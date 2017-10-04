@@ -1,0 +1,209 @@
+/*!
+ * SlickGrid custom styling for Bootstrap (https://github.com/ghiscoding/angular-slickgrid)
+ * Licensed under MIT (https://github.com/ghiscoding/angular-slickgrid/blob/master/LICENSE)
+ * @author: Ghislain B. (ghiscoding)
+ *//*!
+
+/* Mixins for SlickGrid */
+@import './variables';
+
+.slickgrid-container {
+  border-top: $container-border-top;
+  border-bottom: $container-border-bottom;
+  border-left: $container-border-left;
+  border-right: $container-border-right;
+  position: relative;
+
+  @mixin resetSlickCell() {
+    padding: $cell-padding;
+    font-size: $font-size-base;
+    td {
+      font-size: $font-size-base;
+    }
+    body & {
+      line-height: 20px;
+    }
+  }
+
+  // Reset the margin of the checkboxes. The grid
+  // needs a selection checbox column. Bootstrap gives
+  // these elements a 4px top margin, which we have to reset
+  // by aligning to baseline.
+  input[type="checkbox"] {
+    vertical-align: baseline;
+    margin: 0;
+  }
+
+  .slick-viewport {
+    /*opacity: 0.95;*/
+  }
+
+  .grid-canvas {
+    .slick-row {
+      position: absolute;
+      width: 100%;
+      &.odd .slick-cell {
+        &.selected {
+          background-color: $selected-hover-color;
+        }
+      }
+    }
+    .slick-cell, .slick-headerrow-column {
+      border-top: $cell-border-top;
+      border-bottom: $cell-border-bottom;
+      border-left: $cell-border-left;
+      border-right: $cell-border-right;
+    }
+    .even {
+      background: $table-bg-accent;
+    }
+
+
+    .slick-cell {
+      @include resetSlickCell();
+
+      a, a:visited, .ui-widget-content a, .ui-widget-content a:visited {
+        color: $link-color;
+        text-decoration: none;
+      }
+      a:hover, .ui-widget-content a:hover {
+        color: $link-color-hover;
+        text-decoration: none;
+        border-bottom: none;
+      }
+      table {
+        height: 100%;
+        border: 0 none;
+        padding: 0;
+        background: none;
+      }
+      td {
+        border: 0 none;
+        padding: 0;
+        vertical-align: middle;
+        text-align: left;
+      }
+      &.selected {
+        background-color: $selected-hover-color;
+      }
+      &.odd .slick-cell {
+        &.selected {
+          background-color: $selected-hover-color;
+        }
+      }
+    }
+  }
+
+  .slick-header {
+    border-top: $header-border-top;
+    border-right: $header-border-right;
+    border-bottom: $header-border-bottom;
+    border-left: $header-border-left;
+    width: calc(100% - #{$header-scroll-width-to-remove});
+  }
+
+  .slick-headerrow-columns {
+    .slick-headerrow-column {
+      border: none;
+      padding: 4px 5px;
+    }
+    .slick-headerrow-column input,
+    .slick-headerrow-column select,
+    .slick-headerrow-column textarea {
+      margin-right: 0;
+      padding: $header-input-padding;
+      width: $header-input-width;
+      height: $header-input-height;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+  }
+
+  .slick-header-columns {
+    background: $table-background;
+
+
+    .slick-header-sortable {
+      .slick-column-name {
+        margin-left: 0;
+      }
+    }
+    .slick-header-column {
+      height: $header-column-height;
+      line-height: $font-size-base;
+      margin: 0;
+      border-top: $header-border-top;
+      border-right: $header-border-right;
+      border-bottom: $header-border-bottom;
+      border-left: $header-border-left;
+      white-space: normal;
+      &.ui-state-default {
+        @include resetSlickCell();
+      }
+
+      $slickgridHoverHeaderColor: $text-color;
+      $slickgridSortingHeaderColor: $text-color;
+
+      @mixin ResetColumns () {
+        /* like TH  */
+        background: $table-background;
+        font-family: $font-family;
+        color: $text-color;
+        font-weight: bold;
+        a, a:visited {
+          color: $text-color;
+        }
+        a:hover {
+          color: $slickgridHoverHeaderColor;
+        }
+      }
+
+      @include ResetColumns ();
+      &.ui-state-default {
+        @include ResetColumns ();
+      }
+
+      &.slick-header-column-sorted {
+        font-style: normal;
+        color: $slickgridSortingHeaderColor;
+      }
+      &:hover {
+        color: $slickgridHoverHeaderColor;
+      }
+
+      .slick-sort-indicator {
+        position: absolute;
+        display: inline-block;
+        width: 8px;
+        height: 5px;
+        left: auto;
+        right: 7px;
+        top: ((15px * $header-row-count) - 15px);
+      }
+
+      [class*="slick-sort-"] {
+        background: none;
+        font-family: $icon-font-family;
+        font-size: $icon-font-size;
+      }
+      .slick-sort-indicator-asc {
+        &:before {
+          content: $icon-sort-asc;
+        }
+      }
+      .slick-sort-indicator-desc {
+        &:before {
+          content: $icon-sort-desc;
+        }
+      }
+      .slick-resizable-handle {
+        width: 5px;
+        right: 2px;
+      }
+      .slick-resizable-handle:hover {
+        border-right: $header-resizable-hover;
+      }
+    }
+  }
+}

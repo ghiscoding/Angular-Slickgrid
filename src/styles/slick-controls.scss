@@ -1,0 +1,65 @@
+/*
+ * Column Picker Control
+ */
+@import './variables';
+
+
+.slick-columnpicker {
+  background-color: $column-picker-background-color;
+  border: $column-picker-border;
+  border-radius: $column-picker-border-radius;
+  padding: 6px;
+  -moz-box-shadow: 2px 2px 2px silver;
+  -webkit-box-shadow: 2px 2px 2px silver;
+  box-shadow: 2px 2px 2px silver;
+  min-width: 150px;
+  cursor: default;
+  position: absolute;
+  z-index: 20;
+	overflow: auto;
+  resize: both;
+
+  > .close {
+    float: right;
+    width: 20px;
+    height: 25px;
+    padding: 2px;
+    background-color: $column-picker-close-background-color;
+    border: $column-picker-close-border;
+
+    > span {
+      opacity: $column-picker-close-opacity;
+    }
+  }
+
+  input {
+    margin: 4px;
+  }
+  li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: none;
+
+    a {
+      display: block;
+      padding: 4px;
+      font-weight: bold;
+    }
+    a:hover {
+      background: white;
+    }
+  }
+  .title {
+    font-size: 16px;
+    width: 60%;
+    border-bottom: solid 1px #d6d6d6;
+    margin-bottom: 10px;
+  }
+}
+
+.slick-columnpicker-list > hr {
+  margin: 6px 0;
+  border: 0;
+  border-top: 1px solid #d5d5d5;
+}

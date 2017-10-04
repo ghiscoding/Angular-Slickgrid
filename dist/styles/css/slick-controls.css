@@ -1,0 +1,66 @@
+/*
+ * Column Picker Control
+ */
+/*!
+ * SlickGrid custom styling for Bootstrap (https://github.com/ghiscoding/angular-slickgrid)
+ * Licensed under MIT (https://github.com/ghiscoding/angular-slickgrid/blob/master/LICENSE)
+ * @author: Ghislain B. (ghiscoding)
+ */
+/*!
+
+/* SlickGrid Bootstrap variables */
+/* Used by slick-bootstrap.scss */
+/* Slickgrid container, including headers but excluding pagination */
+/* grid */
+/* cell */
+/* cell default slickgrid values */
+/* header */
+/* icon font is using Font-Awesome by default but could be changed to any other icon package like Glyphicons, ... */
+/* Column picker */
+/* pagination variables */
+.slick-columnpicker {
+  background-color: #f8f8f8;
+  border: 1px solid #b8b8b8;
+  border-radius: 3px;
+  padding: 6px;
+  -webkit-box-shadow: 2px 2px 2px silver;
+  box-shadow: 2px 2px 2px silver;
+  min-width: 150px;
+  cursor: default;
+  position: absolute;
+  z-index: 20;
+  overflow: auto;
+  resize: both; }
+  .slick-columnpicker > .close {
+    float: right;
+    width: 20px;
+    height: 25px;
+    padding: 2px;
+    background-color: 1px solid #9c9c9c;
+    border: 1px solid #9c9c9c; }
+    .slick-columnpicker > .close > span {
+      opacity: 0.9; }
+  .slick-columnpicker input {
+    margin: 4px; }
+  .slick-columnpicker li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: none; }
+    .slick-columnpicker li a {
+      display: block;
+      padding: 4px;
+      font-weight: bold; }
+    .slick-columnpicker li a:hover {
+      background: white; }
+  .slick-columnpicker .title {
+    font-size: 16px;
+    width: 60%;
+    border-bottom: solid 1px #d6d6d6;
+    margin-bottom: 10px; }
+
+.slick-columnpicker-list > hr {
+  margin: 6px 0;
+  border: 0;
+  border-top: 1px solid #d5d5d5; }
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy9zdHlsZXMvc2xpY2stY29udHJvbHMuc2NzcyIsIi4uLy4uLy4uL3NyYy9zdHlsZXMvX3ZhcmlhYmxlcy5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FDRkg7Ozs7R0FJRztBQUFBOzttQ0FFZ0M7QUFDbkMsa0NBQWtDO0FBS2xDLHFFQUFxRTtBQU1yRSxVQUFVO0FBTVYsVUFBVTtBQVVWLG1DQUFtQztBQU1uQyxZQUFZO0FBYVosb0hBQW9IO0FBY3BILG1CQUFtQjtBQVFuQiwwQkFBMEI7QURyRTFCO0VBQ0UsMEJDNkQ2QztFRDVEN0MsMEJDNkR1RDtFRDVEdkQsbUJDNkR5QztFRDVEekMsYUFBWTtFQUVaLHVDQUFzQztFQUN0QywrQkFBOEI7RUFDOUIsaUJBQWdCO0VBQ2hCLGdCQUFlO0VBQ2YsbUJBQWtCO0VBQ2xCLFlBQVc7RUFDWixlQUFjO0VBQ2IsYUFBWSxFQXVDYjtFQXBERDtJQWdCSSxhQUFZO0lBQ1osWUFBVztJQUNYLGFBQVk7SUFDWixhQUFZO0lBQ1osb0NDNkNxRDtJRDVDckQsMEJDNkNxRCxFRHhDdEQ7SUExQkg7TUF3Qk0sYUMyQ3FDLEVEMUN0QztFQXpCTDtJQTZCSSxZQUFXLEVBQ1o7RUE5Qkg7SUFnQ0ksaUJBQWdCO0lBQ2hCLFVBQVM7SUFDVCxXQUFVO0lBQ1YsaUJBQWdCLEVBVWpCO0lBN0NIO01Bc0NNLGVBQWM7TUFDZCxhQUFZO01BQ1osa0JBQWlCLEVBQ2xCO0lBekNMO01BMkNNLGtCQUFpQixFQUNsQjtFQTVDTDtJQStDSSxnQkFBZTtJQUNmLFdBQVU7SUFDVixpQ0FBZ0M7SUFDaEMsb0JBQW1CLEVBQ3BCOztBQUdIO0VBQ0UsY0FBYTtFQUNiLFVBQVM7RUFDVCw4QkFBNkIsRUFDOUIiLCJmaWxlIjoic2xpY2stY29udHJvbHMuY3NzIn0= */

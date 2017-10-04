@@ -1,0 +1,13 @@
+$ cat .gitignore
+node_modules
+bower_components
+npm-debug.log
+yarn-error.log
+yarn.lock
+
+.chrome
+.idea
+.DS_STORE
+
+*.log
+*.tgz

@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "strict": false,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "rootDir": ".",
+        "sourceMap": true,
+        "inlineSources": true,
+        "target": "es5",
+        "skipLibCheck": true,
+        "lib": [
+            "es2017",
+            "dom"
+        ],
+        "typeRoots": [
+            "./node_modules/@types/"
+        ]
+    },
+    "exclude": [
+      "node_modules",
+      "demo"
+    ]
+}

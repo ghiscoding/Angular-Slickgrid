@@ -1,0 +1,298 @@
+/*
+ * IMPORTANT:
+ * In order to preserve the uniform grid appearance, all cell styles need to have padding, margin and border sizes.
+ * No built-in (selected, editable, highlight, flashing, invalid, loading, :focus) or user-specified CSS
+ * classes should alter those!
+ */
+ @import './variables';
+
+.pointer {
+  cursor: pointer;
+}
+.slickgrid-container {
+  .slick-header-columns,
+  .slick-header-column {
+    background: $grid-header-background;
+    // background-color: #EBECEE;
+  }
+
+  .slick-header-columns {
+    border-bottom: 1px solid $grid-border-color;
+    background: linear-gradient(rgba(0,0,0,0) 60%, rgba(0,0,0,.1));
+  }
+
+  .slick-header-column {
+    border-right: 1px solid $grid-border-color;
+    border-bottom: 1px solid $grid-border-color;
+  }
+
+  .slick-header-column:hover {
+    background: darken($grid-header-background, 2%);
+  }
+
+  .slick-header-column-active {
+    background: darken($grid-header-background, 5%) !important;
+  }
+
+  .slick-headerrow {
+    background: $grid-header-background;
+  }
+
+  .slick-headerrow-column {
+    background: #fafafa;
+    border-bottom: 0;
+  }
+
+  .grid-canvas {
+    background: white;
+  }
+
+  .slick-row {
+    background: white;
+    border: 0;
+    line-height: 20px;
+
+    .slick-cell {
+      background: white;
+
+      padding-top: 3px;
+      padding-bottom: 4px;
+      padding-left: 4px;
+      padding-right: 4px;
+      box-sizing: border-box;
+
+      &.invalid {
+        border-color: red;
+        -moz-animation-duration: 0.2s;
+        -webkit-animation-duration: 0.2s;
+        -moz-animation-name: slickgrid-invalid-hilite;
+        -webkit-animation-name: slickgrid-invalid-hilite;
+        animation-duration: 0.2s;
+        animation-name: slickgrid-invalid-hilite;
+      }
+
+      &.selected {
+        background-color: rgb(231, 231, 195); // beige
+      }
+
+      &.active {
+        border-color: black;
+        border-style: solid;
+        border-width: 1px;
+
+        // We compensate for the all-around border (now 1px at top and left too!) by reducing the padding:
+        padding-top: 2px;
+        padding-left: 3px;
+        input.editor-text {
+          width: 100%;
+          height: 100%;
+          border: 0;
+          margin: 0;
+          outline: 0;
+          background: transparent;
+          padding: 0;
+          transform: translate(0, -2px);
+        }
+
+      }
+    }
+
+    &.odd .slick-cell {
+      background: $cell-odd-background-color;
+
+      // make sure we override the regular background color:
+      &.selected {
+        background-color: rgb(214, 214, 178); // beige
+      }
+    }
+
+    &.active-row .slick-cell {
+      background-color: rgb(226, 255, 253);
+
+      // make sure we override the regular background color:
+      &.selected {
+        background-color: red;
+      }
+    }
+
+    &.active-row.odd .slick-cell {
+      background-color: $cell-odd-active-background-color;
+
+      // make sure we override the regular background color:
+      &.selected {
+        background-color: green; // beige
+      }
+    }
+
+    &.loading {
+      opacity: 0.5;
+    }
+  }
+
+  .slick-group {
+    border-bottom: 2px solid silver;
+  }
+
+  .slick-group-toggle {
+    width: 9px;
+    height: 9px;
+    margin-right: 5px;
+
+    &.expanded:before {
+      content: "\f196";
+    }
+
+    &.collapsed:before {
+      content: "\f147";
+    }
+  }
+
+  .slick-group-totals {
+    color: gray;
+    background: white;
+  }
+
+  .slick-sortable-placeholder {
+    background: silver !important;
+  }
+
+  @-moz-keyframes slickgrid-invalid-hilite {
+    from {
+      box-shadow: 0 0 6px red;
+    }
+    to {
+      box-shadow: none;
+    }
+  }
+
+  @-webkit-keyframes slickgrid-invalid-hilite {
+    from {
+      box-shadow: 0 0 6px red;
+    }
+    to {
+      box-shadow: none;
+    }
+  }
+
+  // ----------------------------------------------
+  // Excel-like header
+  // ----------------------------------------------
+
+  .slick-header-menubutton {
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-left: thin ridge silver;
+    cursor: pointer;
+    display: inline-block;
+    position: absolute;
+
+    // The next few items are already defined in the slick-headermenu.less file and it should stay that way, *unless* you also replace the button image included there.
+    //bottom: 0;
+    //right: 0;
+    //top: 0;
+    //width: 14px;
+  }
+
+  .slick-header-menu {
+    background: none repeat scroll 0 0 white;
+    border: 1px solid #BFBDBD;
+    min-width: 175px;
+    padding: 4px;
+    z-index: 100000;
+    cursor: default;
+    display: inline-block;
+    margin: 0;
+    position: absolute;
+
+    button {
+      border: 1px solid #BFBDBD;
+      background-color: white;
+      width: 45px;
+      padding: 4px;
+      margin: 4px 4px 4px 0;
+    }
+
+    .filter {
+      border: 1px solid #BFBDBD;
+      font-size: 8pt;
+      height: 400px;
+      margin-top: 6px;
+      overflow: scroll;
+      padding: 4px;
+      white-space: nowrap;
+      width: 200px;
+    }
+
+    .textfilter {
+      & > label {
+        display: inline-block;
+        margin-left: 5px;
+        margin-right: 10px;
+      }
+
+      & > input[type=text] {
+        width: 70%;
+      }
+    }
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .slick-header-menuitem {
+    border: 1px solid transparent;
+    padding: 2px 4px;
+    cursor: pointer;
+    list-style: none outside none;
+    margin: 0;
+  }
+
+  .slick-header-menuicon {
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 16px;
+    margin-right: 4px;
+    vertical-align: middle;
+    width: 16px;
+  }
+
+  .slick-header-menucontent {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .slick-header-menuitem:hover {
+    border-color: #BFBDBD;
+  }
+
+  .header-overlay,
+  .cell-overlay,
+  .selection-cell-overlay {
+    display: block;
+    position: absolute;
+    z-index: 999;
+  }
+
+  .slick-cell > .editor-select {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: auto;
+    top: 0;
+    bottom: 0;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .slick-range-decorator {
+    z-index: 100;
+    pointer-events: none;
+    background: transparent;
+    border: none;
+    outline: black;
+  }
+}
