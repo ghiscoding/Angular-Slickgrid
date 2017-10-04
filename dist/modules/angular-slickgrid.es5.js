@@ -645,8 +645,6 @@ var dateUsShortSorter = function (value1, value2, sortDirection) {
     }
     var /** @type {?} */ date1 = moment$10(value1, DATE_FORMAT$3, true);
     var /** @type {?} */ date2 = moment$10(value2, DATE_FORMAT$3, true);
-    // const duration = moment.duration(date1.diff(date2));
-    // const diff = duration.asSeconds();
     var /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
     return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
 };
