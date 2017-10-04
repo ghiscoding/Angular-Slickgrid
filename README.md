@@ -10,7 +10,14 @@ The goal is of course to be able to run SlickGrid within Angular 4+ but also to 
 ### NPM Package
 [Aurelia-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
 
+<a name="wiki"></a>
+
+## Wiki / Documentation
+The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Validation - Wiki](https://github.com/ghiscoding/angular-slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with.
+
+
 <a name="main-features"></a>
+
 ## Main features
 You can see some screenshots below and the instructions down below.
 
@@ -31,14 +38,12 @@ This is a work in progress, but so far here are some of the features that `angul
 - ... more to come
 
 <a name="missing-features"></a>
+
 ## Missing features (planned items)
 The following are SlickGrid features which are not yet included in this library
 - Inline Editors
 - Filters to support multi-select dropdown and eventually custom filters
 - Plugins (Header Menu, Grid Menu, Column Header Buttons)
-
-## Wiki / Documentation
-The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Validation - Wiki](https://github.com/ghiscoding/angular-slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with.
 
 ## Screenshots
 
