@@ -1,5 +1,10 @@
 import { FilterConditions } from '../filter-conditions';
-import { Column, ColumnFilters, FieldType, FilterChangedArgs, FormElementType, GridOption } from '../models';
+import { Column } from '../models/column.interface';
+import { ColumnFilters } from '../models/columnFilters.interface';
+import { FieldType } from '../models/fieldType';
+import { FilterChangedArgs } from '../models/filterChangedArgs.interface';
+import { FormElementType } from '../models/formElementType';
+import { GridOption } from '../models/gridOption.interface';
 import { FilterTemplates } from './../filter-templates';
 import { Injectable, Input, OnInit } from '@angular/core';
 

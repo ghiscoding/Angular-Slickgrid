@@ -299,8 +299,6 @@ var FilterService = (function () {
     };
     /**
      * Attach a backend filter hook to the grid
-    \@param grid SlickGrid Grid object
-    \@param gridOptions Grid Options object
      * @return {?}
      */
     FilterService.prototype.attachBackendOnFilter = function () {
@@ -328,9 +326,6 @@ var FilterService = (function () {
     };
     /**
      * Attach a local filter hook to the grid
-    \@param grid SlickGrid Grid object
-    \@param gridOptions Grid Options object
-    \@param dataView
      * @param {?} dataView
      * @return {?}
      */
@@ -548,7 +543,7 @@ var ResizerService = (function () {
     }
     /**
      * Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
-    Options: we could also provide a % factor to resize on each height/width independently
+     * Options: we could also provide a % factor to resize on each height/width independently
      * @param {?} grid
      * @param {?} gridOptions
      * @return {?}
@@ -574,7 +569,7 @@ var ResizerService = (function () {
     };
     /**
      * Calculate the datagrid new height/width from the available space, also consider that a % factor might be applied to calculation
-    object gridOptions
+     * object gridOptions
      * @param {?} gridOptions
      * @return {?}
      */
@@ -705,10 +700,8 @@ var SortService = (function () {
     }
     /**
      * Attach a backend sort (single/multi) hook to the grid
-    \@param grid SlickGrid Grid object
-    \@param gridOptions Grid Options object
-     * @param {?} grid
-     * @param {?} gridOptions
+     * @param {?} grid SlickGrid Grid object
+     * @param {?} gridOptions Grid Options object
      * @return {?}
      */
     SortService.prototype.attachBackendOnSort = function (grid, gridOptions) {
@@ -717,11 +710,8 @@ var SortService = (function () {
     };
     /**
      * Attach a local sort (single/multi) hook to the grid
-    \@param grid SlickGrid Grid object
-    \@param gridOptions Grid Options object
-    \@param dataView
-     * @param {?} grid
-     * @param {?} gridOptions
+     * @param {?} grid SlickGrid Grid object
+     * @param {?} gridOptions Grid Options object
      * @param {?} dataView
      * @return {?}
      */
@@ -1242,10 +1232,8 @@ var GridOdataService = (function () {
     };
     /**
      * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
-    \@param string operator
-    \@returns string map
      * @param {?} operator
-     * @return {?}
+     * @return {?} string map
      */
     GridOdataService.prototype.mapOperator = function (operator) {
         var /** @type {?} */ map = '';
@@ -1276,11 +1264,9 @@ var GridOdataService = (function () {
     };
     /**
      * Parse a date passed as a string and return a Date object (if valid)
-    \@param string inputDateString
-    \@returns object Date
      * @param {?} inputDateString
      * @param {?} useUtc
-     * @return {?}
+     * @return {?} object Date
      */
     GridOdataService.prototype.parseUtcDate = function (inputDateString, useUtc) {
         var /** @type {?} */ date = null;
@@ -1458,7 +1444,7 @@ var SlickPaginationComponent = (function () {
 SlickPaginationComponent.decorators = [
     { type: _angular_core.Component, args: [{
                 selector: 'slick-pagination',
-                template: "\n    <div class=\"slick-pagination\">\n    <div class=\"slick-pagination-nav\">\n        <nav aria-label=\"Page navigation\">\n        <ul class=\"pagination\">\n            <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-first fa fa-angle-double-left\" aria-label=\"First\" (click)=\"changeToFirstPage($event)\">\n            </a>\n            </li>\n            <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-prev fa fa-angle-left\" aria-label=\"Previous\" (click)=\"changeToPreviousPage($event)\">\n            </a>\n            </li>\n        </ul>\n        </nav>\n\n        <div class=\"slick-page-number\">\n        page {{pageNumber}} of {{pageCount}}\n        </div>\n\n        <nav aria-label=\"Page navigation\">\n        <ul class=\"pagination\">\n            <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-next fa fa-angle-double-right\" aria-label=\"Next\" (click)=\"changeToNextPage($event)\">\n            </a>\n            </li>\n            <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-end fa fa-angle-right\" aria-label=\"Last\" (click)=\"changeToLastPage($event)\">\n            </a>\n            </li>\n        </ul>\n        </nav>\n    </div>\n    <span class=\"slick-pagination-settings\">\n        <select id=\"items-per-page-label\" [value]=\"itemsPerPage\" (change)=\"onChangeItemPerPage($event)\">\n        <option value=\"{{pageSize}}\" *ngFor=\"let pageSize of paginationPageSizes;\">{{pageSize}}</option>\n        </select>\n        items per page,\n        <span class=\"slick-pagination-count\">\n        {{dataFrom}}-{{dataTo}} of {{totalItems}} items\n        </span>\n    </span>\n    </div>\n  ",
+                template: "\n    <div class=\"slick-pagination\">\n    <div class=\"slick-pagination-nav\">\n        <nav aria-label=\"Page navigation\">\n        <ul class=\"pagination\">\n            <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-first fa fa-angle-double-left\" aria-label=\"First\" (click)=\"changeToFirstPage($event)\">\n            </a>\n            </li>\n            <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-prev fa fa-angle-left\" aria-label=\"Previous\" (click)=\"changeToPreviousPage($event)\">\n            </a>\n            </li>\n        </ul>\n        </nav>\n\n        <div class=\"slick-page-number\">\n        page {{pageNumber}} of {{pageCount}}\n        </div>\n\n        <nav aria-label=\"Page navigation\">\n        <ul class=\"pagination\">\n            <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-next fa fa-angle-right\" aria-label=\"Next\" (click)=\"changeToNextPage($event)\">\n            </a>\n            </li>\n            <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-end fa fa-angle-double-right\" aria-label=\"Last\" (click)=\"changeToLastPage($event)\">\n            </a>\n            </li>\n        </ul>\n        </nav>\n    </div>\n    <span class=\"slick-pagination-settings\">\n        <select id=\"items-per-page-label\" [value]=\"itemsPerPage\" (change)=\"onChangeItemPerPage($event)\">\n        <option value=\"{{pageSize}}\" *ngFor=\"let pageSize of paginationPageSizes;\">{{pageSize}}</option>\n        </select>\n        items per page,\n        <span class=\"slick-pagination-count\">\n        {{dataFrom}}-{{dataTo}} of {{totalItems}} items\n        </span>\n    </span>\n    </div>\n  ",
                 styles: [
                     "\n      /* Pagination styling */\n      .slick-pagination {\n        border-top: 0 none;\n        border-right: 0 none;\n        border-bottom: 0 none;\n        border-left: 0 none;\n        width: 100%;\n        height: 34px;\n        padding-top: 4px;\n        vertical-align: middle;\n        font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;\n        font-size: 13px;\n        font-weight: 400;\n        color: #808080;\n      }\n      .slick-pagination .slick-pagination-status {\n        display: inline-block;\n        padding: 6px;\n      }\n      .slick-pagination .ui-icon-container {\n        display: inline-block;\n        border-color: #ddd;\n      }\n      .slick-pagination .slick-pagination-nav {\n        display: inline-block;\n        padding: 2px;\n        height: 34px;\n      }\n      .slick-pagination .slick-pagination-nav nav {\n        display: inline-block;\n      }\n      .slick-pagination .slick-pagination-nav .slick-page-number {\n        vertical-align: top;\n        margin-top: 6px;\n        display: inline-block;\n        padding: 0 5px;\n      }\n      .slick-pagination .slick-pagination-nav .pagination {\n        margin: 0;\n      }\n      .slick-pagination .slick-pagination-nav .pagination .page-link {\n        font-size: 13px;\n        font-weight: bold;\n        border: 1px solid #ccc;\n      }\n      .slick-pagination .slick-pagination-nav .pagination .page-item {\n        cursor: pointer;\n        font-weight: bold;\n      }\n      .slick-pagination .slick-pagination-nav .pagination .page-item a[class*=\"icon-seek-\"] {\n        text-decoration: none;\n        font-size: 14px;\n        border-color: silver;\n      }\n      .slick-pagination .slick-pagination-nav .pagination .page-item.disabled {\n        cursor: not-allowed;\n        font-weight: normal;\n      }\n      .slick-pagination .slick-pagination-nav .pagination .page-item.disabled > .page-link {\n        font-weight: normal;\n      }\n      .slick-pagination .slick-pagination-nav .pagination .page-item.disabled a[class*=\"icon-seek-\"] {\n        background-color: #f9f9f9;\n        border-color: #dedede;\n      }\n      .slick-pagination .slick-pagination-settings {\n        display: block;\n        float: right;\n        padding: 2px;\n        vertical-align: middle;\n      }\n      .slick-pagination .slick-pagination-settings select {\n        font-size: 12px;\n        line-height: 1.5;\n        height: 32px;\n        width: 62px;\n        padding: 5px;\n        border: 1px solid #ccc;\n        border-radius: 3px;\n      }\n      .slick-pagination .slick-pagination-settings .slick-pagination-count {\n        padding-left: 10px;\n      }\n    "
                 ]
@@ -1769,10 +1755,6 @@ exports.ɵe = dateUsFormatter;
 exports.ɵi = percentCompleteBarFormatter;
 exports.ɵh = percentCompleteFormatter;
 exports.ɵk = yesNoFormatter;
-exports.ɵo = FilterService;
-exports.ɵn = MouseService;
-exports.ɵm = ResizerService;
-exports.ɵp = SortService;
 exports.ɵl = OdataService;
 
 Object.defineProperty(exports, '__esModule', { value: true });

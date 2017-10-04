@@ -7,7 +7,7 @@ declare interface StringConstructor {
 }
 
 
-String.format = function(format: string, args): string {
+String.format = function(format: string, args: any): string {
   // const args = (Array.isArray(arguments[1])) ? arguments[1] : Array.prototype.slice.call(arguments, 1);
 
   return format.replace(/{(\d+)}/g, function (match, number) {

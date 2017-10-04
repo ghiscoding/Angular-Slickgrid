@@ -1,4 +1,4 @@
-import { Sorter } from './../models';
+import { Sorter } from './../models/sorter.interface';
 
 export const numericSorter: Sorter = (value1, value2, sortDirection) => {
   const x = (isNaN(value1) || value1 === '' || value1 === null) ? -99e+10 : parseFloat(value1);

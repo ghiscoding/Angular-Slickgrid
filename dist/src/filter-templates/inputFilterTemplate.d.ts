@@ -1,2 +1,2 @@
-import { Filter } from './../models';
+import { Filter } from './../models/filter.interface';
 export declare const inputFilterTemplate: Filter;

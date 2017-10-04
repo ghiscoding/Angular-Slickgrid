@@ -19,11 +19,10 @@ export declare const Formatters: {
     progressBar: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     yesNoFormatter: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
 };
-import { FilterService } from './services/filter.service';
-import { MouseService } from './services/mouse.service';
-import { ResizerService } from './services/resizer.service';
-import { SortService } from './services/sort.service';
-export { FilterService, MouseService, ResizerService, SortService };
+export { FilterService } from './services/filter.service';
+export { MouseService } from './services/mouse.service';
+export { ResizerService } from './services/resizer.service';
+export { SortService } from './services/sort.service';
 export { GridOdataService } from './services/grid-odata.service';
 export { SlickPaginationComponent } from './components/slick-pagination.component';
 export { AngularSlickgridComponent } from './components/angular-slickgrid.component';

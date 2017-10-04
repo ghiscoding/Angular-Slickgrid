@@ -1,6 +1,10 @@
-import { Column, GridOption } from './../models';
 import { AfterViewInit, OnInit } from '@angular/core';
-import { FilterService, MouseService, SortService, ResizerService } from './../services';
+import { Column } from './../models/column.interface';
+import { GridOption } from './../models/gridOption.interface';
+import { FilterService } from './../services/filter.service';
+import { MouseService } from './../services/mouse.service';
+import { SortService } from './../services/sort.service';
+import { ResizerService } from './../services/resizer.service';
 export declare class AngularSlickgridComponent implements AfterViewInit, OnInit {
     private resizer;
     private mouseService;

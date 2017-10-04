@@ -7,21 +7,13 @@ We will be using [6pac SlickGrid fork](https://github.com/6pac/SlickGrid/) (the 
 ### Goal
 The goal is of course to be able to run SlickGrid within Angular 4+ but also to incorporate as much as possible the entire list of functionalities that SlickGrid offers (you can see a vast list of samples on the [6pac SlickGrid examples](https://github.com/6pac/SlickGrid/wiki/Examples) website).
 
-## Screenshots
-
-Screenshots from the demo app with the `Bootstrap` theme (that is the only available theme, but there is a lot of SASS variables to make it look like Material, or others, if you wish to).
-
-**Slickgrid example with Formatters (last column is a custom Formatter)**
-![Default Slickgrid Example](/screenshots/formatters.png)
-
-**Filter and Sort**
-![Slickgrid Server Side](/screenshots/filter_and_sort.png)
-
-**Slickgrid Example with Server Side (sorting/pagination)**
-![Slickgrid Server Side](/screenshots/pagination.png)
+### NPM Package
+[Aurelia-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
 
 <a name="main-features"></a>
 ## Main features
+You can see some screenshots below and the instructions down below.
+
 This is a work in progress, but so far here are some of the features that `angular-slickgrid` brings (on top of Slickgrid itself):
 - Easier use of SlickGrid within `Angular` as it is just a component (simply pass a column definitions and a dataset and you're good to go)
 - Bootstrap Theme with SASS variables for extra customization (if you create a theme, then please make a PR)
@@ -46,17 +38,30 @@ The following are SlickGrid features which are not yet included in this library
 - Plugins (Header Menu, Grid Menu, Column Header Buttons)
 
 
+## Screenshots
+
+Screenshots from the demo app with the `Bootstrap` theme (that is the only available theme, but there is a lot of SASS variables to make it look like Material, or others, if you wish to).
+
+**Slickgrid example with Formatters (last column is a custom Formatter)**
+![Default Slickgrid Example](/screenshots/formatters.png)
+
+**Filter and Sort**
+![Slickgrid Server Side](/screenshots/filter_and_sort.png)
+
+**Slickgrid Example with Server Side (sorting/pagination)**
+![Slickgrid Server Side](/screenshots/pagination.png)
+
 ## How to use Angular-Slickgrid?
 `Angular-Slickgrid` is built with TypeScript and comes with a set of Interfaces/Models that you can use within your application. For example:
 
 Some of the interface models are
 ```javascript
-import { Column, ColumnFilter, FieldType, Formatter, FormElementType, GridOption } from 'angular-slickgrid';
+import { Column, ColumnFilter, FieldType, Formatter, FormElementType, GridOption } from 'angular-slickgrid/angular-slickgrid';
 ```
 
 Some of the models which include functions (like Formatters)
 ```javascript
-import { ColumnFilters, FilterTemplates, Formatters, Sorters } from 'angular-slickgrid';
+import { ColumnFilters, FilterTemplates, Formatters, Sorters } from 'angular-slickgrid/angular-slickgrid';
 ```
 
 ## Installation
@@ -92,7 +97,7 @@ Then modify your `.angular-cli.json` file with the following Styles and Scripts:
 #### Your App Module (main)
 Include `AngularSlickgridModule` in your App Module (app.module.ts)
 ```javascript
-import { AngularSlickgridModule } from 'angular-slickgrid';
+import { AngularSlickgridModule } from 'angular-slickgrid/angular-slickgrid';
 
 @NgModule({
   declarations: [AppComponent],
@@ -114,7 +119,7 @@ And finally use it your code, for example let's create a `grid-basic.component.h
 and then configure the Column Definitions, Grid Options and pass a Dataset to the grid:
 ```javascript
 import { Component, OnInit } from '@angular/core';
-import { Column, GridOption } from 'angular-slickgrid';
+import { Column, GridOption } from 'angular-slickgrid/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-basic.component.html'

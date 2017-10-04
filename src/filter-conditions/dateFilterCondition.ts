@@ -1,5 +1,6 @@
 import { FieldType } from '../models/fieldType';
-import { FilterCondition, FilterConditionOption } from '../models';
+import { FilterCondition } from './../models/filterCondition.interface';
+import { FilterConditionOption } from './../models/filterConditionOption.interface';
 import { testFilterCondition, mapDateFormatByFieldType } from './filterUtilities';
 import * as moment_ from 'moment';
 const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670

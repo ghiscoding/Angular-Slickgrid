@@ -1,5 +1,5 @@
 import './global-utilities';
-import { OdataOption } from './../models';
+import { OdataOption } from './../models/odataOption.interface';
 export declare class OdataService {
     _columnFilters: any;
     _defaultSortBy: string;

@@ -1,4 +1,6 @@
-import { GridOption, FieldType, Sorter } from './../models';
+import { GridOption } from './../models/gridOption.interface';
+import { FieldType } from './../models/fieldType';
+import { Sorter } from './../models/sorter.interface';
 import { Sorters } from './../sorters';
 import { Injectable, Input, OnInit } from '@angular/core';
 

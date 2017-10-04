@@ -328,8 +328,6 @@ class FilterService {
     }
     /**
      * Attach a backend filter hook to the grid
-    \@param grid SlickGrid Grid object
-    \@param gridOptions Grid Options object
      * @return {?}
      */
     attachBackendOnFilter() {
@@ -357,9 +355,6 @@ class FilterService {
     }
     /**
      * Attach a local filter hook to the grid
-    \@param grid SlickGrid Grid object
-    \@param gridOptions Grid Options object
-    \@param dataView
      * @param {?} dataView
      * @return {?}
      */
@@ -569,7 +564,7 @@ class ResizerService {
     }
     /**
      * Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
-    Options: we could also provide a % factor to resize on each height/width independently
+     * Options: we could also provide a % factor to resize on each height/width independently
      * @param {?} grid
      * @param {?} gridOptions
      * @return {?}
@@ -594,7 +589,7 @@ class ResizerService {
     }
     /**
      * Calculate the datagrid new height/width from the available space, also consider that a % factor might be applied to calculation
-    object gridOptions
+     * object gridOptions
      * @param {?} gridOptions
      * @return {?}
      */
@@ -731,10 +726,8 @@ class SortService {
     constructor() { }
     /**
      * Attach a backend sort (single/multi) hook to the grid
-    \@param grid SlickGrid Grid object
-    \@param gridOptions Grid Options object
-     * @param {?} grid
-     * @param {?} gridOptions
+     * @param {?} grid SlickGrid Grid object
+     * @param {?} gridOptions Grid Options object
      * @return {?}
      */
     attachBackendOnSort(grid, gridOptions) {
@@ -743,11 +736,8 @@ class SortService {
     }
     /**
      * Attach a local sort (single/multi) hook to the grid
-    \@param grid SlickGrid Grid object
-    \@param gridOptions Grid Options object
-    \@param dataView
-     * @param {?} grid
-     * @param {?} gridOptions
+     * @param {?} grid SlickGrid Grid object
+     * @param {?} gridOptions Grid Options object
      * @param {?} dataView
      * @return {?}
      */
@@ -1258,10 +1248,8 @@ class GridOdataService {
     }
     /**
      * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
-    \@param string operator
-    \@returns string map
      * @param {?} operator
-     * @return {?}
+     * @return {?} string map
      */
     mapOperator(operator) {
         let /** @type {?} */ map = '';
@@ -1292,11 +1280,9 @@ class GridOdataService {
     }
     /**
      * Parse a date passed as a string and return a Date object (if valid)
-    \@param string inputDateString
-    \@returns object Date
      * @param {?} inputDateString
      * @param {?} useUtc
-     * @return {?}
+     * @return {?} object Date
      */
     parseUtcDate(inputDateString, useUtc) {
         let /** @type {?} */ date = null;
@@ -1492,11 +1478,11 @@ SlickPaginationComponent.decorators = [
         <nav aria-label="Page navigation">
         <ul class="pagination">
             <li class="page-item" [ngClass]="pageNumber === pageCount ? 'disabled' : ''">
-            <a class="page-link icon-seek-next fa fa-angle-double-right" aria-label="Next" (click)="changeToNextPage($event)">
+            <a class="page-link icon-seek-next fa fa-angle-right" aria-label="Next" (click)="changeToNextPage($event)">
             </a>
             </li>
             <li class="page-item" [ngClass]="pageNumber === pageCount ? 'disabled' : ''">
-            <a class="page-link icon-seek-end fa fa-angle-right" aria-label="Last" (click)="changeToLastPage($event)">
+            <a class="page-link icon-seek-end fa fa-angle-double-right" aria-label="Last" (click)="changeToLastPage($event)">
             </a>
             </li>
         </ul>
@@ -1904,5 +1890,5 @@ const Formatters = {
  * Generated bundle index. Do not edit.
  */
 
-export { CaseType, FormElementType, FieldType, Formatters, FilterService, MouseService, ResizerService, SortService, GridOdataService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, checkboxFormatter as ɵa, checkmarkFormatter as ɵb, progressBarFormatter as ɵj, dateIsoFormatter as ɵc, dateTimeIsoAmPmFormatter as ɵd, dateTimeUsAmPmFormatter as ɵg, dateTimeUsFormatter as ɵf, dateUsFormatter as ɵe, percentCompleteBarFormatter as ɵi, percentCompleteFormatter as ɵh, yesNoFormatter as ɵk, FilterService as ɵo, MouseService as ɵn, ResizerService as ɵm, SortService as ɵp, OdataService as ɵl };
+export { CaseType, FormElementType, FieldType, Formatters, FilterService, MouseService, ResizerService, SortService, GridOdataService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, checkboxFormatter as ɵa, checkmarkFormatter as ɵb, progressBarFormatter as ɵj, dateIsoFormatter as ɵc, dateTimeIsoAmPmFormatter as ɵd, dateTimeUsAmPmFormatter as ɵg, dateTimeUsFormatter as ɵf, dateUsFormatter as ɵe, percentCompleteBarFormatter as ɵi, percentCompleteFormatter as ɵh, yesNoFormatter as ɵk, OdataService as ɵl };
 //# sourceMappingURL=angular-slickgrid.js.map

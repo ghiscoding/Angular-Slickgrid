@@ -1,7 +1,7 @@
-import { CaseType } from '../models/caseType';
 import './global-utilities';
 import { Injectable } from '@angular/core';
-import { OdataOption } from './../models';
+import { CaseType } from '../models/caseType';
+import { OdataOption } from './../models/odataOption.interface';
 
 @Injectable()
 export class OdataService {

@@ -1,4 +1,4 @@
-import { FieldType } from '../models';
+import { FieldType } from '../models/fieldType';
 
 export const mapDateFormatByFieldType: Function = (fieldType: FieldType) => {
   switch (fieldType) {

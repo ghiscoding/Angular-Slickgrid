@@ -13,5 +13,4 @@ export { dateUsFormatter as ɵe } from './src/formatters/dateUsFormatter';
 export { percentCompleteBarFormatter as ɵi } from './src/formatters/percentCompleteBarFormatter';
 export { percentCompleteFormatter as ɵh } from './src/formatters/percentCompleteFormatter';
 export { yesNoFormatter as ɵk } from './src/formatters/yesNoFormatter';
-export { FilterService as ɵo, MouseService as ɵn, ResizerService as ɵm, SortService as ɵp } from './src/services';
 export { OdataService as ɵl } from './src/services/odata.service';

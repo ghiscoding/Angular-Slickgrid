@@ -56,12 +56,12 @@ Screenshots from the demo app with the `Bootstrap` theme (that is the only avail
 
 Some of the interface models are
 ```javascript
-import { Column, ColumnFilter, FieldType, Formatter, FormElementType, GridOption } from 'angular-slickgrid';
+import { Column, ColumnFilter, FieldType, Formatter, FormElementType, GridOption } from 'angular-slickgrid/angular-slickgrid';
 ```
 
 Some of the models which include functions (like Formatters)
 ```javascript
-import { ColumnFilters, FilterTemplates, Formatters, Sorters } from 'angular-slickgrid';
+import { ColumnFilters, FilterTemplates, Formatters, Sorters } from 'angular-slickgrid/angular-slickgrid';
 ```
 
 ## Installation
@@ -97,7 +97,7 @@ Then modify your `.angular-cli.json` file with the following Styles and Scripts:
 #### Your App Module (main)
 Include `AngularSlickgridModule` in your App Module (app.module.ts)
 ```javascript
-import { AngularSlickgridModule } from 'angular-slickgrid';
+import { AngularSlickgridModule } from 'angular-slickgrid/angular-slickgrid';
 
 @NgModule({
   declarations: [AppComponent],
@@ -119,7 +119,7 @@ And finally use it your code, for example let's create a `grid-basic.component.h
 and then configure the Column Definitions, Grid Options and pass a Dataset to the grid:
 ```javascript
 import { Component, OnInit } from '@angular/core';
-import { Column, GridOption } from 'angular-slickgrid';
+import { Column, GridOption } from 'angular-slickgrid/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-basic.component.html'

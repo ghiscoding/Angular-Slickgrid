@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, AfterViewInit } from '@angular/core';
-import { Column, GridOption } from './../models';
+import { Column } from './../models/column.interface';
+import { GridOption } from './../models/gridOption.interface';
 
 @Component({
   selector: 'slick-pagination',
@@ -26,11 +27,11 @@ import { Column, GridOption } from './../models';
         <nav aria-label="Page navigation">
         <ul class="pagination">
             <li class="page-item" [ngClass]="pageNumber === pageCount ? 'disabled' : ''">
-            <a class="page-link icon-seek-next fa fa-angle-double-right" aria-label="Next" (click)="changeToNextPage($event)">
+            <a class="page-link icon-seek-next fa fa-angle-right" aria-label="Next" (click)="changeToNextPage($event)">
             </a>
             </li>
             <li class="page-item" [ngClass]="pageNumber === pageCount ? 'disabled' : ''">
-            <a class="page-link icon-seek-end fa fa-angle-right" aria-label="Last" (click)="changeToLastPage($event)">
+            <a class="page-link icon-seek-end fa fa-angle-double-right" aria-label="Last" (click)="changeToLastPage($event)">
             </a>
             </li>
         </ul>

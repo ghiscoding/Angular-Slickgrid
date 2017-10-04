@@ -1,6 +1,6 @@
-import { GridOption } from './../models';
 import { Injectable } from '@angular/core';
 import { Router, NavigationEnd, NavigationStart } from '@angular/router';
+import { GridOption } from './../models/gridOption.interface';
 
 declare var $: any;
 
@@ -18,7 +18,7 @@ export class ResizerService {
   /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
    * Options: we could also provide a % factor to resize on each height/width independently
    */
-  attachAutoResizeDataGrid(grid: any, gridOptions: GridOption) {
+  attachAutoResizeDataGrid(grid: any, gridOptions: GridOption): any|void {
     // if we can't find the grid to resize, return without attaching anything
     const gridDomElm = $(`#${gridOptions.gridId}`);
     if (!gridDomElm || typeof gridDomElm.offset() === 'undefined') {
@@ -44,7 +44,7 @@ export class ResizerService {
    * Calculate the datagrid new height/width from the available space, also consider that a % factor might be applied to calculation
    * object gridOptions
    */
-  calculateGridNewDimensions(gridOptions: GridOption) {
+  calculateGridNewDimensions(gridOptions: GridOption): any {
     let bottomPadding = (gridOptions.autoResize && gridOptions.autoResize.bottomPadding) ? gridOptions.autoResize.bottomPadding : DATAGRID_BOTTOM_PADDING;
     if (bottomPadding && gridOptions.enablePagination) {
       bottomPadding += DATAGRID_PAGINATION_HEIGHT; // add pagination height to bottom padding
@@ -73,7 +73,7 @@ export class ResizerService {
   }
 
   /** Resize the datagrid to fit the browser height & width */
-  resizeGrid(grid: any, gridOptions: GridOption, newSizes?: { height: number, width: number}) {
+  resizeGrid(grid: any, gridOptions: GridOption, newSizes?: { height: number, width: number}): void {
     // calculate new available sizes but with minimum height of 220px
     newSizes = newSizes || this.calculateGridNewDimensions(gridOptions);
 

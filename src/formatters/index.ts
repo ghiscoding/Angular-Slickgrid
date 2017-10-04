@@ -1,6 +1,4 @@
-import { Column } from './../models';
-// import { Group, GroupTotals } from '../core'
-// import { Item } from '../dataview'
+import { Column } from './../models/column.interface';
 import { checkboxFormatter } from './CheckboxFormatter';
 import { checkmarkFormatter } from './CheckmarkFormatter';
 import { dateIsoFormatter } from './dateIsoFormatter';
@@ -12,6 +10,8 @@ import { percentCompleteFormatter } from './percentCompleteFormatter';
 import { percentCompleteBarFormatter } from './percentCompleteBarFormatter';
 import { progressBarFormatter } from './ProgressBarFormatter';
 import { yesNoFormatter } from './yesNoFormatter';
+// import { Group, GroupTotals } from '../core'
+// import { Item } from '../dataview'
 
 
 /*

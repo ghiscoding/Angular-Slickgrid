@@ -1,6 +1,11 @@
 import './global-utilities';
 import { Injectable } from '@angular/core';
-import { CaseType, FilterChangedArgs, FieldType, OdataOption, PaginationChangedArgs, SortChangedArgs } from './../models';
+import { CaseType } from './../models/caseType';
+import { FilterChangedArgs } from './../models/filterChangedArgs.interface';
+import { FieldType } from './../models/fieldType';
+import { OdataOption } from './../models/odataOption.interface';
+import { PaginationChangedArgs } from './../models/paginationChangedArgs.interface';
+import { SortChangedArgs } from './../models/sortChangedArgs.interface';
 import { OdataService } from './odata.service';
 import * as moment_ from 'moment';
 const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670

@@ -1,5 +1,8 @@
 import './global-utilities';
-import { FilterChangedArgs, OdataOption, PaginationChangedArgs, SortChangedArgs } from './../models';
+import { FilterChangedArgs } from './../models/filterChangedArgs.interface';
+import { OdataOption } from './../models/odataOption.interface';
+import { PaginationChangedArgs } from './../models/paginationChangedArgs.interface';
+import { SortChangedArgs } from './../models/sortChangedArgs.interface';
 import { OdataService } from './odata.service';
 export declare class GridOdataService {
     private odataService;

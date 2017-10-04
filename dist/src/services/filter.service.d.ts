@@ -1,4 +1,6 @@
-import { Column, ColumnFilters, GridOption } from '../models';
+import { Column } from '../models/column.interface';
+import { ColumnFilters } from '../models/columnFilters.interface';
+import { GridOption } from '../models/gridOption.interface';
 export declare class FilterService {
     _columnDefinitions: Column[];
     _columnFilters: ColumnFilters;
