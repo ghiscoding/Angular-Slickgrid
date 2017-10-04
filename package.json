@@ -1,6 +1,6 @@
 {
     "name": "angular-slickgrid",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Build an Angular library compatible with AoT compilation and Tree shaking",
     "main": "./bundles/angular-slickgrid.umd.js",
     "module": "./modules/angular-slickgrid.es5.js",
@@ -22,18 +22,21 @@
         "dev": "npm-run-all -p sass:*"
     },
     "typings": "./angular-slickgrid.d.ts",
-    "author": "",
+    "author": "Ghislain B.",
     "repository": {
         "type": "git",
-        "url": "https://github.com/robisim74/angular-slickgrid.git"
+        "url": "https://github.com/ghiscoding/angular-slickgrid.git"
     },
     "bugs": {
-        "url": "https://github.com/robisim74/angular-slickgrid/issues"
+        "url": "https://github.com/ghiscoding/angular-slickgrid/issues"
     },
-    "homepage": "https://github.com/robisim74/angular-slickgrid",
+    "homepage": "https://github.com/ghiscoding/angular-slickgrid",
     "keywords": [
         "angular",
+        "datagrid",
+        "datatable",
         "javascript",
+        "slickgrid",
         "typescript"
     ],
     "license": "MIT",
