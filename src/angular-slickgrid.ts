@@ -16,7 +16,7 @@ import { yesNoFormatter } from './formatters/yesNoFormatter';
 export { CaseType } from './models/caseType';
 export { Column } from './models/column.interface';
 export { Formatter } from './models/formatter.interface';
-export { GridOption } from './models/gridoption.interface';
+export { GridOption } from './models/gridOption.interface';
 export { FormElementType } from './models/formElementType';
 export { FieldType } from './models/fieldType';
 
