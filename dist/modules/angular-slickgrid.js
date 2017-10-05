@@ -4,82 +4,6 @@ import { Component, Injectable, Input, NgModule } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
-const checkboxFormatter = (row, cell, value, columnDef, dataContext) => value ? '&#x2611;' : '';
-
-const checkmarkFormatter = (row, cell, value, columnDef, dataContext) => value ? `<i class="fa fa-check" aria-hidden="true"></i>` : '';
-
-const moment = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const dateIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment(value).format('YYYY-MM-DD') : '';
-
-const moment$1 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$1(value).format('YYYY-MM-DD h:mm:ss a') : '';
-
-const moment$2 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$2(value).format('MM/DD/YYYY h:mm:ss a') : '';
-
-const moment$3 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$3(value).format('MM/DD/YYYY hh:mm:ss') : '';
-
-const moment$4 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const dateUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$4(value).format('MM/DD/YYYY') : '';
-
-const percentCompleteFormatter = (row, cell, value, columnDef, dataContext) => {
-    if (value === null || value === '') {
-        return '-';
-    }
-    else if (value < 50) {
-        return `<span style='color:red;font-weight:bold;'>${value}%</span>`;
-    }
-    else {
-        return `<span style='color:green'>${value}%</span>`;
-    }
-};
-
-const percentCompleteBarFormatter = (row, cell, value, columnDef, dataContext) => {
-    if (value === null || value === '') {
-        return '';
-    }
-    let /** @type {?} */ color;
-    if (value < 30) {
-        color = 'red';
-    }
-    else if (value < 70) {
-        color = 'silver';
-    }
-    else {
-        color = 'green';
-    }
-    return `<span class="percent-complete-bar" style="background:${color}; width:${value}%"></span>`;
-};
-
-const progressBarFormatter = (row, cell, value, columnDef, dataContext) => {
-    if (value === null || value === '') {
-        return '';
-    }
-    let /** @type {?} */ color;
-    if (value < 30) {
-        color = 'danger';
-    }
-    else if (value < 70) {
-        color = 'warning';
-    }
-    else {
-        color = 'success';
-    }
-    return `<div class="progress">
-    <div class="progress-bar progress-bar-${color}" role="progressbar" aria-valuenow="${value}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ${value}%;">
-    ${value}%
-    </div>
-  </div>`;
-};
-
-const yesNoFormatter = (row, cell, value, columnDef, dataContext) => value ? 'Yes' : 'No';
-
 let CaseType = {};
 CaseType.camelCase = 0;
 CaseType.pascalCase = 1;
@@ -168,68 +92,68 @@ const testFilterCondition = (operator, value1, value2) => {
     return true;
 };
 
-const moment$5 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const dateUtcFilterCondition = (options) => {
     if (!options.filterSearchType) {
         throw new Error('Date UTC filter is a special case and requires a filterSearchType to be provided in the column option, for example: { filterable: true, type: FieldType.dateUtc, filterSearchType: FieldType.dateIso }');
     }
     const /** @type {?} */ searchDateFormat = mapDateFormatByFieldType(options.filterSearchType);
-    if (!moment$5(options.cellValue, moment$5.ISO_8601).isValid() || !moment$5(options.searchTerm, searchDateFormat, true).isValid()) {
+    if (!moment(options.cellValue, moment.ISO_8601).isValid() || !moment(options.searchTerm, searchDateFormat, true).isValid()) {
         return true;
     }
-    const /** @type {?} */ dateCell = moment$5(options.cellValue, moment$5.ISO_8601, true);
-    const /** @type {?} */ dateSearch = moment$5(options.searchTerm, searchDateFormat, true);
+    const /** @type {?} */ dateCell = moment(options.cellValue, moment.ISO_8601, true);
+    const /** @type {?} */ dateSearch = moment(options.searchTerm, searchDateFormat, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
 
-const moment$6 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment$1 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const DATE_FORMAT = 'YYYY-MM-DD';
 const dateIsoFilterCondition = (options) => {
-    if (!moment$6(options.cellValue, DATE_FORMAT, true).isValid() || !moment$6(options.searchTerm, DATE_FORMAT, true).isValid()) {
+    if (!moment$1(options.cellValue, DATE_FORMAT, true).isValid() || !moment$1(options.searchTerm, DATE_FORMAT, true).isValid()) {
         return true;
     }
-    const /** @type {?} */ dateCell = moment$6(options.cellValue, DATE_FORMAT, true);
-    const /** @type {?} */ dateSearch = moment$6(options.searchTerm, DATE_FORMAT, true);
+    const /** @type {?} */ dateCell = moment$1(options.cellValue, DATE_FORMAT, true);
+    const /** @type {?} */ dateSearch = moment$1(options.searchTerm, DATE_FORMAT, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
 
-const moment$7 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment$2 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const DATE_FORMAT$1 = 'M/D/YY';
 const dateUsShortFilterCondition = (options) => {
-    if (!moment$7(options.cellValue, DATE_FORMAT$1, true).isValid() || !moment$7(options.searchTerm, DATE_FORMAT$1, true).isValid()) {
+    if (!moment$2(options.cellValue, DATE_FORMAT$1, true).isValid() || !moment$2(options.searchTerm, DATE_FORMAT$1, true).isValid()) {
         return true;
     }
-    const /** @type {?} */ dateCell = moment$7(options.cellValue, DATE_FORMAT$1, true);
-    const /** @type {?} */ dateSearch = moment$7(options.searchTerm, DATE_FORMAT$1, true);
+    const /** @type {?} */ dateCell = moment$2(options.cellValue, DATE_FORMAT$1, true);
+    const /** @type {?} */ dateSearch = moment$2(options.searchTerm, DATE_FORMAT$1, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
 
-const moment$8 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment$3 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const DATE_FORMAT$2 = 'M/D/YYYY';
 const dateUsFilterCondition = (options) => {
-    if (!moment$8(options.cellValue, DATE_FORMAT$2, true).isValid() || !moment$8(options.searchTerm, DATE_FORMAT$2, true).isValid()) {
+    if (!moment$3(options.cellValue, DATE_FORMAT$2, true).isValid() || !moment$3(options.searchTerm, DATE_FORMAT$2, true).isValid()) {
         return true;
     }
-    const /** @type {?} */ dateCell = moment$8(options.cellValue, DATE_FORMAT$2, true);
-    const /** @type {?} */ dateSearch = moment$8(options.searchTerm, DATE_FORMAT$2, true);
+    const /** @type {?} */ dateCell = moment$3(options.cellValue, DATE_FORMAT$2, true);
+    const /** @type {?} */ dateSearch = moment$3(options.searchTerm, DATE_FORMAT$2, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
 
-const moment$9 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment$4 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const dateFilterCondition = (options) => {
     const /** @type {?} */ filterSearchType = options.filterSearchType || FieldType.dateIso;
     const /** @type {?} */ searchDateFormat = mapDateFormatByFieldType(filterSearchType);
-    if (!moment$9(options.cellValue, moment$9.ISO_8601).isValid() || !moment$9(options.searchTerm, searchDateFormat, true).isValid()) {
+    if (!moment$4(options.cellValue, moment$4.ISO_8601).isValid() || !moment$4(options.searchTerm, searchDateFormat, true).isValid()) {
         return true;
     }
-    const /** @type {?} */ dateCell = moment$9(options.cellValue);
-    const /** @type {?} */ dateSearch = moment$9(options.searchTerm);
+    const /** @type {?} */ dateCell = moment$4(options.cellValue);
+    const /** @type {?} */ dateSearch = moment$4(options.searchTerm);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
@@ -309,6 +233,175 @@ const selectFilterTemplate = (searchTerm, columnDef) => {
 const FilterTemplates = {
     input: inputFilterTemplate,
     select: selectFilterTemplate
+};
+
+const checkboxFormatter = (row, cell, value, columnDef, dataContext) => value ? '&#x2611;' : '';
+
+const checkmarkFormatter = (row, cell, value, columnDef, dataContext) => value ? `<i class="fa fa-check" aria-hidden="true"></i>` : '';
+
+const moment$5 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const dateIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$5(value).format('YYYY-MM-DD') : '';
+
+const moment$6 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$6(value).format('YYYY-MM-DD h:mm:ss a') : '';
+
+const moment$7 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$7(value).format('MM/DD/YYYY h:mm:ss a') : '';
+
+const moment$8 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$8(value).format('MM/DD/YYYY hh:mm:ss') : '';
+
+const moment$9 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const dateUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$9(value).format('MM/DD/YYYY') : '';
+
+const percentCompleteFormatter = (row, cell, value, columnDef, dataContext) => {
+    if (value === null || value === '') {
+        return '-';
+    }
+    else if (value < 50) {
+        return `<span style='color:red;font-weight:bold;'>${value}%</span>`;
+    }
+    else {
+        return `<span style='color:green'>${value}%</span>`;
+    }
+};
+
+const percentCompleteBarFormatter = (row, cell, value, columnDef, dataContext) => {
+    if (value === null || value === '') {
+        return '';
+    }
+    let /** @type {?} */ color;
+    if (value < 30) {
+        color = 'red';
+    }
+    else if (value < 70) {
+        color = 'silver';
+    }
+    else {
+        color = 'green';
+    }
+    return `<span class="percent-complete-bar" style="background:${color}; width:${value}%"></span>`;
+};
+
+const progressBarFormatter = (row, cell, value, columnDef, dataContext) => {
+    if (value === null || value === '') {
+        return '';
+    }
+    let /** @type {?} */ color;
+    if (value < 30) {
+        color = 'danger';
+    }
+    else if (value < 70) {
+        color = 'warning';
+    }
+    else {
+        color = 'success';
+    }
+    return `<div class="progress">
+    <div class="progress-bar progress-bar-${color}" role="progressbar" aria-valuenow="${value}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ${value}%;">
+    ${value}%
+    </div>
+  </div>`;
+};
+
+const yesNoFormatter = (row, cell, value, columnDef, dataContext) => value ? 'Yes' : 'No';
+
+// import { Group, GroupTotals } from '../core'
+// import { Item } from '../dataview'
+/*
+export interface GroupFormatter {
+  (row: number, cell: number, value: any, columnDef: Column, dataContext: Group): string
+}
+
+export interface GroupTotalsFormatter {
+  (row: number, cell: number, value: any, columnDef: Column, dataContext: GroupTotals): string
+}
+*/
+const Formatters = {
+    checkbox: checkboxFormatter,
+    checkmark: checkmarkFormatter,
+    dateIso: dateIsoFormatter,
+    dateTimeIso: dateIsoFormatter,
+    dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
+    dateUs: dateUsFormatter,
+    dateTimeUs: dateTimeUsFormatter,
+    dateTimeUsAmPm: dateTimeUsAmPmFormatter,
+    percentComplete: percentCompleteFormatter,
+    percentCompleteBar: percentCompleteBarFormatter,
+    progressBar: progressBarFormatter,
+    yesNo: yesNoFormatter
+};
+
+const moment$10 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const DATE_FORMAT$3 = 'M/D/YY';
+const dateUsShortSorter = (value1, value2, sortDirection) => {
+    if (!moment$10(value1, DATE_FORMAT$3, true).isValid() || !moment$10(value2, DATE_FORMAT$3, true).isValid()) {
+        return 0;
+    }
+    const /** @type {?} */ date1 = moment$10(value1, DATE_FORMAT$3, true);
+    const /** @type {?} */ date2 = moment$10(value2, DATE_FORMAT$3, true);
+    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+
+const moment$11 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const dateSorter = (value1, value2, sortDirection) => {
+    if (!moment$11(value1, moment$11.ISO_8601).isValid() || !moment$11(value2, moment$11.ISO_8601, true).isValid()) {
+        return 0;
+    }
+    const /** @type {?} */ date1 = moment$11(value1);
+    const /** @type {?} */ date2 = moment$11(value2);
+    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+
+const moment$12 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const DATE_FORMAT$4 = 'YYYY-MM-DD';
+const dateIsoSorter = (value1, value2, sortDirection) => {
+    if (!moment$12(value1, DATE_FORMAT$4, true).isValid() || !moment$12(value2, DATE_FORMAT$4, true).isValid()) {
+        return 0;
+    }
+    const /** @type {?} */ date1 = moment$12(value1, DATE_FORMAT$4, true);
+    const /** @type {?} */ date2 = moment$12(value2, DATE_FORMAT$4, true);
+    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+
+const moment$13 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const DATE_FORMAT$5 = 'M/D/YYYY';
+const dateUsSorter = (value1, value2, sortDirection) => {
+    if (!moment$13(value1, DATE_FORMAT$5, true).isValid() || !moment$13(value2, DATE_FORMAT$5, true).isValid()) {
+        return 0;
+    }
+    const /** @type {?} */ date1 = moment$13(value1, DATE_FORMAT$5, true);
+    const /** @type {?} */ date2 = moment$13(value2, DATE_FORMAT$5, true);
+    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+
+const numericSorter = (value1, value2, sortDirection) => {
+    const /** @type {?} */ x = (isNaN(value1) || value1 === '' || value1 === null) ? -99e+10 : parseFloat(value1);
+    const /** @type {?} */ y = (isNaN(value2) || value2 === '' || value2 === null) ? -99e+10 : parseFloat(value2);
+    return sortDirection * (x === y ? 0 : (x > y ? 1 : -1));
+};
+
+const stringSorter = (value1, value2, sortDirection) => {
+    return sortDirection * (value1 === value2 ? 0 : (value1 > value2 ? 1 : -1));
+};
+
+const Sorters = {
+    date: dateSorter,
+    dateIso: dateIsoSorter,
+    dateUs: dateUsSorter,
+    dateUsShort: dateUsShortSorter,
+    numeric: numericSorter,
+    string: stringSorter
 };
 
 class FilterService {
@@ -536,14 +629,14 @@ class MouseService {
      * @return {?}
      */
     attachOnMouseHover(grid) {
-        grid.onMouseEnter.subscribe(function (e) {
+        grid.onMouseEnter.subscribe((e) => {
             const /** @type {?} */ cell = grid.getCellFromEvent(e);
             if (cell && cell.row >= 0) {
                 grid.setSelectedRows([cell.row]);
                 e.preventDefault();
             }
         });
-        grid.onMouseLeave.subscribe(function (e) {
+        grid.onMouseLeave.subscribe((e) => {
             grid.setSelectedRows([]);
             e.preventDefault();
         });
@@ -654,73 +747,6 @@ ResizerService.decorators = [
 ResizerService.ctorParameters = () => [
     { type: Router, },
 ];
-
-const moment$10 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const DATE_FORMAT$3 = 'M/D/YY';
-const dateUsShortSorter = (value1, value2, sortDirection) => {
-    if (!moment$10(value1, DATE_FORMAT$3, true).isValid() || !moment$10(value2, DATE_FORMAT$3, true).isValid()) {
-        return 0;
-    }
-    const /** @type {?} */ date1 = moment$10(value1, DATE_FORMAT$3, true);
-    const /** @type {?} */ date2 = moment$10(value2, DATE_FORMAT$3, true);
-    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-
-const moment$11 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const dateSorter = (value1, value2, sortDirection) => {
-    if (!moment$11(value1, moment$11.ISO_8601).isValid() || !moment$11(value2, moment$11.ISO_8601, true).isValid()) {
-        return 0;
-    }
-    const /** @type {?} */ date1 = moment$11(value1);
-    const /** @type {?} */ date2 = moment$11(value2);
-    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-
-const moment$12 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const DATE_FORMAT$4 = 'YYYY-MM-DD';
-const dateIsoSorter = (value1, value2, sortDirection) => {
-    if (!moment$12(value1, DATE_FORMAT$4, true).isValid() || !moment$12(value2, DATE_FORMAT$4, true).isValid()) {
-        return 0;
-    }
-    const /** @type {?} */ date1 = moment$12(value1, DATE_FORMAT$4, true);
-    const /** @type {?} */ date2 = moment$12(value2, DATE_FORMAT$4, true);
-    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-
-const moment$13 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const DATE_FORMAT$5 = 'M/D/YYYY';
-const dateUsSorter = (value1, value2, sortDirection) => {
-    if (!moment$13(value1, DATE_FORMAT$5, true).isValid() || !moment$13(value2, DATE_FORMAT$5, true).isValid()) {
-        return 0;
-    }
-    const /** @type {?} */ date1 = moment$13(value1, DATE_FORMAT$5, true);
-    const /** @type {?} */ date2 = moment$13(value2, DATE_FORMAT$5, true);
-    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-
-const numericSorter = (value1, value2, sortDirection) => {
-    const /** @type {?} */ x = (isNaN(value1) || value1 === '' || value1 === null) ? -99e+10 : parseFloat(value1);
-    const /** @type {?} */ y = (isNaN(value2) || value2 === '' || value2 === null) ? -99e+10 : parseFloat(value2);
-    return sortDirection * (x === y ? 0 : (x > y ? 1 : -1));
-};
-
-const stringSorter = (value1, value2, sortDirection) => {
-    return sortDirection * (value1 === value2 ? 0 : (value1 > value2 ? 1 : -1));
-};
-
-const Sorters = {
-    date: dateSorter,
-    dateIso: dateIsoSorter,
-    dateUs: dateUsSorter,
-    dateUsShort: dateUsShortSorter,
-    numeric: numericSorter,
-    string: stringSorter
-};
 
 class SortService {
     constructor() { }
@@ -1119,7 +1145,7 @@ class GridOdataService {
                 fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
                 const /** @type {?} */ matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
                 const /** @type {?} */ operator = columnFilter.operator || ((matches) ? matches[1] : '');
-                let /** @type {?} */ searchValue = (!!matches) ? matches[2] : '';
+                let /** @type {?} */ searchValue = (!!matches) ? matches[2] : fieldSearchValue;
                 const /** @type {?} */ lastValueChar = (!!matches) ? matches[3] : '';
                 const /** @type {?} */ bypassOdataQuery = columnFilter.bypassBackendQuery || false;
                 // no need to query if search value is empty
@@ -1614,6 +1640,7 @@ const GlobalGridOptions = {
     cellHighlightCssClass: 'slick-cell-modified',
     editable: false,
     enableCellNavigation: false,
+    enableColumnPicker: true,
     enableColumnReorder: true,
     enableMouseOverRow: true,
     enablePagination: false,
@@ -1682,7 +1709,9 @@ class AngularSlickgridComponent {
         this._dataView = new Slick.Data.DataView();
         this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this._gridOptions);
         this.grid.setSelectionModel(new Slick.RowSelectionModel());
-        const /** @type {?} */ columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
+        if (this._gridOptions.enableColumnPicker) {
+            const /** @type {?} */ columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
+        }
         this.grid.init();
         this._dataView.beginUpdate();
         this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);
@@ -1859,22 +1888,6 @@ AngularSlickgridModule.decorators = [
  */
 AngularSlickgridModule.ctorParameters = () => [];
 
-// Public classes.
-const Formatters = {
-    checkbox: checkboxFormatter,
-    checkmark: checkmarkFormatter,
-    dateIso: dateIsoFormatter,
-    dateTimeIso: dateIsoFormatter,
-    dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
-    dateUs: dateUsFormatter,
-    dateTimeUs: dateTimeUsFormatter,
-    dateTimeUsAmPm: dateTimeUsAmPmFormatter,
-    percentComplete: percentCompleteFormatter,
-    percentCompleteBar: percentCompleteBarFormatter,
-    progressBar: progressBarFormatter,
-    yesNoFormatter: yesNoFormatter
-};
-
 /**
  * Angular library starter.
  * Build an Angular library compatible with AoT compilation & Tree shaking.
@@ -1890,5 +1903,5 @@ const Formatters = {
  * Generated bundle index. Do not edit.
  */
 
-export { CaseType, FormElementType, FieldType, Formatters, FilterService, MouseService, ResizerService, SortService, GridOdataService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, checkboxFormatter as ɵa, checkmarkFormatter as ɵb, progressBarFormatter as ɵj, dateIsoFormatter as ɵc, dateTimeIsoAmPmFormatter as ɵd, dateTimeUsAmPmFormatter as ɵg, dateTimeUsFormatter as ɵf, dateUsFormatter as ɵe, percentCompleteBarFormatter as ɵi, percentCompleteFormatter as ɵh, yesNoFormatter as ɵk, OdataService as ɵl };
+export { CaseType, FormElementType, FieldType, FilterConditions, FilterTemplates, Formatters, Sorters, FilterService, MouseService, ResizerService, SortService, GridOdataService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, OdataService as ɵa };
 //# sourceMappingURL=angular-slickgrid.js.map

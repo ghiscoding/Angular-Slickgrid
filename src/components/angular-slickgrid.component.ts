@@ -75,7 +75,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
 
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this._gridOptions);
     this.grid.setSelectionModel(new Slick.RowSelectionModel());
-    const columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
+
+    if (this._gridOptions.enableColumnPicker) {
+      const columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
+    }
 
     this.grid.init();
     this._dataView.beginUpdate();

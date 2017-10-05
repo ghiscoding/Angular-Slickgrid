@@ -11,6 +11,7 @@ export interface GridOption {
   cellHighlightCssClass?: string | null;
   editable?: boolean;
   enableAutoResize?: boolean;
+  enableColumnPicker?: boolean;
   enableCellNavigation?: boolean;
   enableColumnReorder?: boolean;
   enableFiltering?: boolean;

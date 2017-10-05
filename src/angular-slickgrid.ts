@@ -1,18 +1,6 @@
+import { Formatters } from './angular-slickgrid';
 // Public classes.
 import { Column } from './models/column.interface';
-import { checkboxFormatter } from './formatters/CheckboxFormatter';
-import { checkmarkFormatter } from './formatters/CheckmarkFormatter';
-import { dateIsoFormatter } from './formatters/dateIsoFormatter';
-import { dateTimeIsoAmPmFormatter } from './formatters/dateTimeIsoAmPmFormatter';
-import { dateTimeUsAmPmFormatter } from './formatters/dateTimeUsAmPmFormatter';
-import { dateTimeUsFormatter } from './formatters/dateTimeUsFormatter';
-import { dateUsFormatter } from './formatters/dateUsFormatter';
-import { percentCompleteFormatter } from './formatters/percentCompleteFormatter';
-import { percentCompleteBarFormatter } from './formatters/percentCompleteBarFormatter';
-import { progressBarFormatter } from './formatters/ProgressBarFormatter';
-import { yesNoFormatter } from './formatters/yesNoFormatter';
-
-
 export { CaseType } from './models/caseType';
 export { Column } from './models/column.interface';
 export { Formatter } from './models/formatter.interface';
@@ -20,20 +8,10 @@ export { GridOption } from './models/gridOption.interface';
 export { FormElementType } from './models/formElementType';
 export { FieldType } from './models/fieldType';
 
-export const Formatters = {
-    checkbox: checkboxFormatter,
-    checkmark: checkmarkFormatter,
-    dateIso: dateIsoFormatter,
-    dateTimeIso: dateIsoFormatter,
-    dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
-    dateUs: dateUsFormatter,
-    dateTimeUs: dateTimeUsFormatter,
-    dateTimeUsAmPm: dateTimeUsAmPmFormatter,
-    percentComplete: percentCompleteFormatter,
-    percentCompleteBar: percentCompleteBarFormatter,
-    progressBar: progressBarFormatter,
-    yesNoFormatter: yesNoFormatter
-};
+export { FilterConditions } from './filter-conditions';
+export { FilterTemplates } from './filter-templates';
+export { Formatters } from './formatters';
+export { Sorters } from './sorters';
 
 export { FilterService } from './services/filter.service';
 export { MouseService } from './services/mouse.service';

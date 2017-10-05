@@ -3,67 +3,6 @@ import moment___default from 'moment';
 import { Component, Injectable, Input, NgModule } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-var checkboxFormatter = function (row, cell, value, columnDef, dataContext) { return value ? '&#x2611;' : ''; };
-var checkmarkFormatter = function (row, cell, value, columnDef, dataContext) { return value ? "<i class=\"fa fa-check\" aria-hidden=\"true\"></i>" : ''; };
-var moment = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-var dateIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment(value).format('YYYY-MM-DD') : ''; };
-var moment$1 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$1(value).format('YYYY-MM-DD h:mm:ss a') : ''; };
-var moment$2 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$2(value).format('MM/DD/YYYY h:mm:ss a') : ''; };
-var moment$3 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$3(value).format('MM/DD/YYYY hh:mm:ss') : ''; };
-var moment$4 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$4(value).format('MM/DD/YYYY') : ''; };
-var percentCompleteFormatter = function (row, cell, value, columnDef, dataContext) {
-    if (value === null || value === '') {
-        return '-';
-    }
-    else if (value < 50) {
-        return "<span style='color:red;font-weight:bold;'>" + value + "%</span>";
-    }
-    else {
-        return "<span style='color:green'>" + value + "%</span>";
-    }
-};
-var percentCompleteBarFormatter = function (row, cell, value, columnDef, dataContext) {
-    if (value === null || value === '') {
-        return '';
-    }
-    var /** @type {?} */ color;
-    if (value < 30) {
-        color = 'red';
-    }
-    else if (value < 70) {
-        color = 'silver';
-    }
-    else {
-        color = 'green';
-    }
-    return "<span class=\"percent-complete-bar\" style=\"background:" + color + "; width:" + value + "%\"></span>";
-};
-var progressBarFormatter = function (row, cell, value, columnDef, dataContext) {
-    if (value === null || value === '') {
-        return '';
-    }
-    var /** @type {?} */ color;
-    if (value < 30) {
-        color = 'danger';
-    }
-    else if (value < 70) {
-        color = 'warning';
-    }
-    else {
-        color = 'success';
-    }
-    return "<div class=\"progress\">\n    <div class=\"progress-bar progress-bar-" + color + "\" role=\"progressbar\" aria-valuenow=\"" + value + "\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width: 2em; width: " + value + "%;\">\n    " + value + "%\n    </div>\n  </div>";
-};
-var yesNoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? 'Yes' : 'No'; };
 var CaseType = {};
 CaseType.camelCase = 0;
 CaseType.pascalCase = 1;
@@ -147,64 +86,64 @@ var testFilterCondition = function (operator, value1, value2) {
     }
     return true;
 };
-var moment$5 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var moment = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 var dateUtcFilterCondition = function (options) {
     if (!options.filterSearchType) {
         throw new Error('Date UTC filter is a special case and requires a filterSearchType to be provided in the column option, for example: { filterable: true, type: FieldType.dateUtc, filterSearchType: FieldType.dateIso }');
     }
     var /** @type {?} */ searchDateFormat = mapDateFormatByFieldType(options.filterSearchType);
-    if (!moment$5(options.cellValue, moment$5.ISO_8601).isValid() || !moment$5(options.searchTerm, searchDateFormat, true).isValid()) {
+    if (!moment(options.cellValue, moment.ISO_8601).isValid() || !moment(options.searchTerm, searchDateFormat, true).isValid()) {
         return true;
     }
-    var /** @type {?} */ dateCell = moment$5(options.cellValue, moment$5.ISO_8601, true);
-    var /** @type {?} */ dateSearch = moment$5(options.searchTerm, searchDateFormat, true);
+    var /** @type {?} */ dateCell = moment(options.cellValue, moment.ISO_8601, true);
+    var /** @type {?} */ dateSearch = moment(options.searchTerm, searchDateFormat, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
-var moment$6 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var moment$1 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 var DATE_FORMAT = 'YYYY-MM-DD';
 var dateIsoFilterCondition = function (options) {
-    if (!moment$6(options.cellValue, DATE_FORMAT, true).isValid() || !moment$6(options.searchTerm, DATE_FORMAT, true).isValid()) {
+    if (!moment$1(options.cellValue, DATE_FORMAT, true).isValid() || !moment$1(options.searchTerm, DATE_FORMAT, true).isValid()) {
         return true;
     }
-    var /** @type {?} */ dateCell = moment$6(options.cellValue, DATE_FORMAT, true);
-    var /** @type {?} */ dateSearch = moment$6(options.searchTerm, DATE_FORMAT, true);
+    var /** @type {?} */ dateCell = moment$1(options.cellValue, DATE_FORMAT, true);
+    var /** @type {?} */ dateSearch = moment$1(options.searchTerm, DATE_FORMAT, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
-var moment$7 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var moment$2 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 var DATE_FORMAT$1 = 'M/D/YY';
 var dateUsShortFilterCondition = function (options) {
-    if (!moment$7(options.cellValue, DATE_FORMAT$1, true).isValid() || !moment$7(options.searchTerm, DATE_FORMAT$1, true).isValid()) {
+    if (!moment$2(options.cellValue, DATE_FORMAT$1, true).isValid() || !moment$2(options.searchTerm, DATE_FORMAT$1, true).isValid()) {
         return true;
     }
-    var /** @type {?} */ dateCell = moment$7(options.cellValue, DATE_FORMAT$1, true);
-    var /** @type {?} */ dateSearch = moment$7(options.searchTerm, DATE_FORMAT$1, true);
+    var /** @type {?} */ dateCell = moment$2(options.cellValue, DATE_FORMAT$1, true);
+    var /** @type {?} */ dateSearch = moment$2(options.searchTerm, DATE_FORMAT$1, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
-var moment$8 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var moment$3 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 var DATE_FORMAT$2 = 'M/D/YYYY';
 var dateUsFilterCondition = function (options) {
-    if (!moment$8(options.cellValue, DATE_FORMAT$2, true).isValid() || !moment$8(options.searchTerm, DATE_FORMAT$2, true).isValid()) {
+    if (!moment$3(options.cellValue, DATE_FORMAT$2, true).isValid() || !moment$3(options.searchTerm, DATE_FORMAT$2, true).isValid()) {
         return true;
     }
-    var /** @type {?} */ dateCell = moment$8(options.cellValue, DATE_FORMAT$2, true);
-    var /** @type {?} */ dateSearch = moment$8(options.searchTerm, DATE_FORMAT$2, true);
+    var /** @type {?} */ dateCell = moment$3(options.cellValue, DATE_FORMAT$2, true);
+    var /** @type {?} */ dateSearch = moment$3(options.searchTerm, DATE_FORMAT$2, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
-var moment$9 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var moment$4 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 var dateFilterCondition = function (options) {
     var /** @type {?} */ filterSearchType = options.filterSearchType || FieldType.dateIso;
     var /** @type {?} */ searchDateFormat = mapDateFormatByFieldType(filterSearchType);
-    if (!moment$9(options.cellValue, moment$9.ISO_8601).isValid() || !moment$9(options.searchTerm, searchDateFormat, true).isValid()) {
+    if (!moment$4(options.cellValue, moment$4.ISO_8601).isValid() || !moment$4(options.searchTerm, searchDateFormat, true).isValid()) {
         return true;
     }
-    var /** @type {?} */ dateCell = moment$9(options.cellValue);
-    var /** @type {?} */ dateSearch = moment$9(options.searchTerm);
+    var /** @type {?} */ dateCell = moment$4(options.cellValue);
+    var /** @type {?} */ dateSearch = moment$4(options.searchTerm);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
@@ -277,6 +216,152 @@ var selectFilterTemplate = function (searchTerm, columnDef) {
 var FilterTemplates = {
     input: inputFilterTemplate,
     select: selectFilterTemplate
+};
+var checkboxFormatter = function (row, cell, value, columnDef, dataContext) { return value ? '&#x2611;' : ''; };
+var checkmarkFormatter = function (row, cell, value, columnDef, dataContext) { return value ? "<i class=\"fa fa-check\" aria-hidden=\"true\"></i>" : ''; };
+var moment$5 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var dateIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$5(value).format('YYYY-MM-DD') : ''; };
+var moment$6 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$6(value).format('YYYY-MM-DD h:mm:ss a') : ''; };
+var moment$7 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$7(value).format('MM/DD/YYYY h:mm:ss a') : ''; };
+var moment$8 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$8(value).format('MM/DD/YYYY hh:mm:ss') : ''; };
+var moment$9 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$9(value).format('MM/DD/YYYY') : ''; };
+var percentCompleteFormatter = function (row, cell, value, columnDef, dataContext) {
+    if (value === null || value === '') {
+        return '-';
+    }
+    else if (value < 50) {
+        return "<span style='color:red;font-weight:bold;'>" + value + "%</span>";
+    }
+    else {
+        return "<span style='color:green'>" + value + "%</span>";
+    }
+};
+var percentCompleteBarFormatter = function (row, cell, value, columnDef, dataContext) {
+    if (value === null || value === '') {
+        return '';
+    }
+    var /** @type {?} */ color;
+    if (value < 30) {
+        color = 'red';
+    }
+    else if (value < 70) {
+        color = 'silver';
+    }
+    else {
+        color = 'green';
+    }
+    return "<span class=\"percent-complete-bar\" style=\"background:" + color + "; width:" + value + "%\"></span>";
+};
+var progressBarFormatter = function (row, cell, value, columnDef, dataContext) {
+    if (value === null || value === '') {
+        return '';
+    }
+    var /** @type {?} */ color;
+    if (value < 30) {
+        color = 'danger';
+    }
+    else if (value < 70) {
+        color = 'warning';
+    }
+    else {
+        color = 'success';
+    }
+    return "<div class=\"progress\">\n    <div class=\"progress-bar progress-bar-" + color + "\" role=\"progressbar\" aria-valuenow=\"" + value + "\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width: 2em; width: " + value + "%;\">\n    " + value + "%\n    </div>\n  </div>";
+};
+var yesNoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? 'Yes' : 'No'; };
+// import { Group, GroupTotals } from '../core'
+// import { Item } from '../dataview'
+/*
+export interface GroupFormatter {
+  (row: number, cell: number, value: any, columnDef: Column, dataContext: Group): string
+}
+
+export interface GroupTotalsFormatter {
+  (row: number, cell: number, value: any, columnDef: Column, dataContext: GroupTotals): string
+}
+*/
+var Formatters = {
+    checkbox: checkboxFormatter,
+    checkmark: checkmarkFormatter,
+    dateIso: dateIsoFormatter,
+    dateTimeIso: dateIsoFormatter,
+    dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
+    dateUs: dateUsFormatter,
+    dateTimeUs: dateTimeUsFormatter,
+    dateTimeUsAmPm: dateTimeUsAmPmFormatter,
+    percentComplete: percentCompleteFormatter,
+    percentCompleteBar: percentCompleteBarFormatter,
+    progressBar: progressBarFormatter,
+    yesNo: yesNoFormatter
+};
+var moment$10 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var DATE_FORMAT$3 = 'M/D/YY';
+var dateUsShortSorter = function (value1, value2, sortDirection) {
+    if (!moment$10(value1, DATE_FORMAT$3, true).isValid() || !moment$10(value2, DATE_FORMAT$3, true).isValid()) {
+        return 0;
+    }
+    var /** @type {?} */ date1 = moment$10(value1, DATE_FORMAT$3, true);
+    var /** @type {?} */ date2 = moment$10(value2, DATE_FORMAT$3, true);
+    var /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+var moment$11 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var dateSorter = function (value1, value2, sortDirection) {
+    if (!moment$11(value1, moment$11.ISO_8601).isValid() || !moment$11(value2, moment$11.ISO_8601, true).isValid()) {
+        return 0;
+    }
+    var /** @type {?} */ date1 = moment$11(value1);
+    var /** @type {?} */ date2 = moment$11(value2);
+    var /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+var moment$12 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var DATE_FORMAT$4 = 'YYYY-MM-DD';
+var dateIsoSorter = function (value1, value2, sortDirection) {
+    if (!moment$12(value1, DATE_FORMAT$4, true).isValid() || !moment$12(value2, DATE_FORMAT$4, true).isValid()) {
+        return 0;
+    }
+    var /** @type {?} */ date1 = moment$12(value1, DATE_FORMAT$4, true);
+    var /** @type {?} */ date2 = moment$12(value2, DATE_FORMAT$4, true);
+    var /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+var moment$13 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var DATE_FORMAT$5 = 'M/D/YYYY';
+var dateUsSorter = function (value1, value2, sortDirection) {
+    if (!moment$13(value1, DATE_FORMAT$5, true).isValid() || !moment$13(value2, DATE_FORMAT$5, true).isValid()) {
+        return 0;
+    }
+    var /** @type {?} */ date1 = moment$13(value1, DATE_FORMAT$5, true);
+    var /** @type {?} */ date2 = moment$13(value2, DATE_FORMAT$5, true);
+    var /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+var numericSorter = function (value1, value2, sortDirection) {
+    var /** @type {?} */ x = (isNaN(value1) || value1 === '' || value1 === null) ? -99e+10 : parseFloat(value1);
+    var /** @type {?} */ y = (isNaN(value2) || value2 === '' || value2 === null) ? -99e+10 : parseFloat(value2);
+    return sortDirection * (x === y ? 0 : (x > y ? 1 : -1));
+};
+var stringSorter = function (value1, value2, sortDirection) {
+    return sortDirection * (value1 === value2 ? 0 : (value1 > value2 ? 1 : -1));
+};
+var Sorters = {
+    date: dateSorter,
+    dateIso: dateIsoSorter,
+    dateUs: dateUsSorter,
+    dateUsShort: dateUsShortSorter,
+    numeric: numericSorter,
+    string: stringSorter
 };
 var FilterService = (function () {
     function FilterService() {
@@ -632,66 +717,6 @@ ResizerService.decorators = [
 ResizerService.ctorParameters = function () { return [
     { type: Router, },
 ]; };
-var moment$10 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-var DATE_FORMAT$3 = 'M/D/YY';
-var dateUsShortSorter = function (value1, value2, sortDirection) {
-    if (!moment$10(value1, DATE_FORMAT$3, true).isValid() || !moment$10(value2, DATE_FORMAT$3, true).isValid()) {
-        return 0;
-    }
-    var /** @type {?} */ date1 = moment$10(value1, DATE_FORMAT$3, true);
-    var /** @type {?} */ date2 = moment$10(value2, DATE_FORMAT$3, true);
-    var /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-var moment$11 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-var dateSorter = function (value1, value2, sortDirection) {
-    if (!moment$11(value1, moment$11.ISO_8601).isValid() || !moment$11(value2, moment$11.ISO_8601, true).isValid()) {
-        return 0;
-    }
-    var /** @type {?} */ date1 = moment$11(value1);
-    var /** @type {?} */ date2 = moment$11(value2);
-    var /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-var moment$12 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-var DATE_FORMAT$4 = 'YYYY-MM-DD';
-var dateIsoSorter = function (value1, value2, sortDirection) {
-    if (!moment$12(value1, DATE_FORMAT$4, true).isValid() || !moment$12(value2, DATE_FORMAT$4, true).isValid()) {
-        return 0;
-    }
-    var /** @type {?} */ date1 = moment$12(value1, DATE_FORMAT$4, true);
-    var /** @type {?} */ date2 = moment$12(value2, DATE_FORMAT$4, true);
-    var /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-var moment$13 = moment___default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-var DATE_FORMAT$5 = 'M/D/YYYY';
-var dateUsSorter = function (value1, value2, sortDirection) {
-    if (!moment$13(value1, DATE_FORMAT$5, true).isValid() || !moment$13(value2, DATE_FORMAT$5, true).isValid()) {
-        return 0;
-    }
-    var /** @type {?} */ date1 = moment$13(value1, DATE_FORMAT$5, true);
-    var /** @type {?} */ date2 = moment$13(value2, DATE_FORMAT$5, true);
-    var /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-var numericSorter = function (value1, value2, sortDirection) {
-    var /** @type {?} */ x = (isNaN(value1) || value1 === '' || value1 === null) ? -99e+10 : parseFloat(value1);
-    var /** @type {?} */ y = (isNaN(value2) || value2 === '' || value2 === null) ? -99e+10 : parseFloat(value2);
-    return sortDirection * (x === y ? 0 : (x > y ? 1 : -1));
-};
-var stringSorter = function (value1, value2, sortDirection) {
-    return sortDirection * (value1 === value2 ? 0 : (value1 > value2 ? 1 : -1));
-};
-var Sorters = {
-    date: dateSorter,
-    dateIso: dateIsoSorter,
-    dateUs: dateUsSorter,
-    dateUsShort: dateUsShortSorter,
-    numeric: numericSorter,
-    string: stringSorter
-};
 var SortService = (function () {
     function SortService() {
     }
@@ -1099,7 +1124,7 @@ var GridOdataService = (function () {
                 fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
                 var /** @type {?} */ matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
                 var /** @type {?} */ operator = columnFilter.operator || ((matches) ? matches[1] : '');
-                var /** @type {?} */ searchValue = (!!matches) ? matches[2] : '';
+                var /** @type {?} */ searchValue = (!!matches) ? matches[2] : fieldSearchValue;
                 var /** @type {?} */ lastValueChar = (!!matches) ? matches[3] : '';
                 var /** @type {?} */ bypassOdataQuery = columnFilter.bypassBackendQuery || false;
                 // no need to query if search value is empty
@@ -1472,6 +1497,7 @@ var GlobalGridOptions = {
     cellHighlightCssClass: 'slick-cell-modified',
     editable: false,
     enableCellNavigation: false,
+    enableColumnPicker: true,
     enableColumnReorder: true,
     enableMouseOverRow: true,
     enablePagination: false,
@@ -1543,7 +1569,9 @@ var AngularSlickgridComponent = (function () {
         this._dataView = new Slick.Data.DataView();
         this.grid = new Slick.Grid("#" + this.gridId, this._dataView, this.columnDefinitions, this._gridOptions);
         this.grid.setSelectionModel(new Slick.RowSelectionModel());
-        var /** @type {?} */ columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
+        if (this._gridOptions.enableColumnPicker) {
+            var /** @type {?} */ columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
+        }
         this.grid.init();
         this._dataView.beginUpdate();
         this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);
@@ -1713,21 +1741,6 @@ AngularSlickgridModule.decorators = [
  * @nocollapse
  */
 AngularSlickgridModule.ctorParameters = function () { return []; };
-// Public classes.
-var Formatters = {
-    checkbox: checkboxFormatter,
-    checkmark: checkmarkFormatter,
-    dateIso: dateIsoFormatter,
-    dateTimeIso: dateIsoFormatter,
-    dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
-    dateUs: dateUsFormatter,
-    dateTimeUs: dateTimeUsFormatter,
-    dateTimeUsAmPm: dateTimeUsAmPmFormatter,
-    percentComplete: percentCompleteFormatter,
-    percentCompleteBar: percentCompleteBarFormatter,
-    progressBar: progressBarFormatter,
-    yesNoFormatter: yesNoFormatter
-};
 /**
  * Angular library starter.
  * Build an Angular library compatible with AoT compilation & Tree shaking.
@@ -1741,5 +1754,5 @@ var Formatters = {
 /**
  * Generated bundle index. Do not edit.
  */
-export { CaseType, FormElementType, FieldType, Formatters, FilterService, MouseService, ResizerService, SortService, GridOdataService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, checkboxFormatter as ɵa, checkmarkFormatter as ɵb, progressBarFormatter as ɵj, dateIsoFormatter as ɵc, dateTimeIsoAmPmFormatter as ɵd, dateTimeUsAmPmFormatter as ɵg, dateTimeUsFormatter as ɵf, dateUsFormatter as ɵe, percentCompleteBarFormatter as ɵi, percentCompleteFormatter as ɵh, yesNoFormatter as ɵk, OdataService as ɵl };
+export { CaseType, FormElementType, FieldType, FilterConditions, FilterTemplates, Formatters, Sorters, FilterService, MouseService, ResizerService, SortService, GridOdataService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, OdataService as ɵa };
 //# sourceMappingURL=angular-slickgrid.es5.js.map
