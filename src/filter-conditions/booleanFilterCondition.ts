@@ -1,6 +1,5 @@
 import { FilterCondition } from './../models/filterCondition.interface';
 import { FilterConditionOption } from './../models/filterConditionOption.interface';
-import { testFilterCondition } from './filterUtilities';
 
 function parseBoolean(str: string) {
   return /(true|1)/i.test(str);
