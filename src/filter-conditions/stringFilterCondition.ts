@@ -3,15 +3,17 @@ import { FilterConditionOption } from './../models/filterConditionOption.interfa
 import { testFilterCondition } from './filterUtilities';
 
 export const stringFilterCondition: FilterCondition = (options: FilterConditionOption) => {
-  // make sure the cell value is a string by casting it
-  options.cellValue = options.cellValue.toString();
+  // make sure the both search & cell value are string
+  // and make them lower case for case insensitive filtering
+  const cellValue = options.cellValue.toString().toLowerCase();
+  const searchTerm = options.searchTerm.toString().toLowerCase();
 
   if (options.operator === '*') {
-    return options.cellValue.startsWith(options.searchTerm);
+    return cellValue.endsWith(searchTerm);
   } else if (options.operator === '' && options.cellValueLastChar === '*') {
-    return options.cellValue.endsWith(options.searchTerm);
+    return cellValue.startsWith(searchTerm);
   } else if (options.operator === '') {
-    return options.cellValue.includes(options.searchTerm);
+    return cellValue.includes(searchTerm);
   }
-  return testFilterCondition(options.operator || '==', options.cellValue.toLowerCase(), options.searchTerm.toLowerCase());
+  return testFilterCondition(options.operator || '==', cellValue, searchTerm);
 };
