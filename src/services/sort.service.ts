@@ -37,31 +37,30 @@ export class SortService {
         for (let i = 0, l = sortColumns.length; i < l; i++) {
           const sortDirection = sortColumns[i].sortAsc ? 1 : -1;
           const sortField = sortColumns[i].sortCol.field;
+          const fieldType = sortColumns[i].sortCol.type || 'string';
           const value1 = dataRow1[sortField];
           const value2 = dataRow2[sortField];
           let result = 0;
 
-          if (typeof sortColumns[i].sortCol.type !== 'undefined') {
-            switch (sortColumns[i].sortCol.type) {
-              case FieldType.number:
-                result = Sorters.numeric(value1, value2, sortDirection);
-                break;
-              case FieldType.date:
-                result = Sorters.date(value1, value2, sortDirection);
-                break;
-              case FieldType.dateIso:
-                result = Sorters.dateIso(value1, value2, sortDirection);
-                break;
-              case FieldType.dateUs:
-                result = Sorters.dateUs(value1, value2, sortDirection);
-                break;
-              case FieldType.dateUsShort:
-                result = Sorters.dateUsShort(value1, value2, sortDirection);
-                break;
-              default:
-                result = Sorters.string(value1, value2, sortDirection);
-                break;
-            }
+          switch (fieldType) {
+            case FieldType.number:
+              result = Sorters.numeric(value1, value2, sortDirection);
+              break;
+            case FieldType.date:
+              result = Sorters.date(value1, value2, sortDirection);
+              break;
+            case FieldType.dateIso:
+              result = Sorters.dateIso(value1, value2, sortDirection);
+              break;
+            case FieldType.dateUs:
+              result = Sorters.dateUs(value1, value2, sortDirection);
+              break;
+            case FieldType.dateUsShort:
+              result = Sorters.dateUsShort(value1, value2, sortDirection);
+              break;
+            default:
+              result = Sorters.string(value1, value2, sortDirection);
+              break;
           }
 
           if (result !== 0) {

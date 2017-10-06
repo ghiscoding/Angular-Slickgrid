@@ -1,6 +1,6 @@
 {
     "name": "angular-slickgrid",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "description": "Build an Angular library compatible with AoT compilation and Tree shaking",
     "main": "./bundles/angular-slickgrid.umd.js",
     "module": "./modules/angular-slickgrid.es5.js",

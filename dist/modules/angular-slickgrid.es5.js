@@ -749,30 +749,29 @@ var SortService = (function () {
                 for (var /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
                     var /** @type {?} */ sortDirection = sortColumns[i].sortAsc ? 1 : -1;
                     var /** @type {?} */ sortField = sortColumns[i].sortCol.field;
+                    var /** @type {?} */ fieldType = sortColumns[i].sortCol.type || 'string';
                     var /** @type {?} */ value1 = dataRow1[sortField];
                     var /** @type {?} */ value2 = dataRow2[sortField];
                     var /** @type {?} */ result = 0;
-                    if (typeof sortColumns[i].sortCol.type !== 'undefined') {
-                        switch (sortColumns[i].sortCol.type) {
-                            case FieldType.number:
-                                result = Sorters.numeric(value1, value2, sortDirection);
-                                break;
-                            case FieldType.date:
-                                result = Sorters.date(value1, value2, sortDirection);
-                                break;
-                            case FieldType.dateIso:
-                                result = Sorters.dateIso(value1, value2, sortDirection);
-                                break;
-                            case FieldType.dateUs:
-                                result = Sorters.dateUs(value1, value2, sortDirection);
-                                break;
-                            case FieldType.dateUsShort:
-                                result = Sorters.dateUsShort(value1, value2, sortDirection);
-                                break;
-                            default:
-                                result = Sorters.string(value1, value2, sortDirection);
-                                break;
-                        }
+                    switch (fieldType) {
+                        case FieldType.number:
+                            result = Sorters.numeric(value1, value2, sortDirection);
+                            break;
+                        case FieldType.date:
+                            result = Sorters.date(value1, value2, sortDirection);
+                            break;
+                        case FieldType.dateIso:
+                            result = Sorters.dateIso(value1, value2, sortDirection);
+                            break;
+                        case FieldType.dateUs:
+                            result = Sorters.dateUs(value1, value2, sortDirection);
+                            break;
+                        case FieldType.dateUsShort:
+                            result = Sorters.dateUsShort(value1, value2, sortDirection);
+                            break;
+                        default:
+                            result = Sorters.string(value1, value2, sortDirection);
+                            break;
                     }
                     if (result !== 0) {
                         return result;
@@ -1743,6 +1742,7 @@ AngularSlickgridModule.decorators = [
  * @nocollapse
  */
 AngularSlickgridModule.ctorParameters = function () { return []; };
+// Public classes.
 /**
  * Angular library starter.
  * Build an Angular library compatible with AoT compilation & Tree shaking.
