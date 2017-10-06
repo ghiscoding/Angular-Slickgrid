@@ -26,7 +26,7 @@ export class GridBasicComponent implements OnInit {
       enableAutoResize: false
     };
 
-    // fake a dataset
+    // mock a dataset
     this.dataset = [];
     for (let i = 0; i < 1000; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);

@@ -35,7 +35,7 @@ export class GridFormatterComponent implements OnInit {
       enableCellNavigation: true
     };
 
-    // fake a dataset
+    // mock a dataset
     this.dataset = [];
     for (let i = 0; i < 1000; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);

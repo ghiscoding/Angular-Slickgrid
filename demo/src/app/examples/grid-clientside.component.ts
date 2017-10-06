@@ -62,7 +62,7 @@ export class GridClientSideComponent implements OnInit {
       enableCellNavigation: true
     };
 
-    // fake a dataset
+    // mock a dataset
     this.dataset = [];
     for (let i = 0; i < 1000; i++) {
       const randomYear = randomBetween(2000, 2025);
