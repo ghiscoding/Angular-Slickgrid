@@ -1,6 +1,4 @@
-import { Formatters } from './angular-slickgrid';
 // Public classes.
-import { Column } from './models/column.interface';
 export { CaseType } from './models/caseType';
 export { Column } from './models/column.interface';
 export { Formatter } from './models/formatter.interface';
