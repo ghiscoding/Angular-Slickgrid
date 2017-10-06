@@ -26,7 +26,7 @@ This is a work in progress, but so far here are some of the features that `angul
 - Bootstrap Theme with SASS variables for extra customization (if you create a theme, then please make a PR)
 - Auto-resize, a boolean flag, will resize the datagrid viewport with available space even on browser resize (basically takes available space by the given div container)
 - Integrated Plugins
-    - Column Picker (`right+click` on any column header to show/hide any column, click [here to print screen](/screenshots/filter_and_sort.png) of the feature).
+    - Column Picker (`right+click` on any column header to show/hide any column, click [here to print screen](/screenshots/columnPicker.png) of the feature).
 - Server side
     - Filtering
     - Sorting
