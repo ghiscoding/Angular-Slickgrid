@@ -44,6 +44,8 @@ The following are SlickGrid features which are not yet included in this library
 - Inline Editors
 - Filters to support multi-select dropdown and eventually custom filters
 - Plugins (Header Menu, Grid Menu, Column Header Buttons)
+- Row selection, will probably provide a `onRowsChanged()` in the `gridOptions` object
+- Cell click, will probably provide a `onCellClicked()` in the `gridOptions` object
 
 ## Screenshots
 
