@@ -25,21 +25,26 @@ This is a work in progress, but so far here are some of the features that `angul
 - Easier use of SlickGrid within `Angular` as it is just a component (simply pass a column definitions and a dataset and you're good to go)
 - Bootstrap Theme with SASS variables for extra customization (if you create a theme, then please make a PR)
 - Auto-resize, a boolean flag, will resize the datagrid viewport with available space even on browser resize (basically takes available space by the given div container)
-- Server side filtering/sorting
-- Server side pagination (which is another Angular component used internally)
-- Server side functionalities are expandables and ships with a simple OData service
-  - customizable with your own services by using `onFilterChanged()` `onPaginationChanged()` and `onSortChanged()`.
-  - extra services might come in the future
+- Integrated Plugins
+    - Column Picker (`right+click` on any column header to show/hide any column, click [here to print screen](/screenshots/filter_and_sort.png) of the feature).
+- Server side
+    - Filtering
+    - Sorting
+    - Pagination (which is in itself another Angular component)
+    - All of these functionalities are expandables and currently ships with a simple OData service
+        - customizable with your own services by using `onFilterChanged()`, `onPaginationChanged()` and `onSortChanged()`.
+        - extra services might come in the future (you could add yours and if you do, please make PR)
 - Some Features of SlickGrid itself which are working out of the gate
   - Sort/Multi-Sort (client/server side)
-  - Header Row with Filters (currently support Input and Select dropdown, multi-select is planned)
+  - Header Row with Filters (currently support `Input` and `Select` dropdown, multi-select is planned)
   - Formatters (a few default ones were added, and you can easily create custom ones too)
-  - Optimized DataView (even server side data is saved into the SlickGrid DataView)
+  - Optimized DataView which brings a lot of functionalities (sort, grouping, and more)
+    - even server side data is saved into the SlickGrid DataView
 - ... more to come
 
 <a name="missing-features"></a>
 
-## Missing features (planned items)
+## Missing features (planned items, not in necessarily in order of execution)
 The following are SlickGrid features which are not yet included in this library
 - Inline Editors
 - Filters to support multi-select dropdown and eventually custom filters
