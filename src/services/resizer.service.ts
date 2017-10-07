@@ -30,13 +30,13 @@ export class ResizerService {
 
     // -- 2nd attach a trigger on the Window DOM element, so that it happens also when resizing after first load
     // -- attach auto-resize to Window object only if it exist
-    $(window).on('resize', () => {
+    $(window).on('resize.grid', () => {
       this.resizeGrid(grid, gridOptions);
     });
 
     // destroy the resizer on route change
     this.router.events.subscribe((event: NavigationEnd) => {
-      $(window).trigger('resize').off('resize');
+      this.destroy();
     });
   }
 
@@ -70,6 +70,13 @@ export class ResizerService {
       height: newHeight,
       width: newWidth
     };
+  }
+
+  /**
+   * Destroy function when element is destroyed
+   */
+  destroy() {
+    $(window).trigger('resize.grid').off('resize');
   }
 
   /** Resize the datagrid to fit the browser height & width */
