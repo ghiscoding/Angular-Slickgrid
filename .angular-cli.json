@@ -1,0 +1,85 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "project": {
+    "name": "angular-slickgrid"
+  },
+  "apps": [
+    {
+      "root": "src",
+      "outDir": "dist-demo",
+      "assets": [
+        "assets",
+        "favicon.ico"
+      ],
+      "index": "index.html",
+      "main": "main.ts",
+      "polyfills": "polyfills.ts",
+      "test": "test.ts",
+      "tsconfig": "tsconfig.app.json",
+      "testTsconfig": "tsconfig.spec.json",
+      "prefix": "app",
+      "styles": [
+        "../node_modules/bootstrap/dist/css/bootstrap.css",
+        "../node_modules/font-awesome/css/font-awesome.css",
+        "app/styles/slickgrid-custom-variables.scss",
+        "styles.scss"
+      ],
+      "scripts": [
+        "../node_modules/jquery/dist/jquery.js",
+        "../node_modules/bootstrap/dist/js/bootstrap.js",
+        "../node_modules/slickgrid/lib/jquery-ui-1.11.3.js",
+        "../node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js",
+        "../node_modules/slickgrid/slick.core.js",
+        "../node_modules/slickgrid/slick.dataview.js",
+        "../node_modules/slickgrid/slick.grid.js",
+        "../node_modules/slickgrid/slick.dataview.js",
+        "../node_modules/slickgrid/plugins/slick.autotooltips.js",
+        "../node_modules/slickgrid/plugins/slick.cellcopymanager.js",
+        "../node_modules/slickgrid/plugins/slick.cellexternalcopymanager.js",
+        "../node_modules/slickgrid/plugins/slick.cellrangedecorator.js",
+        "../node_modules/slickgrid/plugins/slick.cellrangeselector.js",
+        "../node_modules/slickgrid/plugins/slick.cellselectionmodel.js",
+        "../node_modules/slickgrid/plugins/slick.checkboxselectcolumn.js",
+        "../node_modules/slickgrid/plugins/slick.headerbuttons.js",
+        "../node_modules/slickgrid/plugins/slick.headermenu.js",
+        "../node_modules/slickgrid/plugins/slick.rowmovemanager.js",
+        "../node_modules/slickgrid/plugins/slick.rowselectionmodel.js",
+        "../node_modules/slickgrid/controls/slick.columnpicker.js",
+        "../node_modules/slickgrid/controls/slick.pager.js"
+      ],
+      "environmentSource": "environments/environment.ts",
+      "environments": {
+        "dev": "environments/environment.ts",
+        "prod": "environments/environment.prod.ts"
+      }
+    }
+  ],
+  "e2e": {
+    "protractor": {
+      "config": "./protractor.conf.js"
+    }
+  },
+  "lint": [
+    {
+      "project": "src/tsconfig.app.json",
+      "exclude": "**/node_modules/**"
+    },
+    {
+      "project": "src/tsconfig.spec.json",
+      "exclude": "**/node_modules/**"
+    },
+    {
+      "project": "e2e/tsconfig.e2e.json",
+      "exclude": "**/node_modules/**"
+    }
+  ],
+  "test": {
+    "karma": {
+      "config": "./karma.conf.js"
+    }
+  },
+  "defaults": {
+    "styleExt": "scss",
+    "component": {}
+  }
+}

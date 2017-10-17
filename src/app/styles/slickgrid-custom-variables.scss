@@ -1,0 +1,10 @@
+/* Customize the SlickGrid Bootstrap theme to your taste
+ * Copy any of the variables '../node_modules/angular-slickgrid/styles/sass/_variables.scss'
+ * and make sure to add the @import at the end of this file
+ */
+
+/* for example, let's change the mouse hover color */
+
+
+/* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
+@import '../modules/angular-slickgrid/styles/slickgrid-theme-bootstrap.scss';
