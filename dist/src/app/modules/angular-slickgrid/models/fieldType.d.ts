@@ -1,0 +1,15 @@
+export declare enum FieldType {
+    unknown = 0,
+    string = 1,
+    boolean = 2,
+    number = 3,
+    date = 4,
+    dateIso = 5,
+    dateUtc = 6,
+    dateTime = 7,
+    dateTimeIso = 8,
+    dateUs = 9,
+    dateUsShort = 10,
+    dateTimeUs = 11,
+    dateTimeUsShort = 12,
+}
