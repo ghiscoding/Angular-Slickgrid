@@ -1,6 +1,9 @@
 # Angular-Slickgrid
 One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. I have used a few datagrids and slickgrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row).
 
+### Demo page
+[https://ghiscoding.github.io/Angular-Slickgrid](https://ghiscoding.github.io/Angular-Slickgrid)
+
 ### SlickGrid Source
 We will be using [6pac SlickGrid fork](https://github.com/6pac/SlickGrid/) (the most active fork since the original @mleibman fork was closed some time ago by his author personal reasons).
 
