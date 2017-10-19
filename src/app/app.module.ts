@@ -10,7 +10,7 @@ import { GridBackendComponent } from './examples/grid-backend.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
-import { GridGraphqlComponent, PrettyPrintPipe } from './examples/grid-graphql.component';
+import { GridGraphqlComponent } from './examples/grid-graphql.component';
 
 // import our custom module, library created using this article
 // https://medium.com/@ngl817/building-an-angular-4-component-library-with-the-angular-cli-and-ng-packagr-53b2ade0701e
@@ -20,7 +20,6 @@ import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angu
 @NgModule({
   declarations: [
     AppComponent,
-    PrettyPrintPipe,
     GridBasicComponent,
     GridClientSideComponent,
     GridFormatterComponent,

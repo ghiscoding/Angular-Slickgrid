@@ -1001,6 +1001,7 @@ var graphqlQueryBuilder = Query;
 class GraphqlService {
     constructor() {
         this.serviceOptions = {};
+        this.defaultOrderBy = { sort: 'id', direction: 'ASC' };
     }
     /**
      * Build the GraphQL query, since the service include/exclude cursor, the output query will be different.
@@ -1011,20 +1012,48 @@ class GraphqlService {
         if (!this.serviceOptions.datasetName || !this.serviceOptions.dataFilters) {
             throw new Error('GraphQL Service requires "datasetName" & "dataFilters" properties for it to work');
         }
-        const /** @type {?} */ pageFilterQb = new graphqlQueryBuilder(this.serviceOptions.datasetName);
+        const /** @type {?} */ queryQb = new graphqlQueryBuilder('query');
+        const /** @type {?} */ datasetQb = new graphqlQueryBuilder(this.serviceOptions.datasetName);
         const /** @type {?} */ pageInfoQb = new graphqlQueryBuilder('pageInfo');
         const /** @type {?} */ dataQb = (this.serviceOptions.isWithCursor) ? new graphqlQueryBuilder('edges') : new graphqlQueryBuilder('nodes');
         if (this.serviceOptions.isWithCursor) {
+            // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
             pageInfoQb.find('hasNextPage', 'endCursor');
             dataQb.find(['cursor', { 'node': this.serviceOptions.dataFilters }]);
         }
         else {
+            // ...pageInfo { hasNextPage }, nodes { _filters_ }
             pageInfoQb.find('hasNextPage');
             dataQb.find(this.serviceOptions.dataFilters);
         }
-        pageFilterQb.find(['totalCount', pageInfoQb, dataQb]);
-        pageFilterQb.filter(this.serviceOptions.paginationOptions);
-        return pageFilterQb.toString();
+        datasetQb.find(['totalCount', pageInfoQb, dataQb]);
+        // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
+        const /** @type {?} */ datasetFilters = this.serviceOptions.paginationOptions;
+        if (this.serviceOptions.sortingOptions) {
+            // orderBy: [{ sort:x, direction: 'ASC' }]
+            datasetFilters.orderBy = this.serviceOptions.sortingOptions;
+        }
+        if (this.serviceOptions.filteringOptions) {
+            // filterBy: [{ fieldName: date, fieldOperator: '>', fieldValue: '2000-10-10' }]
+            datasetFilters.filterBy = this.serviceOptions.filteringOptions;
+        }
+        // query { users(first: 20, orderBy: [], filterBy: [])}
+        datasetQb.filter(datasetFilters);
+        queryQb.find(datasetQb);
+        const /** @type {?} */ enumSearchWords = ['sort:', 'direction:', 'fieldName:', 'fieldOperator:'];
+        return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchWords);
+    }
+    /**
+     * @param {?=} serviceOptions
+     * @return {?}
+     */
+    buildPaginationQuery(serviceOptions) {
+    }
+    /**
+     * @param {?=} serviceOptions
+     * @return {?}
+     */
+    buildSortingQuery(serviceOptions) {
     }
     /**
      * @param {?=} serviceOptions
@@ -1101,7 +1130,7 @@ class GraphqlService {
             };
         }
         this.updateOptions({ paginationOptions: paginationOptions });
-        // build the OData query which we will use in the WebAPI callback
+        // build the GraphQL query which we will use in the WebAPI callback
         return this.buildQuery();
     }
     /**
@@ -1110,8 +1139,52 @@ class GraphqlService {
      * @return {?}
      */
     onSortChanged(event, args) {
-        // will use sorting as per a FB suggestion
-        // https://github.com/graphql/graphql-relay-js/issues/20#issuecomment-220494222
+        let /** @type {?} */ sortByArray = [];
+        const /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
+        // build the orderBy array, it could be multisort, example
+        // orderBy:[{sort: lastName, direction: ASC}, {sort: firstName, direction: DESC}]
+        if (sortColumns && sortColumns.length === 0) {
+            sortByArray = new Array(this.defaultOrderBy); // when empty, use the default sort
+        }
+        else {
+            if (sortColumns) {
+                for (const /** @type {?} */ column of sortColumns) {
+                    const /** @type {?} */ fieldName = column.sortCol.field || column.sortCol.id;
+                    const /** @type {?} */ direction = column.sortAsc ? 'ASC' : 'DESC';
+                    sortByArray.push({
+                        sort: fieldName,
+                        direction: direction
+                    });
+                }
+            }
+        }
+        this.updateOptions({ sortingOptions: sortByArray });
+        // build the GraphQL query which we will use in the WebAPI callback
+        return this.buildQuery();
+    }
+    /**
+     * A function which takes an input string and removes double quotes only
+     * on certain fields are identified as GraphQL enums
+     * For example let say we identified ("direction:", "sort") as word which are GraphQL enum fields
+     * then the result will be:
+     * FROM
+     * query { users (orderBy:[{sort:"firstName", direction:"ASC"} }
+     * TO
+     * query { users (orderBy:[{sort: firstName, direction: ASC}}
+     * @param {?} inputStr input string
+     * @param {?} enumSearchWords array of enum words to filter
+     * @return {?} outputStr output string
+     */
+    trimDoubleQuotesOnEnumField(inputStr, enumSearchWords) {
+        const /** @type {?} */ patternWordInQuotes = `\s?(".*?")`;
+        let /** @type {?} */ patternRegex = enumSearchWords.join(patternWordInQuotes + '|');
+        patternRegex += patternWordInQuotes; // the last one should also have the pattern but without the pipe "|"
+        // example with (sort: & direction:):  /sort:s?(".*?")|direction:s?(".*?")/
+        const /** @type {?} */ reg = new RegExp(patternRegex, 'g');
+        return inputStr.replace(reg, function (group1, group2, group3) {
+            const /** @type {?} */ rep = group1.replace(/"/g, '');
+            return rep;
+        });
     }
 }
 

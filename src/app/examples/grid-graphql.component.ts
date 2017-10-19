@@ -7,17 +7,6 @@ import { HttpClient } from '@angular/common/http';
 const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
 
-@Pipe({name: 'prettyprint'})
-export class PrettyPrintPipe implements PipeTransform {
-  transform(val: string) {
-    return val
-      .replace(/,(?![^(]*\))/g, '<br/>&nbsp;&nbsp;')
-      .replace(/},/g, '<br/>}')
-      .replace(/}/g, '<br/>}')
-      .replace(/{/g, '{<br/>&nbsp;&nbsp;');
-  }
-}
-
 @Component({
   templateUrl: './grid-graphql.component.html',
   styleUrls: ['./grid-graphql.component.scss']
@@ -51,7 +40,7 @@ export class GridGraphqlComponent implements OnInit {
   ngOnInit(): void {
     this.columnDefinitions = [
       { id: 'name', name: 'Name', field: 'name', filterable: true, sortable: true, type: FieldType.string },
-      { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: false,
+      { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
         filter: {
           searchTerm: '', // default selection
           type: FormElementType.select,
@@ -88,7 +77,7 @@ export class GridGraphqlComponent implements OnInit {
       onSortChanged: (event, args) => {
         this.displaySpinner(true);
         const query = this.graphqlService.onSortChanged(event, args);
-        // this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
+        this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
       }
     };
 
