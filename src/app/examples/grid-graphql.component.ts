@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 
 const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
+let timer: any;
 
 @Component({
   templateUrl: './grid-graphql.component.html',
@@ -65,9 +66,14 @@ export class GridGraphqlComponent implements OnInit {
         totalItems: 0
       },
       onFilterChanged: (event, args) => {
-        this.displaySpinner(true);
-        const query = this.graphqlService.onFilterChanged(event, args);
-        // this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
+        // wait for user pause before processing any request to avoid multiple request sent to backend
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          this.displaySpinner(true);
+          const query = this.graphqlService.onFilterChanged(event, args);
+          console.log('sending request', args);
+          this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
+        }, 700);
       },
       onPaginationChanged: (event, args) => {
         this.displaySpinner(true);

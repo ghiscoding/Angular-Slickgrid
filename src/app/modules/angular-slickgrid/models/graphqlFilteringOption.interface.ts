@@ -1,5 +1,6 @@
+import { OperatorType } from './operatorType';
 export interface GraphqlFilteringOption {
-  fieldName: string;
-  fieldOperator: '<' | '>' | '>=' | '<' | '<=' | '<>' | '!=' | '=' | '==' | '*' | 'IN' | 'NIN';
-  fieldValue: any;
+  field: string;
+  operator: OperatorType;
+  value: any;
 }

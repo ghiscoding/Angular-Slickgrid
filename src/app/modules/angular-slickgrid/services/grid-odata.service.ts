@@ -1,4 +1,5 @@
 import './global-utilities';
+import { parseUtcDate } from './utilities';
 import { Injectable } from '@angular/core';
 import { CaseType, FilterChangedArgs, FieldType, OdataOption, PaginationChangedArgs, SortChangedArgs } from './../models';
 import { OdataService } from './odata.service';
@@ -116,9 +117,9 @@ export class GridOdataService {
               : `startswith(${fieldNameTitleCase}, '${searchValue}')`;
           } else if (fieldType === FieldType.date) {
             // date field needs to be UTC and within DateTime function
-            const dateFormatted = this.parseUtcDate(searchValue, true);
+            const dateFormatted = parseUtcDate(searchValue, true);
             if (dateFormatted) {
-              searchBy = `${fieldNameTitleCase} ${this.mapOperator(operator)} DateTime'${dateFormatted}'`;
+              searchBy = `${fieldNameTitleCase} ${this.mapOdataOperator(operator)} DateTime'${dateFormatted}'`;
             }
           } else if (fieldType === FieldType.string) {
             // string field needs to be in single quotes
@@ -126,7 +127,7 @@ export class GridOdataService {
           } else {
             // any other field type (or undefined type)
             searchValue = fieldType === FieldType.number ? searchValue : `'${searchValue}'`;
-            searchBy = `${fieldNameTitleCase} ${this.mapOperator(operator)} ${searchValue}`;
+            searchBy = `${fieldNameTitleCase} ${this.mapOdataOperator(operator)} ${searchValue}`;
           }
 
           // push to our temp array and also trim white spaces
@@ -201,7 +202,7 @@ export class GridOdataService {
     * @param string operator
     * @returns string map
     */
-  private mapOperator(operator: string) {
+  private mapOdataOperator(operator: string) {
     let map = '';
     switch (operator) {
       case '<':
@@ -228,25 +229,5 @@ export class GridOdataService {
     }
 
     return map;
-  }
-
-  /**
-   * Parse a date passed as a string and return a Date object (if valid)
-   * @param string inputDateString
-   * @returns object Date
-   */
-  private parseUtcDate(inputDateString: string, useUtc: boolean) {
-    let date = null;
-
-    if (/^[0-9\-\/]*$/.test(inputDateString)) {
-      // get the UTC datetime with moment.js but we need to decode the value so that's it's valid text
-      const dateString = decodeURIComponent(inputDateString);
-      const dateMoment = moment(new Date(dateString));
-      if (dateMoment.isValid() && dateMoment.year().toString().length === 4) {
-        date = (useUtc) ? dateMoment.utc().format() : dateMoment.format();
-      }
-    }
-
-    return date;
   }
 }

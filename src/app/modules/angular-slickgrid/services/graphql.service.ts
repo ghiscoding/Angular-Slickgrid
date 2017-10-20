@@ -1,9 +1,10 @@
+import { mapOperatorType, parseUtcDate } from './utilities';
 import { CaseType, FilterChangedArgs, FieldType, GraphqlDatasetFilter, GraphqlFilteringOption, GraphqlServiceOption, GraphqlSortingOption, PaginationChangedArgs, SortChangedArgs, SortDirection } from './../models';
 import QueryBuilder from 'graphql-query-builder';
 
 export class GraphqlService {
   serviceOptions: GraphqlServiceOption = {};
-  defaultOrderBy: GraphqlSortingOption = { sort: 'id', direction: 'ASC' };
+  defaultOrderBy: GraphqlSortingOption = { field: 'id', direction: SortDirection.ASC };
 
   /**
    * Build the GraphQL query, since the service include/exclude cursor, the output query will be different.
@@ -33,7 +34,7 @@ export class GraphqlService {
     // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
     const datasetFilters: GraphqlDatasetFilter = this.serviceOptions.paginationOptions;
     if (this.serviceOptions.sortingOptions) {
-      // orderBy: [{ sort:x, direction: 'ASC' }]
+      // orderBy: [{ field:x, direction: 'ASC' }]
       datasetFilters.orderBy = this.serviceOptions.sortingOptions;
     }
     if (this.serviceOptions.filteringOptions) {
@@ -45,8 +46,8 @@ export class GraphqlService {
     datasetQb.filter(datasetFilters);
     queryQb.find(datasetQb);
 
-    const enumSearchWords = ['sort:', 'direction:', 'fieldName:', 'fieldOperator:'];
-    return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchWords);
+    const enumSearchProperties = ['direction:', 'field:', 'operator:'];
+    return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
   }
 
   buildPaginationQuery(serviceOptions?: GraphqlServiceOption) {
@@ -96,6 +97,58 @@ export class GraphqlService {
    * FILTERING
    */
   onFilterChanged(event: Event, args: FilterChangedArgs) {
+    let searchByArray: GraphqlFilteringOption[] = [];
+
+    // loop through all columns to inspect filters
+    for (const columnId in args.columnFilters) {
+      if (args.columnFilters.hasOwnProperty(columnId)) {
+        const columnFilter = args.columnFilters[columnId];
+        const columnDef = columnFilter.columnDef;
+        const fieldName = columnDef.field || columnDef.name;
+        const fieldType = columnDef.type || 'string';
+        let fieldSearchValue = columnFilter.searchTerm;
+        if (typeof fieldSearchValue === 'undefined') {
+          fieldSearchValue = '';
+        }
+        if (typeof fieldSearchValue !== 'string') {
+          throw new Error(`GraphQL filter term property must be provided type "string", if you use filter with options then make sure your ids are also string. For example: filter: {type: FormElementType.select, selectOptions: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
+        }
+
+        const searchTerms = columnFilter.listTerm || [];
+        fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
+        const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
+        let operator = columnFilter.operator || ((matches) ? matches[1] : '');
+        let searchValue = (!!matches) ? matches[2] : '';
+        const lastValueChar = (!!matches) ? matches[3] : '';
+
+        // no need to query if search value is empty
+        if (fieldName && searchValue === '') {
+          this.removeColumnFilter(fieldName);
+          continue;
+        }
+
+        // escaping the search value
+        searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
+        searchValue = encodeURIComponent(searchValue); // encode URI of the final search value
+
+        if (operator === '*' || lastValueChar === '*') {
+          operator = (operator === '*') ? 'endsWith' : 'startsWith';
+        }
+
+        searchByArray.push({
+          field: fieldName,
+          operator: mapOperatorType(operator),
+          value: searchValue
+        });
+      }
+    }
+
+    this.updateOptions({ filteringOptions: searchByArray });
+
+    // reset Pagination, then build the GraphQL query which we will use in the WebAPI callback
+    this.resetPaginationOptions();
+
+    return this.buildQuery();
   }
 
   /*
@@ -148,7 +201,7 @@ export class GraphqlService {
 
   /*
    * SORTING
-   * we will use sorting as per a Facebook suggestion on a Github issue
+   * we will use sorting as per a Facebook suggestion on a Github issue (with some small changes)
    * https://github.com/graphql/graphql-relay-js/issues/20#issuecomment-220494222
    */
   onSortChanged(event: Event, args: SortChangedArgs) {
@@ -163,9 +216,9 @@ export class GraphqlService {
       if (sortColumns) {
         for (const column of sortColumns) {
           const fieldName = column.sortCol.field || column.sortCol.id;
-          const direction = column.sortAsc ? 'ASC' : 'DESC';
+          const direction = column.sortAsc ? SortDirection.ASC : SortDirection.DESC;
           sortByArray.push({
-            sort: fieldName,
+            field: fieldName,
             direction: direction
           });
         }

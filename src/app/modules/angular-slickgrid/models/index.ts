@@ -18,6 +18,7 @@ export { GraphqlServiceOption } from './graphqlServiceOption.interface';
 export { GraphqlSortingOption } from './graphqlSortingOption.interface';
 export { GridOption } from './gridOption.interface';
 export { OdataOption } from './odataOption.interface';
+export { OperatorType } from './operatorType';
 export { Pagination } from './pagination.interface';
 export { PaginationChangedArgs } from './paginationChangedArgs.interface';
 export { SortChangedArgs } from './sortChangedArgs.interface';
