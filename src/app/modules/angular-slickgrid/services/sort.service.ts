@@ -1,14 +1,11 @@
+import { BackendServiceOption } from './../models/backendServiceOption.interface';
 import { GridOption } from './../models/gridOption.interface';
 import { FieldType } from './../models/fieldType';
 import { Sorter } from './../models/sorter.interface';
 import { Sorters } from './../sorters';
-import { Injectable, Input, OnInit } from '@angular/core';
 
-@Injectable()
 export class SortService {
   subscriber: any;
-
-  constructor() { }
 
   /**
    * Attach a backend sort (single/multi) hook to the grid
@@ -17,7 +14,26 @@ export class SortService {
    */
   attachBackendOnSort(grid: any, gridOptions: GridOption) {
     this.subscriber = grid.onSort;
-    this.subscriber.subscribe(gridOptions.onSortChanged);
+    this.subscriber.subscribe(this.attachBackendOnSortSubscribe);
+  }
+
+  async attachBackendOnSortSubscribe(event, args) {
+    if (!args || !args.grid) {
+      throw new Error('Something went wrong when trying to attach the "attachBackendOnSortSubscribe(event, args)" function, it seems that "args" is not populated correctly');
+    }
+    const serviceOptions: BackendServiceOption = args.grid.getOptions();
+
+    if (!serviceOptions || !serviceOptions.onBackendEventChanged.process || !serviceOptions.onBackendEventChanged.service) {
+      throw new Error(`onBackendEventChanged requires at least a "process" function and a "service" defined`);
+    }
+    if (serviceOptions.onBackendEventChanged.preProcess) {
+      serviceOptions.onBackendEventChanged.preProcess();
+    }
+    const query = serviceOptions.onBackendEventChanged.service.onSortChanged(event, args);
+    const responseProcess = await (serviceOptions.onBackendEventChanged.process(query));
+    if (serviceOptions.onBackendEventChanged.postProcess) {
+      serviceOptions.onBackendEventChanged.postProcess(responseProcess);
+    }
   }
 
   /**

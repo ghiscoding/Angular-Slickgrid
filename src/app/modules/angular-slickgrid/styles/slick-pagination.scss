@@ -1,5 +1,5 @@
 /* pagination/pagination variables */
-@import './../styles/variables.scss';
+@import './variables.scss';
 
 /* Pagination styling */
 .slick-pagination {
@@ -48,6 +48,7 @@
       .page-link {
         font-size: ($font-size-base - 1px);
         border: $pagination-button-border;
+        height: 32px;
       }
 
       .page-item {
@@ -56,10 +57,9 @@
         a[class*="icon-seek-"] {
           text-decoration: none;
           font-family: $icon-font-family;
-          font-size: $icon-font-size;
-          /*color: inherit;*/
+          -webkit-text-stroke: $pagination-icon-seek-text-stroke;
 
-          border-color: rgb(196, 196, 196);
+          border-color: $pagination-button-border;
         }
 
         .icon-seek-first {

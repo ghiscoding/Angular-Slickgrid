@@ -69,24 +69,16 @@ export class GridOdataComponent implements OnInit {
         pageSize: defaultPageSize,
         totalItems: 0
       },
-      onFilterChanged: (event, args) => {
-        // wait for user to stop typing before processing to avoid multiple requests sent to backend
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          this.displaySpinner(true);
-          const query = this.odataService.onFilterChanged(event, args);
-          this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
-        }, 700);
-      },
-      onPaginationChanged: (event, args) => {
-        this.displaySpinner(true);
-        const query = this.odataService.onPaginationChanged(event, args);
-        this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
-      },
-      onSortChanged: (event, args) => {
-        this.displaySpinner(true);
-        const query = this.odataService.onSortChanged(event, args);
-        this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
+      onBackendEventChanged: {
+        preProcess: () => this.displaySpinner(true),
+        process: (query) => this.getCustomerApiCall(query),
+        postProcess: (response) => {
+          console.log(response);
+          this.displaySpinner(false);
+          this.getCustomerCallback(response);
+        },
+        filterTypingDebounce: 700,
+        service: this.odataService
       }
     };
 

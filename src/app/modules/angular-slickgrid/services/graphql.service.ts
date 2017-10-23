@@ -1,8 +1,9 @@
 import { mapOperatorType, parseUtcDate } from './utilities';
-import { CaseType, FilterChangedArgs, FieldType, GraphqlDatasetFilter, GraphqlFilteringOption, GraphqlServiceOption, GraphqlSortingOption, PaginationChangedArgs, SortChangedArgs, SortDirection } from './../models';
+import { BackendService, BackendServiceOption, CaseType, FilterChangedArgs, FieldType, GraphqlDatasetFilter, GraphqlFilteringOption, GraphqlServiceOption, GraphqlSortingOption, PaginationChangedArgs, SortChangedArgs, SortDirection } from './../models';
 import QueryBuilder from 'graphql-query-builder';
+let timer: any;
 
-export class GraphqlService {
+export class GraphqlService implements BackendService {
   serviceOptions: GraphqlServiceOption = {};
   defaultOrderBy: GraphqlSortingOption = { field: 'id', direction: SortDirection.ASC };
 
@@ -93,62 +94,86 @@ export class GraphqlService {
   saveColumnFilter(fieldName: string, value: string, terms?: any[]) {
   }
 
+  filterChanged(event, args) {
+    console.log(event, args);
+  }
+  sorterChanged(event, args) {
+    console.log(event, args);
+    return 'this is the query';
+  }
+
   /*
    * FILTERING
    */
-  onFilterChanged(event: Event, args: FilterChangedArgs) {
+  onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
     let searchByArray: GraphqlFilteringOption[] = [];
-
-    // loop through all columns to inspect filters
-    for (const columnId in args.columnFilters) {
-      if (args.columnFilters.hasOwnProperty(columnId)) {
-        const columnFilter = args.columnFilters[columnId];
-        const columnDef = columnFilter.columnDef;
-        const fieldName = columnDef.field || columnDef.name;
-        const fieldType = columnDef.type || 'string';
-        let fieldSearchValue = columnFilter.searchTerm;
-        if (typeof fieldSearchValue === 'undefined') {
-          fieldSearchValue = '';
-        }
-        if (typeof fieldSearchValue !== 'string') {
-          throw new Error(`GraphQL filter term property must be provided type "string", if you use filter with options then make sure your ids are also string. For example: filter: {type: FormElementType.select, selectOptions: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
-        }
-
-        const searchTerms = columnFilter.listTerm || [];
-        fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
-        const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
-        let operator = columnFilter.operator || ((matches) ? matches[1] : '');
-        let searchValue = (!!matches) ? matches[2] : '';
-        const lastValueChar = (!!matches) ? matches[3] : '';
-
-        // no need to query if search value is empty
-        if (fieldName && searchValue === '') {
-          this.removeColumnFilter(fieldName);
-          continue;
-        }
-
-        // escaping the search value
-        searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
-        searchValue = encodeURIComponent(searchValue); // encode URI of the final search value
-
-        if (operator === '*' || lastValueChar === '*') {
-          operator = (operator === '*') ? 'endsWith' : 'startsWith';
-        }
-
-        searchByArray.push({
-          field: fieldName,
-          operator: mapOperatorType(operator),
-          value: searchValue
-        });
-      }
+    const serviceOptions: BackendServiceOption = args.grid.getOptions();
+    let debounceTypingDelay = 0;
+    if (event.type === 'keyup' || event.type === 'keydown') {
+      debounceTypingDelay = serviceOptions.onBackendEventChanged.filterTypingDebounce || 700;
     }
 
-    this.updateOptions({ filteringOptions: searchByArray });
+    const promise = new Promise<string>((resolve, reject) => {
+      if (!args || !args.grid) {
+        throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
+      }
 
-    // reset Pagination, then build the GraphQL query which we will use in the WebAPI callback
-    this.resetPaginationOptions();
+      // loop through all columns to inspect filters
+      for (const columnId in args.columnFilters) {
+        if (args.columnFilters.hasOwnProperty(columnId)) {
+          const columnFilter = args.columnFilters[columnId];
+          const columnDef = columnFilter.columnDef;
+          const fieldName = columnDef.field || columnDef.name;
+          const fieldType = columnDef.type || 'string';
+          let fieldSearchValue = columnFilter.searchTerm;
+          if (typeof fieldSearchValue === 'undefined') {
+            fieldSearchValue = '';
+          }
+          if (typeof fieldSearchValue !== 'string') {
+            throw new Error(`GraphQL filter term property must be provided type "string", if you use filter with options then make sure your ids are also string. For example: filter: {type: FormElementType.select, selectOptions: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
+          }
 
-    return this.buildQuery();
+          const searchTerms = columnFilter.listTerm || [];
+          fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
+          const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
+          let operator = columnFilter.operator || ((matches) ? matches[1] : '');
+          let searchValue = (!!matches) ? matches[2] : '';
+          const lastValueChar = (!!matches) ? matches[3] : '';
+
+          // no need to query if search value is empty
+          if (fieldName && searchValue === '') {
+            this.removeColumnFilter(fieldName);
+            continue;
+          }
+
+          // escaping the search value
+          searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
+          searchValue = encodeURIComponent(searchValue); // encode URI of the final search value
+
+          if (operator === '*' || lastValueChar === '*') {
+            operator = (operator === '*') ? 'endsWith' : 'startsWith';
+          }
+
+          searchByArray.push({
+            field: fieldName,
+            operator: mapOperatorType(operator),
+            value: searchValue
+          });
+        }
+      }
+
+      this.updateOptions({ filteringOptions: searchByArray });
+
+      // reset Pagination, then build the GraphQL query which we will use in the WebAPI callback
+      // wait a minimum user typing inactivity before processing any query
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        this.resetPaginationOptions();
+        resolve (this.buildQuery());
+      }, debounceTypingDelay);
+    });
+
+    return promise;
   }
 
   /*

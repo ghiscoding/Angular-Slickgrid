@@ -85,13 +85,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
   attachDifferentHooks(grid: any, options: GridOption, dataView: any) {
     // attach external sorting (backend) when available or default onSort (dataView)
     if (options.enableSorting) {
-      (typeof options.onSortChanged === 'function') ? this.sortService.attachBackendOnSort(grid, options) : this.sortService.attachLocalOnSort(grid, options, this._dataView);
+      (options.onBackendEventChanged) ? this.sortService.attachBackendOnSort(grid, options) : this.sortService.attachLocalOnSort(grid, options, this._dataView);
     }
 
     // attach external filter (backend) when available or default onSort (dataView)
     if (options.enableFiltering) {
       this.filterService.init(grid, options, this.columnDefinitions, this._columnFilters);
-      (typeof options.onFilterChanged === 'function') ? this.filterService.attachBackendOnFilter() : this.filterService.attachLocalOnFilter(this._dataView);
+      (options.onBackendEventChanged) ? this.filterService.attachBackendOnFilter(grid, options) : this.filterService.attachLocalOnFilter(this._dataView);
     }
 
     // if enable, change background color on mouse over

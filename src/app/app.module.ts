@@ -6,7 +6,6 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
-import { GridBackendComponent } from './examples/grid-backend.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
@@ -23,7 +22,6 @@ import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angu
     GridBasicComponent,
     GridClientSideComponent,
     GridFormatterComponent,
-    GridBackendComponent,
     GridOdataComponent,
     GridGraphqlComponent
   ],
