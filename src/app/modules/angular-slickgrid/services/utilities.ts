@@ -57,8 +57,10 @@ export function mapOperatorType(operator: string): OperatorType {
       break;
     case '=':
     case '==':
-    default:
       map = OperatorType.equal;
+      break;
+    default:
+      map = OperatorType.contains;
       break;
   }
 
