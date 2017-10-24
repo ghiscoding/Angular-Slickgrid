@@ -5,8 +5,6 @@ import { GlobalGridOptions } from './../global-grid-options';
 
 // using external js modules in Angular
 declare var Slick: any;
-declare var jquery: any;
-declare var $: any;
 
 @Injectable()
 @Component({

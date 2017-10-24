@@ -11,7 +11,7 @@ const routes: Routes = [
   { path: 'formatter', component: GridFormatterComponent },
   { path: 'clientside', component: GridClientSideComponent },
   { path: 'odata', component: GridOdataComponent },
-  { path: 'graphql', component: GridGraphqlComponent },
+  { path: 'gridgraphql', component: GridGraphqlComponent },
   { path: '', redirectTo: '/basic', pathMatch: 'full' }
 ];
 

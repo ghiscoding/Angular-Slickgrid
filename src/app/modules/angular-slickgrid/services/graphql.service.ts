@@ -1,5 +1,20 @@
 import { mapOperatorType, parseUtcDate } from './utilities';
-import { BackendService, BackendServiceOption, CaseType, FilterChangedArgs, FieldType, GraphqlDatasetFilter, GraphqlFilteringOption, GraphqlServiceOption, GraphqlSortingOption, PaginationChangedArgs, SortChangedArgs, SortDirection } from './../models';
+import {
+  BackendService,
+  BackendServiceOption,
+  CaseType,
+  FilterChangedArgs,
+  FieldType,
+  GraphqlCursorPaginationOption,
+  GraphqlDatasetFilter,
+  GraphqlFilteringOption,
+  GraphqlPaginationOption,
+  GraphqlServiceOption,
+  GraphqlSortingOption,
+  PaginationChangedArgs,
+  SortChangedArgs,
+  SortDirection
+} from './../models';
 import QueryBuilder from 'graphql-query-builder';
 let timer: any;
 
@@ -23,7 +38,7 @@ export class GraphqlService implements BackendService {
     if (this.serviceOptions.isWithCursor) {
       // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
       pageInfoQb.find('hasNextPage', 'endCursor');
-      dataQb.find(['cursor', {'node': this.serviceOptions.dataFilters}]);
+      dataQb.find(['cursor', { 'node': this.serviceOptions.dataFilters }]);
     } else {
       // ...pageInfo { hasNextPage }, nodes { _filters_ }
       pageInfoQb.find('hasNextPage');
@@ -77,12 +92,11 @@ export class GraphqlService implements BackendService {
         after: '',
         before: undefined,
         last: undefined
-      };
+      } as GraphqlCursorPaginationOption;
     } else {
       // first, last, offset
-      paginationOptions = {
-        offset: 0
-      };
+      paginationOptions = this.serviceOptions.paginationOptions as GraphqlPaginationOption;
+      paginationOptions.offset = 0 ;
     }
     this.updateOptions({ paginationOptions: paginationOptions });
   }
@@ -169,7 +183,7 @@ export class GraphqlService implements BackendService {
       clearTimeout(timer);
       timer = setTimeout(() => {
         this.resetPaginationOptions();
-        resolve (this.buildQuery());
+        resolve(this.buildQuery());
       }, debounceTypingDelay);
     });
 

@@ -1,12 +1,14 @@
 import { FilterConditions } from '../filter-conditions';
 import { BackendServiceOption, Column, ColumnFilters, FieldType, FilterChangedArgs, FormElementType, GridOption } from '../models';
 import { FilterTemplates } from './../filter-templates';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/first';
+import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/map';
+import $ from 'jquery';
 
 // using external js modules in Angular
 declare var Slick: any;
-declare var jquery: any;
-declare var $: any;
-
 export class FilterService {
   _columnDefinitions: Column[];
   _columnFilters: ColumnFilters;
@@ -47,7 +49,15 @@ export class FilterService {
       serviceOptions.onBackendEventChanged.preProcess();
     }
     const query = await serviceOptions.onBackendEventChanged.service.onFilterChanged(event, args);
-    const responseProcess = await (serviceOptions.onBackendEventChanged.process(query));
+
+    // the process could be an Observable (like HttpClient) or a Promise
+    // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+    const observableOrPromise = (serviceOptions.onBackendEventChanged.process(query));
+    let processPromise = observableOrPromise;
+    if (observableOrPromise instanceof Observable) {
+      processPromise = observableOrPromise.first().toPromise();
+    }
+    const responseProcess = await processPromise;
     if (serviceOptions.onBackendEventChanged.postProcess) {
       serviceOptions.onBackendEventChanged.postProcess(responseProcess);
     }

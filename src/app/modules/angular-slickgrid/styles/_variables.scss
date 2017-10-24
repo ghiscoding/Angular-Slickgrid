@@ -27,7 +27,7 @@ $cell-border-top:                       1px solid $border-color !default;
 $cell-border-right:                     0 none !default;
 $cell-border-bottom:                    0 none !default;
 $cell-border-left:                      0 none !default;
-$cell-odd-background-color:             darken($grid-cell-color, 3%) !default;
+$cell-odd-background-color:             darken($grid-cell-color, 2.5%) !default;
 $cell-odd-active-background-color:      darken($grid-cell-color, 5%) !default;
 $cell-padding:                          5px 7.5834px !default;
 $selected-hover-color:                  rgb(245, 245, 204) !default;
@@ -42,6 +42,7 @@ $cell-padding-left:                     4px !default;
 $header-input-height:                   27px !default;                        // height of the filter form element (input, textarea, select)
 $header-input-width:                    100% !default;                        // width of the filter form element (input, textarea, select)
 $header-input-padding:                  0 6px !default;                       // padding of the filter form element (input, textarea, select)
+$header-row-background-color:           #ffffff !default;
 $header-row-count:                      2 !default;                           // how many rows to display on the header
 $header-column-height:                  (16px * $header-row-count) !default;  // header is calculated by rows to show
 $header-border-top:                     0 none !default;
