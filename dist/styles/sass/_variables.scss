@@ -27,7 +27,7 @@ $cell-border-top:                       1px solid $border-color !default;
 $cell-border-right:                     0 none !default;
 $cell-border-bottom:                    0 none !default;
 $cell-border-left:                      0 none !default;
-$cell-odd-background-color:             darken($grid-cell-color, 5%) !default;
+$cell-odd-background-color:             darken($grid-cell-color, 2.5%) !default;
 $cell-odd-active-background-color:      darken($grid-cell-color, 5%) !default;
 $cell-padding:                          5px 7.5834px !default;
 $selected-hover-color:                  rgb(245, 245, 204) !default;
@@ -42,6 +42,7 @@ $cell-padding-left:                     4px !default;
 $header-input-height:                   27px !default;                        // height of the filter form element (input, textarea, select)
 $header-input-width:                    100% !default;                        // width of the filter form element (input, textarea, select)
 $header-input-padding:                  0 6px !default;                       // padding of the filter form element (input, textarea, select)
+$header-row-background-color:           #ffffff !default;
 $header-row-count:                      2 !default;                           // how many rows to display on the header
 $header-column-height:                  (16px * $header-row-count) !default;  // header is calculated by rows to show
 $header-border-top:                     0 none !default;
@@ -75,12 +76,13 @@ $column-picker-close-opacity:           0.9 !default;
 
 /* pagination variables */
 $pagination-text-color:                 #808080 !default;
-$pagination-border-color:               #ddd !default;
+$pagination-border-color:               #bbb !default;
 $pagination-icon-seek-first:            "\f100" !default;
 $pagination-icon-seek-end:              "\f101" !default;
 $pagination-icon-seek-next:             "\f105" !default;
 $pagination-icon-seek-prev:             "\f104" !default;
-$pagination-button-border:              1px solid #ccc !default;
+$pagination-icon-seek-text-stroke:      0.4px !default;
+$pagination-button-border:              1px solid #b6b6b6 !default;
 $pagination-border-top:                 0 none !default;
 $pagination-border-right:               0 none !default;
 $pagination-border-bottom:              0 none !default;

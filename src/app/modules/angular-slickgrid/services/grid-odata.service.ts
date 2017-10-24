@@ -1,12 +1,15 @@
 import './global-utilities';
+import { parseUtcDate } from './utilities';
 import { Injectable } from '@angular/core';
-import { CaseType, FilterChangedArgs, FieldType, OdataOption, PaginationChangedArgs, SortChangedArgs } from './../models';
+import { BackendService, BackendServiceOption, CaseType, FilterChangedArgs, FieldType, OdataOption, PaginationChangedArgs, SortChangedArgs } from './../models';
 import { OdataService } from './odata.service';
 import * as moment_ from 'moment-mini';
 const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+let timer: any;
 
 @Injectable()
-export class GridOdataService {
+export class GridOdataService implements BackendService {
+  serviceOptions: OdataOption = {};
   defaultSortBy = '';
   minUserInactivityOnFilter = 700;
 
@@ -18,6 +21,10 @@ export class GridOdataService {
 
   initOptions(options: OdataOption): void {
     this.odataService.options = options;
+  }
+
+  updateOptions(options?: OdataOption) {
+    this.serviceOptions = { ...this.serviceOptions, ...options };
   }
 
   removeColumnFilter(fieldName: string): void {
@@ -40,113 +47,125 @@ export class GridOdataService {
   /*
    * FILTERING
    */
-  onFilterChanged(event: Event, args: FilterChangedArgs) {
+  onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
     let searchBy: string = '';
-    let timer: any = 0;
     const searchByArray = [];
+    const serviceOptions: BackendServiceOption = args.grid.getOptions();
+    let debounceTypingDelay = 0;
+    if (event.type === 'keyup' || event.type === 'keydown') {
+      debounceTypingDelay = serviceOptions.onBackendEventChanged.filterTypingDebounce || 700;
+    }
 
-    // loop through all columns to inspect filters
-    for (const columnId in args.columnFilters) {
-      if (args.columnFilters.hasOwnProperty(columnId)) {
-        const columnFilter = args.columnFilters[columnId];
-        const columnDef = columnFilter.columnDef;
-        const fieldName = columnDef.field || columnDef.name;
-        const fieldType = columnDef.type || 'string';
-        let fieldSearchValue = columnFilter.searchTerm;
-        if (typeof fieldSearchValue === 'undefined') {
-          fieldSearchValue = '';
-        }
-        if (typeof fieldSearchValue !== 'string') {
-          throw new Error(`OData filter term property must be provided type "string", if you use filter with options then make sure your ids are also string. For example: filter: {type: FormElementType.select, selectOptions: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
-        }
-
-        const searchTerms = columnFilter.listTerm || [];
-        fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
-        const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
-        const operator = columnFilter.operator || ((matches) ? matches[1] : '');
-        let searchValue = (!!matches) ? matches[2] : '';
-        const lastValueChar = (!!matches) ? matches[3] : '';
-        const bypassOdataQuery = columnFilter.bypassBackendQuery || false;
-
-        // no need to query if search value is empty
-        if (fieldName && searchValue === '') {
-          this.removeColumnFilter(fieldName);
-          continue;
-        }
-
-        // escaping the search value
-        searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
-        searchValue = encodeURIComponent(searchValue); // encode URI of the final search value
-
-        // extra query arguments
-        if (bypassOdataQuery) {
-          // push to our temp array and also trim white spaces
-          if (fieldName) {
-            this.saveColumnFilter(fieldName, fieldSearchValue, searchTerms);
+    const promise = new Promise<string>((resolve, reject) => {
+      // loop through all columns to inspect filters
+      for (const columnId in args.columnFilters) {
+        if (args.columnFilters.hasOwnProperty(columnId)) {
+          const columnFilter = args.columnFilters[columnId];
+          const columnDef = columnFilter.columnDef;
+          const fieldName = columnDef.field || columnDef.name;
+          const fieldType = columnDef.type || 'string';
+          let fieldSearchValue = columnFilter.searchTerm;
+          if (typeof fieldSearchValue === 'undefined') {
+            fieldSearchValue = '';
           }
-        } else {
-          let searchBy = '';
+          if (typeof fieldSearchValue !== 'string') {
+            throw new Error(`OData filter term property must be provided type "string", if you use filter with options then make sure your ids are also string. For example: filter: {type: FormElementType.select, selectOptions: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
+          }
 
-          // titleCase the fieldName so that it matches the WebApi names
-          const fieldNameTitleCase = String.titleCase(fieldName || '');
+          const searchTerms = columnFilter.listTerm || [];
+          fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
+          const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
+          const operator = columnFilter.operator || ((matches) ? matches[1] : '');
+          let searchValue = (!!matches) ? matches[2] : '';
+          const lastValueChar = (!!matches) ? matches[3] : '';
+          const bypassOdataQuery = columnFilter.bypassBackendQuery || false;
 
-          // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
-          if (searchTerms && searchTerms.length > 0) {
-            let tmpSearchTerms = [];
+          // no need to query if search value is empty
+          if (fieldName && searchValue === '') {
+            this.removeColumnFilter(fieldName);
+            continue;
+          }
 
-            if (operator === 'IN') {
-              // example:: (Stage eq "Expired" or Stage eq "Renewal")
-              for (let j = 0, lnj = searchTerms.length; j < lnj; j++) {
-                tmpSearchTerms.push(`${fieldNameTitleCase} eq '${searchTerms[j]}'`);
-              }
-              searchBy = tmpSearchTerms.join(' or ');
-              searchBy = `(${searchBy})`;
-            } else if (operator === 'NIN' || operator === 'NOTIN' || operator === 'NOT IN') {
-              // example:: (Stage ne "Expired" and Stage ne "Renewal")
-              for (let k = 0, lnk = searchTerms.length; k < lnk; k++) {
-                tmpSearchTerms.push(`${fieldNameTitleCase} ne '${searchTerms[k]}'`);
-              }
-              searchBy = tmpSearchTerms.join(' and ');
-              searchBy = `(${searchBy})`;
+          // escaping the search value
+          searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
+          searchValue = encodeURIComponent(searchValue); // encode URI of the final search value
+
+          // extra query arguments
+          if (bypassOdataQuery) {
+            // push to our temp array and also trim white spaces
+            if (fieldName) {
+              this.saveColumnFilter(fieldName, fieldSearchValue, searchTerms);
             }
-          } else if (operator === '*' || lastValueChar !== '') {
-            // first/last character is a '*' will be a startsWith or endsWith
-            searchBy = operator === '*'
-              ? `endswith(${fieldNameTitleCase}, '${searchValue}')`
-              : `startswith(${fieldNameTitleCase}, '${searchValue}')`;
-          } else if (fieldType === FieldType.date) {
-            // date field needs to be UTC and within DateTime function
-            const dateFormatted = this.parseUtcDate(searchValue, true);
-            if (dateFormatted) {
-              searchBy = `${fieldNameTitleCase} ${this.mapOperator(operator)} DateTime'${dateFormatted}'`;
-            }
-          } else if (fieldType === FieldType.string) {
-            // string field needs to be in single quotes
-            searchBy = `substringof('${searchValue}', ${fieldNameTitleCase})`;
           } else {
-            // any other field type (or undefined type)
-            searchValue = fieldType === FieldType.number ? searchValue : `'${searchValue}'`;
-            searchBy = `${fieldNameTitleCase} ${this.mapOperator(operator)} ${searchValue}`;
-          }
+            let searchBy = '';
 
-          // push to our temp array and also trim white spaces
-          if (searchBy !== '') {
-            searchByArray.push(String.trim(searchBy));
-            this.saveColumnFilter(fieldName || '', fieldSearchValue, searchTerms);
+            // titleCase the fieldName so that it matches the WebApi names
+            const fieldNameTitleCase = String.titleCase(fieldName || '');
+
+            // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
+            if (searchTerms && searchTerms.length > 0) {
+              let tmpSearchTerms = [];
+
+              if (operator === 'IN') {
+                // example:: (Stage eq "Expired" or Stage eq "Renewal")
+                for (let j = 0, lnj = searchTerms.length; j < lnj; j++) {
+                  tmpSearchTerms.push(`${fieldNameTitleCase} eq '${searchTerms[j]}'`);
+                }
+                searchBy = tmpSearchTerms.join(' or ');
+                searchBy = `(${searchBy})`;
+              } else if (operator === 'NIN' || operator === 'NOTIN' || operator === 'NOT IN') {
+                // example:: (Stage ne "Expired" and Stage ne "Renewal")
+                for (let k = 0, lnk = searchTerms.length; k < lnk; k++) {
+                  tmpSearchTerms.push(`${fieldNameTitleCase} ne '${searchTerms[k]}'`);
+                }
+                searchBy = tmpSearchTerms.join(' and ');
+                searchBy = `(${searchBy})`;
+              }
+            } else if (operator === '*' || lastValueChar !== '') {
+              // first/last character is a '*' will be a startsWith or endsWith
+              searchBy = operator === '*'
+                ? `endswith(${fieldNameTitleCase}, '${searchValue}')`
+                : `startswith(${fieldNameTitleCase}, '${searchValue}')`;
+            } else if (fieldType === FieldType.date) {
+              // date field needs to be UTC and within DateTime function
+              const dateFormatted = parseUtcDate(searchValue, true);
+              if (dateFormatted) {
+                searchBy = `${fieldNameTitleCase} ${this.mapOdataOperator(operator)} DateTime'${dateFormatted}'`;
+              }
+            } else if (fieldType === FieldType.string) {
+              // string field needs to be in single quotes
+              searchBy = `substringof('${searchValue}', ${fieldNameTitleCase})`;
+            } else {
+              // any other field type (or undefined type)
+              searchValue = fieldType === FieldType.number ? searchValue : `'${searchValue}'`;
+              searchBy = `${fieldNameTitleCase} ${this.mapOdataOperator(operator)} ${searchValue}`;
+            }
+
+            // push to our temp array and also trim white spaces
+            if (searchBy !== '') {
+              searchByArray.push(String.trim(searchBy));
+              this.saveColumnFilter(fieldName || '', fieldSearchValue, searchTerms);
+            }
           }
         }
       }
-    }
 
-    // build the filter query
-    this.odataService.updateOptions({
-      filter: (searchByArray.length > 0) ? searchByArray.join(' and ') : '',
-      skip: undefined
+      // build the filter query
+      this.odataService.updateOptions({
+        filter: (searchByArray.length > 0) ? searchByArray.join(' and ') : '',
+        skip: undefined
+      });
+
+      // reset Pagination, then build the OData query which we will use in the WebAPI callback
+      // wait a minimum user typing inactivity before processing any query
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        this.resetPaginationOptions();
+        resolve (this.odataService.buildQuery());
+      }, debounceTypingDelay);
     });
 
-    // reset Pagination, then build the OData query which we will use in the WebAPI callback
-    this.resetPaginationOptions();
-    return this.odataService.buildQuery();
+    return promise;
   }
 
   /*
@@ -201,7 +220,7 @@ export class GridOdataService {
     * @param string operator
     * @returns string map
     */
-  private mapOperator(operator: string) {
+  private mapOdataOperator(operator: string) {
     let map = '';
     switch (operator) {
       case '<':
@@ -228,25 +247,5 @@ export class GridOdataService {
     }
 
     return map;
-  }
-
-  /**
-   * Parse a date passed as a string and return a Date object (if valid)
-   * @param string inputDateString
-   * @returns object Date
-   */
-  private parseUtcDate(inputDateString: string, useUtc: boolean) {
-    let date = null;
-
-    if (/^[0-9\-\/]*$/.test(inputDateString)) {
-      // get the UTC datetime with moment.js but we need to decode the value so that's it's valid text
-      const dateString = decodeURIComponent(inputDateString);
-      const dateMoment = moment(new Date(dateString));
-      if (dateMoment.isValid() && dateMoment.year().toString().length === 4) {
-        date = (useUtc) ? dateMoment.utc().format() : dateMoment.format();
-      }
-    }
-
-    return date;
   }
 }

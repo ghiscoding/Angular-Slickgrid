@@ -6,17 +6,7 @@ import { HttpClient } from '@angular/common/http';
 
 const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
-
-@Pipe({name: 'prettyprint'})
-export class PrettyPrintPipe implements PipeTransform {
-  transform(val: string) {
-    return val
-      .replace(/,(?![^(]*\))/g, '<br/>&nbsp;&nbsp;')
-      .replace(/},/g, '<br/>}')
-      .replace(/}/g, '<br/>}')
-      .replace(/{/g, '{<br/>&nbsp;&nbsp;');
-  }
-}
+let timer: any;
 
 @Component({
   templateUrl: './grid-graphql.component.html',
@@ -51,7 +41,7 @@ export class GridGraphqlComponent implements OnInit {
   ngOnInit(): void {
     this.columnDefinitions = [
       { id: 'name', name: 'Name', field: 'name', filterable: true, sortable: true, type: FieldType.string },
-      { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: false,
+      { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
         filter: {
           searchTerm: '', // default selection
           type: FormElementType.select,
@@ -75,20 +65,16 @@ export class GridGraphqlComponent implements OnInit {
         pageSize: defaultPageSize,
         totalItems: 0
       },
-      onFilterChanged: (event, args) => {
-        this.displaySpinner(true);
-        const query = this.graphqlService.onFilterChanged(event, args);
-        // this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
-      },
-      onPaginationChanged: (event, args) => {
-        this.displaySpinner(true);
-        const query = this.graphqlService.onPaginationChanged(event, args);
-        this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
-      },
-      onSortChanged: (event, args) => {
-        this.displaySpinner(true);
-        const query = this.graphqlService.onSortChanged(event, args);
-        // this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
+      onBackendEventChanged: {
+        preProcess: () => this.displaySpinner(true),
+        process: (query) => this.getCustomerApiCall(query),
+        postProcess: (response) => {
+          console.log(response);
+          this.displaySpinner(false);
+          this.getCustomerCallback(response);
+        },
+        filterTypingDebounce: 700,
+        service: this.graphqlService
       }
     };
 
@@ -105,6 +91,15 @@ export class GridGraphqlComponent implements OnInit {
     this.status = (isProcessing)
       ? { text: 'processing...', class: 'alert alert-danger' }
       : { text: 'done', class: 'alert alert-success' };
+  }
+
+  filterChange() {
+    console.log('filter change');
+  }
+
+  filterChangeAfter() {
+    console.log('after filter change');
+    this.displaySpinner(false);
   }
 
   onWithCursorChange(isWithCursor) {
@@ -161,7 +156,9 @@ export class GridGraphqlComponent implements OnInit {
     // for the demo purpose, we will call a mock WebAPI function
     return new Promise((resolve, reject) => {
       this.graphqlQuery = this.graphqlService.buildQuery();
-      resolve({ items: [], totalRecordCount: 100, query: query });
+      setTimeout(() => {
+        resolve({ items: [], totalRecordCount: 100, query: query });
+      }, 500);
     });
     // return this.getCustomerDataApiMock(query);
   }

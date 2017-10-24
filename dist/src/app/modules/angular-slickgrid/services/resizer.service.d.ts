@@ -11,10 +11,7 @@ export declare class ResizerService {
      * Calculate the datagrid new height/width from the available space, also consider that a % factor might be applied to calculation
      * object gridOptions
      */
-    calculateGridNewDimensions(gridOptions: GridOption): {
-        height: number;
-        width: any;
-    };
+    calculateGridNewDimensions(gridOptions: GridOption): any;
     /**
      * Destroy function when element is destroyed
      */

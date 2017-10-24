@@ -48,19 +48,18 @@
       .page-link {
         font-size: ($font-size-base - 1px);
         border: $pagination-button-border;
+        height: 32px;
       }
 
       .page-item {
         cursor: pointer;
-        font-weight: 900;
 
         a[class*="icon-seek-"] {
           text-decoration: none;
           font-family: $icon-font-family;
-          font-size: $icon-font-size;
-          /*color: inherit;*/
+          -webkit-text-stroke: $pagination-icon-seek-text-stroke;
 
-          border-color: rgb(192, 192, 192);
+          border-color: $pagination-button-border;
         }
 
         .icon-seek-first {
@@ -89,8 +88,9 @@
         font-weight: normal;
 
         a[class*="icon-seek-"] {
+          color: #b8b8b8;
           background-color: rgb(249, 249, 249);
-          border-color: rgb(222, 222, 222);
+          border-color: #dedede;
         }
       }
     }

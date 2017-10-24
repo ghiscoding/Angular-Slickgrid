@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 
 const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
+let timer: any;
 
 @Component({
   templateUrl: './grid-odata.component.html',
@@ -68,20 +69,16 @@ export class GridOdataComponent implements OnInit {
         pageSize: defaultPageSize,
         totalItems: 0
       },
-      onFilterChanged: (event, args) => {
-        this.displaySpinner(true);
-        const query = this.odataService.onFilterChanged(event, args);
-        this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
-      },
-      onPaginationChanged: (event, args) => {
-        this.displaySpinner(true);
-        const query = this.odataService.onPaginationChanged(event, args);
-        this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
-      },
-      onSortChanged: (event, args) => {
-        this.displaySpinner(true);
-        const query = this.odataService.onSortChanged(event, args);
-        this.getCustomerApiCall(query).then((data) => this.getCustomerCallback(data));
+      onBackendEventChanged: {
+        preProcess: () => this.displaySpinner(true),
+        process: (query) => this.getCustomerApiCall(query),
+        postProcess: (response) => {
+          console.log(response);
+          this.displaySpinner(false);
+          this.getCustomerCallback(response);
+        },
+        filterTypingDebounce: 700,
+        service: this.odataService
       }
     };
 

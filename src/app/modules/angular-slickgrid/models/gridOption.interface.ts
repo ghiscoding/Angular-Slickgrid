@@ -1,3 +1,4 @@
+import { BackendEventChanged } from './backendEventChanged.interface';
 import { AutoResizeOption } from './autoResizeOption.interface';
 import { Pagination } from './pagination.interface';
 import { PaginationChangedArgs } from './paginationChangedArgs.interface';
@@ -28,7 +29,5 @@ export interface GridOption {
   rowHeight?: number;
   showHeaderRow?: boolean;
   topPanelHeight?: number;
-  onFilterChanged?: (event: Event, args: any) => void;
-  onPaginationChanged?: (event: Event, args: PaginationChangedArgs) => void;
-  onSortChanged?: (event: Event, args: SortChangedArgs) => void;
+  onBackendEventChanged?: BackendEventChanged;
 }

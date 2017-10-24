@@ -1,19 +1,23 @@
 import { Column, ColumnFilters, GridOption } from '../models';
+import 'rxjs/add/operator/first';
+import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/map';
 export declare class FilterService {
     _columnDefinitions: Column[];
     _columnFilters: ColumnFilters;
     _dataView: any;
     _grid: any;
     _gridOptions: GridOption;
+    _onFilterChangedOptions: any;
     subscriber: any;
-    constructor();
     init(grid: any, gridOptions: GridOption, columnDefinitions: Column[], columnFilters: any): void;
     /**
      * Attach a backend filter hook to the grid
      * @param grid SlickGrid Grid object
      * @param gridOptions Grid Options object
      */
-    attachBackendOnFilter(): void;
+    attachBackendOnFilter(grid: any, options: any): void;
+    attachBackendOnFilterSubscribe(event: any, args: any): Promise<void>;
     testFilterCondition(operator: string, value1: any, value2: any): boolean;
     /**
      * Attach a local filter hook to the grid

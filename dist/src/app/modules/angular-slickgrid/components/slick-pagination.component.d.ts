@@ -23,6 +23,6 @@ export declare class SlickPaginationComponent implements AfterViewInit, OnInit {
     changeToPreviousPage(event: any): void;
     gotoFirstPage(): void;
     refreshPagination(): void;
-    onPageChanged(event?: Event, pageNumber?: number): void;
+    onPageChanged(event?: Event, pageNumber?: number): Promise<void>;
     recalculateFromToIndexes(): void;
 }

@@ -27,16 +27,14 @@ You can see some screenshots below and the instructions down below.
 This is a work in progress, but so far here are some of the features that `angular-slickgrid` brings (on top of Slickgrid itself):
 - Easier use of SlickGrid within `Angular` as it is just a component (simply pass a column definitions and a dataset and you're good to go)
 - Bootstrap Theme with SASS variables for extra customization (if you create a theme, then please make a PR)
-- Auto-resize, a boolean flag, will resize the datagrid viewport with available space even on browser resize (basically takes available space by the given div container)
-- Integrated Plugins
+- Auto-resize (boolean flag), will resize the datagrid viewport with available space even on browser resize (basically takes available space of it's container)
+- Integrated Plugins.
     - Column Picker (show/hide any column by doing `right+click` in the header, click [here to see print screen](/screenshots/columnPicker.png)).
-- Server side
-    - Filtering
-    - Sorting
-    - Pagination (which is in itself another Angular component)
-    - All of these functionalities are expandables and currently ships with a simple OData service
-        - customizable with your own services by using `onFilterChanged()`, `onPaginationChanged()` and `onSortChanged()`.
-        - extra services might come in the future (you could add yours and if you do, please make PR)
+    - ... more to come
+- Server side (backend) services
+    - Filtering, Sorting, Pagination
+      - [GraphQL](https://github.com/ghiscoding/Angular-Slickgrid/wiki/GraphQL)
+      - [OData](https://github.com/ghiscoding/Angular-Slickgrid/wiki/OData)
 - Some Features of SlickGrid itself which are working out of the gate
   - Sort/Multi-Sort (client/server side)
   - Header Row with Filters (currently support `Input` and `Select` dropdown, multi-select is planned)
@@ -47,8 +45,8 @@ This is a work in progress, but so far here are some of the features that `angul
 
 <a name="missing-features"></a>
 
-## Missing features (planned items, not in necessarily in order of execution)
-The following are SlickGrid features which are not yet included in this library
+## Missing features (planned items, not necessarily in order of execution)
+The following are SlickGrid features which are not yet included in this library but will be in the eventual future.
 - Inline Editors
 - Filters to support multi-select dropdown and eventually custom filters
 - Plugins (Header Menu, Grid Menu, Column Header Buttons)

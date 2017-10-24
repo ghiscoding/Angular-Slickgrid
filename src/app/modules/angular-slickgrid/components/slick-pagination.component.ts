@@ -3,8 +3,7 @@ import { Column, GridOption } from './../models';
 
 @Component({
   selector: 'slick-pagination',
-  templateUrl: './slick-pagination.component.html',
-  styleUrls: ['./slick-pagination.component.scss']
+  templateUrl: './slick-pagination.component.html'
 })
 export class SlickPaginationComponent implements AfterViewInit, OnInit {
   private _gridPaginationOptions: GridOption;
@@ -89,24 +88,34 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
       // calculate and refresh the multiple properties of the pagination UI
       this.paginationPageSizes = this._gridPaginationOptions.pagination.pageSizes;
       this.itemsPerPage = this._gridPaginationOptions.pagination.pageSize;
-      if (this._gridPaginationOptions.onPaginationChanged) {
-          this.paginationCallback = this._gridPaginationOptions.onPaginationChanged;
-      }
       this.totalItems = this._gridPaginationOptions.pagination.totalItems;
       this.dataTo = this.itemsPerPage;
     }
     this.pageCount = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
-  onPageChanged(event?: Event, pageNumber?: number) {
+  async onPageChanged(event?: Event, pageNumber?: number) {
     this.recalculateFromToIndexes();
 
     if (this.dataTo > this.totalItems) {
       this.dataTo = this.totalItems;
     }
-    if (typeof this.paginationCallback === 'function') {
+    if (this._gridPaginationOptions.onBackendEventChanged) {
       const itemsPerPage = this.itemsPerPage;
-      this.paginationCallback(event, { newPage: pageNumber, pageSize: itemsPerPage });
+
+      if (!this._gridPaginationOptions.onBackendEventChanged.process || !this._gridPaginationOptions.onBackendEventChanged.service) {
+        throw new Error(`onBackendEventChanged requires at least a "process" function and a "service" defined`);
+      }
+      if (this._gridPaginationOptions.onBackendEventChanged.preProcess) {
+        this._gridPaginationOptions.onBackendEventChanged.preProcess();
+      }
+      const query = this._gridPaginationOptions.onBackendEventChanged.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
+      const responseProcess = await (this._gridPaginationOptions.onBackendEventChanged.process(query));
+      if (this._gridPaginationOptions.onBackendEventChanged.postProcess) {
+        this._gridPaginationOptions.onBackendEventChanged.postProcess(responseProcess);
+      }
+    } else {
+      throw new Error('Pagination with a backend service requires "onBackendEventChanged" to be defined in your grid options');
     }
   }
 

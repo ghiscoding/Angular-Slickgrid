@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -51,6 +51,7 @@
     "graphql-query-builder": "^1.0.7",
     "jquery": "^3.2.1",
     "moment-mini": "^2.18.1",
+    "rxjs": "^5.5.0",
     "slickgrid": "^2.3.3",
     "vinyl-paths": "^2.1.0",
     "zone.js": "^0.8.17"
@@ -87,8 +88,8 @@
     "require-dir": "^0.3.2",
     "run-sequence": "^2.2.0",
     "ts-node": "~3.3.0",
-    "tslint": "~5.7.0",
-    "typescript": "~2.4.2",
+    "tslint": "^5.8.0",
+    "typescript": "^2.5.3",
     "yargs": "^9.0.1"
   },
   "main": "bundles/angular-slickgrid.umd.js",

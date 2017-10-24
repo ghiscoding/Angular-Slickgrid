@@ -1,23 +1,22 @@
 import { FilterConditions } from '../filter-conditions';
-import { Column, ColumnFilters, FieldType, FilterChangedArgs, FormElementType, GridOption } from '../models';
+import { BackendServiceOption, Column, ColumnFilters, FieldType, FilterChangedArgs, FormElementType, GridOption } from '../models';
 import { FilterTemplates } from './../filter-templates';
-import { Injectable, Input, OnInit } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/first';
+import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/map';
+import $ from 'jquery';
 
 // using external js modules in Angular
 declare var Slick: any;
-declare var jquery: any;
-declare var $: any;
-
-@Injectable()
 export class FilterService {
   _columnDefinitions: Column[];
   _columnFilters: ColumnFilters;
   _dataView: any;
   _grid: any;
   _gridOptions: GridOption;
+  _onFilterChangedOptions: any;
   subscriber: any;
-
-  constructor() { }
 
   init(grid: any, gridOptions: GridOption, columnDefinitions: Column[], columnFilters: any) {
     this._columnDefinitions = columnDefinitions;
@@ -31,10 +30,37 @@ export class FilterService {
    * @param grid SlickGrid Grid object
    * @param gridOptions Grid Options object
    */
-  attachBackendOnFilter() {
+  attachBackendOnFilter(grid, options) {
     this.subscriber = new Slick.Event();
-    this.subscriber.subscribe(this._gridOptions.onFilterChanged);
+    this.subscriber.subscribe(this.attachBackendOnFilterSubscribe);
     this.addFilterTemplateToHeaderRow();
+  }
+
+  async attachBackendOnFilterSubscribe(event, args) {
+    if (!args || !args.grid) {
+      throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
+    }
+    const serviceOptions: BackendServiceOption = args.grid.getOptions();
+
+    if (!serviceOptions || !serviceOptions.onBackendEventChanged.process || !serviceOptions.onBackendEventChanged.service) {
+      throw new Error(`onBackendEventChanged requires at least a "process" function and a "service" defined`);
+    }
+    if (serviceOptions.onBackendEventChanged.preProcess) {
+      serviceOptions.onBackendEventChanged.preProcess();
+    }
+    const query = await serviceOptions.onBackendEventChanged.service.onFilterChanged(event, args);
+
+    // the process could be an Observable (like HttpClient) or a Promise
+    // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+    const observableOrPromise = (serviceOptions.onBackendEventChanged.process(query));
+    let processPromise = observableOrPromise;
+    if (observableOrPromise instanceof Observable) {
+      processPromise = observableOrPromise.first().toPromise();
+    }
+    const responseProcess = await processPromise;
+    if (serviceOptions.onBackendEventChanged.postProcess) {
+      serviceOptions.onBackendEventChanged.postProcess(responseProcess);
+    }
   }
 
   testFilterCondition(operator: string, value1: any, value2: any) {
@@ -136,6 +162,7 @@ export class FilterService {
       columnDef: args.columnDef,
       columnFilters: this._columnFilters,
       searchTerm: e.target.value,
+      serviceOptions: this._onFilterChangedOptions,
       grid: this._grid
     }, e);
   }
@@ -174,7 +201,7 @@ export class FilterService {
           elm.appendTo(header);
         }
 
-        // depending on the DOM Element type, we will watch the corrent event
+        // depending on the DOM Element type, we will watch the correct event
         const filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FormElementType.input;
         switch (filterType) {
           case FormElementType.select:

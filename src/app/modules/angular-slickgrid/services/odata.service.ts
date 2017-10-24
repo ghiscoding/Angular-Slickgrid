@@ -1,9 +1,7 @@
 import { CaseType } from '../models/caseType';
 import './global-utilities';
-import { Injectable } from '@angular/core';
 import { OdataOption } from './../models';
 
-@Injectable()
 export class OdataService {
   _columnFilters: any;
   _defaultSortBy: string;
