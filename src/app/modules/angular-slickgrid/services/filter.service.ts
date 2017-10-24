@@ -3,6 +3,7 @@ import { BackendServiceOption, Column, ColumnFilters, FieldType, FilterChangedAr
 import { FilterTemplates } from './../filter-templates';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
+import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 import $ from 'jquery';
@@ -56,6 +57,16 @@ export class FilterService {
     let processPromise = observableOrPromise;
     if (observableOrPromise instanceof Observable) {
       processPromise = observableOrPromise.first().toPromise();
+      if (!(processPromise instanceof Promise)) {
+        processPromise = observableOrPromise.take(1).toPromise();
+      }
+      if (!(processPromise instanceof Promise)) {
+        throw new Error(
+          `Something went wrong, Angular-Slickgrid filter.service is not able to convert the Observable into a Promise.
+          If you are using Angular HttpClient, you could try converting your http call to a Promise with ".toPromise()"
+          for example::  this.http.post('graphql', { query: graphqlQuery }).toPromise()
+          `);
+      }
     }
     const responseProcess = await processPromise;
     if (serviceOptions.onBackendEventChanged.postProcess) {

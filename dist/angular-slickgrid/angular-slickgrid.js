@@ -1,5 +1,6 @@
 import { Observable as Observable$1 } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
+import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 import { Component, Injectable, Input, NgModule } from '@angular/core';
@@ -64,6 +65,7 @@ const booleanFilterCondition = (options) => {
 };
 
 let OperatorType = {};
+OperatorType.contains = /** @type {?} */ ('Contains');
 OperatorType.lessThan = /** @type {?} */ ('LT');
 OperatorType.lessThanOrEqual = /** @type {?} */ ('LE');
 OperatorType.greaterThan = /** @type {?} */ ('GT');
@@ -74,6 +76,7 @@ OperatorType.endsWith = /** @type {?} */ ('EndsWith');
 OperatorType.startsWith = /** @type {?} */ ('StartsWith');
 OperatorType.in = /** @type {?} */ ('IN');
 OperatorType.notIn = /** @type {?} */ ('NIN');
+OperatorType[OperatorType.contains] = "contains";
 OperatorType[OperatorType.lessThan] = "lessThan";
 OperatorType[OperatorType.lessThanOrEqual] = "lessThanOrEqual";
 OperatorType[OperatorType.greaterThan] = "greaterThan";
@@ -10766,6 +10769,15 @@ class FilterService {
             let /** @type {?} */ processPromise = observableOrPromise;
             if (observableOrPromise instanceof Observable$1) {
                 processPromise = observableOrPromise.first().toPromise();
+                if (!(processPromise instanceof Promise)) {
+                    processPromise = observableOrPromise.take(1).toPromise();
+                }
+                if (!(processPromise instanceof Promise)) {
+                    throw new Error(`Something went wrong, Angular-Slickgrid filter.service is not able to convert the Observable into a Promise.
+          If you are using Angular HttpClient, you could try converting your http call to a Promise with ".toPromise()"
+          for example::  this.http.post('graphql', { query: graphqlQuery }).toPromise()
+          `);
+                }
             }
             const /** @type {?} */ responseProcess = yield processPromise;
             if (serviceOptions.onBackendEventChanged.postProcess) {
@@ -11258,8 +11270,10 @@ function mapOperatorType(operator) {
             break;
         case '=':
         case '==':
-        default:
             map$$1 = OperatorType.equal;
+            break;
+        default:
+            map$$1 = OperatorType.contains;
             break;
     }
     return map$$1;

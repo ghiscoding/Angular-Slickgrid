@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/toPromise'), require('rxjs/add/operator/map'), require('@angular/core'), require('@angular/router'), require('@angular/common')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/toPromise', 'rxjs/add/operator/map', '@angular/core', '@angular/router', '@angular/common'], factory) :
-	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.ng.core,global.ng.router,global.ng.common));
-}(this, (function (exports,Observable,first,toPromise,map,core,router,common) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('rxjs/add/operator/map'), require('@angular/core'), require('@angular/router'), require('@angular/common')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'rxjs/add/operator/map', '@angular/core', '@angular/router', '@angular/common'], factory) :
+	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.ng.core,global.ng.router,global.ng.common));
+}(this, (function (exports,Observable,first,take,toPromise,map,core,router,common) { 'use strict';
 
 var __generator = (this && this.__generator) || function (thisArg, body) {
     var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
@@ -85,6 +85,7 @@ var booleanFilterCondition = function (options) {
     return parseBoolean(options.cellValue) === parseBoolean(options.searchTerm);
 };
 var OperatorType = {};
+OperatorType.contains = /** @type {?} */ ('Contains');
 OperatorType.lessThan = /** @type {?} */ ('LT');
 OperatorType.lessThanOrEqual = /** @type {?} */ ('LE');
 OperatorType.greaterThan = /** @type {?} */ ('GT');
@@ -95,6 +96,7 @@ OperatorType.endsWith = /** @type {?} */ ('EndsWith');
 OperatorType.startsWith = /** @type {?} */ ('StartsWith');
 OperatorType.in = /** @type {?} */ ('IN');
 OperatorType.notIn = /** @type {?} */ ('NIN');
+OperatorType[OperatorType.contains] = "contains";
 OperatorType[OperatorType.lessThan] = "lessThan";
 OperatorType[OperatorType.lessThanOrEqual] = "lessThanOrEqual";
 OperatorType[OperatorType.greaterThan] = "greaterThan";
@@ -8978,6 +8980,12 @@ var FilterService = /** @class */ (function () {
                         processPromise = observableOrPromise;
                         if (observableOrPromise instanceof Observable.Observable) {
                             processPromise = observableOrPromise.first().toPromise();
+                            if (!(processPromise instanceof Promise)) {
+                                processPromise = observableOrPromise.take(1).toPromise();
+                            }
+                            if (!(processPromise instanceof Promise)) {
+                                throw new Error("Something went wrong, Angular-Slickgrid filter.service is not able to convert the Observable into a Promise.\n          If you are using Angular HttpClient, you could try converting your http call to a Promise with \".toPromise()\"\n          for example::  this.http.post('graphql', { query: graphqlQuery }).toPromise()\n          ");
+                            }
                         }
                         return [4 /*yield*/, processPromise];
                     case 2:
@@ -9505,8 +9513,10 @@ function mapOperatorType(operator) {
             break;
         case '=':
         case '==':
-        default:
             map$$1 = OperatorType.equal;
+            break;
+        default:
+            map$$1 = OperatorType.contains;
             break;
     }
     return map$$1;
