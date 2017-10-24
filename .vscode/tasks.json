@@ -12,6 +12,15 @@
       "problemMatcher": []
     },
     {
+      "taskName": "Publish Library to NPM",
+      "command": "npm",
+      "type": "shell",
+      "args": [
+        "publish dist"
+      ],
+      "problemMatcher": []
+    },
+    {
       "taskName": "Start Library Development",
       "command": "ng",
       "type": "shell",
