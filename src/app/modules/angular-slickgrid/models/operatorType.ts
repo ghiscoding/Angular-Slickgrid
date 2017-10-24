@@ -1,4 +1,5 @@
 export enum OperatorType {
+  contains = <any>'Contains',
   lessThan = <any>'LT',
   lessThanOrEqual = <any>'LE',
   greaterThan = <any>'GT',

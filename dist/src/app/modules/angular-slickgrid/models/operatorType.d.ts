@@ -1,4 +1,5 @@
 export declare enum OperatorType {
+    contains,
     lessThan,
     lessThanOrEqual,
     greaterThan,
