@@ -99,7 +99,7 @@
     border-right: $header-border-right;
     border-bottom: $header-border-bottom;
     border-left: $header-border-left;
-    width: calc(100% - #{$header-scroll-width-to-remove});
+    width: 100%;
   }
 
   .slick-headerrow-columns {
@@ -123,6 +123,7 @@
 
   .slick-header-columns {
     background: $table-background;
+    width: calc(100% - #{$header-scroll-width-to-remove});
 
 
     .slick-header-sortable {
@@ -176,10 +177,11 @@
       .slick-sort-indicator {
         position: absolute;
         display: inline-block;
+        color: $icon-sort-color;
         width: 8px;
         height: 5px;
         left: auto;
-        right: 7px;
+        right: 10px;
         top: ((15px * $header-row-count) - 15px);
       }
 

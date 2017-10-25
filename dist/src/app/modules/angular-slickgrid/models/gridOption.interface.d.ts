@@ -26,5 +26,5 @@ export interface GridOption {
     rowHeight?: number;
     showHeaderRow?: boolean;
     topPanelHeight?: number;
-    onBackendEventChanged?: BackendEventChanged;
+    onBackendEventApi?: BackendEventChanged;
 }

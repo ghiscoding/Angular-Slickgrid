@@ -29,7 +29,6 @@ import { Observable as Observable$1 } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/operator/map';
 import { Component, Injectable, Input, NgModule } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -958,6 +957,92 @@ var Sorters = {
     numeric: numericSorter,
     string: stringSorter
 };
+var moment$14 = moment_min || moment_;
+/**
+ * Try casting an input of type Promise | Observable into a Promise type.
+ * @param {?} input object which could be of type Promise or Observable
+ * @param {?=} fromServiceName string representing the caller service name and will be used if we throw a casting problem error
+ * @return {?}
+ */
+function castToPromise(input, fromServiceName) {
+    if (fromServiceName === void 0) { fromServiceName = ''; }
+    var /** @type {?} */ promise = input;
+    if (input instanceof Promise) {
+        // if it's already a Promise then return it
+        return input;
+    }
+    else if (input instanceof Observable$1) {
+        promise = input.first().toPromise();
+        if (!(promise instanceof Promise)) {
+            promise = input.take(1).toPromise();
+        }
+        if (!(promise instanceof Promise)) {
+            throw new Error("Something went wrong, Angular-Slickgrid " + fromServiceName + " is not able to convert the Observable into a Promise.\n        If you are using Angular HttpClient, you could try converting your http call to a Promise with \".toPromise()\"\n        for example::  this.http.post('graphql', { query: graphqlQuery }).toPromise()\n        ");
+        }
+    }
+    return promise;
+}
+/**
+ * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
+ * @param {?} operator
+ * @return {?} string map
+ */
+function mapOperatorType(operator) {
+    var /** @type {?} */ map;
+    switch (operator) {
+        case '<':
+            map = OperatorType.lessThan;
+            break;
+        case '<=':
+            map = OperatorType.lessThanOrEqual;
+            break;
+        case '>':
+            map = OperatorType.greaterThan;
+            break;
+        case '>=':
+            map = OperatorType.greaterThanOrEqual;
+            break;
+        case '<>':
+        case '!=':
+            map = OperatorType.notEqual;
+            break;
+        case '*':
+        case '.*':
+        case 'startsWith':
+            map = OperatorType.startsWith;
+            break;
+        case '*.':
+        case 'endsWith':
+            map = OperatorType.endsWith;
+            break;
+        case '=':
+        case '==':
+            map = OperatorType.equal;
+            break;
+        default:
+            map = OperatorType.contains;
+            break;
+    }
+    return map;
+}
+/**
+ * Parse a date passed as a string and return a Date object (if valid)
+ * @param {?} inputDateString
+ * @param {?} useUtc
+ * @return {?} object Date
+ */
+function parseUtcDate(inputDateString, useUtc) {
+    var /** @type {?} */ date = null;
+    if (/^[0-9\-\/]*$/.test(inputDateString)) {
+        // get the UTC datetime with moment.js but we need to decode the value so that's it's valid text
+        var /** @type {?} */ dateString = decodeURIComponent(inputDateString);
+        var /** @type {?} */ dateMoment = moment$14(new Date(dateString));
+        if (dateMoment.isValid() && dateMoment.year().toString().length === 4) {
+            date = (useUtc) ? dateMoment.utc().format() : dateMoment.format();
+        }
+    }
+    return date;
+}
 var jquery = createCommonjsModule(function (module) {
     /*!
      * jQuery JavaScript Library v3.2.1
@@ -2795,14 +2880,14 @@ var jquery = createCommonjsModule(function (module) {
                 }
                 return results;
             }
-            function condense(unmatched, map$$1, filter, context, xml) {
-                var elem, newUnmatched = [], i = 0, len = unmatched.length, mapped = map$$1 != null;
+            function condense(unmatched, map, filter, context, xml) {
+                var elem, newUnmatched = [], i = 0, len = unmatched.length, mapped = map != null;
                 for (; i < len; i++) {
                     if ((elem = unmatched[i])) {
                         if (!filter || filter(elem, context, xml)) {
                             newUnmatched.push(elem);
                             if (mapped) {
-                                map$$1.push(i);
+                                map.push(i);
                             }
                         }
                     }
@@ -6093,14 +6178,14 @@ var jquery = createCommonjsModule(function (module) {
         jQuery.fn.extend({
             css: function (name, value) {
                 return access(this, function (elem, name, value) {
-                    var styles, len, map$$1 = {}, i = 0;
+                    var styles, len, map = {}, i = 0;
                     if (Array.isArray(name)) {
                         styles = getStyles(elem);
                         len = name.length;
                         for (; i < len; i++) {
-                            map$$1[name[i]] = jQuery.css(elem, name[i], false, styles);
+                            map[name[i]] = jQuery.css(elem, name[i], false, styles);
                         }
-                        return map$$1;
+                        return map;
                     }
                     return value !== undefined ?
                         jQuery.style(elem, name, value) :
@@ -7911,17 +7996,17 @@ var jquery = createCommonjsModule(function (module) {
                         return this;
                     },
                     // Status-dependent callbacks
-                    statusCode: function (map$$1) {
+                    statusCode: function (map) {
                         var code;
-                        if (map$$1) {
+                        if (map) {
                             if (completed) {
                                 // Execute the appropriate callbacks
-                                jqXHR.always(map$$1[jqXHR.status]);
+                                jqXHR.always(map[jqXHR.status]);
                             }
                             else {
                                 // Lazy-add the new callbacks in a way that preserves old ones
-                                for (code in map$$1) {
-                                    statusCode[code] = [statusCode[code], map$$1[code]];
+                                for (code in map) {
+                                    statusCode[code] = [statusCode[code], map[code]];
                                 }
                             }
                         }
@@ -8961,7 +9046,7 @@ var FilterService = /** @class */ (function () {
      */
     FilterService.prototype.attachBackendOnFilterSubscribe = function (event, args) {
         return __awaiter(this, void 0, void 0, function () {
-            var serviceOptions, query, observableOrPromise, processPromise, responseProcess;
+            var serviceOptions, backendApi, query, observableOrPromise, responseProcess;
             return __generator(this, function (_g) {
                 switch (_g.label) {
                     case 0:
@@ -8969,31 +9054,24 @@ var FilterService = /** @class */ (function () {
                             throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
                         }
                         serviceOptions = args.grid.getOptions();
-                        if (!serviceOptions || !serviceOptions.onBackendEventChanged.process || !serviceOptions.onBackendEventChanged.service) {
-                            throw new Error("onBackendEventChanged requires at least a \"process\" function and a \"service\" defined");
+                        if (!serviceOptions || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
+                            throw new Error("onBackendEventApi requires at least a \"process\" function and a \"service\" defined");
                         }
-                        if (serviceOptions.onBackendEventChanged.preProcess) {
-                            serviceOptions.onBackendEventChanged.preProcess();
+                        backendApi = serviceOptions.onBackendEventApi;
+                        // run a preProcess callback if defined
+                        if (backendApi.preProcess) {
+                            backendApi.preProcess();
                         }
-                        return [4 /*yield*/, serviceOptions.onBackendEventChanged.service.onFilterChanged(event, args)];
+                        return [4 /*yield*/, backendApi.service.onFilterChanged(event, args)];
                     case 1:
                         query = _g.sent();
-                        observableOrPromise = (serviceOptions.onBackendEventChanged.process(query));
-                        processPromise = observableOrPromise;
-                        if (observableOrPromise instanceof Observable$1) {
-                            processPromise = observableOrPromise.first().toPromise();
-                            if (!(processPromise instanceof Promise)) {
-                                processPromise = observableOrPromise.take(1).toPromise();
-                            }
-                            if (!(processPromise instanceof Promise)) {
-                                throw new Error("Something went wrong, Angular-Slickgrid filter.service is not able to convert the Observable into a Promise.\n          If you are using Angular HttpClient, you could try converting your http call to a Promise with \".toPromise()\"\n          for example::  this.http.post('graphql', { query: graphqlQuery }).toPromise()\n          ");
-                            }
-                        }
-                        return [4 /*yield*/, processPromise];
+                        observableOrPromise = backendApi.process(query);
+                        return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 2:
                         responseProcess = _g.sent();
-                        if (serviceOptions.onBackendEventChanged.postProcess) {
-                            serviceOptions.onBackendEventChanged.postProcess(responseProcess);
+                        // send the response process to the postProcess callback
+                        if (backendApi.postProcess) {
+                            backendApi.postProcess(responseProcess);
                         }
                         return [2 /*return*/];
                 }
@@ -9376,7 +9454,7 @@ var SortService = /** @class */ (function () {
      */
     SortService.prototype.attachBackendOnSortSubscribe = function (event, args) {
         return __awaiter$1(this, void 0, void 0, function () {
-            var serviceOptions, query, responseProcess;
+            var serviceOptions, query, observableOrPromise, responseProcess;
             return __generator(this, function (_g) {
                 switch (_g.label) {
                     case 0:
@@ -9384,18 +9462,20 @@ var SortService = /** @class */ (function () {
                             throw new Error('Something went wrong when trying to attach the "attachBackendOnSortSubscribe(event, args)" function, it seems that "args" is not populated correctly');
                         }
                         serviceOptions = args.grid.getOptions();
-                        if (!serviceOptions || !serviceOptions.onBackendEventChanged.process || !serviceOptions.onBackendEventChanged.service) {
-                            throw new Error("onBackendEventChanged requires at least a \"process\" function and a \"service\" defined");
+                        if (!serviceOptions || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
+                            throw new Error("onBackendEventApi requires at least a \"process\" function and a \"service\" defined");
                         }
-                        if (serviceOptions.onBackendEventChanged.preProcess) {
-                            serviceOptions.onBackendEventChanged.preProcess();
+                        if (serviceOptions.onBackendEventApi.preProcess) {
+                            serviceOptions.onBackendEventApi.preProcess();
                         }
-                        query = serviceOptions.onBackendEventChanged.service.onSortChanged(event, args);
-                        return [4 /*yield*/, (serviceOptions.onBackendEventChanged.process(query))];
+                        query = serviceOptions.onBackendEventApi.service.onSortChanged(event, args);
+                        observableOrPromise = serviceOptions.onBackendEventApi.process(query);
+                        return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 1:
                         responseProcess = _g.sent();
-                        if (serviceOptions.onBackendEventChanged.postProcess) {
-                            serviceOptions.onBackendEventChanged.postProcess(responseProcess);
+                        // send the response process to the postProcess callback
+                        if (serviceOptions.onBackendEventApi.postProcess) {
+                            serviceOptions.onBackendEventApi.postProcess(responseProcess);
                         }
                         return [2 /*return*/];
                 }
@@ -9461,68 +9541,6 @@ var SortService = /** @class */ (function () {
     };
     return SortService;
 }());
-var moment$14 = moment_min || moment_;
-/**
- * Parse a date passed as a string and return a Date object (if valid)
- * @param {?} inputDateString
- * @param {?} useUtc
- * @return {?} object Date
- */
-function parseUtcDate(inputDateString, useUtc) {
-    var /** @type {?} */ date = null;
-    if (/^[0-9\-\/]*$/.test(inputDateString)) {
-        // get the UTC datetime with moment.js but we need to decode the value so that's it's valid text
-        var /** @type {?} */ dateString = decodeURIComponent(inputDateString);
-        var /** @type {?} */ dateMoment = moment$14(new Date(dateString));
-        if (dateMoment.isValid() && dateMoment.year().toString().length === 4) {
-            date = (useUtc) ? dateMoment.utc().format() : dateMoment.format();
-        }
-    }
-    return date;
-}
-/**
- * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
- * @param {?} operator
- * @return {?} string map
- */
-function mapOperatorType(operator) {
-    var /** @type {?} */ map$$1;
-    switch (operator) {
-        case '<':
-            map$$1 = OperatorType.lessThan;
-            break;
-        case '<=':
-            map$$1 = OperatorType.lessThanOrEqual;
-            break;
-        case '>':
-            map$$1 = OperatorType.greaterThan;
-            break;
-        case '>=':
-            map$$1 = OperatorType.greaterThanOrEqual;
-            break;
-        case '<>':
-        case '!=':
-            map$$1 = OperatorType.notEqual;
-            break;
-        case '*':
-        case '.*':
-        case 'startsWith':
-            map$$1 = OperatorType.startsWith;
-            break;
-        case '*.':
-        case 'endsWith':
-            map$$1 = OperatorType.endsWith;
-            break;
-        case '=':
-        case '==':
-            map$$1 = OperatorType.equal;
-            break;
-        default:
-            map$$1 = OperatorType.contains;
-            break;
-    }
-    return map$$1;
-}
 "use strict";
 //=====================================================
 //============================ parce properties to find
@@ -9785,7 +9803,7 @@ var GraphqlService = /** @class */ (function () {
         var /** @type {?} */ serviceOptions = args.grid.getOptions();
         var /** @type {?} */ debounceTypingDelay = 0;
         if (event.type === 'keyup' || event.type === 'keydown') {
-            debounceTypingDelay = serviceOptions.onBackendEventChanged.filterTypingDebounce || 700;
+            debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || 700;
         }
         var /** @type {?} */ promise = new Promise(function (resolve, reject) {
             if (!args || !args.grid) {
@@ -10228,7 +10246,7 @@ var GridOdataService = /** @class */ (function () {
         var /** @type {?} */ serviceOptions = args.grid.getOptions();
         var /** @type {?} */ debounceTypingDelay = 0;
         if (event.type === 'keyup' || event.type === 'keydown') {
-            debounceTypingDelay = serviceOptions.onBackendEventChanged.filterTypingDebounce || 700;
+            debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || 700;
         }
         var /** @type {?} */ promise = new Promise(function (resolve, reject) {
             // loop through all columns to inspect filters
@@ -10389,31 +10407,31 @@ var GridOdataService = /** @class */ (function () {
      * @return {?} string map
      */
     GridOdataService.prototype.mapOdataOperator = function (operator) {
-        var /** @type {?} */ map$$1 = '';
+        var /** @type {?} */ map = '';
         switch (operator) {
             case '<':
-                map$$1 = 'lt';
+                map = 'lt';
                 break;
             case '<=':
-                map$$1 = 'le';
+                map = 'le';
                 break;
             case '>':
-                map$$1 = 'gt';
+                map = 'gt';
                 break;
             case '>=':
-                map$$1 = 'ge';
+                map = 'ge';
                 break;
             case '<>':
             case '!=':
-                map$$1 = 'ne';
+                map = 'ne';
                 break;
             case '=':
             case '==':
             default:
-                map$$1 = 'eq';
+                map = 'eq';
                 break;
         }
-        return map$$1;
+        return map;
     };
     return GridOdataService;
 }());
@@ -10574,7 +10592,7 @@ var SlickPaginationComponent = /** @class */ (function () {
      */
     SlickPaginationComponent.prototype.onPageChanged = function (event, pageNumber) {
         return __awaiter$2(this, void 0, void 0, function () {
-            var itemsPerPage, query, responseProcess;
+            var itemsPerPage, query, observableOrPromise, responseProcess;
             return __generator(this, function (_g) {
                 switch (_g.label) {
                     case 0:
@@ -10582,23 +10600,25 @@ var SlickPaginationComponent = /** @class */ (function () {
                         if (this.dataTo > this.totalItems) {
                             this.dataTo = this.totalItems;
                         }
-                        if (!this._gridPaginationOptions.onBackendEventChanged) return [3 /*break*/, 2];
+                        if (!this._gridPaginationOptions.onBackendEventApi) return [3 /*break*/, 2];
                         itemsPerPage = this.itemsPerPage;
-                        if (!this._gridPaginationOptions.onBackendEventChanged.process || !this._gridPaginationOptions.onBackendEventChanged.service) {
-                            throw new Error("onBackendEventChanged requires at least a \"process\" function and a \"service\" defined");
+                        if (!this._gridPaginationOptions.onBackendEventApi.process || !this._gridPaginationOptions.onBackendEventApi.service) {
+                            throw new Error("onBackendEventApi requires at least a \"process\" function and a \"service\" defined");
                         }
-                        if (this._gridPaginationOptions.onBackendEventChanged.preProcess) {
-                            this._gridPaginationOptions.onBackendEventChanged.preProcess();
+                        if (this._gridPaginationOptions.onBackendEventApi.preProcess) {
+                            this._gridPaginationOptions.onBackendEventApi.preProcess();
                         }
-                        query = this._gridPaginationOptions.onBackendEventChanged.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
-                        return [4 /*yield*/, (this._gridPaginationOptions.onBackendEventChanged.process(query))];
+                        query = this._gridPaginationOptions.onBackendEventApi.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
+                        observableOrPromise = this._gridPaginationOptions.onBackendEventApi.process(query);
+                        return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 1:
                         responseProcess = _g.sent();
-                        if (this._gridPaginationOptions.onBackendEventChanged.postProcess) {
-                            this._gridPaginationOptions.onBackendEventChanged.postProcess(responseProcess);
+                        // send the response process to the postProcess callback
+                        if (this._gridPaginationOptions.onBackendEventApi.postProcess) {
+                            this._gridPaginationOptions.onBackendEventApi.postProcess(responseProcess);
                         }
                         return [3 /*break*/, 3];
-                    case 2: throw new Error('Pagination with a backend service requires "onBackendEventChanged" to be defined in your grid options');
+                    case 2: throw new Error('Pagination with a backend service requires "onBackendEventApi" to be defined in your grid options');
                     case 3: return [2 /*return*/];
                 }
             });
@@ -10661,6 +10681,24 @@ var GlobalGridOptions = {
     rowHeight: 35,
     showHeaderRow: false,
     topPanelHeight: 25
+};
+var __awaiter$3 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try {
+            step(generator.next(value));
+        }
+        catch (e) {
+            reject(e);
+        } }
+        function rejected(value) { try {
+            step(generator["throw"](value));
+        }
+        catch (e) {
+            reject(e);
+        } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
 var AngularSlickgridComponent = /** @class */ (function () {
     /**
@@ -10731,14 +10769,37 @@ var AngularSlickgridComponent = /** @class */ (function () {
      * @return {?}
      */
     AngularSlickgridComponent.prototype.attachDifferentHooks = function (grid, options, dataView) {
+        var _this = this;
         // attach external sorting (backend) when available or default onSort (dataView)
         if (options.enableSorting) {
-            (options.onBackendEventChanged) ? this.sortService.attachBackendOnSort(grid, options) : this.sortService.attachLocalOnSort(grid, options, this._dataView);
+            (options.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, options) : this.sortService.attachLocalOnSort(grid, options, this._dataView);
         }
-        // attach external filter (backend) when available or default onSort (dataView)
+        // attach external filter (backend) when available or default onFilter (dataView)
         if (options.enableFiltering) {
             this.filterService.init(grid, options, this.columnDefinitions, this._columnFilters);
-            (options.onBackendEventChanged) ? this.filterService.attachBackendOnFilter(grid, options) : this.filterService.attachLocalOnFilter(this._dataView);
+            (options.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, options) : this.filterService.attachLocalOnFilter(this._dataView);
+        }
+        if (options.onBackendEventApi && options.onBackendEventApi.onInit) {
+            var /** @type {?} */ backendApi_1 = options.onBackendEventApi;
+            var /** @type {?} */ query_1 = backendApi_1.service.buildQuery();
+            // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
+            setTimeout(function () { return __awaiter$3(_this, void 0, void 0, function () {
+                var observableOrPromise, responseProcess;
+                return __generator(this, function (_g) {
+                    switch (_g.label) {
+                        case 0:
+                            observableOrPromise = options.onBackendEventApi.onInit(query_1);
+                            return [4 /*yield*/, castToPromise(observableOrPromise)];
+                        case 1:
+                            responseProcess = _g.sent();
+                            // send the response process to the postProcess callback
+                            if (backendApi_1.postProcess) {
+                                backendApi_1.postProcess(responseProcess);
+                            }
+                            return [2 /*return*/];
+                    }
+                });
+            }); });
         }
         // if enable, change background color on mouse over
         if (options.enableMouseOverRow) {
@@ -10823,7 +10884,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
                 setTimeout(function () {
                     _this.resizer.resizeGrid(_this.grid, _this._gridOptions);
-                    _this.grid.autosizeColumns();
+                    // this.grid.autosizeColumns();
                 });
             }
         }
