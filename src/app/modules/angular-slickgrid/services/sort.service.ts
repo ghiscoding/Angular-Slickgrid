@@ -1,3 +1,4 @@
+import { castToPromise } from './utilities';
 import { BackendServiceOption } from './../models/backendServiceOption.interface';
 import { GridOption } from './../models/gridOption.interface';
 import { FieldType } from './../models/fieldType';
@@ -23,16 +24,22 @@ export class SortService {
     }
     const serviceOptions: BackendServiceOption = args.grid.getOptions();
 
-    if (!serviceOptions || !serviceOptions.onBackendEventChanged.process || !serviceOptions.onBackendEventChanged.service) {
-      throw new Error(`onBackendEventChanged requires at least a "process" function and a "service" defined`);
+    if (!serviceOptions || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
+      throw new Error(`onBackendEventApi requires at least a "process" function and a "service" defined`);
     }
-    if (serviceOptions.onBackendEventChanged.preProcess) {
-      serviceOptions.onBackendEventChanged.preProcess();
+    if (serviceOptions.onBackendEventApi.preProcess) {
+      serviceOptions.onBackendEventApi.preProcess();
     }
-    const query = serviceOptions.onBackendEventChanged.service.onSortChanged(event, args);
-    const responseProcess = await (serviceOptions.onBackendEventChanged.process(query));
-    if (serviceOptions.onBackendEventChanged.postProcess) {
-      serviceOptions.onBackendEventChanged.postProcess(responseProcess);
+    const query = serviceOptions.onBackendEventApi.service.onSortChanged(event, args);
+
+    // the process could be an Observable (like HttpClient) or a Promise
+    // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+    const observableOrPromise = serviceOptions.onBackendEventApi.process(query);
+    const responseProcess = await castToPromise(observableOrPromise);
+
+    // send the response process to the postProcess callback
+    if (serviceOptions.onBackendEventApi.postProcess) {
+      serviceOptions.onBackendEventApi.postProcess(responseProcess);
     }
   }
 

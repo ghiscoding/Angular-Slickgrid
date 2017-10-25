@@ -1,3 +1,4 @@
+import { castToPromise } from './../services/utilities';
 import { Component, OnInit, Input, AfterViewInit } from '@angular/core';
 import { Column, GridOption } from './../models';
 
@@ -100,22 +101,28 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
     if (this.dataTo > this.totalItems) {
       this.dataTo = this.totalItems;
     }
-    if (this._gridPaginationOptions.onBackendEventChanged) {
+    if (this._gridPaginationOptions.onBackendEventApi) {
       const itemsPerPage = this.itemsPerPage;
 
-      if (!this._gridPaginationOptions.onBackendEventChanged.process || !this._gridPaginationOptions.onBackendEventChanged.service) {
-        throw new Error(`onBackendEventChanged requires at least a "process" function and a "service" defined`);
+      if (!this._gridPaginationOptions.onBackendEventApi.process || !this._gridPaginationOptions.onBackendEventApi.service) {
+        throw new Error(`onBackendEventApi requires at least a "process" function and a "service" defined`);
       }
-      if (this._gridPaginationOptions.onBackendEventChanged.preProcess) {
-        this._gridPaginationOptions.onBackendEventChanged.preProcess();
+      if (this._gridPaginationOptions.onBackendEventApi.preProcess) {
+        this._gridPaginationOptions.onBackendEventApi.preProcess();
       }
-      const query = this._gridPaginationOptions.onBackendEventChanged.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
-      const responseProcess = await (this._gridPaginationOptions.onBackendEventChanged.process(query));
-      if (this._gridPaginationOptions.onBackendEventChanged.postProcess) {
-        this._gridPaginationOptions.onBackendEventChanged.postProcess(responseProcess);
+      const query = this._gridPaginationOptions.onBackendEventApi.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
+
+      // the process could be an Observable (like HttpClient) or a Promise
+      // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+      const observableOrPromise = this._gridPaginationOptions.onBackendEventApi.process(query);
+      const responseProcess = await castToPromise(observableOrPromise);
+
+      // send the response process to the postProcess callback
+      if (this._gridPaginationOptions.onBackendEventApi.postProcess) {
+        this._gridPaginationOptions.onBackendEventApi.postProcess(responseProcess);
       }
     } else {
-      throw new Error('Pagination with a backend service requires "onBackendEventChanged" to be defined in your grid options');
+      throw new Error('Pagination with a backend service requires "onBackendEventApi" to be defined in your grid options');
     }
   }
 

@@ -1,25 +1,37 @@
 import { OperatorType } from '../models/operatorType';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/first';
+import 'rxjs/add/operator/take';
+import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
 const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
 /**
- * Parse a date passed as a string and return a Date object (if valid)
- * @param string inputDateString
- * @returns object Date
+ * Try casting an input of type Promise | Observable into a Promise type.
+ * @param input object which could be of type Promise or Observable
+ * @param fromServiceName string representing the caller service name and will be used if we throw a casting problem error
  */
-export function parseUtcDate(inputDateString: string, useUtc: boolean): Date {
-  let date = null;
+export function castToPromise(input: Promise<any> | Observable<any>, fromServiceName: string = '') {
+  let promise = input;
 
-  if (/^[0-9\-\/]*$/.test(inputDateString)) {
-    // get the UTC datetime with moment.js but we need to decode the value so that's it's valid text
-    const dateString = decodeURIComponent(inputDateString);
-    const dateMoment = moment(new Date(dateString));
-    if (dateMoment.isValid() && dateMoment.year().toString().length === 4) {
-      date = (useUtc) ? dateMoment.utc().format() : dateMoment.format();
+  if (input instanceof Promise) {
+    // if it's already a Promise then return it
+    return input;
+  } else if (input instanceof Observable) {
+    promise = input.first().toPromise();
+    if (!(promise instanceof Promise)) {
+      promise = input.take(1).toPromise();
+    }
+    if (!(promise instanceof Promise)) {
+      throw new Error(
+        `Something went wrong, Angular-Slickgrid ${fromServiceName} is not able to convert the Observable into a Promise.
+        If you are using Angular HttpClient, you could try converting your http call to a Promise with ".toPromise()"
+        for example::  this.http.post('graphql', { query: graphqlQuery }).toPromise()
+        `);
     }
   }
 
-  return date;
+  return promise;
 }
 
 /**
@@ -65,4 +77,24 @@ export function mapOperatorType(operator: string): OperatorType {
   }
 
   return map;
+}
+
+/**
+ * Parse a date passed as a string and return a Date object (if valid)
+ * @param string inputDateString
+ * @returns object Date
+ */
+export function parseUtcDate(inputDateString: string, useUtc: boolean): Date {
+  let date = null;
+
+  if (/^[0-9\-\/]*$/.test(inputDateString)) {
+    // get the UTC datetime with moment.js but we need to decode the value so that's it's valid text
+    const dateString = decodeURIComponent(inputDateString);
+    const dateMoment = moment(new Date(dateString));
+    if (dateMoment.isValid() && dateMoment.year().toString().length === 4) {
+      date = (useUtc) ? dateMoment.utc().format() : dateMoment.format();
+    }
+  }
+
+  return date;
 }

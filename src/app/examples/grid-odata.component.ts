@@ -69,7 +69,8 @@ export class GridOdataComponent implements OnInit {
         pageSize: defaultPageSize,
         totalItems: 0
       },
-      onBackendEventChanged: {
+      onBackendEventApi: {
+        onInit: (query) => this.getCustomerApiCall(query),
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {
@@ -81,10 +82,6 @@ export class GridOdataComponent implements OnInit {
         service: this.odataService
       }
     };
-
-    // get the data from backend on page load
-    this.displaySpinner(true);
-    this.getCustomerApiCall(this.odataService.buildQuery()).then((data) => this.getCustomerCallback(data));
   }
 
   displaySpinner(isProcessing) {

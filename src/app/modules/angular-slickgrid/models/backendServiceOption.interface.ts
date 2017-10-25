@@ -5,5 +5,5 @@ export interface BackendServiceOption {
   paginationOptions?: any;
   filteringOptions?: any[];
   sortingOptions?: any[];
-  onBackendEventChanged?: BackendEventChanged;
+  onBackendEventApi?: BackendEventChanged;
 }

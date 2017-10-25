@@ -65,7 +65,8 @@ export class GridGraphqlComponent implements OnInit {
         pageSize: defaultPageSize,
         totalItems: 0
       },
-      onBackendEventChanged: {
+      onBackendEventApi: {
+        onInit: (query) => this.getCustomerApiCall(query),
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {
@@ -79,10 +80,6 @@ export class GridGraphqlComponent implements OnInit {
 
     const paginationOption = this.getPaginationOption(this.isWithCursor);
     this.graphqlService.initOptions(paginationOption);
-
-    // get the data from backend on page load
-    this.displaySpinner(true);
-    this.getCustomerApiCall(this.graphqlService.buildQuery()).then((data) => this.getCustomerCallback(data));
   }
 
   displaySpinner(isProcessing) {

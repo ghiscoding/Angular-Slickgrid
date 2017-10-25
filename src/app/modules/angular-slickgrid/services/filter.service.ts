@@ -1,11 +1,7 @@
+import { castToPromise } from './utilities';
 import { FilterConditions } from '../filter-conditions';
 import { BackendServiceOption, Column, ColumnFilters, FieldType, FilterChangedArgs, FormElementType, GridOption } from '../models';
 import { FilterTemplates } from './../filter-templates';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/first';
-import 'rxjs/add/operator/take';
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/operator/map';
 import $ from 'jquery';
 
 // using external js modules in Angular
@@ -43,34 +39,27 @@ export class FilterService {
     }
     const serviceOptions: BackendServiceOption = args.grid.getOptions();
 
-    if (!serviceOptions || !serviceOptions.onBackendEventChanged.process || !serviceOptions.onBackendEventChanged.service) {
-      throw new Error(`onBackendEventChanged requires at least a "process" function and a "service" defined`);
+    if (!serviceOptions || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
+      throw new Error(`onBackendEventApi requires at least a "process" function and a "service" defined`);
     }
-    if (serviceOptions.onBackendEventChanged.preProcess) {
-      serviceOptions.onBackendEventChanged.preProcess();
+    const backendApi = serviceOptions.onBackendEventApi;
+
+    // run a preProcess callback if defined
+    if (backendApi.preProcess) {
+      backendApi.preProcess();
     }
-    const query = await serviceOptions.onBackendEventChanged.service.onFilterChanged(event, args);
+
+    // call the service to get a query back
+    const query = await backendApi.service.onFilterChanged(event, args);
 
     // the process could be an Observable (like HttpClient) or a Promise
     // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-    const observableOrPromise = (serviceOptions.onBackendEventChanged.process(query));
-    let processPromise = observableOrPromise;
-    if (observableOrPromise instanceof Observable) {
-      processPromise = observableOrPromise.first().toPromise();
-      if (!(processPromise instanceof Promise)) {
-        processPromise = observableOrPromise.take(1).toPromise();
-      }
-      if (!(processPromise instanceof Promise)) {
-        throw new Error(
-          `Something went wrong, Angular-Slickgrid filter.service is not able to convert the Observable into a Promise.
-          If you are using Angular HttpClient, you could try converting your http call to a Promise with ".toPromise()"
-          for example::  this.http.post('graphql', { query: graphqlQuery }).toPromise()
-          `);
-      }
-    }
-    const responseProcess = await processPromise;
-    if (serviceOptions.onBackendEventChanged.postProcess) {
-      serviceOptions.onBackendEventChanged.postProcess(responseProcess);
+    const observableOrPromise = backendApi.process(query);
+    const responseProcess = await castToPromise(observableOrPromise);
+
+    // send the response process to the postProcess callback
+    if (backendApi.postProcess) {
+      backendApi.postProcess(responseProcess);
     }
   }
 

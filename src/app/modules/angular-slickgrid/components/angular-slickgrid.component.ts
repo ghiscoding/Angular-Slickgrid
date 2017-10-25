@@ -1,3 +1,4 @@
+import { castToPromise } from './../services/utilities';
 import { Column, ColumnFilters, FormElementType, GridOption } from './../models';
 import { AfterViewInit, Component, Injectable, Input, OnInit } from '@angular/core';
 import { FilterService, MouseService, SortService, ResizerService } from './../services';
@@ -83,13 +84,31 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
   attachDifferentHooks(grid: any, options: GridOption, dataView: any) {
     // attach external sorting (backend) when available or default onSort (dataView)
     if (options.enableSorting) {
-      (options.onBackendEventChanged) ? this.sortService.attachBackendOnSort(grid, options) : this.sortService.attachLocalOnSort(grid, options, this._dataView);
+      (options.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, options) : this.sortService.attachLocalOnSort(grid, options, this._dataView);
     }
 
-    // attach external filter (backend) when available or default onSort (dataView)
+    // attach external filter (backend) when available or default onFilter (dataView)
     if (options.enableFiltering) {
       this.filterService.init(grid, options, this.columnDefinitions, this._columnFilters);
-      (options.onBackendEventChanged) ? this.filterService.attachBackendOnFilter(grid, options) : this.filterService.attachLocalOnFilter(this._dataView);
+      (options.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, options) : this.filterService.attachLocalOnFilter(this._dataView);
+    }
+
+    if (options.onBackendEventApi && options.onBackendEventApi.onInit) {
+      const backendApi = options.onBackendEventApi;
+      const query = backendApi.service.buildQuery();
+
+      // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
+      setTimeout(async () => {
+        // the process could be an Observable (like HttpClient) or a Promise
+        // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+        const observableOrPromise = options.onBackendEventApi.onInit(query);
+        const responseProcess = await castToPromise(observableOrPromise);
+
+        // send the response process to the postProcess callback
+        if (backendApi.postProcess) {
+          backendApi.postProcess(responseProcess);
+        }
+      });
     }
 
     // if enable, change background color on mouse over

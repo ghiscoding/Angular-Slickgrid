@@ -53,7 +53,7 @@ export class GridOdataService implements BackendService {
     const serviceOptions: BackendServiceOption = args.grid.getOptions();
     let debounceTypingDelay = 0;
     if (event.type === 'keyup' || event.type === 'keydown') {
-      debounceTypingDelay = serviceOptions.onBackendEventChanged.filterTypingDebounce || 700;
+      debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || 700;
     }
 
     const promise = new Promise<string>((resolve, reject) => {
