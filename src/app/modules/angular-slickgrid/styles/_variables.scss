@@ -6,7 +6,7 @@
 
 /* SlickGrid Bootstrap variables */
 /* Used by slick-bootstrap.scss */
-$border-color:                        #dddddd !default;
+$border-color:                          #dddddd !default;
 $font-size-base:          			    14px !default;
 $font-family:                           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
 
@@ -19,8 +19,8 @@ $container-border-left:                 0 none !default;
 /* grid */
 $grid-border-color:                     fade(black, 3%) !default;
 $grid-border-style:                     solid !default;
-$grid-header-background:              rgba(255, 255, 255, .6) !default;
-$grid-cell-color:                     rgb(255, 255, 255) !default;
+$grid-header-background:                rgba(255, 255, 255, .6) !default;
+$grid-cell-color:                       rgb(255, 255, 255) !default;
 
 /* cell */
 $cell-border-top:                       1px solid $border-color !default;
@@ -30,7 +30,7 @@ $cell-border-left:                      0 none !default;
 $cell-odd-background-color:             darken($grid-cell-color, 2.5%) !default;
 $cell-odd-active-background-color:      darken($grid-cell-color, 5%) !default;
 $cell-padding:                          5px 7.5834px !default;
-$selected-hover-color:                rgb(245, 245, 204) !default;
+$selected-hover-color:                  rgb(245, 245, 204) !default;
 
 /* cell default slickgrid values */
 $cell-padding-top:                      4px !default;
@@ -42,7 +42,7 @@ $cell-padding-left:                     4px !default;
 $header-input-height:                   27px !default;                        // height of the filter form element (input, textarea, select)
 $header-input-width:                    100% !default;                        // width of the filter form element (input, textarea, select)
 $header-input-padding:                  0 6px !default;                       // padding of the filter form element (input, textarea, select)
-$header-row-background-color:         #ffffff !default;
+$header-row-background-color:           #ffffff !default;
 $header-row-count:                      2 !default;                           // how many rows to display on the header
 $header-column-height:                  (16px * $header-row-count) !default;  // header is calculated by rows to show
 $header-border-top:                     0 none !default;
@@ -57,18 +57,18 @@ $icon-font-family:                      "FontAwesome" !default;               //
 $icon-font-size:                        14px !default;
 $icon-sort-asc:                         "\f0d8" !default;
 $icon-sort-desc:                        "\f0d7" !default;
-$icon-sort-color:                     rgb(76, 128, 190) !default;
+$icon-sort-color:                       rgb(76, 128, 190) !default;
 $table-background:                      transparent !default;
 $container-border:                      0px solid $border-color !default;
-$link-color:        				  #08c !default;
+$link-color:        				    #08c !default;
 $link-color-hover:                      darker($link-color, 15%) !default;
-$table-bg-accent: 					  #f9f9f9 !default; // for striping every second row
-$gray-dark:              			  #333 !default;
+$table-bg-accent: 					    #f9f9f9 !default; // for striping every second row
+$gray-dark:              			    #333 !default;
 $text-color:             			    $gray-dark !default;
 $navbar-default-link-hover-color:	    $gray-dark !default;
 
 /* Column picker */
-$column-picker-background-color:      #f8f8f8 !default;
+$column-picker-background-color:        #f8f8f8 !default;
 $column-picker-border:                  1px solid #b8b8b8 !default;
 $column-picker-border-radius:           3px !default;
 $column-picker-close-background-color:  1px solid #9c9c9c !default;
@@ -76,8 +76,9 @@ $column-picker-close-border:            1px solid #9c9c9c !default;
 $column-picker-close-opacity:           0.9 !default;
 
 /* pagination variables */
-$pagination-button-hover-color:       #E6E6E6 !default;
-$pagination-border-color:             #ddd !default;
+$pagination-button-hover-color:         #E6E6E6 !default;
+$pagination-border-color:               #ddd !default;
+$pagination-icon-color:                 #337ab7 !default;
 $pagination-icon-seek-first:            "\f100" !default;
 $pagination-icon-seek-end:              "\f101" !default;
 $pagination-icon-seek-next:             "\f105" !default;
@@ -88,4 +89,4 @@ $pagination-border-top:                 0 none !default;
 $pagination-border-right:               0 none !default;
 $pagination-border-bottom:              0 none !default;
 $pagination-border-left:                0 none !default;
-$pagination-text-color:               #808080 !default;
+$pagination-text-color:                 #808080 !default;
