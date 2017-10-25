@@ -31,10 +31,9 @@ This is a work in progress, but so far here are some of the features that `angul
 - Integrated Plugins.
     - Column Picker (show/hide any column by doing `right+click` in the header, click [here to see print screen](/screenshots/columnPicker.png)).
     - ... more to come
-- Server side (backend) services
-    - Filtering, Sorting, Pagination
-      - [GraphQL](https://github.com/ghiscoding/Angular-Slickgrid/wiki/GraphQL)
-      - [OData](https://github.com/ghiscoding/Angular-Slickgrid/wiki/OData)
+- Server side (backend) Services (filtering, sorting, pagination)
+    - [GraphQL](https://github.com/ghiscoding/Angular-Slikgrid/wiki/GraphQL)
+    - [OData](https://github.com/ghiscoding/Angular-Slickgrid/wiki/OData)
 - Some Features of SlickGrid itself which are working out of the gate
   - Sort/Multi-Sort (client/server side)
   - Header Row with Filters (currently support `Input` and `Select` dropdown, multi-select is planned)

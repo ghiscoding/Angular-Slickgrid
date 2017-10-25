@@ -69,7 +69,6 @@ export class GridGraphqlComponent implements OnInit {
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {
-          console.log(response);
           this.displaySpinner(false);
           this.getCustomerCallback(response);
         },

@@ -1,5 +1,5 @@
 /* pagination/pagination variables */
-@import './variables.scss';
+@import './variables';
 
 /* Pagination styling */
 .slick-pagination {
@@ -60,6 +60,9 @@
           -webkit-text-stroke: $pagination-icon-seek-text-stroke;
 
           border-color: $pagination-button-border;
+        }
+        a[class*="icon-seek-"]:hover {
+          background-color: $pagination-button-hover-color;
         }
 
         .icon-seek-first {

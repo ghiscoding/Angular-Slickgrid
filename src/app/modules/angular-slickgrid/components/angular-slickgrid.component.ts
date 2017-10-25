@@ -163,7 +163,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
         // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
         setTimeout(() => {
           this.resizer.resizeGrid(this.grid, this._gridOptions);
-          this.grid.autosizeColumns();
+          // this.grid.autosizeColumns();
         });
       }
     }

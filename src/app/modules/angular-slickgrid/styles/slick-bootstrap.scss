@@ -176,10 +176,11 @@
       .slick-sort-indicator {
         position: absolute;
         display: inline-block;
+        color: $icon-sort-color;
         width: 8px;
         height: 5px;
         left: auto;
-        right: 7px;
+        right: 10px;
         top: ((15px * $header-row-count) - 15px);
       }
 
