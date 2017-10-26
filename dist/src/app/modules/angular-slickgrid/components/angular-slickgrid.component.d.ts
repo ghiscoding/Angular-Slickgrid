@@ -1,9 +1,9 @@
 import { Column, GridOption } from './../models';
 import { AfterViewInit, OnInit } from '@angular/core';
-import { FilterService, MouseService, SortService, ResizerService } from './../services';
+import { FilterService, GridEventService, SortService, ResizerService } from './../services';
 export declare class AngularSlickgridComponent implements AfterViewInit, OnInit {
     private resizer;
-    private mouseService;
+    private gridEventService;
     private filterService;
     private sortService;
     private _dataset;
@@ -22,7 +22,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnInit 
     gridHeight: number;
     gridWidth: number;
     dataset: any[];
-    constructor(resizer: ResizerService, mouseService: MouseService, filterService: FilterService, sortService: SortService);
+    constructor(resizer: ResizerService, gridEventService: GridEventService, filterService: FilterService, sortService: SortService);
     ngOnInit(): void;
     ngAfterViewInit(): void;
     attachDifferentHooks(grid: any, options: GridOption, dataView: any): void;
@@ -32,5 +32,5 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnInit 
     showHeaderRow(isShowing: boolean): boolean;
     /** Toggle the filter row displayed on first row */
     toggleHeaderRow(): boolean;
-    refreshGridData(dataset: any): void;
+    refreshGridData(dataset: any[]): void;
 }

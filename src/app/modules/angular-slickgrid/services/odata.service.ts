@@ -1,6 +1,5 @@
-import { CaseType } from '../models/caseType';
 import './global-utilities';
-import { OdataOption } from './../models';
+import { CaseType, OdataOption } from './../models';
 
 export class OdataService {
   _columnFilters: any;
@@ -22,7 +21,7 @@ export class OdataService {
     */
   buildQuery(): string {
     this._odataOptions.filterQueue = [];
-    let queryTmpArray = [];
+    const queryTmpArray = [];
 
     if (this._odataOptions.top) {
       queryTmpArray.push(`$top=${this._odataOptions.top}`);
@@ -97,7 +96,7 @@ export class OdataService {
   saveColumnFilter(fieldName: string, value: any, searchTerms?: any[]) {
     this._columnFilters[fieldName] = {
       search: searchTerms,
-      value: value
+      value
     };
   }
 
@@ -126,7 +125,7 @@ export class OdataService {
 
     // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
     if (!!fieldSearchTerms && fieldSearchTerms.length > 0) {
-      let tmpSearchTerms = [];
+      const tmpSearchTerms = [];
 
       if (operator === 'IN') {
         // example:: (Stage eq "Expired" or Stage eq "Renewal")

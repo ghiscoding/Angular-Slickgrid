@@ -896,7 +896,7 @@ var Formatters = {
     percentComplete: percentCompleteFormatter,
     percentCompleteBar: percentCompleteBarFormatter,
     progressBar: progressBarFormatter,
-    yesNoFormatter: yesNoFormatter
+    yesNo: yesNoFormatter
 };
 var moment$10 = moment_min || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 var DATE_FORMAT$3 = 'M/D/YY';
@@ -9095,6 +9095,7 @@ var FilterService = /** @class */ (function () {
             case '=':
             case '==': return (value1 === value2) ? true : false;
         }
+        return true;
     };
     /**
      * Attach a local filter hook to the grid
@@ -9271,14 +9272,14 @@ var FilterService = /** @class */ (function () {
     };
     return FilterService;
 }());
-var MouseService = /** @class */ (function () {
-    function MouseService() {
+var GridEventService = /** @class */ (function () {
+    function GridEventService() {
     }
     /**
      * @param {?} grid
      * @return {?}
      */
-    MouseService.prototype.attachOnMouseHover = function (grid) {
+    GridEventService.prototype.attachOnMouseHover = function (grid) {
         grid.onMouseEnter.subscribe(function (e) {
             var /** @type {?} */ cell = grid.getCellFromEvent(e);
             if (cell && cell.row >= 0) {
@@ -9291,7 +9292,43 @@ var MouseService = /** @class */ (function () {
             e.preventDefault();
         });
     };
-    return MouseService;
+    /**
+     * @param {?} grid
+     * @param {?} gridOptions
+     * @param {?} dataView
+     * @return {?}
+     */
+    GridEventService.prototype.attachOnClick = function (grid, gridOptions, dataView) {
+        grid.onClick.subscribe(function (e, args) {
+            if (!e || !args || !args.grid || !args.cell || !args.grid.getColumns || !args.grid.getDataItem) {
+                return;
+            }
+            var /** @type {?} */ column = args.grid.getColumns()[args.cell];
+            var /** @type {?} */ action = column.action;
+            // so if the columns definition does have an action property (a function attached), then run it
+            if (typeof action === 'function') {
+                // attach both "this._gridOptions" and "_slickDataViewObj" since we'll need them inside the AJAX action
+                var /** @type {?} */ actionArgs = {
+                    dataView: dataView,
+                    gridDefinition: gridOptions,
+                    grid: grid,
+                    columnDef: args.grid.getColumns()[args.cell],
+                    dataContext: args.grid.getDataItem(args.row)
+                };
+                // AngularJS with SlickGrid action is possible via a few defined arguments passed as an object
+                // args.angular = (this._gridOptions.hasOwnProperty('angular')) ? this._gridOptions.angular : null;
+                // finally call up the Slick.Actions.... function
+                action(actionArgs);
+                e.stopImmediatePropagation();
+            }
+            // stop the click event bubbling
+            // NOTE: We don't want to stop bubbling when doing an input edit, if we do the autoEdit which has intent of doing singleClick edit will become doubleClick edit
+            if (grid && grid.getOptions && grid.getOptions().autoEdit) {
+                e.stopImmediatePropagation();
+            }
+        });
+    };
+    return GridEventService;
 }());
 // global constants, height/width are in pixels
 var DATAGRID_MIN_HEIGHT = 180;
@@ -9814,7 +9851,7 @@ var GraphqlService = /** @class */ (function () {
                 if (args.columnFilters.hasOwnProperty(columnId)) {
                     var /** @type {?} */ columnFilter = args.columnFilters[columnId];
                     var /** @type {?} */ columnDef = columnFilter.columnDef;
-                    var /** @type {?} */ fieldName = columnDef.field || columnDef.name;
+                    var /** @type {?} */ fieldName = columnDef.field || columnDef.name || '';
                     var /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
                     if (typeof fieldSearchValue === 'undefined') {
                         fieldSearchValue = '';
@@ -10703,13 +10740,13 @@ var __awaiter$3 = (this && this.__awaiter) || function (thisArg, _arguments, P, 
 var AngularSlickgridComponent = /** @class */ (function () {
     /**
      * @param {?} resizer
-     * @param {?} mouseService
+     * @param {?} gridEventService
      * @param {?} filterService
      * @param {?} sortService
      */
-    function AngularSlickgridComponent(resizer, mouseService, filterService, sortService) {
+    function AngularSlickgridComponent(resizer, gridEventService, filterService, sortService) {
         this.resizer = resizer;
-        this.mouseService = mouseService;
+        this.gridEventService = gridEventService;
         this.filterService = filterService;
         this.sortService = sortService;
         this._columnFilters = {};
@@ -10753,7 +10790,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataView = new Slick.Data.DataView();
         this.grid = new Slick.Grid("#" + this.gridId, this._dataView, this.columnDefinitions, this._gridOptions);
         this.grid.setSelectionModel(new Slick.RowSelectionModel());
-        var /** @type {?} */ columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
+        if (this._gridOptions.enableColumnPicker) {
+            var /** @type {?} */ columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
+        }
         this.grid.init();
         this._dataView.beginUpdate();
         this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);
@@ -10801,9 +10840,11 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 });
             }); });
         }
+        // on cell click, mainly used with the columnDef.action callback
+        this.gridEventService.attachOnClick(grid, this._gridOptions, dataView);
         // if enable, change background color on mouse over
         if (options.enableMouseOverRow) {
-            this.mouseService.attachOnMouseHover(grid);
+            this.gridEventService.attachOnMouseHover(grid);
         }
         dataView.onRowCountChanged.subscribe(function (e, args) {
             grid.updateRowCount();
@@ -10903,7 +10944,7 @@ AngularSlickgridComponent.decorators = [
  */
 AngularSlickgridComponent.ctorParameters = function () { return [
     { type: ResizerService, },
-    { type: MouseService, },
+    { type: GridEventService, },
     { type: FilterService, },
     { type: SortService, },
 ]; };
@@ -10935,7 +10976,7 @@ AngularSlickgridModule.decorators = [
                 ],
                 providers: [
                     GraphqlService,
-                    MouseService,
+                    GridEventService,
                     OdataService,
                     FilterService,
                     SortService,
@@ -10951,5 +10992,5 @@ AngularSlickgridModule.ctorParameters = function () { return []; };
 /**
  * Generated bundle index. Do not edit.
  */
-export { CaseType, FormElementType, FieldType, FilterConditions, FilterTemplates, Formatters, Sorters, FilterService, MouseService, ResizerService, SortService, GraphqlService, GridOdataService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, FilterService as ɵd, MouseService as ɵc, ResizerService as ɵb, SortService as ɵe, OdataService as ɵa };
+export { CaseType, FormElementType, FieldType, FilterConditions, FilterTemplates, Formatters, Sorters, FilterService, GridEventService, ResizerService, SortService, GraphqlService, GridOdataService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, FilterService as ɵd, GridEventService as ɵc, ResizerService as ɵb, SortService as ɵe, OdataService as ɵa };
 //# sourceMappingURL=angular-slickgrid.es5.js.map

@@ -11,8 +11,10 @@ export interface GridOption {
   autoResize?: AutoResizeOption;
   cellHighlightCssClass?: string | null;
   editable?: boolean;
+  enableAsyncPostRender?: boolean;
   enableAutoResize?: boolean;
   enableCellNavigation?: boolean;
+  enableColumnPicker?: boolean;
   enableColumnReorder?: boolean;
   enableFiltering?: boolean;
   enableMouseOverRow?: boolean;

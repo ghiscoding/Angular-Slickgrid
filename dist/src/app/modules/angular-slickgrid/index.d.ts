@@ -9,7 +9,7 @@ export { FilterTemplates } from './filter-templates';
 export { Formatters } from './formatters';
 export { Sorters } from './sorters';
 export { FilterService } from './services/filter.service';
-export { MouseService } from './services/mouse.service';
+export { GridEventService } from './services/gridEvent.service';
 export { ResizerService } from './services/resizer.service';
 export { SortService } from './services/sort.service';
 export { GraphqlService } from './services/graphql.service';

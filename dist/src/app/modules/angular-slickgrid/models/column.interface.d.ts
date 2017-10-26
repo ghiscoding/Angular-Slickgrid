@@ -1,7 +1,10 @@
+import { ActionArgs } from './actionArgs.interface';
 import { FieldType } from './fieldType';
 import { Formatter } from './formatter.interface';
 import { Sorter } from './sorter.interface';
 export interface Column {
+    action?: (args: ActionArgs) => void;
+    asyncPostRender?: any;
     cannotTriggerInsert?: boolean;
     cssClass?: string;
     colspan?: number | '*';

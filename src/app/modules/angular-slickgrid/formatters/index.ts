@@ -1,8 +1,8 @@
 import { Column } from './../models';
 // import { Group, GroupTotals } from '../core'
 // import { Item } from '../dataview'
-import { checkboxFormatter } from './CheckboxFormatter';
-import { checkmarkFormatter } from './CheckmarkFormatter';
+import { checkboxFormatter } from './checkboxFormatter';
+import { checkmarkFormatter } from './checkmarkFormatter';
 import { dateIsoFormatter } from './dateIsoFormatter';
 import { dateTimeIsoAmPmFormatter } from './dateTimeIsoAmPmFormatter';
 import { dateTimeUsAmPmFormatter } from './dateTimeUsAmPmFormatter';
@@ -10,7 +10,7 @@ import { dateTimeUsFormatter } from './dateTimeUsFormatter';
 import { dateUsFormatter } from './dateUsFormatter';
 import { percentCompleteFormatter } from './percentCompleteFormatter';
 import { percentCompleteBarFormatter } from './percentCompleteBarFormatter';
-import { progressBarFormatter } from './ProgressBarFormatter';
+import { progressBarFormatter } from './progressBarFormatter';
 import { yesNoFormatter } from './yesNoFormatter';
 
 
@@ -35,5 +35,5 @@ export const Formatters = {
   percentComplete: percentCompleteFormatter,
   percentCompleteBar: percentCompleteBarFormatter,
   progressBar: progressBarFormatter,
-  yesNoFormatter: yesNoFormatter
+  yesNo: yesNoFormatter
 };

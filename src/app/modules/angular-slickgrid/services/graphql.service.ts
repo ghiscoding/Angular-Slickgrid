@@ -98,7 +98,7 @@ export class GraphqlService implements BackendService {
       paginationOptions = this.serviceOptions.paginationOptions as GraphqlPaginationOption;
       paginationOptions.offset = 0 ;
     }
-    this.updateOptions({ paginationOptions: paginationOptions });
+    this.updateOptions({ paginationOptions });
   }
 
   updateOptions(serviceOptions?: GraphqlServiceOption) {
@@ -120,7 +120,7 @@ export class GraphqlService implements BackendService {
    * FILTERING
    */
   onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
-    let searchByArray: GraphqlFilteringOption[] = [];
+    const searchByArray: GraphqlFilteringOption[] = [];
     const serviceOptions: BackendServiceOption = args.grid.getOptions();
     let debounceTypingDelay = 0;
     if (event.type === 'keyup' || event.type === 'keydown') {
@@ -137,7 +137,7 @@ export class GraphqlService implements BackendService {
         if (args.columnFilters.hasOwnProperty(columnId)) {
           const columnFilter = args.columnFilters[columnId];
           const columnDef = columnFilter.columnDef;
-          const fieldName = columnDef.field || columnDef.name;
+          const fieldName = columnDef.field || columnDef.name || '';
           const fieldType = columnDef.type || 'string';
           let fieldSearchValue = columnFilter.searchTerm;
           if (typeof fieldSearchValue === 'undefined') {
@@ -232,7 +232,7 @@ export class GraphqlService implements BackendService {
       };
     }
 
-    this.updateOptions({ paginationOptions: paginationOptions });
+    this.updateOptions({ paginationOptions });
 
     // build the GraphQL query which we will use in the WebAPI callback
     return this.buildQuery();
@@ -258,7 +258,7 @@ export class GraphqlService implements BackendService {
           const direction = column.sortAsc ? SortDirection.ASC : SortDirection.DESC;
           sortByArray.push({
             field: fieldName,
-            direction: direction
+            direction
           });
         }
       }

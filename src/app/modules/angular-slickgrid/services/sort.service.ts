@@ -1,8 +1,5 @@
 import { castToPromise } from './utilities';
-import { BackendServiceOption } from './../models/backendServiceOption.interface';
-import { GridOption } from './../models/gridOption.interface';
-import { FieldType } from './../models/fieldType';
-import { Sorter } from './../models/sorter.interface';
+import { BackendServiceOption, FieldType, GridOption, Sorter } from './../models';
 import { Sorters } from './../sorters';
 
 export class SortService {

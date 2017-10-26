@@ -45,7 +45,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
     return Math.ceil(number);
   }
   onChangeItemPerPage(event: any) {
-    const itemsPerPage = <number>event.target.value;
+    const itemsPerPage = event.target.value as number;
     this.pageCount = Math.ceil(this.totalItems / itemsPerPage);
     this.pageNumber = 1;
     this.itemsPerPage = itemsPerPage;

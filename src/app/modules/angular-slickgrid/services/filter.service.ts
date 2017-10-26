@@ -63,7 +63,7 @@ export class FilterService {
     }
   }
 
-  testFilterCondition(operator: string, value1: any, value2: any) {
+  testFilterCondition(operator: string, value1: any, value2: any): boolean {
     switch (operator) {
       case '<': return (value1 < value2) ? true : false;
       case '<=': return (value1 <= value2) ? true : false;
@@ -74,6 +74,7 @@ export class FilterService {
       case '=':
       case '==': return (value1 === value2) ? true : false;
     }
+    return true;
   }
   /**
    * Attach a local filter hook to the grid
@@ -102,7 +103,6 @@ export class FilterService {
       const columnFilter = args.columnFilters[columnId];
       const columnIndex = args.grid.getColumnIndex(columnId);
       const columnDef = args.grid.getColumns()[columnIndex];
-      const fieldName = columnDef.field || columnDef.name;
       const fieldType = columnDef.type || FieldType.string;
       const conditionalFilterFn = (columnDef.filter && columnDef.filter.conditionalFilter) ? columnDef.filter.conditionalFilter : null;
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;

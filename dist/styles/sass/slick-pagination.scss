@@ -55,11 +55,11 @@
         cursor: pointer;
 
         a[class*="icon-seek-"] {
-          text-decoration: none;
-          font-family: $icon-font-family;
-          -webkit-text-stroke: $pagination-icon-seek-text-stroke;
-
-          border-color: $pagination-button-border;
+            border-color: $pagination-button-border;
+            color: $pagination-icon-color;
+            text-decoration: none;
+            font-family: $icon-font-family;
+            -webkit-text-stroke: $pagination-icon-seek-text-stroke;
         }
         a[class*="icon-seek-"]:hover {
           background-color: $pagination-button-hover-color;

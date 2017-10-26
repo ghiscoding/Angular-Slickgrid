@@ -1,7 +1,7 @@
 import { castToPromise } from './../services/utilities';
 import { Column, ColumnFilters, FormElementType, GridOption } from './../models';
 import { AfterViewInit, Component, Injectable, Input, OnInit } from '@angular/core';
-import { FilterService, MouseService, SortService, ResizerService } from './../services';
+import { FilterService, GridEventService, SortService, ResizerService } from './../services';
 import { GlobalGridOptions } from './../global-grid-options';
 
 // using external js modules in Angular
@@ -49,7 +49,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
   }
 
   constructor(private resizer: ResizerService,
-    private mouseService: MouseService,
+    private gridEventService: GridEventService,
     private filterService: FilterService,
     private sortService: SortService) {
   }
@@ -68,7 +68,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
 
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this._gridOptions);
     this.grid.setSelectionModel(new Slick.RowSelectionModel());
-    const columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
+
+    if (this._gridOptions.enableColumnPicker) {
+      const columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
+    }
 
     this.grid.init();
     this._dataView.beginUpdate();
@@ -111,9 +114,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
       });
     }
 
+    // on cell click, mainly used with the columnDef.action callback
+    this.gridEventService.attachOnClick(grid, this._gridOptions, dataView);
+
     // if enable, change background color on mouse over
     if (options.enableMouseOverRow) {
-      this.mouseService.attachOnMouseHover(grid);
+      this.gridEventService.attachOnMouseHover(grid);
     }
 
     dataView.onRowCountChanged.subscribe((e: any, args: any) => {
@@ -149,7 +155,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     if (this.gridOptions.enableFiltering) {
       this.gridOptions.showHeaderRow = true;
     }
-    const options = Object.assign({}, GlobalGridOptions, this.gridOptions);
+    const options = { ...GlobalGridOptions, ...this.gridOptions };
     return options;
   }
 
@@ -166,7 +172,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     return isShowing;
   }
 
-  refreshGridData(dataset: any) {
+  refreshGridData(dataset: any[]) {
     if (dataset && this.grid) {
       this._dataView.setItems(dataset);
 

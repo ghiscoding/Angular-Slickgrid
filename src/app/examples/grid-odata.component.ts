@@ -6,7 +6,6 @@ import { HttpClient } from '@angular/common/http';
 
 const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
-let timer: any;
 
 @Component({
   templateUrl: './grid-odata.component.html',
