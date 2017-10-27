@@ -5,8 +5,7 @@ import { Column, GridOption } from './../modules/angular-slickgrid/models';
 declare var Slick: any;
 
 @Component({
-  templateUrl: './grid-basic.component.html',
-  styleUrls: ['./grid-basic.component.scss']
+  templateUrl: './grid-basic.component.html'
 })
 export class GridBasicComponent implements OnInit {
   title = 'Basic Grid';
@@ -29,7 +28,7 @@ export class GridBasicComponent implements OnInit {
       enableAutoResize: false
     };
 
-    // fake a dataset
+    // mock a dataset
     this.dataset = [];
     for (let i = 0; i < 1000; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);

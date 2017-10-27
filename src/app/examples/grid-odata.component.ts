@@ -8,8 +8,7 @@ const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
 
 @Component({
-  templateUrl: './grid-odata.component.html',
-  styleUrls: ['./grid-odata.component.scss']
+  templateUrl: './grid-odata.component.html'
 })
 export class GridOdataComponent implements OnInit {
   title = 'Grid connected to Backend Server with OData';

@@ -118,7 +118,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     this.gridEventService.attachOnClick(grid, this._gridOptions, dataView);
 
     // if enable, change background color on mouse over
-    if (options.enableMouseOverRow) {
+    if (options.enableMouseHoverHighlightRow) {
       this.gridEventService.attachOnMouseHover(grid);
     }
 

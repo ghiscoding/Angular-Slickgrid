@@ -17,7 +17,7 @@ export interface GridOption {
   enableColumnPicker?: boolean;
   enableColumnReorder?: boolean;
   enableFiltering?: boolean;
-  enableMouseOverRow?: boolean;
+  enableMouseHoverHighlightRow?: boolean;
   enablePagination?: boolean;
   enableSorting?: boolean;
   enableTextSelectionOnCells?: boolean;

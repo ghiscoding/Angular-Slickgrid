@@ -6,6 +6,7 @@ export { GridOption } from './models/gridOption.interface';
 export { FormElementType } from './models/formElementType';
 export { FieldType } from './models/fieldType';
 
+export { Editors } from './editors';
 export { FilterConditions } from './filter-conditions';
 export { FilterTemplates } from './filter-templates';
 export { Formatters } from './formatters';

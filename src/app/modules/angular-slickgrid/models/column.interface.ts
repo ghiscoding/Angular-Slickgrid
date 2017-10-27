@@ -1,16 +1,15 @@
-import { ActionArgs } from './actionArgs.interface';
+import { Editor } from './editor.interface';
 import { FieldType } from './fieldType';
 import { Formatter } from './formatter.interface';
+import { OnCellClickArgs } from './onCellClickArgs.interface';
 import { Sorter } from './sorter.interface';
 
 export interface Column {
-  action?: (args: ActionArgs) => void;
   asyncPostRender?: any;
   cannotTriggerInsert?: boolean;
   cssClass?: string;
   colspan?: number | '*';
   defaultSortAsc?: boolean;
-  // editor?: typeof Editor;
   editor?: any;
   field: string;
   filter?: any;
@@ -29,6 +28,7 @@ export interface Column {
   maxWidth?: number;
   minWidth?: number;
   name?: string;
+  onCellClick?: (args: OnCellClickArgs) => void;
   previousWidth?: number;
   resizable?: boolean;
   rerenderOnResize?: boolean;

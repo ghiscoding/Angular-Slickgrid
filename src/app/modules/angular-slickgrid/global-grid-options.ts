@@ -18,7 +18,7 @@ export const GlobalGridOptions: GridOption = {
   editable: false,
   enableCellNavigation: false,
   enableColumnReorder: true,
-  enableMouseOverRow: true,
+  enableMouseHoverHighlightRow: true,
   enablePagination: false,
   enableSorting: true,
   enableTextSelectionOnCells: true,

@@ -8,8 +8,7 @@ const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
 
 @Component({
-  templateUrl: './grid-graphql.component.html',
-  styleUrls: ['./grid-graphql.component.scss']
+  templateUrl: './grid-graphql.component.html'
 })
 export class GridGraphqlComponent implements OnInit {
   title = 'Grid connected to Backend Server with GraphQL';
