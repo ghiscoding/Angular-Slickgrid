@@ -1,63 +1,59 @@
+import { mapFlatpickrDateFormatWithFieldType } from './../services/utilities';
 import flatpickr from 'flatpickr';
-import 'flatpickr/dist/flatpickr.min.css';
 import $ from 'jquery';
-import { Editor, KeyCode } from './../models';
-
-if (!flatpickr) {
-  throw new Error('The DateEditor requires Flatpickr installed. Or you can also create your custom editor');
-}
+import { Editor, FieldType, KeyCode } from './../models';
 
 /*
- * An example of a 'detached' editor.
- * The UI is added onto document BODY and .position(), .show() and .hide() are implemented.
- * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
+ * An example of a date picker editor using Flatpickr
+ * https://chmln.github.io/flatpickr
  */
 export class DateEditor implements Editor {
-  $input;
-  $wrapper;
-  flatInstance;
-  defaultDate;
-  options;
+  $input: any;
+  flatInstance: any;
+  defaultDate: string;
 
   constructor(private args: any) {
     this.init();
   }
 
   init(): void {
-    this.options = this.args.column.options && this.args.column.options.date ? this.args.column.options.date : {};
-
-    this.defaultDate = this.options.defaultDate = this.args.item[this.args.column.field];
-
-    this.$input = $(`<input type="text" data-default-date="${this.defaultDate}" class="editor-text" />`);
+    const pickerOptions = {
+      defaultDate: this.args.item[this.args.column.field] || null,
+      altInput: true,
+      altFormat: mapFlatpickrDateFormatWithFieldType(this.args.type || FieldType.dateIso),
+      onChange: (selectedDates, dateStr, instance) => {
+        this.save();
+      },
+    };
+    this.$input = $(`<input type="text" value="${this.defaultDate}" class="editor-text" />`);
     this.$input.appendTo(this.args.container);
     this.$input.focus().val(this.defaultDate).select();
-    this.flatInstance = flatpickr(this.$input[0], this.options);
+    this.flatInstance = flatpickr(this.$input[0], pickerOptions);
+    this.flatInstance.open();
   }
 
   destroy() {
-    this.flatInstance.destroy();
+    //this.flatInstance.destroy();
     this.$input.remove();
   }
 
   show() {
     this.flatInstance.open();
-    // this.flatInstance.positionCalendar();
   }
 
   hide() {
     this.flatInstance.close();
   }
 
-  position(pos) {
-    // todo: fix how scrolling is affected
-    // this.flatInstance.positionCalendar();
-  }
-
   focus() {
     this.$input.focus();
   }
 
-  loadValue(item) {
+  save() {
+    this.args.commitChanges();
+  };
+
+  loadValue(item: any) {
     this.defaultDate = item[this.args.column.field];
     this.$input.val(this.defaultDate);
     this.$input.select();
@@ -67,7 +63,7 @@ export class DateEditor implements Editor {
     return this.$input.val();
   }
 
-  applyValue(item, state) {
+  applyValue(item: any, state: any) {
     item[this.args.column.field] = state;
   }
 

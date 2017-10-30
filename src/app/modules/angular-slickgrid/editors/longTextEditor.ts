@@ -1,7 +1,5 @@
-// import flatpickr from 'flatpickr';
-// import 'flatpickr/dist/flatpickr.min.css';
 import $ from 'jquery';
-import { Editor, KeyCode } from './../models';
+import { Editor, HtmlElementPosition, KeyCode } from './../models';
 
 /*
  * An example of a 'detached' editor.
@@ -9,9 +7,9 @@ import { Editor, KeyCode } from './../models';
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class LongTextEditor implements Editor {
-  $input;
-  $wrapper;
-  defaultValue;
+  $input: any;
+  $wrapper: any;
+  defaultValue: any;
 
   constructor(private args: any) {
     this.init();
@@ -28,15 +26,15 @@ export class LongTextEditor implements Editor {
         <button class="btn btn-default btn-xs">Cancel</button>
       </div>`).appendTo(this.$wrapper);
 
-    this.$wrapper.find('button:first').on('click', (event) => this.save());
-    this.$wrapper.find('button:last').on('click', (event) => this.cancel());
+    this.$wrapper.find('button:first').on('click', (event: Event) => this.save());
+    this.$wrapper.find('button:last').on('click', (event: Event) => this.cancel());
     this.$input.on('keydown', this.handleKeyDown);
 
     this.position(this.args.position);
     this.$input.focus().select();
   }
 
-  handleKeyDown(e) {
+  handleKeyDown(e: any) {
     if (e.which === KeyCode.ENTER && e.ctrlKey) {
       this.save();
     } else if (e.which === KeyCode.ESCAPE) {
@@ -68,10 +66,10 @@ export class LongTextEditor implements Editor {
     this.$wrapper.show();
   }
 
-  position(position) {
+  position(position: HtmlElementPosition) {
     this.$wrapper
-      .css('top', position.top - 5)
-      .css('left', position.left - 5);
+      .css('top', (position.top || 0) - 5)
+      .css('left', (position.left || 0) - 5);
   }
 
   destroy() {
@@ -82,7 +80,7 @@ export class LongTextEditor implements Editor {
     this.$input.focus();
   }
 
-  loadValue(item) {
+  loadValue(item: any) {
     this.$input.val(this.defaultValue = item[this.args.column.field]);
     this.$input.select();
   }
@@ -91,7 +89,7 @@ export class LongTextEditor implements Editor {
     return this.$input.val();
   }
 
-  applyValue(item, state) {
+  applyValue(item: any, state: any) {
     item[this.args.column.field] = state;
   }
 

@@ -8,6 +8,7 @@ const DATAGRID_MIN_HEIGHT = 180;
 const DATAGRID_MIN_WIDTH = 300;
 const DATAGRID_BOTTOM_PADDING = 20;
 const DATAGRID_PAGINATION_HEIGHT = 35;
+let timer: any;
 
 @Injectable()
 export class ResizerService {
@@ -91,26 +92,31 @@ export class ResizerService {
   }
 
   /** Resize the datagrid to fit the browser height & width */
-  resizeGrid(grid: any, gridOptions: GridOption, newSizes?: { height: number, width: number }): void {
-    // calculate new available sizes but with minimum height of 220px
-    newSizes = newSizes || this.calculateGridNewDimensions(gridOptions);
+  resizeGrid(grid: any, gridOptions: GridOption, delay?: number, newSizes?: { height: number, width: number }): void {
+    delay = delay || 0;
 
-    if (newSizes) {
-      // apply these new height/width to the datagrid
-      $(`#${gridOptions.gridId}`).height(newSizes.height);
-      $(`#${gridOptions.gridId}`).width(newSizes.width);
-      $(`#${gridOptions.gridContainerId}`).height(newSizes.height);
-      $(`#${gridOptions.gridContainerId}`).width(newSizes.width);
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      // calculate new available sizes but with minimum height of 220px
+      newSizes = newSizes || this.calculateGridNewDimensions(gridOptions);
 
-      // resize the slickgrid canvas on all browser except some IE versions
-      // exclude all IE below IE11
-      // IE11 wants to be a better standard (W3C) follower (finally) they even changed their appName output to also have 'Netscape'
-      if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && grid) {
-        grid.resizeCanvas();
+      if (newSizes) {
+        // apply these new height/width to the datagrid
+        $(`#${gridOptions.gridId}`).height(newSizes.height);
+        $(`#${gridOptions.gridId}`).width(newSizes.width);
+        $(`#${gridOptions.gridContainerId}`).height(newSizes.height);
+        $(`#${gridOptions.gridContainerId}`).width(newSizes.width);
+
+        // resize the slickgrid canvas on all browser except some IE versions
+        // exclude all IE below IE11
+        // IE11 wants to be a better standard (W3C) follower (finally) they even changed their appName output to also have 'Netscape'
+        if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && grid) {
+          grid.resizeCanvas();
+        }
+
+        // also call the grid auto-size columns so that it takes available when going bigger
+        grid.autosizeColumns();
       }
-
-      // also call the grid auto-size columns so that it takes available when going bigger
-      grid.autosizeColumns();
-    }
+    }, delay);
   }
 }

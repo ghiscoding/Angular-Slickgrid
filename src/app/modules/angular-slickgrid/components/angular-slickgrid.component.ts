@@ -1,6 +1,26 @@
+// import 3rd party vendor libs
+import 'slickgrid/lib/jquery-ui-1.11.3';
+import 'slickgrid/lib/jquery.event.drag-2.3.0';
+import 'slickgrid/slick.core';
+import 'slickgrid/slick.dataview';
+import 'slickgrid/slick.grid';
+import 'slickgrid/slick.dataview';
+import 'slickgrid/plugins/slick.autotooltips';
+import 'slickgrid/plugins/slick.cellcopymanager';
+import 'slickgrid/plugins/slick.cellexternalcopymanager';
+import 'slickgrid/plugins/slick.cellrangedecorator';
+import 'slickgrid/plugins/slick.cellrangeselector';
+import 'slickgrid/plugins/slick.cellselectionmodel';
+import 'slickgrid/plugins/slick.checkboxselectcolumn';
+import 'slickgrid/plugins/slick.headerbuttons';
+import 'slickgrid/plugins/slick.headermenu';
+import 'slickgrid/plugins/slick.rowmovemanager';
+import 'slickgrid/plugins/slick.rowselectionmodel';
+import 'slickgrid/controls/slick.columnpicker';
+import 'slickgrid/controls/slick.pager';
 import { castToPromise } from './../services/utilities';
 import { Column, ColumnFilters, FormElementType, GridOption } from './../models';
-import { AfterViewInit, Component, Injectable, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter , Injectable, Input, Output, OnInit } from '@angular/core';
 import { FilterService, GridEventService, SortService, ResizerService } from './../services';
 import { GlobalGridOptions } from './../global-grid-options';
 
@@ -32,8 +52,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
   gridHeightString: string;
   gridWidthString: string;
   showPagination = false;
-  onFilter = new Slick.Event();
 
+  @Output() dataviewChanged = new EventEmitter<any>();
+  @Output() gridChanged = new EventEmitter<any>();
   @Input() gridId: string;
   @Input() columnDefinitions: Column[];
   @Input() gridOptions: GridOption;
@@ -68,6 +89,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
 
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this._gridOptions);
     this.grid.setSelectionModel(new Slick.RowSelectionModel());
+    this.gridChanged.emit(this.grid);
+    this.dataviewChanged.emit(this._dataView);
 
     if (this._gridOptions.enableColumnPicker) {
       const columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
@@ -145,7 +168,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
         grid.autosizeColumns();
       }
     } else {
-      this.resizer.resizeGrid(grid, options, { height: this.gridHeight, width: this.gridWidth });
+      this.resizer.resizeGrid(grid, options, 0, { height: this.gridHeight, width: this.gridWidth });
     }
   }
 
@@ -186,10 +209,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
       }
       if (this._gridOptions.enableAutoResize) {
         // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
-        setTimeout(() => {
-          this.resizer.resizeGrid(this.grid, this._gridOptions);
+        this.resizer.resizeGrid(this.grid, this._gridOptions, 10);
           // this.grid.autosizeColumns();
-        });
       }
     }
   }

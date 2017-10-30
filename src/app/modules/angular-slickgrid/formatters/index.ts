@@ -8,7 +8,8 @@ import { dateTimeIsoAmPmFormatter } from './dateTimeIsoAmPmFormatter';
 import { dateTimeUsAmPmFormatter } from './dateTimeUsAmPmFormatter';
 import { dateTimeUsFormatter } from './dateTimeUsFormatter';
 import { dateUsFormatter } from './dateUsFormatter';
-import { editPencilFormatter } from './editPencilFormatter';
+import { deleteIconFormatter } from './deleteIconFormatter';
+import { editIconFormatter } from './editIconFormatter';
 import { percentCompleteFormatter } from './percentCompleteFormatter';
 import { percentCompleteBarFormatter } from './percentCompleteBarFormatter';
 import { progressBarFormatter } from './progressBarFormatter';
@@ -18,7 +19,6 @@ import { yesNoFormatter } from './yesNoFormatter';
 export interface GroupFormatter {
   (row: number, cell: number, value: any, columnDef: Column, dataContext: Group): string
 }
-
 export interface GroupTotalsFormatter {
   (row: number, cell: number, value: any, columnDef: Column, dataContext: GroupTotals): string
 }
@@ -32,7 +32,8 @@ export const Formatters = {
   dateUs: dateUsFormatter,
   dateTimeUs: dateTimeUsFormatter,
   dateTimeUsAmPm: dateTimeUsAmPmFormatter,
-  editPencil: editPencilFormatter,
+  deleteIcon: deleteIconFormatter,
+  editIcon: editIconFormatter,
   percentComplete: percentCompleteFormatter,
   percentCompleteBar: percentCompleteBarFormatter,
   progressBar: progressBarFormatter,

@@ -32,7 +32,7 @@ export class GridEventService {
           dataView,
           gridDefinition: gridOptions,
           grid,
-          columnDef: args.grid.getColumns()[args.cell],
+          columnDef: column,
           dataContext: args.grid.getDataItem(args.row)
         };
 
@@ -44,7 +44,7 @@ export class GridEventService {
       // stop the click event bubbling
       // NOTE: We don't want to stop bubbling when doing an input edit, if we do the autoEdit which has intent of doing singleClick edit will become doubleClick edit
       if (grid.getOptions && !grid.getOptions().autoEdit) {
-        e.stopImmediatePropagation();
+        // e.stopImmediatePropagation();
       }
     });
   }

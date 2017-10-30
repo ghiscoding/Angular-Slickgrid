@@ -1,4 +1,4 @@
-import { GridOdataService } from './modules/angular-slickgrid/services';
+import { GridOdataService, ResizerService } from './modules/angular-slickgrid/services';
 import { AppRoutingRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
@@ -33,7 +33,7 @@ import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angu
     HttpClientModule,
     AngularSlickgridModule
   ],
-  providers: [GridOdataService],
+  providers: [GridOdataService, ResizerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

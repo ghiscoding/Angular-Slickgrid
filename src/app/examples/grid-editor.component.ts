@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Editors, Formatters } from './../modules/angular-slickgrid';
+import { GridExtraUtils, ResizerService } from './../modules/angular-slickgrid/services';
 import { OnCellClickArgs, Column, FieldType, Formatter, GridOption } from './../modules/angular-slickgrid/models';
 
 @Component({
-  templateUrl: './grid-formatter.component.html'
+  templateUrl: './grid-editor.component.html'
 })
 export class GridEditorComponent implements OnInit {
   title = 'Example 4: Editors';
@@ -12,11 +13,27 @@ export class GridEditorComponent implements OnInit {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
+  isAutoEdit: boolean = true;
+  updatedObject: any;
+  gridObj: any;
+  dataviewObj: any;
+
+  constructor(private resizer: ResizerService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'id', field: 'id',
-        formatter: Formatters.editPencil,
+      {
+        id: 'edit', field: 'id',
+        formatter: Formatters.editIcon,
+        maxWidth: 30,
+        onCellClick: (args: OnCellClickArgs) => {
+          console.log(args);
+          console.log(this);
+        }
+      },
+      {
+        id: 'delete', field: 'id',
+        formatter: Formatters.deleteIcon,
         maxWidth: 30,
         onCellClick: (args: OnCellClickArgs) => {
           console.log(args);
@@ -25,10 +42,10 @@ export class GridEditorComponent implements OnInit {
       },
       { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, editor: Editors.longText },
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, editor: Editors.text },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, editor: Editors.integer, sortable: true },
-      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.dateIso, editor: Editors.date },
+      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, editor: Editors.integer },
+      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, editor: Editors.date },
       { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, sortable: true }
+      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, editor: Editors.checkbox }
     ];
 
     this.gridOptions = {
@@ -37,20 +54,21 @@ export class GridEditorComponent implements OnInit {
         sidePadding: 15
       },
       editable: true,
+      enableColumnPicker: true,
       enableCellNavigation: true,
       asyncEditorLoading: false,
-      autoEdit: true
+      autoEdit: this.isAutoEdit
     };
 
     // mock a dataset
-    this.dataset = [];
-    for (let i = 0; i < 5; i++) {
+    let mockedDataset = [];
+    for (let i = 0; i < 1000; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
       const randomPercent = Math.round(Math.random() * 100);
 
-      this.dataset[i] = {
+      mockedDataset[i] = {
         id: i,
         title: 'Task ' + i,
         duration: Math.round(Math.random() * 100) + '',
@@ -61,5 +79,36 @@ export class GridEditorComponent implements OnInit {
         effortDriven: (i % 5 === 0)
       };
     }
+    this.dataset = mockedDataset;
+  }
+
+  gridReady(grid) {
+    this.gridObj = grid;
+
+    grid.onCellChange.subscribe((e, args) => {
+      console.log('onCellChange', args);
+      this.updatedObject = args.item;
+      this.resizer.resizeGrid(this.gridObj, this.gridOptions, 10);
+    });
+    grid.onClick.subscribe((e, args) => {
+      const column = GridExtraUtils.getColumnDefinitionAndData(args);
+      console.log('onClick', args, column);
+      if (column.columnDef.id === 'delete') {
+        if (confirm('Are you sure?')) {
+          this.dataviewObj.deleteItem(column.dataContext.id);
+          this.dataviewObj.refresh();
+        }
+      }
+    });
+
+  }
+  dataviewReady(dataview) {
+    this.dataviewObj = dataview;
+  }
+
+  setAutoEdit(isAutoEdit) {
+    this.isAutoEdit = isAutoEdit;
+    this.gridObj.setOptions({ autoEdit: isAutoEdit }); // change the grid option dynamically
+    return true;
   }
 }

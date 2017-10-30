@@ -1,17 +1,13 @@
-// import flatpickr from 'flatpickr';
-// import 'flatpickr/dist/flatpickr.min.css';
 import $ from 'jquery';
 import { Editor, KeyCode } from './../models';
 
 /*
  * An example of a 'detached' editor.
- * The UI is added onto document BODY and .position(), .show() and .hide() are implemented.
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class IntegerEditor implements Editor {
-  $input;
-  $wrapper;
-  defaultValue;
+  $input: any;
+  defaultValue: any;
 
   constructor(private args: any) {
     this.init();
@@ -37,7 +33,7 @@ export class IntegerEditor implements Editor {
     this.$input.focus();
   }
 
-  loadValue(item) {
+  loadValue(item: any) {
     this.defaultValue = item[this.args.column.field];
     this.$input.val(this.defaultValue);
     this.$input[0].defaultValue = this.defaultValue;
@@ -45,10 +41,10 @@ export class IntegerEditor implements Editor {
   }
 
   serializeValue() {
-    return parseInt(this.$input.val(), 10) || 0;
+    return parseInt(this.$input.val() as string, 10) || 0;
   }
 
-  applyValue(item, state) {
+  applyValue(item: any, state: any) {
     item[this.args.column.field] = state;
   }
 
@@ -57,7 +53,7 @@ export class IntegerEditor implements Editor {
   }
 
   validate() {
-    if (isNaN(this.$input.val())) {
+    if (isNaN(this.$input.val() as number)) {
       return {
         valid: false,
         msg: 'Please enter a valid integer'

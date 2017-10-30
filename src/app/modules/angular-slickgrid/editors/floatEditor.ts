@@ -1,5 +1,3 @@
-// import flatpickr from 'flatpickr';
-// import 'flatpickr/dist/flatpickr.min.css';
 import $ from 'jquery';
 import { Editor, KeyCode } from './../models';
 
@@ -8,13 +6,11 @@ const allowEmptyValue = false;
 
 /*
  * An example of a 'detached' editor.
- * The UI is added onto document BODY and .position(), .show() and .hide() are implemented.
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class FloatEditor implements Editor {
-  $input;
-  $wrapper;
-  defaultValue;
+  $input: any;
+  defaultValue: any;
 
   constructor(private args: any) {
     this.init();
@@ -49,13 +45,13 @@ export class FloatEditor implements Editor {
     return (!rtn && rtn !== 0 ? null : rtn);
   }
 
-  loadValue(item) {
+  loadValue(item: any) {
     this.defaultValue = item[this.args.column.field];
 
     const decPlaces = this.getDecimalPlaces();
     if (decPlaces !== null
-        && (this.defaultValue || this.defaultValue === 0)
-        && this.defaultValue.toFixed) {
+      && (this.defaultValue || this.defaultValue === 0)
+      && this.defaultValue.toFixed) {
       this.defaultValue = this.defaultValue.toFixed(decPlaces);
     }
 
@@ -76,7 +72,7 @@ export class FloatEditor implements Editor {
     return rtn;
   }
 
-  applyValue(item, state) {
+  applyValue(item: any, state: any) {
     item[this.args.column.field] = state;
   }
 
