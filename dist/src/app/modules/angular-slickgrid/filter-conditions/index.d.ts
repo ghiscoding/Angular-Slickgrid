@@ -9,5 +9,5 @@ export declare const FilterConditions: {
     dateUsShortFilter: (options: FilterConditionOption) => boolean;
     numberFilter: (options: FilterConditionOption) => boolean;
     stringFilter: (options: FilterConditionOption) => boolean;
-    testFilter: Function;
+    testFilter: (operator: string, value1: any, value2: any) => boolean;
 };

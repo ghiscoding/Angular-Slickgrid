@@ -1,2 +1,2 @@
-import { Formatter } from './../models/formatter.interface';
+import { Formatter } from './../models';
 export declare const dateTimeUsAmPmFormatter: Formatter;

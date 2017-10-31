@@ -1,2 +1,1 @@
-export declare const mapDateFormatByFieldType: Function;
-export declare const testFilterCondition: Function;
+export declare const testFilterCondition: (operator: string, value1: any, value2: any) => boolean;

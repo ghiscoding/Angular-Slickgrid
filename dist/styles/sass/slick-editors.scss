@@ -1,0 +1,24 @@
+@import './variables';
+
+/* Long Text Editor */
+.slick-large-editor-text {
+  z-index: 10000;
+  position: absolute;
+  background: $large-editor-background-color;
+  padding: $large-editor-text-padding;
+  border: $large-editor-border;
+  border-radius: $large-editor-border-radius;
+}
+.slick-large-editor-text textarea {
+  background: $large-editor-background-color;
+  height: $large-editor-textarea-height;
+  width: $large-editor-textarea-width;
+  border: 0;
+  outline: 0;
+}
+.slick-large-editor-text .editor-footer {
+  text-align: $large-editor-button-text-align;
+}
+.slick-large-editor-text .editor-footer > button {
+  margin-left: $large-editor-footer-spacing;
+}

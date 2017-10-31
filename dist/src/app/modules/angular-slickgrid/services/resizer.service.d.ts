@@ -17,7 +17,7 @@ export declare class ResizerService {
      */
     destroy(): void;
     /** Resize the datagrid to fit the browser height & width */
-    resizeGrid(grid: any, gridOptions: GridOption, newSizes?: {
+    resizeGrid(grid: any, gridOptions: GridOption, delay?: number, newSizes?: {
         height: number;
         width: number;
     }): void;

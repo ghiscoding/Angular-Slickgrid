@@ -1,7 +1,8 @@
 import { mapFlatpickrDateFormatWithFieldType } from './../services/utilities';
-import flatpickr from 'flatpickr';
 import $ from 'jquery';
 import { Editor, FieldType, KeyCode } from './../models';
+import flatpickr from 'flatpickr';
+import flatpickrI18n from 'flatpickr/dist/l10n/fr';
 
 /*
  * An example of a date picker editor using Flatpickr
@@ -28,7 +29,9 @@ export class DateEditor implements Editor {
     this.$input = $(`<input type="text" value="${this.defaultDate}" class="editor-text" />`);
     this.$input.appendTo(this.args.container);
     this.$input.focus().val(this.defaultDate).select();
+    // flatpickr.localize(flatpickrI18n.fr);
     this.flatInstance = flatpickr(this.$input[0], pickerOptions);
+
     this.flatInstance.open();
   }
 

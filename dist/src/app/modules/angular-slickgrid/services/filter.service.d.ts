@@ -1,4 +1,4 @@
-import { Column, ColumnFilters, GridOption } from '../models';
+import { Column, ColumnFilters, GridOption, SlickEvent } from '../models';
 export declare class FilterService {
     _columnDefinitions: Column[];
     _columnFilters: ColumnFilters;
@@ -6,7 +6,7 @@ export declare class FilterService {
     _grid: any;
     _gridOptions: GridOption;
     _onFilterChangedOptions: any;
-    subscriber: any;
+    subscriber: SlickEvent;
     init(grid: any, gridOptions: GridOption, columnDefinitions: Column[], columnFilters: any): void;
     /**
      * Attach a backend filter hook to the grid

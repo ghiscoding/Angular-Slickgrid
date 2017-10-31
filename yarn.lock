@@ -181,6 +181,12 @@
   version "0.0.38"
   resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-0.0.38.tgz#6131569a9fe21fe7bad8abf4a3174ea5a8647bbd"
 
+"@types/flatpickr@^3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@types/flatpickr/-/flatpickr-3.1.2.tgz#767e04fea776ddb399007028bed1a885e26d6d52"
+  dependencies:
+    flatpickr "*"
+
 "@types/jasmine@*":
   version "2.5.54"
   resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-2.5.54.tgz#a6b5f2ae2afb6e0307774e8c7c608e037d491c63"
@@ -2495,7 +2501,7 @@ flagged-respawn@^0.3.2:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/flagged-respawn/-/flagged-respawn-0.3.2.tgz#ff191eddcd7088a675b2610fffc976be9b8074b5"
 
-flatpickr@^4.0.6:
+flatpickr@*, flatpickr@^4.0.6:
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/flatpickr/-/flatpickr-4.0.6.tgz#d898778636984b9b46b590f3b60513fc260db709"
 
