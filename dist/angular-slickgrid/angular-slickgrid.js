@@ -10900,8 +10900,10 @@ class TextEditor {
     }
 }
 
+// import { DateEditor } from './dateEditor';
 const Editors = {
     checkbox: CheckboxEditor,
+    /*date: DateEditor,*/
     float: FloatEditor,
     integer: IntegerEditor,
     longText: LongTextEditor,
@@ -11374,6 +11376,13 @@ const dateSorter = (value1, value2, sortDirection) => {
 
 const moment$13 = moment_min || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const DATE_FORMAT$1 = 'YYYY-MM-DD';
+/*
+import { mapMomentDateFormatWithFieldType } from './../services/utilities';
+import { FieldType, Sorter } from './../models/index';
+import * as moment_ from 'moment-mini';
+const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT = mapMomentDateFormatWithFieldType(FieldType.dateIso);
+*/
 const dateIsoSorter = (value1, value2, sortDirection) => {
     if (!moment$13(value1, DATE_FORMAT$1, true).isValid() || !moment$13(value2, DATE_FORMAT$1, true).isValid()) {
         return 0;
@@ -11547,12 +11556,12 @@ class FilterService {
                 cellValue = cellValue.toString();
             }
             const /** @type {?} */ conditionOptions = {
-                fieldType: fieldType,
-                searchTerm: searchTerm,
-                cellValue: cellValue,
-                operator: operator,
+                fieldType,
+                searchTerm,
+                cellValue,
+                operator,
                 cellValueLastChar: lastValueChar,
-                filterSearchType: filterSearchType
+                filterSearchType
             };
             if (conditionalFilterFn && typeof conditionalFilterFn === 'function') {
                 conditionalFilterFn(conditionOptions);
@@ -11627,11 +11636,11 @@ class FilterService {
                 switch (filterType) {
                     case FormElementType.select:
                     case FormElementType.multiSelect:
-                        elm.change((e) => this.callbackSearchEvent(e, { columnDef: columnDef }));
+                        elm.change((e) => this.callbackSearchEvent(e, { columnDef }));
                         break;
                     case FormElementType.input:
                     default:
-                        elm.keyup((e) => this.callbackSearchEvent(e, { columnDef: columnDef }));
+                        elm.keyup((e) => this.callbackSearchEvent(e, { columnDef }));
                         break;
                 }
             }
@@ -11647,8 +11656,8 @@ class FilterService {
         if (searchTerm) {
             this._columnFilters[columnDef.id] = {
                 columnId: columnDef.id,
-                columnDef: columnDef,
-                searchTerm: searchTerm
+                columnDef,
+                searchTerm
             };
             if (listTerm) {
                 this._columnFilters.listTerm = listTerm;
@@ -37792,5 +37801,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { CaseType, FieldType, FormElementType, KeyCode, OperatorType, SortDirection, Editors, FilterConditions, FilterTemplates, Formatters, Sorters, FilterService, GridEventService, GraphqlService, GridExtraUtils, GridOdataService, ResizerService, SortService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, FilterService as ɵd, GridEventService as ɵc, ResizerService as ɵb, SortService as ɵe, OdataService as ɵa };
+export { CaseType, FieldType, FormElementType, KeyCode, OperatorType, SortDirection, Editors, FilterConditions, FilterTemplates, Formatters, Sorters, FilterService, GridEventService, GraphqlService, GridExtraUtils, GridOdataService, ResizerService, SortService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CheckboxEditor as ɵa, FloatEditor as ɵb, IntegerEditor as ɵc, LongTextEditor as ɵd, TextEditor as ɵe, booleanFilterCondition as ɵg, dateFilterCondition as ɵh, dateIsoFilterCondition as ɵi, dateUsFilterCondition as ɵk, dateUsShortFilterCondition as ɵl, dateUtcFilterCondition as ɵj, executeMappedCondition as ɵf, testFilterCondition as ɵo, numberFilterCondition as ɵm, stringFilterCondition as ɵn, inputFilterTemplate as ɵp, selectFilterTemplate as ɵq, checkboxFormatter as ɵr, checkmarkFormatter as ɵs, dateIsoFormatter as ɵt, dateTimeIsoAmPmFormatter as ɵu, dateTimeUsAmPmFormatter as ɵx, dateTimeUsFormatter as ɵw, dateUsFormatter as ɵv, deleteIconFormatter as ɵy, editIconFormatter as ɵz, percentCompleteBarFormatter as ɵbb, percentCompleteFormatter as ɵba, progressBarFormatter as ɵbc, yesNoFormatter as ɵbd, OdataService as ɵbk, dateIsoSorter as ɵbf, dateSorter as ɵbe, dateUsShortSorter as ɵbh, dateUsSorter as ɵbg, numericSorter as ɵbi, stringSorter as ɵbj };
 //# sourceMappingURL=angular-slickgrid.js.map

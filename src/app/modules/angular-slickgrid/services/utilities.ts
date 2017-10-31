@@ -1,4 +1,4 @@
-import { FieldType, OperatorType } from '../models';
+import { FieldType, OperatorType } from '../models/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';

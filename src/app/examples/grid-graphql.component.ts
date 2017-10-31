@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter, Pipe, PipeTransform } from '@angular/core';
-import { CaseType, Column, FormElementType, GridOption } from './../modules/angular-slickgrid/models';
+import { CaseType, Column, FormElementType, GridOption } from './../modules/angular-slickgrid/models/index';
 import { FieldType, Formatters } from './../modules/angular-slickgrid';
 import { GraphqlService } from './../modules/angular-slickgrid/services';
 import { HttpClient } from '@angular/common/http';

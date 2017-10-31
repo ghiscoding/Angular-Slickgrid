@@ -14,7 +14,7 @@ import {
   PaginationChangedArgs,
   SortChangedArgs,
   SortDirection
-} from './../models';
+} from './../models/index';
 import QueryBuilder from 'graphql-query-builder';
 let timer: any;
 

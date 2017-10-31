@@ -35,12 +35,11 @@ export { SortChangedArgs } from './models/sortChangedArgs.interface';
 export { SortDirection } from './models/sortDirection';
 export { Sorter } from './models/sorter.interface';
 
-
-export { Editors } from './editors';
-export { FilterConditions } from './filter-conditions';
-export { FilterTemplates } from './filter-templates';
-export { Formatters } from './formatters';
-export { Sorters } from './sorters';
+export { Editors } from './editors/index';
+export { FilterConditions } from './filter-conditions/index';
+export { FilterTemplates } from './filter-templates/index';
+export { Formatters } from './formatters/index';
+export { Sorters } from './sorters/index';
 
 export { FilterService } from './services/filter.service';
 export { GridEventService } from './services/gridEvent.service';

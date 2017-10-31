@@ -1,4 +1,4 @@
-import { FilterCondition, FilterConditionOption } from './../models';
+import { FilterCondition, FilterConditionOption } from './../models/index';
 import { testFilterCondition } from './filterUtilities';
 
 function parseBoolean(str: string) {

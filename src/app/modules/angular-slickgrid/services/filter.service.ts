@@ -1,5 +1,5 @@
 import { castToPromise } from './utilities';
-import { FilterConditions } from '../filter-conditions';
+import { FilterConditions } from '../filter-conditions/index';
 import {
   BackendServiceOption,
   Column,
@@ -9,7 +9,7 @@ import {
   FormElementType,
   GridOption,
   SlickEvent
-} from '../models';
+} from '../models/index';
 import { FilterTemplates } from './../filter-templates';
 import $ from 'jquery';
 
@@ -138,12 +138,12 @@ export class FilterService {
       }
 
       const conditionOptions = {
-        fieldType: fieldType,
-        searchTerm: searchTerm,
-        cellValue: cellValue,
-        operator: operator,
+        fieldType,
+        searchTerm,
+        cellValue,
+        operator,
         cellValueLastChar: lastValueChar,
-        filterSearchType: filterSearchType
+        filterSearchType
       };
       if (conditionalFilterFn && typeof conditionalFilterFn === 'function') {
         conditionalFilterFn(conditionOptions);
@@ -215,11 +215,11 @@ export class FilterService {
         switch (filterType) {
           case FormElementType.select:
           case FormElementType.multiSelect:
-            elm.change((e: any) => this.callbackSearchEvent(e, { columnDef: columnDef }));
+            elm.change((e: any) => this.callbackSearchEvent(e, { columnDef }));
             break;
           case FormElementType.input:
           default:
-            elm.keyup((e: any) => this.callbackSearchEvent(e, { columnDef: columnDef }));
+            elm.keyup((e: any) => this.callbackSearchEvent(e, { columnDef }));
             break;
         }
       }
@@ -230,8 +230,8 @@ export class FilterService {
     if (searchTerm) {
       this._columnFilters[columnDef.id] = {
         columnId: columnDef.id,
-        columnDef: columnDef,
-        searchTerm: searchTerm
+        columnDef,
+        searchTerm
       };
       if (listTerm) {
         this._columnFilters.listTerm = listTerm;

@@ -1,6 +1,6 @@
 import { castToPromise } from './utilities';
-import { BackendServiceOption, FieldType, GridOption, Sorter } from './../models';
-import { Sorters } from './../sorters';
+import { BackendServiceOption, FieldType, GridOption, Sorter } from './../models/index';
+import { Sorters } from './../sorters/index';
 
 export class SortService {
   subscriber: any;

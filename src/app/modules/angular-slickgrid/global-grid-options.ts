@@ -1,4 +1,4 @@
-import { GridOption } from './models';
+import { GridOption } from './models/index';
 
 /**
  * Options that can be passed to the Bootstrap-Datetimepicker directly

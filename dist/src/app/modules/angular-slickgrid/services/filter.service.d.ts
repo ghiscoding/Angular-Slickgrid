@@ -1,4 +1,4 @@
-import { Column, ColumnFilters, GridOption, SlickEvent } from '../models';
+import { Column, ColumnFilters, GridOption, SlickEvent } from '../models/index';
 export declare class FilterService {
     _columnDefinitions: Column[];
     _columnFilters: ColumnFilters;

@@ -1,4 +1,4 @@
-import { Column, Filter } from './../models';
+import { Column, Filter } from './../models/index';
 import { inputFilterTemplate } from './inputFilterTemplate';
 import { selectFilterTemplate } from './selectFilterTemplate';
 

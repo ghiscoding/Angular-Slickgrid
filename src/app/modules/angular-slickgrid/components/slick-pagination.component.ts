@@ -1,6 +1,6 @@
-import { castToPromise } from './../services/utilities';
 import { Component, OnInit, Input, AfterViewInit } from '@angular/core';
-import { Column, GridOption } from './../models';
+import { castToPromise } from './../services/utilities';
+import { Column, GridOption } from './../models/index';
 
 @Component({
   selector: 'slick-pagination',

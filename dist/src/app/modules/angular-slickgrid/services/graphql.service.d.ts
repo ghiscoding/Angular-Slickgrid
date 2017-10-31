@@ -1,4 +1,4 @@
-import { BackendService, FilterChangedArgs, GraphqlServiceOption, GraphqlSortingOption, PaginationChangedArgs, SortChangedArgs } from './../models';
+import { BackendService, FilterChangedArgs, GraphqlServiceOption, GraphqlSortingOption, PaginationChangedArgs, SortChangedArgs } from './../models/index';
 export declare class GraphqlService implements BackendService {
     serviceOptions: GraphqlServiceOption;
     defaultOrderBy: GraphqlSortingOption;

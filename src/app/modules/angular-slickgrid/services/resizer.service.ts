@@ -1,4 +1,4 @@
-import { GridOption } from './../models';
+import { GridOption } from './../models/index';
 import { Injectable } from '@angular/core';
 import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import $ from 'jquery';
