@@ -8608,10 +8608,8 @@ var TextEditor = /** @class */ (function () {
     };
     return TextEditor;
 }());
-// import { DateEditor } from './dateEditor';
 var Editors = {
     checkbox: CheckboxEditor,
-    /*date: DateEditor,*/
     float: FloatEditor,
     integer: IntegerEditor,
     longText: LongTextEditor,
@@ -9566,13 +9564,6 @@ var dateSorter = function (value1, value2, sortDirection) {
 };
 var moment$13 = moment_min || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 var DATE_FORMAT$1 = 'YYYY-MM-DD';
-/*
-import { mapMomentDateFormatWithFieldType } from './../services/utilities';
-import { FieldType, Sorter } from './../models/index';
-import * as moment_ from 'moment-mini';
-const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-*/
 var dateIsoSorter = function (value1, value2, sortDirection) {
     if (!moment$13(value1, DATE_FORMAT$1, true).isValid() || !moment$13(value2, DATE_FORMAT$1, true).isValid()) {
         return 0;
@@ -32076,43 +32067,11 @@ exports.SortService = SortService;
 exports.SlickPaginationComponent = SlickPaginationComponent;
 exports.AngularSlickgridComponent = AngularSlickgridComponent;
 exports.AngularSlickgridModule = AngularSlickgridModule;
-exports.ɵa = CheckboxEditor;
-exports.ɵb = FloatEditor;
-exports.ɵc = IntegerEditor;
-exports.ɵd = LongTextEditor;
-exports.ɵe = TextEditor;
-exports.ɵg = booleanFilterCondition;
-exports.ɵh = dateFilterCondition;
-exports.ɵi = dateIsoFilterCondition;
-exports.ɵk = dateUsFilterCondition;
-exports.ɵl = dateUsShortFilterCondition;
-exports.ɵj = dateUtcFilterCondition;
-exports.ɵf = executeMappedCondition;
-exports.ɵo = testFilterCondition;
-exports.ɵm = numberFilterCondition;
-exports.ɵn = stringFilterCondition;
-exports.ɵp = inputFilterTemplate;
-exports.ɵq = selectFilterTemplate;
-exports.ɵr = checkboxFormatter;
-exports.ɵs = checkmarkFormatter;
-exports.ɵt = dateIsoFormatter;
-exports.ɵu = dateTimeIsoAmPmFormatter;
-exports.ɵx = dateTimeUsAmPmFormatter;
-exports.ɵw = dateTimeUsFormatter;
-exports.ɵv = dateUsFormatter;
-exports.ɵy = deleteIconFormatter;
-exports.ɵz = editIconFormatter;
-exports.ɵbb = percentCompleteBarFormatter;
-exports.ɵba = percentCompleteFormatter;
-exports.ɵbc = progressBarFormatter;
-exports.ɵbd = yesNoFormatter;
-exports.ɵbk = OdataService;
-exports.ɵbf = dateIsoSorter;
-exports.ɵbe = dateSorter;
-exports.ɵbh = dateUsShortSorter;
-exports.ɵbg = dateUsSorter;
-exports.ɵbi = numericSorter;
-exports.ɵbj = stringSorter;
+exports.ɵd = FilterService;
+exports.ɵc = GridEventService;
+exports.ɵb = ResizerService;
+exports.ɵe = SortService;
+exports.ɵa = OdataService;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -1,2 +1,2 @@
-import { Sorter } from './../models/index';
+import { Sorter } from './../models';
 export declare const numericSorter: Sorter;

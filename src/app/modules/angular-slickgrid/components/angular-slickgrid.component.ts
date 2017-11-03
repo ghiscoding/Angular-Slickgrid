@@ -18,10 +18,10 @@ import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.pager';
-import { AfterViewInit, Component, EventEmitter , Injectable, Input, Output, OnInit } from '@angular/core';
 import { castToPromise } from './../services/utilities';
-import { Column, ColumnFilters, FormElementType, GridOption } from './../models/index';
-import { FilterService, GridEventService, SortService, ResizerService } from './../services/index';
+import { Column, ColumnFilters, FormElementType, GridOption } from './../models';
+import { AfterViewInit, Component, EventEmitter , Injectable, Input, Output, OnInit } from '@angular/core';
+import { FilterService, GridEventService, SortService, ResizerService } from './../services';
 import { GlobalGridOptions } from './../global-grid-options';
 
 // using external js modules in Angular

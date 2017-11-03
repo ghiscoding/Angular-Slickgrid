@@ -1,17 +1,8 @@
 import './global-utilities';
 import { parseUtcDate } from './utilities';
 import { Injectable } from '@angular/core';
+import { BackendService, BackendServiceOption, CaseType, FilterChangedArgs, FieldType, OdataOption, PaginationChangedArgs, SortChangedArgs } from './../models';
 import { OdataService } from './odata.service';
-import {
-  BackendService,
-  BackendServiceOption,
-  CaseType,
-  FilterChangedArgs,
-  FieldType,
-  OdataOption,
-  PaginationChangedArgs,
-  SortChangedArgs
-} from './../models/index';
 import * as moment_ from 'moment-mini';
 const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 let timer: any;

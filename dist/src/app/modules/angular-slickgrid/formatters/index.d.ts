@@ -1,4 +1,4 @@
-import { Column } from './../models/index';
+import { Column } from './../models';
 export declare const Formatters: {
     checkbox: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     checkmark: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;

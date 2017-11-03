@@ -1,4 +1,4 @@
-import { GridOption } from './../models/index';
+import { GridOption } from './../models';
 import { Router } from '@angular/router';
 export declare class ResizerService {
     private router;

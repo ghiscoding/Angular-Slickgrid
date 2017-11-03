@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Formatters } from './../modules/angular-slickgrid';
-import { Column, FieldType, Formatter, GridOption } from './../modules/angular-slickgrid/models/index';
+import { Column, FieldType, Formatter, GridOption } from './../modules/angular-slickgrid/models';
 
 // create my custom Formatter with the Formatter type
 const myCustomCheckboxFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) =>

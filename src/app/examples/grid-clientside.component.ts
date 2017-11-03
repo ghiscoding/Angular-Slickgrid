@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Formatters } from './../modules/angular-slickgrid';
-import { Column, FieldType, Formatter, FormElementType, GridOption } from './../modules/angular-slickgrid/models/index';
+import { Column, FieldType, Formatter, FormElementType, GridOption } from './../modules/angular-slickgrid/models';
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);

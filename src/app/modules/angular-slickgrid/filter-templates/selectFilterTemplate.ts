@@ -1,4 +1,4 @@
-import { Column, Filter } from './../models/index';
+import { Column, Filter } from './../models';
 
 export const selectFilterTemplate: Filter = (searchTerm: string, columnDef: Column) => {
   if (!columnDef.filter.selectOptions) {

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Editors, Formatters } from './../modules/angular-slickgrid';
 import { GridExtraUtils, ResizerService } from './../modules/angular-slickgrid/services';
-import { OnEventArgs, Column, FieldType, Formatter, GridOption } from './../modules/angular-slickgrid/models/index';
+import { Column, FieldType, Formatter, GridOption, OnEventArgs } from './../modules/angular-slickgrid/models';
 
 @Component({
   templateUrl: './grid-editor.component.html'

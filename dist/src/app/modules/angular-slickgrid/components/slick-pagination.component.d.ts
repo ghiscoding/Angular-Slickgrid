@@ -1,5 +1,5 @@
 import { OnInit, AfterViewInit } from '@angular/core';
-import { GridOption } from './../models/index';
+import { GridOption } from './../models';
 export declare class SlickPaginationComponent implements AfterViewInit, OnInit {
     private _gridPaginationOptions;
     gridPaginationOptions: GridOption;

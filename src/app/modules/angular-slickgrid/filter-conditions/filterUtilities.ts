@@ -1,4 +1,4 @@
-import { FieldType } from '../models/index';
+import { FieldType } from '../models';
 
 export const testFilterCondition = (operator: string, value1: any, value2: any): boolean => {
   switch (operator) {

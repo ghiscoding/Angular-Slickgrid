@@ -1,4 +1,4 @@
-import { Sorter } from './../models/index';
+import { Sorter } from './../models';
 
 export const stringSorter: Sorter = (value1, value2, sortDirection) => {
   let position;

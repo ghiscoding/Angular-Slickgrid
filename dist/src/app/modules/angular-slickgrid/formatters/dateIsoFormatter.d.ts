@@ -1,2 +1,2 @@
-import { Formatter } from './../models/index';
+import { Formatter } from './../models';
 export declare const dateIsoFormatter: Formatter;

@@ -1,4 +1,4 @@
-import { Editor, HtmlElementPosition } from './../models/index';
+import { Editor, HtmlElementPosition } from './../models';
 export declare class LongTextEditor implements Editor {
     private args;
     $input: any;

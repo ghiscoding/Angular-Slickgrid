@@ -17,9 +17,9 @@ import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.pager';
+import { Column, GridOption } from './../models';
 import { AfterViewInit, EventEmitter, OnInit } from '@angular/core';
-import { Column, GridOption } from './../models/index';
-import { FilterService, GridEventService, SortService, ResizerService } from './../services/index';
+import { FilterService, GridEventService, SortService, ResizerService } from './../services';
 export declare class AngularSlickgridComponent implements AfterViewInit, OnInit {
     private resizer;
     private gridEventService;

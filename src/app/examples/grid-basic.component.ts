@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Column, GridOption } from './../modules/angular-slickgrid/models/index';
+import { Column, GridOption } from './../modules/angular-slickgrid/models';
 
 // using external js modules in Angular
 declare var Slick: any;

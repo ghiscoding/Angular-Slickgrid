@@ -1,2 +1,2 @@
-import { FilterCondition } from './../models/index';
+import { FilterCondition } from './../models';
 export declare const booleanFilterCondition: FilterCondition;

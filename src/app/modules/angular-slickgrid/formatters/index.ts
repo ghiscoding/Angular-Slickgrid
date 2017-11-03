@@ -1,4 +1,4 @@
-import { Column } from './../models/index';
+import { Column } from './../models';
 // import { Group, GroupTotals } from '../core'
 // import { Item } from '../dataview'
 import { checkboxFormatter } from './checkboxFormatter';

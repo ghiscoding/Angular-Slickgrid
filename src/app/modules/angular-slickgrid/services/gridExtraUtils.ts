@@ -1,4 +1,4 @@
-import { CellArgs } from './../models/index';
+import { CellArgs } from './../models';
 
 export class GridExtraUtils {
   static getColumnDefinitionAndData(args: CellArgs) {

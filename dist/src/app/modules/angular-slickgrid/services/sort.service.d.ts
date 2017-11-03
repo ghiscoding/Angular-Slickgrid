@@ -1,4 +1,4 @@
-import { GridOption } from './../models/index';
+import { GridOption } from './../models';
 export declare class SortService {
     subscriber: any;
     /**

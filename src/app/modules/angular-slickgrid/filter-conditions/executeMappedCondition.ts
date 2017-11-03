@@ -8,7 +8,7 @@ import { dateUsFilterCondition } from './dateUsFilterCondition';
 import { dateFilterCondition } from './dateFilterCondition';
 import { numberFilterCondition } from './numberFilterCondition';
 import { stringFilterCondition } from './stringFilterCondition';
-import { FieldType } from '../models/index';
+import { FieldType } from '../models';
 
 export const executeMappedCondition: FilterCondition = (options: FilterConditionOption) => {
   // execute the mapped type, or default to String condition check

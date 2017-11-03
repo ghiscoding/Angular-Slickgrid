@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { Editor, KeyCode } from './../models/index';
+import { Editor, KeyCode } from './../models';
 
 const defaultDecimalPlaces = 0;
 const allowEmptyValue = false;

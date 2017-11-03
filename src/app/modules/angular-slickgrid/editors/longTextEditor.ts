@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { Editor, HtmlElementPosition, KeyCode } from './../models/index';
+import { Editor, HtmlElementPosition, KeyCode } from './../models';
 
 /*
  * An example of a 'detached' editor.

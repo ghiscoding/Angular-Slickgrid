@@ -1,4 +1,4 @@
-import { Editor } from './../models/index';
+import { Editor } from './../models';
 export declare class CheckboxEditor implements Editor {
     private args;
     $input: any;
