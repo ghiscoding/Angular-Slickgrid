@@ -1,14 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Editors, Formatters } from './../modules/angular-slickgrid';
 import { GridExtraUtils, ResizerService } from './../modules/angular-slickgrid/services';
-import { OnCellClickArgs, Column, FieldType, Formatter, GridOption } from './../modules/angular-slickgrid/models/index';
+import { OnEventArgs, Column, FieldType, Formatter, GridOption } from './../modules/angular-slickgrid/models/index';
 
 @Component({
   templateUrl: './grid-editor.component.html'
 })
 export class GridEditorComponent implements OnInit {
   title = 'Example 4: Editors';
-  subTitle = `inline editors (not yet implement) and onCellClick editor (execute an action, e.g: open a modal window)`;
+  subTitle = `Inline Editors and onCellClick Editor (execute an action, e.g: open a modal window)`;
 
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -26,24 +26,27 @@ export class GridEditorComponent implements OnInit {
         id: 'edit', field: 'id',
         formatter: Formatters.editIcon,
         maxWidth: 30,
-        onCellClick: (args: OnCellClickArgs) => {
+        onCellClick: (args: OnEventArgs) => {
           console.log(args);
-          console.log(this);
         }
       },
       {
         id: 'delete', field: 'id',
         formatter: Formatters.deleteIcon,
         maxWidth: 30,
-        onCellClick: (args: OnCellClickArgs) => {
+        onCellClick: (args: OnEventArgs) => {
           console.log(args);
-          console.log(this);
         }
       },
       { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, editor: Editors.longText },
-      { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, editor: Editors.text },
+      { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, editor: Editors.text,
+        onCellChange: (args: OnEventArgs) => {
+        alert('onCellChange directly attached to the column definition');
+        console.log(args);
+        }
+      },
       { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, editor: Editors.integer },
-      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, editor: Editors.date },
+      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.date/*, editor: Editors.date*/ },
       { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date },
       { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, editor: Editors.checkbox }
     ];
