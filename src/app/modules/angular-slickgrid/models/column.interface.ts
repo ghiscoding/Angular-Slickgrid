@@ -1,7 +1,7 @@
 import { Editor } from './editor.interface';
 import { FieldType } from './fieldType';
 import { Formatter } from './formatter.interface';
-import { OnCellClickArgs } from './onCellClickArgs.interface';
+import { OnEventArgs } from './onEventArgs.interface';
 import { Sorter } from './sorter.interface';
 
 export interface Column {
@@ -28,7 +28,8 @@ export interface Column {
   maxWidth?: number;
   minWidth?: number;
   name?: string;
-  onCellClick?: (args: OnCellClickArgs) => void;
+  onCellChange?: (args: OnEventArgs) => void;
+  onCellClick?: (args: OnEventArgs) => void;
   previousWidth?: number;
   resizable?: boolean;
   rerenderOnResize?: boolean;
