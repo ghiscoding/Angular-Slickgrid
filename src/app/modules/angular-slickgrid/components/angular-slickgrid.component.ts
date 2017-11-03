@@ -92,9 +92,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     this.gridChanged.emit(this.grid);
     this.dataviewChanged.emit(this._dataView);
 
-    if (this._gridOptions.enableColumnPicker) {
-      const columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
-    }
+    this.attachDifferentControlOrPlugins(this.grid, this._gridOptions, this._dataView);
+
 
     this.grid.init();
     this._dataView.beginUpdate();
@@ -105,6 +104,33 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
 
     // attach resize ONLY after the dataView is ready
     this.attachResizeHook(this.grid, this._gridOptions);
+  }
+
+  attachDifferentControlOrPlugins(grid: any, options: GridOption, dataView: any) {
+    if (options.enableColumnPicker) {
+      const columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, options);
+    }
+    if (options.enableAutoTooltip) {
+      const columnpicker = new Slick.Controls.AutoTooltips(options.autoTooltipOptions || {});
+    }
+    if (options.enableRowSelection) {
+      const columnpicker = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
+    }
+    if (options.enableHeaderButton) {
+      const columnpicker = new Slick.RowSelectionModel(options.headerMenuOptions || {});
+    }
+    if (options.enableHeaderMenu) {
+      const columnpicker = new Slick.RowSelectionModel(options.headerMenuOptions || {});
+    }
+    if (options.registerPlugins !== undefined) {
+      if (Array.isArray(options.registerPlugins)) {
+        options.registerPlugins.forEach((plugin) => {
+          this.grid.registerPlugin(plugin);
+        });
+      } else {
+        this.grid.registerPlugin(options.registerPlugins);
+      }
+    }
   }
 
   attachDifferentHooks(grid: any, options: GridOption, dataView: any) {
@@ -138,6 +164,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     }
 
     // on cell click, mainly used with the columnDef.action callback
+    this.gridEventService.attachOnCellChange(grid, this._gridOptions, dataView);
     this.gridEventService.attachOnClick(grid, this._gridOptions, dataView);
 
     // if enable, change background color on mouse over
