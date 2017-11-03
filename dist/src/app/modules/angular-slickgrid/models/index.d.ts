@@ -25,7 +25,7 @@ export { HtmlElementPosition } from './htmlElementPosition.interface';
 export { KeyCode } from './keyCode.enum';
 export { GridOption } from './gridOption.interface';
 export { OdataOption } from './odataOption.interface';
-export { OnCellClickArgs } from './onCellClickArgs.interface';
+export { OnEventArgs } from './onEventArgs.interface';
 export { OperatorType } from './operatorType';
 export { Pagination } from './pagination.interface';
 export { PaginationChangedArgs } from './paginationChangedArgs.interface';

@@ -13,13 +13,9 @@ The goal is of course to be able to run SlickGrid within Angular 4+ but also to 
 ### NPM Package
 [Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
 
-<a name="wiki"></a>
-
 ## Wiki / Documentation
 The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Validation - Wiki](https://github.com/ghiscoding/angular-slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with.
 
-
-<a name="main-features"></a>
 
 ## Main features
 You can see some screenshots below and the instructions down below.
@@ -28,9 +24,8 @@ This is a work in progress, but so far here are some of the features that `angul
 - Easier use of SlickGrid within `Angular` as it is just a component (simply pass a column definitions and a dataset and you're good to go)
 - Bootstrap Theme with SASS variables for extra customization (if you create a theme, then please make a PR)
 - Auto-resize (boolean flag), will resize the datagrid viewport with available space even on browser resize (basically takes available space of it's container)
-- Integrated Plugins.
-    - Column Picker (show/hide any column by doing `right+click` in the header, click [here to see print screen](/screenshots/columnPicker.png)).
-    - ... more to come
+- Inline Editors
+- Support all SlickGrid Plugins.
 - Server side (backend) Services (filtering, sorting, pagination)
     - [GraphQL](https://github.com/ghiscoding/Angular-Slikgrid/wiki/GraphQL)
     - [OData](https://github.com/ghiscoding/Angular-Slickgrid/wiki/OData)
@@ -40,17 +35,18 @@ This is a work in progress, but so far here are some of the features that `angul
   - Formatters (a few default ones were added, and you can easily create custom ones too)
   - Optimized DataView which brings a lot of functionalities (sort, grouping, and more)
     - even server side data is saved into the SlickGrid DataView
+  - All the [SlickGrid Events](https://github.com/6pac/SlickGrid/wiki/Grid-Events) are supported, see the [Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-&-DataView-Events)
 - ... more to come
-
-<a name="missing-features"></a>
 
 ## Missing features (planned items, not necessarily in order of execution)
 The following are SlickGrid features which are not yet included in this library but will be in the eventual future.
-- Inline Editors
 - Filters to support multi-select dropdown and eventually custom filters
-- Plugins (Header Menu, Grid Menu, Column Header Buttons)
-- Row selection, will probably provide a `onRowsChanged()` in the `gridOptions` object
-- Cell click, will probably provide a `onCellClicked()` in the `gridOptions` object
+
+### License
+[MIT License](LICENSE)
+
+## Use it, like it?
+You like and use this great library `Angular-Slickgrid`? You can always upvote :star: and/or contribute :)
 
 ## Screenshots
 

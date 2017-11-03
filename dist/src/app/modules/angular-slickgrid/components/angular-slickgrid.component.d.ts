@@ -45,6 +45,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnInit 
     constructor(resizer: ResizerService, gridEventService: GridEventService, filterService: FilterService, sortService: SortService);
     ngOnInit(): void;
     ngAfterViewInit(): void;
+    attachDifferentControlOrPlugins(grid: any, options: GridOption, dataView: any): void;
     attachDifferentHooks(grid: any, options: GridOption, dataView: any): void;
     attachResizeHook(grid: any, options: GridOption): void;
     mergeGridOptions(): GridOption;

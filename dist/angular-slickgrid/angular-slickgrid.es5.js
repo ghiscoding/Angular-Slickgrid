@@ -9387,8 +9387,8 @@ var numberFilterCondition = function (options) {
     return testFilterCondition(options.operator || '==', parseFloat(options.cellValue), parseFloat(options.searchTerm));
 };
 var stringFilterCondition = function (options) {
-    // make sure the cell value is a string by casting it
-    options.cellValue = options.cellValue.toString();
+    // make sure the cell value is a string by casting it when possible
+    options.cellValue = (options.cellValue === undefined || options.cellValue === null) ? '' : options.cellValue.toString();
     if (options.operator === '*') {
         return options.cellValue.startsWith(options.searchTerm);
     }
@@ -9543,13 +9543,13 @@ var Formatters = {
     yesNo: yesNoFormatter
 };
 var moment$11 = moment_min || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-var DATE_FORMAT = 'M/D/YY';
+var FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
 var dateUsShortSorter = function (value1, value2, sortDirection) {
-    if (!moment$11(value1, DATE_FORMAT, true).isValid() || !moment$11(value2, DATE_FORMAT, true).isValid()) {
+    if (!moment$11(value1, FORMAT$8, true).isValid() || !moment$11(value2, FORMAT$8, true).isValid()) {
         return 0;
     }
-    var /** @type {?} */ date1 = moment$11(value1, DATE_FORMAT, true);
-    var /** @type {?} */ date2 = moment$11(value2, DATE_FORMAT, true);
+    var /** @type {?} */ date1 = moment$11(value1, FORMAT$8, true);
+    var /** @type {?} */ date2 = moment$11(value2, FORMAT$8, true);
     var /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
     return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
 };
@@ -9564,24 +9564,24 @@ var dateSorter = function (value1, value2, sortDirection) {
     return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
 };
 var moment$13 = moment_min || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-var DATE_FORMAT$1 = 'YYYY-MM-DD';
+var FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
 var dateIsoSorter = function (value1, value2, sortDirection) {
-    if (!moment$13(value1, DATE_FORMAT$1, true).isValid() || !moment$13(value2, DATE_FORMAT$1, true).isValid()) {
+    if (!moment$13(value1, FORMAT$9, true).isValid() || !moment$13(value2, FORMAT$9, true).isValid()) {
         return 0;
     }
-    var /** @type {?} */ date1 = moment$13(value1, DATE_FORMAT$1, true);
-    var /** @type {?} */ date2 = moment$13(value2, DATE_FORMAT$1, true);
+    var /** @type {?} */ date1 = moment$13(value1, FORMAT$9, true);
+    var /** @type {?} */ date2 = moment$13(value2, FORMAT$9, true);
     var /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
     return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
 };
 var moment$14 = moment_min || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-var DATE_FORMAT$2 = 'M/D/YYYY';
+var FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
 var dateUsSorter = function (value1, value2, sortDirection) {
-    if (!moment$14(value1, DATE_FORMAT$2, true).isValid() || !moment$14(value2, DATE_FORMAT$2, true).isValid()) {
+    if (!moment$14(value1, FORMAT$10, true).isValid() || !moment$14(value2, FORMAT$10, true).isValid()) {
         return 0;
     }
-    var /** @type {?} */ date1 = moment$14(value1, DATE_FORMAT$2, true);
-    var /** @type {?} */ date2 = moment$14(value2, DATE_FORMAT$2, true);
+    var /** @type {?} */ date1 = moment$14(value1, FORMAT$10, true);
+    var /** @type {?} */ date2 = moment$14(value2, FORMAT$10, true);
     var /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
     return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
 };
@@ -9591,7 +9591,23 @@ var numericSorter = function (value1, value2, sortDirection) {
     return sortDirection * (x === y ? 0 : (x > y ? 1 : -1));
 };
 var stringSorter = function (value1, value2, sortDirection) {
-    return sortDirection * (value1 === value2 ? 0 : (value1 > value2 ? 1 : -1));
+    var /** @type {?} */ position;
+    if (value1 === null) {
+        position = -1;
+    }
+    else if (value2 === null) {
+        position = 1;
+    }
+    else if (value1 === value2) {
+        position = 0;
+    }
+    else if (sortDirection) {
+        position = value1 < value2 ? -1 : 1;
+    }
+    else if (!sortDirection) {
+        position = value1 < value2 ? 1 : -1;
+    }
+    return sortDirection * position;
 };
 var Sorters = {
     date: dateSorter,
@@ -9905,24 +9921,53 @@ var GridEventService = /** @class */ (function () {
      * @param {?} dataView
      * @return {?}
      */
-    GridEventService.prototype.attachOnClick = function (grid, gridOptions, dataView) {
-        grid.onClick.subscribe(function (e, args) {
+    GridEventService.prototype.attachOnCellChange = function (grid, gridOptions, dataView) {
+        // subscribe to this Slickgrid event of onCellChange
+        grid.onCellChange.subscribe(function (e, args) {
             if (!e || !args || !args.grid || args.cell === undefined || !args.grid.getColumns || !args.grid.getDataItem) {
                 return;
             }
             var /** @type {?} */ column = args.grid.getColumns()[args.cell];
-            // so if the columns definition does have an column.onCellClick property (a function attached), then run it
-            if (typeof column.onCellClick === 'function') {
-                // attach both "this._gridOptions" and "_slickDataViewObj" since we'll need them inside the AJAX column.onClick
-                var /** @type {?} */ onCellClickArgs = {
+            // if the column definition has a onCellChange property (a callback function), then run it
+            if (typeof column.onCellChange === 'function') {
+                // add to the output gridOptions & dataView since we'll need them inside the AJAX column.onCellChange
+                var /** @type {?} */ returnedArgs = {
                     dataView: dataView,
                     gridDefinition: gridOptions,
                     grid: grid,
                     columnDef: column,
                     dataContext: args.grid.getDataItem(args.row)
                 };
-                // finally call up the Slick.column.onClicks.... function
-                column.onCellClick(onCellClickArgs);
+                // finally call up the Slick.column.onCellChanges.... function
+                column.onCellChange(returnedArgs);
+                // e.stopImmediatePropagation();
+            }
+        });
+    };
+    /**
+     * @param {?} grid
+     * @param {?} gridOptions
+     * @param {?} dataView
+     * @return {?}
+     */
+    GridEventService.prototype.attachOnClick = function (grid, gridOptions, dataView) {
+        grid.onClick.subscribe(function (e, args) {
+            if (!e || !args || !args.grid || args.cell === undefined || !args.grid.getColumns || !args.grid.getDataItem) {
+                return;
+            }
+            var /** @type {?} */ column = args.grid.getColumns()[args.cell];
+            // if the column definition has a onCellClick property (a callback function), then run it
+            if (typeof column.onCellClick === 'function') {
+                // add to the output gridOptions & dataView since we'll need them inside the AJAX column.onClick
+                var /** @type {?} */ returnedArgs = {
+                    dataView: dataView,
+                    gridDefinition: gridOptions,
+                    grid: grid,
+                    columnDef: column,
+                    dataContext: args.grid.getDataItem(args.row)
+                };
+                // finally call up the Slick.column.onCellClick.... function
+                column.onCellClick(returnedArgs);
                 e.stopImmediatePropagation();
             }
             // stop the click event bubbling
@@ -31756,6 +31801,7 @@ var GlobalGridOptions = {
     cellHighlightCssClass: 'slick-cell-modified',
     editable: false,
     enableCellNavigation: false,
+    enableColumnPicker: true,
     enableColumnReorder: true,
     enableMouseHoverHighlightRow: true,
     enablePagination: false,
@@ -31849,9 +31895,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.grid.setSelectionModel(new Slick.RowSelectionModel());
         this.gridChanged.emit(this.grid);
         this.dataviewChanged.emit(this._dataView);
-        if (this._gridOptions.enableColumnPicker) {
-            var /** @type {?} */ columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, this._gridOptions);
-        }
+        this.attachDifferentControlOrPlugins(this.grid, this._gridOptions, this._dataView);
         this.grid.init();
         this._dataView.beginUpdate();
         this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);
@@ -31859,6 +31903,40 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataView.endUpdate();
         // attach resize ONLY after the dataView is ready
         this.attachResizeHook(this.grid, this._gridOptions);
+    };
+    /**
+     * @param {?} grid
+     * @param {?} options
+     * @param {?} dataView
+     * @return {?}
+     */
+    AngularSlickgridComponent.prototype.attachDifferentControlOrPlugins = function (grid, options, dataView) {
+        var _this = this;
+        if (options.enableColumnPicker) {
+            var /** @type {?} */ columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, options);
+        }
+        if (options.enableAutoTooltip) {
+            var /** @type {?} */ columnpicker = new Slick.Controls.AutoTooltips(options.autoTooltipOptions || {});
+        }
+        if (options.enableRowSelection) {
+            var /** @type {?} */ columnpicker = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
+        }
+        if (options.enableHeaderButton) {
+            var /** @type {?} */ columnpicker = new Slick.RowSelectionModel(options.headerMenuOptions || {});
+        }
+        if (options.enableHeaderMenu) {
+            var /** @type {?} */ columnpicker = new Slick.RowSelectionModel(options.headerMenuOptions || {});
+        }
+        if (options.registerPlugins !== undefined) {
+            if (Array.isArray(options.registerPlugins)) {
+                options.registerPlugins.forEach(function (plugin) {
+                    _this.grid.registerPlugin(plugin);
+                });
+            }
+            else {
+                this.grid.registerPlugin(options.registerPlugins);
+            }
+        }
     };
     /**
      * @param {?} grid
@@ -31900,6 +31978,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
             }); });
         }
         // on cell click, mainly used with the columnDef.action callback
+        this.gridEventService.attachOnCellChange(grid, this._gridOptions, dataView);
         this.gridEventService.attachOnClick(grid, this._gridOptions, dataView);
         // if enable, change background color on mouse over
         if (options.enableMouseHoverHighlightRow) {
