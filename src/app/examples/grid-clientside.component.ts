@@ -36,6 +36,7 @@ export class GridClientSideComponent implements OnInit {
   ngOnInit(): void {
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', filterable: true, sortable: true, type: FieldType.string },
+      { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, type: FieldType.string },
       { id: 'duration', name: 'Duration (days)', field: 'duration', filterable: true, sortable: true, type: FieldType.number },
       { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, filterable: true, sortable: true },
       { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, filterable: true, sortable: true, type: FieldType.date },
@@ -65,6 +66,7 @@ export class GridClientSideComponent implements OnInit {
     // mock a dataset
     this.dataset = [];
     for (let i = 0; i < 1000; i++) {
+      const randomDuration = Math.round(Math.random() * 100);
       const randomYear = randomBetween(2000, 2025);
       const randomYearShort = randomBetween(10, 25);
       const randomMonth = randomBetween(1, 12);
@@ -77,7 +79,8 @@ export class GridClientSideComponent implements OnInit {
       this.dataset[i] = {
         id: i,
         title: 'Task ' + i,
-        duration: Math.round(Math.random() * 100) + '',
+        description: (i % 28 === 1) ? null : 'desc ' + i, // also add some random to test NULL field
+        duration: randomDuration,
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),          // provide a Date format
