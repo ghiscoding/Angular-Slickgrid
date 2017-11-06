@@ -1,7 +1,8 @@
-/**
- * Header Buttons Plugin
- */
-.has-buttons .slick-column-name,
+// ---------------------------------------------------------
+// Header Button Plugin - add button in header with command
+// ---------------------------------------------------------
+
+.slick-column-name,
 .slick-sort-indicator {
   /**
    * This makes all "float:right" elements after it that spill over to the next line
@@ -31,6 +32,7 @@
 
 .slick-header-button-hidden {
   width: 0;
+  margin-right: -8px;
 
   -webkit-transition: 0.2s width;
   -ms-transition: 0.2s width;
@@ -41,69 +43,114 @@
   width: 15px;
 }
 
+// ----------------------------------------------
+// Header Menu Plugin - Excel-like header
+// ----------------------------------------------
 
-/**
- * Header Menu Plugin
- */
- /* Menu button */
+.slick-header-menubutton {
+ background-position: center center;
+ background-repeat: no-repeat;
+ cursor: pointer;
+ display: none;
+ position: absolute;
+
+ // The next few items are already defined in the slick-headermenu.less file and it should stay that way, *unless* you also replace the button image included there.
+ bottom: 0;
+ right: 3px;
+ top: 0;
+ width: 14px;
+}
+.slick-header-menubutton:before {
+ font-family: $icon-font-family;
+ font-size: 14px;
+ content: "\f13a";
+}
+
+.slick-header-column:hover {
  .slick-header-menubutton {
-   position: absolute;
-   right: 0;
-   top: 0;
-   bottom: 0;
-   width: 14px;
-   background-repeat: no-repeat;
-   background-position: left center;
-   cursor: pointer;
-   display: none;
-   border-left: thin ridge silver;
-   /*background-image: url(../../images/down.gif);*/
- }
- .slick-header-menubutton:before {
-   font-size: 12px;
-   content: "\25bc";
- }
-
- .slick-header-column:hover > .slick-header-menubutton,
- .slick-header-column-active .slick-header-menubutton {
    display: inline-block;
  }
+}
+.slick-header-menu {
+ background: none repeat scroll 0 0 white;
+ border: 1px solid #BFBDBD;
+ min-width: 175px;
+ padding: 4px;
+ z-index: 100000;
+ cursor: default;
+ display: inline-block;
+ margin: 0;
+ position: absolute;
 
- /* Menu */
- .slick-header-menu {
-   position: absolute;
-   display: inline-block;
-   margin: 0;
-   padding: 2px;
-   cursor: default;
+ button {
+   border: 1px solid #BFBDBD;
+   background-color: white;
+   width: 45px;
+   padding: 4px;
+   margin: 4px 4px 4px 0;
  }
 
-
- /* Menu items */
- .slick-header-menuitem {
-   list-style: none;
-   margin: 0;
-   padding: 0;
-   cursor: pointer;
+ .filter {
+   border: 1px solid #BFBDBD;
+   font-size: 8pt;
+   height: 400px;
+   margin-top: 6px;
+   overflow: scroll;
+   padding: 4px;
+   white-space: nowrap;
+   width: 200px;
  }
 
- .slick-header-menuicon {
-   display: inline-block;
-   width: 16px;
-   height: 16px;
-   vertical-align: middle;
-   margin-right: 4px;
-   background-repeat: no-repeat;
-   background-position: center center;
- }
+ .textfilter {
+   & > label {
+     display: inline-block;
+     margin-left: 5px;
+     margin-right: 10px;
+   }
 
- .slick-header-menucontent {
-   display: inline-block;
-   vertical-align: middle;
+   & > input[type=text] {
+     width: 70%;
+   }
  }
+}
 
+label {
+ display: block;
+ margin-bottom: 5px;
+}
 
- /* Disabled */
- .slick-header-menuitem-disabled {
-   color: silver;
- }
+.slick-header-menuitem {
+ border: 1px solid transparent;
+ padding: 2px 4px;
+ cursor: pointer;
+ list-style: none outside none;
+ margin: 0;
+}
+
+.slick-header-menuicon {
+ background-position: center center;
+ background-repeat: no-repeat;
+ display: inline-block;
+ height: 16px;
+ margin-right: 4px;
+ vertical-align: middle;
+ width: 16px;
+}
+
+.slick-header-menucontent {
+ display: inline-block;
+ vertical-align: middle;
+}
+
+.slick-header-menuitem:hover {
+ border-color: #BFBDBD;
+ background-color: rgb(246, 246, 246);
+}
+.slick-header-menuitem-disabled {
+ border-color: transparent !important;
+ background: inherit !important;
+}
+/* Disabled */
+.slick-header-menuitem-disabled {
+ color: silver;
+}

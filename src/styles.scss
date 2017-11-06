@@ -8,3 +8,12 @@
   color: grey;
   margin-bottom: 10px;
 }
+.red {
+    color: red;
+}
+.faded {
+    opacity: 0.2;
+}
+.faded:hover {
+    opacity: 0.5;
+}

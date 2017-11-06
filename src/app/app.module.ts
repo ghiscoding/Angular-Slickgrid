@@ -9,6 +9,9 @@ import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
+import { GridHeaderButtonComponent } from './examples/grid-headerbutton.component';
+import { GridHeaderMenuComponent } from './examples/grid-headermenu.component';
+import { GridMenuComponent } from './examples/grid-menu.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
 
@@ -24,6 +27,9 @@ import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angu
     GridClientSideComponent,
     GridEditorComponent,
     GridFormatterComponent,
+    GridHeaderButtonComponent,
+    GridHeaderMenuComponent,
+    GridMenuComponent,
     GridOdataComponent,
     GridGraphqlComponent
   ],

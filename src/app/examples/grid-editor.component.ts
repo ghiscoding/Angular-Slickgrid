@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Editors, Formatters } from './../modules/angular-slickgrid';
 import { GridExtraUtils, ResizerService } from './../modules/angular-slickgrid/services';
 import { Column, FieldType, Formatter, GridOption, OnEventArgs } from './../modules/angular-slickgrid/models';
@@ -7,7 +7,7 @@ import { Column, FieldType, Formatter, GridOption, OnEventArgs } from './../modu
   templateUrl: './grid-editor.component.html'
 })
 export class GridEditorComponent implements OnInit {
-  title = 'Example 4: Editors';
+  title = 'Editors';
   subTitle = `Inline Editors and onCellClick Editor (execute an action, e.g: open a modal window)`;
 
   columnDefinitions: Column[];

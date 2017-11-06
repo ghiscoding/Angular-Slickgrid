@@ -1,5 +1,6 @@
-import { BackendEventChanged } from './backendEventChanged.interface';
 import { AutoResizeOption } from './autoResizeOption.interface';
+import { BackendEventChanged } from './backendEventChanged.interface';
+import { GridMenu } from './gridMenu.interface';
 import { Pagination } from './pagination.interface';
 import { PaginationChangedArgs } from './paginationChangedArgs.interface';
 import { SortChangedArgs } from './sortChangedArgs.interface';
@@ -23,6 +24,7 @@ export interface GridOption {
   enableColumnPicker?: boolean;
   enableColumnReorder?: boolean;
   enableFiltering?: boolean;
+  enableGridMenu?: boolean;
   enableHeaderButton?: boolean;
   enableHeaderMenu?: boolean;
   enableMouseHoverHighlightRow?: boolean;
@@ -33,6 +35,7 @@ export interface GridOption {
   explicitInitialization?: boolean;
   forceFitColumns?: boolean;
   gridContainerId?: string;
+  gridMenu?: GridMenu;
   gridId?: string;
   headerRowHeight?: number;
   headerButtonOptions?: {
@@ -43,6 +46,9 @@ export interface GridOption {
     buttonImage?: string;
   };
   multiColumnSort?: boolean;
+  onGridMenuCommand?: (e: Event, args: any) => void;
+  onHeaderButtonCommand?: (e: Event, args: any) => void;
+  onHeaderMenuCommand?: (e: Event, args: any) => void;
   pagination?: Pagination;
   registerPlugins?: any | any[]; // e.g.: Slick.CheckboxSelectColumn
   rowHeight?: number;

@@ -4,3 +4,9 @@
 .red {
   color: red;
 }
+.faded {
+    opacity: 0.2;
+}
+.faded:hover {
+    opacity: 0.5;
+}

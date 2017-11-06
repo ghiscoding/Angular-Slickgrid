@@ -5,6 +5,7 @@ import 'slickgrid/slick.core';
 import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
+import 'slickgrid/controls/slick.gridmenu';
 import 'slickgrid/plugins/slick.autotooltips';
 import 'slickgrid/plugins/slick.cellcopymanager';
 import 'slickgrid/plugins/slick.cellexternalcopymanager';
@@ -19,9 +20,9 @@ import 'slickgrid/plugins/slick.rowselectionmodel';
 import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.pager';
 import { castToPromise } from './../services/utilities';
-import { Column, ColumnFilters, FormElementType, GridOption } from './../models';
+import { CellArgs, Column, ColumnFilters, FormElementType, GridOption } from './../models';
 import { AfterViewInit, Component, EventEmitter , Injectable, Input, Output, OnInit } from '@angular/core';
-import { FilterService, GridEventService, SortService, ResizerService } from './../services';
+import { ControlPluginService, FilterService, GridEventService, SortService, ResizerService } from './../services';
 import { GlobalGridOptions } from './../global-grid-options';
 
 // using external js modules in Angular
@@ -69,11 +70,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     return this._dataView.getItems();
   }
 
-  constructor(private resizer: ResizerService,
+  constructor(
+    private controlPluginService: ControlPluginService,
     private gridEventService: GridEventService,
     private filterService: FilterService,
-    private sortService: SortService) {
-  }
+    private resizer: ResizerService,
+    private sortService: SortService
+  ) {}
 
   ngOnInit(): void {
     this.gridHeightString = `${this.gridHeight}px`;
@@ -92,8 +95,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     this.gridChanged.emit(this.grid);
     this.dataviewChanged.emit(this._dataView);
 
-    this.attachDifferentControlOrPlugins(this.grid, this._gridOptions, this._dataView);
-
+    this.controlPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
 
     this.grid.init();
     this._dataView.beginUpdate();
@@ -104,33 +106,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
 
     // attach resize ONLY after the dataView is ready
     this.attachResizeHook(this.grid, this._gridOptions);
-  }
-
-  attachDifferentControlOrPlugins(grid: any, options: GridOption, dataView: any) {
-    if (options.enableColumnPicker) {
-      const columnpicker = new Slick.Controls.ColumnPicker(this.columnDefinitions, this.grid, options);
-    }
-    if (options.enableAutoTooltip) {
-      const columnpicker = new Slick.Controls.AutoTooltips(options.autoTooltipOptions || {});
-    }
-    if (options.enableRowSelection) {
-      const columnpicker = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-    }
-    if (options.enableHeaderButton) {
-      const columnpicker = new Slick.RowSelectionModel(options.headerMenuOptions || {});
-    }
-    if (options.enableHeaderMenu) {
-      const columnpicker = new Slick.RowSelectionModel(options.headerMenuOptions || {});
-    }
-    if (options.registerPlugins !== undefined) {
-      if (Array.isArray(options.registerPlugins)) {
-        options.registerPlugins.forEach((plugin) => {
-          this.grid.registerPlugin(plugin);
-        });
-      } else {
-        this.grid.registerPlugin(options.registerPlugins);
-      }
-    }
   }
 
   attachDifferentHooks(grid: any, options: GridOption, dataView: any) {

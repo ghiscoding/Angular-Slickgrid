@@ -54,7 +54,7 @@
     "jquery": "^3.2.1",
     "moment-mini": "^2.18.1",
     "rxjs": "^5.5.0",
-    "slickgrid": "^2.3.3",
+    "slickgrid": "^2.3.9",
     "vinyl-paths": "^2.1.0",
     "zone.js": "^0.8.17"
   },

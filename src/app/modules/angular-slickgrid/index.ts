@@ -26,7 +26,7 @@ export { HtmlElementPosition } from './models/htmlElementPosition.interface';
 export { KeyCode } from './models/keyCode.enum';
 export { GridOption } from './models/gridOption.interface';
 export { OdataOption } from './models/odataOption.interface';
-export { OnCellClickArgs } from './models/onCellClickArgs.interface';
+export { OnEventArgs } from './models/onEventArgs.interface';
 export { OperatorType } from './models/operatorType';
 export { Pagination } from './models/pagination.interface';
 export { PaginationChangedArgs } from './models/paginationChangedArgs.interface';
@@ -35,13 +35,13 @@ export { SortChangedArgs } from './models/sortChangedArgs.interface';
 export { SortDirection } from './models/sortDirection';
 export { Sorter } from './models/sorter.interface';
 
-
 export { Editors } from './editors';
 export { FilterConditions } from './filter-conditions';
 export { FilterTemplates } from './filter-templates';
 export { Formatters } from './formatters';
 export { Sorters } from './sorters';
 
+export { ControlPluginService } from './services/controlPlugin.service';
 export { FilterService } from './services/filter.service';
 export { GridEventService } from './services/gridEvent.service';
 export { GraphqlService } from './services/graphql.service';
