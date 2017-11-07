@@ -15,7 +15,7 @@ import {
   SortChangedArgs,
   SortDirection
 } from './../models';
-import QueryBuilder from 'graphql-query-builder';
+import QueryBuilder from './graphqlQueryBuilder';
 let timer: any;
 
 export class GraphqlService implements BackendService {

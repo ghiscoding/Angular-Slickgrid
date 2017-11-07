@@ -1,4 +1,4 @@
-import { OnEventArgs, CellArgs, GridOption } from './../models/index';
+import { OnEventArgs, CellArgs, GridOption } from './../models';
 
 export class GridEventService {
   /* OnMouseHover (Enter/Leave) Events */

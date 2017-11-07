@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Editors, Formatters } from './../modules/angular-slickgrid';
-import { GridExtraUtils, ResizerService } from './../modules/angular-slickgrid/services';
-import { Column, FieldType, Formatter, GridOption, OnEventArgs } from './../modules/angular-slickgrid/models';
+import { Column, Editors, FieldType, Formatter, Formatters, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-editor.component.html'
 })
 export class GridEditorComponent implements OnInit {
-  title = 'Editors';
-  subTitle = `Inline Editors and onCellClick Editor (execute an action, e.g: open a modal window)`;
+  title = 'Example 3: Editors';
+  subTitle = `
+  Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors">Wiki link</a>).
+  `;
 
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -25,6 +25,7 @@ export class GridEditorComponent implements OnInit {
       {
         id: 'edit', field: 'id',
         formatter: Formatters.editIcon,
+        minWidth: 30,
         maxWidth: 30,
         onCellClick: (args: OnEventArgs) => {
           console.log(args);
@@ -33,6 +34,7 @@ export class GridEditorComponent implements OnInit {
       {
         id: 'delete', field: 'id',
         formatter: Formatters.deleteIcon,
+        minWidth: 30,
         maxWidth: 30,
         onCellClick: (args: OnEventArgs) => {
           console.log(args);
@@ -96,7 +98,9 @@ export class GridEditorComponent implements OnInit {
     grid.onClick.subscribe((e, args) => {
       const column = GridExtraUtils.getColumnDefinitionAndData(args);
       console.log('onClick', args, column);
-      if (column.columnDef.id === 'delete') {
+      if (column.columnDef.id === 'edit') {
+        alert('open a modal window to edit: ' + column.dataContext.title);
+      } else if (column.columnDef.id === 'delete') {
         if (confirm('Are you sure?')) {
           this.dataviewObj.deleteItem(column.dataContext.id);
           this.dataviewObj.refresh();

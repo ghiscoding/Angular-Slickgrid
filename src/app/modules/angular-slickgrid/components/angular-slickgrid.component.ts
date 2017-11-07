@@ -19,11 +19,11 @@ import 'slickgrid/plugins/slick.headerbuttons';
 import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
-import { castToPromise } from './../services/utilities';
-import { CellArgs, Column, FormElementType, GridOption } from './../models';
 import { AfterViewInit, Component, EventEmitter , Injectable, Input, Output, OnInit } from '@angular/core';
-import { ControlPluginService, FilterService, GridEventService, SortService, ResizerService } from './../services';
+import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
+import { CellArgs, Column, FormElementType, GridOption } from './../models';
+import { ControlPluginService, FilterService, GridEventService, SortService, ResizerService } from './../services';
 
 // using external js modules in Angular
 declare var Slick: any;
@@ -88,14 +88,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     this._gridOptions = this.mergeGridOptions();
 
     this._dataView = new Slick.Data.DataView();
-
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this._gridOptions);
     this.grid.setSelectionModel(new Slick.RowSelectionModel());
-    this.gridChanged.emit(this.grid);
-    this.dataviewChanged.emit(this._dataView);
 
     this.controlPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
     this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);
+
+    // emit the Grid & DataView object to make them available in parent component
+    this.gridChanged.emit(this.grid);
+    this.dataviewChanged.emit(this._dataView);
 
     this.grid.init();
     this._dataView.beginUpdate();

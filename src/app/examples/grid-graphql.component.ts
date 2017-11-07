@@ -11,11 +11,12 @@ const sampleDataRoot = '/assets/data';
   templateUrl: './grid-graphql.component.html'
 })
 export class GridGraphqlComponent implements OnInit {
-  title = 'Grid connected to Backend Server with GraphQL';
+  title = 'Example 6: Grid connected to Backend Server with GraphQL';
   subTitle = `
-    Sorting/Paging connected to a Backend GraphQL Service.
+    Sorting/Paging connected to a Backend GraphQL Service (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/GraphQL">Wiki link</a>).
     <br/>
     <ul class="small">
+      <li><span class="red">(*) NO DATA SHOWING</span> - just change Filters &amp; Pages and look at the "GraphQL Query" changing :)</li>
       <li>Only "Name" field is sortable for the demo (because we use JSON files), however "multiColumnSort: true" is also supported</li>
       <li>String column also support operator (>, >=, <, <=, <>, !=, =, ==, *)
       <ul>

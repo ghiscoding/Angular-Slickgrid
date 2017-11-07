@@ -11,9 +11,9 @@ const sampleDataRoot = '/assets/data';
   templateUrl: './grid-odata.component.html'
 })
 export class GridOdataComponent implements OnInit {
-  title = 'Grid connected to Backend Server with OData';
+  title = 'Example 5: Grid connected to Backend Server with OData';
   subTitle = `
-    Sorting/Paging connected to a Backend OData Service.
+    Sorting/Paging connected to a Backend OData Service (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/OData">Wiki link</a>).
     <br/>
     <ul class="small">
       <li>Only "Name" field is sortable for the demo (because we use JSON files), however "multiColumnSort: true" is also supported</li>

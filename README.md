@@ -14,7 +14,7 @@ The goal is of course to be able to run SlickGrid within Angular 4+ but also to 
 [Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
 
 ## Wiki / Documentation
-The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Validation - Wiki](https://github.com/ghiscoding/angular-slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with.
+The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Validation - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with.
 
 
 ## Main features

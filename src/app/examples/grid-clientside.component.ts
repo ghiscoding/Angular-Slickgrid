@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Formatters } from './../modules/angular-slickgrid';
-import { Column, FieldType, Formatter, FormElementType, GridOption } from './../modules/angular-slickgrid/models';
+import { Column, FieldType, Formatter, Formatters, FormElementType, GridOption } from './../modules/angular-slickgrid';
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -10,24 +9,24 @@ function randomBetween(min, max) {
   templateUrl: './grid-clientside.component.html'
 })
 export class GridClientSideComponent implements OnInit {
-  title = 'Client Side Sort/Filter';
+  title = 'Example 4: Client Side Sort/Filter';
   subTitle = `
-  Sort/Filter on client side only using SlickGrid DataView
-  <br/>
-  <ul class="small">
-    <li>Support multi-sort (by default), hold "Shift" key and click on the next column to sort.
-    <li>All column types support the following operators: (>, >=, <, <=, <>, !=, =, ==, *)
-    <ul>
-      <li>Example: >100 ... >=2001-01-01 ... >02/28/17</li>
-      <li><b>Note:</b> For filters to work properly (default is string), make sure to provide a FieldType (type is against the dataset, not the Formatter)</li>
+    Sort/Filter on client side only using SlickGrid DataView (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Sorting">Wiki link</a>)
+    <br/>
+    <ul class="small">
+      <li>Support multi-sort (by default), hold "Shift" key and click on the next column to sort.
+      <li>All column types support the following operators: (>, >=, <, <=, <>, !=, =, ==, *)
+      <ul>
+        <li>Example: >100 ... >=2001-01-01 ... >02/28/17</li>
+        <li><b>Note:</b> For filters to work properly (default is string), make sure to provide a FieldType (type is against the dataset, not the Formatter)</li>
+      </ul>
+      <li>Date Filters</li>
+      <ul>
+        <li>FieldType of dateUtc/date (from dataset) can use an extra option of "filterSearchType" to let user filter more easily. For example, in the "UTC Date" field below, you can type "&gt;02/28/2017", also when dealing with UTC you have to take the time difference in consideration.</li>
+      </ul>
+      <li>On String filters, (*) can be used as startsWith (Hello* => matches "Hello Word") ... endsWith (*Doe => matches: "John Doe")</li>
     </ul>
-    <li>Date Filters</li>
-    <ul>
-      <li>FieldType of dateUtc/date (from dataset) can use an extra option of "filterSearchType" to let user filter more easily. For example, in the "UTC Date" field below, you can type "&gt;02/28/2017", also when dealing with UTC you have to take the time difference in consideration.</li>
-    </ul>
-    <li>On String filters, (*) can be used as startsWith (Hello* => matches "Hello Word") ... endsWith (*Doe => matches: "John Doe")</li>
-  </ul>
-`;
+  `;
 
   columnDefinitions: Column[];
   gridOptions: GridOption;

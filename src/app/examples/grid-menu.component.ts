@@ -1,7 +1,5 @@
-import { FormElementType } from './../../../.ng_build/ts/src/app/modules/angular-slickgrid/models/formElementType';
 import { Component, OnInit } from '@angular/core';
-import { Formatters } from './../modules/angular-slickgrid';
-import { Column, FieldType, Formatter, GridOption } from './../modules/angular-slickgrid/models';
+import { Column, FieldType, Formatter, Formatters, FormElementType, GridOption } from './../modules/angular-slickgrid';
 import * as $ from 'jquery';
 
 // create a custom Formatter to highlight negative values in red
@@ -18,9 +16,11 @@ const highlightingFormatter = (row, cell, value, columnDef, dataContext) => {
   templateUrl: './grid-menu.component.html'
 })
 export class GridMenuComponent implements OnInit {
-  title = 'Grid Menu Control';
+  title = 'Example 9: Grid Menu Control';
   subTitle = `
-    This example demonstrates using the <b>Slick.Controls.GridMenu</b> plugin to easily add a Grid Menu (aka hamburger menu) on the top right corner of the grid.<br/>
+    This example demonstrates using the <b>Slick.Controls.GridMenu</b> plugin to easily add a Grid Menu (aka hamburger menu) on the top right corner of the grid.
+    (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-Menu">Wiki link</a>)
+    <br/>
     <ul>
       <li>The Grid Menu uses the following icon by default "fa-bars"&nbsp;&nbsp;<span class="fa fa-bars"></span>&nbsp;&nbsp;(which looks like a hamburger, hence the name)</li>
       <ul><li>Another icon which you could use is "fa-ellipsis-v"&nbsp;&nbsp;<span class="fa fa-ellipsis-v"></span>&nbsp;&nbsp;(which is shown in this example)</li></ul>
@@ -57,35 +57,6 @@ export class GridMenuComponent implements OnInit {
         }
       }
     ];
-    for (let i = 0; i < this.columnDefinitions.length; i++) {
-      this.columnDefinitions[i].header = {
-        menu: {
-          items: [
-            {
-              iconCssClass: 'fa fa-sort-asc',
-              title: 'Sort Ascending',
-              disabled: !this.columnDefinitions[i].sortable,
-              command: 'sort-asc'
-            },
-            {
-              iconCssClass: 'fa fa-sort-desc',
-              title: 'Sort Descending',
-              disabled: !this.columnDefinitions[i].sortable,
-              command: 'sort-desc'
-            },
-            {
-              title: 'Hide Column',
-              command: 'hide'
-            },
-            {
-              iconCssClass: 'fa fa-question-circle',
-              title: 'Help',
-              command: 'help'
-            }
-          ]
-        }
-      };
-    }
 
     this.visibleColumns = this.columnDefinitions;
 
@@ -118,6 +89,12 @@ export class GridMenuComponent implements OnInit {
             command: 'toggle-filter'
           },
           {
+            iconCssClass: 'fa fa-random',
+            title: 'Toggle Top Panel',
+            disabled: false,
+            command: 'toggle-toppanel'
+          },
+          {
             iconCssClass: 'fa fa-question-circle',
             title: 'Help',
             disabled: false,
@@ -133,6 +110,8 @@ export class GridMenuComponent implements OnInit {
       onGridMenuCommand: (e, args) => {
         if (args.command === 'toggle-filter') {
           this.gridObj.setHeaderRowVisibility(!this.gridObj.getOptions().showHeaderRow);
+        } else if (args.command === 'toggle-toppanel') {
+          this.gridObj.setTopPanelVisibility(!this.gridObj.getOptions().showTopPanel);
         } else if (args.command === 'clear-filter') {
           $('.slick-headerrow-column').children().val('');
           // TODO aurelia-slickgrid should have a clearAllFilters function
@@ -169,11 +148,5 @@ export class GridMenuComponent implements OnInit {
   }
   dataviewReady(dataview) {
     this.dataviewObj = dataview;
-  }
-
-  removeColumnByIndex(array, index) {
-    return array.filter((el, i) => {
-      return index !== i;
-    });
   }
 }

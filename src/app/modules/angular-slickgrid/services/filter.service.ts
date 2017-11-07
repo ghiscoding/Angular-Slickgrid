@@ -1,5 +1,5 @@
-import { FilterConditions } from './../filter-conditions/index';
-import { FilterTemplates } from './../filter-templates/index';
+import { FilterConditions } from './../filter-conditions';
+import { FilterTemplates } from './../filter-templates';
 import {
   BackendServiceOption,
   Column,

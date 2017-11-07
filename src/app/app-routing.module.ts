@@ -16,7 +16,7 @@ const routes: Routes = [
   { path: 'formatter', component: GridFormatterComponent },
   { path: 'headerbutton', component: GridHeaderButtonComponent },
   { path: 'headermenu', component: GridHeaderMenuComponent },
-  { path: 'hamburgermenu', component: GridMenuComponent },
+  { path: 'gridmenu', component: GridMenuComponent },
   { path: 'clientside', component: GridClientSideComponent },
   { path: 'odata', component: GridOdataComponent },
   { path: 'gridgraphql', component: GridGraphqlComponent },

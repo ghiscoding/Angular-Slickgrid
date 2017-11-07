@@ -10,8 +10,10 @@ const myCustomCheckboxFormatter: Formatter = (row: number, cell: number, value: 
   templateUrl: './grid-formatter.component.html'
 })
 export class GridFormatterComponent implements OnInit {
-  title = 'Grid with Formatters';
-  subTitle = 'grid auto-resize, multi-column sort and custom/SlickGrid Formatters';
+  title = 'Example 2: Grid with Formatters';
+  subTitle = `
+    Grid with Custom and/or included Slickgrid Formatters (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Formatters">Wiki link</a>).
+  `;
 
   columnDefinitions: Column[];
   gridOptions: GridOption;
