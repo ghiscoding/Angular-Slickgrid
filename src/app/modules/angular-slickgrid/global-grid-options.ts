@@ -13,9 +13,9 @@ export const GlobalGridOptions: GridOption = {
     minWidth: 300,
     sidePadding: 0
   },
-  enableAutoResize: true,
   cellHighlightCssClass: 'slick-cell-modified',
   editable: false,
+  enableAutoResize: true,
   enableCellNavigation: false,
   enableColumnPicker: true,
   enableColumnReorder: true,
@@ -24,7 +24,7 @@ export const GlobalGridOptions: GridOption = {
   enablePagination: false,
   enableSorting: true,
   enableTextSelectionOnCells: true,
-  explicitInitialization: false,
+  explicitInitialization: true,
   forceFitColumns: false,
   headerRowHeight: 35,
   multiColumnSort: true,
@@ -35,5 +35,5 @@ export const GlobalGridOptions: GridOption = {
   },
   rowHeight: 35,
   showHeaderRow: false,
-  topPanelHeight: 25
+  topPanelHeight: 35
 };

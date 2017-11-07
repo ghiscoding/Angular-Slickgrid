@@ -5,7 +5,9 @@ import 'slickgrid/slick.core';
 import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
+import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.gridmenu';
+import 'slickgrid/controls/slick.pager';
 import 'slickgrid/plugins/slick.autotooltips';
 import 'slickgrid/plugins/slick.cellcopymanager';
 import 'slickgrid/plugins/slick.cellexternalcopymanager';
@@ -17,10 +19,8 @@ import 'slickgrid/plugins/slick.headerbuttons';
 import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
-import 'slickgrid/controls/slick.columnpicker';
-import 'slickgrid/controls/slick.pager';
 import { castToPromise } from './../services/utilities';
-import { CellArgs, Column, ColumnFilters, FormElementType, GridOption } from './../models';
+import { CellArgs, Column, FormElementType, GridOption } from './../models';
 import { AfterViewInit, Component, EventEmitter , Injectable, Input, Output, OnInit } from '@angular/core';
 import { ControlPluginService, FilterService, GridEventService, SortService, ResizerService } from './../services';
 import { GlobalGridOptions } from './../global-grid-options';
@@ -47,7 +47,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
   private _dataset: any[];
   private _dataView: any;
   private _gridOptions: GridOption;
-  private _columnFilters: ColumnFilters = {};
   grid: any;
   gridPaginationOptions: GridOption;
   gridHeightString: string;
@@ -96,11 +95,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     this.dataviewChanged.emit(this._dataView);
 
     this.controlPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
+    this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);
 
     this.grid.init();
     this._dataView.beginUpdate();
-    this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);
-
     this._dataView.setItems(this._dataset);
     this._dataView.endUpdate();
 
@@ -116,8 +114,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
 
     // attach external filter (backend) when available or default onFilter (dataView)
     if (options.enableFiltering) {
-      this.filterService.init(grid, options, this.columnDefinitions, this._columnFilters);
-      (options.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, options) : this.filterService.attachLocalOnFilter(this._dataView);
+      this.filterService.init(grid, options, this.columnDefinitions);
+      (options.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, options) : this.filterService.attachLocalOnFilter(grid, options, this._dataView);
     }
 
     if (options.onBackendEventApi && options.onBackendEventApi.onInit) {
