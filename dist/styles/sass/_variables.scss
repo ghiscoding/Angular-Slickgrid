@@ -7,7 +7,7 @@
 /* SlickGrid Bootstrap variables */
 /* Used by slick-bootstrap.scss */
 $border-color:                          #dddddd !default;
-$font-size-base:          			    14px !default;
+$font-size-base:          			        14px !default;
 $font-family:                           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
 
 /* Slickgrid container, including headers but excluding pagination */
@@ -58,22 +58,39 @@ $icon-font-size:                        14px !default;
 $icon-sort-asc:                         "\f0d8" !default;
 $icon-sort-desc:                        "\f0d7" !default;
 $icon-sort-color:                       rgb(76, 128, 190) !default;
+$icon-sort-position-right:              10px;
+$icon-sort-position-top:                ((15px * $header-row-count) - 15px);
 $table-background:                      transparent !default;
 $container-border:                      0px solid $border-color !default;
-$link-color:        				    #08c !default;
+$link-color:        				            #08c !default;
 $link-color-hover:                      darker($link-color, 15%) !default;
-$table-bg-accent: 					    #f9f9f9 !default; // for striping every second row
-$gray-dark:              			    #333 !default;
-$text-color:             			    $gray-dark !default;
-$navbar-default-link-hover-color:	    $gray-dark !default;
+$table-bg-accent: 					            #f9f9f9 !default; // for striping every second row
+$gray-dark:              			          #333 !default;
+$text-color:             			          $gray-dark !default;
+$navbar-default-link-hover-color:	      $gray-dark !default;
 
 /* Column picker */
 $column-picker-background-color:        #f8f8f8 !default;
 $column-picker-border:                  1px solid #b8b8b8 !default;
 $column-picker-border-radius:           3px !default;
+$column-picker-box-shadow:              2px 2px 2px silver !default;
 $column-picker-close-background-color:  1px solid #9c9c9c !default;
-$column-picker-close-border:            1px solid #9c9c9c !default;
+$column-picker-close-border:            0px solid #9c9c9c !default;
 $column-picker-close-opacity:           0.9 !default;
+$column-picker-label-margin:            4px !default;
+$column-picker-label-font-weight:       normal !default;
+$column-picker-link-background-color:   #ffffff !default;
+
+/* Grid Menu - hamburger menu */
+$grid-menu-background-color:            #f8f8f8 !default;
+$grid-menu-border:                      1px solid #b8b8b8 !default;
+$grid-menu-border-radius:               3px !default;
+$grid-menu-label-margin:                4px !default;
+$grid-menu-label-font-weight:           normal !default;
+$grid-menu-link-background-color:       #ffffff !default;
+$grid-menu-box-shadow:                  2px 2px 2px silver !default;
+$grid-menu-icon-font-size:              14px;
+
 
 /* Editors */
 $large-editor-background-color:         #ffffff !default;

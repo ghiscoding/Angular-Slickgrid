@@ -100,6 +100,7 @@
     border-bottom: $header-border-bottom;
     border-left: $header-border-left;
     width: 100%;
+    box-shadow: none !important;
   }
 
   .slick-headerrow-columns {
@@ -181,8 +182,8 @@
         width: 8px;
         height: 5px;
         left: auto;
-        right: 10px;
-        top: ((15px * $header-row-count) - 15px);
+        right: $icon-sort-position-right;
+        top: $icon-sort-position-top;
       }
 
       [class*="slick-sort-"] {

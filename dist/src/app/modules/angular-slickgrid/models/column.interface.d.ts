@@ -1,5 +1,7 @@
 import { FieldType } from './fieldType';
 import { Formatter } from './formatter.interface';
+import { HeaderButton } from './headerButton.interface';
+import { HeaderMenu } from './headerMenu.interface';
 import { OnEventArgs } from './onEventArgs.interface';
 import { Sorter } from './sorter.interface';
 export interface Column {
@@ -16,6 +18,12 @@ export interface Column {
     filterTemplate?: any;
     focusable?: boolean;
     formatter?: Formatter;
+    header?: {
+        buttons?: HeaderButton[];
+        menu?: {
+            items: HeaderMenu[];
+        };
+    };
     headerCssClass?: string;
     id: number | string;
     isEditable?: boolean;

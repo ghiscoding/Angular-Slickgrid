@@ -1,5 +1,6 @@
-import { BackendEventChanged } from './backendEventChanged.interface';
 import { AutoResizeOption } from './autoResizeOption.interface';
+import { BackendEventChanged } from './backendEventChanged.interface';
+import { GridMenu } from './gridMenu.interface';
 import { Pagination } from './pagination.interface';
 export interface GridOption {
     asyncEditorLoading?: boolean;
@@ -20,6 +21,7 @@ export interface GridOption {
     enableColumnPicker?: boolean;
     enableColumnReorder?: boolean;
     enableFiltering?: boolean;
+    enableGridMenu?: boolean;
     enableHeaderButton?: boolean;
     enableHeaderMenu?: boolean;
     enableMouseHoverHighlightRow?: boolean;
@@ -30,6 +32,7 @@ export interface GridOption {
     explicitInitialization?: boolean;
     forceFitColumns?: boolean;
     gridContainerId?: string;
+    gridMenu?: GridMenu;
     gridId?: string;
     headerRowHeight?: number;
     headerButtonOptions?: {
@@ -40,6 +43,10 @@ export interface GridOption {
         buttonImage?: string;
     };
     multiColumnSort?: boolean;
+    onBackendEventApi?: BackendEventChanged;
+    onGridMenuCommand?: (e: Event, args: any) => void;
+    onHeaderButtonCommand?: (e: Event, args: any) => void;
+    onHeaderMenuCommand?: (e: Event, args: any) => void;
     pagination?: Pagination;
     registerPlugins?: any | any[];
     rowHeight?: number;
@@ -47,6 +54,6 @@ export interface GridOption {
         selectActiveRow: boolean;
     };
     showHeaderRow?: boolean;
+    showTopPanel?: boolean;
     topPanelHeight?: number;
-    onBackendEventApi?: BackendEventChanged;
 }

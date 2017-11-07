@@ -1,3 +1,4 @@
+export { ControlPluginService } from './controlPlugin.service';
 export { FilterService } from './filter.service';
 export { GraphqlService } from './graphql.service';
 export { GridEventService } from './gridEvent.service';
