@@ -11234,7 +11234,7 @@ const selectFilterTemplate = (searchTerm, columnDef) => {
     columnDef.filter.selectOptions.forEach((option) => {
         options += `<option value="${option.value}">${option.label}</option>`;
     });
-    return `<select id="search-${columnDef.id}" class="form-control">${options}</select>`;
+    return `<select class="form-control search-filter">${options}</select>`;
 };
 
 const FilterTemplates = {
@@ -11431,7 +11431,7 @@ const Sorters = {
     string: stringSorter
 };
 
-class ControlPluginService {
+class ControlAndPluginService {
     /**
      * @param {?} grid
      * @param {?} columnDefinitions
@@ -11440,6 +11440,8 @@ class ControlPluginService {
      * @return {?}
      */
     attachDifferentControlOrPlugins(grid, columnDefinitions, options, dataView) {
+        this._visibleColumns = columnDefinitions;
+        this._grid = grid;
         if (options.enableColumnPicker) {
             const /** @type {?} */ columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
         }
@@ -11491,6 +11493,31 @@ class ControlPluginService {
             }
         }
     }
+    /**
+     * @param {?} column
+     * @return {?}
+     */
+    hideColumn(column) {
+        const /** @type {?} */ columnIndex = this._grid.getColumnIndex(column.id);
+        this._visibleColumns = this.removeColumnByIndex(this._visibleColumns, columnIndex);
+        this._grid.setColumns(this._visibleColumns);
+    }
+    /**
+     * @param {?} array
+     * @param {?} index
+     * @return {?}
+     */
+    removeColumnByIndex(array, index) {
+        return array.filter((el, i) => {
+            return index !== i;
+        });
+    }
+    /**
+     * @return {?}
+     */
+    autoResizeColumns() {
+        this._grid.autosizeColumns();
+    }
 }
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -11526,7 +11553,7 @@ class FilterService {
         this.subscriber = new Slick.Event();
         this.subscriber.subscribe(this.attachBackendOnFilterSubscribe);
         grid.onHeaderRowCellRendered.subscribe((e, args) => {
-            this.addFilterTemplateToHeaderRow();
+            this.addFilterTemplateToHeaderRow(args);
         });
     }
     /**
@@ -11557,6 +11584,27 @@ class FilterService {
                 backendApi.postProcess(responseProcess);
             }
         });
+    }
+    /**
+     * Clear the search filters (below the column titles)
+     * @return {?}
+     */
+    clearFilters() {
+        // remove the text inside each search input fields
+        jquery('.slick-headerrow-column .search-filter').val('');
+        // we need to loop through all columnFilters and delete them 1 by 1
+        // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
+        for (const /** @type {?} */ columnId in this._columnFilters) {
+            if (columnId && this._columnFilters[columnId]) {
+                delete this._columnFilters[columnId];
+            }
+        }
+        // we also need to refresh the dataView and optionally the grid (it's optional since we use DataView)
+        if (this._dataView) {
+            this._dataView.refresh();
+            this._grid.invalidate();
+            this._grid.render();
+        }
     }
     /**
      * @param {?} operator
@@ -11596,7 +11644,7 @@ class FilterService {
             }
         });
         grid.onHeaderRowCellRendered.subscribe((e, args) => {
-            this.addFilterTemplateToHeaderRow();
+            this.addFilterTemplateToHeaderRow(args);
         });
     }
     /**
@@ -11680,9 +11728,10 @@ class FilterService {
         }, e);
     }
     /**
+     * @param {?} args
      * @return {?}
      */
-    addFilterTemplateToHeaderRow() {
+    addFilterTemplateToHeaderRow(args) {
         for (let /** @type {?} */ i = 0; i < this._columnDefinitions.length; i++) {
             if (this._columnDefinitions[i].id !== 'selector' && this._columnDefinitions[i].filterable) {
                 let /** @type {?} */ filterTemplate = '';
@@ -11703,12 +11752,17 @@ class FilterService {
                         filterTemplate = FilterTemplates.select(searchTerm, columnDef);
                     }
                 }
+                // when hiding/showing (Column Picker or Grid Menu), it will come re-create yet again the filters
+                // because of that we need to first get searchTerm from the columnFilters (that is what the user input last)
+                // if nothing is found, we can then use the optional searchTerm passed to the Grid Option (that is couple lines before)
+                const /** @type {?} */ inputSearchTerm = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerm : searchTerm || null;
                 // create the DOM Element
                 header = this._grid.getHeaderRowColumn(columnDef.id);
                 jquery(header).empty();
                 elm = jquery(filterTemplate);
-                elm.val(searchTerm);
+                elm.attr('id', `filter-${columnDef.id}`);
                 elm.data('columnId', columnDef.id);
+                elm.val(inputSearchTerm);
                 if (elm && typeof elm.appendTo === 'function') {
                     elm.appendTo(header);
                 }
@@ -38391,6 +38445,11 @@ const GlobalGridOptions = {
     enableTextSelectionOnCells: true,
     explicitInitialization: true,
     forceFitColumns: false,
+    gridMenu: {
+        columnTitle: 'Columns',
+        iconCssClass: 'fa fa-bars',
+        menuWidth: 16
+    },
     headerRowHeight: 35,
     multiColumnSort: true,
     pagination: {
@@ -38414,14 +38473,14 @@ var __awaiter$3 = (this && this.__awaiter) || function (thisArg, _arguments, P, 
 };
 class AngularSlickgridComponent {
     /**
-     * @param {?} controlPluginService
+     * @param {?} controlAndPluginService
      * @param {?} gridEventService
      * @param {?} filterService
      * @param {?} resizer
      * @param {?} sortService
      */
-    constructor(controlPluginService, gridEventService, filterService, resizer, sortService) {
-        this.controlPluginService = controlPluginService;
+    constructor(controlAndPluginService, gridEventService, filterService, resizer, sortService) {
+        this.controlAndPluginService = controlAndPluginService;
         this.gridEventService = gridEventService;
         this.filterService = filterService;
         this.resizer = resizer;
@@ -38463,7 +38522,7 @@ class AngularSlickgridComponent {
         this._dataView = new Slick.Data.DataView();
         this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this._gridOptions);
         this.grid.setSelectionModel(new Slick.RowSelectionModel());
-        this.controlPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
+        this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
         this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);
         // emit the Grid & DataView object to make them available in parent component
         this.gridChanged.emit(this.grid);
@@ -38616,7 +38675,7 @@ AngularSlickgridComponent.decorators = [
  * @nocollapse
  */
 AngularSlickgridComponent.ctorParameters = () => [
-    { type: ControlPluginService, },
+    { type: ControlAndPluginService, },
     { type: GridEventService, },
     { type: FilterService, },
     { type: ResizerService, },
@@ -38649,7 +38708,7 @@ AngularSlickgridModule.decorators = [
                     SlickPaginationComponent
                 ],
                 providers: [
-                    ControlPluginService,
+                    ControlAndPluginService,
                     GraphqlService,
                     GridEventService,
                     OdataService,
@@ -38668,5 +38727,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { CaseType, FieldType, FormElementType, KeyCode, OperatorType, SortDirection, Editors, FilterConditions, FilterTemplates, Formatters, Sorters, ControlPluginService, FilterService, GridEventService, GraphqlService, GridExtraUtils, GridOdataService, ResizerService, SortService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, ControlPluginService as ɵb, FilterService as ɵd, GridEventService as ɵc, ResizerService as ɵe, SortService as ɵf, OdataService as ɵa };
+export { CaseType, FieldType, FormElementType, KeyCode, OperatorType, SortDirection, Editors, FilterConditions, FilterTemplates, Formatters, Sorters, ControlAndPluginService, FilterService, GridEventService, GraphqlService, GridExtraUtils, GridOdataService, ResizerService, SortService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, ControlAndPluginService as ɵb, FilterService as ɵd, GridEventService as ɵc, ResizerService as ɵe, SortService as ɵf, OdataService as ɵa };
 //# sourceMappingURL=angular-slickgrid.js.map

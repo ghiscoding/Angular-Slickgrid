@@ -15,6 +15,8 @@ export declare class FilterService {
      */
     attachBackendOnFilter(grid: any, options: GridOption): void;
     attachBackendOnFilterSubscribe(event: Event, args: any): Promise<void>;
+    /** Clear the search filters (below the column titles) */
+    clearFilters(): void;
     testFilterCondition(operator: string, value1: any, value2: any): boolean;
     /**
      * Attach a local filter hook to the grid
@@ -26,7 +28,7 @@ export declare class FilterService {
     customFilter(item: any, args: any): boolean;
     destroy(): void;
     callbackSearchEvent(e: any, args: any): void;
-    addFilterTemplateToHeaderRow(): void;
+    addFilterTemplateToHeaderRow(args: any): void;
     private keepColumnFilters(searchTerm, listTerm, columnDef);
     private triggerEvent(evt, args, e);
 }
