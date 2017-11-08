@@ -3,8 +3,14 @@ import { CellArgs, Column, GridOption } from './../models';
 // using external js modules in Angular
 declare var Slick: any;
 
-export class ControlPluginService {
+export class ControlAndPluginService {
+  _grid: any;
+  _visibleColumns: Column[];
+
   attachDifferentControlOrPlugins(grid: any, columnDefinitions: Column[], options: GridOption, dataView: any) {
+    this._visibleColumns = columnDefinitions;
+    this._grid = grid;
+
     if (options.enableColumnPicker) {
       const columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
     }
@@ -55,5 +61,21 @@ export class ControlPluginService {
         grid.registerPlugin(options.registerPlugins);
       }
     }
+  }
+
+  hideColumn(column: Column) {
+    const columnIndex = this._grid.getColumnIndex(column.id);
+    this._visibleColumns = this.removeColumnByIndex(this._visibleColumns, columnIndex);
+    this._grid.setColumns(this._visibleColumns);
+  }
+
+  removeColumnByIndex(array, index) {
+    return array.filter((el, i) => {
+      return index !== i;
+    });
+  }
+
+  autoResizeColumns() {
+    this._grid.autosizeColumns();
   }
 }

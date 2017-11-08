@@ -23,7 +23,7 @@ import { AfterViewInit, Component, EventEmitter , Injectable, Input, Output, OnI
 import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
 import { CellArgs, Column, FormElementType, GridOption } from './../models';
-import { ControlPluginService, FilterService, GridEventService, SortService, ResizerService } from './../services';
+import { ControlAndPluginService, FilterService, GridEventService, SortService, ResizerService } from './../services';
 
 // using external js modules in Angular
 declare var Slick: any;
@@ -70,7 +70,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
   }
 
   constructor(
-    private controlPluginService: ControlPluginService,
+    private controlAndPluginService: ControlAndPluginService,
     private gridEventService: GridEventService,
     private filterService: FilterService,
     private resizer: ResizerService,
@@ -91,7 +91,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this._gridOptions);
     this.grid.setSelectionModel(new Slick.RowSelectionModel());
 
-    this.controlPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
+    this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
     this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);
 
     // emit the Grid & DataView object to make them available in parent component

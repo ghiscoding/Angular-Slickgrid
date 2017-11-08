@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSlickgridComponent } from './../components/angular-slickgrid.component';
-import { ControlPluginService } from '../services/controlPlugin.service';
+import { ControlAndPluginService } from '../services/controlAndPlugin.service';
 import { Formatters } from './../formatters';
 import { FilterService } from './../services/filter.service';
 import { GridEventService } from './../services/gridEvent.service';
@@ -24,7 +24,7 @@ import { SortService } from './../services/sort.service';
     SlickPaginationComponent
   ],
   providers: [
-    ControlPluginService,
+    ControlAndPluginService,
     GraphqlService,
     GridEventService,
     OdataService,

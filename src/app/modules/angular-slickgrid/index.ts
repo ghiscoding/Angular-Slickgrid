@@ -41,7 +41,7 @@ export { FilterTemplates } from './filter-templates';
 export { Formatters } from './formatters';
 export { Sorters } from './sorters';
 
-export { ControlPluginService } from './services/controlPlugin.service';
+export { ControlAndPluginService } from './services/controlAndPlugin.service';
 export { FilterService } from './services/filter.service';
 export { GridEventService } from './services/gridEvent.service';
 export { GraphqlService } from './services/graphql.service';

@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Formatters } from './../modules/angular-slickgrid';
-import { Column, FieldType, Formatter, GridOption } from './../modules/angular-slickgrid/models';
+import { Component, OnInit, Injectable } from '@angular/core';
+import { Column, ControlAndPluginService, FieldType, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
 import * as $ from 'jquery';
 
 // create a custom Formatter to highlight negative values in red
@@ -16,6 +15,7 @@ const highlightingFormatter = (row, cell, value, columnDef, dataContext) => {
 @Component({
   templateUrl: './grid-headermenu.component.html'
 })
+@Injectable()
 export class GridHeaderMenuComponent implements OnInit {
   title = 'Example 8: Header Menu Plugin';
   subTitle = `
@@ -35,6 +35,8 @@ export class GridHeaderMenuComponent implements OnInit {
   gridObj: any;
   dataviewObj: any;
   visibleColumns: Column[];
+
+  constructor(private controlService: ControlAndPluginService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -87,9 +89,8 @@ export class GridHeaderMenuComponent implements OnInit {
       enableCellNavigation: true,
       onHeaderMenuCommand: (e, args) => {
         if (args.command === 'hide') {
-          const columnIndex = this.gridObj.getColumnIndex(args.column.id);
-          this.visibleColumns = this.removeColumnByIndex(this.visibleColumns, columnIndex);
-          this.gridObj.setColumns(this.visibleColumns);
+          this.controlService.hideColumn(args.column);
+          this.controlService.autoResizeColumns();
         } else if (args.command === 'sort-asc' || args.command === 'sort-desc') {
           // get previously sorted columns
           // getSortColumns() only returns sortAsc & columnId, we want the entire column definition
@@ -158,11 +159,5 @@ export class GridHeaderMenuComponent implements OnInit {
     });
     this.gridObj.invalidate();
     this.gridObj.render();
-  }
-
-  removeColumnByIndex(array, index) {
-    return array.filter((el, i) => {
-      return index !== i;
-    });
   }
 }
