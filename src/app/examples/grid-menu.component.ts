@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Column, FieldType, Formatter, Formatters, FormElementType, GridOption } from './../modules/angular-slickgrid';
+import { Component, OnInit, Injectable } from '@angular/core';
+import { Column, FieldType, FilterService, Formatter, Formatters, FormElementType, GridOption } from './../modules/angular-slickgrid';
 import * as $ from 'jquery';
 
 // create a custom Formatter to highlight negative values in red
@@ -15,6 +15,7 @@ const highlightingFormatter = (row, cell, value, columnDef, dataContext) => {
 @Component({
   templateUrl: './grid-menu.component.html'
 })
+@Injectable()
 export class GridMenuComponent implements OnInit {
   title = 'Example 9: Grid Menu Control';
   subTitle = `
@@ -36,6 +37,8 @@ export class GridMenuComponent implements OnInit {
   gridObj: any;
   dataviewObj: any;
   visibleColumns: Column[];
+
+  constructor(private filterService: FilterService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -113,9 +116,7 @@ export class GridMenuComponent implements OnInit {
         } else if (args.command === 'toggle-toppanel') {
           this.gridObj.setTopPanelVisibility(!this.gridObj.getOptions().showTopPanel);
         } else if (args.command === 'clear-filter') {
-          $('.slick-headerrow-column').children().val('');
-          // TODO aurelia-slickgrid should have a clearAllFilters function
-          alert('Command: ' + args.command);
+          this.filterService.clearFilters();
           this.dataviewObj.refresh();
         } else {
           alert('Command: ' + args.command);

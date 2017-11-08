@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, Pipe, PipeTransform } from '@angular/core';
+import { Component, EventEmitter, Injectable, Input, OnInit, Output, Pipe, PipeTransform } from '@angular/core';
 import { CaseType, Column, FormElementType, GridOption } from './../modules/angular-slickgrid/models';
 import { FieldType, Formatters } from './../modules/angular-slickgrid';
 import { GraphqlService } from './../modules/angular-slickgrid/services';
@@ -10,6 +10,7 @@ const sampleDataRoot = '/assets/data';
 @Component({
   templateUrl: './grid-graphql.component.html'
 })
+@Injectable()
 export class GridGraphqlComponent implements OnInit {
   title = 'Example 6: Grid connected to Backend Server with GraphQL';
   subTitle = `

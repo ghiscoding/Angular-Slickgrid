@@ -8,5 +8,5 @@ export const selectFilterTemplate: Filter = (searchTerm: string, columnDef: Colu
   columnDef.filter.selectOptions.forEach((option: any) => {
     options += `<option value="${option.value}">${option.label}</option>`;
   });
-  return `<select id="search-${columnDef.id}" class="form-control">${options}</select>`;
+  return `<select class="form-control search-filter">${options}</select>`;
 };

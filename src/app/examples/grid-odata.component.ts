@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, Injectable } from '@angular/core';
 import { CaseType, Column, FormElementType, GridOption } from './../modules/angular-slickgrid/models';
 import { FieldType, Formatters } from './../modules/angular-slickgrid';
 import { GridOdataService } from './../modules/angular-slickgrid/services';
@@ -10,6 +10,7 @@ const sampleDataRoot = '/assets/data';
 @Component({
   templateUrl: './grid-odata.component.html'
 })
+@Injectable()
 export class GridOdataComponent implements OnInit {
   title = 'Example 5: Grid connected to Backend Server with OData';
   subTitle = `
