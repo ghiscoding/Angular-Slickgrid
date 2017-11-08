@@ -40,7 +40,7 @@ export class FilterService {
     this.subscriber.subscribe(this.attachBackendOnFilterSubscribe);
 
     grid.onHeaderRowCellRendered.subscribe((e: Event, args: any) => {
-      this.addFilterTemplateToHeaderRow();
+      this.addFilterTemplateToHeaderRow(args);
     });
   }
 
@@ -127,7 +127,7 @@ export class FilterService {
     });
 
     grid.onHeaderRowCellRendered.subscribe((e: Event, args: any) => {
-      this.addFilterTemplateToHeaderRow();
+      this.addFilterTemplateToHeaderRow(args);
     });
   }
 
@@ -206,7 +206,7 @@ export class FilterService {
     }, e);
   }
 
-  addFilterTemplateToHeaderRow() {
+  addFilterTemplateToHeaderRow(args: any) {
     for (let i = 0; i < this._columnDefinitions.length; i++) {
       if (this._columnDefinitions[i].id !== 'selector' && this._columnDefinitions[i].filterable) {
         let filterTemplate = '';
@@ -230,12 +230,19 @@ export class FilterService {
           }
         }
 
+        // when hiding/showing (Column Picker or Grid Menu), it will come re-create yet again the filters
+        // because of that we need to first get searchTerm from the columnFilters (that is what the user input last)
+        // if nothing is found, we can then use the optional searchTerm passed to the Grid Option (that is couple lines before)
+        const inputSearchTerm = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerm : searchTerm || null;
+
         // create the DOM Element
         header = this._grid.getHeaderRowColumn(columnDef.id);
         $(header).empty();
+
         elm = $(filterTemplate);
-        elm.val(searchTerm);
+        elm.attr('id', `filter-${columnDef.id}`);
         elm.data('columnId', columnDef.id);
+        elm.val(inputSearchTerm);
         if (elm && typeof elm.appendTo === 'function') {
           elm.appendTo(header);
         }
