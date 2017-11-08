@@ -20,7 +20,7 @@ import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, Component, EventEmitter , Injectable, Input, Output, OnInit } from '@angular/core';
-import { castToPromise } from './../services/utilities';
+import { castToPromise, immutableMerge } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
 import { CellArgs, Column, FormElementType, GridOption } from './../models';
 import { ControlAndPluginService, FilterService, GridEventService, SortService, ResizerService } from './../services';
@@ -179,7 +179,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     if (this.gridOptions.enableFiltering) {
       this.gridOptions.showHeaderRow = true;
     }
-    const options = { ...GlobalGridOptions, ...this.gridOptions };
+    // use an immutable merge to avoid changing properties in GlobalGridOptions when changing route
+    const options = immutableMerge(GlobalGridOptions, this.gridOptions);
     return options;
   }
 
