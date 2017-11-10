@@ -1,6 +1,7 @@
 import { Column } from './../models';
 // import { Group, GroupTotals } from '../core'
 // import { Item } from '../dataview'
+import { arrayToCsvFormatter } from './arrayToCsvFormatter';
 import { checkboxFormatter } from './checkboxFormatter';
 import { checkmarkFormatter } from './checkmarkFormatter';
 import { dateIsoFormatter } from './dateIsoFormatter';
@@ -9,6 +10,7 @@ import { dateTimeUsAmPmFormatter } from './dateTimeUsAmPmFormatter';
 import { dateTimeUsFormatter } from './dateTimeUsFormatter';
 import { dateUsFormatter } from './dateUsFormatter';
 import { deleteIconFormatter } from './deleteIconFormatter';
+import { hyperlinkFormatter } from './hyperlinkFormatter';
 import { editIconFormatter } from './editIconFormatter';
 import { percentCompleteFormatter } from './percentCompleteFormatter';
 import { percentCompleteBarFormatter } from './percentCompleteBarFormatter';
@@ -24,6 +26,7 @@ export interface GroupTotalsFormatter {
 }
 */
 export const Formatters = {
+  arrayToCsv: arrayToCsvFormatter,
   checkbox: checkboxFormatter,
   checkmark: checkmarkFormatter,
   dateIso: dateIsoFormatter,
@@ -34,6 +37,7 @@ export const Formatters = {
   dateTimeUsAmPm: dateTimeUsAmPmFormatter,
   deleteIcon: deleteIconFormatter,
   editIcon: editIconFormatter,
+  hyperlink: hyperlinkFormatter,
   percentComplete: percentCompleteFormatter,
   percentCompleteBar: percentCompleteBarFormatter,
   progressBar: progressBarFormatter,
