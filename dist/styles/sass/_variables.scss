@@ -27,10 +27,10 @@ $cell-border-top:                       1px solid $border-color !default;
 $cell-border-right:                     0 none !default;
 $cell-border-bottom:                    0 none !default;
 $cell-border-left:                      0 none !default;
-$cell-odd-background-color:             darken($grid-cell-color, 2.5%) !default;
+$cell-even-background-color: 			      #ffffff !default;
+$cell-odd-background-color:             darken($grid-cell-color, 3%) !default; // for striping every second row
 $cell-odd-active-background-color:      darken($grid-cell-color, 5%) !default;
 $cell-padding:                          5px 7.5834px !default;
-$selected-hover-color:                  rgb(245, 245, 204) !default;
 
 /* cell default slickgrid values */
 $cell-padding-top:                      4px !default;
@@ -38,12 +38,19 @@ $cell-padding-right:                    4px !default;
 $cell-padding-bottom:                   4px !default;
 $cell-padding-left:                     4px !default;
 
+/* row */
+$row-highlight-background-color:        rgba(212, 203, 156, 0.774) !default;
+$row-highlight-fade-animation:          2s ease-in 1 !default;
+$row-mouse-hover-color:                 rgb(245, 245, 204) !default;
+$row-selected-color:                    #e2e2c5 !default;
+
 /* header */
 $header-input-height:                   27px !default;                        // height of the filter form element (input, textarea, select)
 $header-input-width:                    100% !default;                        // width of the filter form element (input, textarea, select)
 $header-input-padding:                  0 6px !default;                       // padding of the filter form element (input, textarea, select)
 $header-row-background-color:           #ffffff !default;
 $header-row-count:                      2 !default;                           // how many rows to display on the header
+$header-row-filter-padding:             4px !default;
 $header-column-height:                  (16px * $header-row-count) !default;  // header is calculated by rows to show
 $header-border-top:                     0 none !default;
 $header-border-right:                   0 none !default;
@@ -64,7 +71,6 @@ $table-background:                      transparent !default;
 $container-border:                      0px solid $border-color !default;
 $link-color:        				            #08c !default;
 $link-color-hover:                      darker($link-color, 15%) !default;
-$table-bg-accent: 					            #f9f9f9 !default; // for striping every second row
 $gray-dark:              			          #333 !default;
 $text-color:             			          $gray-dark !default;
 $navbar-default-link-hover-color:	      $gray-dark !default;
@@ -90,7 +96,6 @@ $grid-menu-label-font-weight:           normal !default;
 $grid-menu-link-background-color:       #ffffff !default;
 $grid-menu-box-shadow:                  2px 2px 2px silver !default;
 $grid-menu-icon-font-size:              14px;
-
 
 /* Editors */
 $large-editor-background-color:         #ffffff !default;

@@ -20,10 +20,11 @@ import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, EventEmitter, OnInit } from '@angular/core';
 import { Column, GridOption } from './../models';
-import { ControlAndPluginService, FilterService, GridEventService, SortService, ResizerService } from './../services';
+import { ControlAndPluginService, FilterService, GridEventService, GridExtraService, SortService, ResizerService } from './../services';
 export declare class AngularSlickgridComponent implements AfterViewInit, OnInit {
     private controlAndPluginService;
     private gridEventService;
+    private gridExtraService;
     private filterService;
     private resizer;
     private sortService;
@@ -43,7 +44,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnInit 
     gridHeight: number;
     gridWidth: number;
     dataset: any[];
-    constructor(controlAndPluginService: ControlAndPluginService, gridEventService: GridEventService, filterService: FilterService, resizer: ResizerService, sortService: SortService);
+    constructor(controlAndPluginService: ControlAndPluginService, gridEventService: GridEventService, gridExtraService: GridExtraService, filterService: FilterService, resizer: ResizerService, sortService: SortService);
     ngOnInit(): void;
     ngAfterViewInit(): void;
     attachDifferentHooks(grid: any, options: GridOption, dataView: any): void;

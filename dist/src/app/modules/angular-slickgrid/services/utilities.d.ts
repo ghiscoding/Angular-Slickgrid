@@ -34,4 +34,3 @@ export declare function mapOperatorType(operator: string): OperatorType;
  * @returns string date formatted
  */
 export declare function parseUtcDate(inputDateString: string, useUtc: boolean): string | null;
-export declare function immutableMerge(...args: any[]): any;
