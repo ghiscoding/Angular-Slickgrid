@@ -48,7 +48,7 @@ export class GridGraphqlComponent implements OnInit {
           selectOptions: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
         }
       },
-      { id: 'company', name: 'Company', field: 'company' }
+      { id: 'company', name: 'Company', field: 'company', filterable: true }
     ];
 
     this.gridOptions = {

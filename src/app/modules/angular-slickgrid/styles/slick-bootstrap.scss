@@ -156,7 +156,7 @@
   .slick-headerrow-columns {
     .slick-headerrow-column {
       border: none;
-      padding: 4px 5px;
+      padding: $header-row-filter-padding;
       background: $header-row-background-color;
     }
     .slick-headerrow-column input,

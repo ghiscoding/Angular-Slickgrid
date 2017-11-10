@@ -168,6 +168,6 @@ export class ControlAndPluginService {
     options.gridMenu.customItems = options.gridMenu.customItems || [];
     this.addGridMenuCustomCommands(options);
 
-    options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
+    // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
   }
 }

@@ -50,6 +50,7 @@ $header-input-width:                    100% !default;                        //
 $header-input-padding:                  0 6px !default;                       // padding of the filter form element (input, textarea, select)
 $header-row-background-color:           #ffffff !default;
 $header-row-count:                      2 !default;                           // how many rows to display on the header
+$header-row-filter-padding:             4px !default;
 $header-column-height:                  (16px * $header-row-count) !default;  // header is calculated by rows to show
 $header-border-top:                     0 none !default;
 $header-border-right:                   0 none !default;
@@ -95,7 +96,6 @@ $grid-menu-label-font-weight:           normal !default;
 $grid-menu-link-background-color:       #ffffff !default;
 $grid-menu-box-shadow:                  2px 2px 2px silver !default;
 $grid-menu-icon-font-size:              14px;
-
 
 /* Editors */
 $large-editor-background-color:         #ffffff !default;
