@@ -47,23 +47,25 @@ export class GridHeaderButtonComponent implements OnInit {
       },
       enableFiltering: false,
       enableCellNavigation: true,
-      onHeaderButtonCommand: (e, args) => {
-        const column = args.column;
-        const button = args.button;
-        const command = args.command;
+      headerButtonOptions: {
+        onCommand: (e, args) => {
+          const column = args.column;
+          const button = args.button;
+          const command = args.command;
 
-        if (command === 'toggle-highlight') {
-          if (button.cssClass === 'fa fa-circle red') {
-            delete columnsWithHighlightingById[column.id];
-            button.cssClass = 'fa fa-circle-o red faded';
-            button.tooltip = 'Highlight negative numbers.';
-          } else {
-            columnsWithHighlightingById[column.id] = true;
-            button.cssClass = 'fa fa-circle red';
-            button.tooltip = 'Remove highlight.';
+          if (command === 'toggle-highlight') {
+            if (button.cssClass === 'fa fa-circle red') {
+              delete columnsWithHighlightingById[column.id];
+              button.cssClass = 'fa fa-circle-o red faded';
+              button.tooltip = 'Highlight negative numbers.';
+            } else {
+              columnsWithHighlightingById[column.id] = true;
+              button.cssClass = 'fa fa-circle red';
+              button.tooltip = 'Remove highlight.';
+            }
+
+            this.gridObj.invalidate();
           }
-
-          this.gridObj.invalidate();
         }
       }
     };

@@ -9,4 +9,8 @@ export interface GridMenu {
   menuWidth?: number;
   resizeOnShowHeaderRow?: boolean;
   customItems?: CustomGridMenu[];
+
+  onBeforeMenuShow?: (e: Event, args: any) => void;
+  onMenuClose?: (e: Event, args: any) => void;
+  onCommand?: (e: Event, args: any) => void;
 }

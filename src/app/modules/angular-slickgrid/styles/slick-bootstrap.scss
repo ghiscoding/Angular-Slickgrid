@@ -7,6 +7,16 @@
 /* Mixins for SlickGrid */
 @import './variables';
 
+@-webkit-keyframes highlight-fade {
+  0% {background: $row-highlight-background-color;}
+  100% {background: none;}
+}
+
+@keyframes highlight-fade {
+  0% {background: $row-highlight-background-color;}
+  100% {background: none;}
+}
+
 .slickgrid-container {
   border-top: $container-border-top;
   border-bottom: $container-border-bottom;
@@ -38,15 +48,60 @@
     /*opacity: 0.95;*/
   }
 
+
+
   .grid-canvas {
     .slick-row {
       position: absolute;
       width: 100%;
-      &.odd .slick-cell {
-        &.selected {
-          background-color: $selected-hover-color;
+      &:hover {
+        background-color: $row-mouse-hover-color;
+      }
+      &.highlight {
+        background-color: $row-highlight-background-color;
+        -webkit-animation: highlight-fade $row-highlight-fade-animation;
+        animation: highlight-fade $row-highlight-fade-animation;
+        .slick-cell {
+          &.selected {
+            background-color: inherit !important;
+          }
+        }
+        &.odd {
+          background: $row-highlight-background-color;
+          -webkit-animation: highlight-fade 2s ease-in 1;
+          animation: highlight-fade 2s ease-in 1;
+        }
+        &.odd .slick-cell {
+          &.selected {
+            background-color: inherit !important;
+          }
         }
       }
+      &.highlighter {
+        background: orange !important;
+        transition-property: background;
+        transition-duration: 3s;
+        transition-timing-function: ease-in;
+      }
+      &.odd {
+        background: $cell-odd-background-color;
+        &:hover {
+          background-color: $row-mouse-hover-color;
+        }
+      }
+      &.odd .slick-cell {
+        &.selected {
+          background-color: $row-selected-color;
+        }
+        background: inherit;
+      }
+      &.odd .slick-cell {
+        &.selected {
+          background-color: $row-selected-color;
+        }
+        background: inherit;
+      }
+
     }
     .slick-cell, .slick-headerrow-column {
       border-top: $cell-border-top;
@@ -55,7 +110,7 @@
       border-right: $cell-border-right;
     }
     .even {
-      background: $table-bg-accent;
+      background: $cell-even-background-color;
     }
 
 
@@ -84,12 +139,7 @@
         text-align: left;
       }
       &.selected {
-        background-color: $selected-hover-color;
-      }
-      &.odd .slick-cell {
-        &.selected {
-          background-color: $selected-hover-color;
-        }
+        background-color: $row-selected-color;
       }
     }
   }

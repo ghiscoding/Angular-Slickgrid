@@ -1,21 +1,6 @@
 import { OnEventArgs, CellArgs, GridOption } from './../models';
 
 export class GridEventService {
-  /* OnMouseHover (Enter/Leave) Events */
-  attachOnMouseHover(grid: any) {
-    grid.onMouseEnter.subscribe((e: any) => {
-      const cell = grid.getCellFromEvent(e);
-      if (cell && cell.row >= 0) {
-        grid.setSelectedRows([cell.row]);
-        e.preventDefault();
-      }
-    });
-    grid.onMouseLeave.subscribe((e: any) => {
-      grid.setSelectedRows([]);
-      e.preventDefault();
-    });
-  }
-
   /* OnCellChange Event */
   attachOnCellChange(grid: any, gridOptions: GridOption, dataView: any) {
     // subscribe to this Slickgrid event of onCellChange

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Column, Editors, FieldType, Formatter, Formatters, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
+import { Column, Editors, FieldType, Formatter, Formatters, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-editor.component.html'
@@ -18,7 +18,7 @@ export class GridEditorComponent implements OnInit {
   gridObj: any;
   dataviewObj: any;
 
-  constructor(private resizer: ResizerService) {}
+  constructor(private gridExtraService: GridExtraService, private resizer: ResizerService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -27,18 +27,25 @@ export class GridEditorComponent implements OnInit {
         formatter: Formatters.editIcon,
         minWidth: 30,
         maxWidth: 30,
+        /*
+        // use onCellClick OR grid.onClick.subscribe which you can see down below
         onCellClick: (args: OnEventArgs) => {
           console.log(args);
-        }
+          alert(`Editing: ${args.dataContext.title}`);
+        }*/
       },
       {
         id: 'delete', field: 'id',
         formatter: Formatters.deleteIcon,
         minWidth: 30,
         maxWidth: 30,
+        /*
+        // use onCellClick OR grid.onClick.subscribe which you can see down below
         onCellClick: (args: OnEventArgs) => {
           console.log(args);
+          alert(`Deleting: ${args.dataContext.title}`);
         }
+        */
       },
       { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, editor: Editors.longText },
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, editor: Editors.text,
@@ -54,15 +61,15 @@ export class GridEditorComponent implements OnInit {
     ];
 
     this.gridOptions = {
+      asyncEditorLoading: false,
+      autoEdit: this.isAutoEdit,
       autoResize: {
         containerId: 'demo-container',
         sidePadding: 15
       },
       editable: true,
       enableColumnPicker: true,
-      enableCellNavigation: true,
-      asyncEditorLoading: false,
-      autoEdit: this.isAutoEdit
+      enableCellNavigation: true
     };
 
     // mock a dataset
@@ -100,6 +107,12 @@ export class GridEditorComponent implements OnInit {
       console.log('onClick', args, column);
       if (column.columnDef.id === 'edit') {
         alert('open a modal window to edit: ' + column.dataContext.title);
+
+        // highlight the row, to customize the color, you can change the SASS variable $row-highlight-background-color
+        this.gridExtraService.highlightRow(args.row, 1500);
+
+        // you could also select the row, when using "enableCellNavigation: true", it automatically selects the row
+        // this.gridExtraService.setSelectedRow(args.row);
       } else if (column.columnDef.id === 'delete') {
         if (confirm('Are you sure?')) {
           this.dataviewObj.deleteItem(column.dataContext.id);

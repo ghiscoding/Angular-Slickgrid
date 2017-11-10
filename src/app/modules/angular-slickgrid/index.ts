@@ -45,6 +45,7 @@ export { ControlAndPluginService } from './services/controlAndPlugin.service';
 export { FilterService } from './services/filter.service';
 export { GridEventService } from './services/gridEvent.service';
 export { GraphqlService } from './services/graphql.service';
+export { GridExtraService } from './services/gridExtra.service';
 export { GridExtraUtils } from './services/gridExtraUtils';
 export { GridOdataService } from './services/grid-odata.service';
 export { ResizerService } from './services/resizer.service';

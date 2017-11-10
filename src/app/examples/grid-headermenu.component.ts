@@ -87,31 +87,33 @@ export class GridHeaderMenuComponent implements OnInit {
       },
       enableFiltering: false,
       enableCellNavigation: true,
-      onHeaderMenuCommand: (e, args) => {
-        if (args.command === 'hide') {
-          this.controlService.hideColumn(args.column);
-          this.controlService.autoResizeColumns();
-        } else if (args.command === 'sort-asc' || args.command === 'sort-desc') {
-          // get previously sorted columns
-          // getSortColumns() only returns sortAsc & columnId, we want the entire column definition
-          const oldSortColumns = this.gridObj.getSortColumns();
-          const cols = $.map(oldSortColumns, (col) => {
-            // get the column definition but only keep column which are not equal to our current column
-            if (col.columnId !== args.column.id) {
-              return { sortCol: this.columnDefinitions[this.gridObj.getColumnIndex(col.columnId)], sortAsc: col.sortAsc };
-            }
-          });
-          // add to the column array, the column sorted by the header menu
-          const isSortedAsc = (args.command === 'sort-asc');
-          cols.push({ sortAsc: isSortedAsc, sortCol: args.column });
-          // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
-          const newSortColumns = $.map(cols, (col) => {
-            return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
-          });
-          this.gridObj.setSortColumns(newSortColumns);
-          this.executeSort(cols);
-        } else {
-          alert('Command: ' + args.command);
+      headerMenuOptions: {
+        onCommand: (e, args) => {
+          if (args.command === 'hide') {
+            this.controlService.hideColumn(args.column);
+            this.controlService.autoResizeColumns();
+          } else if (args.command === 'sort-asc' || args.command === 'sort-desc') {
+            // get previously sorted columns
+            // getSortColumns() only returns sortAsc & columnId, we want the entire column definition
+            const oldSortColumns = this.gridObj.getSortColumns();
+            const cols = $.map(oldSortColumns, (col) => {
+              // get the column definition but only keep column which are not equal to our current column
+              if (col.columnId !== args.column.id) {
+                return { sortCol: this.columnDefinitions[this.gridObj.getColumnIndex(col.columnId)], sortAsc: col.sortAsc };
+              }
+            });
+            // add to the column array, the column sorted by the header menu
+            const isSortedAsc = (args.command === 'sort-asc');
+            cols.push({ sortAsc: isSortedAsc, sortCol: args.column });
+            // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
+            const newSortColumns = $.map(cols, (col) => {
+              return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
+            });
+            this.gridObj.setSortColumns(newSortColumns);
+            this.executeSort(cols);
+          } else {
+            alert('Command: ' + args.command);
+          }
         }
       }
     };

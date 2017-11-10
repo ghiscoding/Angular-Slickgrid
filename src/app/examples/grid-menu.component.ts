@@ -108,20 +108,20 @@ export class GridMenuComponent implements OnInit {
             disabled: true,
             command: 'disabled-command'
           }
-        ]
-      },
-      onGridMenuCommand: (e, args) => {
-        if (args.command === 'toggle-filter') {
-          this.gridObj.setHeaderRowVisibility(!this.gridObj.getOptions().showHeaderRow);
-        } else if (args.command === 'toggle-toppanel') {
-          this.gridObj.setTopPanelVisibility(!this.gridObj.getOptions().showTopPanel);
-        } else if (args.command === 'clear-filter') {
-          this.filterService.clearFilters();
-          this.dataviewObj.refresh();
-        } else {
-          alert('Command: ' + args.command);
+        ],
+        onCommand: (e, args) => {
+          if (args.command === 'toggle-filter') {
+            this.gridObj.setHeaderRowVisibility(!this.gridObj.getOptions().showHeaderRow);
+          } else if (args.command === 'toggle-toppanel') {
+            this.gridObj.setTopPanelVisibility(!this.gridObj.getOptions().showTopPanel);
+          } else if (args.command === 'clear-filter') {
+            this.filterService.clearFilters();
+            this.dataviewObj.refresh();
+          } else {
+            alert('Command: ' + args.command);
+          }
         }
-      }
+      },
     };
 
     this.getData();

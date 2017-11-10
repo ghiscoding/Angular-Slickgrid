@@ -5,7 +5,6 @@ import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
 const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-import _ from 'lodash';
 
 /**
  * Try casting an input of type Promise | Observable into a Promise type.
@@ -228,18 +227,4 @@ export function parseUtcDate(inputDateString: string, useUtc: boolean): string |
   }
 
   return date;
-}
-
-export function immutableMerge(...args) {
-  if (args.length === 0) {
-    return {};
-  }
-  if (args.length === 1) {
-    return args[0];
-  }
-  if (args.length === 2) {
-    return _.merge(_.cloneDeep(args[0]), args[1]);
-  } else {
-    return immutableMerge(_.first(args), immutableMerge(_.rest(args)));
-  }
 }

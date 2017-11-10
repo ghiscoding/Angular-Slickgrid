@@ -20,10 +20,11 @@ import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, Component, EventEmitter , Injectable, Input, Output, OnInit } from '@angular/core';
-import { castToPromise, immutableMerge } from './../services/utilities';
+import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
 import { CellArgs, Column, FormElementType, GridOption } from './../models';
-import { ControlAndPluginService, FilterService, GridEventService, SortService, ResizerService } from './../services';
+import { ControlAndPluginService, FilterService, GridEventService, GridExtraService, SortService, ResizerService } from './../services';
+import $ from 'jquery';
 
 // using external js modules in Angular
 declare var Slick: any;
@@ -72,6 +73,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
   constructor(
     private controlAndPluginService: ControlAndPluginService,
     private gridEventService: GridEventService,
+    private gridExtraService: GridExtraService,
     private filterService: FilterService,
     private resizer: ResizerService,
     private sortService: SortService
@@ -105,6 +107,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
 
     // attach resize ONLY after the dataView is ready
     this.attachResizeHook(this.grid, this._gridOptions);
+
+    // attach grid extra service
+    const gridExtraService = this.gridExtraService.init(this.grid, this._dataView);
   }
 
   attachDifferentHooks(grid: any, options: GridOption, dataView: any) {
@@ -141,11 +146,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     this.gridEventService.attachOnCellChange(grid, this._gridOptions, dataView);
     this.gridEventService.attachOnClick(grid, this._gridOptions, dataView);
 
-    // if enable, change background color on mouse over
-    if (options.enableMouseHoverHighlightRow) {
-      this.gridEventService.attachOnMouseHover(grid);
-    }
-
     dataView.onRowCountChanged.subscribe((e: any, args: any) => {
       grid.updateRowCount();
       grid.render();
@@ -179,9 +179,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     if (this.gridOptions.enableFiltering) {
       this.gridOptions.showHeaderRow = true;
     }
-    // use an immutable merge to avoid changing properties in GlobalGridOptions when changing route
-    const options = immutableMerge(GlobalGridOptions, this.gridOptions);
-    return options;
+    // use jquery extend to deep merge and avoid immutable properties changed in GlobalGridOptions after route change
+    return $.extend(true, {}, GlobalGridOptions, this.gridOptions);
   }
 
   /** Toggle the filter row displayed on first row */

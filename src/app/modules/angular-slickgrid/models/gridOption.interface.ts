@@ -40,16 +40,15 @@ export interface GridOption {
   headerRowHeight?: number;
   headerButtonOptions?: {
     buttonCssClass?: string;
+    onCommand?: (e: Event, args: any) => void;
   };
   headerMenuOptions?: {
     buttonCssClass?: string;
     buttonImage?: string;
+    onCommand?: (e: Event, args: any) => void;
   };
   multiColumnSort?: boolean;
   onBackendEventApi?: BackendEventChanged;
-  onGridMenuCommand?: (e: Event, args: any) => void;
-  onHeaderButtonCommand?: (e: Event, args: any) => void;
-  onHeaderMenuCommand?: (e: Event, args: any) => void;
   pagination?: Pagination;
   registerPlugins?: any | any[]; // e.g.: Slick.CheckboxSelectColumn
   rowHeight?: number;

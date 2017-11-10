@@ -34,11 +34,23 @@ export class ControlAndPluginService {
       this.prepareGridMenu(options);
 
       this.gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
-      this.gridMenuControl.onCommand.subscribe((e: Event, args: CellArgs) => {
-        if (typeof options.onGridMenuCommand === 'function') {
-          options.onGridMenuCommand(e, args);
-        }
-      });
+      if (options.gridMenu) {
+        this.gridMenuControl.onBeforeMenuShow.subscribe((e: Event, args: CellArgs) => {
+          if (typeof options.gridMenu.onBeforeMenuShow === 'function') {
+            options.gridMenu.onBeforeMenuShow(e, args);
+          }
+        });
+        this.gridMenuControl.onCommand.subscribe((e: Event, args: CellArgs) => {
+          if (typeof options.gridMenu.onCommand === 'function') {
+            options.gridMenu.onCommand(e, args);
+          }
+        });
+        this.gridMenuControl.onMenuClose.subscribe((e: Event, args: CellArgs) => {
+          if (typeof options.gridMenu.onMenuClose === 'function') {
+            options.gridMenu.onMenuClose(e, args);
+          }
+        });
+      }
     }
     if (options.enableAutoTooltip) {
       this.autoTooltipPlugin = new Slick.AutoTooltips(options.autoTooltipOptions || {});
@@ -52,8 +64,8 @@ export class ControlAndPluginService {
       this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(options.headerButtonOptions || {});
       grid.registerPlugin(this.headerButtonsPlugin);
       this.headerButtonsPlugin.onCommand.subscribe((e: Event, args: CellArgs) => {
-        if (typeof options.onHeaderButtonCommand === 'function') {
-          options.onHeaderButtonCommand(e, args);
+        if (typeof options.headerButtonOptions.onCommand === 'function') {
+          options.headerButtonOptions.onCommand(e, args);
         }
       });
     }
@@ -61,8 +73,8 @@ export class ControlAndPluginService {
       this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenuOptions || {});
       grid.registerPlugin(this.headerMenuPlugin);
       this.headerMenuPlugin.onCommand.subscribe((e: Event, args: CellArgs) => {
-        if (typeof options.onHeaderMenuCommand === 'function') {
-          options.onHeaderMenuCommand(e, args);
+        if (typeof options.headerMenuOptions.onCommand === 'function') {
+          options.headerMenuOptions.onCommand(e, args);
         }
       });
     }
@@ -127,7 +139,7 @@ export class ControlAndPluginService {
           }
         );
       }
-      options.onGridMenuCommand = (e, args) => {
+      options.gridMenu.onCommand = (e, args) => {
         if (args.command === 'toggle-filter') {
           this._grid.setHeaderRowVisibility(!this._grid.getOptions().showHeaderRow);
         } else if (args.command === 'toggle-toppanel') {

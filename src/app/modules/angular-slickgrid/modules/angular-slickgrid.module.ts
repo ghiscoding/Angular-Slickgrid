@@ -5,6 +5,7 @@ import { ControlAndPluginService } from '../services/controlAndPlugin.service';
 import { Formatters } from './../formatters';
 import { FilterService } from './../services/filter.service';
 import { GridEventService } from './../services/gridEvent.service';
+import { GridExtraService } from '../services/gridExtra.service';
 import { GraphqlService } from './../services/graphql.service';
 import { OdataService } from './../services/odata.service';
 import { ResizerService } from './../services/resizer.service';
@@ -27,6 +28,7 @@ import { SortService } from './../services/sort.service';
     ControlAndPluginService,
     GraphqlService,
     GridEventService,
+    GridExtraService,
     OdataService,
     FilterService,
     SortService,
