@@ -8,6 +8,11 @@ export class GridEditorComponent implements OnInit {
   title = 'Example 3: Editors';
   subTitle = `
   Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors">Wiki link</a>).
+  <ul>
+    <li>When using "enableCellNavigation: true", clicking on a cell will automatically make it active &amp; selected.
+    <ul><li>If you don't want this behavior, then you should disable "enableCellNavigation"</li></ul>
+    <li>Inline Editors requires "enableCellNavigation: true" (not sure why though)</li>
+  </ul>
   `;
 
   columnDefinitions: Column[];
@@ -27,25 +32,24 @@ export class GridEditorComponent implements OnInit {
         formatter: Formatters.editIcon,
         minWidth: 30,
         maxWidth: 30,
-        /*
         // use onCellClick OR grid.onClick.subscribe which you can see down below
         onCellClick: (args: OnEventArgs) => {
           console.log(args);
           alert(`Editing: ${args.dataContext.title}`);
-        }*/
+          this.gridExtraService.highlightRow(args.row, 1500);
+          this.gridExtraService.setSelectedRow(args.row);
+        }
       },
       {
         id: 'delete', field: 'id',
         formatter: Formatters.deleteIcon,
         minWidth: 30,
         maxWidth: 30,
-        /*
         // use onCellClick OR grid.onClick.subscribe which you can see down below
         onCellClick: (args: OnEventArgs) => {
           console.log(args);
           alert(`Deleting: ${args.dataContext.title}`);
         }
-        */
       },
       { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, editor: Editors.longText },
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, editor: Editors.text,
@@ -102,6 +106,9 @@ export class GridEditorComponent implements OnInit {
       this.updatedObject = args.item;
       this.resizer.resizeGrid(this.gridObj, this.gridOptions, 10);
     });
+
+    // You could also subscribe to grid.onClick
+    // Note that if you had already setup "onCellClick" in the column definition, you cannot use grid.onClick
     grid.onClick.subscribe((e, args) => {
       const column = GridExtraUtils.getColumnDefinitionAndData(args);
       console.log('onClick', args, column);

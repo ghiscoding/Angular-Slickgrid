@@ -14,6 +14,8 @@ export class GridEventService {
       if (typeof column.onCellChange === 'function') {
         // add to the output gridOptions & dataView since we'll need them inside the AJAX column.onCellChange
         const returnedArgs: OnEventArgs = {
+          row: args.row,
+          cell: args.cell,
           dataView,
           gridDefinition: gridOptions,
           grid,
@@ -40,6 +42,8 @@ export class GridEventService {
       if (typeof column.onCellClick === 'function') {
         // add to the output gridOptions & dataView since we'll need them inside the AJAX column.onClick
         const returnedArgs: OnEventArgs = {
+          row: args.row,
+          cell: args.cell,
           dataView,
           gridDefinition: gridOptions,
           grid,
