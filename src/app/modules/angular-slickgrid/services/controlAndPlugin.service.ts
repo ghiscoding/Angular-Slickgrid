@@ -9,7 +9,7 @@ import {
   HeaderButtonOnCommandArgs,
   HeaderMenuOnCommandArgs,
   HeaderMenuOnBeforeMenuShowArgs
-} from './../models/index';
+} from './../models';
 
 // using external js modules in Angular
 declare var Slick: any;

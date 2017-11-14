@@ -1,3 +1,4 @@
+import { castToPromise } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { FilterTemplates } from './../filter-templates';
 import {
@@ -53,22 +54,23 @@ export class FilterService {
     if (!serviceOptions || !serviceOptions.onBackendEventApi || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
       throw new Error(`onBackendEventApi requires at least a "process" function and a "service" defined`);
     }
-    const backendApi = serviceOptions.onBackendEventApi;
 
     // run a preProcess callback if defined
-    if (backendApi.preProcess !== undefined) {
-      backendApi.preProcess();
+    if (serviceOptions.onBackendEventApi.preProcess) {
+      serviceOptions.onBackendEventApi.preProcess();
     }
 
     // call the service to get a query back
-    const query = await backendApi.service.onFilterChanged(event, args);
+    const query = await serviceOptions.onBackendEventApi.service.onFilterChanged(event, args);
 
-    // await for the Promise to resolve the data
-    const responseProcess = await backendApi.process(query);
+        // the process could be an Observable (like HttpClient) or a Promise
+    // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+    const observableOrPromise = serviceOptions.onBackendEventApi.process(query);
+    const responseProcess = await castToPromise(observableOrPromise);
 
     // send the response process to the postProcess callback
-    if (backendApi.postProcess !== undefined) {
-      backendApi.postProcess(responseProcess);
+    if (serviceOptions.onBackendEventApi.postProcess !== undefined) {
+      serviceOptions.onBackendEventApi.postProcess(responseProcess);
     }
   }
 
