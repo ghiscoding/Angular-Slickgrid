@@ -20,6 +20,7 @@ import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, Component, EventEmitter , Injectable, Input, Output, OnInit } from '@angular/core';
+import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
 import { CellArgs, Column, FormElementType, GridOption } from './../models';
@@ -76,12 +77,20 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     private gridExtraService: GridExtraService,
     private filterService: FilterService,
     private resizer: ResizerService,
+    private router: Router,
     private sortService: SortService
   ) {}
 
   ngOnInit(): void {
     this.gridHeightString = `${this.gridHeight}px`;
     this.gridWidthString = `${this.gridWidth}px`;
+
+    // on route change, we should destroy the grid & cleanup some of the objects
+    this.router.events.subscribe((event: NavigationEnd) => {
+      this.grid.destroy();
+      this._dataView = [];
+      this.filterService.clearFilters();
+    });
   }
 
   ngAfterViewInit() {
