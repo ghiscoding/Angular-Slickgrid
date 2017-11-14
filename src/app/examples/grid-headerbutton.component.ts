@@ -47,7 +47,7 @@ export class GridHeaderButtonComponent implements OnInit {
       },
       enableFiltering: false,
       enableCellNavigation: true,
-      headerButtonOptions: {
+      headerButton: {
         onCommand: (e, args) => {
           const column = args.column;
           const button = args.button;

@@ -1,7 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { FilterService } from './filter.service';
-import { CellArgs, Column, GridOption } from './../models';
+import {
+  CellArgs,
+  CustomGridMenu,
+  Column,
+  GridOption,
+  HeaderButtonOnCommandArgs,
+  HeaderMenuOnCommandArgs,
+  HeaderMenuOnBeforeMenuShowArgs
+} from './../models/index';
 
 // using external js modules in Angular
 declare var Slick: any;
@@ -61,20 +69,25 @@ export class ControlAndPluginService {
       grid.setSelectionModel(this.rowSelectionPlugin);
     }
     if (options.enableHeaderButton) {
-      this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(options.headerButtonOptions || {});
+      this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(options.headerButton || {});
       grid.registerPlugin(this.headerButtonsPlugin);
-      this.headerButtonsPlugin.onCommand.subscribe((e: Event, args: CellArgs) => {
-        if (typeof options.headerButtonOptions.onCommand === 'function') {
-          options.headerButtonOptions.onCommand(e, args);
+      this.headerButtonsPlugin.onCommand.subscribe((e: Event, args: HeaderButtonOnCommandArgs) => {
+        if (options.headerButton && typeof options.headerButton.onCommand === 'function') {
+          options.headerButton.onCommand(e, args);
         }
       });
     }
     if (options.enableHeaderMenu) {
-      this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenuOptions || {});
+      this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenu || {});
       grid.registerPlugin(this.headerMenuPlugin);
-      this.headerMenuPlugin.onCommand.subscribe((e: Event, args: CellArgs) => {
-        if (typeof options.headerMenuOptions.onCommand === 'function') {
-          options.headerMenuOptions.onCommand(e, args);
+      this.headerMenuPlugin.onCommand.subscribe((e: Event, args: HeaderMenuOnCommandArgs) => {
+        if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
+          options.headerMenu.onCommand(e, args);
+        }
+      });
+      this.headerMenuPlugin.onCommand.subscribe((e: Event, args: HeaderMenuOnBeforeMenuShowArgs) => {
+        if (options.headerMenu && typeof options.headerMenu.onBeforeMenuShow === 'function') {
+          options.headerMenu.onBeforeMenuShow(e, args);
         }
       });
     }

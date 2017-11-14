@@ -1,6 +1,8 @@
 import { AutoResizeOption } from './autoResizeOption.interface';
 import { BackendEventChanged } from './backendEventChanged.interface';
 import { GridMenu } from './gridMenu.interface';
+import { HeaderButton } from './headerButton.interface';
+import { HeaderMenu } from './headerMenu.interface';
 import { Pagination } from './pagination.interface';
 import { PaginationChangedArgs } from './paginationChangedArgs.interface';
 import { SortChangedArgs } from './sortChangedArgs.interface';
@@ -38,15 +40,8 @@ export interface GridOption {
   gridMenu?: GridMenu;
   gridId?: string;
   headerRowHeight?: number;
-  headerButtonOptions?: {
-    buttonCssClass?: string;
-    onCommand?: (e: Event, args: any) => void;
-  };
-  headerMenuOptions?: {
-    buttonCssClass?: string;
-    buttonImage?: string;
-    onCommand?: (e: Event, args: any) => void;
-  };
+  headerButton?: HeaderButton;
+  headerMenu?: HeaderMenu;
   multiColumnSort?: boolean;
   onBackendEventApi?: BackendEventChanged;
   pagination?: Pagination;
