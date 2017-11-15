@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Formatters } from './../modules/angular-slickgrid';
-import { Column, FieldType, Formatter, GridOption } from './../modules/angular-slickgrid/models';
+import { Column, FieldType, Formatter, Formatters, GridExtraService, GridOption } from './../modules/angular-slickgrid';
 
 // create my custom Formatter with the Formatter type
-const myCustomCheckboxFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) =>
+const myCustomCheckmarkFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) =>
   value ? `<i class="fa fa-fire" aria-hidden="true"></i>` : '<i class="fa fa-snowflake-o" aria-hidden="true"></i>';
+const customCheckboxFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
+  return `<span class="fa fa-check selector-checkbox pointer"></span>`;
+};
 
 @Component({
   templateUrl: './grid-formatter.component.html'
@@ -19,6 +21,8 @@ export class GridFormatterComponent implements OnInit {
   gridOptions: GridOption;
   dataset: any[];
 
+  constructor(private gridExtraService: GridExtraService) {}
+
   ngOnInit(): void {
     this.columnDefinitions = [
       {id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string},
@@ -27,14 +31,16 @@ export class GridFormatterComponent implements OnInit {
       {id: 'percent2', name: '% Complete', field: 'percentComplete2', formatter: Formatters.progressBar, type: FieldType.number, sortable: true},
       {id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.dateIso },
       {id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date },
-      {id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: myCustomCheckboxFormatter, type: FieldType.number, sortable: true}
+      {id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: myCustomCheckmarkFormatter, type: FieldType.number, sortable: true}
     ];
     this.gridOptions = {
       autoResize: {
         containerId: 'demo-container',
         sidePadding: 15
       },
-      enableCellNavigation: false
+      enableCellNavigation: false,
+      enableCheckboxSelector: true,
+      enableMultiSelect: false
     };
 
     // mock a dataset

@@ -99,8 +99,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     this._gridOptions = this.mergeGridOptions();
 
     this._dataView = new Slick.Data.DataView();
+    this.controlAndPluginService.createPluginBeforeGridCreation(this.columnDefinitions, this._gridOptions);
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this._gridOptions);
-    this.grid.setSelectionModel(new Slick.RowSelectionModel());
 
     this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
     this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);

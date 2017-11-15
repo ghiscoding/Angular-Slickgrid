@@ -62,6 +62,9 @@ export class GridExtraService {
     }, fadeDelay + 10);
   }
 
+  getSelectedRows() {
+    return this._grid.getSelectedRows();
+  }
   setSelectedRow(rowIndex: number) {
     this._grid.setSelectedRows([rowIndex]);
   }

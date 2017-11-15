@@ -1,5 +1,6 @@
 import { AutoResizeOption } from './autoResizeOption.interface';
 import { BackendEventChanged } from './backendEventChanged.interface';
+import { CheckboxSelector } from './checkboxSelector.interface';
 import { GridMenu } from './gridMenu.interface';
 import { HeaderButton } from './headerButton.interface';
 import { HeaderMenu } from './headerMenu.interface';
@@ -18,11 +19,13 @@ export interface GridOption {
     maxToolTipLength: number;
   };
   cellHighlightCssClass?: string | null;
+  checkboxSelector?: CheckboxSelector;
   editable?: boolean;
   enableAsyncPostRender?: boolean;
   enableAutoResize?: boolean;
   enableAutoTooltip?: boolean;
   enableCellNavigation?: boolean;
+  enableCheckboxSelector?: boolean;
   enableColumnPicker?: boolean;
   enableColumnReorder?: boolean;
   enableFiltering?: boolean;
@@ -30,6 +33,7 @@ export interface GridOption {
   enableHeaderButton?: boolean;
   enableHeaderMenu?: boolean;
   enableMouseHoverHighlightRow?: boolean;
+  enableMultiSelect?: boolean;
   enablePagination?: boolean;
   enableRowSelection?: boolean;
   enableSorting?: boolean;

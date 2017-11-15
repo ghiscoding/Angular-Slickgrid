@@ -127,7 +127,6 @@ export class GridEditorComponent implements OnInit {
         }
       }
     });
-
   }
   dataviewReady(dataview) {
     this.dataviewObj = dataview;

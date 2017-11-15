@@ -4,6 +4,7 @@ export { BackendEventChanged } from './backendEventChanged.interface';
 export { BackendServiceOption } from './backendServiceOption.interface';
 export { CaseType } from './caseType';
 export { CellArgs } from './cellArgs.interface';
+export { CheckboxSelector } from './checkboxSelector.interface';
 export { Column } from './column.interface';
 export { ColumnFilter } from './columnFilter.interface';
 export { ColumnFilters } from './columnFilters.interface';

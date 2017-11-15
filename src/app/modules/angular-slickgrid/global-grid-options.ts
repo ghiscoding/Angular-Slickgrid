@@ -14,6 +14,9 @@ export const GlobalGridOptions: GridOption = {
     sidePadding: 0
   },
   cellHighlightCssClass: 'slick-cell-modified',
+  checkboxSelector: {
+    cssClass: 'slick-cell-checkboxsel'
+  },
   editable: false,
   enableAutoResize: true,
   enableCellNavigation: false,

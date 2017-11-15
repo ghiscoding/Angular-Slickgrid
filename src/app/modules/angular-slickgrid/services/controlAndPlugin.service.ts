@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { FilterService } from './filter.service';
+import { GridExtraUtils } from './gridExtraUtils';
+import { GridExtraService } from './gridExtra.service';
 import {
   CellArgs,
+  CheckboxSelector,
   CustomGridMenu,
   Column,
+  Formatter,
   GridOption,
   HeaderButtonOnCommandArgs,
   HeaderMenuOnCommandArgs,
@@ -22,18 +26,50 @@ export class ControlAndPluginService {
 
   // controls & plugins
   autoTooltipPlugin;
+  checkboxSelectorPlugin: any;
   columnPickerControl;
   headerButtonsPlugin;
   headerMenuPlugin;
   gridMenuControl;
   rowSelectionPlugin;
 
-  constructor(private filterService: FilterService, private router: Router) {}
+  constructor(private filterService: FilterService, private gridExtraService: GridExtraService, private router: Router) {}
 
+  /**
+   * Attach/Create different Controls or Plugins after the Grid is created
+   * @param {any} grid
+   * @param {Column[]} columnDefinitions
+   * @param {GridOptions} options
+   * @param {any} dataView
+   */
   attachDifferentControlOrPlugins(grid: any, columnDefinitions: Column[], options: GridOption, dataView: any) {
     this._visibleColumns = columnDefinitions;
     this._dataView = dataView;
     this._grid = grid;
+
+    if (options.enableMultiSelect) {
+      // when enabling the multi-select, we need to also watch onClick events to perform certain actions
+      // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
+      grid.onClick.subscribe((e, args) => {
+        const column = GridExtraUtils.getColumnDefinitionAndData(args);
+        console.log('onClick', args, column);
+        if (column.columnDef.id === 'multiSelectSelector') {
+          const selectedRows = this.gridExtraService.getSelectedRows();
+          const selectedRowIndex = selectedRows.findIndex((rowNumber) => rowNumber === args.row);
+
+          if (selectedRowIndex >= 0) {
+            selectedRows.splice(selectedRowIndex, 1);
+          } else {
+            selectedRows.push(args.row);
+          }
+          this.gridExtraService.setSelectedRows(selectedRows);
+        }
+      });
+
+      // this also requires the Row Selection Model to be registered as well
+      this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
+      grid.setSelectionModel(this.rowSelectionPlugin);
+    }
 
     if (options.enableColumnPicker) {
       this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
@@ -63,6 +99,16 @@ export class ControlAndPluginService {
     if (options.enableAutoTooltip) {
       this.autoTooltipPlugin = new Slick.AutoTooltips(options.autoTooltipOptions || {});
       grid.registerPlugin(this.autoTooltipPlugin);
+    }
+
+    if (options.enableCheckboxSelector) {
+      // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
+      // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
+      grid.registerPlugin(this.checkboxSelectorPlugin);
+
+      // this also requires the Row Selection Model to be registered as well
+      this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
+      grid.setSelectionModel(this.rowSelectionPlugin);
     }
     if (options.enableRowSelection) {
       this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
@@ -183,4 +229,33 @@ export class ControlAndPluginService {
 
     // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
   }
+
+  /**
+   * Attach/Create different plugins before the Grid creation.
+   * For example the multi-select have to be added to the column definition before the grid is created to work properly
+   * @param {Column[]} columnDefinitions
+   * @param {GridOptions} options
+   */
+  createPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption) {
+    if (options.enableCheckboxSelector) {
+      this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
+      columnDefinitions.unshift(this.checkboxSelectorPlugin.getColumnDefinition());
+    }
+
+    if (options.enableMultiSelect) {
+      const customCheckboxFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
+        return `<span class="fa fa-check selector-checkbox pointer"></span>`;
+      };
+      const columnSelector: Column = {
+        id: 'multiSelectSelector',
+        name: '<span id="selector-all-btn" class="fa fa-check selector-checkbox pointer"></span>',
+        field: '', formatter: customCheckboxFormatter, minWidth: 35,  width: 35, maxWidth: 35,
+        cssClass: 'slick-selector'
+      };
+
+      // const columnSelector;
+      columnDefinitions.unshift(columnSelector);
+    }
+  }
 }
+

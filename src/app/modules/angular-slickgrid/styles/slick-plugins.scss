@@ -157,3 +157,62 @@ label {
 .slick-header-menuitem-disabled {
  color: silver;
 }
+
+// ----------------------------------------------
+// Checkbox Selector Plugin
+// ----------------------------------------------
+
+.slick-cell-checkboxsel {
+  border: $row-checkbox-selector-border;
+  background: $row-checkbox-selector-background;
+  /*
+  input[type="checkbox"]{
+    display:none;
+  }
+  input[type="checkbox"] + label {
+    color: #88E2E2;
+    font-size: 25px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+  }
+  input[type="checkbox"]:checked + label {
+    background: #fff;
+  }
+  input[type="checkbox"] + label:before {
+    display:inline-block;
+    content: "\f096";
+    cursor:pointer;
+  }
+
+  input[type="checkbox"]:checked + label:before {
+    content:"\f046";
+    position: relative;
+    left: 2px;
+  }
+  */
+}
+#selector-all-btn.slick-selector {
+  border-right: $selector-border-right !important;
+  .selector-checkbox {
+    opacity: 0.1;
+    font-size: ($font-size-base-value + 2px) !important;
+  }
+  .selected {
+    .selector-checkbox {
+      opacity: 1;
+    }
+  }
+}
+.slick-selector {
+  border-right: $selector-border-right !important;
+  .selector-checkbox {
+    opacity: 0.1;
+    font-size: ($font-size-base-value + 2px) !important;
+  }
+}
+.slick-selector.selected {
+  .selector-checkbox {
+    opacity: 1;
+  }
+}
