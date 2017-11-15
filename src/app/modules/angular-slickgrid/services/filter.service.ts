@@ -194,7 +194,8 @@ export class FilterService {
       this._columnFilters[args.columnDef.id] = {
         columnId: args.columnDef.id,
         columnDef: args.columnDef,
-        searchTerm: e.target.value
+        searchTerm: e.target.value,
+        operator: args.operator || null
       };
     }
 
@@ -254,7 +255,7 @@ export class FilterService {
         switch (filterType) {
           case FormElementType.select:
           case FormElementType.multiSelect:
-            elm.change((e: any) => this.callbackSearchEvent(e, { columnDef }));
+            elm.change((e: any) => this.callbackSearchEvent(e, { columnDef, operator: 'EQ' }));
             break;
           case FormElementType.input:
           default:
