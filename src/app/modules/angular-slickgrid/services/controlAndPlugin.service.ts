@@ -25,16 +25,20 @@ export class ControlAndPluginService {
   _visibleColumns: Column[];
 
   // controls & plugins
-  autoTooltipPlugin;
+  autoTooltipPlugin: any;
   checkboxSelectorPlugin: any;
-  columnPickerControl;
-  headerButtonsPlugin;
-  headerMenuPlugin;
-  gridMenuControl;
-  rowSelectionPlugin;
+  columnPickerControl: any;
+  headerButtonsPlugin: any;
+  headerMenuPlugin: any;
+  gridMenuControl: any;
+  rowSelectionPlugin: any;
 
   constructor(private filterService: FilterService, private gridExtraService: GridExtraService, private router: Router) {}
 
+  init(grid: any, dataView: any, columnDefinitions: Column[], options: GridOption) {
+    this._grid = grid;
+    this._dataView = dataView;
+  }
   /**
    * Attach/Create different Controls or Plugins after the Grid is created
    * @param {any} grid
@@ -43,39 +47,11 @@ export class ControlAndPluginService {
    * @param {any} dataView
    */
   attachDifferentControlOrPlugins(grid: any, columnDefinitions: Column[], options: GridOption, dataView: any) {
-    this._visibleColumns = columnDefinitions;
-    this._dataView = dataView;
-    this._grid = grid;
-
-    if (options.enableMultiSelect) {
-      // when enabling the multi-select, we need to also watch onClick events to perform certain actions
-      // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
-      grid.onClick.subscribe((e, args) => {
-        const column = GridExtraUtils.getColumnDefinitionAndData(args);
-        console.log('onClick', args, column);
-        if (column.columnDef.id === 'multiSelectSelector') {
-          const selectedRows = this.gridExtraService.getSelectedRows();
-          const selectedRowIndex = selectedRows.findIndex((rowNumber) => rowNumber === args.row);
-
-          if (selectedRowIndex >= 0) {
-            selectedRows.splice(selectedRowIndex, 1);
-          } else {
-            selectedRows.push(args.row);
-          }
-          this.gridExtraService.setSelectedRows(selectedRows);
-        }
-      });
-
-      // this also requires the Row Selection Model to be registered as well
-      this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-      grid.setSelectionModel(this.rowSelectionPlugin);
-    }
-
     if (options.enableColumnPicker) {
       this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
     }
     if (options.enableGridMenu) {
-      this.prepareGridMenu(options);
+      this.prepareGridMenu(grid, options);
 
       this.gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
       if (options.gridMenu) {
@@ -107,8 +83,10 @@ export class ControlAndPluginService {
       grid.registerPlugin(this.checkboxSelectorPlugin);
 
       // this also requires the Row Selection Model to be registered as well
-      this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-      grid.setSelectionModel(this.rowSelectionPlugin);
+      if (!this.rowSelectionPlugin) {
+        this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
+        grid.setSelectionModel(this.rowSelectionPlugin);
+      }
     }
     if (options.enableRowSelection) {
       this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
@@ -149,14 +127,7 @@ export class ControlAndPluginService {
 
     // destroy all the Controls & Plugins when changing Route
     this.router.events.subscribe((event: NavigationEnd) => {
-      this.columnPickerControl.destroy();
-      this.gridMenuControl.destroy();
-
-      /* The following plugins destroy are causing a page reload, not sure why, will leave commented out until I find why */
-      // this.autoTooltipPlugin.destroy();
-      // this.headerButtonsPlugin.destroy();
-      // this.headerMenuPlugin.destroy();
-      // this.rowSelectionPlugin.destroy();
+      this.destroy();
     });
   }
 
@@ -176,7 +147,42 @@ export class ControlAndPluginService {
     this._grid.autosizeColumns();
   }
 
-  private addGridMenuCustomCommands(options: GridOption) {
+  destroy() {
+    this._grid = null;
+    this._dataView = null;
+    this._visibleColumns = [];
+
+    if (this.columnPickerControl) {
+      this.columnPickerControl.destroy();
+      this.columnPickerControl = null;
+    }
+    if (this.gridMenuControl) {
+      this.gridMenuControl.destroy();
+      this.gridMenuControl = null;
+    }
+    if (this.rowSelectionPlugin) {
+      this.rowSelectionPlugin.destroy();
+      this.rowSelectionPlugin = null;
+    }
+    if (this.checkboxSelectorPlugin) {
+      this.checkboxSelectorPlugin.destroy();
+      this.checkboxSelectorPlugin = null;
+    }
+    if (this.autoTooltipPlugin) {
+      this.autoTooltipPlugin.destroy();
+      this.autoTooltipPlugin = null;
+    }
+    if (this.headerButtonsPlugin) {
+      this.headerButtonsPlugin.destroy();
+      this.headerButtonsPlugin = null;
+    }
+    if (this.headerMenuPlugin) {
+      this.headerMenuPlugin.destroy();
+      this.headerMenuPlugin = null;
+    }
+  }
+
+  private addGridMenuCustomCommands(grid: any, options: GridOption) {
     if (options.enableFiltering) {
       if (options.gridMenu.customItems.filter((item) => item.command === 'clear-filter').length === 0) {
         options.gridMenu.customItems.push(
@@ -200,9 +206,9 @@ export class ControlAndPluginService {
       }
       options.gridMenu.onCommand = (e, args) => {
         if (args.command === 'toggle-filter') {
-          this._grid.setHeaderRowVisibility(!this._grid.getOptions().showHeaderRow);
+          grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
         } else if (args.command === 'toggle-toppanel') {
-          this._grid.setTopPanelVisibility(!this._grid.getOptions().showTopPanel);
+          grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
         } else if (args.command === 'clear-filter') {
           this.filterService.clearFilters();
           this._dataView.refresh();
@@ -218,15 +224,14 @@ export class ControlAndPluginService {
     }
   }
 
-  private prepareGridMenu(options) {
+  private prepareGridMenu(grid, options) {
     options.gridMenu = options.gridMenu || {};
     options.gridMenu.columnTitle = options.gridMenu.columnTitle || 'Columns';
     options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
     options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
     options.gridMenu.customTitle = options.gridMenu.customTitle || null;
     options.gridMenu.customItems = options.gridMenu.customItems || [];
-    this.addGridMenuCustomCommands(options);
-
+    this.addGridMenuCustomCommands(grid, options);
     // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
   }
 
@@ -240,21 +245,6 @@ export class ControlAndPluginService {
     if (options.enableCheckboxSelector) {
       this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
       columnDefinitions.unshift(this.checkboxSelectorPlugin.getColumnDefinition());
-    }
-
-    if (options.enableMultiSelect) {
-      const customCheckboxFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
-        return `<span class="fa fa-check selector-checkbox pointer"></span>`;
-      };
-      const columnSelector: Column = {
-        id: 'multiSelectSelector',
-        name: '<span id="selector-all-btn" class="fa fa-check selector-checkbox pointer"></span>',
-        field: '', formatter: customCheckboxFormatter, minWidth: 35,  width: 35, maxWidth: 35,
-        cssClass: 'slick-selector'
-      };
-
-      // const columnSelector;
-      columnDefinitions.unshift(columnSelector);
     }
   }
 }

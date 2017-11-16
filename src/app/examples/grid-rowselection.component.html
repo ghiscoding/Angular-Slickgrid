@@ -1,0 +1,38 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div class="container">
+    <h2>{{title}}</h2>
+    <div class="subtitle" [innerHTML]="subTitle"></div>
+
+    <div class="row">
+        <div class="col-sm-4">
+          <div class="form-inline">
+            <label class="control-label" for="radioWithCursor">Multi-Select / Single</label>
+            <span id="radioWithCursor">
+              <label class="radio-inline control-label" for="radioTrue">
+                <input type="radio" name="inlineRadioOptions" id="radioTrue" checked [value]="isMultiSelect" (change)="onChooseMultiSelectType(true)">
+                Multi-Select
+              </label>
+              <label class="radio-inline control-label" for="radioFalse">
+                <input type="radio" name="inlineRadioOptions" id="radioFalse" [value]="isMultiSelect" (change)="onChooseMultiSelectType(false)">
+                Single
+              </label>
+            </span>
+          </div>
+        </div>
+        <div class="col-sm-8">
+          <div class="alert alert-info">
+            <strong>Selected Row(s):</strong>
+            <div [innerHTML]="selectedObjects"></div>
+          </div>
+        </div>
+      </div>
+
+    <angular-slickgrid gridId="grid1"
+                (dataviewChanged)="dataviewReady($event)" (gridChanged)="gridReady($event)"
+              [columnDefinitions]="columnDefinitions"
+              [gridOptions]="gridOptions"
+              [dataset]="dataset">
+    </angular-slickgrid>
+    <br/>
+    <hr/>
+  </div>

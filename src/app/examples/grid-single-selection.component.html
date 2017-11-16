@@ -1,0 +1,11 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div>
+    <angular-slickgrid gridId="grid2"
+                (dataviewChanged)="dataviewReady($event)" (gridChanged)="gridReady($event)"
+              [columnDefinitions]="columnDefinitions"
+              [gridOptions]="gridOptions"
+              [dataset]="dataset"
+              gridHeight="300"
+              gridWidth="800">
+    </angular-slickgrid>
+  </div>

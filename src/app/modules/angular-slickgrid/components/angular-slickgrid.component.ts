@@ -88,6 +88,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     // on route change, we should destroy the grid & cleanup some of the objects
     this.router.events.subscribe((event: NavigationEnd) => {
       this.grid.destroy();
+      this.controlAndPluginService.destroy();
       this._dataView = [];
       this.filterService.clearFilters();
     });
@@ -99,6 +100,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnInit {
     this._gridOptions = this.mergeGridOptions();
 
     this._dataView = new Slick.Data.DataView();
+    this.controlAndPluginService.init(this.grid, this._dataView, this.columnDefinitions, this._gridOptions);
     this.controlAndPluginService.createPluginBeforeGridCreation(this.columnDefinitions, this._gridOptions);
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this._gridOptions);
 

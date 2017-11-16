@@ -8,6 +8,6 @@ export class GridExtraUtils {
     return {
       columnDef: args.grid.getColumns()[args.cell],
       dataContext: args.grid.getDataItem(args.row)
-    }
+    };
   }
 }

@@ -33,7 +33,6 @@ export interface GridOption {
   enableHeaderButton?: boolean;
   enableHeaderMenu?: boolean;
   enableMouseHoverHighlightRow?: boolean;
-  enableMultiSelect?: boolean;
   enablePagination?: boolean;
   enableRowSelection?: boolean;
   enableSorting?: boolean;
