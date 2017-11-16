@@ -1,8 +1,5 @@
+import { HeaderButtonOnCommandArgs } from './headerButtonOnCommandArgs.interface';
 export interface HeaderButton {
-    cssClass?: string;
-    image?: string;
-    tooltip?: string;
-    showOnHover?: boolean;
-    handler?: (e: Event) => void;
-    command?: string;
+    buttonCssClass?: string;
+    onCommand?: (e: Event, args: HeaderButtonOnCommandArgs) => void;
 }

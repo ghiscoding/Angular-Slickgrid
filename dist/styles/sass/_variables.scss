@@ -7,7 +7,8 @@
 /* SlickGrid Bootstrap variables */
 /* Used by slick-bootstrap.scss */
 $border-color:                          #dddddd !default;
-$font-size-base:          			        14px !default;
+$font-size-base-value:                  14 !default;
+$font-size-base:          			        $font-size-base-value + 0px !default;
 $font-family:                           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
 
 /* Slickgrid container, including headers but excluding pagination */
@@ -23,6 +24,7 @@ $grid-header-background:                rgba(255, 255, 255, .6) !default;
 $grid-cell-color:                       rgb(255, 255, 255) !default;
 
 /* cell */
+$cell-active-border:                    1px solid rgb(170, 170, 170) !default;
 $cell-border-top:                       1px solid $border-color !default;
 $cell-border-right:                     0 none !default;
 $cell-border-bottom:                    0 none !default;
@@ -32,19 +34,19 @@ $cell-odd-background-color:             darken($grid-cell-color, 3%) !default; /
 $cell-odd-active-background-color:      darken($grid-cell-color, 5%) !default;
 $cell-padding:                          5px 7.5834px !default;
 
-/* cell default slickgrid values */
-$cell-padding-top:                      4px !default;
-$cell-padding-right:                    4px !default;
-$cell-padding-bottom:                   4px !default;
-$cell-padding-left:                     4px !default;
-
 /* row */
 $row-highlight-background-color:        rgba(212, 203, 156, 0.774) !default;
 $row-highlight-fade-animation:          2s ease-in 1 !default;
 $row-mouse-hover-color:                 rgb(245, 245, 204) !default;
 $row-selected-color:                    #e2e2c5 !default;
+$row-checkbox-selector-background:      inherit !default;
+$row-checkbox-selector-border:          none !default;
 
 /* header */
+$header-padding-top:                    4px !default;
+$header-padding-right:                  4px !default;
+$header-padding-bottom:                 4px !default;
+$header-padding-left:                   4px !default;
 $header-input-height:                   27px !default;                        // height of the filter form element (input, textarea, select)
 $header-input-width:                    100% !default;                        // width of the filter form element (input, textarea, select)
 $header-input-padding:                  0 6px !default;                       // padding of the filter form element (input, textarea, select)
@@ -122,3 +124,6 @@ $pagination-border-right:               0 none !default;
 $pagination-border-bottom:              0 none !default;
 $pagination-border-left:                0 none !default;
 $pagination-text-color:                 #808080 !default;
+
+/* selector plugin */
+$selector-border-right:                 1px solid rgb(196, 196, 196) !default;

@@ -13,6 +13,7 @@ export declare class GridExtraService {
      * @param {number} fadeDelay
      */
     highlightRow(rowNumber: number, fadeDelay?: number): void;
+    getSelectedRows(): any;
     setSelectedRow(rowIndex: number): void;
     setSelectedRows(rowIndexes: number[]): void;
 }

@@ -1,8 +1,8 @@
+import { HeaderMenuOnBeforeMenuShowArgs } from './headerMenuOnBeforeMenuShowArgs.interface';
+import { HeaderButtonOnCommandArgs } from './headerButtonOnCommandArgs.interface';
 export interface HeaderMenu {
-    title?: string;
-    disabled?: boolean;
-    tooltip?: string;
-    command?: string;
-    iconCssClass?: string;
-    iconImage?: string;
+    buttonCssClass?: string;
+    buttonImage?: string;
+    onBeforeMenuShow?: (e: Event, args: HeaderMenuOnBeforeMenuShowArgs) => void;
+    onCommand?: (e: Event, args: HeaderButtonOnCommandArgs) => void;
 }

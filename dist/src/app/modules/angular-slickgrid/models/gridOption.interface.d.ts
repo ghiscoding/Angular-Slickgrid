@@ -1,6 +1,9 @@
 import { AutoResizeOption } from './autoResizeOption.interface';
 import { BackendEventChanged } from './backendEventChanged.interface';
+import { CheckboxSelector } from './checkboxSelector.interface';
 import { GridMenu } from './gridMenu.interface';
+import { HeaderButton } from './headerButton.interface';
+import { HeaderMenu } from './headerMenu.interface';
 import { Pagination } from './pagination.interface';
 export interface GridOption {
     asyncEditorLoading?: boolean;
@@ -13,11 +16,13 @@ export interface GridOption {
         maxToolTipLength: number;
     };
     cellHighlightCssClass?: string | null;
+    checkboxSelector?: CheckboxSelector;
     editable?: boolean;
     enableAsyncPostRender?: boolean;
     enableAutoResize?: boolean;
     enableAutoTooltip?: boolean;
     enableCellNavigation?: boolean;
+    enableCheckboxSelector?: boolean;
     enableColumnPicker?: boolean;
     enableColumnReorder?: boolean;
     enableFiltering?: boolean;
@@ -35,15 +40,8 @@ export interface GridOption {
     gridMenu?: GridMenu;
     gridId?: string;
     headerRowHeight?: number;
-    headerButtonOptions?: {
-        buttonCssClass?: string;
-        onCommand?: (e: Event, args: any) => void;
-    };
-    headerMenuOptions?: {
-        buttonCssClass?: string;
-        buttonImage?: string;
-        onCommand?: (e: Event, args: any) => void;
-    };
+    headerButton?: HeaderButton;
+    headerMenu?: HeaderMenu;
     multiColumnSort?: boolean;
     onBackendEventApi?: BackendEventChanged;
     pagination?: Pagination;

@@ -11047,6 +11047,8 @@ function mapOperatorType(operator) {
             break;
         case '<>':
         case '!=':
+        case 'neq':
+        case 'NEQ':
             map = OperatorType.notEqual;
             break;
         case '*':
@@ -11060,7 +11062,18 @@ function mapOperatorType(operator) {
             break;
         case '=':
         case '==':
+        case 'eq':
+        case 'EQ':
             map = OperatorType.equal;
+            break;
+        case 'in':
+        case 'IN':
+            map = OperatorType.in;
+            break;
+        case 'notIn':
+        case 'NIN':
+        case 'NOT_IN':
+            map = OperatorType.notIn;
             break;
         default:
             map = OperatorType.contains;
@@ -11498,18 +11511,19 @@ class FilterService {
             if (!serviceOptions || !serviceOptions.onBackendEventApi || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
                 throw new Error(`onBackendEventApi requires at least a "process" function and a "service" defined`);
             }
-            const /** @type {?} */ backendApi = serviceOptions.onBackendEventApi;
             // run a preProcess callback if defined
-            if (backendApi.preProcess !== undefined) {
-                backendApi.preProcess();
+            if (serviceOptions.onBackendEventApi.preProcess) {
+                serviceOptions.onBackendEventApi.preProcess();
             }
             // call the service to get a query back
-            const /** @type {?} */ query = yield backendApi.service.onFilterChanged(event, args);
-            // await for the Promise to resolve the data
-            const /** @type {?} */ responseProcess = yield backendApi.process(query);
+            const /** @type {?} */ query = yield serviceOptions.onBackendEventApi.service.onFilterChanged(event, args);
+            // the process could be an Observable (like HttpClient) or a Promise
+            // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+            const /** @type {?} */ observableOrPromise = serviceOptions.onBackendEventApi.process(query);
+            const /** @type {?} */ responseProcess = yield castToPromise(observableOrPromise);
             // send the response process to the postProcess callback
-            if (backendApi.postProcess !== undefined) {
-                backendApi.postProcess(responseProcess);
+            if (serviceOptions.onBackendEventApi.postProcess !== undefined) {
+                serviceOptions.onBackendEventApi.postProcess(responseProcess);
             }
         });
     }
@@ -11643,7 +11657,8 @@ class FilterService {
             this._columnFilters[args.columnDef.id] = {
                 columnId: args.columnDef.id,
                 columnDef: args.columnDef,
-                searchTerm: e.target.value
+                searchTerm: e.target.value,
+                operator: args.operator || null
             };
         }
         this.triggerEvent(this.subscriber, {
@@ -11699,7 +11714,7 @@ class FilterService {
                 switch (filterType) {
                     case FormElementType.select:
                     case FormElementType.multiSelect:
-                        elm.change((e) => this.callbackSearchEvent(e, { columnDef }));
+                        elm.change((e) => this.callbackSearchEvent(e, { columnDef, operator: 'EQ' }));
                         break;
                     case FormElementType.input:
                     default:
@@ -11739,16 +11754,111 @@ class FilterService {
     }
 }
 
+class GridExtraService {
+    /**
+     * @param {?} grid
+     * @param {?} dataView
+     * @return {?}
+     */
+    init(grid, dataView) {
+        this._grid = grid;
+        this._dataView = dataView;
+    }
+    /**
+     * Chain the item Metadata with our implementation of Metadata at given row index
+     * @param {?} previousItemMetadata
+     * @return {?}
+     */
+    getItemRowMetadata(previousItemMetadata) {
+        return (rowNumber) => {
+            const /** @type {?} */ item = this._dataView.getItem(rowNumber);
+            let /** @type {?} */ meta = {
+                cssClasses: ''
+            };
+            if (typeof previousItemMetadata === 'object' && !jquery.isEmptyObject(previousItemMetadata)) {
+                meta = previousItemMetadata(rowNumber);
+            }
+            if (item && item._dirty) {
+                meta.cssClasses = (meta.cssClasses || '') + ' dirty';
+            }
+            if (item && item.rowClass) {
+                meta.cssClasses += ` ${item.rowClass}`;
+                meta.cssClasses += ` row${rowNumber}`;
+            }
+            return meta;
+        };
+    }
+    /**
+     * Highlight then fade a row for x seconds.
+     * The implementation follows this SO answer: https://stackoverflow.com/a/19985148/1212166
+     * @param {?} rowNumber
+     * @param {?=} fadeDelay
+     * @return {?}
+     */
+    highlightRow(rowNumber, fadeDelay = 1500) {
+        // chain current item Metadata with our own Metadata for implementing highligh CSS styling
+        this._grid.setSelectedRows([rowNumber]);
+        this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
+        const /** @type {?} */ item = this._dataView.getItem(rowNumber);
+        item.rowClass = 'highlight';
+        this._dataView.updateItem(item.id, item);
+        const /** @type {?} */ gridOptions = (this._grid.getOptions());
+        // highlight the row for a user defined timeout
+        const /** @type {?} */ rowElm = jquery(`#${gridOptions.gridId}`)
+            .find(`.highlight.row${rowNumber}`)
+            .first();
+        // delete the row's CSS that was attached for highlighting
+        setTimeout(() => {
+            delete item.rowClass;
+            this._dataView.updateItem(item.id, item);
+        }, fadeDelay + 10);
+    }
+    /**
+     * @return {?}
+     */
+    getSelectedRows() {
+        return this._grid.getSelectedRows();
+    }
+    /**
+     * @param {?} rowIndex
+     * @return {?}
+     */
+    setSelectedRow(rowIndex) {
+        this._grid.setSelectedRows([rowIndex]);
+    }
+    /**
+     * @param {?} rowIndexes
+     * @return {?}
+     */
+    setSelectedRows(rowIndexes) {
+        this._grid.setSelectedRows(rowIndexes);
+    }
+}
+
 class ControlAndPluginService {
     /**
      * @param {?} filterService
+     * @param {?} gridExtraService
      * @param {?} router
      */
-    constructor(filterService, router$$1) {
+    constructor(filterService, gridExtraService, router$$1) {
         this.filterService = filterService;
+        this.gridExtraService = gridExtraService;
         this.router = router$$1;
     }
     /**
+     * @param {?} grid
+     * @param {?} dataView
+     * @param {?} columnDefinitions
+     * @param {?} options
+     * @return {?}
+     */
+    init(grid, dataView, columnDefinitions, options) {
+        this._grid = grid;
+        this._dataView = dataView;
+    }
+    /**
+     * Attach/Create different Controls or Plugins after the Grid is created
      * @param {?} grid
      * @param {?} columnDefinitions
      * @param {?} options
@@ -11756,14 +11866,11 @@ class ControlAndPluginService {
      * @return {?}
      */
     attachDifferentControlOrPlugins(grid, columnDefinitions, options, dataView) {
-        this._visibleColumns = columnDefinitions;
-        this._dataView = dataView;
-        this._grid = grid;
         if (options.enableColumnPicker) {
             this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
         }
         if (options.enableGridMenu) {
-            this.prepareGridMenu(options);
+            this.prepareGridMenu(grid, options);
             this.gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
             if (options.gridMenu) {
                 this.gridMenuControl.onBeforeMenuShow.subscribe((e, args) => {
@@ -11787,25 +11894,40 @@ class ControlAndPluginService {
             this.autoTooltipPlugin = new Slick.AutoTooltips(options.autoTooltipOptions || {});
             grid.registerPlugin(this.autoTooltipPlugin);
         }
+        if (options.enableCheckboxSelector) {
+            // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
+            // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
+            grid.registerPlugin(this.checkboxSelectorPlugin);
+            // this also requires the Row Selection Model to be registered as well
+            if (!this.rowSelectionPlugin) {
+                this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
+                grid.setSelectionModel(this.rowSelectionPlugin);
+            }
+        }
         if (options.enableRowSelection) {
             this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
             grid.setSelectionModel(this.rowSelectionPlugin);
         }
         if (options.enableHeaderButton) {
-            this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(options.headerButtonOptions || {});
+            this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(options.headerButton || {});
             grid.registerPlugin(this.headerButtonsPlugin);
             this.headerButtonsPlugin.onCommand.subscribe((e, args) => {
-                if (typeof options.headerButtonOptions.onCommand === 'function') {
-                    options.headerButtonOptions.onCommand(e, args);
+                if (options.headerButton && typeof options.headerButton.onCommand === 'function') {
+                    options.headerButton.onCommand(e, args);
                 }
             });
         }
         if (options.enableHeaderMenu) {
-            this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenuOptions || {});
+            this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenu || {});
             grid.registerPlugin(this.headerMenuPlugin);
             this.headerMenuPlugin.onCommand.subscribe((e, args) => {
-                if (typeof options.headerMenuOptions.onCommand === 'function') {
-                    options.headerMenuOptions.onCommand(e, args);
+                if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
+                    options.headerMenu.onCommand(e, args);
+                }
+            });
+            this.headerMenuPlugin.onCommand.subscribe((e, args) => {
+                if (options.headerMenu && typeof options.headerMenu.onBeforeMenuShow === 'function') {
+                    options.headerMenu.onBeforeMenuShow(e, args);
                 }
             });
         }
@@ -11821,13 +11943,7 @@ class ControlAndPluginService {
         }
         // destroy all the Controls & Plugins when changing Route
         this.router.events.subscribe((event) => {
-            this.columnPickerControl.destroy();
-            this.gridMenuControl.destroy();
-            /* The following plugins destroy are causing a page reload, not sure why, will leave commented out until I find why */
-            // this.autoTooltipPlugin.destroy();
-            // this.headerButtonsPlugin.destroy();
-            // this.headerMenuPlugin.destroy();
-            // this.rowSelectionPlugin.destroy();
+            this.destroy();
         });
     }
     /**
@@ -11856,10 +11972,47 @@ class ControlAndPluginService {
         this._grid.autosizeColumns();
     }
     /**
+     * @return {?}
+     */
+    destroy() {
+        this._grid = null;
+        this._dataView = null;
+        this._visibleColumns = [];
+        if (this.columnPickerControl) {
+            this.columnPickerControl.destroy();
+            this.columnPickerControl = null;
+        }
+        if (this.gridMenuControl) {
+            this.gridMenuControl.destroy();
+            this.gridMenuControl = null;
+        }
+        if (this.rowSelectionPlugin) {
+            this.rowSelectionPlugin.destroy();
+            this.rowSelectionPlugin = null;
+        }
+        if (this.checkboxSelectorPlugin) {
+            this.checkboxSelectorPlugin.destroy();
+            this.checkboxSelectorPlugin = null;
+        }
+        if (this.autoTooltipPlugin) {
+            this.autoTooltipPlugin.destroy();
+            this.autoTooltipPlugin = null;
+        }
+        if (this.headerButtonsPlugin) {
+            this.headerButtonsPlugin.destroy();
+            this.headerButtonsPlugin = null;
+        }
+        if (this.headerMenuPlugin) {
+            this.headerMenuPlugin.destroy();
+            this.headerMenuPlugin = null;
+        }
+    }
+    /**
+     * @param {?} grid
      * @param {?} options
      * @return {?}
      */
-    addGridMenuCustomCommands(options) {
+    addGridMenuCustomCommands(grid, options) {
         if (options.enableFiltering) {
             if (options.gridMenu.customItems.filter((item) => item.command === 'clear-filter').length === 0) {
                 options.gridMenu.customItems.push({
@@ -11879,10 +12032,10 @@ class ControlAndPluginService {
             }
             options.gridMenu.onCommand = (e, args) => {
                 if (args.command === 'toggle-filter') {
-                    this._grid.setHeaderRowVisibility(!this._grid.getOptions().showHeaderRow);
+                    grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
                 }
                 else if (args.command === 'toggle-toppanel') {
-                    this._grid.setTopPanelVisibility(!this._grid.getOptions().showTopPanel);
+                    grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
                 }
                 else if (args.command === 'clear-filter') {
                     this.filterService.clearFilters();
@@ -11899,18 +12052,32 @@ class ControlAndPluginService {
         }
     }
     /**
+     * @param {?} grid
      * @param {?} options
      * @return {?}
      */
-    prepareGridMenu(options) {
+    prepareGridMenu(grid, options) {
         options.gridMenu = options.gridMenu || {};
         options.gridMenu.columnTitle = options.gridMenu.columnTitle || 'Columns';
         options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
         options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
         options.gridMenu.customTitle = options.gridMenu.customTitle || null;
         options.gridMenu.customItems = options.gridMenu.customItems || [];
-        this.addGridMenuCustomCommands(options);
+        this.addGridMenuCustomCommands(grid, options);
         // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
+    }
+    /**
+     * Attach/Create different plugins before the Grid creation.
+     * For example the multi-select have to be added to the column definition before the grid is created to work properly
+     * @param {?} columnDefinitions
+     * @param {?} options
+     * @return {?}
+     */
+    createPluginBeforeGridCreation(columnDefinitions, options) {
+        if (options.enableCheckboxSelector) {
+            this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
+            columnDefinitions.unshift(this.checkboxSelectorPlugin.getColumnDefinition());
+        }
     }
 }
 ControlAndPluginService.decorators = [
@@ -11921,6 +12088,7 @@ ControlAndPluginService.decorators = [
  */
 ControlAndPluginService.ctorParameters = () => [
     { type: FilterService, },
+    { type: GridExtraService, },
     { type: Router, },
 ];
 
@@ -12402,81 +12570,6 @@ class GraphqlService {
             const /** @type {?} */ rep = group1.replace(/"/g, '');
             return rep;
         });
-    }
-}
-
-class GridExtraService {
-    /**
-     * @param {?} grid
-     * @param {?} dataView
-     * @return {?}
-     */
-    init(grid, dataView) {
-        this._grid = grid;
-        this._dataView = dataView;
-    }
-    /**
-     * Chain the item Metadata with our implementation of Metadata at given row index
-     * @param {?} previousItemMetadata
-     * @return {?}
-     */
-    getItemRowMetadata(previousItemMetadata) {
-        return (rowNumber) => {
-            const /** @type {?} */ item = this._dataView.getItem(rowNumber);
-            let /** @type {?} */ meta = {
-                cssClasses: ''
-            };
-            if (typeof previousItemMetadata === 'object' && !jquery.isEmptyObject(previousItemMetadata)) {
-                meta = previousItemMetadata(rowNumber);
-            }
-            if (item && item._dirty) {
-                meta.cssClasses = (meta.cssClasses || '') + ' dirty';
-            }
-            if (item && item.rowClass) {
-                meta.cssClasses += ` ${item.rowClass}`;
-                meta.cssClasses += ` row${rowNumber}`;
-            }
-            return meta;
-        };
-    }
-    /**
-     * Highlight then fade a row for x seconds.
-     * The implementation follows this SO answer: https://stackoverflow.com/a/19985148/1212166
-     * @param {?} rowNumber
-     * @param {?=} fadeDelay
-     * @return {?}
-     */
-    highlightRow(rowNumber, fadeDelay = 1500) {
-        // chain current item Metadata with our own Metadata for implementing highligh CSS styling
-        this._grid.setSelectedRows([rowNumber]);
-        this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
-        const /** @type {?} */ item = this._dataView.getItem(rowNumber);
-        item.rowClass = 'highlight';
-        this._dataView.updateItem(item.id, item);
-        const /** @type {?} */ gridOptions = (this._grid.getOptions());
-        // highlight the row for a user defined timeout
-        const /** @type {?} */ rowElm = jquery(`#${gridOptions.gridId}`)
-            .find(`.highlight.row${rowNumber}`)
-            .first();
-        // delete the row's CSS that was attached for highlighting
-        setTimeout(() => {
-            delete item.rowClass;
-            this._dataView.updateItem(item.id, item);
-        }, fadeDelay + 10);
-    }
-    /**
-     * @param {?} rowIndex
-     * @return {?}
-     */
-    setSelectedRow(rowIndex) {
-        this._grid.setSelectedRows([rowIndex]);
-    }
-    /**
-     * @param {?} rowIndexes
-     * @return {?}
-     */
-    setSelectedRows(rowIndexes) {
-        this._grid.setSelectedRows(rowIndexes);
     }
 }
 
@@ -38608,6 +38701,9 @@ const GlobalGridOptions = {
         sidePadding: 0
     },
     cellHighlightCssClass: 'slick-cell-modified',
+    checkboxSelector: {
+        cssClass: 'slick-cell-checkboxsel'
+    },
     editable: false,
     enableAutoResize: true,
     enableCellNavigation: false,
@@ -38654,14 +38750,16 @@ class AngularSlickgridComponent {
      * @param {?} gridExtraService
      * @param {?} filterService
      * @param {?} resizer
+     * @param {?} router
      * @param {?} sortService
      */
-    constructor(controlAndPluginService, gridEventService, gridExtraService, filterService, resizer, sortService) {
+    constructor(controlAndPluginService, gridEventService, gridExtraService, filterService, resizer, router$$1, sortService) {
         this.controlAndPluginService = controlAndPluginService;
         this.gridEventService = gridEventService;
         this.gridExtraService = gridExtraService;
         this.filterService = filterService;
         this.resizer = resizer;
+        this.router = router$$1;
         this.sortService = sortService;
         this.showPagination = false;
         this.dataviewChanged = new EventEmitter();
@@ -38689,6 +38787,13 @@ class AngularSlickgridComponent {
     ngOnInit() {
         this.gridHeightString = `${this.gridHeight}px`;
         this.gridWidthString = `${this.gridWidth}px`;
+        // on route change, we should destroy the grid & cleanup some of the objects
+        this.router.events.subscribe((event) => {
+            this.grid.destroy();
+            this.controlAndPluginService.destroy();
+            this._dataView = [];
+            this.filterService.clearFilters();
+        });
     }
     /**
      * @return {?}
@@ -38698,8 +38803,9 @@ class AngularSlickgridComponent {
         this._dataset = this._dataset || [];
         this._gridOptions = this.mergeGridOptions();
         this._dataView = new Slick.Data.DataView();
+        this.controlAndPluginService.init(this.grid, this._dataView, this.columnDefinitions, this._gridOptions);
+        this.controlAndPluginService.createPluginBeforeGridCreation(this.columnDefinitions, this._gridOptions);
         this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this._gridOptions);
-        this.grid.setSelectionModel(new Slick.RowSelectionModel());
         this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
         this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);
         // emit the Grid & DataView object to make them available in parent component
@@ -38856,6 +38962,7 @@ AngularSlickgridComponent.ctorParameters = () => [
     { type: GridExtraService, },
     { type: FilterService, },
     { type: ResizerService, },
+    { type: Router, },
     { type: SortService, },
 ];
 AngularSlickgridComponent.propDecorators = {

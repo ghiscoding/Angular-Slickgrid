@@ -1,7 +1,7 @@
 import { FieldType } from './fieldType';
 import { Formatter } from './formatter.interface';
-import { HeaderButton } from './headerButton.interface';
-import { HeaderMenu } from './headerMenu.interface';
+import { HeaderButtonItem } from './headerButtonItem.interface';
+import { HeaderMenuItem } from './headerMenuItem.interface';
 import { OnEventArgs } from './onEventArgs.interface';
 import { Sorter } from './sorter.interface';
 export interface Column {
@@ -19,9 +19,9 @@ export interface Column {
     focusable?: boolean;
     formatter?: Formatter;
     header?: {
-        buttons?: HeaderButton[];
+        buttons?: HeaderButtonItem[];
         menu?: {
-            items: HeaderMenu[];
+            items: HeaderMenuItem[];
         };
     };
     headerCssClass?: string;
