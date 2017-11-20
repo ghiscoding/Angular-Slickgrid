@@ -1,5 +1,4 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { GridAddItemComponent } from './examples/grid-additem.component';
 import { GridMenuComponent } from './examples/grid-menu.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
@@ -10,8 +9,11 @@ import { GridHeaderMenuComponent } from './examples/grid-headermenu.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
 import { GridRowSelectionComponent } from './examples/grid-rowselection.component';
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
+  { path: 'additem', component: GridAddItemComponent },
   { path: 'basic', component: GridBasicComponent },
   { path: 'editor', component: GridEditorComponent },
   { path: 'formatter', component: GridFormatterComponent },

@@ -1,0 +1,19 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div class="container">
+    <h2>{{title}}</h2>
+    <div class="subtitle" [innerHTML]="subTitle"></div>
+
+    <div class="col-sm-12">
+        <span>
+            <button class="btn btn-sm btn-default" (click)="addNewItem()">Add New Mocked Item</button>
+            <button class="btn btn-sm btn-default" (click)="updateSecondItem()">Update 2nd Row Item with Random Duration</button>
+            <button class="btn btn-sm btn-default" (click)="highlighFifthRow()">Highlight 5th Row</button>
+        </span>
+        <hr/>
+    </div>
+
+    <div class="col-sm-12">
+        <angular-slickgrid gridId="grid2" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
+        </angular-slickgrid>
+    </div>
+</div>

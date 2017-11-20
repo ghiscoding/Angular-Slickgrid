@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
+import { GridAddItemComponent } from './examples/grid-additem.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
@@ -25,6 +26,7 @@ import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angu
 @NgModule({
   declarations: [
     AppComponent,
+    GridAddItemComponent,
     GridBasicComponent,
     GridClientSideComponent,
     GridEditorComponent,

@@ -117,7 +117,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.attachResizeHook(this.grid, this._gridOptions);
 
     // attach grid extra service
-    const gridExtraService = this.gridExtraService.init(this.grid, this._dataView);
+    const gridExtraService = this.gridExtraService.init(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
   }
 
   attachDifferentHooks(grid: any, options: GridOption, dataView: any) {
