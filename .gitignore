@@ -35,6 +35,8 @@ npm-debug.log
 testem.log
 /typings
 yarn-error.log
+package-lock.json
+yarn.lock
 
 # e2e
 /e2e/*.js
