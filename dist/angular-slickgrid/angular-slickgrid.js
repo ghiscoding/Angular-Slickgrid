@@ -3,7 +3,6 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import { Component, EventEmitter, Injectable, Input, NgModule, Output } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 let CaseType = {};
@@ -11472,6 +11471,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 class FilterService {
     constructor() {
         this._columnFilters = {};
+        this.onFilterChanged = new EventEmitter();
     }
     /**
      * @param {?} grid
@@ -11492,6 +11492,7 @@ class FilterService {
      */
     attachBackendOnFilter(grid, options) {
         this.subscriber = new Slick.Event();
+        this.emitFilterChangedBy('remote');
         this.subscriber.subscribe(this.attachBackendOnFilterSubscribe);
         grid.onHeaderRowCellRendered.subscribe((e, args) => {
             this.addFilterTemplateToHeaderRow(args);
@@ -11577,6 +11578,7 @@ class FilterService {
     attachLocalOnFilter(grid, options, dataView) {
         this._dataView = dataView;
         this.subscriber = new Slick.Event();
+        this.emitFilterChangedBy('remote');
         dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
         dataView.setFilter(this.customFilter);
         this.subscriber.subscribe((e, args) => {
@@ -11725,6 +11727,15 @@ class FilterService {
         }
     }
     /**
+     * A simple function that is attached to the subscriber and emit a change when the sort is called.
+     * Other services, like Pagination, can then subscribe to it.
+     * @param {?} sender
+     * @return {?}
+     */
+    emitFilterChangedBy(sender) {
+        this.subscriber.subscribe(() => this.onFilterChanged.emit(`onFilterChanged by ${sender}`));
+    }
+    /**
      * @param {?} searchTerm
      * @param {?} listTerm
      * @param {?} columnDef
@@ -11757,12 +11768,26 @@ class FilterService {
 class GridExtraService {
     /**
      * @param {?} grid
+     * @param {?} columnDefinition
+     * @param {?} gridOptions
      * @param {?} dataView
      * @return {?}
      */
-    init(grid, dataView) {
+    init(grid, columnDefinition, gridOptions, dataView) {
         this._grid = grid;
+        this._columnDefinition = columnDefinition;
+        this._gridOptions = gridOptions;
         this._dataView = dataView;
+    }
+    /**
+     * @param {?} rowNumber
+     * @return {?}
+     */
+    getDataItemByRowNumber(rowNumber) {
+        if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+            throw new Error('We could not find SlickGrid Grid object');
+        }
+        return this._grid.getDataItem(rowNumber);
     }
     /**
      * Chain the item Metadata with our implementation of Metadata at given row index
@@ -11833,29 +11858,56 @@ class GridExtraService {
     setSelectedRows(rowIndexes) {
         this._grid.setSelectedRows(rowIndexes);
     }
+    /**
+     * Add an item (data item) to the datagrid
+     * @param {?} item
+     * @return {?}
+     */
+    addItemToDatagrid(item) {
+        if (!this._grid || !this._gridOptions || !this._dataView) {
+            throw new Error('We could not find SlickGrid Grid, DataView objects');
+        }
+        if (!this._gridOptions || (!this._gridOptions.enableCheckboxSelector && !this._gridOptions.enableRowSelection)) {
+            throw new Error('addItemToDatagrid() requires to have a valid Slickgrid Selection Model. You can overcome this issue by enabling enableCheckboxSelector or enableRowSelection to True');
+        }
+        const /** @type {?} */ row = 0;
+        this._dataView.insertItem(row, item);
+        this.highlightRow(0, 1500);
+        // refresh dataview & grid
+        this._dataView.refresh();
+        // get new dataset length
+        const /** @type {?} */ datasetLength = this._dataView.getLength();
+    }
+    /**
+     * Update an existing item with new properties inside the datagrid
+     * @param {?} item
+     * @return {?}
+     */
+    updateDataGridItem(item) {
+        const /** @type {?} */ row = this._dataView.getRowById(item.id);
+        const /** @type {?} */ itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
+        if (itemId === -1) {
+            throw new Error(`Could not find the item in the item in the grid or it's associated "id"`);
+        }
+        // Update the item itself inside the dataView
+        this._dataView.updateItem(itemId, item);
+        // highlight the row we just updated
+        this.highlightRow(row, 1500);
+        // refresh dataview & grid
+        this._dataView.refresh();
+        // get new dataset length
+        const /** @type {?} */ datasetLength = this._dataView.getLength();
+    }
 }
 
 class ControlAndPluginService {
     /**
      * @param {?} filterService
      * @param {?} gridExtraService
-     * @param {?} router
      */
-    constructor(filterService, gridExtraService, router$$1) {
+    constructor(filterService, gridExtraService) {
         this.filterService = filterService;
         this.gridExtraService = gridExtraService;
-        this.router = router$$1;
-    }
-    /**
-     * @param {?} grid
-     * @param {?} dataView
-     * @param {?} columnDefinitions
-     * @param {?} options
-     * @return {?}
-     */
-    init(grid, dataView, columnDefinitions, options) {
-        this._grid = grid;
-        this._dataView = dataView;
     }
     /**
      * Attach/Create different Controls or Plugins after the Grid is created
@@ -11866,6 +11918,9 @@ class ControlAndPluginService {
      * @return {?}
      */
     attachDifferentControlOrPlugins(grid, columnDefinitions, options, dataView) {
+        this._grid = grid;
+        this._dataView = dataView;
+        this._visibleColumns = columnDefinitions;
         if (options.enableColumnPicker) {
             this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
         }
@@ -11874,17 +11929,17 @@ class ControlAndPluginService {
             this.gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
             if (options.gridMenu) {
                 this.gridMenuControl.onBeforeMenuShow.subscribe((e, args) => {
-                    if (typeof options.gridMenu.onBeforeMenuShow === 'function') {
+                    if (options.gridMenu && typeof options.gridMenu.onBeforeMenuShow === 'function') {
                         options.gridMenu.onBeforeMenuShow(e, args);
                     }
                 });
                 this.gridMenuControl.onCommand.subscribe((e, args) => {
-                    if (typeof options.gridMenu.onCommand === 'function') {
+                    if (options.gridMenu && typeof options.gridMenu.onCommand === 'function') {
                         options.gridMenu.onCommand(e, args);
                     }
                 });
                 this.gridMenuControl.onMenuClose.subscribe((e, args) => {
-                    if (typeof options.gridMenu.onMenuClose === 'function') {
+                    if (options.gridMenu && typeof options.gridMenu.onMenuClose === 'function') {
                         options.gridMenu.onMenuClose(e, args);
                     }
                 });
@@ -11941,19 +11996,17 @@ class ControlAndPluginService {
                 grid.registerPlugin(options.registerPlugins);
             }
         }
-        // destroy all the Controls & Plugins when changing Route
-        this.router.events.subscribe((event) => {
-            this.destroy();
-        });
     }
     /**
      * @param {?} column
      * @return {?}
      */
     hideColumn(column) {
-        const /** @type {?} */ columnIndex = this._grid.getColumnIndex(column.id);
-        this._visibleColumns = this.removeColumnByIndex(this._visibleColumns, columnIndex);
-        this._grid.setColumns(this._visibleColumns);
+        if (this._grid && this._visibleColumns) {
+            const /** @type {?} */ columnIndex = this._grid.getColumnIndex(column.id);
+            this._visibleColumns = this.removeColumnByIndex(this._visibleColumns, columnIndex);
+            this._grid.setColumns(this._visibleColumns);
+        }
     }
     /**
      * @param {?} array
@@ -12014,7 +12067,7 @@ class ControlAndPluginService {
      */
     addGridMenuCustomCommands(grid, options) {
         if (options.enableFiltering) {
-            if (options.gridMenu.customItems.filter((item) => item.command === 'clear-filter').length === 0) {
+            if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'clear-filter').length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: 'fa fa-filter text-danger',
                     title: 'Clear All Filters',
@@ -12022,7 +12075,7 @@ class ControlAndPluginService {
                     command: 'clear-filter'
                 });
             }
-            if (options.gridMenu.customItems.filter((item) => item.command === 'toggle-filter').length === 0) {
+            if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'toggle-filter').length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: 'fa fa-random',
                     title: 'Toggle Filter Row',
@@ -12030,24 +12083,26 @@ class ControlAndPluginService {
                     command: 'toggle-filter'
                 });
             }
-            options.gridMenu.onCommand = (e, args) => {
-                if (args.command === 'toggle-filter') {
-                    grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
-                }
-                else if (args.command === 'toggle-toppanel') {
-                    grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
-                }
-                else if (args.command === 'clear-filter') {
-                    this.filterService.clearFilters();
-                    this._dataView.refresh();
-                }
-                else {
-                    alert('Command: ' + args.command);
-                }
-            };
+            if (options.gridMenu) {
+                options.gridMenu.onCommand = (e, args) => {
+                    if (args.command === 'toggle-filter') {
+                        grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
+                    }
+                    else if (args.command === 'toggle-toppanel') {
+                        grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
+                    }
+                    else if (args.command === 'clear-filter') {
+                        this.filterService.clearFilters();
+                        this._dataView.refresh();
+                    }
+                    else {
+                        alert('Command: ' + args.command);
+                    }
+                };
+            }
         }
         // remove the custom command title if there's no command
-        if (options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
+        if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
             options.gridMenu.customTitle = options.gridMenu.customTitle || 'Commands';
         }
     }
@@ -12061,7 +12116,7 @@ class ControlAndPluginService {
         options.gridMenu.columnTitle = options.gridMenu.columnTitle || 'Columns';
         options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
         options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
-        options.gridMenu.customTitle = options.gridMenu.customTitle || null;
+        options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
         options.gridMenu.customItems = options.gridMenu.customItems || [];
         this.addGridMenuCustomCommands(grid, options);
         // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
@@ -12089,7 +12144,6 @@ ControlAndPluginService.decorators = [
 ControlAndPluginService.ctorParameters = () => [
     { type: FilterService, },
     { type: GridExtraService, },
-    { type: Router, },
 ];
 
 class GridEventService {
@@ -13095,12 +13149,7 @@ const DATAGRID_BOTTOM_PADDING = 20;
 const DATAGRID_PAGINATION_HEIGHT = 35;
 let timer$2;
 class ResizerService {
-    /**
-     * @param {?} router
-     */
-    constructor(router$$1) {
-        this.router = router$$1;
-    }
+    constructor() { }
     /**
      * Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
      * Options: we could also provide a % factor to resize on each height/width independently
@@ -13122,10 +13171,6 @@ class ResizerService {
             // for some yet unknown reason, calling the resize twice removes any stuttering/flickering when changing the height and makes it much smoother
             this.resizeGrid(grid, gridOptions);
             this.resizeGrid(grid, gridOptions);
-        });
-        // destroy the resizer on route change
-        this.router.events.subscribe((event) => {
-            this.destroy();
         });
     }
     /**
@@ -13212,9 +13257,7 @@ ResizerService.decorators = [
 /**
  * @nocollapse
  */
-ResizerService.ctorParameters = () => [
-    { type: Router, },
-];
+ResizerService.ctorParameters = () => [];
 
 var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13225,6 +13268,9 @@ var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, 
     });
 };
 class SortService {
+    constructor() {
+        this.onSortChanged = new EventEmitter();
+    }
     /**
      * Attach a backend sort (single/multi) hook to the grid
      * @param {?} grid SlickGrid Grid object
@@ -13233,6 +13279,7 @@ class SortService {
      */
     attachBackendOnSort(grid, gridOptions) {
         this.subscriber = grid.onSort;
+        this.emitSortChangedBy('remote');
         this.subscriber.subscribe(this.attachBackendOnSortSubscribe);
     }
     /**
@@ -13272,6 +13319,7 @@ class SortService {
      */
     attachLocalOnSort(grid, gridOptions, dataView) {
         this.subscriber = grid.onSort;
+        this.emitSortChangedBy('local');
         this.subscriber.subscribe((e, args) => {
             // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
             // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
@@ -13320,6 +13368,15 @@ class SortService {
     destroy() {
         this.subscriber.unsubscribe();
     }
+    /**
+     * A simple function that is attached to the subscriber and emit a change when the sort is called.
+     * Other services, like Pagination, can then subscribe to it.
+     * @param {?} sender
+     * @return {?}
+     */
+    emitSortChangedBy(sender) {
+        this.subscriber.subscribe(() => this.onSortChanged.emit(`onSortChanged by ${sender}`));
+    }
 }
 
 var __awaiter$2 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -13331,7 +13388,13 @@ var __awaiter$2 = (this && this.__awaiter) || function (thisArg, _arguments, P, 
     });
 };
 class SlickPaginationComponent {
-    constructor() {
+    /**
+     * @param {?} filterService
+     * @param {?} sortService
+     */
+    constructor(filterService, sortService) {
+        this.filterService = filterService;
+        this.sortService = sortService;
         this.dataFrom = 1;
         this.dataTo = 1;
         this.itemsPerPage = 25;
@@ -13369,6 +13432,13 @@ class SlickPaginationComponent {
         if (!this._gridPaginationOptions || !this._gridPaginationOptions.pagination || (this._gridPaginationOptions.pagination.totalItems !== this.totalItems)) {
             this.refreshPagination();
         }
+        // Subscribe to Event Emitter of Filter & Sort changed, go back to page 1 when that happen
+        this.filterService.onFilterChanged.subscribe((data) => {
+            this.refreshPagination(true);
+        });
+        this.sortService.onSortChanged.subscribe((data) => {
+            this.refreshPagination(true);
+        });
     }
     /**
      * @param {?} number
@@ -13376,17 +13446,6 @@ class SlickPaginationComponent {
      */
     ceil(number) {
         return Math.ceil(number);
-    }
-    /**
-     * @param {?} event
-     * @return {?}
-     */
-    onChangeItemPerPage(event) {
-        const /** @type {?} */ itemsPerPage = (event.target.value);
-        this.pageCount = Math.ceil(this.totalItems / itemsPerPage);
-        this.pageNumber = 1;
-        this.itemsPerPage = itemsPerPage;
-        this.onPageChanged(event, this.pageNumber);
     }
     /**
      * @param {?} event
@@ -13425,19 +13484,24 @@ class SlickPaginationComponent {
         }
     }
     /**
+     * @param {?} event
      * @return {?}
      */
-    gotoFirstPage() {
+    onChangeItemPerPage(event) {
+        const /** @type {?} */ itemsPerPage = (event.target.value);
+        this.pageCount = Math.ceil(this.totalItems / itemsPerPage);
         this.pageNumber = 1;
-        this.onPageChanged(undefined, this.pageNumber);
+        this.itemsPerPage = itemsPerPage;
+        this.onPageChanged(event, this.pageNumber);
     }
     /**
+     * @param {?=} isPageNumberReset
      * @return {?}
      */
-    refreshPagination() {
+    refreshPagination(isPageNumberReset) {
         if (this._gridPaginationOptions && this._gridPaginationOptions.pagination) {
             // if totalItems changed, we should always go back to the first page and recalculation the From-To indexes
-            if (this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
+            if (isPageNumberReset || this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
                 this.pageNumber = 1;
                 this.recalculateFromToIndexes();
             }
@@ -13543,7 +13607,10 @@ SlickPaginationComponent.decorators = [
 /**
  * @nocollapse
  */
-SlickPaginationComponent.ctorParameters = () => [];
+SlickPaginationComponent.ctorParameters = () => [
+    { type: FilterService, },
+    { type: SortService, },
+];
 SlickPaginationComponent.propDecorators = {
     'gridPaginationOptions': [{ type: Input },],
     'grid': [{ type: Input },],
@@ -38750,16 +38817,14 @@ class AngularSlickgridComponent {
      * @param {?} gridExtraService
      * @param {?} filterService
      * @param {?} resizer
-     * @param {?} router
      * @param {?} sortService
      */
-    constructor(controlAndPluginService, gridEventService, gridExtraService, filterService, resizer, router$$1, sortService) {
+    constructor(controlAndPluginService, gridEventService, gridExtraService, filterService, resizer, sortService) {
         this.controlAndPluginService = controlAndPluginService;
         this.gridEventService = gridEventService;
         this.gridExtraService = gridExtraService;
         this.filterService = filterService;
         this.resizer = resizer;
-        this.router = router$$1;
         this.sortService = sortService;
         this.showPagination = false;
         this.dataviewChanged = new EventEmitter();
@@ -38787,13 +38852,16 @@ class AngularSlickgridComponent {
     ngOnInit() {
         this.gridHeightString = `${this.gridHeight}px`;
         this.gridWidthString = `${this.gridWidth}px`;
-        // on route change, we should destroy the grid & cleanup some of the objects
-        this.router.events.subscribe((event) => {
-            this.grid.destroy();
-            this.controlAndPluginService.destroy();
-            this._dataView = [];
-            this.filterService.clearFilters();
-        });
+    }
+    /**
+     * @return {?}
+     */
+    ngOnDestroy() {
+        this._dataView = [];
+        this.controlAndPluginService.destroy();
+        this.filterService.clearFilters();
+        this.resizer.destroy();
+        this.grid.destroy();
     }
     /**
      * @return {?}
@@ -38803,7 +38871,6 @@ class AngularSlickgridComponent {
         this._dataset = this._dataset || [];
         this._gridOptions = this.mergeGridOptions();
         this._dataView = new Slick.Data.DataView();
-        this.controlAndPluginService.init(this.grid, this._dataView, this.columnDefinitions, this._gridOptions);
         this.controlAndPluginService.createPluginBeforeGridCreation(this.columnDefinitions, this._gridOptions);
         this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this._gridOptions);
         this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
@@ -38818,7 +38885,7 @@ class AngularSlickgridComponent {
         // attach resize ONLY after the dataView is ready
         this.attachResizeHook(this.grid, this._gridOptions);
         // attach grid extra service
-        const /** @type {?} */ gridExtraService = this.gridExtraService.init(this.grid, this._dataView);
+        const /** @type {?} */ gridExtraService = this.gridExtraService.init(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
     }
     /**
      * @param {?} grid
@@ -38962,7 +39029,6 @@ AngularSlickgridComponent.ctorParameters = () => [
     { type: GridExtraService, },
     { type: FilterService, },
     { type: ResizerService, },
-    { type: Router, },
     { type: SortService, },
 ];
 AngularSlickgridComponent.propDecorators = {

@@ -1,8 +1,6 @@
 import { GridOption } from './../models';
-import { Router } from '@angular/router';
 export declare class ResizerService {
-    private router;
-    constructor(router: Router);
+    constructor();
     /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
      * Options: we could also provide a % factor to resize on each height/width independently
      */

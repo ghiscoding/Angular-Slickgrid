@@ -1,6 +1,8 @@
+import { EventEmitter } from '@angular/core';
 import { GridOption } from './../models';
 export declare class SortService {
     subscriber: any;
+    onSortChanged: EventEmitter<string>;
     /**
      * Attach a backend sort (single/multi) hook to the grid
      * @param grid SlickGrid Grid object
@@ -16,4 +18,10 @@ export declare class SortService {
      */
     attachLocalOnSort(grid: any, gridOptions: GridOption, dataView: any): void;
     destroy(): void;
+    /**
+     * A simple function that is attached to the subscriber and emit a change when the sort is called.
+     * Other services, like Pagination, can then subscribe to it.
+     * @param {string} sender
+     */
+    emitSortChangedBy(sender: string): void;
 }

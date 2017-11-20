@@ -18,17 +18,15 @@ import 'slickgrid/plugins/slick.headerbuttons';
 import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
-import { AfterViewInit, EventEmitter, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { AfterViewInit, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { Column, GridOption } from './../models';
 import { ControlAndPluginService, FilterService, GridEventService, GridExtraService, SortService, ResizerService } from './../services';
-export declare class AngularSlickgridComponent implements AfterViewInit, OnInit {
+export declare class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
     private controlAndPluginService;
     private gridEventService;
     private gridExtraService;
     private filterService;
     private resizer;
-    private router;
     private sortService;
     private _dataset;
     private _dataView;
@@ -46,8 +44,9 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnInit 
     gridHeight: number;
     gridWidth: number;
     dataset: any[];
-    constructor(controlAndPluginService: ControlAndPluginService, gridEventService: GridEventService, gridExtraService: GridExtraService, filterService: FilterService, resizer: ResizerService, router: Router, sortService: SortService);
+    constructor(controlAndPluginService: ControlAndPluginService, gridEventService: GridEventService, gridExtraService: GridExtraService, filterService: FilterService, resizer: ResizerService, sortService: SortService);
     ngOnInit(): void;
+    ngOnDestroy(): void;
     ngAfterViewInit(): void;
     attachDifferentHooks(grid: any, options: GridOption, dataView: any): void;
     attachResizeHook(grid: any, options: GridOption): void;

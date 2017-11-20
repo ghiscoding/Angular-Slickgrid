@@ -1,11 +1,9 @@
-import { Router } from '@angular/router';
 import { FilterService } from './filter.service';
 import { GridExtraService } from './gridExtra.service';
 import { Column, GridOption } from './../models';
 export declare class ControlAndPluginService {
     private filterService;
     private gridExtraService;
-    private router;
     _dataView: any;
     _grid: any;
     _visibleColumns: Column[];
@@ -16,8 +14,7 @@ export declare class ControlAndPluginService {
     headerMenuPlugin: any;
     gridMenuControl: any;
     rowSelectionPlugin: any;
-    constructor(filterService: FilterService, gridExtraService: GridExtraService, router: Router);
-    init(grid: any, dataView: any, columnDefinitions: Column[], options: GridOption): void;
+    constructor(filterService: FilterService, gridExtraService: GridExtraService);
     /**
      * Attach/Create different Controls or Plugins after the Grid is created
      * @param {any} grid
@@ -27,7 +24,7 @@ export declare class ControlAndPluginService {
      */
     attachDifferentControlOrPlugins(grid: any, columnDefinitions: Column[], options: GridOption, dataView: any): void;
     hideColumn(column: Column): void;
-    removeColumnByIndex(array: any, index: any): any;
+    removeColumnByIndex(array: any[], index: number): any[];
     autoResizeColumns(): void;
     destroy(): void;
     private addGridMenuCustomCommands(grid, options);
