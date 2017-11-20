@@ -12,7 +12,7 @@ export class GridBasicComponent implements OnInit {
   subTitle = `
     Basic Grid with fixed sizes (800 x 400) set by "gridHeight" &amp; "gridWidth"
     <ul>
-      <li><a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step">Wiki HOWTO link</a></li>
+      <li><a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step" target="_blank">Wiki HOWTO link</a></li>
     </ul>
   `;
 

@@ -14,7 +14,7 @@ const sampleDataRoot = '/assets/data';
 export class GridGraphqlComponent implements OnInit {
   title = 'Example 6: Grid connected to Backend Server with GraphQL';
   subTitle = `
-    Sorting/Paging connected to a Backend GraphQL Service (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/GraphQL">Wiki link</a>).
+    Sorting/Paging connected to a Backend GraphQL Service (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/GraphQL" target="_blank">Wiki link</a>).
     <br/>
     <ul class="small">
       <li><span class="red">(*) NO DATA SHOWING</span> - just change Filters &amp; Pages and look at the "GraphQL Query" changing :)</li>

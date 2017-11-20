@@ -11,7 +11,7 @@ function randomBetween(min, max) {
 export class GridClientSideComponent implements OnInit {
   title = 'Example 4: Client Side Sort/Filter';
   subTitle = `
-    Sort/Filter on client side only using SlickGrid DataView (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Sorting">Wiki link</a>)
+    Sort/Filter on client side only using SlickGrid DataView (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Sorting" target="_blank">Wiki link</a>)
     <br/>
     <ul class="small">
       <li>Support multi-sort (by default), hold "Shift" key and click on the next column to sort.

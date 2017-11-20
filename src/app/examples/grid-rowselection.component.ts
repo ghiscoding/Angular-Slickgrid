@@ -7,7 +7,7 @@ import { Column, FieldType, Formatter, Formatters, GridExtraService, GridExtraUt
 export class GridRowSelectionComponent implements OnInit {
   title = 'Example 10: Grid with Row Selection';
   subTitle = `
-    Row selection, single or multi-select (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Row-Selection">Wiki link</a>).
+    Row selection, single or multi-select (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Row-Selection" target="_blank">Wiki link</a>).
   `;
 
   columnDefinitions: Column[];
@@ -41,7 +41,8 @@ export class GridRowSelectionComponent implements OnInit {
       },
       enableAutoResize: true,
       enableCellNavigation: false,
-      enableCheckboxSelector: true
+      enableCheckboxSelector: true,
+      enableRowSelection: true
     };
 
     this.dataset = this.prepareData();

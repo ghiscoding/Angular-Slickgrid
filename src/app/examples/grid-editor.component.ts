@@ -7,7 +7,7 @@ import { Column, Editors, FieldType, Formatter, Formatters, GridExtraService, Gr
 export class GridEditorComponent implements OnInit {
   title = 'Example 3: Editors';
   subTitle = `
-  Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors">Wiki link</a>).
+  Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors" target="_blank">Wiki link</a>).
   <ul>
     <li>When using "enableCellNavigation: true", clicking on a cell will automatically make it active &amp; selected.
     <ul><li>If you don't want this behavior, then you should disable "enableCellNavigation"</li></ul>

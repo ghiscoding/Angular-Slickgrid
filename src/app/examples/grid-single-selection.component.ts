@@ -8,7 +8,7 @@ import { Column, FieldType, Formatter, Formatters, GridExtraService, GridOption 
 export class GridSingleSelectionComponent implements OnInit {
   title = 'Example 10: Grid with Row Selection';
   subTitle = `
-    Row selection, single or multi-select (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Row-Selection">Wiki link</a>).
+    Row selection, single or multi-select (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Row-Selection" target="_blank">Wiki link</a>).
   `;
 
   columnDefinitions: Column[];
