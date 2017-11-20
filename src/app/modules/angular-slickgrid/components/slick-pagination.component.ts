@@ -1,4 +1,6 @@
 import { castToPromise } from './../services/utilities';
+import { FilterService } from '../services/filter.service';
+import { SortService } from './../services/sort.service';
 import { Component, OnInit, Input, AfterViewInit } from '@angular/core';
 import { Column, GridOption } from './../models';
 
@@ -29,7 +31,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
   paginationCallback: Function;
   paginationPageSizes = [25, 75, 100];
 
-  constructor() { }
+  constructor(private filterService: FilterService, private sortService: SortService) { }
 
   ngOnInit() {
   }
@@ -39,11 +41,44 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
     if (!this._gridPaginationOptions || !this._gridPaginationOptions.pagination || (this._gridPaginationOptions.pagination.totalItems !== this.totalItems)) {
       this.refreshPagination();
     }
+
+    // Subscribe to Event Emitter of Filter & Sort changed, go back to page 1 when that happen
+    this.filterService.onFilterChanged.subscribe((data) => {
+      this.refreshPagination(true);
+    });
+    this.sortService.onSortChanged.subscribe((data) => {
+      this.refreshPagination(true);
+    });
   }
 
   ceil(number: number) {
     return Math.ceil(number);
   }
+
+  changeToFirstPage(event: any) {
+    this.pageNumber = 1;
+    this.onPageChanged(event, this.pageNumber);
+  }
+
+  changeToLastPage(event: any) {
+    this.pageNumber = this.pageCount;
+    this.onPageChanged(event, this.pageNumber);
+  }
+
+  changeToNextPage(event: any) {
+    if (this.pageNumber < this.pageCount) {
+      this.pageNumber++;
+      this.onPageChanged(event, this.pageNumber);
+    }
+  }
+
+  changeToPreviousPage(event: any) {
+    if (this.pageNumber > 0) {
+      this.pageNumber--;
+      this.onPageChanged(event, this.pageNumber);
+    }
+  }
+
   onChangeItemPerPage(event: any) {
     const itemsPerPage = event.target.value as number;
     this.pageCount = Math.ceil(this.totalItems / itemsPerPage);
@@ -52,36 +87,10 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
     this.onPageChanged(event, this.pageNumber);
   }
 
-  changeToFirstPage(event: any) {
-    this.pageNumber = 1;
-    this.onPageChanged(event, this.pageNumber);
-  }
-  changeToLastPage(event: any) {
-    this.pageNumber = this.pageCount;
-    this.onPageChanged(event, this.pageNumber);
-  }
-  changeToNextPage(event: any) {
-    if (this.pageNumber < this.pageCount) {
-      this.pageNumber++;
-      this.onPageChanged(event, this.pageNumber);
-    }
-  }
-  changeToPreviousPage(event: any) {
-    if (this.pageNumber > 0) {
-      this.pageNumber--;
-      this.onPageChanged(event, this.pageNumber);
-    }
-  }
-
-  gotoFirstPage() {
-    this.pageNumber = 1;
-    this.onPageChanged(undefined, this.pageNumber);
-  }
-
-  refreshPagination() {
+  refreshPagination(isPageNumberReset?: boolean) {
     if (this._gridPaginationOptions && this._gridPaginationOptions.pagination) {
       // if totalItems changed, we should always go back to the first page and recalculation the From-To indexes
-      if (this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
+      if (isPageNumberReset || this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
         this.pageNumber = 1;
         this.recalculateFromToIndexes();
       }

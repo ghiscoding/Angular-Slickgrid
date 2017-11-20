@@ -1,3 +1,4 @@
+import { EventEmitter } from '@angular/core';
 import { castToPromise } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { FilterTemplates } from './../filter-templates';
@@ -24,6 +25,7 @@ export class FilterService {
   _gridOptions: GridOption;
   _onFilterChangedOptions: any;
   subscriber: SlickEvent;
+  onFilterChanged = new EventEmitter<string>();
 
   init(grid: any, gridOptions: GridOption, columnDefinitions: Column[]): void {
     this._columnDefinitions = columnDefinitions;
@@ -38,6 +40,7 @@ export class FilterService {
    */
   attachBackendOnFilter(grid: any, options: GridOption) {
     this.subscriber = new Slick.Event();
+    this.emitFilterChangedBy('remote');
     this.subscriber.subscribe(this.attachBackendOnFilterSubscribe);
 
     grid.onHeaderRowCellRendered.subscribe((e: Event, args: any) => {
@@ -117,6 +120,7 @@ export class FilterService {
   attachLocalOnFilter(grid: any, options: GridOption, dataView: any) {
     this._dataView = dataView;
     this.subscriber = new Slick.Event();
+    this.emitFilterChangedBy('remote');
 
     dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
     dataView.setFilter(this.customFilter);
@@ -264,6 +268,15 @@ export class FilterService {
         }
       }
     }
+  }
+
+  /**
+   * A simple function that is attached to the subscriber and emit a change when the sort is called.
+   * Other services, like Pagination, can then subscribe to it.
+   * @param {string} sender
+   */
+  emitFilterChangedBy(sender: string) {
+    this.subscriber.subscribe(() => this.onFilterChanged.emit(`onFilterChanged by ${sender}`));
   }
 
   private keepColumnFilters(searchTerm: string, listTerm: any, columnDef: any) {
