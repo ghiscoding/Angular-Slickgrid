@@ -1,6 +1,5 @@
 import { GridOption } from './../models';
 import { Injectable } from '@angular/core';
-import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import $ from 'jquery';
 
 // global constants, height/width are in pixels
@@ -12,8 +11,7 @@ let timer: any;
 
 @Injectable()
 export class ResizerService {
-  constructor(private router: Router) {
-  }
+  constructor() {}
 
   /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
    * Options: we could also provide a % factor to resize on each height/width independently
@@ -34,11 +32,6 @@ export class ResizerService {
       // for some yet unknown reason, calling the resize twice removes any stuttering/flickering when changing the height and makes it much smoother
       this.resizeGrid(grid, gridOptions);
       this.resizeGrid(grid, gridOptions);
-    });
-
-    // destroy the resizer on route change
-    this.router.events.subscribe((event: NavigationEnd) => {
-      this.destroy();
     });
   }
 

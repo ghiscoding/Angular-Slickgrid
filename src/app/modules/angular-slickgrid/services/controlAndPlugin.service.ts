@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { FilterService } from './filter.service';
 import { GridExtraUtils } from './gridExtraUtils';
 import { GridExtraService } from './gridExtra.service';
@@ -33,12 +32,8 @@ export class ControlAndPluginService {
   gridMenuControl: any;
   rowSelectionPlugin: any;
 
-  constructor(private filterService: FilterService, private gridExtraService: GridExtraService, private router: Router) {}
+  constructor(private filterService: FilterService, private gridExtraService: GridExtraService) {}
 
-  init(grid: any, dataView: any, columnDefinitions: Column[], options: GridOption) {
-    this._grid = grid;
-    this._dataView = dataView;
-  }
   /**
    * Attach/Create different Controls or Plugins after the Grid is created
    * @param {any} grid
@@ -47,6 +42,10 @@ export class ControlAndPluginService {
    * @param {any} dataView
    */
   attachDifferentControlOrPlugins(grid: any, columnDefinitions: Column[], options: GridOption, dataView: any) {
+    this._grid = grid;
+    this._dataView = dataView;
+    this._visibleColumns = columnDefinitions;
+
     if (options.enableColumnPicker) {
       this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
     }
@@ -56,17 +55,17 @@ export class ControlAndPluginService {
       this.gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
       if (options.gridMenu) {
         this.gridMenuControl.onBeforeMenuShow.subscribe((e: Event, args: CellArgs) => {
-          if (typeof options.gridMenu.onBeforeMenuShow === 'function') {
+          if (options.gridMenu && typeof options.gridMenu.onBeforeMenuShow === 'function') {
             options.gridMenu.onBeforeMenuShow(e, args);
           }
         });
         this.gridMenuControl.onCommand.subscribe((e: Event, args: CellArgs) => {
-          if (typeof options.gridMenu.onCommand === 'function') {
+          if (options.gridMenu && typeof options.gridMenu.onCommand === 'function') {
             options.gridMenu.onCommand(e, args);
           }
         });
         this.gridMenuControl.onMenuClose.subscribe((e: Event, args: CellArgs) => {
-          if (typeof options.gridMenu.onMenuClose === 'function') {
+          if (options.gridMenu && typeof options.gridMenu.onMenuClose === 'function') {
             options.gridMenu.onMenuClose(e, args);
           }
         });
@@ -124,21 +123,18 @@ export class ControlAndPluginService {
         grid.registerPlugin(options.registerPlugins);
       }
     }
-
-    // destroy all the Controls & Plugins when changing Route
-    this.router.events.subscribe((event: NavigationEnd) => {
-      this.destroy();
-    });
   }
 
   hideColumn(column: Column) {
-    const columnIndex = this._grid.getColumnIndex(column.id);
-    this._visibleColumns = this.removeColumnByIndex(this._visibleColumns, columnIndex);
-    this._grid.setColumns(this._visibleColumns);
+    if (this._grid && this._visibleColumns) {
+      const columnIndex = this._grid.getColumnIndex(column.id);
+      this._visibleColumns = this.removeColumnByIndex(this._visibleColumns, columnIndex);
+      this._grid.setColumns(this._visibleColumns);
+    }
   }
 
-  removeColumnByIndex(array, index) {
-    return array.filter((el, i) => {
+  removeColumnByIndex(array: any[], index: number) {
+    return array.filter((el: any, i: number) => {
       return index !== i;
     });
   }
@@ -184,7 +180,7 @@ export class ControlAndPluginService {
 
   private addGridMenuCustomCommands(grid: any, options: GridOption) {
     if (options.enableFiltering) {
-      if (options.gridMenu.customItems.filter((item) => item.command === 'clear-filter').length === 0) {
+      if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-filter').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: 'fa fa-filter text-danger',
@@ -194,7 +190,7 @@ export class ControlAndPluginService {
           }
         );
       }
-      if (options.gridMenu.customItems.filter((item) => item.command === 'toggle-filter').length === 0) {
+      if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'toggle-filter').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: 'fa fa-random',
@@ -204,32 +200,34 @@ export class ControlAndPluginService {
           }
         );
       }
-      options.gridMenu.onCommand = (e, args) => {
-        if (args.command === 'toggle-filter') {
-          grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
-        } else if (args.command === 'toggle-toppanel') {
-          grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
-        } else if (args.command === 'clear-filter') {
-          this.filterService.clearFilters();
-          this._dataView.refresh();
-        } else {
-          alert('Command: ' + args.command);
-        }
-      };
+      if (options.gridMenu) {
+        options.gridMenu.onCommand = (e, args) => {
+          if (args.command === 'toggle-filter') {
+            grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
+          } else if (args.command === 'toggle-toppanel') {
+            grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
+          } else if (args.command === 'clear-filter') {
+            this.filterService.clearFilters();
+            this._dataView.refresh();
+          } else {
+            alert('Command: ' + args.command);
+          }
+        };
+      }
     }
 
     // remove the custom command title if there's no command
-    if (options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
+    if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
       options.gridMenu.customTitle = options.gridMenu.customTitle || 'Commands';
     }
   }
 
-  private prepareGridMenu(grid, options) {
+  private prepareGridMenu(grid: any, options: GridOption) {
     options.gridMenu = options.gridMenu || {};
     options.gridMenu.columnTitle = options.gridMenu.columnTitle || 'Columns';
     options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
     options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
-    options.gridMenu.customTitle = options.gridMenu.customTitle || null;
+    options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
     options.gridMenu.customItems = options.gridMenu.customItems || [];
     this.addGridMenuCustomCommands(grid, options);
     // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
@@ -248,4 +246,3 @@ export class ControlAndPluginService {
     }
   }
 }
-
