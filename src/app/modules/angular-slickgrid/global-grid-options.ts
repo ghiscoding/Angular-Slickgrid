@@ -36,6 +36,7 @@ export const GlobalGridOptions: GridOption = {
     resizeOnShowHeaderRow: false
   },
   headerRowHeight: 35,
+  locale: 'en',
   multiColumnSort: true,
   pagination: {
     pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
