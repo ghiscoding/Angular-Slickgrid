@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { Column, FieldType, Formatter, Formatters, GridExtraService, GridExtraUtils, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-rowselection.component.html'
 })
+@Injectable()
 export class GridRowSelectionComponent implements OnInit {
   title = 'Example 10: Grid with Row Selection';
   subTitle = `

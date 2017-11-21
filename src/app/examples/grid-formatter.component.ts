@@ -18,8 +18,6 @@ export class GridFormatterComponent implements OnInit {
   gridOptions: GridOption;
   dataset: any[];
 
-  constructor(private gridExtraService: GridExtraService) {}
-
   ngOnInit(): void {
     this.columnDefinitions = [
       {id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string},

@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injectable } from '@angular/core';
 import { Column, Editors, FieldType, Formatter, Formatters, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-additem.component.html'
 })
+@Injectable()
 export class GridAddItemComponent implements OnInit {
   title = 'Example 11: Add / Update / Highlight a Datagrid Item';
   subTitle = `
@@ -79,15 +80,15 @@ export class GridAddItemComponent implements OnInit {
   }
 
   addNewItem() {
-    const randomId = Math.floor(Math.random() * (10000 - 1000) + 1000);
+    const newId = this.dataset.length;
     const randomYear = 2000 + Math.floor(Math.random() * 10);
     const randomMonth = Math.floor(Math.random() * 11);
     const randomDay = Math.floor((Math.random() * 29));
     const randomPercent = Math.round(Math.random() * 100);
 
     const newItem = {
-      id: randomId,
-      title: 'Task ' + randomId,
+      id: newId,
+      title: 'Task ' + newId,
       duration: Math.round(Math.random() * 100) + '',
       percentComplete: randomPercent,
       percentCompleteNumber: randomPercent,
