@@ -105,7 +105,7 @@ export class GridEditorComponent implements OnInit {
     grid.onCellChange.subscribe((e, args) => {
       console.log('onCellChange', args);
       this.updatedObject = args.item;
-      this.resizer.resizeGrid(this.gridObj, this.gridOptions, 10);
+      this.resizer.resizeGrid(10);
     });
 
     // You could also subscribe to grid.onClick

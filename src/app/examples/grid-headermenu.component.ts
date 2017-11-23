@@ -13,7 +13,8 @@ const highlightingFormatter = (row, cell, value, columnDef, dataContext) => {
 };
 
 @Component({
-  templateUrl: './grid-headermenu.component.html'
+  templateUrl: './grid-headermenu.component.html',
+  providers: [ControlAndPluginService]
 })
 @Injectable()
 export class GridHeaderMenuComponent implements OnInit {
@@ -76,7 +77,6 @@ export class GridHeaderMenuComponent implements OnInit {
         }
       };
     }
-    this.visibleColumns = this.columnDefinitions;
 
     this.gridOptions = {
       enableAutoResize: true,

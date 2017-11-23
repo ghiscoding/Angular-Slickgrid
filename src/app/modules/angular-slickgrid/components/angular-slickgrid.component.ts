@@ -177,7 +177,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         grid.autosizeColumns();
       }
     } else {
-      this.resizer.resizeGrid(grid, options, 0, { height: this.gridHeight, width: this.gridWidth });
+      this.resizer.resizeGrid(0, { height: this.gridHeight, width: this.gridWidth });
     }
   }
 
@@ -191,19 +191,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     return $.extend(true, {}, GlobalGridOptions, this.gridOptions);
   }
 
-  /** Toggle the filter row displayed on first row */
-  showHeaderRow(isShowing: boolean) {
-    this.grid.setHeaderRowVisibility(isShowing);
-    return isShowing;
-  }
-
-  /** Toggle the filter row displayed on first row */
-  toggleHeaderRow() {
-    const isShowing = !this.grid.getOptions().showHeaderRow;
-    this.grid.setHeaderRowVisibility(isShowing);
-    return isShowing;
-  }
-
+  /**
+   * When dataset changes, we need to refresh the entire grid UI & possibly resize it as well
+   * @param {object} dataset
+   */
   refreshGridData(dataset: any[]) {
     if (dataset && this.grid) {
       this._dataView.setItems(dataset);
@@ -218,9 +209,24 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
       if (this._gridOptions.enableAutoResize) {
         // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
-        this.resizer.resizeGrid(this.grid, this._gridOptions, 10);
+        this.resizer.resizeGrid(10);
           // this.grid.autosizeColumns();
       }
     }
+  }
+
+  /** Toggle the filter row displayed on first row
+   * @param {boolean} isShowing
+   */
+  showHeaderRow(isShowing: boolean) {
+    this.grid.setHeaderRowVisibility(isShowing);
+    return isShowing;
+  }
+
+  /** Toggle the filter row displayed on first row */
+  toggleHeaderRow() {
+    const isShowing = !this.grid.getOptions().showHeaderRow;
+    this.grid.setHeaderRowVisibility(isShowing);
+    return isShowing;
   }
 }

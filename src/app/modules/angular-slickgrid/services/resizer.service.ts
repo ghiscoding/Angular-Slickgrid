@@ -11,12 +11,18 @@ let timer: any;
 
 @Injectable()
 export class ResizerService {
+  private _grid: any;
+  private _gridOptions: GridOption;
+
   constructor() {}
 
   /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
    * Options: we could also provide a % factor to resize on each height/width independently
    */
   attachAutoResizeDataGrid(grid: any, gridOptions: GridOption) {
+    this._grid = grid;
+    this._gridOptions = gridOptions;
+
     // if we can't find the grid to resize, return without attaching anything
     const gridDomElm = $(`#${gridOptions.gridId}`);
     if (gridDomElm === undefined || gridDomElm.offset() === undefined) {
@@ -24,14 +30,14 @@ export class ResizerService {
     }
 
     // -- 1st resize the datagrid size at first load (we need this because the .on event is not triggered on first load)
-    this.resizeGrid(grid, gridOptions);
+    this.resizeGrid();
 
     // -- 2nd attach a trigger on the Window DOM element, so that it happens also when resizing after first load
     // -- attach auto-resize to Window object only if it exist
     $(window).on('resize.grid', () => {
       // for some yet unknown reason, calling the resize twice removes any stuttering/flickering when changing the height and makes it much smoother
-      this.resizeGrid(grid, gridOptions);
-      this.resizeGrid(grid, gridOptions);
+      this.resizeGrid();
+      this.resizeGrid();
     });
   }
 
@@ -85,30 +91,37 @@ export class ResizerService {
   }
 
   /** Resize the datagrid to fit the browser height & width */
-  resizeGrid(grid: any, gridOptions: GridOption, delay?: number, newSizes?: { height: number, width: number }): void {
+  resizeGrid(delay?: number, newSizes?: { height: number, width: number }): void {
+    if (!this._grid || !this._gridOptions) {
+      throw new Error(`
+      Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined.
+      You can fix this by setting your gridOption to use "enableAutoResize" or create an instance of the ResizerService by calling attachAutoResizeDataGrid()`);
+    }
+
+    // because of the javascript async nature, we might want to delay the resize a little bit
     delay = delay || 0;
 
     clearTimeout(timer);
     timer = setTimeout(() => {
       // calculate new available sizes but with minimum height of 220px
-      newSizes = newSizes || this.calculateGridNewDimensions(gridOptions);
+      newSizes = newSizes || this.calculateGridNewDimensions(this._gridOptions);
 
       if (newSizes) {
         // apply these new height/width to the datagrid
-        $(`#${gridOptions.gridId}`).height(newSizes.height);
-        $(`#${gridOptions.gridId}`).width(newSizes.width);
-        $(`#${gridOptions.gridContainerId}`).height(newSizes.height);
-        $(`#${gridOptions.gridContainerId}`).width(newSizes.width);
+        $(`#${this._gridOptions.gridId}`).height(newSizes.height);
+        $(`#${this._gridOptions.gridId}`).width(newSizes.width);
+        $(`#${this._gridOptions.gridContainerId}`).height(newSizes.height);
+        $(`#${this._gridOptions.gridContainerId}`).width(newSizes.width);
 
         // resize the slickgrid canvas on all browser except some IE versions
         // exclude all IE below IE11
         // IE11 wants to be a better standard (W3C) follower (finally) they even changed their appName output to also have 'Netscape'
-        if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && grid) {
-          grid.resizeCanvas();
+        if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && this._grid) {
+          this._grid.resizeCanvas();
         }
 
         // also call the grid auto-size columns so that it takes available when going bigger
-        grid.autosizeColumns();
+        this._grid.autosizeColumns();
       }
     }, delay);
   }
