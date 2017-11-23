@@ -51,9 +51,15 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     attachDifferentHooks(grid: any, options: GridOption, dataView: any): void;
     attachResizeHook(grid: any, options: GridOption): void;
     mergeGridOptions(): GridOption;
-    /** Toggle the filter row displayed on first row */
+    /**
+     * When dataset changes, we need to refresh the entire grid UI & possibly resize it as well
+     * @param {object} dataset
+     */
+    refreshGridData(dataset: any[]): void;
+    /** Toggle the filter row displayed on first row
+     * @param {boolean} isShowing
+     */
     showHeaderRow(isShowing: boolean): boolean;
     /** Toggle the filter row displayed on first row */
     toggleHeaderRow(): boolean;
-    refreshGridData(dataset: any[]): void;
 }

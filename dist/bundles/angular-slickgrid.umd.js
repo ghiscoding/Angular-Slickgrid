@@ -169,7 +169,6 @@ var jquery = createCommonjsModule(function (module) {
      * Date: 2017-03-20T18:59Z
      */
     (function (global, factory) {
-        "use strict";
         {
             // For CommonJS and CommonJS-like environments where a proper `window`
             // is present, execute the factory and get jQuery.
@@ -193,7 +192,6 @@ var jquery = createCommonjsModule(function (module) {
         // throw exceptions when non-strict code (e.g., ASP.NET 4.5) accesses strict mode
         // arguments.callee.caller (trac-13335). But as of jQuery 3.0 (2016), strict mode should be common
         // enough that all such attempts are guarded in a try block.
-        "use strict";
         var arr = [];
         var document = window.document;
         var getProto = Object.getPrototypeOf;
@@ -8183,448 +8181,6 @@ var CheckboxEditor = /** @class */ (function () {
     };
     return CheckboxEditor;
 }());
-var defaultDecimalPlaces = 0;
-var FloatEditor = /** @class */ (function () {
-    /**
-     * @param {?} args
-     */
-    function FloatEditor(args) {
-        this.args = args;
-        this.init();
-    }
-    /**
-     * @return {?}
-     */
-    FloatEditor.prototype.init = function () {
-        this.$input = jquery("<input type=\"text\" class='editor-text' />")
-            .appendTo(this.args.container)
-            .on('keydown.nav', function (e) {
-            if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
-                e.stopImmediatePropagation();
-            }
-        })
-            .focus()
-            .select();
-    };
-    /**
-     * @return {?}
-     */
-    FloatEditor.prototype.destroy = function () {
-        this.$input.remove();
-    };
-    /**
-     * @return {?}
-     */
-    FloatEditor.prototype.focus = function () {
-        this.$input.focus();
-    };
-    /**
-     * @return {?}
-     */
-    FloatEditor.prototype.getDecimalPlaces = function () {
-        // returns the number of fixed decimal places or null
-        var /** @type {?} */ rtn = this.args.column.editorFixedDecimalPlaces;
-        if (rtn === undefined) {
-            rtn = defaultDecimalPlaces;
-        }
-        return (!rtn && rtn !== 0 ? null : rtn);
-    };
-    /**
-     * @param {?} item
-     * @return {?}
-     */
-    FloatEditor.prototype.loadValue = function (item) {
-        this.defaultValue = item[this.args.column.field];
-        var /** @type {?} */ decPlaces = this.getDecimalPlaces();
-        if (decPlaces !== null
-            && (this.defaultValue || this.defaultValue === 0)
-            && this.defaultValue.toFixed) {
-            this.defaultValue = this.defaultValue.toFixed(decPlaces);
-        }
-        this.$input.val(this.defaultValue);
-        this.$input[0].defaultValue = this.defaultValue;
-        this.$input.select();
-    };
-    /**
-     * @return {?}
-     */
-    FloatEditor.prototype.serializeValue = function () {
-        var /** @type {?} */ rtn = parseFloat(this.$input.val()) || 0;
-        var /** @type {?} */ decPlaces = this.getDecimalPlaces();
-        if (decPlaces !== null
-            && (rtn || rtn === 0)
-            && rtn.toFixed) {
-            rtn = parseFloat(rtn.toFixed(decPlaces));
-        }
-        return rtn;
-    };
-    /**
-     * @param {?} item
-     * @param {?} state
-     * @return {?}
-     */
-    FloatEditor.prototype.applyValue = function (item, state) {
-        item[this.args.column.field] = state;
-    };
-    /**
-     * @return {?}
-     */
-    FloatEditor.prototype.isValueChanged = function () {
-        return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
-    };
-    /**
-     * @return {?}
-     */
-    FloatEditor.prototype.validate = function () {
-        if (isNaN(this.$input.val())) {
-            return {
-                valid: false,
-                msg: 'Please enter a valid number'
-            };
-        }
-        if (this.args.column.validator) {
-            var /** @type {?} */ validationResults = this.args.column.validator(this.$input.val());
-            if (!validationResults.valid) {
-                return validationResults;
-            }
-        }
-        return {
-            valid: true,
-            msg: null
-        };
-    };
-    return FloatEditor;
-}());
-var IntegerEditor = /** @class */ (function () {
-    /**
-     * @param {?} args
-     */
-    function IntegerEditor(args) {
-        this.args = args;
-        this.init();
-    }
-    /**
-     * @return {?}
-     */
-    IntegerEditor.prototype.init = function () {
-        this.$input = jquery("<input type=\"text\" class='editor-text' />")
-            .appendTo(this.args.container)
-            .on('keydown.nav', function (e) {
-            if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
-                e.stopImmediatePropagation();
-            }
-        })
-            .focus()
-            .select();
-    };
-    /**
-     * @return {?}
-     */
-    IntegerEditor.prototype.destroy = function () {
-        this.$input.remove();
-    };
-    /**
-     * @return {?}
-     */
-    IntegerEditor.prototype.focus = function () {
-        this.$input.focus();
-    };
-    /**
-     * @param {?} item
-     * @return {?}
-     */
-    IntegerEditor.prototype.loadValue = function (item) {
-        this.defaultValue = item[this.args.column.field];
-        this.$input.val(this.defaultValue);
-        this.$input[0].defaultValue = this.defaultValue;
-        this.$input.select();
-    };
-    /**
-     * @return {?}
-     */
-    IntegerEditor.prototype.serializeValue = function () {
-        return parseInt(/** @type {?} */ (this.$input.val()), 10) || 0;
-    };
-    /**
-     * @param {?} item
-     * @param {?} state
-     * @return {?}
-     */
-    IntegerEditor.prototype.applyValue = function (item, state) {
-        item[this.args.column.field] = state;
-    };
-    /**
-     * @return {?}
-     */
-    IntegerEditor.prototype.isValueChanged = function () {
-        return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
-    };
-    /**
-     * @return {?}
-     */
-    IntegerEditor.prototype.validate = function () {
-        if (isNaN(/** @type {?} */ (this.$input.val()))) {
-            return {
-                valid: false,
-                msg: 'Please enter a valid integer'
-            };
-        }
-        if (this.args.column.validator) {
-            var /** @type {?} */ validationResults = this.args.column.validator(this.$input.val());
-            if (!validationResults.valid) {
-                return validationResults;
-            }
-        }
-        return {
-            valid: true,
-            msg: null
-        };
-    };
-    return IntegerEditor;
-}());
-var LongTextEditor = /** @class */ (function () {
-    /**
-     * @param {?} args
-     */
-    function LongTextEditor(args) {
-        this.args = args;
-        this.init();
-    }
-    /**
-     * @return {?}
-     */
-    LongTextEditor.prototype.init = function () {
-        var _this = this;
-        var /** @type {?} */ $container = jquery('body');
-        this.$wrapper = jquery("<div class=\"slick-large-editor-text\" />").appendTo($container);
-        this.$input = jquery("<textarea hidefocus rows=\"5\">").appendTo(this.$wrapper);
-        jquery("<div class=\"editor-footer\">\n        <button class=\"btn btn-primary btn-xs\">Save</button>\n        <button class=\"btn btn-default btn-xs\">Cancel</button>\n      </div>").appendTo(this.$wrapper);
-        this.$wrapper.find('button:first').on('click', function (event) { return _this.save(); });
-        this.$wrapper.find('button:last').on('click', function (event) { return _this.cancel(); });
-        this.$input.on('keydown', this.handleKeyDown);
-        this.position(this.args.position);
-        this.$input.focus().select();
-    };
-    /**
-     * @param {?} e
-     * @return {?}
-     */
-    LongTextEditor.prototype.handleKeyDown = function (e) {
-        if (e.which === KeyCode.ENTER && e.ctrlKey) {
-            this.save();
-        }
-        else if (e.which === KeyCode.ESCAPE) {
-            e.preventDefault();
-            this.cancel();
-        }
-        else if (e.which === KeyCode.TAB && e.shiftKey) {
-            e.preventDefault();
-            this.args.grid.navigatePrev();
-        }
-        else if (e.which === KeyCode.TAB) {
-            e.preventDefault();
-            this.args.grid.navigateNext();
-        }
-    };
-    /**
-     * @return {?}
-     */
-    LongTextEditor.prototype.save = function () {
-        this.args.commitChanges();
-    };
-    /**
-     * @return {?}
-     */
-    LongTextEditor.prototype.cancel = function () {
-        this.$input.val(this.defaultValue);
-        this.args.cancelChanges();
-    };
-    /**
-     * @return {?}
-     */
-    LongTextEditor.prototype.hide = function () {
-        this.$wrapper.hide();
-    };
-    /**
-     * @return {?}
-     */
-    LongTextEditor.prototype.show = function () {
-        this.$wrapper.show();
-    };
-    /**
-     * @param {?} position
-     * @return {?}
-     */
-    LongTextEditor.prototype.position = function (position) {
-        this.$wrapper
-            .css('top', (position.top || 0) - 5)
-            .css('left', (position.left || 0) - 5);
-    };
-    /**
-     * @return {?}
-     */
-    LongTextEditor.prototype.destroy = function () {
-        this.$wrapper.remove();
-    };
-    /**
-     * @return {?}
-     */
-    LongTextEditor.prototype.focus = function () {
-        this.$input.focus();
-    };
-    /**
-     * @param {?} item
-     * @return {?}
-     */
-    LongTextEditor.prototype.loadValue = function (item) {
-        this.$input.val(this.defaultValue = item[this.args.column.field]);
-        this.$input.select();
-    };
-    /**
-     * @return {?}
-     */
-    LongTextEditor.prototype.serializeValue = function () {
-        return this.$input.val();
-    };
-    /**
-     * @param {?} item
-     * @param {?} state
-     * @return {?}
-     */
-    LongTextEditor.prototype.applyValue = function (item, state) {
-        item[this.args.column.field] = state;
-    };
-    /**
-     * @return {?}
-     */
-    LongTextEditor.prototype.isValueChanged = function () {
-        return (!(this.$input.val() === '' && this.defaultValue == null)) && (this.$input.val() !== this.defaultValue);
-    };
-    /**
-     * @return {?}
-     */
-    LongTextEditor.prototype.validate = function () {
-        if (this.args.column.validator) {
-            var /** @type {?} */ validationResults = this.args.column.validator(this.$input.val(), this.args);
-        }
-        return {
-            valid: true,
-            msg: null
-        };
-    };
-    return LongTextEditor;
-}());
-var TextEditor = /** @class */ (function () {
-    /**
-     * @param {?} args
-     */
-    function TextEditor(args) {
-        this.args = args;
-        this.init();
-    }
-    /**
-     * @return {?}
-     */
-    TextEditor.prototype.init = function () {
-        this.$input = jquery("<input type=\"text\" class='editor-text' />")
-            .appendTo(this.args.container)
-            .on('keydown.nav', function (e) {
-            if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
-                e.stopImmediatePropagation();
-            }
-        })
-            .focus()
-            .select();
-    };
-    /**
-     * @return {?}
-     */
-    TextEditor.prototype.destroy = function () {
-        this.$input.remove();
-    };
-    /**
-     * @return {?}
-     */
-    TextEditor.prototype.focus = function () {
-        this.$input.focus();
-    };
-    /**
-     * @return {?}
-     */
-    TextEditor.prototype.getValue = function () {
-        return this.$input.val();
-    };
-    /**
-     * @param {?} val
-     * @return {?}
-     */
-    TextEditor.prototype.setValue = function (val) {
-        this.$input.val(val);
-    };
-    /**
-     * @param {?} item
-     * @return {?}
-     */
-    TextEditor.prototype.loadValue = function (item) {
-        this.defaultValue = item[this.args.column.field] || '';
-        this.$input.val(this.defaultValue);
-        this.$input[0].defaultValue = this.defaultValue;
-        this.$input.select();
-    };
-    /**
-     * @return {?}
-     */
-    TextEditor.prototype.serializeValue = function () {
-        return this.$input.val();
-    };
-    /**
-     * @param {?} item
-     * @param {?} state
-     * @return {?}
-     */
-    TextEditor.prototype.applyValue = function (item, state) {
-        item[this.args.column.field] = state;
-    };
-    /**
-     * @return {?}
-     */
-    TextEditor.prototype.isValueChanged = function () {
-        return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
-    };
-    /**
-     * @return {?}
-     */
-    TextEditor.prototype.validate = function () {
-        if (this.args.column.validator) {
-            var /** @type {?} */ validationResults = this.args.column.validator(this.$input.val());
-            if (!validationResults.valid) {
-                return validationResults;
-            }
-        }
-        return {
-            valid: true,
-            msg: null
-        };
-    };
-    return TextEditor;
-}());
-var Editors = {
-    checkbox: CheckboxEditor,
-    float: FloatEditor,
-    integer: IntegerEditor,
-    longText: LongTextEditor,
-    text: TextEditor
-};
-/**
- * @param {?} str
- * @return {?}
- */
-function parseBoolean(str) {
-    return /(true|1)/i.test(str);
-}
-var booleanFilterCondition = function (options) {
-    return parseBoolean(options.cellValue) === parseBoolean(options.searchTerm);
-};
 var moment_min = createCommonjsModule(function (module, exports) {
     //! moment.js
     //! version : 2.18.1
@@ -8632,7 +8188,6 @@ var moment_min = createCommonjsModule(function (module, exports) {
     //! license : MIT
     //! momentjs.com
     !function (a, b) { module.exports = b(); }(commonjsGlobal, function () {
-        "use strict";
         function a() { return sd.apply(null, arguments); }
         function b(a) { sd = a; }
         function c(a) { return a instanceof Array || "[object Array]" === Object.prototype.toString.call(a); }
@@ -9163,7 +8718,7 @@ var moment_ = Object.freeze({
     default: moment_min,
     __moduleExports: moment_min
 });
-var moment$1 = moment_min || moment_;
+var moment = moment_min || moment_;
 /**
  * Try casting an input of type Promise | Observable into a Promise type.
  * @param {?} input object which could be of type Promise or Observable
@@ -9249,6 +8804,75 @@ function mapMomentDateFormatWithFieldType(fieldType) {
  * @param {?} fieldType
  * @return {?}
  */
+function mapFlatpickrDateFormatWithFieldType(fieldType) {
+    /*
+      d: Day of the month, 2 digits with leading zeros	01 to 31
+      D: A textual representation of a day	Mon through Sun
+      l: (lowercase 'L')	A full textual representation of the day of the week	Sunday through Saturday
+      j: Day of the month without leading zeros	1 to 31
+      J: Day of the month without leading zeros and ordinal suffix	1st, 2nd, to 31st
+      w: Numeric representation of the day of the week	0 (for Sunday) through 6 (for Saturday)
+      F: A full textual representation of a month	January through December
+      m: Numeric representation of a month, with leading zero	01 through 12
+      n: Numeric representation of a month, without leading zeros	1 through 12
+      M: A short textual representation of a month	Jan through Dec
+      U: The number of seconds since the Unix Epoch	1413704993
+      y: A two digit representation of a year	99 or 03
+      Y: A full numeric representation of a year, 4 digits	1999 or 2003
+      H: Hours (24 hours)	00 to 23
+      h: Hours	1 to 12
+      i: Minutes	00 to 59
+      S: Seconds, 2 digits	00 to 59
+      s: Seconds	0, 1 to 59
+      K: AM/PM	AM or PM
+    */
+    var /** @type {?} */ map;
+    switch (fieldType) {
+        case FieldType.dateTime:
+        case FieldType.dateTimeIso:
+            map = 'Y-m-d H:i:S';
+            break;
+        case FieldType.dateTimeIsoAmPm:
+            map = 'Y-m-d h:i:S K'; // there is no lowercase in Flatpickr :(
+            break;
+        case FieldType.dateTimeIsoAM_PM:
+            map = 'Y-m-d h:i:S K';
+            break;
+        case FieldType.dateUs:
+            map = 'm/d/Y';
+            break;
+        case FieldType.dateUsShort:
+            map = 'M/D/YY';
+            break;
+        case FieldType.dateTimeUs:
+            map = 'm/d/Y H:i:S';
+            break;
+        case FieldType.dateTimeUsAmPm:
+            map = 'm/d/Y h:i:S K'; // there is no lowercase in Flatpickr :(
+            break;
+        case FieldType.dateTimeUsAM_PM:
+            map = 'm/d/Y h:i:S K';
+            break;
+        case FieldType.dateTimeUsShort:
+            map = 'M/D/YY H:i:s';
+            break;
+        case FieldType.dateTimeUsShortAmPm:
+            map = 'M/D/YY h:i:s K'; // there is no lowercase in Flatpickr :(
+            break;
+        case FieldType.dateTimeUsAM_PM:
+            map = 'M/D/YY h:i:s K';
+            break;
+        case FieldType.dateUtc:
+            map = 'Z';
+            break;
+        case FieldType.date:
+        case FieldType.dateIso:
+        default:
+            map = 'Y-m-d';
+            break;
+    }
+    return map;
+}
 /**
  * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
  * @param {?} operator
@@ -9316,13 +8940,575 @@ function parseUtcDate(inputDateString, useUtc) {
     if (/^[0-9\-\/]*$/.test(inputDateString)) {
         // get the UTC datetime with moment.js but we need to decode the value so that it's valid text
         var /** @type {?} */ dateString = decodeURIComponent(inputDateString);
-        var /** @type {?} */ dateMoment = moment$1(new Date(dateString));
+        var /** @type {?} */ dateMoment = moment(new Date(dateString));
         if (dateMoment.isValid() && dateMoment.year().toString().length === 4) {
             date = (useUtc) ? dateMoment.utc().format() : dateMoment.format();
         }
     }
     return date;
 }
+var flatpickr = require('flatpickr');
+var DateEditor = /** @class */ (function () {
+    /**
+     * @param {?} args
+     */
+    function DateEditor(args) {
+        this.args = args;
+        this.init();
+    }
+    /**
+     * @return {?}
+     */
+    DateEditor.prototype.init = function () {
+        var _this = this;
+        var /** @type {?} */ gridOptions = this.args.grid.getOptions();
+        this.defaultDate = this.args.item[this.args.column.field] || null;
+        var /** @type {?} */ inputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
+        var /** @type {?} */ outputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.outputType || 'Z');
+        var /** @type {?} */ locale = (gridOptions && gridOptions.locale) ? gridOptions.locale : 'en';
+        var /** @type {?} */ pickerOptions = {
+            defaultDate: this.defaultDate,
+            altInput: true,
+            altFormat: inputFormat,
+            dateFormat: outputFormat,
+            closeOnSelect: false,
+            onChange: function (selectedDates, dateStr, instance) {
+                _this.save();
+            },
+        };
+        // change locale if needed, Flatpickr reference: https://chmln.github.io/flatpickr/localization/
+        if (locale !== 'en') {
+            var /** @type {?} */ localeDefault = require("flatpickr/dist/l10n/" + locale + ".js").default;
+            pickerOptions['locale'] = (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
+        }
+        this.$input = jquery("<input type=\"text\" data-defaultDate=\"" + this.defaultDate + "\" class=\"editor-text flatpickr\" />");
+        this.$input.appendTo(this.args.container);
+        this.flatInstance = flatpickr(this.$input[0], pickerOptions);
+        this.flatInstance.open();
+    };
+    /**
+     * @return {?}
+     */
+    DateEditor.prototype.destroy = function () {
+        // this.flatInstance.destroy();
+        this.flatInstance.close();
+        this.$input.remove();
+    };
+    /**
+     * @return {?}
+     */
+    DateEditor.prototype.show = function () {
+        this.flatInstance.open();
+    };
+    /**
+     * @return {?}
+     */
+    DateEditor.prototype.hide = function () {
+        this.flatInstance.close();
+    };
+    /**
+     * @return {?}
+     */
+    DateEditor.prototype.focus = function () {
+        this.$input.focus();
+    };
+    /**
+     * @return {?}
+     */
+    DateEditor.prototype.save = function () {
+        this.args.commitChanges();
+    };
+    /**
+     * @param {?} item
+     * @return {?}
+     */
+    DateEditor.prototype.loadValue = function (item) {
+        this.defaultDate = item[this.args.column.field];
+    };
+    /**
+     * @return {?}
+     */
+    DateEditor.prototype.serializeValue = function () {
+        return this.$input.val();
+    };
+    /**
+     * @param {?} item
+     * @param {?} state
+     * @return {?}
+     */
+    DateEditor.prototype.applyValue = function (item, state) {
+        item[this.args.column.field] = state;
+    };
+    /**
+     * @return {?}
+     */
+    DateEditor.prototype.isValueChanged = function () {
+        return (!(this.$input.val() === '' && this.defaultDate == null)) && (this.$input.val() !== this.defaultDate);
+    };
+    /**
+     * @return {?}
+     */
+    DateEditor.prototype.validate = function () {
+        if (this.args.column.validator) {
+            var /** @type {?} */ validationResults = this.args.column.validator(this.$input.val(), this.args);
+            if (!validationResults.valid) {
+                return validationResults;
+            }
+        }
+        return {
+            valid: true,
+            msg: null
+        };
+    };
+    return DateEditor;
+}());
+var defaultDecimalPlaces = 0;
+var FloatEditor = /** @class */ (function () {
+    /**
+     * @param {?} args
+     */
+    function FloatEditor(args) {
+        this.args = args;
+        this.init();
+    }
+    /**
+     * @return {?}
+     */
+    FloatEditor.prototype.init = function () {
+        this.$input = jquery("<input type=\"text\" class='editor-text' />")
+            .appendTo(this.args.container)
+            .on('keydown.nav', function (e) {
+            if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
+                e.stopImmediatePropagation();
+            }
+        })
+            .focus()
+            .select();
+    };
+    /**
+     * @return {?}
+     */
+    FloatEditor.prototype.destroy = function () {
+        this.$input.remove();
+    };
+    /**
+     * @return {?}
+     */
+    FloatEditor.prototype.focus = function () {
+        this.$input.focus();
+    };
+    /**
+     * @return {?}
+     */
+    FloatEditor.prototype.getDecimalPlaces = function () {
+        // returns the number of fixed decimal places or null
+        var /** @type {?} */ rtn = this.args.column.editorFixedDecimalPlaces;
+        if (rtn === undefined) {
+            rtn = defaultDecimalPlaces;
+        }
+        return (!rtn && rtn !== 0 ? null : rtn);
+    };
+    /**
+     * @param {?} item
+     * @return {?}
+     */
+    FloatEditor.prototype.loadValue = function (item) {
+        this.defaultValue = item[this.args.column.field];
+        var /** @type {?} */ decPlaces = this.getDecimalPlaces();
+        if (decPlaces !== null
+            && (this.defaultValue || this.defaultValue === 0)
+            && this.defaultValue.toFixed) {
+            this.defaultValue = this.defaultValue.toFixed(decPlaces);
+        }
+        this.$input.val(this.defaultValue);
+        this.$input[0].defaultValue = this.defaultValue;
+        this.$input.select();
+    };
+    /**
+     * @return {?}
+     */
+    FloatEditor.prototype.serializeValue = function () {
+        var /** @type {?} */ rtn = parseFloat(this.$input.val()) || 0;
+        var /** @type {?} */ decPlaces = this.getDecimalPlaces();
+        if (decPlaces !== null
+            && (rtn || rtn === 0)
+            && rtn.toFixed) {
+            rtn = parseFloat(rtn.toFixed(decPlaces));
+        }
+        return rtn;
+    };
+    /**
+     * @param {?} item
+     * @param {?} state
+     * @return {?}
+     */
+    FloatEditor.prototype.applyValue = function (item, state) {
+        item[this.args.column.field] = state;
+    };
+    /**
+     * @return {?}
+     */
+    FloatEditor.prototype.isValueChanged = function () {
+        return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
+    };
+    /**
+     * @return {?}
+     */
+    FloatEditor.prototype.validate = function () {
+        if (isNaN(this.$input.val())) {
+            return {
+                valid: false,
+                msg: 'Please enter a valid number'
+            };
+        }
+        if (this.args.column.validator) {
+            var /** @type {?} */ validationResults = this.args.column.validator(this.$input.val());
+            if (!validationResults.valid) {
+                return validationResults;
+            }
+        }
+        return {
+            valid: true,
+            msg: null
+        };
+    };
+    return FloatEditor;
+}());
+var IntegerEditor = /** @class */ (function () {
+    /**
+     * @param {?} args
+     */
+    function IntegerEditor(args) {
+        this.args = args;
+        this.init();
+    }
+    /**
+     * @return {?}
+     */
+    IntegerEditor.prototype.init = function () {
+        this.$input = jquery("<input type=\"text\" class='editor-text' />")
+            .appendTo(this.args.container)
+            .on('keydown.nav', function (e) {
+            if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
+                e.stopImmediatePropagation();
+            }
+        })
+            .focus()
+            .select();
+    };
+    /**
+     * @return {?}
+     */
+    IntegerEditor.prototype.destroy = function () {
+        this.$input.remove();
+    };
+    /**
+     * @return {?}
+     */
+    IntegerEditor.prototype.focus = function () {
+        this.$input.focus();
+    };
+    /**
+     * @param {?} item
+     * @return {?}
+     */
+    IntegerEditor.prototype.loadValue = function (item) {
+        this.defaultValue = item[this.args.column.field];
+        this.$input.val(this.defaultValue);
+        this.$input[0].defaultValue = this.defaultValue;
+        this.$input.select();
+    };
+    /**
+     * @return {?}
+     */
+    IntegerEditor.prototype.serializeValue = function () {
+        return parseInt(/** @type {?} */ (this.$input.val()), 10) || 0;
+    };
+    /**
+     * @param {?} item
+     * @param {?} state
+     * @return {?}
+     */
+    IntegerEditor.prototype.applyValue = function (item, state) {
+        item[this.args.column.field] = state;
+    };
+    /**
+     * @return {?}
+     */
+    IntegerEditor.prototype.isValueChanged = function () {
+        return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
+    };
+    /**
+     * @return {?}
+     */
+    IntegerEditor.prototype.validate = function () {
+        if (isNaN(/** @type {?} */ (this.$input.val()))) {
+            return {
+                valid: false,
+                msg: 'Please enter a valid integer'
+            };
+        }
+        if (this.args.column.validator) {
+            var /** @type {?} */ validationResults = this.args.column.validator(this.$input.val());
+            if (!validationResults.valid) {
+                return validationResults;
+            }
+        }
+        return {
+            valid: true,
+            msg: null
+        };
+    };
+    return IntegerEditor;
+}());
+var LongTextEditor = /** @class */ (function () {
+    /**
+     * @param {?} args
+     */
+    function LongTextEditor(args) {
+        this.args = args;
+        this.init();
+    }
+    /**
+     * @return {?}
+     */
+    LongTextEditor.prototype.init = function () {
+        var _this = this;
+        var /** @type {?} */ $container = jquery('body');
+        this.$wrapper = jquery("<div class=\"slick-large-editor-text\" />").appendTo($container);
+        this.$input = jquery("<textarea hidefocus rows=\"5\">").appendTo(this.$wrapper);
+        jquery("<div class=\"editor-footer\">\n        <button class=\"btn btn-primary btn-xs\">Save</button>\n        <button class=\"btn btn-default btn-xs\">Cancel</button>\n      </div>").appendTo(this.$wrapper);
+        this.$wrapper.find('button:first').on('click', function (event) { return _this.save(); });
+        this.$wrapper.find('button:last').on('click', function (event) { return _this.cancel(); });
+        this.$input.on('keydown', this.handleKeyDown);
+        this.position(this.args.position);
+        this.$input.focus().select();
+    };
+    /**
+     * @param {?} e
+     * @return {?}
+     */
+    LongTextEditor.prototype.handleKeyDown = function (e) {
+        if (e.which === KeyCode.ENTER && e.ctrlKey) {
+            this.save();
+        }
+        else if (e.which === KeyCode.ESCAPE) {
+            e.preventDefault();
+            this.cancel();
+        }
+        else if (e.which === KeyCode.TAB && e.shiftKey) {
+            e.preventDefault();
+            this.args.grid.navigatePrev();
+        }
+        else if (e.which === KeyCode.TAB) {
+            e.preventDefault();
+            this.args.grid.navigateNext();
+        }
+    };
+    /**
+     * @return {?}
+     */
+    LongTextEditor.prototype.save = function () {
+        this.args.commitChanges();
+    };
+    /**
+     * @return {?}
+     */
+    LongTextEditor.prototype.cancel = function () {
+        this.$input.val(this.defaultValue);
+        this.args.cancelChanges();
+    };
+    /**
+     * @return {?}
+     */
+    LongTextEditor.prototype.hide = function () {
+        this.$wrapper.hide();
+    };
+    /**
+     * @return {?}
+     */
+    LongTextEditor.prototype.show = function () {
+        this.$wrapper.show();
+    };
+    /**
+     * @param {?} position
+     * @return {?}
+     */
+    LongTextEditor.prototype.position = function (position) {
+        this.$wrapper
+            .css('top', (position.top || 0) - 5)
+            .css('left', (position.left || 0) - 5);
+    };
+    /**
+     * @return {?}
+     */
+    LongTextEditor.prototype.destroy = function () {
+        this.$wrapper.remove();
+    };
+    /**
+     * @return {?}
+     */
+    LongTextEditor.prototype.focus = function () {
+        this.$input.focus();
+    };
+    /**
+     * @param {?} item
+     * @return {?}
+     */
+    LongTextEditor.prototype.loadValue = function (item) {
+        this.$input.val(this.defaultValue = item[this.args.column.field]);
+        this.$input.select();
+    };
+    /**
+     * @return {?}
+     */
+    LongTextEditor.prototype.serializeValue = function () {
+        return this.$input.val();
+    };
+    /**
+     * @param {?} item
+     * @param {?} state
+     * @return {?}
+     */
+    LongTextEditor.prototype.applyValue = function (item, state) {
+        item[this.args.column.field] = state;
+    };
+    /**
+     * @return {?}
+     */
+    LongTextEditor.prototype.isValueChanged = function () {
+        return (!(this.$input.val() === '' && this.defaultValue == null)) && (this.$input.val() !== this.defaultValue);
+    };
+    /**
+     * @return {?}
+     */
+    LongTextEditor.prototype.validate = function () {
+        var /** @type {?} */ valid = true;
+        var /** @type {?} */ msg = null;
+        if (this.args.column.validator) {
+            var /** @type {?} */ validationResults = this.args.column.validator(this.$input.val(), this.args);
+            valid = validationResults.valid;
+            msg = validationResults.msg;
+        }
+        return {
+            valid: true,
+            msg: null
+        };
+    };
+    return LongTextEditor;
+}());
+var TextEditor = /** @class */ (function () {
+    /**
+     * @param {?} args
+     */
+    function TextEditor(args) {
+        this.args = args;
+        this.init();
+    }
+    /**
+     * @return {?}
+     */
+    TextEditor.prototype.init = function () {
+        this.$input = jquery("<input type=\"text\" class='editor-text' />")
+            .appendTo(this.args.container)
+            .on('keydown.nav', function (e) {
+            if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
+                e.stopImmediatePropagation();
+            }
+        })
+            .focus()
+            .select();
+    };
+    /**
+     * @return {?}
+     */
+    TextEditor.prototype.destroy = function () {
+        this.$input.remove();
+    };
+    /**
+     * @return {?}
+     */
+    TextEditor.prototype.focus = function () {
+        this.$input.focus();
+    };
+    /**
+     * @return {?}
+     */
+    TextEditor.prototype.getValue = function () {
+        return this.$input.val();
+    };
+    /**
+     * @param {?} val
+     * @return {?}
+     */
+    TextEditor.prototype.setValue = function (val) {
+        this.$input.val(val);
+    };
+    /**
+     * @param {?} item
+     * @return {?}
+     */
+    TextEditor.prototype.loadValue = function (item) {
+        this.defaultValue = item[this.args.column.field] || '';
+        this.$input.val(this.defaultValue);
+        this.$input[0].defaultValue = this.defaultValue;
+        this.$input.select();
+    };
+    /**
+     * @return {?}
+     */
+    TextEditor.prototype.serializeValue = function () {
+        return this.$input.val();
+    };
+    /**
+     * @param {?} item
+     * @param {?} state
+     * @return {?}
+     */
+    TextEditor.prototype.applyValue = function (item, state) {
+        item[this.args.column.field] = state;
+    };
+    /**
+     * @return {?}
+     */
+    TextEditor.prototype.isValueChanged = function () {
+        return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
+    };
+    /**
+     * @return {?}
+     */
+    TextEditor.prototype.validate = function () {
+        if (this.args.column.validator) {
+            var /** @type {?} */ validationResults = this.args.column.validator(this.$input.val());
+            if (!validationResults.valid) {
+                return validationResults;
+            }
+        }
+        return {
+            valid: true,
+            msg: null
+        };
+    };
+    return TextEditor;
+}());
+var Editors = {
+    checkbox: CheckboxEditor,
+    date: DateEditor,
+    float: FloatEditor,
+    integer: IntegerEditor,
+    longText: LongTextEditor,
+    text: TextEditor
+};
+/**
+ * @param {?} str
+ * @return {?}
+ */
+function parseBoolean(str) {
+    return /(true|1)/i.test(str);
+}
+var booleanFilterCondition = function (options) {
+    return parseBoolean(options.cellValue) === parseBoolean(options.searchTerm);
+};
 var testFilterCondition = function (operator, value1, value2) {
     switch (operator) {
         case '<': return (value1 < value2);
@@ -9336,15 +9522,15 @@ var testFilterCondition = function (operator, value1, value2) {
     }
     return true;
 };
-var moment = moment_min || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+var moment$1 = moment_min || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 var dateFilterCondition = function (options) {
     var /** @type {?} */ filterSearchType = options.filterSearchType || FieldType.dateIso;
     var /** @type {?} */ searchDateFormat = mapMomentDateFormatWithFieldType(filterSearchType);
-    if (!moment(options.cellValue, moment.ISO_8601).isValid() || !moment(options.searchTerm, searchDateFormat, true).isValid()) {
+    if (!moment$1(options.cellValue, moment$1.ISO_8601).isValid() || !moment$1(options.searchTerm, searchDateFormat, true).isValid()) {
         return true;
     }
-    var /** @type {?} */ dateCell = moment(options.cellValue);
-    var /** @type {?} */ dateSearch = moment(options.searchTerm);
+    var /** @type {?} */ dateCell = moment$1(options.cellValue);
+    var /** @type {?} */ dateSearch = moment$1(options.searchTerm);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
@@ -9889,6 +10075,7 @@ var FilterService = /** @class */ (function () {
                 var /** @type {?} */ elm = null;
                 var /** @type {?} */ header = void 0;
                 var /** @type {?} */ columnDef_1 = this_1._columnDefinitions[i];
+                var /** @type {?} */ columnId = columnDef_1.id;
                 var /** @type {?} */ listTerm = (columnDef_1.filter && columnDef_1.filter.listTerm) ? columnDef_1.filter.listTerm : null;
                 var /** @type {?} */ searchTerm = (columnDef_1.filter && columnDef_1.filter.searchTerm) ? columnDef_1.filter.searchTerm : '';
                 // keep the filter in a columnFilters for later reference
@@ -10038,6 +10225,7 @@ var GridExtraService = /** @class */ (function () {
         var _this = this;
         if (fadeDelay === void 0) { fadeDelay = 1500; }
         // chain current item Metadata with our own Metadata for implementing highligh CSS styling
+        var /** @type {?} */ previousMetadata = this._dataView.getItemMetadata;
         this._grid.setSelectedRows([rowNumber]);
         this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
         var /** @type {?} */ item = this._dataView.getItem(rowNumber);
@@ -10134,6 +10322,7 @@ var ControlAndPluginService = /** @class */ (function () {
      * @return {?}
      */
     ControlAndPluginService.prototype.attachDifferentControlOrPlugins = function (grid, columnDefinitions, options, dataView) {
+        var _this = this;
         this._grid = grid;
         this._dataView = dataView;
         this._visibleColumns = columnDefinitions;
@@ -10158,6 +10347,8 @@ var ControlAndPluginService = /** @class */ (function () {
                     if (options.gridMenu && typeof options.gridMenu.onMenuClose === 'function') {
                         options.gridMenu.onMenuClose(e, args);
                     }
+                    // we also want to resize the columns if the user decided to hide certain column(s)
+                    _this._grid.autosizeColumns();
                 });
             }
         }
@@ -10736,6 +10927,7 @@ var GraphqlService = /** @class */ (function () {
                     var /** @type {?} */ columnFilter = args.columnFilters[columnId];
                     var /** @type {?} */ columnDef = columnFilter.columnDef;
                     var /** @type {?} */ fieldName = columnDef.field || columnDef.name || '';
+                    var /** @type {?} */ fieldType = columnDef.type || 'string';
                     var /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
                     if (typeof fieldSearchValue === 'undefined') {
                         fieldSearchValue = '';
@@ -10743,6 +10935,7 @@ var GraphqlService = /** @class */ (function () {
                     if (typeof fieldSearchValue !== 'string') {
                         throw new Error("GraphQL filter term property must be provided type \"string\", if you use filter with options then make sure your ids are also string. For example: filter: {type: FormElementType.select, selectOptions: [{ id: \"0\", value: \"0\" }, { id: \"1\", value: \"1\" }]");
                     }
+                    var /** @type {?} */ searchTerms = columnFilter.listTerm || [];
                     fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
                     var /** @type {?} */ matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
                     var /** @type {?} */ operator = columnFilter.operator || ((matches) ? matches[1] : '');
@@ -11401,19 +11594,21 @@ var ResizerService = /** @class */ (function () {
      */
     ResizerService.prototype.attachAutoResizeDataGrid = function (grid, gridOptions) {
         var _this = this;
+        this._grid = grid;
+        this._gridOptions = gridOptions;
         // if we can't find the grid to resize, return without attaching anything
         var /** @type {?} */ gridDomElm = jquery("#" + gridOptions.gridId);
         if (gridDomElm === undefined || gridDomElm.offset() === undefined) {
             return null;
         }
         // -- 1st resize the datagrid size at first load (we need this because the .on event is not triggered on first load)
-        this.resizeGrid(grid, gridOptions);
+        this.resizeGrid();
         // -- 2nd attach a trigger on the Window DOM element, so that it happens also when resizing after first load
         // -- attach auto-resize to Window object only if it exist
         jquery(window).on('resize.grid', function () {
             // for some yet unknown reason, calling the resize twice removes any stuttering/flickering when changing the height and makes it much smoother
-            _this.resizeGrid(grid, gridOptions);
-            _this.resizeGrid(grid, gridOptions);
+            _this.resizeGrid();
+            _this.resizeGrid();
         });
     };
     /**
@@ -11460,37 +11655,39 @@ var ResizerService = /** @class */ (function () {
      * @return {?}
      */
     ResizerService.prototype.destroy = function () {
-        jquery(window).trigger('resize.grid').off('resize');
+        jquery(window).off('resize.grid');
     };
     /**
      * Resize the datagrid to fit the browser height & width
-     * @param {?} grid
-     * @param {?} gridOptions
      * @param {?=} delay
      * @param {?=} newSizes
      * @return {?}
      */
-    ResizerService.prototype.resizeGrid = function (grid, gridOptions, delay, newSizes) {
+    ResizerService.prototype.resizeGrid = function (delay, newSizes) {
         var _this = this;
+        if (!this._grid || !this._gridOptions) {
+            throw new Error("\n      Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined.\n      You can fix this by setting your gridOption to use \"enableAutoResize\" or create an instance of the ResizerService by calling attachAutoResizeDataGrid()");
+        }
+        // because of the javascript async nature, we might want to delay the resize a little bit
         delay = delay || 0;
         clearTimeout(timer$2);
         timer$2 = setTimeout(function () {
             // calculate new available sizes but with minimum height of 220px
-            newSizes = newSizes || _this.calculateGridNewDimensions(gridOptions);
+            newSizes = newSizes || _this.calculateGridNewDimensions(_this._gridOptions);
             if (newSizes) {
                 // apply these new height/width to the datagrid
-                jquery("#" + gridOptions.gridId).height(newSizes.height);
-                jquery("#" + gridOptions.gridId).width(newSizes.width);
-                jquery("#" + gridOptions.gridContainerId).height(newSizes.height);
-                jquery("#" + gridOptions.gridContainerId).width(newSizes.width);
+                jquery("#" + _this._gridOptions.gridId).height(newSizes.height);
+                jquery("#" + _this._gridOptions.gridId).width(newSizes.width);
+                jquery("#" + _this._gridOptions.gridContainerId).height(newSizes.height);
+                jquery("#" + _this._gridOptions.gridContainerId).width(newSizes.width);
                 // resize the slickgrid canvas on all browser except some IE versions
                 // exclude all IE below IE11
                 // IE11 wants to be a better standard (W3C) follower (finally) they even changed their appName output to also have 'Netscape'
-                if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && grid) {
-                    grid.resizeCanvas();
+                if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && _this._grid) {
+                    _this._grid.resizeCanvas();
                 }
                 // also call the grid auto-size columns so that it takes available when going bigger
-                grid.autosizeColumns();
+                _this._grid.autosizeColumns();
             }
         }, delay);
     };
@@ -12583,6 +12780,17 @@ SlickPaginationComponent.propDecorators = {
             }
         };
     });
+    var widget = $.widget;
+    /*!
+     * jQuery UI Mouse 1.11.3
+     * http://jqueryui.com
+     *
+     * Copyright jQuery Foundation and other contributors
+     * Released under the MIT license.
+     * http://jquery.org/license
+     *
+     * http://api.jqueryui.com/mouse/
+     */
     var mouseHandled = false;
     $(document).mouseup(function () {
         mouseHandled = false;
@@ -13126,6 +13334,17 @@ SlickPaginationComponent.propDecorators = {
             testElementParent.removeChild(testElement);
         })();
     })();
+    var position = $.ui.position;
+    /*!
+     * jQuery UI Draggable 1.11.3
+     * http://jqueryui.com
+     *
+     * Copyright jQuery Foundation and other contributors
+     * Released under the MIT license.
+     * http://jquery.org/license
+     *
+     * http://api.jqueryui.com/draggable/
+     */
     $.widget("ui.draggable", $.ui.mouse, {
         version: "1.11.3",
         widgetEventPrefix: "drag",
@@ -14007,6 +14226,17 @@ SlickPaginationComponent.propDecorators = {
             }
         }
     });
+    var draggable = $.ui.draggable;
+    /*!
+     * jQuery UI Droppable 1.11.3
+     * http://jqueryui.com
+     *
+     * Copyright jQuery Foundation and other contributors
+     * Released under the MIT license.
+     * http://jquery.org/license
+     *
+     * http://api.jqueryui.com/droppable/
+     */
     $.widget("ui.droppable", {
         version: "1.11.3",
         widgetEventPrefix: "drop",
@@ -14307,6 +14537,17 @@ SlickPaginationComponent.propDecorators = {
             }
         }
     };
+    var droppable = $.ui.droppable;
+    /*!
+     * jQuery UI Resizable 1.11.3
+     * http://jqueryui.com
+     *
+     * Copyright jQuery Foundation and other contributors
+     * Released under the MIT license.
+     * http://jquery.org/license
+     *
+     * http://api.jqueryui.com/resizable/
+     */
     $.widget("ui.resizable", $.ui.mouse, {
         version: "1.11.3",
         widgetEventPrefix: "resize",
@@ -15173,6 +15414,17 @@ SlickPaginationComponent.propDecorators = {
             }
         }
     });
+    var resizable = $.ui.resizable;
+    /*!
+     * jQuery UI Selectable 1.11.3
+     * http://jqueryui.com
+     *
+     * Copyright jQuery Foundation and other contributors
+     * Released under the MIT license.
+     * http://jquery.org/license
+     *
+     * http://api.jqueryui.com/selectable/
+     */
     var selectable = $.widget("ui.selectable", $.ui.mouse, {
         version: "1.11.3",
         options: {
@@ -17943,6 +18195,17 @@ SlickPaginationComponent.propDecorators = {
             $("<div>").text(message).appendTo(this.liveRegion);
         }
     });
+    var autocomplete = $.ui.autocomplete;
+    /*!
+     * jQuery UI Button 1.11.3
+     * http://jqueryui.com
+     *
+     * Copyright jQuery Foundation and other contributors
+     * Released under the MIT license.
+     * http://jquery.org/license
+     *
+     * http://api.jqueryui.com/button/
+     */
     var lastActive, baseClasses = "ui-button ui-widget ui-state-default ui-corner-all", typeClasses = "ui-button-icons-only ui-button-icon-only ui-button-text-icons ui-button-text-icon-primary ui-button-text-icon-secondary ui-button-text-only", formResetHandler = function () {
         var form = $(this);
         setTimeout(function () {
@@ -18281,6 +18544,17 @@ SlickPaginationComponent.propDecorators = {
                 .button("destroy");
         }
     });
+    var button = $.ui.button;
+    /*!
+     * jQuery UI Datepicker 1.11.3
+     * http://jqueryui.com
+     *
+     * Copyright jQuery Foundation and other contributors
+     * Released under the MIT license.
+     * http://jquery.org/license
+     *
+     * http://api.jqueryui.com/datepicker/
+     */
     $.extend($.ui, { datepicker: { version: "1.11.3" } });
     var datepicker_instActive;
     function datepicker_getZindex(elem) {
@@ -20072,6 +20346,17 @@ SlickPaginationComponent.propDecorators = {
     $.datepicker.initialized = false;
     $.datepicker.uuid = new Date().getTime();
     $.datepicker.version = "1.11.3";
+    var datepicker = $.datepicker;
+    /*!
+     * jQuery UI Dialog 1.11.3
+     * http://jqueryui.com
+     *
+     * Copyright jQuery Foundation and other contributors
+     * Released under the MIT license.
+     * http://jquery.org/license
+     *
+     * http://api.jqueryui.com/dialog/
+     */
     var dialog = $.widget("ui.dialog", {
         version: "1.11.3",
         options: {
@@ -24570,6 +24855,17 @@ SlickPaginationComponent.propDecorators = {
             };
         });
     })();
+    var effect = $.effects;
+    /*!
+     * jQuery UI Effects Blind 1.11.3
+     * http://jqueryui.com
+     *
+     * Copyright jQuery Foundation and other contributors
+     * Released under the MIT license.
+     * http://jquery.org/license
+     *
+     * http://api.jqueryui.com/blind-effect/
+     */
     var effectBlind = $.effects.effect.blind = function (o, done) {
         // Create element
         var el = $(this), rvertical = /up|down|vertical/, rpositivemotion = /up|left|vertical|horizontal/, props = ["position", "top", "bottom", "left", "right", "height", "width"], mode = $.effects.setMode(el, o.mode || "hide"), direction = o.direction || "up", vertical = rvertical.test(direction), ref = vertical ? "height" : "width", ref2 = vertical ? "top" : "left", motion = rpositivemotion.test(direction), animation = {}, show = mode === "show", wrapper, distance, margin;
@@ -30676,7 +30972,6 @@ if (typeof Slick === "undefined") {
         init();
     }
 }(jQuery));
-'use strict';
 (function ($) {
     function SlickColumnPicker(columns, grid, options) {
         var $list;
@@ -30827,81 +31122,6 @@ if (typeof Slick === "undefined") {
     // Slick.Controls.ColumnPicker
     $.extend(true, window, { Slick: { Controls: { ColumnPicker: SlickColumnPicker } } });
 })(jQuery);
-/***
-   * A control to add a Grid Menu (hambuger menu on top-right of the grid)
-   *
-   * USAGE:
-   *
-   * Add the slick.gridmenu.(js|css) files and register it with the grid.
-   *
-   * To specify a menu in a column header, extend the column definition like so:
-   * var gridMenuControl = new Slick.Controls.GridMenu(columns, grid, options);
-   *
-   * Available grid options, by defining a gridMenu object:
-   *
-   *  var options = {
-   *    enableCellNavigation: true,
-   *    gridMenu: {
-   *      customTitle: "Custom Menus",
-   *      columnTitle: "Columns",
-   *      iconImage: "../images/drag-handle.png",   // this is the Grid Menu icon (hamburger icon)
-   *      iconCssClass: "fa fa-bars",               // you can provide iconImage OR iconCssClass
-   *      leaveOpen: false,                         // do we want to leave the Grid Menu open after a command execution? (false by default)
-   *      menuWidth: 18,                            // width that will be use to resize the column header container (18 by default)
-   *      resizeOnShowHeaderRow: true,              // true by default
-   *      customItems: [
-   *        {
-   *          // custom menu item options
-   *        },
-   *        {
-   *          // custom menu item options
-   *        }
-   *      ]
-   *    }
-   *  };
-   *
-   *
-   * Available custom menu item options:
-   *    title:        Menu item text.
-   *    disabled:     Whether the item is disabled.
-   *    tooltip:      Item tooltip.
-   *    command:      A command identifier to be passed to the onCommand event handlers.
-   *    iconCssClass: A CSS class to be added to the menu item icon.
-   *    iconImage:    A url to the icon image.
-   *
-   *
-   * The plugin exposes the following events:
-   *    onBeforeMenuShow:   Fired before the menu is shown.  You can customize the menu or dismiss it by returning false.
-   *      * ONLY works with a jQuery event (as per slick.core code), so we cannot notify when it's a button event (when grid menu is attached to an external button, not the hamburger menu)
-   *        Event args:
-   *            grid:     Reference to the grid.
-   *            column:   Column definition.
-   *            menu:     Menu options.  Note that you can change the menu items here.
-   *
-   *    onMenuClose:      Fired when the menu is closing.
-   *        Event args:
-   *            grid:     Reference to the grid.
-   *            column:   Column definition.
-   *            menu:     Menu options.  Note that you can change the menu items here.
-   *
-   *    onCommand:    Fired on menu item click for buttons with 'command' specified.
-   *        Event args:
-   *            grid:     Reference to the grid.
-   *            column:   Column definition.
-   *            command:  Button command identified.
-   *            button:   Button options.  Note that you can change the button options in your
-   *                      event handler, and the column header will be automatically updated to
-   *                      reflect them.  This is useful if you want to implement something like a
-   *                      toggle button.
-   *
-   *
-   * @param options {Object} Options:
-   *    buttonCssClass:   an extra CSS class to add to the menu button
-   *    buttonImage:      a url to the menu button image (default '../images/down.gif')
-   * @class Slick.Controls.GridMenu
-   * @constructor
-   */
-'use strict';
 (function ($) {
     // register namespace
     $.extend(true, window, {
@@ -33012,6 +33232,7 @@ var GlobalGridOptions = {
         resizeOnShowHeaderRow: false
     },
     headerRowHeight: 35,
+    locale: 'en',
     multiColumnSort: true,
     pagination: {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
@@ -33190,9 +33411,6 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 grid.autosizeColumns();
             }
         }
-        else {
-            this.resizer.resizeGrid(grid, options, 0, { height: this.gridHeight, width: this.gridWidth });
-        }
     };
     /**
      * @return {?}
@@ -33205,6 +33423,28 @@ var AngularSlickgridComponent = /** @class */ (function () {
         }
         // use jquery extend to deep merge and avoid immutable properties changed in GlobalGridOptions after route change
         return jquery.extend(true, {}, GlobalGridOptions, this.gridOptions);
+    };
+    /**
+     * When dataset changes, we need to refresh the entire grid UI & possibly resize it as well
+     * @param {?} dataset
+     * @return {?}
+     */
+    AngularSlickgridComponent.prototype.refreshGridData = function (dataset) {
+        if (dataset && this.grid) {
+            this._dataView.setItems(dataset);
+            // this.grid.setData(dataset);
+            this.grid.invalidate();
+            this.grid.render();
+            if (this._gridOptions.enablePagination) {
+                this.showPagination = true;
+                this.gridPaginationOptions = this.mergeGridOptions();
+            }
+            if (this._gridOptions.enableAutoResize) {
+                // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
+                this.resizer.resizeGrid(10);
+                // this.grid.autosizeColumns();
+            }
+        }
     };
     /**
      * Toggle the filter row displayed on first row
@@ -33223,27 +33463,6 @@ var AngularSlickgridComponent = /** @class */ (function () {
         var /** @type {?} */ isShowing = !this.grid.getOptions().showHeaderRow;
         this.grid.setHeaderRowVisibility(isShowing);
         return isShowing;
-    };
-    /**
-     * @param {?} dataset
-     * @return {?}
-     */
-    AngularSlickgridComponent.prototype.refreshGridData = function (dataset) {
-        if (dataset && this.grid) {
-            this._dataView.setItems(dataset);
-            // this.grid.setData(dataset);
-            this.grid.invalidate();
-            this.grid.render();
-            if (this._gridOptions.enablePagination) {
-                this.showPagination = true;
-                this.gridPaginationOptions = this.mergeGridOptions();
-            }
-            if (this._gridOptions.enableAutoResize) {
-                // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
-                this.resizer.resizeGrid(this.grid, this._gridOptions, 10);
-                // this.grid.autosizeColumns();
-            }
-        }
     };
     return AngularSlickgridComponent;
 }());

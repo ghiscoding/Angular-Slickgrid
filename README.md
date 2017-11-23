@@ -14,7 +14,7 @@ The goal is of course to be able to run SlickGrid within Angular 4+ but also to 
 [Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
 
 ## Wiki / Documentation
-The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Slickgrid - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with.
+The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Slickgrid - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with. You can also take a look at the [Demo page](https://ghiscoding.github.io/Angular-Slickgrid), it includes sample for most of the features and it keeps growing (so you might want to consult it whenever a new version comes out).
 
 
 ## Main features
@@ -24,8 +24,9 @@ This is a work in progress, but so far here are some of the features that `angul
 - Easier use of SlickGrid within `Angular` as it is just a component (simply pass a column definitions and a dataset and you're good to go)
 - Bootstrap Theme with SASS variables for extra customization (if you create a theme, then please make a PR)
 - Auto-resize (boolean flag), will resize the datagrid viewport with available space even on browser resize (basically takes available space of it's container)
-- Inline Editors
-- Support all SlickGrid Plugins.
+- Inline Editors (number, float, text, longText, date, ... you can also create your own custom ones)
+- Support all the SlickGrid [Controls](https://github.com/6pac/SlickGrid/tree/master/controls) and [Plugins](https://github.com/6pac/SlickGrid/tree/master/plugins)
+- Row(s) Selection
 - Server side (backend) Services (filtering, sorting, pagination)
     - [GraphQL](https://github.com/ghiscoding/Angular-Slikgrid/wiki/GraphQL)
     - [OData](https://github.com/ghiscoding/Angular-Slickgrid/wiki/OData)
@@ -40,6 +41,8 @@ This is a work in progress, but so far here are some of the features that `angul
 
 ## Missing features (planned items, not necessarily in order of execution)
 The following are SlickGrid features which are not yet included in this library but will be in the eventual future.
+- Export to CSV
+- Support of Locale with `ngx-translate`
 - Filters to support multi-select dropdown and eventually custom filters
 
 ### License

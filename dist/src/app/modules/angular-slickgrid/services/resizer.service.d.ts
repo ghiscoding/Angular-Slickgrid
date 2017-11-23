@@ -1,5 +1,7 @@
 import { GridOption } from './../models';
 export declare class ResizerService {
+    private _grid;
+    private _gridOptions;
     constructor();
     /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
      * Options: we could also provide a % factor to resize on each height/width independently
@@ -15,7 +17,7 @@ export declare class ResizerService {
      */
     destroy(): void;
     /** Resize the datagrid to fit the browser height & width */
-    resizeGrid(grid: any, gridOptions: GridOption, delay?: number, newSizes?: {
+    resizeGrid(delay?: number, newSizes?: {
         height: number;
         width: number;
     }): void;
