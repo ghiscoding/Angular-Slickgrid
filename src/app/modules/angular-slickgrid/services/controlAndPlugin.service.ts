@@ -68,6 +68,8 @@ export class ControlAndPluginService {
           if (options.gridMenu && typeof options.gridMenu.onMenuClose === 'function') {
             options.gridMenu.onMenuClose(e, args);
           }
+          // we also want to resize the columns if the user decided to hide certain column(s)
+          this._grid.autosizeColumns();
         });
       }
     }
