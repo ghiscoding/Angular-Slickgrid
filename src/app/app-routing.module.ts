@@ -26,7 +26,7 @@ const routes: Routes = [
   { path: 'clientside', component: GridClientSideComponent },
   { path: 'odata', component: GridOdataComponent },
   { path: 'selection', component: GridRowSelectionComponent },
-  { path: '', redirectTo: '/home', pathMatch: 'full' }
+  { path: '', redirectTo: '/basic', pathMatch: 'full' }
 ];
 
 @NgModule({
