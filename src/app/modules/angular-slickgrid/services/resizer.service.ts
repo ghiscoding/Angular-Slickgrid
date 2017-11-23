@@ -81,7 +81,7 @@ export class ResizerService {
    * Destroy function when element is destroyed
    */
   destroy() {
-    $(window).trigger('resize.grid').off('resize');
+    $(window).off('resize.grid');
   }
 
   /** Resize the datagrid to fit the browser height & width */

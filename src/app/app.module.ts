@@ -17,6 +17,7 @@ import { GridHeaderMenuComponent } from './examples/grid-headermenu.component';
 import { GridMenuComponent } from './examples/grid-menu.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
 import { GridRowSelectionComponent } from './examples/grid-rowselection.component';
+import { HomeComponent } from './examples/home.component';
 
 // import our custom module, library created using this article
 // https://medium.com/@ngl817/building-an-angular-4-component-library-with-the-angular-cli-and-ng-packagr-53b2ade0701e
@@ -37,7 +38,8 @@ import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angu
     GridMenuComponent,
     GridOdataComponent,
     GridSingleSelectionComponent,
-    GridRowSelectionComponent
+    GridRowSelectionComponent,
+    HomeComponent
   ],
   imports: [
     AppRoutingRoutingModule,

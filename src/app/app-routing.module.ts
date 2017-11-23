@@ -9,10 +9,12 @@ import { GridHeaderMenuComponent } from './examples/grid-headermenu.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
 import { GridRowSelectionComponent } from './examples/grid-rowselection.component';
+import { HomeComponent } from './examples/home.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
+  { path: 'home', component: HomeComponent },
   { path: 'additem', component: GridAddItemComponent },
   { path: 'basic', component: GridBasicComponent },
   { path: 'editor', component: GridEditorComponent },
@@ -24,7 +26,7 @@ const routes: Routes = [
   { path: 'clientside', component: GridClientSideComponent },
   { path: 'odata', component: GridOdataComponent },
   { path: 'selection', component: GridRowSelectionComponent },
-  { path: '', redirectTo: '/basic', pathMatch: 'full' }
+  { path: '', redirectTo: '/home', pathMatch: 'full' }
 ];
 
 @NgModule({
