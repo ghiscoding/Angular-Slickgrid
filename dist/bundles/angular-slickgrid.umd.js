@@ -120,17 +120,17 @@ KeyCode[KeyCode.RIGHT] = "RIGHT";
 KeyCode[KeyCode.TAB] = "TAB";
 KeyCode[KeyCode.UP] = "UP";
 var OperatorType = {};
-OperatorType.contains = /** @type {?} */ ('Contains');
-OperatorType.lessThan = /** @type {?} */ ('LT');
-OperatorType.lessThanOrEqual = /** @type {?} */ ('LE');
-OperatorType.greaterThan = /** @type {?} */ ('GT');
-OperatorType.greaterThanOrEqual = /** @type {?} */ ('GE');
-OperatorType.notEqual = /** @type {?} */ ('NE');
-OperatorType.equal = /** @type {?} */ ('EQ');
-OperatorType.endsWith = /** @type {?} */ ('EndsWith');
-OperatorType.startsWith = /** @type {?} */ ('StartsWith');
-OperatorType.in = /** @type {?} */ ('IN');
-OperatorType.notIn = /** @type {?} */ ('NIN');
+OperatorType.contains = ('Contains');
+OperatorType.lessThan = ('LT');
+OperatorType.lessThanOrEqual = ('LE');
+OperatorType.greaterThan = ('GT');
+OperatorType.greaterThanOrEqual = ('GE');
+OperatorType.notEqual = ('NE');
+OperatorType.equal = ('EQ');
+OperatorType.endsWith = ('EndsWith');
+OperatorType.startsWith = ('StartsWith');
+OperatorType.in = ('IN');
+OperatorType.notIn = ('NIN');
 OperatorType[OperatorType.contains] = "contains";
 OperatorType[OperatorType.lessThan] = "lessThan";
 OperatorType[OperatorType.lessThanOrEqual] = "lessThanOrEqual";
@@ -143,8 +143,8 @@ OperatorType[OperatorType.startsWith] = "startsWith";
 OperatorType[OperatorType.in] = "in";
 OperatorType[OperatorType.notIn] = "notIn";
 var SortDirection = {};
-SortDirection.ASC = /** @type {?} */ ('ASC');
-SortDirection.DESC = /** @type {?} */ ('DESC');
+SortDirection.ASC = ('ASC');
+SortDirection.DESC = ('DESC');
 SortDirection[SortDirection.ASC] = "ASC";
 SortDirection[SortDirection.DESC] = "DESC";
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -8103,7 +8103,7 @@ var jquery = createCommonjsModule(function (module) {
         return jQuery;
     });
 });
-var CheckboxEditor = /** @class */ (function () {
+var CheckboxEditor = (function () {
     /**
      * @param {?} args
      */
@@ -8948,7 +8948,7 @@ function parseUtcDate(inputDateString, useUtc) {
     return date;
 }
 var flatpickr = require('flatpickr');
-var DateEditor = /** @class */ (function () {
+var DateEditor = (function () {
     /**
      * @param {?} args
      */
@@ -9063,7 +9063,7 @@ var DateEditor = /** @class */ (function () {
     return DateEditor;
 }());
 var defaultDecimalPlaces = 0;
-var FloatEditor = /** @class */ (function () {
+var FloatEditor = (function () {
     /**
      * @param {?} args
      */
@@ -9174,7 +9174,7 @@ var FloatEditor = /** @class */ (function () {
     };
     return FloatEditor;
 }());
-var IntegerEditor = /** @class */ (function () {
+var IntegerEditor = (function () {
     /**
      * @param {?} args
      */
@@ -9261,7 +9261,7 @@ var IntegerEditor = /** @class */ (function () {
     };
     return IntegerEditor;
 }());
-var LongTextEditor = /** @class */ (function () {
+var LongTextEditor = (function () {
     /**
      * @param {?} args
      */
@@ -9397,7 +9397,7 @@ var LongTextEditor = /** @class */ (function () {
     };
     return LongTextEditor;
 }());
-var TextEditor = /** @class */ (function () {
+var TextEditor = (function () {
     /**
      * @param {?} args
      */
@@ -9848,7 +9848,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var FilterService = /** @class */ (function () {
+var FilterService = (function () {
     function FilterService() {
         this._columnFilters = {};
         this.onFilterChanged = new core.EventEmitter();
@@ -10163,7 +10163,7 @@ var FilterService = /** @class */ (function () {
     };
     return FilterService;
 }());
-var GridExtraService = /** @class */ (function () {
+var GridExtraService = (function () {
     function GridExtraService() {
     }
     /**
@@ -10304,7 +10304,7 @@ var GridExtraService = /** @class */ (function () {
     };
     return GridExtraService;
 }());
-var ControlAndPluginService = /** @class */ (function () {
+var ControlAndPluginService = (function () {
     /**
      * @param {?} filterService
      * @param {?} gridExtraService
@@ -10554,7 +10554,7 @@ ControlAndPluginService.ctorParameters = function () { return [
     { type: FilterService, },
     { type: GridExtraService, },
 ]; };
-var GridEventService = /** @class */ (function () {
+var GridEventService = (function () {
     function GridEventService() {
     }
     /**
@@ -10633,7 +10633,7 @@ var GridEventService = /** @class */ (function () {
  * The previous lib can be viewed here at this Github
  * https://github.com/codemeasandwich/graphql-query-builder
  */
-var GraphqlQueryBuilder = /** @class */ (function () {
+var GraphqlQueryBuilder = (function () {
     /**
      * @param {?} queryFnName
      * @param {?=} aliasOrFilter
@@ -10782,7 +10782,7 @@ var GraphqlQueryBuilder = /** @class */ (function () {
     return GraphqlQueryBuilder;
 }());
 var timer;
-var GraphqlService = /** @class */ (function () {
+var GraphqlService = (function () {
     function GraphqlService() {
         this.serviceOptions = {};
         this.defaultOrderBy = { field: 'id', direction: SortDirection.ASC };
@@ -10859,7 +10859,7 @@ var GraphqlService = /** @class */ (function () {
         var /** @type {?} */ paginationOptions;
         if (this.serviceOptions.isWithCursor) {
             // first, last, after, before
-            paginationOptions = /** @type {?} */ ({
+            paginationOptions = ({
                 after: '',
                 before: undefined,
                 last: undefined
@@ -10867,7 +10867,7 @@ var GraphqlService = /** @class */ (function () {
         }
         else {
             // first, last, offset
-            paginationOptions = /** @type {?} */ (this.serviceOptions.paginationOptions);
+            paginationOptions = (this.serviceOptions.paginationOptions);
             paginationOptions.offset = 0;
         }
         this.updateOptions({ paginationOptions: paginationOptions });
@@ -11048,7 +11048,7 @@ var GraphqlService = /** @class */ (function () {
     };
     return GraphqlService;
 }());
-var GridExtraUtils = /** @class */ (function () {
+var GridExtraUtils = (function () {
     function GridExtraUtils() {
     }
     /**
@@ -11105,7 +11105,7 @@ String.allTitleCase = function (inputStr) {
 String.titleCase = function (inputStr) {
     return inputStr.charAt(0).toUpperCase() + inputStr.slice(1);
 };
-var OdataService = /** @class */ (function () {
+var OdataService = (function () {
     function OdataService() {
         this._odataOptions = {
             filterQueue: [],
@@ -11313,7 +11313,7 @@ var OdataService = /** @class */ (function () {
     return OdataService;
 }());
 var timer$1;
-var GridOdataService = /** @class */ (function () {
+var GridOdataService = (function () {
     /**
      * @param {?} odataService
      */
@@ -11582,7 +11582,7 @@ var DATAGRID_MIN_WIDTH = 300;
 var DATAGRID_BOTTOM_PADDING = 20;
 var DATAGRID_PAGINATION_HEIGHT = 35;
 var timer$2;
-var ResizerService = /** @class */ (function () {
+var ResizerService = (function () {
     function ResizerService() {
     }
     /**
@@ -11718,7 +11718,7 @@ var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, 
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var SortService = /** @class */ (function () {
+var SortService = (function () {
     function SortService() {
         this.onSortChanged = new core.EventEmitter();
     }
@@ -11856,7 +11856,7 @@ var __awaiter$2 = (this && this.__awaiter) || function (thisArg, _arguments, P, 
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var SlickPaginationComponent = /** @class */ (function () {
+var SlickPaginationComponent = (function () {
     /**
      * @param {?} filterService
      * @param {?} sortService
@@ -13763,13 +13763,13 @@ SlickPaginationComponent.propDecorators = {
             }
             var mod = d === "absolute" ? 1 : -1, scrollIsRootNode = this._isRootNode(this.scrollParent[0]);
             return {
-                top: (pos.top + // The absolute mouse position
-                    this.offset.relative.top * mod + // Only for relative positioned nodes: Relative offset from element to offset parent
-                    this.offset.parent.top * mod - // The offsetParent's offset without borders (offset + border)
+                top: (pos.top +
+                    this.offset.relative.top * mod +
+                    this.offset.parent.top * mod -
                     ((this.cssPosition === "fixed" ? -this.offset.scroll.top : (scrollIsRootNode ? 0 : this.offset.scroll.top)) * mod)),
-                left: (pos.left + // The absolute mouse position
-                    this.offset.relative.left * mod + // Only for relative positioned nodes: Relative offset from element to offset parent
-                    this.offset.parent.left * mod - // The offsetParent's offset without borders (offset + border)
+                left: (pos.left +
+                    this.offset.relative.left * mod +
+                    this.offset.parent.left * mod -
                     ((this.cssPosition === "fixed" ? -this.offset.scroll.left : (scrollIsRootNode ? 0 : this.offset.scroll.left)) * mod))
             };
         },
@@ -13829,15 +13829,15 @@ SlickPaginationComponent.propDecorators = {
                 }
             }
             return {
-                top: (pageY - // The absolute mouse position
-                    this.offset.click.top - // Click offset (relative to the element)
-                    this.offset.relative.top - // Only for relative positioned nodes: Relative offset from element to offset parent
-                    this.offset.parent.top + // The offsetParent's offset without borders (offset + border)
+                top: (pageY -
+                    this.offset.click.top -
+                    this.offset.relative.top -
+                    this.offset.parent.top +
                     (this.cssPosition === "fixed" ? -this.offset.scroll.top : (scrollIsRootNode ? 0 : this.offset.scroll.top))),
-                left: (pageX - // The absolute mouse position
-                    this.offset.click.left - // Click offset (relative to the element)
-                    this.offset.relative.left - // Only for relative positioned nodes: Relative offset from element to offset parent
-                    this.offset.parent.left + // The offsetParent's offset without borders (offset + border)
+                left: (pageX -
+                    this.offset.click.left -
+                    this.offset.relative.left -
+                    this.offset.parent.left +
                     (this.cssPosition === "fixed" ? -this.offset.scroll.left : (scrollIsRootNode ? 0 : this.offset.scroll.left)))
             };
         },
@@ -14409,18 +14409,18 @@ SlickPaginationComponent.propDecorators = {
                 case "fit":
                     return (l <= x1 && x2 <= r && t <= y1 && y2 <= b);
                 case "intersect":
-                    return (l < x1 + (draggable.helperProportions.width / 2) && // Right Half
-                        x2 - (draggable.helperProportions.width / 2) < r && // Left Half
-                        t < y1 + (draggable.helperProportions.height / 2) && // Bottom Half
+                    return (l < x1 + (draggable.helperProportions.width / 2) &&
+                        x2 - (draggable.helperProportions.width / 2) < r &&
+                        t < y1 + (draggable.helperProportions.height / 2) &&
                         y2 - (draggable.helperProportions.height / 2) < b); // Top Half
                 case "pointer":
                     return isOverAxis(event.pageY, t, droppable.proportions().height) && isOverAxis(event.pageX, l, droppable.proportions().width);
                 case "touch":
-                    return ((y1 >= t && y1 <= b) || // Top edge touching
-                        (y2 >= t && y2 <= b) || // Bottom edge touching
+                    return ((y1 >= t && y1 <= b) ||
+                        (y2 >= t && y2 <= b) ||
                         (y1 < t && y2 > b) // Surrounded vertically
-                    ) && ((x1 >= l && x1 <= r) || // Left edge touching
-                        (x2 >= l && x2 <= r) || // Right edge touching
+                    ) && ((x1 >= l && x1 <= r) ||
+                        (x2 >= l && x2 <= r) ||
                         (x1 < l && x2 > r) // Surrounded horizontally
                     );
                 default:
@@ -16079,9 +16079,9 @@ SlickPaginationComponent.propDecorators = {
                 return isOverElement;
             }
             else {
-                return (l < x1 + (this.helperProportions.width / 2) && // Right Half
-                    x2 - (this.helperProportions.width / 2) < r && // Left Half
-                    t < y1 + (this.helperProportions.height / 2) && // Bottom Half
+                return (l < x1 + (this.helperProportions.width / 2) &&
+                    x2 - (this.helperProportions.width / 2) < r &&
+                    t < y1 + (this.helperProportions.height / 2) &&
                     y2 - (this.helperProportions.height / 2) < b); // Top Half
             }
         },
@@ -16464,13 +16464,13 @@ SlickPaginationComponent.propDecorators = {
             }
             var mod = d === "absolute" ? 1 : -1, scroll = this.cssPosition === "absolute" && !(this.scrollParent[0] !== this.document[0] && $.contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent, scrollIsRootNode = (/(html|body)/i).test(scroll[0].tagName);
             return {
-                top: (pos.top + // The absolute mouse position
-                    this.offset.relative.top * mod + // Only for relative positioned nodes: Relative offset from element to offset parent
-                    this.offset.parent.top * mod - // The offsetParent's offset without borders (offset + border)
+                top: (pos.top +
+                    this.offset.relative.top * mod +
+                    this.offset.parent.top * mod -
                     ((this.cssPosition === "fixed" ? -this.scrollParent.scrollTop() : (scrollIsRootNode ? 0 : scroll.scrollTop())) * mod)),
-                left: (pos.left + // The absolute mouse position
-                    this.offset.relative.left * mod + // Only for relative positioned nodes: Relative offset from element to offset parent
-                    this.offset.parent.left * mod - // The offsetParent's offset without borders (offset + border)
+                left: (pos.left +
+                    this.offset.relative.left * mod +
+                    this.offset.parent.left * mod -
                     ((this.cssPosition === "fixed" ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft()) * mod))
             };
         },
@@ -16510,15 +16510,15 @@ SlickPaginationComponent.propDecorators = {
                 }
             }
             return {
-                top: (pageY - // The absolute mouse position
-                    this.offset.click.top - // Click offset (relative to the element)
-                    this.offset.relative.top - // Only for relative positioned nodes: Relative offset from element to offset parent
-                    this.offset.parent.top + // The offsetParent's offset without borders (offset + border)
+                top: (pageY -
+                    this.offset.click.top -
+                    this.offset.relative.top -
+                    this.offset.parent.top +
                     ((this.cssPosition === "fixed" ? -this.scrollParent.scrollTop() : (scrollIsRootNode ? 0 : scroll.scrollTop())))),
-                left: (pageX - // The absolute mouse position
-                    this.offset.click.left - // Click offset (relative to the element)
-                    this.offset.relative.left - // Only for relative positioned nodes: Relative offset from element to offset parent
-                    this.offset.parent.left + // The offsetParent's offset without borders (offset + border)
+                left: (pageX -
+                    this.offset.click.left -
+                    this.offset.relative.left -
+                    this.offset.parent.left +
                     ((this.cssPosition === "fixed" ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft())))
             };
         },
@@ -18716,7 +18716,7 @@ SlickPaginationComponent.propDecorators = {
                 selectedDay: 0, selectedMonth: 0, selectedYear: 0,
                 drawMonth: 0, drawYear: 0,
                 inline: inline,
-                dpDiv: (!inline ? this.dpDiv : // presentation div
+                dpDiv: (!inline ? this.dpDiv :
                     datepicker_bindHover($("<div class='" + this._inlineClass + " ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all'></div>"))) };
         },
         /* Attach the date picker to an input field. */
@@ -18855,7 +18855,7 @@ SlickPaginationComponent.propDecorators = {
                 browserHeight = document.documentElement.clientHeight;
                 scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
                 scrollY = document.documentElement.scrollTop || document.body.scrollTop;
-                this._pos = // should use actual width/height below
+                this._pos =
                     [(browserWidth / 2) - 100 + scrollX, (browserHeight / 2) - 150 + scrollY];
             }
             // move input on screen for focus, but hidden behind dialog
@@ -20050,7 +20050,7 @@ SlickPaginationComponent.propDecorators = {
                     calender += "<div class='ui-datepicker-header ui-widget-header ui-helper-clearfix" + cornerClass + "'>" +
                         (/all|left/.test(cornerClass) && row === 0 ? (isRTL ? next : prev) : "") +
                         (/all|right/.test(cornerClass) && row === 0 ? (isRTL ? prev : next) : "") +
-                        this._generateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, row > 0 || col > 0, monthNames, monthNamesShort) + // draw month headers
+                        this._generateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, row > 0 || col > 0, monthNames, monthNamesShort) +
                         "</div><table class='ui-datepicker-calendar'><thead>" +
                         "<tr>";
                     thead = (showWeek ? "<th class='ui-datepicker-week-col'>" + this._get(inst, "weekHeader") + "</th>" : "");
@@ -20080,23 +20080,23 @@ SlickPaginationComponent.propDecorators = {
                             unselectable = (otherMonth && !selectOtherMonths) || !daySettings[0] ||
                                 (minDate && printDate < minDate) || (maxDate && printDate > maxDate);
                             tbody += "<td class='" +
-                                ((dow + firstDay + 6) % 7 >= 5 ? " ui-datepicker-week-end" : "") + // highlight weekends
-                                (otherMonth ? " ui-datepicker-other-month" : "") + // highlight days from other months
-                                ((printDate.getTime() === selectedDate.getTime() && drawMonth === inst.selectedMonth && inst._keyEvent) || // user pressed key
+                                ((dow + firstDay + 6) % 7 >= 5 ? " ui-datepicker-week-end" : "") +
+                                (otherMonth ? " ui-datepicker-other-month" : "") +
+                                ((printDate.getTime() === selectedDate.getTime() && drawMonth === inst.selectedMonth && inst._keyEvent) ||
                                     (defaultDate.getTime() === printDate.getTime() && defaultDate.getTime() === selectedDate.getTime()) ?
                                     // or defaultDate is current printedDate and defaultDate is selectedDate
-                                    " " + this._dayOverClass : "") + // highlight selected day
-                                (unselectable ? " " + this._unselectableClass + " ui-state-disabled" : "") + // highlight unselectable days
-                                (otherMonth && !showOtherMonths ? "" : " " + daySettings[1] + // highlight custom dates
-                                    (printDate.getTime() === currentDate.getTime() ? " " + this._currentClass : "") + // highlight selected day
-                                    (printDate.getTime() === today.getTime() ? " ui-datepicker-today" : "")) + "'" + // highlight today (if different)
-                                ((!otherMonth || showOtherMonths) && daySettings[2] ? " title='" + daySettings[2].replace(/'/g, "&#39;") + "'" : "") + // cell title
-                                (unselectable ? "" : " data-handler='selectDay' data-event='click' data-month='" + printDate.getMonth() + "' data-year='" + printDate.getFullYear() + "'") + ">" + // actions
-                                (otherMonth && !showOtherMonths ? "&#xa0;" : // display for other months
+                                    " " + this._dayOverClass : "") +
+                                (unselectable ? " " + this._unselectableClass + " ui-state-disabled" : "") +
+                                (otherMonth && !showOtherMonths ? "" : " " + daySettings[1] +
+                                    (printDate.getTime() === currentDate.getTime() ? " " + this._currentClass : "") +
+                                    (printDate.getTime() === today.getTime() ? " ui-datepicker-today" : "")) + "'" +
+                                ((!otherMonth || showOtherMonths) && daySettings[2] ? " title='" + daySettings[2].replace(/'/g, "&#39;") + "'" : "") +
+                                (unselectable ? "" : " data-handler='selectDay' data-event='click' data-month='" + printDate.getMonth() + "' data-year='" + printDate.getFullYear() + "'") + ">" +
+                                (otherMonth && !showOtherMonths ? "&#xa0;" :
                                     (unselectable ? "<span class='ui-state-default'>" + printDate.getDate() + "</span>" : "<a class='ui-state-default" +
                                         (printDate.getTime() === today.getTime() ? " ui-state-highlight" : "") +
-                                        (printDate.getTime() === currentDate.getTime() ? " ui-state-active" : "") + // highlight selected day
-                                        (otherMonth ? " ui-priority-secondary" : "") + // distinguish dates from other months
+                                        (printDate.getTime() === currentDate.getTime() ? " ui-state-active" : "") +
+                                        (otherMonth ? " ui-priority-secondary" : "") +
                                         "' href='#'>" + printDate.getDate() + "</a>")) + "</td>"; // display selectable date
                             printDate.setDate(printDate.getDate() + 1);
                             printDate = this._daylightSavingAdjust(printDate);
@@ -33262,7 +33262,7 @@ var __awaiter$3 = (this && this.__awaiter) || function (thisArg, _arguments, P, 
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var AngularSlickgridComponent = /** @class */ (function () {
+var AngularSlickgridComponent = (function () {
     /**
      * @param {?} controlAndPluginService
      * @param {?} gridEventService
@@ -33494,7 +33494,7 @@ AngularSlickgridComponent.propDecorators = {
     'gridWidth': [{ type: core.Input },],
     'dataset': [{ type: core.Input },],
 };
-var AngularSlickgridModule = /** @class */ (function () {
+var AngularSlickgridModule = (function () {
     function AngularSlickgridModule() {
     }
     return AngularSlickgridModule;
