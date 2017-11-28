@@ -14,17 +14,17 @@ export class ResizerService {
   private _grid: any;
   private _gridOptions: GridOption;
 
-  constructor() {}
+  init(grid: any, gridOptions: GridOption): void {
+    this._grid = grid;
+    this._gridOptions = gridOptions;
+  }
 
   /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
    * Options: we could also provide a % factor to resize on each height/width independently
    */
-  attachAutoResizeDataGrid(grid: any, gridOptions: GridOption) {
-    this._grid = grid;
-    this._gridOptions = gridOptions;
-
+  attachAutoResizeDataGrid() {
     // if we can't find the grid to resize, return without attaching anything
-    const gridDomElm = $(`#${gridOptions.gridId}`);
+    const gridDomElm = $(`#${this._gridOptions && this._gridOptions.gridId ? this._gridOptions.gridId : 'grid1'}`);
     if (gridDomElm === undefined || gridDomElm.offset() === undefined) {
       return null;
     }
