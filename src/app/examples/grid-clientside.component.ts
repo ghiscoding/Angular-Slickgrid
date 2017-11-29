@@ -58,8 +58,7 @@ export class GridClientSideComponent implements OnInit {
         containerId: 'demo-container',
         sidePadding: 15
       },
-      enableFiltering: true,
-      enableCellNavigation: true
+      enableFiltering: true
     };
 
     // mock a dataset

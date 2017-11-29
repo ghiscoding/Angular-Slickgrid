@@ -120,7 +120,7 @@ export class FilterService {
   attachLocalOnFilter(grid: any, options: GridOption, dataView: any) {
     this._dataView = dataView;
     this.subscriber = new Slick.Event();
-    this.emitFilterChangedBy('remote');
+    this.emitFilterChangedBy('local');
 
     dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
     dataView.setFilter(this.customFilter);
