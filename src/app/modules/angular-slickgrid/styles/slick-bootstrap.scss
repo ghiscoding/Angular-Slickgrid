@@ -47,8 +47,9 @@
   .slick-viewport {
     /*opacity: 0.95;*/
   }
-
-
+  .ui-state-default {
+    border: 0;
+  }
 
   .grid-canvas {
     .slick-row {
@@ -109,6 +110,7 @@
       border-left: $cell-border-left;
       border-right: $cell-border-right;
     }
+
     .even {
       background: $cell-even-background-color;
     }
