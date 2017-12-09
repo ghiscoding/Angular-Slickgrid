@@ -96,6 +96,7 @@ export class GridExtraService {
 
     const row = 0;
     this._dataView.insertItem(row, item);
+    this._grid.scrollRowIntoView(0); // scroll to row 0
     this.highlightRow(0, 1500);
 
     // refresh dataview & grid
