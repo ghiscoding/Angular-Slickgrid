@@ -211,7 +211,7 @@ export class GridOdataComponent implements OnInit {
         const updatedData = filteredData.slice(firstRow, firstRow + top);
 
         setTimeout(() => {
-          resolve({ items: updatedData, totalRecordCount: countTotalItems, query: query });
+          resolve({ items: updatedData, totalRecordCount: countTotalItems, query });
         }, 500);
       });
     });

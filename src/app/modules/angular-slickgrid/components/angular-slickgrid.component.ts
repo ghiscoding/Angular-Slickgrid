@@ -71,12 +71,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   constructor(
-    private controlAndPluginService: ControlAndPluginService,
-    private gridEventService: GridEventService,
-    private gridExtraService: GridExtraService,
     private filterService: FilterService,
+    private sortService: SortService,
+    private gridExtraService: GridExtraService,
+    private gridEventService: GridEventService,
     private resizer: ResizerService,
-    private sortService: SortService
+    private controlAndPluginService: ControlAndPluginService
   ) {}
 
   ngOnInit(): void {

@@ -1,13 +1,14 @@
 import { castToPromise } from './../services/utilities';
 import { FilterService } from '../services/filter.service';
 import { SortService } from './../services/sort.service';
-import { Component, OnInit, Input, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, AfterViewInit, Injectable } from '@angular/core';
 import { Column, GridOption } from './../models';
 
 @Component({
   selector: 'slick-pagination',
   templateUrl: './slick-pagination.component.html'
 })
+@Injectable()
 export class SlickPaginationComponent implements AfterViewInit, OnInit {
   private _gridPaginationOptions: GridOption;
 

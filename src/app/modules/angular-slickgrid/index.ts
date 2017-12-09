@@ -41,15 +41,15 @@ export { FilterTemplates } from './filter-templates';
 export { Formatters } from './formatters';
 export { Sorters } from './sorters';
 
-export { ControlAndPluginService } from './services/controlAndPlugin.service';
 export { FilterService } from './services/filter.service';
+export { SortService } from './services/sort.service';
 export { GridEventService } from './services/gridEvent.service';
 export { GraphqlService } from './services/graphql.service';
 export { GridExtraService } from './services/gridExtra.service';
 export { GridExtraUtils } from './services/gridExtraUtils';
 export { GridOdataService } from './services/grid-odata.service';
 export { ResizerService } from './services/resizer.service';
-export { SortService } from './services/sort.service';
+export { ControlAndPluginService } from './services/controlAndPlugin.service';
 
 export { SlickPaginationComponent } from './components/slick-pagination.component';
 export { AngularSlickgridComponent } from './components/angular-slickgrid.component';

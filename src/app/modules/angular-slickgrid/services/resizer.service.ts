@@ -1,5 +1,4 @@
 import { GridOption } from './../models';
-import { Injectable } from '@angular/core';
 import $ from 'jquery';
 
 // global constants, height/width are in pixels
@@ -9,7 +8,6 @@ const DATAGRID_BOTTOM_PADDING = 20;
 const DATAGRID_PAGINATION_HEIGHT = 35;
 let timer: any;
 
-@Injectable()
 export class ResizerService {
   private _grid: any;
   private _gridOptions: GridOption;
