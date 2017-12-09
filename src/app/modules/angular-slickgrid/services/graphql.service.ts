@@ -34,15 +34,16 @@ export class GraphqlService implements BackendService {
     const datasetQb = new QueryBuilder(this.serviceOptions.datasetName);
     const pageInfoQb = new QueryBuilder('pageInfo');
     const dataQb = (this.serviceOptions.isWithCursor) ? new QueryBuilder('edges') : new QueryBuilder('nodes');
+    const filters = this.buildFilterQuery(this.serviceOptions.dataFilters);
 
     if (this.serviceOptions.isWithCursor) {
       // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
       pageInfoQb.find('hasNextPage', 'endCursor');
-      dataQb.find(['cursor', { 'node': this.serviceOptions.dataFilters }]);
+      dataQb.find(['cursor', { 'node': filters }]);
     } else {
       // ...pageInfo { hasNextPage }, nodes { _filters_ }
       pageInfoQb.find('hasNextPage');
-      dataQb.find(this.serviceOptions.dataFilters);
+      dataQb.find(filters);
     }
 
     datasetQb.find(['totalCount', pageInfoQb, dataQb]);
@@ -66,19 +67,24 @@ export class GraphqlService implements BackendService {
     return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
   }
 
-  buildPaginationQuery(serviceOptions?: GraphqlServiceOption) {
+  buildFilterQuery(inputArray) {
+    const q = {};
 
-  }
-  buildSortingQuery(serviceOptions?: GraphqlServiceOption) {
+    inputArray.map((arg) => {
+        const [ o, a ] = arg.split('.');
+        q[o] = q[o] || [];
+        if (a) {
+          q[o] = q[o].concat(a);
+        }
+    });
 
+    return Object.keys(q).map((k) => {
+        return q[k].length ? `${k} \{ ${q[k].join(', ')} \}` : k;
+    }).join(', ');
   }
 
   initOptions(serviceOptions?: GraphqlServiceOption): void {
     this.serviceOptions = serviceOptions || {};
-  }
-
-  removeColumnFilter(fieldName: string): void {
-
   }
 
   /*
@@ -103,17 +109,6 @@ export class GraphqlService implements BackendService {
 
   updateOptions(serviceOptions?: GraphqlServiceOption) {
     this.serviceOptions = { ...this.serviceOptions, ...serviceOptions };
-  }
-
-  saveColumnFilter(fieldName: string, value: string, terms?: any[]) {
-  }
-
-  filterChanged(event, args) {
-    console.log(event, args);
-  }
-  sorterChanged(event, args) {
-    console.log(event, args);
-    return 'this is the query';
   }
 
   /*
@@ -156,7 +151,6 @@ export class GraphqlService implements BackendService {
 
           // no need to query if search value is empty
           if (fieldName && searchValue === '') {
-            this.removeColumnFilter(fieldName);
             continue;
           }
 
