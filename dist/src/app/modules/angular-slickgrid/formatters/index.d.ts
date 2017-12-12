@@ -3,6 +3,7 @@ export declare const Formatters: {
     arrayToCsv: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     checkbox: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     checkmark: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
+    complexObject: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     dateIso: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     dateTimeIso: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     dateTimeIsoAmPm: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;

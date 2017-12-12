@@ -10732,7 +10732,7 @@ class DateEditor {
         const /** @type {?} */ gridOptions = this.args.grid.getOptions();
         this.defaultDate = this.args.item[this.args.column.field] || null;
         const /** @type {?} */ inputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
-        const /** @type {?} */ outputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.outputType || 'Z');
+        const /** @type {?} */ outputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.outputType || FieldType.dateUtc);
         const /** @type {?} */ locale = (gridOptions && gridOptions.locale) ? gridOptions.locale : 'en';
         const /** @type {?} */ pickerOptions = {
             defaultDate: this.defaultDate,
@@ -11445,7 +11445,15 @@ const arrayToCsvFormatter = (row, cell, value, columnDef, dataContext) => {
 
 const checkboxFormatter = (row, cell, value, columnDef, dataContext) => value ? '&#x2611;' : '';
 
-const checkmarkFormatter = (row, cell, value, columnDef, dataContext) => value ? `<i class="fa fa-check" aria-hidden="true"></i>` : '';
+const checkmarkFormatter = (row, cell, value, columnDef, dataContext) => value ? `<i class="fa fa-check checkmark-icon" aria-hidden="true"></i>` : '';
+
+const complexObjectFormatter = (row, cell, value, columnDef, dataContext) => {
+    if (!columnDef) {
+        return '';
+    }
+    const /** @type {?} */ complexField = columnDef.field || '';
+    return complexField.split('.').reduce((obj, i) => obj[i], dataContext);
+};
 
 const moment$6 = moment_min || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$3 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
@@ -11467,7 +11475,7 @@ const moment$10 = moment_min || moment_; // patch to fix rollup "moment has no d
 const FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
 const dateUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$10(value).format(FORMAT$7) : '';
 
-const deleteIconFormatter = (row, cell, value, columnDef, dataContext) => `<i class="fa fa-times pointer" aria-hidden="true"></i>`;
+const deleteIconFormatter = (row, cell, value, columnDef, dataContext) => `<i class="fa fa-trash pointer delete-icon" aria-hidden="true"></i>`;
 
 const hyperlinkFormatter = (row, cell, value, columnDef, dataContext) => {
     const /** @type {?} */ matchUrl = value.match(/^(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/, 'i');
@@ -11477,7 +11485,7 @@ const hyperlinkFormatter = (row, cell, value, columnDef, dataContext) => {
     return '';
 };
 
-const editIconFormatter = (row, cell, value, columnDef, dataContext) => `<i class="fa fa-pencil pointer" aria-hidden="true"></i>`;
+const editIconFormatter = (row, cell, value, columnDef, dataContext) => `<i class="fa fa-pencil pointer edit-icon" aria-hidden="true"></i>`;
 
 const percentCompleteFormatter = (row, cell, value, columnDef, dataContext) => {
     if (value === null || value === '') {
@@ -11545,6 +11553,7 @@ const Formatters = {
     arrayToCsv: arrayToCsvFormatter,
     checkbox: checkboxFormatter,
     checkmark: checkmarkFormatter,
+    complexObject: complexObjectFormatter,
     dateIso: dateIsoFormatter,
     dateTimeIso: dateIsoFormatter,
     dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
@@ -11760,7 +11769,7 @@ class FilterService {
     attachLocalOnFilter(grid, options, dataView) {
         this._dataView = dataView;
         this.subscriber = new Slick.Event();
-        this.emitFilterChangedBy('remote');
+        this.emitFilterChangedBy('local');
         dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
         dataView.setFilter(this.customFilter);
         this.subscriber.subscribe((e, args) => {
@@ -11948,389 +11957,125 @@ class FilterService {
     }
 }
 
-class GridExtraService {
+var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+class SortService {
+    constructor() {
+        this.onSortChanged = new EventEmitter();
+    }
     /**
-     * @param {?} grid
-     * @param {?} columnDefinition
-     * @param {?} gridOptions
+     * Attach a backend sort (single/multi) hook to the grid
+     * @param {?} grid SlickGrid Grid object
+     * @param {?} gridOptions Grid Options object
+     * @return {?}
+     */
+    attachBackendOnSort(grid, gridOptions) {
+        this.subscriber = grid.onSort;
+        this.emitSortChangedBy('remote');
+        this.subscriber.subscribe(this.attachBackendOnSortSubscribe);
+    }
+    /**
+     * @param {?} event
+     * @param {?} args
+     * @return {?}
+     */
+    attachBackendOnSortSubscribe(event, args) {
+        return __awaiter$1(this, void 0, void 0, function* () {
+            if (!args || !args.grid) {
+                throw new Error('Something went wrong when trying to attach the "attachBackendOnSortSubscribe(event, args)" function, it seems that "args" is not populated correctly');
+            }
+            const /** @type {?} */ serviceOptions = args.grid.getOptions();
+            if (!serviceOptions || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
+                throw new Error(`onBackendEventApi requires at least a "process" function and a "service" defined`);
+            }
+            if (serviceOptions.onBackendEventApi.preProcess) {
+                serviceOptions.onBackendEventApi.preProcess();
+            }
+            const /** @type {?} */ query = serviceOptions.onBackendEventApi.service.onSortChanged(event, args);
+            // the process could be an Observable (like HttpClient) or a Promise
+            // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+            const /** @type {?} */ observableOrPromise = serviceOptions.onBackendEventApi.process(query);
+            const /** @type {?} */ responseProcess = yield castToPromise(observableOrPromise);
+            // send the response process to the postProcess callback
+            if (serviceOptions.onBackendEventApi.postProcess) {
+                serviceOptions.onBackendEventApi.postProcess(responseProcess);
+            }
+        });
+    }
+    /**
+     * Attach a local sort (single/multi) hook to the grid
+     * @param {?} grid SlickGrid Grid object
+     * @param {?} gridOptions Grid Options object
      * @param {?} dataView
      * @return {?}
      */
-    init(grid, columnDefinition, gridOptions, dataView) {
-        this._grid = grid;
-        this._columnDefinition = columnDefinition;
-        this._gridOptions = gridOptions;
-        this._dataView = dataView;
-    }
-    /**
-     * @param {?} rowNumber
-     * @return {?}
-     */
-    getDataItemByRowNumber(rowNumber) {
-        if (!this._grid || typeof this._grid.getDataItem !== 'function') {
-            throw new Error('We could not find SlickGrid Grid object');
-        }
-        return this._grid.getDataItem(rowNumber);
-    }
-    /**
-     * Chain the item Metadata with our implementation of Metadata at given row index
-     * @param {?} previousItemMetadata
-     * @return {?}
-     */
-    getItemRowMetadata(previousItemMetadata) {
-        return (rowNumber) => {
-            const /** @type {?} */ item = this._dataView.getItem(rowNumber);
-            let /** @type {?} */ meta = {
-                cssClasses: ''
-            };
-            if (typeof previousItemMetadata === 'object' && !jquery.isEmptyObject(previousItemMetadata)) {
-                meta = previousItemMetadata(rowNumber);
-            }
-            if (item && item._dirty) {
-                meta.cssClasses = (meta.cssClasses || '') + ' dirty';
-            }
-            if (item && item.rowClass) {
-                meta.cssClasses += ` ${item.rowClass}`;
-                meta.cssClasses += ` row${rowNumber}`;
-            }
-            return meta;
-        };
-    }
-    /**
-     * Highlight then fade a row for x seconds.
-     * The implementation follows this SO answer: https://stackoverflow.com/a/19985148/1212166
-     * @param {?} rowNumber
-     * @param {?=} fadeDelay
-     * @return {?}
-     */
-    highlightRow(rowNumber, fadeDelay = 1500) {
-        // chain current item Metadata with our own Metadata for implementing highligh CSS styling
-        const /** @type {?} */ previousMetadata = this._dataView.getItemMetadata;
-        this._grid.setSelectedRows([rowNumber]);
-        this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
-        const /** @type {?} */ item = this._dataView.getItem(rowNumber);
-        item.rowClass = 'highlight';
-        this._dataView.updateItem(item.id, item);
-        const /** @type {?} */ gridOptions = (this._grid.getOptions());
-        // highlight the row for a user defined timeout
-        const /** @type {?} */ rowElm = jquery(`#${gridOptions.gridId}`)
-            .find(`.highlight.row${rowNumber}`)
-            .first();
-        // delete the row's CSS that was attached for highlighting
-        setTimeout(() => {
-            delete item.rowClass;
-            this._dataView.updateItem(item.id, item);
-        }, fadeDelay + 10);
-    }
-    /**
-     * @return {?}
-     */
-    getSelectedRows() {
-        return this._grid.getSelectedRows();
-    }
-    /**
-     * @param {?} rowIndex
-     * @return {?}
-     */
-    setSelectedRow(rowIndex) {
-        this._grid.setSelectedRows([rowIndex]);
-    }
-    /**
-     * @param {?} rowIndexes
-     * @return {?}
-     */
-    setSelectedRows(rowIndexes) {
-        this._grid.setSelectedRows(rowIndexes);
-    }
-    /**
-     * Add an item (data item) to the datagrid
-     * @param {?} item
-     * @return {?}
-     */
-    addItemToDatagrid(item) {
-        if (!this._grid || !this._gridOptions || !this._dataView) {
-            throw new Error('We could not find SlickGrid Grid, DataView objects');
-        }
-        if (!this._gridOptions || (!this._gridOptions.enableCheckboxSelector && !this._gridOptions.enableRowSelection)) {
-            throw new Error('addItemToDatagrid() requires to have a valid Slickgrid Selection Model. You can overcome this issue by enabling enableCheckboxSelector or enableRowSelection to True');
-        }
-        const /** @type {?} */ row = 0;
-        this._dataView.insertItem(row, item);
-        this.highlightRow(0, 1500);
-        // refresh dataview & grid
-        this._dataView.refresh();
-        // get new dataset length
-        const /** @type {?} */ datasetLength = this._dataView.getLength();
-    }
-    /**
-     * Update an existing item with new properties inside the datagrid
-     * @param {?} item
-     * @return {?}
-     */
-    updateDataGridItem(item) {
-        const /** @type {?} */ row = this._dataView.getRowById(item.id);
-        const /** @type {?} */ itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
-        if (itemId === -1) {
-            throw new Error(`Could not find the item in the item in the grid or it's associated "id"`);
-        }
-        // Update the item itself inside the dataView
-        this._dataView.updateItem(itemId, item);
-        // highlight the row we just updated
-        this.highlightRow(row, 1500);
-        // refresh dataview & grid
-        this._dataView.refresh();
-        // get new dataset length
-        const /** @type {?} */ datasetLength = this._dataView.getLength();
-    }
-}
-
-class ControlAndPluginService {
-    /**
-     * @param {?} filterService
-     * @param {?} gridExtraService
-     */
-    constructor(filterService, gridExtraService) {
-        this.filterService = filterService;
-        this.gridExtraService = gridExtraService;
-    }
-    /**
-     * Attach/Create different Controls or Plugins after the Grid is created
-     * @param {?} grid
-     * @param {?} columnDefinitions
-     * @param {?} options
-     * @param {?} dataView
-     * @return {?}
-     */
-    attachDifferentControlOrPlugins(grid, columnDefinitions, options, dataView) {
-        this._grid = grid;
-        this._dataView = dataView;
-        this._visibleColumns = columnDefinitions;
-        if (options.enableColumnPicker) {
-            this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
-        }
-        if (options.enableGridMenu) {
-            this.prepareGridMenu(grid, options);
-            this.gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
-            if (options.gridMenu) {
-                this.gridMenuControl.onBeforeMenuShow.subscribe((e, args) => {
-                    if (options.gridMenu && typeof options.gridMenu.onBeforeMenuShow === 'function') {
-                        options.gridMenu.onBeforeMenuShow(e, args);
+    attachLocalOnSort(grid, gridOptions, dataView) {
+        this.subscriber = grid.onSort;
+        this.emitSortChangedBy('local');
+        this.subscriber.subscribe((e, args) => {
+            // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
+            // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
+            const /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
+            dataView.sort(function (dataRow1, dataRow2) {
+                for (let /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
+                    const /** @type {?} */ sortDirection = sortColumns[i].sortAsc ? 1 : -1;
+                    const /** @type {?} */ sortField = sortColumns[i].sortCol.field;
+                    const /** @type {?} */ fieldType = sortColumns[i].sortCol.type || 'string';
+                    const /** @type {?} */ value1 = dataRow1[sortField];
+                    const /** @type {?} */ value2 = dataRow2[sortField];
+                    let /** @type {?} */ result = 0;
+                    switch (fieldType) {
+                        case FieldType.number:
+                            result = Sorters.numeric(value1, value2, sortDirection);
+                            break;
+                        case FieldType.date:
+                            result = Sorters.date(value1, value2, sortDirection);
+                            break;
+                        case FieldType.dateIso:
+                            result = Sorters.dateIso(value1, value2, sortDirection);
+                            break;
+                        case FieldType.dateUs:
+                            result = Sorters.dateUs(value1, value2, sortDirection);
+                            break;
+                        case FieldType.dateUsShort:
+                            result = Sorters.dateUsShort(value1, value2, sortDirection);
+                            break;
+                        default:
+                            result = Sorters.string(value1, value2, sortDirection);
+                            break;
                     }
-                });
-                this.gridMenuControl.onCommand.subscribe((e, args) => {
-                    if (options.gridMenu && typeof options.gridMenu.onCommand === 'function') {
-                        options.gridMenu.onCommand(e, args);
+                    if (result !== 0) {
+                        return result;
                     }
-                });
-                this.gridMenuControl.onMenuClose.subscribe((e, args) => {
-                    if (options.gridMenu && typeof options.gridMenu.onMenuClose === 'function') {
-                        options.gridMenu.onMenuClose(e, args);
-                    }
-                    // we also want to resize the columns if the user decided to hide certain column(s)
-                    this._grid.autosizeColumns();
-                });
-            }
-        }
-        if (options.enableAutoTooltip) {
-            this.autoTooltipPlugin = new Slick.AutoTooltips(options.autoTooltipOptions || {});
-            grid.registerPlugin(this.autoTooltipPlugin);
-        }
-        if (options.enableCheckboxSelector) {
-            // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
-            // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
-            grid.registerPlugin(this.checkboxSelectorPlugin);
-            // this also requires the Row Selection Model to be registered as well
-            if (!this.rowSelectionPlugin) {
-                this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-                grid.setSelectionModel(this.rowSelectionPlugin);
-            }
-        }
-        if (options.enableRowSelection) {
-            this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-            grid.setSelectionModel(this.rowSelectionPlugin);
-        }
-        if (options.enableHeaderButton) {
-            this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(options.headerButton || {});
-            grid.registerPlugin(this.headerButtonsPlugin);
-            this.headerButtonsPlugin.onCommand.subscribe((e, args) => {
-                if (options.headerButton && typeof options.headerButton.onCommand === 'function') {
-                    options.headerButton.onCommand(e, args);
                 }
+                return 0;
             });
-        }
-        if (options.enableHeaderMenu) {
-            this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenu || {});
-            grid.registerPlugin(this.headerMenuPlugin);
-            this.headerMenuPlugin.onCommand.subscribe((e, args) => {
-                if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
-                    options.headerMenu.onCommand(e, args);
-                }
-            });
-            this.headerMenuPlugin.onCommand.subscribe((e, args) => {
-                if (options.headerMenu && typeof options.headerMenu.onBeforeMenuShow === 'function') {
-                    options.headerMenu.onBeforeMenuShow(e, args);
-                }
-            });
-        }
-        if (options.registerPlugins !== undefined) {
-            if (Array.isArray(options.registerPlugins)) {
-                options.registerPlugins.forEach((plugin) => {
-                    grid.registerPlugin(plugin);
-                });
-            }
-            else {
-                grid.registerPlugin(options.registerPlugins);
-            }
-        }
-    }
-    /**
-     * @param {?} column
-     * @return {?}
-     */
-    hideColumn(column) {
-        if (this._grid && this._visibleColumns) {
-            const /** @type {?} */ columnIndex = this._grid.getColumnIndex(column.id);
-            this._visibleColumns = this.removeColumnByIndex(this._visibleColumns, columnIndex);
-            this._grid.setColumns(this._visibleColumns);
-        }
-    }
-    /**
-     * @param {?} array
-     * @param {?} index
-     * @return {?}
-     */
-    removeColumnByIndex(array, index) {
-        return array.filter((el, i) => {
-            return index !== i;
+            grid.invalidate();
+            grid.render();
         });
     }
     /**
      * @return {?}
      */
-    autoResizeColumns() {
-        this._grid.autosizeColumns();
-    }
-    /**
-     * @return {?}
-     */
     destroy() {
-        this._grid = null;
-        this._dataView = null;
-        this._visibleColumns = [];
-        if (this.columnPickerControl) {
-            this.columnPickerControl.destroy();
-            this.columnPickerControl = null;
-        }
-        if (this.gridMenuControl) {
-            this.gridMenuControl.destroy();
-            this.gridMenuControl = null;
-        }
-        if (this.rowSelectionPlugin) {
-            this.rowSelectionPlugin.destroy();
-            this.rowSelectionPlugin = null;
-        }
-        if (this.checkboxSelectorPlugin) {
-            this.checkboxSelectorPlugin.destroy();
-            this.checkboxSelectorPlugin = null;
-        }
-        if (this.autoTooltipPlugin) {
-            this.autoTooltipPlugin.destroy();
-            this.autoTooltipPlugin = null;
-        }
-        if (this.headerButtonsPlugin) {
-            this.headerButtonsPlugin.destroy();
-            this.headerButtonsPlugin = null;
-        }
-        if (this.headerMenuPlugin) {
-            this.headerMenuPlugin.destroy();
-            this.headerMenuPlugin = null;
-        }
+        this.subscriber.unsubscribe();
     }
     /**
-     * @param {?} grid
-     * @param {?} options
+     * A simple function that is attached to the subscriber and emit a change when the sort is called.
+     * Other services, like Pagination, can then subscribe to it.
+     * @param {?} sender
      * @return {?}
      */
-    addGridMenuCustomCommands(grid, options) {
-        if (options.enableFiltering) {
-            if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'clear-filter').length === 0) {
-                options.gridMenu.customItems.push({
-                    iconCssClass: 'fa fa-filter text-danger',
-                    title: 'Clear All Filters',
-                    disabled: false,
-                    command: 'clear-filter'
-                });
-            }
-            if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'toggle-filter').length === 0) {
-                options.gridMenu.customItems.push({
-                    iconCssClass: 'fa fa-random',
-                    title: 'Toggle Filter Row',
-                    disabled: false,
-                    command: 'toggle-filter'
-                });
-            }
-            if (options.gridMenu) {
-                options.gridMenu.onCommand = (e, args) => {
-                    if (args.command === 'toggle-filter') {
-                        grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
-                    }
-                    else if (args.command === 'toggle-toppanel') {
-                        grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
-                    }
-                    else if (args.command === 'clear-filter') {
-                        this.filterService.clearFilters();
-                        this._dataView.refresh();
-                    }
-                    else {
-                        alert('Command: ' + args.command);
-                    }
-                };
-            }
-        }
-        // remove the custom command title if there's no command
-        if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
-            options.gridMenu.customTitle = options.gridMenu.customTitle || 'Commands';
-        }
-    }
-    /**
-     * @param {?} grid
-     * @param {?} options
-     * @return {?}
-     */
-    prepareGridMenu(grid, options) {
-        options.gridMenu = options.gridMenu || {};
-        options.gridMenu.columnTitle = options.gridMenu.columnTitle || 'Columns';
-        options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
-        options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
-        options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
-        options.gridMenu.customItems = options.gridMenu.customItems || [];
-        this.addGridMenuCustomCommands(grid, options);
-        // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
-    }
-    /**
-     * Attach/Create different plugins before the Grid creation.
-     * For example the multi-select have to be added to the column definition before the grid is created to work properly
-     * @param {?} columnDefinitions
-     * @param {?} options
-     * @return {?}
-     */
-    createPluginBeforeGridCreation(columnDefinitions, options) {
-        if (options.enableCheckboxSelector) {
-            this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
-            columnDefinitions.unshift(this.checkboxSelectorPlugin.getColumnDefinition());
-        }
+    emitSortChangedBy(sender) {
+        this.subscriber.subscribe(() => this.onSortChanged.emit(`onSortChanged by ${sender}`));
     }
 }
-ControlAndPluginService.decorators = [
-    { type: Injectable },
-];
-/**
- * @nocollapse
- */
-ControlAndPluginService.ctorParameters = () => [
-    { type: FilterService, },
-    { type: GridExtraService, },
-];
 
 class GridEventService {
     /**
@@ -12569,15 +12314,16 @@ class GraphqlService {
         const /** @type {?} */ datasetQb = new GraphqlQueryBuilder(this.serviceOptions.datasetName);
         const /** @type {?} */ pageInfoQb = new GraphqlQueryBuilder('pageInfo');
         const /** @type {?} */ dataQb = (this.serviceOptions.isWithCursor) ? new GraphqlQueryBuilder('edges') : new GraphqlQueryBuilder('nodes');
+        const /** @type {?} */ filters = this.buildFilterQuery(this.serviceOptions.dataFilters);
         if (this.serviceOptions.isWithCursor) {
             // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
             pageInfoQb.find('hasNextPage', 'endCursor');
-            dataQb.find(['cursor', { 'node': this.serviceOptions.dataFilters }]);
+            dataQb.find(['cursor', { 'node': filters }]);
         }
         else {
             // ...pageInfo { hasNextPage }, nodes { _filters_ }
             pageInfoQb.find('hasNextPage');
-            dataQb.find(this.serviceOptions.dataFilters);
+            dataQb.find(filters);
         }
         datasetQb.find(['totalCount', pageInfoQb, dataQb]);
         // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
@@ -12597,16 +12343,21 @@ class GraphqlService {
         return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
     }
     /**
-     * @param {?=} serviceOptions
+     * @param {?} inputArray
      * @return {?}
      */
-    buildPaginationQuery(serviceOptions) {
-    }
-    /**
-     * @param {?=} serviceOptions
-     * @return {?}
-     */
-    buildSortingQuery(serviceOptions) {
+    buildFilterQuery(inputArray) {
+        // following this SO answer https://stackoverflow.com/a/47705476/1212166
+        const /** @type {?} */ set = (o = {}, a) => {
+            const /** @type {?} */ k = a.shift();
+            o[k] = a.length ? set(o[k], a) : null;
+            return o;
+        };
+        const /** @type {?} */ output = inputArray.reduce((o, a) => set(o, a.split('.')), {});
+        return JSON.stringify(output)
+            .replace(/\"|\:|null/g, '')
+            .replace(/^\{/, '')
+            .replace(/\}$/, '');
     }
     /**
      * @param {?=} serviceOptions
@@ -12614,12 +12365,6 @@ class GraphqlService {
      */
     initOptions(serviceOptions) {
         this.serviceOptions = serviceOptions || {};
-    }
-    /**
-     * @param {?} fieldName
-     * @return {?}
-     */
-    removeColumnFilter(fieldName) {
     }
     /**
      * @return {?}
@@ -12647,31 +12392,6 @@ class GraphqlService {
      */
     updateOptions(serviceOptions) {
         this.serviceOptions = Object.assign({}, this.serviceOptions, serviceOptions);
-    }
-    /**
-     * @param {?} fieldName
-     * @param {?} value
-     * @param {?=} terms
-     * @return {?}
-     */
-    saveColumnFilter(fieldName, value, terms) {
-    }
-    /**
-     * @param {?} event
-     * @param {?} args
-     * @return {?}
-     */
-    filterChanged(event, args) {
-        console.log(event, args);
-    }
-    /**
-     * @param {?} event
-     * @param {?} args
-     * @return {?}
-     */
-    sorterChanged(event, args) {
-        console.log(event, args);
-        return 'this is the query';
     }
     /**
      * @param {?} event
@@ -12711,7 +12431,6 @@ class GraphqlService {
                     const /** @type {?} */ lastValueChar = (!!matches) ? matches[3] : '';
                     // no need to query if search value is empty
                     if (fieldName && searchValue === '') {
-                        this.removeColumnFilter(fieldName);
                         continue;
                     }
                     // escaping the search value
@@ -12812,6 +12531,143 @@ class GraphqlService {
             const /** @type {?} */ rep = group1.replace(/"/g, '');
             return rep;
         });
+    }
+}
+
+class GridExtraService {
+    /**
+     * @param {?} grid
+     * @param {?} columnDefinition
+     * @param {?} gridOptions
+     * @param {?} dataView
+     * @return {?}
+     */
+    init(grid, columnDefinition, gridOptions, dataView) {
+        this._grid = grid;
+        this._columnDefinition = columnDefinition;
+        this._gridOptions = gridOptions;
+        this._dataView = dataView;
+    }
+    /**
+     * @param {?} rowNumber
+     * @return {?}
+     */
+    getDataItemByRowNumber(rowNumber) {
+        if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+            throw new Error('We could not find SlickGrid Grid object');
+        }
+        return this._grid.getDataItem(rowNumber);
+    }
+    /**
+     * Chain the item Metadata with our implementation of Metadata at given row index
+     * @param {?} previousItemMetadata
+     * @return {?}
+     */
+    getItemRowMetadata(previousItemMetadata) {
+        return (rowNumber) => {
+            const /** @type {?} */ item = this._dataView.getItem(rowNumber);
+            let /** @type {?} */ meta = {
+                cssClasses: ''
+            };
+            if (typeof previousItemMetadata === 'object' && !jquery.isEmptyObject(previousItemMetadata)) {
+                meta = previousItemMetadata(rowNumber);
+            }
+            if (item && item._dirty) {
+                meta.cssClasses = (meta.cssClasses || '') + ' dirty';
+            }
+            if (item && item.rowClass) {
+                meta.cssClasses += ` ${item.rowClass}`;
+                meta.cssClasses += ` row${rowNumber}`;
+            }
+            return meta;
+        };
+    }
+    /**
+     * Highlight then fade a row for x seconds.
+     * The implementation follows this SO answer: https://stackoverflow.com/a/19985148/1212166
+     * @param {?} rowNumber
+     * @param {?=} fadeDelay
+     * @return {?}
+     */
+    highlightRow(rowNumber, fadeDelay = 1500) {
+        // chain current item Metadata with our own Metadata for implementing highligh CSS styling
+        const /** @type {?} */ previousMetadata = this._dataView.getItemMetadata;
+        this._grid.setSelectedRows([rowNumber]);
+        this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
+        const /** @type {?} */ item = this._dataView.getItem(rowNumber);
+        item.rowClass = 'highlight';
+        this._dataView.updateItem(item.id, item);
+        const /** @type {?} */ gridOptions = (this._grid.getOptions());
+        // highlight the row for a user defined timeout
+        const /** @type {?} */ rowElm = jquery(`#${gridOptions.gridId}`)
+            .find(`.highlight.row${rowNumber}`)
+            .first();
+        // delete the row's CSS that was attached for highlighting
+        setTimeout(() => {
+            delete item.rowClass;
+            this._dataView.updateItem(item.id, item);
+        }, fadeDelay + 10);
+    }
+    /**
+     * @return {?}
+     */
+    getSelectedRows() {
+        return this._grid.getSelectedRows();
+    }
+    /**
+     * @param {?} rowIndex
+     * @return {?}
+     */
+    setSelectedRow(rowIndex) {
+        this._grid.setSelectedRows([rowIndex]);
+    }
+    /**
+     * @param {?} rowIndexes
+     * @return {?}
+     */
+    setSelectedRows(rowIndexes) {
+        this._grid.setSelectedRows(rowIndexes);
+    }
+    /**
+     * Add an item (data item) to the datagrid
+     * @param {?} item
+     * @return {?}
+     */
+    addItemToDatagrid(item) {
+        if (!this._grid || !this._gridOptions || !this._dataView) {
+            throw new Error('We could not find SlickGrid Grid, DataView objects');
+        }
+        if (!this._gridOptions || (!this._gridOptions.enableCheckboxSelector && !this._gridOptions.enableRowSelection)) {
+            throw new Error('addItemToDatagrid() requires to have a valid Slickgrid Selection Model. You can overcome this issue by enabling enableCheckboxSelector or enableRowSelection to True');
+        }
+        const /** @type {?} */ row = 0;
+        this._dataView.insertItem(row, item);
+        this._grid.scrollRowIntoView(0); // scroll to row 0
+        this.highlightRow(0, 1500);
+        // refresh dataview & grid
+        this._dataView.refresh();
+        // get new dataset length
+        const /** @type {?} */ datasetLength = this._dataView.getLength();
+    }
+    /**
+     * Update an existing item with new properties inside the datagrid
+     * @param {?} item
+     * @return {?}
+     */
+    updateDataGridItem(item) {
+        const /** @type {?} */ row = this._dataView.getRowById(item.id);
+        const /** @type {?} */ itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
+        if (itemId === -1) {
+            throw new Error(`Could not find the item in the item in the grid or it's associated "id"`);
+        }
+        // Update the item itself inside the dataView
+        this._dataView.updateItem(itemId, item);
+        // highlight the row we just updated
+        this.highlightRow(row, 1500);
+        // refresh dataview & grid
+        this._dataView.refresh();
+        // get new dataset length
+        const /** @type {?} */ datasetLength = this._dataView.getLength();
     }
 }
 
@@ -13337,19 +13193,23 @@ const DATAGRID_BOTTOM_PADDING = 20;
 const DATAGRID_PAGINATION_HEIGHT = 35;
 let timer$2;
 class ResizerService {
-    constructor() { }
     /**
-     * Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
-     * Options: we could also provide a % factor to resize on each height/width independently
      * @param {?} grid
      * @param {?} gridOptions
      * @return {?}
      */
-    attachAutoResizeDataGrid(grid, gridOptions) {
+    init(grid, gridOptions) {
         this._grid = grid;
         this._gridOptions = gridOptions;
+    }
+    /**
+     * Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
+     * Options: we could also provide a % factor to resize on each height/width independently
+     * @return {?}
+     */
+    attachAutoResizeDataGrid() {
         // if we can't find the grid to resize, return without attaching anything
-        const /** @type {?} */ gridDomElm = jquery(`#${gridOptions.gridId}`);
+        const /** @type {?} */ gridDomElm = jquery(`#${this._gridOptions && this._gridOptions.gridId ? this._gridOptions.gridId : 'grid1'}`);
         if (gridDomElm === undefined || gridDomElm.offset() === undefined) {
             return null;
         }
@@ -13445,133 +13305,254 @@ class ResizerService {
         }, delay);
     }
 }
-ResizerService.decorators = [
-    { type: Injectable },
-];
-/**
- * @nocollapse
- */
-ResizerService.ctorParameters = () => [];
 
-var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-class SortService {
-    constructor() {
-        this.onSortChanged = new EventEmitter();
-    }
+class ControlAndPluginService {
     /**
-     * Attach a backend sort (single/multi) hook to the grid
-     * @param {?} grid SlickGrid Grid object
-     * @param {?} gridOptions Grid Options object
-     * @return {?}
+     * @param {?} filterService
+     * @param {?} gridExtraService
      */
-    attachBackendOnSort(grid, gridOptions) {
-        this.subscriber = grid.onSort;
-        this.emitSortChangedBy('remote');
-        this.subscriber.subscribe(this.attachBackendOnSortSubscribe);
+    constructor(filterService, gridExtraService) {
+        this.filterService = filterService;
+        this.gridExtraService = gridExtraService;
     }
     /**
-     * @param {?} event
-     * @param {?} args
-     * @return {?}
-     */
-    attachBackendOnSortSubscribe(event, args) {
-        return __awaiter$1(this, void 0, void 0, function* () {
-            if (!args || !args.grid) {
-                throw new Error('Something went wrong when trying to attach the "attachBackendOnSortSubscribe(event, args)" function, it seems that "args" is not populated correctly');
-            }
-            const /** @type {?} */ serviceOptions = args.grid.getOptions();
-            if (!serviceOptions || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
-                throw new Error(`onBackendEventApi requires at least a "process" function and a "service" defined`);
-            }
-            if (serviceOptions.onBackendEventApi.preProcess) {
-                serviceOptions.onBackendEventApi.preProcess();
-            }
-            const /** @type {?} */ query = serviceOptions.onBackendEventApi.service.onSortChanged(event, args);
-            // the process could be an Observable (like HttpClient) or a Promise
-            // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-            const /** @type {?} */ observableOrPromise = serviceOptions.onBackendEventApi.process(query);
-            const /** @type {?} */ responseProcess = yield castToPromise(observableOrPromise);
-            // send the response process to the postProcess callback
-            if (serviceOptions.onBackendEventApi.postProcess) {
-                serviceOptions.onBackendEventApi.postProcess(responseProcess);
-            }
-        });
-    }
-    /**
-     * Attach a local sort (single/multi) hook to the grid
-     * @param {?} grid SlickGrid Grid object
-     * @param {?} gridOptions Grid Options object
+     * Attach/Create different Controls or Plugins after the Grid is created
+     * @param {?} grid
+     * @param {?} columnDefinitions
+     * @param {?} options
      * @param {?} dataView
      * @return {?}
      */
-    attachLocalOnSort(grid, gridOptions, dataView) {
-        this.subscriber = grid.onSort;
-        this.emitSortChangedBy('local');
-        this.subscriber.subscribe((e, args) => {
-            // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
-            // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
-            const /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
-            dataView.sort(function (dataRow1, dataRow2) {
-                for (let /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
-                    const /** @type {?} */ sortDirection = sortColumns[i].sortAsc ? 1 : -1;
-                    const /** @type {?} */ sortField = sortColumns[i].sortCol.field;
-                    const /** @type {?} */ fieldType = sortColumns[i].sortCol.type || 'string';
-                    const /** @type {?} */ value1 = dataRow1[sortField];
-                    const /** @type {?} */ value2 = dataRow2[sortField];
-                    let /** @type {?} */ result = 0;
-                    switch (fieldType) {
-                        case FieldType.number:
-                            result = Sorters.numeric(value1, value2, sortDirection);
-                            break;
-                        case FieldType.date:
-                            result = Sorters.date(value1, value2, sortDirection);
-                            break;
-                        case FieldType.dateIso:
-                            result = Sorters.dateIso(value1, value2, sortDirection);
-                            break;
-                        case FieldType.dateUs:
-                            result = Sorters.dateUs(value1, value2, sortDirection);
-                            break;
-                        case FieldType.dateUsShort:
-                            result = Sorters.dateUsShort(value1, value2, sortDirection);
-                            break;
-                        default:
-                            result = Sorters.string(value1, value2, sortDirection);
-                            break;
+    attachDifferentControlOrPlugins(grid, columnDefinitions, options, dataView) {
+        this._grid = grid;
+        this._dataView = dataView;
+        this._visibleColumns = columnDefinitions;
+        if (options.enableColumnPicker) {
+            this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
+        }
+        if (options.enableGridMenu) {
+            this.prepareGridMenu(grid, options);
+            this.gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
+            if (options.gridMenu) {
+                this.gridMenuControl.onBeforeMenuShow.subscribe((e, args) => {
+                    if (options.gridMenu && typeof options.gridMenu.onBeforeMenuShow === 'function') {
+                        options.gridMenu.onBeforeMenuShow(e, args);
                     }
-                    if (result !== 0) {
-                        return result;
+                });
+                this.gridMenuControl.onCommand.subscribe((e, args) => {
+                    if (options.gridMenu && typeof options.gridMenu.onCommand === 'function') {
+                        options.gridMenu.onCommand(e, args);
                     }
+                });
+                this.gridMenuControl.onMenuClose.subscribe((e, args) => {
+                    if (options.gridMenu && typeof options.gridMenu.onMenuClose === 'function') {
+                        options.gridMenu.onMenuClose(e, args);
+                    }
+                    // we also want to resize the columns if the user decided to hide certain column(s)
+                    this._grid.autosizeColumns();
+                });
+            }
+        }
+        if (options.enableAutoTooltip) {
+            this.autoTooltipPlugin = new Slick.AutoTooltips(options.autoTooltipOptions || {});
+            grid.registerPlugin(this.autoTooltipPlugin);
+        }
+        if (options.enableCheckboxSelector) {
+            // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
+            // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
+            grid.registerPlugin(this.checkboxSelectorPlugin);
+            // this also requires the Row Selection Model to be registered as well
+            if (!this.rowSelectionPlugin) {
+                this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
+                grid.setSelectionModel(this.rowSelectionPlugin);
+            }
+        }
+        if (options.enableRowSelection) {
+            this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
+            grid.setSelectionModel(this.rowSelectionPlugin);
+        }
+        if (options.enableHeaderButton) {
+            this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(options.headerButton || {});
+            grid.registerPlugin(this.headerButtonsPlugin);
+            this.headerButtonsPlugin.onCommand.subscribe((e, args) => {
+                if (options.headerButton && typeof options.headerButton.onCommand === 'function') {
+                    options.headerButton.onCommand(e, args);
                 }
-                return 0;
             });
-            grid.invalidate();
-            grid.render();
+        }
+        if (options.enableHeaderMenu) {
+            this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenu || {});
+            grid.registerPlugin(this.headerMenuPlugin);
+            this.headerMenuPlugin.onCommand.subscribe((e, args) => {
+                if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
+                    options.headerMenu.onCommand(e, args);
+                }
+            });
+            this.headerMenuPlugin.onCommand.subscribe((e, args) => {
+                if (options.headerMenu && typeof options.headerMenu.onBeforeMenuShow === 'function') {
+                    options.headerMenu.onBeforeMenuShow(e, args);
+                }
+            });
+        }
+        if (options.registerPlugins !== undefined) {
+            if (Array.isArray(options.registerPlugins)) {
+                options.registerPlugins.forEach((plugin) => {
+                    grid.registerPlugin(plugin);
+                });
+            }
+            else {
+                grid.registerPlugin(options.registerPlugins);
+            }
+        }
+    }
+    /**
+     * @param {?} column
+     * @return {?}
+     */
+    hideColumn(column) {
+        if (this._grid && this._visibleColumns) {
+            const /** @type {?} */ columnIndex = this._grid.getColumnIndex(column.id);
+            this._visibleColumns = this.removeColumnByIndex(this._visibleColumns, columnIndex);
+            this._grid.setColumns(this._visibleColumns);
+        }
+    }
+    /**
+     * @param {?} array
+     * @param {?} index
+     * @return {?}
+     */
+    removeColumnByIndex(array, index) {
+        return array.filter((el, i) => {
+            return index !== i;
         });
+    }
+    /**
+     * @return {?}
+     */
+    autoResizeColumns() {
+        this._grid.autosizeColumns();
     }
     /**
      * @return {?}
      */
     destroy() {
-        this.subscriber.unsubscribe();
+        this._grid = null;
+        this._dataView = null;
+        this._visibleColumns = [];
+        if (this.columnPickerControl) {
+            this.columnPickerControl.destroy();
+            this.columnPickerControl = null;
+        }
+        if (this.gridMenuControl) {
+            this.gridMenuControl.destroy();
+            this.gridMenuControl = null;
+        }
+        if (this.rowSelectionPlugin) {
+            this.rowSelectionPlugin.destroy();
+            this.rowSelectionPlugin = null;
+        }
+        if (this.checkboxSelectorPlugin) {
+            this.checkboxSelectorPlugin.destroy();
+            this.checkboxSelectorPlugin = null;
+        }
+        if (this.autoTooltipPlugin) {
+            this.autoTooltipPlugin.destroy();
+            this.autoTooltipPlugin = null;
+        }
+        if (this.headerButtonsPlugin) {
+            this.headerButtonsPlugin.destroy();
+            this.headerButtonsPlugin = null;
+        }
+        if (this.headerMenuPlugin) {
+            this.headerMenuPlugin.destroy();
+            this.headerMenuPlugin = null;
+        }
     }
     /**
-     * A simple function that is attached to the subscriber and emit a change when the sort is called.
-     * Other services, like Pagination, can then subscribe to it.
-     * @param {?} sender
+     * @param {?} grid
+     * @param {?} options
      * @return {?}
      */
-    emitSortChangedBy(sender) {
-        this.subscriber.subscribe(() => this.onSortChanged.emit(`onSortChanged by ${sender}`));
+    addGridMenuCustomCommands(grid, options) {
+        if (options.enableFiltering) {
+            if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'clear-filter').length === 0) {
+                options.gridMenu.customItems.push({
+                    iconCssClass: 'fa fa-filter text-danger',
+                    title: 'Clear All Filters',
+                    disabled: false,
+                    command: 'clear-filter'
+                });
+            }
+            if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'toggle-filter').length === 0) {
+                options.gridMenu.customItems.push({
+                    iconCssClass: 'fa fa-random',
+                    title: 'Toggle Filter Row',
+                    disabled: false,
+                    command: 'toggle-filter'
+                });
+            }
+            if (options.gridMenu) {
+                options.gridMenu.onCommand = (e, args) => {
+                    if (args.command === 'toggle-filter') {
+                        grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
+                    }
+                    else if (args.command === 'toggle-toppanel') {
+                        grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
+                    }
+                    else if (args.command === 'clear-filter') {
+                        this.filterService.clearFilters();
+                        this._dataView.refresh();
+                    }
+                    else {
+                        alert('Command: ' + args.command);
+                    }
+                };
+            }
+        }
+        // remove the custom command title if there's no command
+        if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
+            options.gridMenu.customTitle = options.gridMenu.customTitle || 'Commands';
+        }
+    }
+    /**
+     * @param {?} grid
+     * @param {?} options
+     * @return {?}
+     */
+    prepareGridMenu(grid, options) {
+        options.gridMenu = options.gridMenu || {};
+        options.gridMenu.columnTitle = options.gridMenu.columnTitle || 'Columns';
+        options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
+        options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
+        options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
+        options.gridMenu.customItems = options.gridMenu.customItems || [];
+        this.addGridMenuCustomCommands(grid, options);
+        // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
+    }
+    /**
+     * Attach/Create different plugins before the Grid creation.
+     * For example the multi-select have to be added to the column definition before the grid is created to work properly
+     * @param {?} columnDefinitions
+     * @param {?} options
+     * @return {?}
+     */
+    createPluginBeforeGridCreation(columnDefinitions, options) {
+        if (options.enableCheckboxSelector) {
+            this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
+            columnDefinitions.unshift(this.checkboxSelectorPlugin.getColumnDefinition());
+        }
     }
 }
+ControlAndPluginService.decorators = [
+    { type: Injectable },
+];
+/**
+ * @nocollapse
+ */
+ControlAndPluginService.ctorParameters = () => [
+    { type: FilterService, },
+    { type: GridExtraService, },
+];
 
 var __awaiter$2 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13797,6 +13778,7 @@ SlickPaginationComponent.decorators = [
         </div>
   `
             },] },
+    { type: Injectable },
 ];
 /**
  * @nocollapse
@@ -39063,20 +39045,20 @@ var __awaiter$3 = (this && this.__awaiter) || function (thisArg, _arguments, P, 
 };
 class AngularSlickgridComponent {
     /**
-     * @param {?} controlAndPluginService
-     * @param {?} gridEventService
-     * @param {?} gridExtraService
      * @param {?} filterService
-     * @param {?} resizer
      * @param {?} sortService
+     * @param {?} gridExtraService
+     * @param {?} gridEventService
+     * @param {?} resizer
+     * @param {?} controlAndPluginService
      */
-    constructor(controlAndPluginService, gridEventService, gridExtraService, filterService, resizer, sortService) {
-        this.controlAndPluginService = controlAndPluginService;
-        this.gridEventService = gridEventService;
-        this.gridExtraService = gridExtraService;
+    constructor(filterService, sortService, gridExtraService, gridEventService, resizer, controlAndPluginService) {
         this.filterService = filterService;
-        this.resizer = resizer;
         this.sortService = sortService;
+        this.gridExtraService = gridExtraService;
+        this.gridEventService = gridEventService;
+        this.resizer = resizer;
+        this.controlAndPluginService = controlAndPluginService;
         this.showPagination = false;
         this.dataviewChanged = new EventEmitter();
         this.gridChanged = new EventEmitter();
@@ -39192,11 +39174,15 @@ class AngularSlickgridComponent {
             this.grid.autosizeColumns();
         }
         // auto-resize grid on browser resize
+        this.resizer.init(grid, options);
         if (options.enableAutoResize) {
-            this.resizer.attachAutoResizeDataGrid(grid, options);
+            this.resizer.attachAutoResizeDataGrid();
             if (options.autoFitColumnsOnFirstLoad) {
                 grid.autosizeColumns();
             }
+        }
+        else {
+            this.resizer.resizeGrid(0, { height: this.gridHeight, width: this.gridWidth });
         }
     }
     /**
@@ -39273,12 +39259,12 @@ AngularSlickgridComponent.decorators = [
  * @nocollapse
  */
 AngularSlickgridComponent.ctorParameters = () => [
-    { type: ControlAndPluginService, },
-    { type: GridEventService, },
-    { type: GridExtraService, },
     { type: FilterService, },
-    { type: ResizerService, },
     { type: SortService, },
+    { type: GridExtraService, },
+    { type: GridEventService, },
+    { type: ResizerService, },
+    { type: ControlAndPluginService, },
 ];
 AngularSlickgridComponent.propDecorators = {
     'dataviewChanged': [{ type: Output },],
@@ -39327,5 +39313,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { CaseType, FieldType, FormElementType, KeyCode, OperatorType, SortDirection, Editors, FilterConditions, FilterTemplates, Formatters, Sorters, ControlAndPluginService, FilterService, GridEventService, GraphqlService, GridExtraService, GridExtraUtils, GridOdataService, ResizerService, SortService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, ControlAndPluginService as ɵb, FilterService as ɵe, GridEventService as ɵc, GridExtraService as ɵd, ResizerService as ɵf, SortService as ɵg, OdataService as ɵa };
+export { CaseType, FieldType, FormElementType, KeyCode, OperatorType, SortDirection, Editors, FilterConditions, FilterTemplates, Formatters, Sorters, FilterService, SortService, GridEventService, GraphqlService, GridExtraService, GridExtraUtils, GridOdataService, OdataService, ResizerService, ControlAndPluginService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, TextEditor as ɵf, booleanFilterCondition as ɵh, dateFilterCondition as ɵi, dateIsoFilterCondition as ɵj, dateUsFilterCondition as ɵl, dateUsShortFilterCondition as ɵm, dateUtcFilterCondition as ɵk, executeMappedCondition as ɵg, testFilterCondition as ɵp, numberFilterCondition as ɵn, stringFilterCondition as ɵo, inputFilterTemplate as ɵq, selectFilterTemplate as ɵr, arrayToCsvFormatter as ɵs, checkboxFormatter as ɵt, checkmarkFormatter as ɵu, complexObjectFormatter as ɵv, dateIsoFormatter as ɵw, dateTimeIsoAmPmFormatter as ɵx, dateTimeUsAmPmFormatter as ɵba, dateTimeUsFormatter as ɵz, dateUsFormatter as ɵy, deleteIconFormatter as ɵbb, editIconFormatter as ɵbc, hyperlinkFormatter as ɵbd, percentCompleteBarFormatter as ɵbf, percentCompleteFormatter as ɵbe, progressBarFormatter as ɵbg, yesNoFormatter as ɵbh, dateIsoSorter as ɵbj, dateSorter as ɵbi, dateUsShortSorter as ɵbl, dateUsSorter as ɵbk, numericSorter as ɵbm, stringSorter as ɵbn };
 //# sourceMappingURL=angular-slickgrid.js.map

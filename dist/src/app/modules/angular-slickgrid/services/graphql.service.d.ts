@@ -7,15 +7,10 @@ export declare class GraphqlService implements BackendService {
      * @param serviceOptions GraphqlServiceOption
      */
     buildQuery(serviceOptions?: GraphqlServiceOption): string;
-    buildPaginationQuery(serviceOptions?: GraphqlServiceOption): void;
-    buildSortingQuery(serviceOptions?: GraphqlServiceOption): void;
+    buildFilterQuery(inputArray: any): string;
     initOptions(serviceOptions?: GraphqlServiceOption): void;
-    removeColumnFilter(fieldName: string): void;
     resetPaginationOptions(): void;
     updateOptions(serviceOptions?: GraphqlServiceOption): void;
-    saveColumnFilter(fieldName: string, value: string, terms?: any[]): void;
-    filterChanged(event: any, args: any): void;
-    sorterChanged(event: any, args: any): string;
     onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string>;
     onPaginationChanged(event: Event, args: PaginationChangedArgs): string;
     onSortChanged(event: Event, args: SortChangedArgs): string;

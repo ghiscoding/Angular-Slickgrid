@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Injectable, Input, OnInit, Output, Pipe, PipeTransform } from '@angular/core';
 import { CaseType, Column, FormElementType, GridOption } from './../modules/angular-slickgrid/models';
 import { FieldType, Formatters } from './../modules/angular-slickgrid';
-import { GraphqlService } from './../modules/angular-slickgrid/services';
+import { GraphqlService } from './../modules/angular-slickgrid/services/graphql.service';
 import { HttpClient } from '@angular/common/http';
 
 const defaultPageSize = 20;

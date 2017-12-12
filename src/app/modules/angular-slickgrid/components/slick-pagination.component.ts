@@ -1,7 +1,7 @@
+import { Component, OnInit, Input, AfterViewInit, Injectable } from '@angular/core';
 import { castToPromise } from './../services/utilities';
 import { FilterService } from '../services/filter.service';
 import { SortService } from './../services/sort.service';
-import { Component, OnInit, Input, AfterViewInit, Injectable } from '@angular/core';
 import { Column, GridOption } from './../models';
 
 @Component({

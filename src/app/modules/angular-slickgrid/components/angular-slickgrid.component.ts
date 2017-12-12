@@ -23,7 +23,13 @@ import { AfterViewInit, Component, EventEmitter, Injectable, Input, Output, OnDe
 import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
 import { CellArgs, Column, FormElementType, GridOption } from './../models';
-import { ControlAndPluginService, FilterService, GridEventService, GridExtraService, SortService, ResizerService } from './../services';
+import { ControlAndPluginService } from './../services/controlAndPlugin.service';
+import { FilterService } from './../services/filter.service';
+import { GridEventService } from './../services/gridEvent.service';
+import { GridExtraService } from './../services/gridExtra.service';
+import { ResizerService } from './../services/resizer.service';
+import { SortService } from './../services/sort.service';
+
 import $ from 'jquery';
 
 // using external js modules in Angular

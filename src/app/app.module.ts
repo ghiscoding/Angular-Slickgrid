@@ -1,5 +1,6 @@
 import { GridSingleSelectionComponent } from './examples/grid-single-selection.component';
-import { GridOdataService, ResizerService } from './modules/angular-slickgrid/services';
+import { GridOdataService } from './modules/angular-slickgrid/services/grid-odata.service';
+import { ResizerService } from './modules/angular-slickgrid/services/resizer.service';
 import { AppRoutingRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';

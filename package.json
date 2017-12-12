@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -48,18 +48,18 @@
     "vinyl-paths": "^2.1.0"
   },
   "devDependencies": {
-    "@angular/core": "^5.0.0",
     "@angular/animations": "^5.0.0",
+    "@angular/cli": "1.5.4",
     "@angular/common": "^5.0.0",
     "@angular/compiler": "^5.0.0",
+    "@angular/compiler-cli": "^5.0.0",
+    "@angular/core": "^5.0.0",
     "@angular/forms": "^5.0.0",
     "@angular/http": "^5.0.0",
+    "@angular/language-service": "^5.0.0",
     "@angular/platform-browser": "^5.0.0",
     "@angular/platform-browser-dynamic": "^5.0.0",
     "@angular/router": "^5.0.0",
-    "@angular/cli": "1.5.4",
-    "@angular/compiler-cli": "^5.0.0",
-    "@angular/language-service": "^5.0.0",
     "@types/jasmine": "~2.6.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^8.0.39",
@@ -90,7 +90,7 @@
     "rxjs": "^5.4.2",
     "ts-node": "~3.3.0",
     "tslint": "^5.8.0",
-    "typescript": "~2.4.2",
+    "typescript": "^2.3.4",
     "yargs": "^9.0.1",
     "zone.js": "^0.8.17"
   }

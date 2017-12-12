@@ -120,17 +120,17 @@ KeyCode[KeyCode.RIGHT] = "RIGHT";
 KeyCode[KeyCode.TAB] = "TAB";
 KeyCode[KeyCode.UP] = "UP";
 var OperatorType = {};
-OperatorType.contains = ('Contains');
-OperatorType.lessThan = ('LT');
-OperatorType.lessThanOrEqual = ('LE');
-OperatorType.greaterThan = ('GT');
-OperatorType.greaterThanOrEqual = ('GE');
-OperatorType.notEqual = ('NE');
-OperatorType.equal = ('EQ');
-OperatorType.endsWith = ('EndsWith');
-OperatorType.startsWith = ('StartsWith');
-OperatorType.in = ('IN');
-OperatorType.notIn = ('NIN');
+OperatorType.contains = /** @type {?} */ ('Contains');
+OperatorType.lessThan = /** @type {?} */ ('LT');
+OperatorType.lessThanOrEqual = /** @type {?} */ ('LE');
+OperatorType.greaterThan = /** @type {?} */ ('GT');
+OperatorType.greaterThanOrEqual = /** @type {?} */ ('GE');
+OperatorType.notEqual = /** @type {?} */ ('NE');
+OperatorType.equal = /** @type {?} */ ('EQ');
+OperatorType.endsWith = /** @type {?} */ ('EndsWith');
+OperatorType.startsWith = /** @type {?} */ ('StartsWith');
+OperatorType.in = /** @type {?} */ ('IN');
+OperatorType.notIn = /** @type {?} */ ('NIN');
 OperatorType[OperatorType.contains] = "contains";
 OperatorType[OperatorType.lessThan] = "lessThan";
 OperatorType[OperatorType.lessThanOrEqual] = "lessThanOrEqual";
@@ -143,8 +143,8 @@ OperatorType[OperatorType.startsWith] = "startsWith";
 OperatorType[OperatorType.in] = "in";
 OperatorType[OperatorType.notIn] = "notIn";
 var SortDirection = {};
-SortDirection.ASC = ('ASC');
-SortDirection.DESC = ('DESC');
+SortDirection.ASC = /** @type {?} */ ('ASC');
+SortDirection.DESC = /** @type {?} */ ('DESC');
 SortDirection[SortDirection.ASC] = "ASC";
 SortDirection[SortDirection.DESC] = "DESC";
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -8103,7 +8103,7 @@ var jquery = createCommonjsModule(function (module) {
         return jQuery;
     });
 });
-var CheckboxEditor = (function () {
+var CheckboxEditor = /** @class */ (function () {
     /**
      * @param {?} args
      */
@@ -8948,7 +8948,7 @@ function parseUtcDate(inputDateString, useUtc) {
     return date;
 }
 var flatpickr = require('flatpickr');
-var DateEditor = (function () {
+var DateEditor = /** @class */ (function () {
     /**
      * @param {?} args
      */
@@ -8964,7 +8964,7 @@ var DateEditor = (function () {
         var /** @type {?} */ gridOptions = this.args.grid.getOptions();
         this.defaultDate = this.args.item[this.args.column.field] || null;
         var /** @type {?} */ inputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
-        var /** @type {?} */ outputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.outputType || 'Z');
+        var /** @type {?} */ outputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.outputType || FieldType.dateUtc);
         var /** @type {?} */ locale = (gridOptions && gridOptions.locale) ? gridOptions.locale : 'en';
         var /** @type {?} */ pickerOptions = {
             defaultDate: this.defaultDate,
@@ -9063,7 +9063,7 @@ var DateEditor = (function () {
     return DateEditor;
 }());
 var defaultDecimalPlaces = 0;
-var FloatEditor = (function () {
+var FloatEditor = /** @class */ (function () {
     /**
      * @param {?} args
      */
@@ -9174,7 +9174,7 @@ var FloatEditor = (function () {
     };
     return FloatEditor;
 }());
-var IntegerEditor = (function () {
+var IntegerEditor = /** @class */ (function () {
     /**
      * @param {?} args
      */
@@ -9261,7 +9261,7 @@ var IntegerEditor = (function () {
     };
     return IntegerEditor;
 }());
-var LongTextEditor = (function () {
+var LongTextEditor = /** @class */ (function () {
     /**
      * @param {?} args
      */
@@ -9397,7 +9397,7 @@ var LongTextEditor = (function () {
     };
     return LongTextEditor;
 }());
-var TextEditor = (function () {
+var TextEditor = /** @class */ (function () {
     /**
      * @param {?} args
      */
@@ -9658,7 +9658,14 @@ var arrayToCsvFormatter = function (row, cell, value, columnDef, dataContext) {
     return '';
 };
 var checkboxFormatter = function (row, cell, value, columnDef, dataContext) { return value ? '&#x2611;' : ''; };
-var checkmarkFormatter = function (row, cell, value, columnDef, dataContext) { return value ? "<i class=\"fa fa-check\" aria-hidden=\"true\"></i>" : ''; };
+var checkmarkFormatter = function (row, cell, value, columnDef, dataContext) { return value ? "<i class=\"fa fa-check checkmark-icon\" aria-hidden=\"true\"></i>" : ''; };
+var complexObjectFormatter = function (row, cell, value, columnDef, dataContext) {
+    if (!columnDef) {
+        return '';
+    }
+    var /** @type {?} */ complexField = columnDef.field || '';
+    return complexField.split('.').reduce(function (obj, i) { return obj[i]; }, dataContext);
+};
 var moment$6 = moment_min || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 var FORMAT$3 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
 var dateIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$6(value).format(FORMAT$3) : ''; };
@@ -9674,7 +9681,7 @@ var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { 
 var moment$10 = moment_min || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 var FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
 var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$10(value).format(FORMAT$7) : ''; };
-var deleteIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-times pointer\" aria-hidden=\"true\"></i>"; };
+var deleteIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-trash pointer delete-icon\" aria-hidden=\"true\"></i>"; };
 var hyperlinkFormatter = function (row, cell, value, columnDef, dataContext) {
     var /** @type {?} */ matchUrl = value.match(/^(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/, 'i');
     if (matchUrl && Array.isArray(matchUrl)) {
@@ -9682,7 +9689,7 @@ var hyperlinkFormatter = function (row, cell, value, columnDef, dataContext) {
     }
     return '';
 };
-var editIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-pencil pointer\" aria-hidden=\"true\"></i>"; };
+var editIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-pencil pointer edit-icon\" aria-hidden=\"true\"></i>"; };
 var percentCompleteFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {
         return '-';
@@ -9741,6 +9748,7 @@ var Formatters = {
     arrayToCsv: arrayToCsvFormatter,
     checkbox: checkboxFormatter,
     checkmark: checkmarkFormatter,
+    complexObject: complexObjectFormatter,
     dateIso: dateIsoFormatter,
     dateTimeIso: dateIsoFormatter,
     dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
@@ -9848,7 +9856,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var FilterService = (function () {
+var FilterService = /** @class */ (function () {
     function FilterService() {
         this._columnFilters = {};
         this.onFilterChanged = new core.EventEmitter();
@@ -9968,7 +9976,7 @@ var FilterService = (function () {
         var _this = this;
         this._dataView = dataView;
         this.subscriber = new Slick.Event();
-        this.emitFilterChangedBy('remote');
+        this.emitFilterChangedBy('local');
         dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
         dataView.setFilter(this.customFilter);
         this.subscriber.subscribe(function (e, args) {
@@ -10163,398 +10171,145 @@ var FilterService = (function () {
     };
     return FilterService;
 }());
-var GridExtraService = (function () {
-    function GridExtraService() {
+var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try {
+            step(generator.next(value));
+        }
+        catch (e) {
+            reject(e);
+        } }
+        function rejected(value) { try {
+            step(generator["throw"](value));
+        }
+        catch (e) {
+            reject(e);
+        } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var SortService = /** @class */ (function () {
+    function SortService() {
+        this.onSortChanged = new core.EventEmitter();
     }
     /**
-     * @param {?} grid
-     * @param {?} columnDefinition
-     * @param {?} gridOptions
+     * Attach a backend sort (single/multi) hook to the grid
+     * @param {?} grid SlickGrid Grid object
+     * @param {?} gridOptions Grid Options object
+     * @return {?}
+     */
+    SortService.prototype.attachBackendOnSort = function (grid, gridOptions) {
+        this.subscriber = grid.onSort;
+        this.emitSortChangedBy('remote');
+        this.subscriber.subscribe(this.attachBackendOnSortSubscribe);
+    };
+    /**
+     * @param {?} event
+     * @param {?} args
+     * @return {?}
+     */
+    SortService.prototype.attachBackendOnSortSubscribe = function (event, args) {
+        return __awaiter$1(this, void 0, void 0, function () {
+            var serviceOptions, query, observableOrPromise, responseProcess;
+            return __generator(this, function (_g) {
+                switch (_g.label) {
+                    case 0:
+                        if (!args || !args.grid) {
+                            throw new Error('Something went wrong when trying to attach the "attachBackendOnSortSubscribe(event, args)" function, it seems that "args" is not populated correctly');
+                        }
+                        serviceOptions = args.grid.getOptions();
+                        if (!serviceOptions || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
+                            throw new Error("onBackendEventApi requires at least a \"process\" function and a \"service\" defined");
+                        }
+                        if (serviceOptions.onBackendEventApi.preProcess) {
+                            serviceOptions.onBackendEventApi.preProcess();
+                        }
+                        query = serviceOptions.onBackendEventApi.service.onSortChanged(event, args);
+                        observableOrPromise = serviceOptions.onBackendEventApi.process(query);
+                        return [4 /*yield*/, castToPromise(observableOrPromise)];
+                    case 1:
+                        responseProcess = _g.sent();
+                        // send the response process to the postProcess callback
+                        if (serviceOptions.onBackendEventApi.postProcess) {
+                            serviceOptions.onBackendEventApi.postProcess(responseProcess);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    /**
+     * Attach a local sort (single/multi) hook to the grid
+     * @param {?} grid SlickGrid Grid object
+     * @param {?} gridOptions Grid Options object
      * @param {?} dataView
      * @return {?}
      */
-    GridExtraService.prototype.init = function (grid, columnDefinition, gridOptions, dataView) {
-        this._grid = grid;
-        this._columnDefinition = columnDefinition;
-        this._gridOptions = gridOptions;
-        this._dataView = dataView;
-    };
-    /**
-     * @param {?} rowNumber
-     * @return {?}
-     */
-    GridExtraService.prototype.getDataItemByRowNumber = function (rowNumber) {
-        if (!this._grid || typeof this._grid.getDataItem !== 'function') {
-            throw new Error('We could not find SlickGrid Grid object');
-        }
-        return this._grid.getDataItem(rowNumber);
-    };
-    /**
-     * Chain the item Metadata with our implementation of Metadata at given row index
-     * @param {?} previousItemMetadata
-     * @return {?}
-     */
-    GridExtraService.prototype.getItemRowMetadata = function (previousItemMetadata) {
-        var _this = this;
-        return function (rowNumber) {
-            var /** @type {?} */ item = _this._dataView.getItem(rowNumber);
-            var /** @type {?} */ meta = {
-                cssClasses: ''
-            };
-            if (typeof previousItemMetadata === 'object' && !jquery.isEmptyObject(previousItemMetadata)) {
-                meta = previousItemMetadata(rowNumber);
-            }
-            if (item && item._dirty) {
-                meta.cssClasses = (meta.cssClasses || '') + ' dirty';
-            }
-            if (item && item.rowClass) {
-                meta.cssClasses += " " + item.rowClass;
-                meta.cssClasses += " row" + rowNumber;
-            }
-            return meta;
-        };
-    };
-    /**
-     * Highlight then fade a row for x seconds.
-     * The implementation follows this SO answer: https://stackoverflow.com/a/19985148/1212166
-     * @param {?} rowNumber
-     * @param {?=} fadeDelay
-     * @return {?}
-     */
-    GridExtraService.prototype.highlightRow = function (rowNumber, fadeDelay) {
-        var _this = this;
-        if (fadeDelay === void 0) { fadeDelay = 1500; }
-        // chain current item Metadata with our own Metadata for implementing highligh CSS styling
-        var /** @type {?} */ previousMetadata = this._dataView.getItemMetadata;
-        this._grid.setSelectedRows([rowNumber]);
-        this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
-        var /** @type {?} */ item = this._dataView.getItem(rowNumber);
-        item.rowClass = 'highlight';
-        this._dataView.updateItem(item.id, item);
-        var /** @type {?} */ gridOptions = (this._grid.getOptions());
-        // highlight the row for a user defined timeout
-        var /** @type {?} */ rowElm = jquery("#" + gridOptions.gridId)
-            .find(".highlight.row" + rowNumber)
-            .first();
-        // delete the row's CSS that was attached for highlighting
-        setTimeout(function () {
-            delete item.rowClass;
-            _this._dataView.updateItem(item.id, item);
-        }, fadeDelay + 10);
-    };
-    /**
-     * @return {?}
-     */
-    GridExtraService.prototype.getSelectedRows = function () {
-        return this._grid.getSelectedRows();
-    };
-    /**
-     * @param {?} rowIndex
-     * @return {?}
-     */
-    GridExtraService.prototype.setSelectedRow = function (rowIndex) {
-        this._grid.setSelectedRows([rowIndex]);
-    };
-    /**
-     * @param {?} rowIndexes
-     * @return {?}
-     */
-    GridExtraService.prototype.setSelectedRows = function (rowIndexes) {
-        this._grid.setSelectedRows(rowIndexes);
-    };
-    /**
-     * Add an item (data item) to the datagrid
-     * @param {?} item
-     * @return {?}
-     */
-    GridExtraService.prototype.addItemToDatagrid = function (item) {
-        if (!this._grid || !this._gridOptions || !this._dataView) {
-            throw new Error('We could not find SlickGrid Grid, DataView objects');
-        }
-        if (!this._gridOptions || (!this._gridOptions.enableCheckboxSelector && !this._gridOptions.enableRowSelection)) {
-            throw new Error('addItemToDatagrid() requires to have a valid Slickgrid Selection Model. You can overcome this issue by enabling enableCheckboxSelector or enableRowSelection to True');
-        }
-        var /** @type {?} */ row = 0;
-        this._dataView.insertItem(row, item);
-        this.highlightRow(0, 1500);
-        // refresh dataview & grid
-        this._dataView.refresh();
-        // get new dataset length
-        var /** @type {?} */ datasetLength = this._dataView.getLength();
-    };
-    /**
-     * Update an existing item with new properties inside the datagrid
-     * @param {?} item
-     * @return {?}
-     */
-    GridExtraService.prototype.updateDataGridItem = function (item) {
-        var /** @type {?} */ row = this._dataView.getRowById(item.id);
-        var /** @type {?} */ itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
-        if (itemId === -1) {
-            throw new Error("Could not find the item in the item in the grid or it's associated \"id\"");
-        }
-        // Update the item itself inside the dataView
-        this._dataView.updateItem(itemId, item);
-        // highlight the row we just updated
-        this.highlightRow(row, 1500);
-        // refresh dataview & grid
-        this._dataView.refresh();
-        // get new dataset length
-        var /** @type {?} */ datasetLength = this._dataView.getLength();
-    };
-    return GridExtraService;
-}());
-var ControlAndPluginService = (function () {
-    /**
-     * @param {?} filterService
-     * @param {?} gridExtraService
-     */
-    function ControlAndPluginService(filterService, gridExtraService) {
-        this.filterService = filterService;
-        this.gridExtraService = gridExtraService;
-    }
-    /**
-     * Attach/Create different Controls or Plugins after the Grid is created
-     * @param {?} grid
-     * @param {?} columnDefinitions
-     * @param {?} options
-     * @param {?} dataView
-     * @return {?}
-     */
-    ControlAndPluginService.prototype.attachDifferentControlOrPlugins = function (grid, columnDefinitions, options, dataView) {
-        var _this = this;
-        this._grid = grid;
-        this._dataView = dataView;
-        this._visibleColumns = columnDefinitions;
-        if (options.enableColumnPicker) {
-            this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
-        }
-        if (options.enableGridMenu) {
-            this.prepareGridMenu(grid, options);
-            this.gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
-            if (options.gridMenu) {
-                this.gridMenuControl.onBeforeMenuShow.subscribe(function (e, args) {
-                    if (options.gridMenu && typeof options.gridMenu.onBeforeMenuShow === 'function') {
-                        options.gridMenu.onBeforeMenuShow(e, args);
+    SortService.prototype.attachLocalOnSort = function (grid, gridOptions, dataView) {
+        this.subscriber = grid.onSort;
+        this.emitSortChangedBy('local');
+        this.subscriber.subscribe(function (e, args) {
+            // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
+            // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
+            var /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
+            dataView.sort(function (dataRow1, dataRow2) {
+                for (var /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
+                    var /** @type {?} */ sortDirection = sortColumns[i].sortAsc ? 1 : -1;
+                    var /** @type {?} */ sortField = sortColumns[i].sortCol.field;
+                    var /** @type {?} */ fieldType = sortColumns[i].sortCol.type || 'string';
+                    var /** @type {?} */ value1 = dataRow1[sortField];
+                    var /** @type {?} */ value2 = dataRow2[sortField];
+                    var /** @type {?} */ result = 0;
+                    switch (fieldType) {
+                        case FieldType.number:
+                            result = Sorters.numeric(value1, value2, sortDirection);
+                            break;
+                        case FieldType.date:
+                            result = Sorters.date(value1, value2, sortDirection);
+                            break;
+                        case FieldType.dateIso:
+                            result = Sorters.dateIso(value1, value2, sortDirection);
+                            break;
+                        case FieldType.dateUs:
+                            result = Sorters.dateUs(value1, value2, sortDirection);
+                            break;
+                        case FieldType.dateUsShort:
+                            result = Sorters.dateUsShort(value1, value2, sortDirection);
+                            break;
+                        default:
+                            result = Sorters.string(value1, value2, sortDirection);
+                            break;
                     }
-                });
-                this.gridMenuControl.onCommand.subscribe(function (e, args) {
-                    if (options.gridMenu && typeof options.gridMenu.onCommand === 'function') {
-                        options.gridMenu.onCommand(e, args);
+                    if (result !== 0) {
+                        return result;
                     }
-                });
-                this.gridMenuControl.onMenuClose.subscribe(function (e, args) {
-                    if (options.gridMenu && typeof options.gridMenu.onMenuClose === 'function') {
-                        options.gridMenu.onMenuClose(e, args);
-                    }
-                    // we also want to resize the columns if the user decided to hide certain column(s)
-                    _this._grid.autosizeColumns();
-                });
-            }
-        }
-        if (options.enableAutoTooltip) {
-            this.autoTooltipPlugin = new Slick.AutoTooltips(options.autoTooltipOptions || {});
-            grid.registerPlugin(this.autoTooltipPlugin);
-        }
-        if (options.enableCheckboxSelector) {
-            // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
-            // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
-            grid.registerPlugin(this.checkboxSelectorPlugin);
-            // this also requires the Row Selection Model to be registered as well
-            if (!this.rowSelectionPlugin) {
-                this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-                grid.setSelectionModel(this.rowSelectionPlugin);
-            }
-        }
-        if (options.enableRowSelection) {
-            this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-            grid.setSelectionModel(this.rowSelectionPlugin);
-        }
-        if (options.enableHeaderButton) {
-            this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(options.headerButton || {});
-            grid.registerPlugin(this.headerButtonsPlugin);
-            this.headerButtonsPlugin.onCommand.subscribe(function (e, args) {
-                if (options.headerButton && typeof options.headerButton.onCommand === 'function') {
-                    options.headerButton.onCommand(e, args);
                 }
+                return 0;
             });
-        }
-        if (options.enableHeaderMenu) {
-            this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenu || {});
-            grid.registerPlugin(this.headerMenuPlugin);
-            this.headerMenuPlugin.onCommand.subscribe(function (e, args) {
-                if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
-                    options.headerMenu.onCommand(e, args);
-                }
-            });
-            this.headerMenuPlugin.onCommand.subscribe(function (e, args) {
-                if (options.headerMenu && typeof options.headerMenu.onBeforeMenuShow === 'function') {
-                    options.headerMenu.onBeforeMenuShow(e, args);
-                }
-            });
-        }
-        if (options.registerPlugins !== undefined) {
-            if (Array.isArray(options.registerPlugins)) {
-                options.registerPlugins.forEach(function (plugin) {
-                    grid.registerPlugin(plugin);
-                });
-            }
-            else {
-                grid.registerPlugin(options.registerPlugins);
-            }
-        }
-    };
-    /**
-     * @param {?} column
-     * @return {?}
-     */
-    ControlAndPluginService.prototype.hideColumn = function (column) {
-        if (this._grid && this._visibleColumns) {
-            var /** @type {?} */ columnIndex = this._grid.getColumnIndex(column.id);
-            this._visibleColumns = this.removeColumnByIndex(this._visibleColumns, columnIndex);
-            this._grid.setColumns(this._visibleColumns);
-        }
-    };
-    /**
-     * @param {?} array
-     * @param {?} index
-     * @return {?}
-     */
-    ControlAndPluginService.prototype.removeColumnByIndex = function (array, index) {
-        return array.filter(function (el, i) {
-            return index !== i;
+            grid.invalidate();
+            grid.render();
         });
     };
     /**
      * @return {?}
      */
-    ControlAndPluginService.prototype.autoResizeColumns = function () {
-        this._grid.autosizeColumns();
+    SortService.prototype.destroy = function () {
+        this.subscriber.unsubscribe();
     };
     /**
+     * A simple function that is attached to the subscriber and emit a change when the sort is called.
+     * Other services, like Pagination, can then subscribe to it.
+     * @param {?} sender
      * @return {?}
      */
-    ControlAndPluginService.prototype.destroy = function () {
-        this._grid = null;
-        this._dataView = null;
-        this._visibleColumns = [];
-        if (this.columnPickerControl) {
-            this.columnPickerControl.destroy();
-            this.columnPickerControl = null;
-        }
-        if (this.gridMenuControl) {
-            this.gridMenuControl.destroy();
-            this.gridMenuControl = null;
-        }
-        if (this.rowSelectionPlugin) {
-            this.rowSelectionPlugin.destroy();
-            this.rowSelectionPlugin = null;
-        }
-        if (this.checkboxSelectorPlugin) {
-            this.checkboxSelectorPlugin.destroy();
-            this.checkboxSelectorPlugin = null;
-        }
-        if (this.autoTooltipPlugin) {
-            this.autoTooltipPlugin.destroy();
-            this.autoTooltipPlugin = null;
-        }
-        if (this.headerButtonsPlugin) {
-            this.headerButtonsPlugin.destroy();
-            this.headerButtonsPlugin = null;
-        }
-        if (this.headerMenuPlugin) {
-            this.headerMenuPlugin.destroy();
-            this.headerMenuPlugin = null;
-        }
-    };
-    /**
-     * @param {?} grid
-     * @param {?} options
-     * @return {?}
-     */
-    ControlAndPluginService.prototype.addGridMenuCustomCommands = function (grid, options) {
+    SortService.prototype.emitSortChangedBy = function (sender) {
         var _this = this;
-        if (options.enableFiltering) {
-            if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
-                options.gridMenu.customItems.push({
-                    iconCssClass: 'fa fa-filter text-danger',
-                    title: 'Clear All Filters',
-                    disabled: false,
-                    command: 'clear-filter'
-                });
-            }
-            if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'toggle-filter'; }).length === 0) {
-                options.gridMenu.customItems.push({
-                    iconCssClass: 'fa fa-random',
-                    title: 'Toggle Filter Row',
-                    disabled: false,
-                    command: 'toggle-filter'
-                });
-            }
-            if (options.gridMenu) {
-                options.gridMenu.onCommand = function (e, args) {
-                    if (args.command === 'toggle-filter') {
-                        grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
-                    }
-                    else if (args.command === 'toggle-toppanel') {
-                        grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
-                    }
-                    else if (args.command === 'clear-filter') {
-                        _this.filterService.clearFilters();
-                        _this._dataView.refresh();
-                    }
-                    else {
-                        alert('Command: ' + args.command);
-                    }
-                };
-            }
-        }
-        // remove the custom command title if there's no command
-        if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
-            options.gridMenu.customTitle = options.gridMenu.customTitle || 'Commands';
-        }
+        this.subscriber.subscribe(function () { return _this.onSortChanged.emit("onSortChanged by " + sender); });
     };
-    /**
-     * @param {?} grid
-     * @param {?} options
-     * @return {?}
-     */
-    ControlAndPluginService.prototype.prepareGridMenu = function (grid, options) {
-        options.gridMenu = options.gridMenu || {};
-        options.gridMenu.columnTitle = options.gridMenu.columnTitle || 'Columns';
-        options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
-        options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
-        options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
-        options.gridMenu.customItems = options.gridMenu.customItems || [];
-        this.addGridMenuCustomCommands(grid, options);
-        // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
-    };
-    /**
-     * Attach/Create different plugins before the Grid creation.
-     * For example the multi-select have to be added to the column definition before the grid is created to work properly
-     * @param {?} columnDefinitions
-     * @param {?} options
-     * @return {?}
-     */
-    ControlAndPluginService.prototype.createPluginBeforeGridCreation = function (columnDefinitions, options) {
-        if (options.enableCheckboxSelector) {
-            this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
-            columnDefinitions.unshift(this.checkboxSelectorPlugin.getColumnDefinition());
-        }
-    };
-    return ControlAndPluginService;
+    return SortService;
 }());
-ControlAndPluginService.decorators = [
-    { type: core.Injectable },
-];
-/**
- * @nocollapse
- */
-ControlAndPluginService.ctorParameters = function () { return [
-    { type: FilterService, },
-    { type: GridExtraService, },
-]; };
-var GridEventService = (function () {
+var GridEventService = /** @class */ (function () {
     function GridEventService() {
     }
     /**
@@ -10633,7 +10388,7 @@ var GridEventService = (function () {
  * The previous lib can be viewed here at this Github
  * https://github.com/codemeasandwich/graphql-query-builder
  */
-var GraphqlQueryBuilder = (function () {
+var GraphqlQueryBuilder = /** @class */ (function () {
     /**
      * @param {?} queryFnName
      * @param {?=} aliasOrFilter
@@ -10782,7 +10537,7 @@ var GraphqlQueryBuilder = (function () {
     return GraphqlQueryBuilder;
 }());
 var timer;
-var GraphqlService = (function () {
+var GraphqlService = /** @class */ (function () {
     function GraphqlService() {
         this.serviceOptions = {};
         this.defaultOrderBy = { field: 'id', direction: SortDirection.ASC };
@@ -10800,15 +10555,16 @@ var GraphqlService = (function () {
         var /** @type {?} */ datasetQb = new GraphqlQueryBuilder(this.serviceOptions.datasetName);
         var /** @type {?} */ pageInfoQb = new GraphqlQueryBuilder('pageInfo');
         var /** @type {?} */ dataQb = (this.serviceOptions.isWithCursor) ? new GraphqlQueryBuilder('edges') : new GraphqlQueryBuilder('nodes');
+        var /** @type {?} */ filters = this.buildFilterQuery(this.serviceOptions.dataFilters);
         if (this.serviceOptions.isWithCursor) {
             // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
             pageInfoQb.find('hasNextPage', 'endCursor');
-            dataQb.find(['cursor', { 'node': this.serviceOptions.dataFilters }]);
+            dataQb.find(['cursor', { 'node': filters }]);
         }
         else {
             // ...pageInfo { hasNextPage }, nodes { _filters_ }
             pageInfoQb.find('hasNextPage');
-            dataQb.find(this.serviceOptions.dataFilters);
+            dataQb.find(filters);
         }
         datasetQb.find(['totalCount', pageInfoQb, dataQb]);
         // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
@@ -10828,16 +10584,22 @@ var GraphqlService = (function () {
         return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
     };
     /**
-     * @param {?=} serviceOptions
+     * @param {?} inputArray
      * @return {?}
      */
-    GraphqlService.prototype.buildPaginationQuery = function (serviceOptions) {
-    };
-    /**
-     * @param {?=} serviceOptions
-     * @return {?}
-     */
-    GraphqlService.prototype.buildSortingQuery = function (serviceOptions) {
+    GraphqlService.prototype.buildFilterQuery = function (inputArray) {
+        // following this SO answer https://stackoverflow.com/a/47705476/1212166
+        var /** @type {?} */ set = function (o, a) {
+            if (o === void 0) { o = {}; }
+            var /** @type {?} */ k = a.shift();
+            o[k] = a.length ? set(o[k], a) : null;
+            return o;
+        };
+        var /** @type {?} */ output = inputArray.reduce(function (o, a) { return set(o, a.split('.')); }, {});
+        return JSON.stringify(output)
+            .replace(/\"|\:|null/g, '')
+            .replace(/^\{/, '')
+            .replace(/\}$/, '');
     };
     /**
      * @param {?=} serviceOptions
@@ -10847,19 +10609,13 @@ var GraphqlService = (function () {
         this.serviceOptions = serviceOptions || {};
     };
     /**
-     * @param {?} fieldName
-     * @return {?}
-     */
-    GraphqlService.prototype.removeColumnFilter = function (fieldName) {
-    };
-    /**
      * @return {?}
      */
     GraphqlService.prototype.resetPaginationOptions = function () {
         var /** @type {?} */ paginationOptions;
         if (this.serviceOptions.isWithCursor) {
             // first, last, after, before
-            paginationOptions = ({
+            paginationOptions = /** @type {?} */ ({
                 after: '',
                 before: undefined,
                 last: undefined
@@ -10867,7 +10623,7 @@ var GraphqlService = (function () {
         }
         else {
             // first, last, offset
-            paginationOptions = (this.serviceOptions.paginationOptions);
+            paginationOptions = /** @type {?} */ (this.serviceOptions.paginationOptions);
             paginationOptions.offset = 0;
         }
         this.updateOptions({ paginationOptions: paginationOptions });
@@ -10878,31 +10634,6 @@ var GraphqlService = (function () {
      */
     GraphqlService.prototype.updateOptions = function (serviceOptions) {
         this.serviceOptions = Object.assign({}, this.serviceOptions, serviceOptions);
-    };
-    /**
-     * @param {?} fieldName
-     * @param {?} value
-     * @param {?=} terms
-     * @return {?}
-     */
-    GraphqlService.prototype.saveColumnFilter = function (fieldName, value, terms) {
-    };
-    /**
-     * @param {?} event
-     * @param {?} args
-     * @return {?}
-     */
-    GraphqlService.prototype.filterChanged = function (event, args) {
-        console.log(event, args);
-    };
-    /**
-     * @param {?} event
-     * @param {?} args
-     * @return {?}
-     */
-    GraphqlService.prototype.sorterChanged = function (event, args) {
-        console.log(event, args);
-        return 'this is the query';
     };
     /**
      * @param {?} event
@@ -10943,7 +10674,6 @@ var GraphqlService = (function () {
                     var /** @type {?} */ lastValueChar = (!!matches) ? matches[3] : '';
                     // no need to query if search value is empty
                     if (fieldName && searchValue === '') {
-                        _this.removeColumnFilter(fieldName);
                         continue;
                     }
                     // escaping the search value
@@ -11048,7 +10778,149 @@ var GraphqlService = (function () {
     };
     return GraphqlService;
 }());
-var GridExtraUtils = (function () {
+var GridExtraService = /** @class */ (function () {
+    function GridExtraService() {
+    }
+    /**
+     * @param {?} grid
+     * @param {?} columnDefinition
+     * @param {?} gridOptions
+     * @param {?} dataView
+     * @return {?}
+     */
+    GridExtraService.prototype.init = function (grid, columnDefinition, gridOptions, dataView) {
+        this._grid = grid;
+        this._columnDefinition = columnDefinition;
+        this._gridOptions = gridOptions;
+        this._dataView = dataView;
+    };
+    /**
+     * @param {?} rowNumber
+     * @return {?}
+     */
+    GridExtraService.prototype.getDataItemByRowNumber = function (rowNumber) {
+        if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+            throw new Error('We could not find SlickGrid Grid object');
+        }
+        return this._grid.getDataItem(rowNumber);
+    };
+    /**
+     * Chain the item Metadata with our implementation of Metadata at given row index
+     * @param {?} previousItemMetadata
+     * @return {?}
+     */
+    GridExtraService.prototype.getItemRowMetadata = function (previousItemMetadata) {
+        var _this = this;
+        return function (rowNumber) {
+            var /** @type {?} */ item = _this._dataView.getItem(rowNumber);
+            var /** @type {?} */ meta = {
+                cssClasses: ''
+            };
+            if (typeof previousItemMetadata === 'object' && !jquery.isEmptyObject(previousItemMetadata)) {
+                meta = previousItemMetadata(rowNumber);
+            }
+            if (item && item._dirty) {
+                meta.cssClasses = (meta.cssClasses || '') + ' dirty';
+            }
+            if (item && item.rowClass) {
+                meta.cssClasses += " " + item.rowClass;
+                meta.cssClasses += " row" + rowNumber;
+            }
+            return meta;
+        };
+    };
+    /**
+     * Highlight then fade a row for x seconds.
+     * The implementation follows this SO answer: https://stackoverflow.com/a/19985148/1212166
+     * @param {?} rowNumber
+     * @param {?=} fadeDelay
+     * @return {?}
+     */
+    GridExtraService.prototype.highlightRow = function (rowNumber, fadeDelay) {
+        var _this = this;
+        if (fadeDelay === void 0) { fadeDelay = 1500; }
+        // chain current item Metadata with our own Metadata for implementing highligh CSS styling
+        var /** @type {?} */ previousMetadata = this._dataView.getItemMetadata;
+        this._grid.setSelectedRows([rowNumber]);
+        this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
+        var /** @type {?} */ item = this._dataView.getItem(rowNumber);
+        item.rowClass = 'highlight';
+        this._dataView.updateItem(item.id, item);
+        var /** @type {?} */ gridOptions = (this._grid.getOptions());
+        // highlight the row for a user defined timeout
+        var /** @type {?} */ rowElm = jquery("#" + gridOptions.gridId)
+            .find(".highlight.row" + rowNumber)
+            .first();
+        // delete the row's CSS that was attached for highlighting
+        setTimeout(function () {
+            delete item.rowClass;
+            _this._dataView.updateItem(item.id, item);
+        }, fadeDelay + 10);
+    };
+    /**
+     * @return {?}
+     */
+    GridExtraService.prototype.getSelectedRows = function () {
+        return this._grid.getSelectedRows();
+    };
+    /**
+     * @param {?} rowIndex
+     * @return {?}
+     */
+    GridExtraService.prototype.setSelectedRow = function (rowIndex) {
+        this._grid.setSelectedRows([rowIndex]);
+    };
+    /**
+     * @param {?} rowIndexes
+     * @return {?}
+     */
+    GridExtraService.prototype.setSelectedRows = function (rowIndexes) {
+        this._grid.setSelectedRows(rowIndexes);
+    };
+    /**
+     * Add an item (data item) to the datagrid
+     * @param {?} item
+     * @return {?}
+     */
+    GridExtraService.prototype.addItemToDatagrid = function (item) {
+        if (!this._grid || !this._gridOptions || !this._dataView) {
+            throw new Error('We could not find SlickGrid Grid, DataView objects');
+        }
+        if (!this._gridOptions || (!this._gridOptions.enableCheckboxSelector && !this._gridOptions.enableRowSelection)) {
+            throw new Error('addItemToDatagrid() requires to have a valid Slickgrid Selection Model. You can overcome this issue by enabling enableCheckboxSelector or enableRowSelection to True');
+        }
+        var /** @type {?} */ row = 0;
+        this._dataView.insertItem(row, item);
+        this._grid.scrollRowIntoView(0); // scroll to row 0
+        this.highlightRow(0, 1500);
+        // refresh dataview & grid
+        this._dataView.refresh();
+        // get new dataset length
+        var /** @type {?} */ datasetLength = this._dataView.getLength();
+    };
+    /**
+     * Update an existing item with new properties inside the datagrid
+     * @param {?} item
+     * @return {?}
+     */
+    GridExtraService.prototype.updateDataGridItem = function (item) {
+        var /** @type {?} */ row = this._dataView.getRowById(item.id);
+        var /** @type {?} */ itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
+        if (itemId === -1) {
+            throw new Error("Could not find the item in the item in the grid or it's associated \"id\"");
+        }
+        // Update the item itself inside the dataView
+        this._dataView.updateItem(itemId, item);
+        // highlight the row we just updated
+        this.highlightRow(row, 1500);
+        // refresh dataview & grid
+        this._dataView.refresh();
+        // get new dataset length
+        var /** @type {?} */ datasetLength = this._dataView.getLength();
+    };
+    return GridExtraService;
+}());
+var GridExtraUtils = /** @class */ (function () {
     function GridExtraUtils() {
     }
     /**
@@ -11105,7 +10977,7 @@ String.allTitleCase = function (inputStr) {
 String.titleCase = function (inputStr) {
     return inputStr.charAt(0).toUpperCase() + inputStr.slice(1);
 };
-var OdataService = (function () {
+var OdataService = /** @class */ (function () {
     function OdataService() {
         this._odataOptions = {
             filterQueue: [],
@@ -11313,7 +11185,7 @@ var OdataService = (function () {
     return OdataService;
 }());
 var timer$1;
-var GridOdataService = (function () {
+var GridOdataService = /** @class */ (function () {
     /**
      * @param {?} odataService
      */
@@ -11582,22 +11454,27 @@ var DATAGRID_MIN_WIDTH = 300;
 var DATAGRID_BOTTOM_PADDING = 20;
 var DATAGRID_PAGINATION_HEIGHT = 35;
 var timer$2;
-var ResizerService = (function () {
+var ResizerService = /** @class */ (function () {
     function ResizerService() {
     }
     /**
-     * Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
-     * Options: we could also provide a % factor to resize on each height/width independently
      * @param {?} grid
      * @param {?} gridOptions
      * @return {?}
      */
-    ResizerService.prototype.attachAutoResizeDataGrid = function (grid, gridOptions) {
-        var _this = this;
+    ResizerService.prototype.init = function (grid, gridOptions) {
         this._grid = grid;
         this._gridOptions = gridOptions;
+    };
+    /**
+     * Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
+     * Options: we could also provide a % factor to resize on each height/width independently
+     * @return {?}
+     */
+    ResizerService.prototype.attachAutoResizeDataGrid = function () {
+        var _this = this;
         // if we can't find the grid to resize, return without attaching anything
-        var /** @type {?} */ gridDomElm = jquery("#" + gridOptions.gridId);
+        var /** @type {?} */ gridDomElm = jquery("#" + (this._gridOptions && this._gridOptions.gridId ? this._gridOptions.gridId : 'grid1'));
         if (gridDomElm === undefined || gridDomElm.offset() === undefined) {
             return null;
         }
@@ -11693,151 +11570,256 @@ var ResizerService = (function () {
     };
     return ResizerService;
 }());
-ResizerService.decorators = [
+var ControlAndPluginService = /** @class */ (function () {
+    /**
+     * @param {?} filterService
+     * @param {?} gridExtraService
+     */
+    function ControlAndPluginService(filterService, gridExtraService) {
+        this.filterService = filterService;
+        this.gridExtraService = gridExtraService;
+    }
+    /**
+     * Attach/Create different Controls or Plugins after the Grid is created
+     * @param {?} grid
+     * @param {?} columnDefinitions
+     * @param {?} options
+     * @param {?} dataView
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.attachDifferentControlOrPlugins = function (grid, columnDefinitions, options, dataView) {
+        var _this = this;
+        this._grid = grid;
+        this._dataView = dataView;
+        this._visibleColumns = columnDefinitions;
+        if (options.enableColumnPicker) {
+            this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
+        }
+        if (options.enableGridMenu) {
+            this.prepareGridMenu(grid, options);
+            this.gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
+            if (options.gridMenu) {
+                this.gridMenuControl.onBeforeMenuShow.subscribe(function (e, args) {
+                    if (options.gridMenu && typeof options.gridMenu.onBeforeMenuShow === 'function') {
+                        options.gridMenu.onBeforeMenuShow(e, args);
+                    }
+                });
+                this.gridMenuControl.onCommand.subscribe(function (e, args) {
+                    if (options.gridMenu && typeof options.gridMenu.onCommand === 'function') {
+                        options.gridMenu.onCommand(e, args);
+                    }
+                });
+                this.gridMenuControl.onMenuClose.subscribe(function (e, args) {
+                    if (options.gridMenu && typeof options.gridMenu.onMenuClose === 'function') {
+                        options.gridMenu.onMenuClose(e, args);
+                    }
+                    // we also want to resize the columns if the user decided to hide certain column(s)
+                    _this._grid.autosizeColumns();
+                });
+            }
+        }
+        if (options.enableAutoTooltip) {
+            this.autoTooltipPlugin = new Slick.AutoTooltips(options.autoTooltipOptions || {});
+            grid.registerPlugin(this.autoTooltipPlugin);
+        }
+        if (options.enableCheckboxSelector) {
+            // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
+            // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
+            grid.registerPlugin(this.checkboxSelectorPlugin);
+            // this also requires the Row Selection Model to be registered as well
+            if (!this.rowSelectionPlugin) {
+                this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
+                grid.setSelectionModel(this.rowSelectionPlugin);
+            }
+        }
+        if (options.enableRowSelection) {
+            this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
+            grid.setSelectionModel(this.rowSelectionPlugin);
+        }
+        if (options.enableHeaderButton) {
+            this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(options.headerButton || {});
+            grid.registerPlugin(this.headerButtonsPlugin);
+            this.headerButtonsPlugin.onCommand.subscribe(function (e, args) {
+                if (options.headerButton && typeof options.headerButton.onCommand === 'function') {
+                    options.headerButton.onCommand(e, args);
+                }
+            });
+        }
+        if (options.enableHeaderMenu) {
+            this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenu || {});
+            grid.registerPlugin(this.headerMenuPlugin);
+            this.headerMenuPlugin.onCommand.subscribe(function (e, args) {
+                if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
+                    options.headerMenu.onCommand(e, args);
+                }
+            });
+            this.headerMenuPlugin.onCommand.subscribe(function (e, args) {
+                if (options.headerMenu && typeof options.headerMenu.onBeforeMenuShow === 'function') {
+                    options.headerMenu.onBeforeMenuShow(e, args);
+                }
+            });
+        }
+        if (options.registerPlugins !== undefined) {
+            if (Array.isArray(options.registerPlugins)) {
+                options.registerPlugins.forEach(function (plugin) {
+                    grid.registerPlugin(plugin);
+                });
+            }
+            else {
+                grid.registerPlugin(options.registerPlugins);
+            }
+        }
+    };
+    /**
+     * @param {?} column
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.hideColumn = function (column) {
+        if (this._grid && this._visibleColumns) {
+            var /** @type {?} */ columnIndex = this._grid.getColumnIndex(column.id);
+            this._visibleColumns = this.removeColumnByIndex(this._visibleColumns, columnIndex);
+            this._grid.setColumns(this._visibleColumns);
+        }
+    };
+    /**
+     * @param {?} array
+     * @param {?} index
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.removeColumnByIndex = function (array, index) {
+        return array.filter(function (el, i) {
+            return index !== i;
+        });
+    };
+    /**
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.autoResizeColumns = function () {
+        this._grid.autosizeColumns();
+    };
+    /**
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.destroy = function () {
+        this._grid = null;
+        this._dataView = null;
+        this._visibleColumns = [];
+        if (this.columnPickerControl) {
+            this.columnPickerControl.destroy();
+            this.columnPickerControl = null;
+        }
+        if (this.gridMenuControl) {
+            this.gridMenuControl.destroy();
+            this.gridMenuControl = null;
+        }
+        if (this.rowSelectionPlugin) {
+            this.rowSelectionPlugin.destroy();
+            this.rowSelectionPlugin = null;
+        }
+        if (this.checkboxSelectorPlugin) {
+            this.checkboxSelectorPlugin.destroy();
+            this.checkboxSelectorPlugin = null;
+        }
+        if (this.autoTooltipPlugin) {
+            this.autoTooltipPlugin.destroy();
+            this.autoTooltipPlugin = null;
+        }
+        if (this.headerButtonsPlugin) {
+            this.headerButtonsPlugin.destroy();
+            this.headerButtonsPlugin = null;
+        }
+        if (this.headerMenuPlugin) {
+            this.headerMenuPlugin.destroy();
+            this.headerMenuPlugin = null;
+        }
+    };
+    /**
+     * @param {?} grid
+     * @param {?} options
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.addGridMenuCustomCommands = function (grid, options) {
+        var _this = this;
+        if (options.enableFiltering) {
+            if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
+                options.gridMenu.customItems.push({
+                    iconCssClass: 'fa fa-filter text-danger',
+                    title: 'Clear All Filters',
+                    disabled: false,
+                    command: 'clear-filter'
+                });
+            }
+            if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'toggle-filter'; }).length === 0) {
+                options.gridMenu.customItems.push({
+                    iconCssClass: 'fa fa-random',
+                    title: 'Toggle Filter Row',
+                    disabled: false,
+                    command: 'toggle-filter'
+                });
+            }
+            if (options.gridMenu) {
+                options.gridMenu.onCommand = function (e, args) {
+                    if (args.command === 'toggle-filter') {
+                        grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
+                    }
+                    else if (args.command === 'toggle-toppanel') {
+                        grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
+                    }
+                    else if (args.command === 'clear-filter') {
+                        _this.filterService.clearFilters();
+                        _this._dataView.refresh();
+                    }
+                    else {
+                        alert('Command: ' + args.command);
+                    }
+                };
+            }
+        }
+        // remove the custom command title if there's no command
+        if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
+            options.gridMenu.customTitle = options.gridMenu.customTitle || 'Commands';
+        }
+    };
+    /**
+     * @param {?} grid
+     * @param {?} options
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.prepareGridMenu = function (grid, options) {
+        options.gridMenu = options.gridMenu || {};
+        options.gridMenu.columnTitle = options.gridMenu.columnTitle || 'Columns';
+        options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
+        options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
+        options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
+        options.gridMenu.customItems = options.gridMenu.customItems || [];
+        this.addGridMenuCustomCommands(grid, options);
+        // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
+    };
+    /**
+     * Attach/Create different plugins before the Grid creation.
+     * For example the multi-select have to be added to the column definition before the grid is created to work properly
+     * @param {?} columnDefinitions
+     * @param {?} options
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.createPluginBeforeGridCreation = function (columnDefinitions, options) {
+        if (options.enableCheckboxSelector) {
+            this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
+            columnDefinitions.unshift(this.checkboxSelectorPlugin.getColumnDefinition());
+        }
+    };
+    return ControlAndPluginService;
+}());
+ControlAndPluginService.decorators = [
     { type: core.Injectable },
 ];
 /**
  * @nocollapse
  */
-ResizerService.ctorParameters = function () { return []; };
-var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try {
-            step(generator.next(value));
-        }
-        catch (e) {
-            reject(e);
-        } }
-        function rejected(value) { try {
-            step(generator["throw"](value));
-        }
-        catch (e) {
-            reject(e);
-        } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var SortService = (function () {
-    function SortService() {
-        this.onSortChanged = new core.EventEmitter();
-    }
-    /**
-     * Attach a backend sort (single/multi) hook to the grid
-     * @param {?} grid SlickGrid Grid object
-     * @param {?} gridOptions Grid Options object
-     * @return {?}
-     */
-    SortService.prototype.attachBackendOnSort = function (grid, gridOptions) {
-        this.subscriber = grid.onSort;
-        this.emitSortChangedBy('remote');
-        this.subscriber.subscribe(this.attachBackendOnSortSubscribe);
-    };
-    /**
-     * @param {?} event
-     * @param {?} args
-     * @return {?}
-     */
-    SortService.prototype.attachBackendOnSortSubscribe = function (event, args) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            var serviceOptions, query, observableOrPromise, responseProcess;
-            return __generator(this, function (_g) {
-                switch (_g.label) {
-                    case 0:
-                        if (!args || !args.grid) {
-                            throw new Error('Something went wrong when trying to attach the "attachBackendOnSortSubscribe(event, args)" function, it seems that "args" is not populated correctly');
-                        }
-                        serviceOptions = args.grid.getOptions();
-                        if (!serviceOptions || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
-                            throw new Error("onBackendEventApi requires at least a \"process\" function and a \"service\" defined");
-                        }
-                        if (serviceOptions.onBackendEventApi.preProcess) {
-                            serviceOptions.onBackendEventApi.preProcess();
-                        }
-                        query = serviceOptions.onBackendEventApi.service.onSortChanged(event, args);
-                        observableOrPromise = serviceOptions.onBackendEventApi.process(query);
-                        return [4 /*yield*/, castToPromise(observableOrPromise)];
-                    case 1:
-                        responseProcess = _g.sent();
-                        // send the response process to the postProcess callback
-                        if (serviceOptions.onBackendEventApi.postProcess) {
-                            serviceOptions.onBackendEventApi.postProcess(responseProcess);
-                        }
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    /**
-     * Attach a local sort (single/multi) hook to the grid
-     * @param {?} grid SlickGrid Grid object
-     * @param {?} gridOptions Grid Options object
-     * @param {?} dataView
-     * @return {?}
-     */
-    SortService.prototype.attachLocalOnSort = function (grid, gridOptions, dataView) {
-        this.subscriber = grid.onSort;
-        this.emitSortChangedBy('local');
-        this.subscriber.subscribe(function (e, args) {
-            // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
-            // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
-            var /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
-            dataView.sort(function (dataRow1, dataRow2) {
-                for (var /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
-                    var /** @type {?} */ sortDirection = sortColumns[i].sortAsc ? 1 : -1;
-                    var /** @type {?} */ sortField = sortColumns[i].sortCol.field;
-                    var /** @type {?} */ fieldType = sortColumns[i].sortCol.type || 'string';
-                    var /** @type {?} */ value1 = dataRow1[sortField];
-                    var /** @type {?} */ value2 = dataRow2[sortField];
-                    var /** @type {?} */ result = 0;
-                    switch (fieldType) {
-                        case FieldType.number:
-                            result = Sorters.numeric(value1, value2, sortDirection);
-                            break;
-                        case FieldType.date:
-                            result = Sorters.date(value1, value2, sortDirection);
-                            break;
-                        case FieldType.dateIso:
-                            result = Sorters.dateIso(value1, value2, sortDirection);
-                            break;
-                        case FieldType.dateUs:
-                            result = Sorters.dateUs(value1, value2, sortDirection);
-                            break;
-                        case FieldType.dateUsShort:
-                            result = Sorters.dateUsShort(value1, value2, sortDirection);
-                            break;
-                        default:
-                            result = Sorters.string(value1, value2, sortDirection);
-                            break;
-                    }
-                    if (result !== 0) {
-                        return result;
-                    }
-                }
-                return 0;
-            });
-            grid.invalidate();
-            grid.render();
-        });
-    };
-    /**
-     * @return {?}
-     */
-    SortService.prototype.destroy = function () {
-        this.subscriber.unsubscribe();
-    };
-    /**
-     * A simple function that is attached to the subscriber and emit a change when the sort is called.
-     * Other services, like Pagination, can then subscribe to it.
-     * @param {?} sender
-     * @return {?}
-     */
-    SortService.prototype.emitSortChangedBy = function (sender) {
-        var _this = this;
-        this.subscriber.subscribe(function () { return _this.onSortChanged.emit("onSortChanged by " + sender); });
-    };
-    return SortService;
-}());
+ControlAndPluginService.ctorParameters = function () { return [
+    { type: FilterService, },
+    { type: GridExtraService, },
+]; };
 var __awaiter$2 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try {
@@ -11856,7 +11838,7 @@ var __awaiter$2 = (this && this.__awaiter) || function (thisArg, _arguments, P, 
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var SlickPaginationComponent = (function () {
+var SlickPaginationComponent = /** @class */ (function () {
     /**
      * @param {?} filterService
      * @param {?} sortService
@@ -12040,6 +12022,7 @@ SlickPaginationComponent.decorators = [
                 selector: 'slick-pagination',
                 template: "\n    <div class=\"slick-pagination\">\n        <div class=\"slick-pagination-nav\">\n            <nav aria-label=\"Page navigation\">\n            <ul class=\"pagination\">\n                <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-first fa fa-angle-double-left\" aria-label=\"First\" (click)=\"changeToFirstPage($event)\">\n                </a>\n                </li>\n                <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-prev fa fa-angle-left\" aria-label=\"Previous\" (click)=\"changeToPreviousPage($event)\">\n                </a>\n                </li>\n            </ul>\n            </nav>\n\n            <div class=\"slick-page-number\">\n            page {{pageNumber}} of {{pageCount}}\n            </div>\n\n            <nav aria-label=\"Page navigation\">\n            <ul class=\"pagination\">\n                <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-next text-center fa fa-lg fa-angle-right\" aria-label=\"Next\" (click)=\"changeToNextPage($event)\">\n                </a>\n                </li>\n                <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-end fa fa-lg fa-angle-double-right\" aria-label=\"Last\" (click)=\"changeToLastPage($event)\">\n                </a>\n                </li>\n            </ul>\n            </nav>\n        </div>\n        <span class=\"slick-pagination-settings\">\n            <select id=\"items-per-page-label\" [value]=\"itemsPerPage\" (change)=\"onChangeItemPerPage($event)\">\n            <option value=\"{{pageSize}}\" *ngFor=\"let pageSize of paginationPageSizes;\">{{pageSize}}</option>\n            </select>\n            items per page,\n            <span class=\"slick-pagination-count\">\n            {{dataFrom}}-{{dataTo}} of {{totalItems}} items\n            </span>\n        </span>\n        </div>\n  "
             },] },
+    { type: core.Injectable },
 ];
 /**
  * @nocollapse
@@ -13763,13 +13746,13 @@ SlickPaginationComponent.propDecorators = {
             }
             var mod = d === "absolute" ? 1 : -1, scrollIsRootNode = this._isRootNode(this.scrollParent[0]);
             return {
-                top: (pos.top +
-                    this.offset.relative.top * mod +
-                    this.offset.parent.top * mod -
+                top: (pos.top + // The absolute mouse position
+                    this.offset.relative.top * mod + // Only for relative positioned nodes: Relative offset from element to offset parent
+                    this.offset.parent.top * mod - // The offsetParent's offset without borders (offset + border)
                     ((this.cssPosition === "fixed" ? -this.offset.scroll.top : (scrollIsRootNode ? 0 : this.offset.scroll.top)) * mod)),
-                left: (pos.left +
-                    this.offset.relative.left * mod +
-                    this.offset.parent.left * mod -
+                left: (pos.left + // The absolute mouse position
+                    this.offset.relative.left * mod + // Only for relative positioned nodes: Relative offset from element to offset parent
+                    this.offset.parent.left * mod - // The offsetParent's offset without borders (offset + border)
                     ((this.cssPosition === "fixed" ? -this.offset.scroll.left : (scrollIsRootNode ? 0 : this.offset.scroll.left)) * mod))
             };
         },
@@ -13829,15 +13812,15 @@ SlickPaginationComponent.propDecorators = {
                 }
             }
             return {
-                top: (pageY -
-                    this.offset.click.top -
-                    this.offset.relative.top -
-                    this.offset.parent.top +
+                top: (pageY - // The absolute mouse position
+                    this.offset.click.top - // Click offset (relative to the element)
+                    this.offset.relative.top - // Only for relative positioned nodes: Relative offset from element to offset parent
+                    this.offset.parent.top + // The offsetParent's offset without borders (offset + border)
                     (this.cssPosition === "fixed" ? -this.offset.scroll.top : (scrollIsRootNode ? 0 : this.offset.scroll.top))),
-                left: (pageX -
-                    this.offset.click.left -
-                    this.offset.relative.left -
-                    this.offset.parent.left +
+                left: (pageX - // The absolute mouse position
+                    this.offset.click.left - // Click offset (relative to the element)
+                    this.offset.relative.left - // Only for relative positioned nodes: Relative offset from element to offset parent
+                    this.offset.parent.left + // The offsetParent's offset without borders (offset + border)
                     (this.cssPosition === "fixed" ? -this.offset.scroll.left : (scrollIsRootNode ? 0 : this.offset.scroll.left)))
             };
         },
@@ -14409,18 +14392,18 @@ SlickPaginationComponent.propDecorators = {
                 case "fit":
                     return (l <= x1 && x2 <= r && t <= y1 && y2 <= b);
                 case "intersect":
-                    return (l < x1 + (draggable.helperProportions.width / 2) &&
-                        x2 - (draggable.helperProportions.width / 2) < r &&
-                        t < y1 + (draggable.helperProportions.height / 2) &&
+                    return (l < x1 + (draggable.helperProportions.width / 2) && // Right Half
+                        x2 - (draggable.helperProportions.width / 2) < r && // Left Half
+                        t < y1 + (draggable.helperProportions.height / 2) && // Bottom Half
                         y2 - (draggable.helperProportions.height / 2) < b); // Top Half
                 case "pointer":
                     return isOverAxis(event.pageY, t, droppable.proportions().height) && isOverAxis(event.pageX, l, droppable.proportions().width);
                 case "touch":
-                    return ((y1 >= t && y1 <= b) ||
-                        (y2 >= t && y2 <= b) ||
+                    return ((y1 >= t && y1 <= b) || // Top edge touching
+                        (y2 >= t && y2 <= b) || // Bottom edge touching
                         (y1 < t && y2 > b) // Surrounded vertically
-                    ) && ((x1 >= l && x1 <= r) ||
-                        (x2 >= l && x2 <= r) ||
+                    ) && ((x1 >= l && x1 <= r) || // Left edge touching
+                        (x2 >= l && x2 <= r) || // Right edge touching
                         (x1 < l && x2 > r) // Surrounded horizontally
                     );
                 default:
@@ -16079,9 +16062,9 @@ SlickPaginationComponent.propDecorators = {
                 return isOverElement;
             }
             else {
-                return (l < x1 + (this.helperProportions.width / 2) &&
-                    x2 - (this.helperProportions.width / 2) < r &&
-                    t < y1 + (this.helperProportions.height / 2) &&
+                return (l < x1 + (this.helperProportions.width / 2) && // Right Half
+                    x2 - (this.helperProportions.width / 2) < r && // Left Half
+                    t < y1 + (this.helperProportions.height / 2) && // Bottom Half
                     y2 - (this.helperProportions.height / 2) < b); // Top Half
             }
         },
@@ -16464,13 +16447,13 @@ SlickPaginationComponent.propDecorators = {
             }
             var mod = d === "absolute" ? 1 : -1, scroll = this.cssPosition === "absolute" && !(this.scrollParent[0] !== this.document[0] && $.contains(this.scrollParent[0], this.offsetParent[0])) ? this.offsetParent : this.scrollParent, scrollIsRootNode = (/(html|body)/i).test(scroll[0].tagName);
             return {
-                top: (pos.top +
-                    this.offset.relative.top * mod +
-                    this.offset.parent.top * mod -
+                top: (pos.top + // The absolute mouse position
+                    this.offset.relative.top * mod + // Only for relative positioned nodes: Relative offset from element to offset parent
+                    this.offset.parent.top * mod - // The offsetParent's offset without borders (offset + border)
                     ((this.cssPosition === "fixed" ? -this.scrollParent.scrollTop() : (scrollIsRootNode ? 0 : scroll.scrollTop())) * mod)),
-                left: (pos.left +
-                    this.offset.relative.left * mod +
-                    this.offset.parent.left * mod -
+                left: (pos.left + // The absolute mouse position
+                    this.offset.relative.left * mod + // Only for relative positioned nodes: Relative offset from element to offset parent
+                    this.offset.parent.left * mod - // The offsetParent's offset without borders (offset + border)
                     ((this.cssPosition === "fixed" ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft()) * mod))
             };
         },
@@ -16510,15 +16493,15 @@ SlickPaginationComponent.propDecorators = {
                 }
             }
             return {
-                top: (pageY -
-                    this.offset.click.top -
-                    this.offset.relative.top -
-                    this.offset.parent.top +
+                top: (pageY - // The absolute mouse position
+                    this.offset.click.top - // Click offset (relative to the element)
+                    this.offset.relative.top - // Only for relative positioned nodes: Relative offset from element to offset parent
+                    this.offset.parent.top + // The offsetParent's offset without borders (offset + border)
                     ((this.cssPosition === "fixed" ? -this.scrollParent.scrollTop() : (scrollIsRootNode ? 0 : scroll.scrollTop())))),
-                left: (pageX -
-                    this.offset.click.left -
-                    this.offset.relative.left -
-                    this.offset.parent.left +
+                left: (pageX - // The absolute mouse position
+                    this.offset.click.left - // Click offset (relative to the element)
+                    this.offset.relative.left - // Only for relative positioned nodes: Relative offset from element to offset parent
+                    this.offset.parent.left + // The offsetParent's offset without borders (offset + border)
                     ((this.cssPosition === "fixed" ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft())))
             };
         },
@@ -18716,7 +18699,7 @@ SlickPaginationComponent.propDecorators = {
                 selectedDay: 0, selectedMonth: 0, selectedYear: 0,
                 drawMonth: 0, drawYear: 0,
                 inline: inline,
-                dpDiv: (!inline ? this.dpDiv :
+                dpDiv: (!inline ? this.dpDiv : // presentation div
                     datepicker_bindHover($("<div class='" + this._inlineClass + " ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all'></div>"))) };
         },
         /* Attach the date picker to an input field. */
@@ -18855,7 +18838,7 @@ SlickPaginationComponent.propDecorators = {
                 browserHeight = document.documentElement.clientHeight;
                 scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
                 scrollY = document.documentElement.scrollTop || document.body.scrollTop;
-                this._pos =
+                this._pos = // should use actual width/height below
                     [(browserWidth / 2) - 100 + scrollX, (browserHeight / 2) - 150 + scrollY];
             }
             // move input on screen for focus, but hidden behind dialog
@@ -20050,7 +20033,7 @@ SlickPaginationComponent.propDecorators = {
                     calender += "<div class='ui-datepicker-header ui-widget-header ui-helper-clearfix" + cornerClass + "'>" +
                         (/all|left/.test(cornerClass) && row === 0 ? (isRTL ? next : prev) : "") +
                         (/all|right/.test(cornerClass) && row === 0 ? (isRTL ? prev : next) : "") +
-                        this._generateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, row > 0 || col > 0, monthNames, monthNamesShort) +
+                        this._generateMonthYearHeader(inst, drawMonth, drawYear, minDate, maxDate, row > 0 || col > 0, monthNames, monthNamesShort) + // draw month headers
                         "</div><table class='ui-datepicker-calendar'><thead>" +
                         "<tr>";
                     thead = (showWeek ? "<th class='ui-datepicker-week-col'>" + this._get(inst, "weekHeader") + "</th>" : "");
@@ -20080,23 +20063,23 @@ SlickPaginationComponent.propDecorators = {
                             unselectable = (otherMonth && !selectOtherMonths) || !daySettings[0] ||
                                 (minDate && printDate < minDate) || (maxDate && printDate > maxDate);
                             tbody += "<td class='" +
-                                ((dow + firstDay + 6) % 7 >= 5 ? " ui-datepicker-week-end" : "") +
-                                (otherMonth ? " ui-datepicker-other-month" : "") +
-                                ((printDate.getTime() === selectedDate.getTime() && drawMonth === inst.selectedMonth && inst._keyEvent) ||
+                                ((dow + firstDay + 6) % 7 >= 5 ? " ui-datepicker-week-end" : "") + // highlight weekends
+                                (otherMonth ? " ui-datepicker-other-month" : "") + // highlight days from other months
+                                ((printDate.getTime() === selectedDate.getTime() && drawMonth === inst.selectedMonth && inst._keyEvent) || // user pressed key
                                     (defaultDate.getTime() === printDate.getTime() && defaultDate.getTime() === selectedDate.getTime()) ?
                                     // or defaultDate is current printedDate and defaultDate is selectedDate
-                                    " " + this._dayOverClass : "") +
-                                (unselectable ? " " + this._unselectableClass + " ui-state-disabled" : "") +
-                                (otherMonth && !showOtherMonths ? "" : " " + daySettings[1] +
-                                    (printDate.getTime() === currentDate.getTime() ? " " + this._currentClass : "") +
-                                    (printDate.getTime() === today.getTime() ? " ui-datepicker-today" : "")) + "'" +
-                                ((!otherMonth || showOtherMonths) && daySettings[2] ? " title='" + daySettings[2].replace(/'/g, "&#39;") + "'" : "") +
-                                (unselectable ? "" : " data-handler='selectDay' data-event='click' data-month='" + printDate.getMonth() + "' data-year='" + printDate.getFullYear() + "'") + ">" +
-                                (otherMonth && !showOtherMonths ? "&#xa0;" :
+                                    " " + this._dayOverClass : "") + // highlight selected day
+                                (unselectable ? " " + this._unselectableClass + " ui-state-disabled" : "") + // highlight unselectable days
+                                (otherMonth && !showOtherMonths ? "" : " " + daySettings[1] + // highlight custom dates
+                                    (printDate.getTime() === currentDate.getTime() ? " " + this._currentClass : "") + // highlight selected day
+                                    (printDate.getTime() === today.getTime() ? " ui-datepicker-today" : "")) + "'" + // highlight today (if different)
+                                ((!otherMonth || showOtherMonths) && daySettings[2] ? " title='" + daySettings[2].replace(/'/g, "&#39;") + "'" : "") + // cell title
+                                (unselectable ? "" : " data-handler='selectDay' data-event='click' data-month='" + printDate.getMonth() + "' data-year='" + printDate.getFullYear() + "'") + ">" + // actions
+                                (otherMonth && !showOtherMonths ? "&#xa0;" : // display for other months
                                     (unselectable ? "<span class='ui-state-default'>" + printDate.getDate() + "</span>" : "<a class='ui-state-default" +
                                         (printDate.getTime() === today.getTime() ? " ui-state-highlight" : "") +
-                                        (printDate.getTime() === currentDate.getTime() ? " ui-state-active" : "") +
-                                        (otherMonth ? " ui-priority-secondary" : "") +
+                                        (printDate.getTime() === currentDate.getTime() ? " ui-state-active" : "") + // highlight selected day
+                                        (otherMonth ? " ui-priority-secondary" : "") + // distinguish dates from other months
                                         "' href='#'>" + printDate.getDate() + "</a>")) + "</td>"; // display selectable date
                             printDate.setDate(printDate.getDate() + 1);
                             printDate = this._daylightSavingAdjust(printDate);
@@ -33262,22 +33245,22 @@ var __awaiter$3 = (this && this.__awaiter) || function (thisArg, _arguments, P, 
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var AngularSlickgridComponent = (function () {
+var AngularSlickgridComponent = /** @class */ (function () {
     /**
-     * @param {?} controlAndPluginService
-     * @param {?} gridEventService
-     * @param {?} gridExtraService
      * @param {?} filterService
-     * @param {?} resizer
      * @param {?} sortService
+     * @param {?} gridExtraService
+     * @param {?} gridEventService
+     * @param {?} resizer
+     * @param {?} controlAndPluginService
      */
-    function AngularSlickgridComponent(controlAndPluginService, gridEventService, gridExtraService, filterService, resizer, sortService) {
-        this.controlAndPluginService = controlAndPluginService;
-        this.gridEventService = gridEventService;
-        this.gridExtraService = gridExtraService;
+    function AngularSlickgridComponent(filterService, sortService, gridExtraService, gridEventService, resizer, controlAndPluginService) {
         this.filterService = filterService;
-        this.resizer = resizer;
         this.sortService = sortService;
+        this.gridExtraService = gridExtraService;
+        this.gridEventService = gridEventService;
+        this.resizer = resizer;
+        this.controlAndPluginService = controlAndPluginService;
         this.showPagination = false;
         this.dataviewChanged = new core.EventEmitter();
         this.gridChanged = new core.EventEmitter();
@@ -33405,11 +33388,15 @@ var AngularSlickgridComponent = (function () {
             this.grid.autosizeColumns();
         }
         // auto-resize grid on browser resize
+        this.resizer.init(grid, options);
         if (options.enableAutoResize) {
-            this.resizer.attachAutoResizeDataGrid(grid, options);
+            this.resizer.attachAutoResizeDataGrid();
             if (options.autoFitColumnsOnFirstLoad) {
                 grid.autosizeColumns();
             }
+        }
+        else {
+            this.resizer.resizeGrid(0, { height: this.gridHeight, width: this.gridWidth });
         }
     };
     /**
@@ -33477,12 +33464,12 @@ AngularSlickgridComponent.decorators = [
  * @nocollapse
  */
 AngularSlickgridComponent.ctorParameters = function () { return [
-    { type: ControlAndPluginService, },
-    { type: GridEventService, },
-    { type: GridExtraService, },
     { type: FilterService, },
-    { type: ResizerService, },
     { type: SortService, },
+    { type: GridExtraService, },
+    { type: GridEventService, },
+    { type: ResizerService, },
+    { type: ControlAndPluginService, },
 ]; };
 AngularSlickgridComponent.propDecorators = {
     'dataviewChanged': [{ type: core.Output },],
@@ -33494,7 +33481,7 @@ AngularSlickgridComponent.propDecorators = {
     'gridWidth': [{ type: core.Input },],
     'dataset': [{ type: core.Input },],
 };
-var AngularSlickgridModule = (function () {
+var AngularSlickgridModule = /** @class */ (function () {
     function AngularSlickgridModule() {
     }
     return AngularSlickgridModule;
@@ -33540,25 +33527,59 @@ exports.FilterConditions = FilterConditions;
 exports.FilterTemplates = FilterTemplates;
 exports.Formatters = Formatters;
 exports.Sorters = Sorters;
-exports.ControlAndPluginService = ControlAndPluginService;
 exports.FilterService = FilterService;
+exports.SortService = SortService;
 exports.GridEventService = GridEventService;
 exports.GraphqlService = GraphqlService;
 exports.GridExtraService = GridExtraService;
 exports.GridExtraUtils = GridExtraUtils;
 exports.GridOdataService = GridOdataService;
+exports.OdataService = OdataService;
 exports.ResizerService = ResizerService;
-exports.SortService = SortService;
+exports.ControlAndPluginService = ControlAndPluginService;
 exports.SlickPaginationComponent = SlickPaginationComponent;
 exports.AngularSlickgridComponent = AngularSlickgridComponent;
 exports.AngularSlickgridModule = AngularSlickgridModule;
-exports.ɵb = ControlAndPluginService;
-exports.ɵe = FilterService;
-exports.ɵc = GridEventService;
-exports.ɵd = GridExtraService;
-exports.ɵf = ResizerService;
-exports.ɵg = SortService;
-exports.ɵa = OdataService;
+exports.ɵa = CheckboxEditor;
+exports.ɵb = DateEditor;
+exports.ɵc = FloatEditor;
+exports.ɵd = IntegerEditor;
+exports.ɵe = LongTextEditor;
+exports.ɵf = TextEditor;
+exports.ɵh = booleanFilterCondition;
+exports.ɵi = dateFilterCondition;
+exports.ɵj = dateIsoFilterCondition;
+exports.ɵl = dateUsFilterCondition;
+exports.ɵm = dateUsShortFilterCondition;
+exports.ɵk = dateUtcFilterCondition;
+exports.ɵg = executeMappedCondition;
+exports.ɵp = testFilterCondition;
+exports.ɵn = numberFilterCondition;
+exports.ɵo = stringFilterCondition;
+exports.ɵq = inputFilterTemplate;
+exports.ɵr = selectFilterTemplate;
+exports.ɵs = arrayToCsvFormatter;
+exports.ɵt = checkboxFormatter;
+exports.ɵu = checkmarkFormatter;
+exports.ɵv = complexObjectFormatter;
+exports.ɵw = dateIsoFormatter;
+exports.ɵx = dateTimeIsoAmPmFormatter;
+exports.ɵba = dateTimeUsAmPmFormatter;
+exports.ɵz = dateTimeUsFormatter;
+exports.ɵy = dateUsFormatter;
+exports.ɵbb = deleteIconFormatter;
+exports.ɵbc = editIconFormatter;
+exports.ɵbd = hyperlinkFormatter;
+exports.ɵbf = percentCompleteBarFormatter;
+exports.ɵbe = percentCompleteFormatter;
+exports.ɵbg = progressBarFormatter;
+exports.ɵbh = yesNoFormatter;
+exports.ɵbj = dateIsoSorter;
+exports.ɵbi = dateSorter;
+exports.ɵbl = dateUsShortSorter;
+exports.ɵbk = dateUsSorter;
+exports.ɵbm = numericSorter;
+exports.ɵbn = stringSorter;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

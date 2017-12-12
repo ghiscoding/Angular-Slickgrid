@@ -1,6 +1,6 @@
+import { OnInit, AfterViewInit } from '@angular/core';
 import { FilterService } from '../services/filter.service';
 import { SortService } from './../services/sort.service';
-import { OnInit, AfterViewInit } from '@angular/core';
 import { GridOption } from './../models';
 export declare class SlickPaginationComponent implements AfterViewInit, OnInit {
     private filterService;

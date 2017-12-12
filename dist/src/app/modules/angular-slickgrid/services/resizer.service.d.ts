@@ -2,11 +2,11 @@ import { GridOption } from './../models';
 export declare class ResizerService {
     private _grid;
     private _gridOptions;
-    constructor();
+    init(grid: any, gridOptions: GridOption): void;
     /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
      * Options: we could also provide a % factor to resize on each height/width independently
      */
-    attachAutoResizeDataGrid(grid: any, gridOptions: GridOption): any;
+    attachAutoResizeDataGrid(): any;
     /**
      * Calculate the datagrid new height/width from the available space, also consider that a % factor might be applied to calculation
      * object gridOptions

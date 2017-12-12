@@ -37,6 +37,7 @@ export interface Column {
     onCellChange?: (args: OnEventArgs) => void;
     onCellClick?: (args: OnEventArgs) => void;
     outputType?: FieldType;
+    params?: any;
     previousWidth?: number;
     resizable?: boolean;
     rerenderOnResize?: boolean;
