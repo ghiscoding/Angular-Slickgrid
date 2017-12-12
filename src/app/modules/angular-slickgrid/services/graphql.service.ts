@@ -68,19 +68,19 @@ export class GraphqlService implements BackendService {
   }
 
   buildFilterQuery(inputArray) {
-    const q = {};
+    // following this SO answer https://stackoverflow.com/a/47705476/1212166
+    const set = (o = {}, a) => {
+      const k = a.shift();
+      o[k] = a.length ? set(o[k], a) : null;
+      return o;
+    };
 
-    inputArray.map((arg) => {
-        const [ o, a ] = arg.split('.');
-        q[o] = q[o] || [];
-        if (a) {
-          q[o] = q[o].concat(a);
-        }
-    });
+    const output = inputArray.reduce((o, a) => set(o, a.split('.')), {});
 
-    return Object.keys(q).map((k) => {
-        return q[k].length ? `${k} \{ ${q[k].join(', ')} \}` : k;
-    }).join(', ');
+    return JSON.stringify(output)
+      .replace(/\"|\:|null/g, '')
+      .replace(/^\{/, '')
+      .replace(/\}$/, '');
   }
 
   initOptions(serviceOptions?: GraphqlServiceOption): void {
