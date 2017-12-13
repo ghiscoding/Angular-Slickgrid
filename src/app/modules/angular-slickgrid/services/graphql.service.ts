@@ -55,7 +55,7 @@ export class GraphqlService implements BackendService {
       datasetFilters.orderBy = this.serviceOptions.sortingOptions;
     }
     if (this.serviceOptions.filteringOptions) {
-      // filterBy: [{ fieldName: date, fieldOperator: '>', fieldValue: '2000-10-10' }]
+      // filterBy: [{ field: date, operator: '>', value: '2000-10-10' }]
       datasetFilters.filterBy = this.serviceOptions.filteringOptions;
     }
 
@@ -67,8 +67,19 @@ export class GraphqlService implements BackendService {
     return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
   }
 
+  /**
+   * From an input array of strings, we want to build a GraphQL query string.
+   * The process has to take the dot notation and parse it into a valid GraphQL query
+   * Following this SO answer https://stackoverflow.com/a/47705476/1212166
+   *
+   * INPUT
+   *  ['firstName', 'lastName', 'billing.address.street', 'billing.address.zip']
+   * OUTPUT
+   * firstName, lastName, shipping{address{street, zip}}
+   * @param inputArray
+   */
   buildFilterQuery(inputArray) {
-    // following this SO answer https://stackoverflow.com/a/47705476/1212166
+
     const set = (o = {}, a) => {
       const k = a.shift();
       o[k] = a.length ? set(o[k], a) : null;
@@ -242,7 +253,7 @@ export class GraphqlService implements BackendService {
     const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
 
     // build the orderBy array, it could be multisort, example
-    // orderBy:[{sort: lastName, direction: ASC}, {sort: firstName, direction: DESC}]
+    // orderBy:[{field: lastName, direction: ASC}, {field: firstName, direction: DESC}]
     if (sortColumns && sortColumns.length === 0) {
       sortByArray = new Array(this.defaultOrderBy); // when empty, use the default sort
     } else {
@@ -266,27 +277,34 @@ export class GraphqlService implements BackendService {
 
   /**
    * A function which takes an input string and removes double quotes only
-   * on certain fields are identified as GraphQL enums
+   * on certain fields are identified as GraphQL enums (except fields with dot notation)
    * For example let say we identified ("direction:", "sort") as word which are GraphQL enum fields
    * then the result will be:
    * FROM
-   * query { users (orderBy:[{sort:"firstName", direction:"ASC"} }
+   * query { users (orderBy:[{field:"firstName", direction:"ASC"} }]) }
    * TO
-   * query { users (orderBy:[{sort: firstName, direction: ASC}}
+   * query { users (orderBy:[{field: firstName, direction: ASC}})}
+   *
+   * EXCEPTIONS (fields with dot notation "." which are inside a "field:")
+   * these fields will keep double quotes while everything else will be stripped of double quotes
+   * query { users (orderBy:[{field:"billing.street.name", direction: "ASC"} }
+   * TO
+   * query { users (orderBy:[{field:"billing.street.name", direction: ASC}}
    * @param inputStr input string
    * @param enumSearchWords array of enum words to filter
    * @returns outputStr output string
    */
   trimDoubleQuotesOnEnumField(inputStr: string, enumSearchWords: string[]) {
-    const patternWordInQuotes = `\s?(".*?")`;
+    const patternWordInQuotes = `\s?((field:\s*)?".*?")`;
     let patternRegex = enumSearchWords.join(patternWordInQuotes + '|');
     patternRegex += patternWordInQuotes; // the last one should also have the pattern but without the pipe "|"
 
-    // example with (sort: & direction:):  /sort:s?(".*?")|direction:s?(".*?")/
+    // example with (field: & direction:):  /field:s?(".*?")|direction:s?(".*?")/
     const reg = new RegExp(patternRegex, 'g');
 
     return inputStr.replace(reg, function (group1, group2, group3) {
-      const rep = group1.replace(/"/g, '');
+      // remove double quotes except when the string starts with a "field:"
+      const rep = (group1.startsWith('field:')) ? group1 : group1.replace(/"/g, '');
       return rep;
     });
   }

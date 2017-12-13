@@ -49,8 +49,8 @@ export class GridGraphqlComponent implements OnInit {
         }
       },
       { id: 'company', name: 'Company', field: 'company', filterable: true },
-      { id: 'address.street', name: 'Address Street', field: 'address.street', filterable: true, sortable: true },
-      { id: 'address.zip', name: 'Address Zip', field: 'address.zip', filterable: true, sortable: true },
+      { id: 'billing.address.street', name: 'Billing Address Street', field: 'billing.address.street', filterable: true, sortable: true },
+      { id: 'billing.address.zip', name: 'Billing Address Zip', field: 'billing.address.zip', filterable: true, sortable: true },
     ];
 
     this.gridOptions = {
