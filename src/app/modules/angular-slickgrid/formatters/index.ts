@@ -16,6 +16,7 @@ import { editIconFormatter } from './editIconFormatter';
 import { percentCompleteFormatter } from './percentCompleteFormatter';
 import { percentCompleteBarFormatter } from './percentCompleteBarFormatter';
 import { progressBarFormatter } from './progressBarFormatter';
+import { translateFormatter } from './translateFormatter';
 import { yesNoFormatter } from './yesNoFormatter';
 
 /*
@@ -43,5 +44,6 @@ export const Formatters = {
   percentComplete: percentCompleteFormatter,
   percentCompleteBar: percentCompleteBarFormatter,
   progressBar: progressBarFormatter,
+  translate: translateFormatter,
   yesNo: yesNoFormatter
 };

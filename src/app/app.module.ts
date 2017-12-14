@@ -1,10 +1,12 @@
-import { GridSingleSelectionComponent } from './examples/grid-single-selection.component';
-import { GridOdataService } from './modules/angular-slickgrid/services/grid-odata.service';
-import { ResizerService } from './modules/angular-slickgrid/services/resizer.service';
 import { AppRoutingRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Injector, APP_INITIALIZER, NgModule } from '@angular/core';
+import { LOCATION_INITIALIZED } from '@angular/common';
+import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { GridOdataService } from './modules/angular-slickgrid/services/grid-odata.service';
+import { ResizerService } from './modules/angular-slickgrid/services/resizer.service';
 
 import { AppComponent } from './app.component';
 import { GridAddItemComponent } from './examples/grid-additem.component';
@@ -15,8 +17,10 @@ import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
 import { GridHeaderButtonComponent } from './examples/grid-headerbutton.component';
 import { GridHeaderMenuComponent } from './examples/grid-headermenu.component';
+import { GridLocalizationComponent } from './examples/grid-localization.component';
 import { GridMenuComponent } from './examples/grid-menu.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
+import { GridSingleSelectionComponent } from './examples/grid-single-selection.component';
 import { GridRowSelectionComponent } from './examples/grid-rowselection.component';
 import { HomeComponent } from './examples/home.component';
 
@@ -24,6 +28,29 @@ import { HomeComponent } from './examples/home.component';
 // https://medium.com/@ngl817/building-an-angular-4-component-library-with-the-angular-cli-and-ng-packagr-53b2ade0701e
 import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angular-slickgrid.module';
 // import { SlickgridModule } from 'angular-slickgrid';
+
+// AoT requires an exported function for factories
+export function createTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
+
+// use an Initializer Factory as describe here: https://github.com/ngx-translate/core/issues/517#issuecomment-299637956
+export function appInitializerFactory(translate: TranslateService, injector: Injector) {
+  return () => new Promise<any>((resolve: any) => {
+    const locationInitialized = injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
+    locationInitialized.then(() => {
+      const langToSet = 'en';
+      translate.setDefaultLang('en');
+      translate.use(langToSet).subscribe(() => {
+        // console.info(`Successfully initialized '${langToSet}' language.'`);
+      }, err => {
+        console.error(`Problem with '${langToSet}' language initialization.'`);
+      }, () => {
+        resolve(null);
+      });
+    });
+  });
+}
 
 @NgModule({
   declarations: [
@@ -36,6 +63,7 @@ import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angu
     GridGraphqlComponent,
     GridHeaderButtonComponent,
     GridHeaderMenuComponent,
+    GridLocalizationComponent,
     GridMenuComponent,
     GridOdataComponent,
     GridSingleSelectionComponent,
@@ -46,9 +74,25 @@ import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angu
     AppRoutingRoutingModule,
     BrowserModule,
     HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (createTranslateLoader),
+        deps: [HttpClient]
+      }
+    }),
     AngularSlickgridModule
   ],
-  providers: [GridOdataService, ResizerService],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appInitializerFactory,
+      deps: [TranslateService, Injector],
+      multi: true
+    },
+    GridOdataService,
+    ResizerService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

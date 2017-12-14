@@ -29,6 +29,7 @@ import { GridEventService } from './../services/gridEvent.service';
 import { GridExtraService } from './../services/gridExtra.service';
 import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
+import { TranslateService } from '@ngx-translate/core';
 
 import $ from 'jquery';
 
@@ -82,8 +83,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private gridExtraService: GridExtraService,
     private gridEventService: GridEventService,
     private resizer: ResizerService,
-    private controlAndPluginService: ControlAndPluginService
-  ) {}
+    private controlAndPluginService: ControlAndPluginService,
+    private translate: TranslateService
+  ) { }
 
   ngOnInit(): void {
     this.gridHeightString = `${this.gridHeight}px`;
@@ -124,9 +126,22 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // attach grid extra service
     const gridExtraService = this.gridExtraService.init(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
+
+    // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
+    if (this._gridOptions.enableTranslate) {
+      this.controlAndPluginService.translateHeaders();
+    }
   }
 
   attachDifferentHooks(grid: any, options: GridOption, dataView: any) {
+    // on locale change, we have to manually translate the Headers, GridMenu
+    this.translate.onLangChange.subscribe((event) => {
+      if (options.enableTranslate) {
+        this.controlAndPluginService.translateHeaders();
+        this.controlAndPluginService.translateGridMenu();
+      }
+    });
+
     // attach external sorting (backend) when available or default onSort (dataView)
     if (options.enableSorting) {
       (options.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, options) : this.sortService.attachLocalOnSort(grid, options, this._dataView);
@@ -217,7 +232,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (this._gridOptions.enableAutoResize) {
         // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
         this.resizer.resizeGrid(10);
-          // this.grid.autosizeColumns();
+        // this.grid.autosizeColumns();
       }
     }
   }

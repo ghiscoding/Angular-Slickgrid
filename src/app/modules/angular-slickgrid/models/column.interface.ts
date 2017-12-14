@@ -27,6 +27,7 @@ export interface Column {
     };
   };
   headerCssClass?: string;
+  headerKey?: string;
   id: number | string;
   isEditable?: boolean;
   isHidden?: boolean;
