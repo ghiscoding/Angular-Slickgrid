@@ -12552,7 +12552,7 @@ class GraphqlService {
         const /** @type {?} */ reg = new RegExp(patternRegex, 'g');
         return inputStr.replace(reg, function (group1, group2, group3) {
             // remove double quotes except when the string starts with a "field:"
-            const /** @type {?} */ rep = (group1.startsWith('field:')) ? group1 : group1.replace(/"/g, '');
+            const /** @type {?} */ rep = (group1.startsWith('field:') && group1.includes('.')) ? group1 : group1.replace(/"/g, '');
             return rep;
         });
     }
