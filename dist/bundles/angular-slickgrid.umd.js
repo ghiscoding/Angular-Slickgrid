@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('@angular/core'), require('@angular/common')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', '@angular/core', '@angular/common'], factory) :
-	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.ng.core,global.ng.common));
-}(this, (function (exports,Observable,first,take,toPromise,core,common) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('@ngx-translate/core'), require('@angular/core'), require('@angular/common')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', '@ngx-translate/core', '@angular/core', '@angular/common'], factory) :
+	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global['ngx-translate-core'],global.ng.core,global.ng.common));
+}(this, (function (exports,Observable,first,take,toPromise,core,core$1,common) { 'use strict';
 
 var __generator = (this && this.__generator) || function (thisArg, body) {
     var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
@@ -9733,6 +9733,13 @@ var progressBarFormatter = function (row, cell, value, columnDef, dataContext) {
     }
     return "<div class=\"progress\">\n    <div class=\"progress-bar progress-bar-" + color + "\" role=\"progressbar\" aria-valuenow=\"" + value + "\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width: 2em; width: " + value + "%;\">\n    " + value + "%\n    </div>\n  </div>";
 };
+var translateFormatter = function (row, cell, value, columnDef, dataContext) {
+    var /** @type {?} */ params = columnDef.params || {};
+    if (!params.i18n || !(params.i18n instanceof core.TranslateService)) {
+        throw new Error("The translate formatter requires the ngx-translate \"TranslateService\" to be provided as a column params.\n    For example: this.columnDefinitions = [{ id: title, field: title, formatter: Formatters.translate, params: { i18n: this.translateService }");
+    }
+    return params.i18n.instant(value);
+};
 var yesNoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? 'Yes' : 'No'; };
 // import { Group, GroupTotals } from '../core'
 // import { Item } from '../dataview'
@@ -9761,6 +9768,7 @@ var Formatters = {
     percentComplete: percentCompleteFormatter,
     percentCompleteBar: percentCompleteBarFormatter,
     progressBar: progressBarFormatter,
+    translate: translateFormatter,
     yesNo: yesNoFormatter
 };
 var moment$11 = moment_min || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
@@ -9859,7 +9867,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var FilterService = /** @class */ (function () {
     function FilterService() {
         this._columnFilters = {};
-        this.onFilterChanged = new core.EventEmitter();
+        this.onFilterChanged = new core$1.EventEmitter();
     }
     /**
      * @param {?} grid
@@ -10191,7 +10199,7 @@ var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, 
 };
 var SortService = /** @class */ (function () {
     function SortService() {
-        this.onSortChanged = new core.EventEmitter();
+        this.onSortChanged = new core$1.EventEmitter();
     }
     /**
      * Attach a backend sort (single/multi) hook to the grid
@@ -10581,7 +10589,8 @@ var GraphqlService = /** @class */ (function () {
         datasetQb.filter(datasetFilters);
         queryQb.find(datasetQb);
         var /** @type {?} */ enumSearchProperties = ['direction:', 'field:', 'operator:'];
-        return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
+        var /** @type {?} */ output = this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
+        return output.replace('\\', '\\\\').replace('\/', '\/\/'); // also escape slashes
     };
     /**
      * From an input array of strings, we want to build a GraphQL query string.
@@ -10890,6 +10899,15 @@ var GridExtraService = /** @class */ (function () {
      */
     GridExtraService.prototype.setSelectedRows = function (rowIndexes) {
         this._grid.setSelectedRows(rowIndexes);
+    };
+    /**
+     * @return {?}
+     */
+    GridExtraService.prototype.renderGrid = function () {
+        if (this._grid && typeof this._grid.invalidate === 'function') {
+            this._grid.invalidate();
+            this._grid.render();
+        }
     };
     /**
      * Add an item (data item) to the datagrid
@@ -11454,7 +11472,7 @@ var GridOdataService = /** @class */ (function () {
     return GridOdataService;
 }());
 GridOdataService.decorators = [
-    { type: core.Injectable },
+    { type: core$1.Injectable },
 ];
 /**
  * @nocollapse
@@ -11588,10 +11606,12 @@ var ControlAndPluginService = /** @class */ (function () {
     /**
      * @param {?} filterService
      * @param {?} gridExtraService
+     * @param {?} translate
      */
-    function ControlAndPluginService(filterService, gridExtraService) {
+    function ControlAndPluginService(filterService, gridExtraService, translate) {
         this.filterService = filterService;
         this.gridExtraService = gridExtraService;
+        this.translate = translate;
     }
     /**
      * Attach/Create different Controls or Plugins after the Grid is created
@@ -11602,35 +11622,16 @@ var ControlAndPluginService = /** @class */ (function () {
      * @return {?}
      */
     ControlAndPluginService.prototype.attachDifferentControlOrPlugins = function (grid, columnDefinitions, options, dataView) {
-        var _this = this;
         this._grid = grid;
+        this._gridOptions = options;
         this._dataView = dataView;
-        this._visibleColumns = columnDefinitions;
+        this._columnDefinitions = columnDefinitions;
+        this.visibleColumns = columnDefinitions;
         if (options.enableColumnPicker) {
             this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
         }
         if (options.enableGridMenu) {
-            this.prepareGridMenu(grid, options);
-            this.gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
-            if (options.gridMenu) {
-                this.gridMenuControl.onBeforeMenuShow.subscribe(function (e, args) {
-                    if (options.gridMenu && typeof options.gridMenu.onBeforeMenuShow === 'function') {
-                        options.gridMenu.onBeforeMenuShow(e, args);
-                    }
-                });
-                this.gridMenuControl.onCommand.subscribe(function (e, args) {
-                    if (options.gridMenu && typeof options.gridMenu.onCommand === 'function') {
-                        options.gridMenu.onCommand(e, args);
-                    }
-                });
-                this.gridMenuControl.onMenuClose.subscribe(function (e, args) {
-                    if (options.gridMenu && typeof options.gridMenu.onMenuClose === 'function') {
-                        options.gridMenu.onMenuClose(e, args);
-                    }
-                    // we also want to resize the columns if the user decided to hide certain column(s)
-                    _this._grid.autosizeColumns();
-                });
-            }
+            this.gridMenuControl = this.createGridMenu(grid, columnDefinitions, options);
         }
         if (options.enableAutoTooltip) {
             this.autoTooltipPlugin = new Slick.AutoTooltips(options.autoTooltipOptions || {});
@@ -11685,14 +11686,63 @@ var ControlAndPluginService = /** @class */ (function () {
         }
     };
     /**
+     * @param {?} grid
+     * @param {?} columnDefinitions
+     * @param {?} options
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.createGridMenu = function (grid, columnDefinitions, options) {
+        var _this = this;
+        this.prepareGridMenu(grid, options);
+        var /** @type {?} */ gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
+        if (options.gridMenu) {
+            gridMenuControl.onBeforeMenuShow.subscribe(function (e, args) {
+                if (options.gridMenu && typeof options.gridMenu.onBeforeMenuShow === 'function') {
+                    options.gridMenu.onBeforeMenuShow(e, args);
+                }
+                else {
+                    // when using i18n with Grid Menu, we have a problem with the last 2 checkbox
+                    // they are written in plain English within the SlickGrid Controls
+                    // and so we don't have access directly to their text, however with a jQuery hack,
+                    // we can somehow change the text with jQuery but it's very patchy
+                    if (options.enableTranslate) {
+                        setTimeout(function () {
+                            var /** @type {?} */ forceFitElm = jquery("label:contains('Force fit columns')");
+                            var /** @type {?} */ syncResizeElm = jquery("label:contains('Synchronous resize')");
+                            if (forceFitElm && forceFitElm[0] && forceFitElm[0].lastChild && forceFitElm[0].lastChild.textContent) {
+                                forceFitElm[0].lastChild.textContent = _this.translate.instant('FORCE_FIT_COLUMNS');
+                            }
+                            if (syncResizeElm && syncResizeElm[0] && syncResizeElm[0].lastChild && syncResizeElm[0].lastChild.textContent) {
+                                syncResizeElm[0].lastChild.textContent = _this.translate.instant('SYNCHRONOUS_RESIZE');
+                            }
+                        }, 10);
+                    }
+                }
+            });
+            gridMenuControl.onCommand.subscribe(function (e, args) {
+                if (options.gridMenu && typeof options.gridMenu.onCommand === 'function') {
+                    options.gridMenu.onCommand(e, args);
+                }
+            });
+            gridMenuControl.onMenuClose.subscribe(function (e, args) {
+                if (options.gridMenu && typeof options.gridMenu.onMenuClose === 'function') {
+                    options.gridMenu.onMenuClose(e, args);
+                }
+                // we also want to resize the columns if the user decided to hide certain column(s)
+                _this._grid.autosizeColumns();
+            });
+        }
+        return gridMenuControl;
+    };
+    /**
      * @param {?} column
      * @return {?}
      */
     ControlAndPluginService.prototype.hideColumn = function (column) {
-        if (this._grid && this._visibleColumns) {
+        if (this._grid && this.visibleColumns) {
             var /** @type {?} */ columnIndex = this._grid.getColumnIndex(column.id);
-            this._visibleColumns = this.removeColumnByIndex(this._visibleColumns, columnIndex);
-            this._grid.setColumns(this._visibleColumns);
+            this.visibleColumns = this.removeColumnByIndex(this.visibleColumns, columnIndex);
+            this._grid.setColumns(this.visibleColumns);
         }
     };
     /**
@@ -11717,7 +11767,7 @@ var ControlAndPluginService = /** @class */ (function () {
     ControlAndPluginService.prototype.destroy = function () {
         this._grid = null;
         this._dataView = null;
-        this._visibleColumns = [];
+        this.visibleColumns = [];
         if (this.columnPickerControl) {
             this.columnPickerControl.destroy();
             this.columnPickerControl = null;
@@ -11758,7 +11808,7 @@ var ControlAndPluginService = /** @class */ (function () {
             if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: 'fa fa-filter text-danger',
-                    title: 'Clear All Filters',
+                    title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
                     disabled: false,
                     command: 'clear-filter'
                 });
@@ -11766,7 +11816,7 @@ var ControlAndPluginService = /** @class */ (function () {
             if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'toggle-filter'; }).length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: 'fa fa-random',
-                    title: 'Toggle Filter Row',
+                    title: options.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
                     disabled: false,
                     command: 'toggle-filter'
                 });
@@ -11789,9 +11839,10 @@ var ControlAndPluginService = /** @class */ (function () {
                 };
             }
         }
-        // remove the custom command title if there's no command
+        // add the custom command title if there's no command
         if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
-            options.gridMenu.customTitle = options.gridMenu.customTitle || 'Commands';
+            var /** @type {?} */ customTitle = options.enableTranslate ? this.translate.instant('COMMANDS') : 'Commands';
+            options.gridMenu.customTitle = options.gridMenu.customTitle || customTitle;
         }
     };
     /**
@@ -11800,14 +11851,46 @@ var ControlAndPluginService = /** @class */ (function () {
      * @return {?}
      */
     ControlAndPluginService.prototype.prepareGridMenu = function (grid, options) {
+        var /** @type {?} */ columnTitle = options.enableTranslate ? this.translate.instant('COLUMNS') : 'Columns';
         options.gridMenu = options.gridMenu || {};
-        options.gridMenu.columnTitle = options.gridMenu.columnTitle || 'Columns';
+        options.gridMenu.columnTitle = options.gridMenu.columnTitle || columnTitle;
         options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
         options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
         options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
         options.gridMenu.customItems = options.gridMenu.customItems || [];
         this.addGridMenuCustomCommands(grid, options);
         // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
+    };
+    /**
+     * Translate the Grid Menu ColumnTitle and CustomTitle.
+     * Note that the only way that seems to work is to destroy and re-create the Grid Menu
+     * Changing only the gridMenu.columnTitle with i18n translate was not enough.
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.translateGridMenu = function () {
+        // destroy and re-create the Grid Menu which seems to be the only way to translate properly
+        this.gridMenuControl.destroy();
+        this._gridOptions.gridMenu = undefined;
+        this.createGridMenu(this._grid, this.visibleColumns, this._gridOptions);
+    };
+    /**
+     * Translate manually the header titles.
+     * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
+     * @param {?=} locale
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.translateHeaders = function (locale) {
+        if (locale) {
+            this.translate.use(locale);
+        }
+        for (var _g = 0, _h = this._columnDefinitions; _g < _h.length; _g++) {
+            var column = _h[_g];
+            if (column.headerKey) {
+                column.name = this.translate.instant(column.headerKey);
+            }
+        }
+        // calling setColumns() will trigger a grid re-render
+        this._grid.setColumns(this._columnDefinitions);
     };
     /**
      * Attach/Create different plugins before the Grid creation.
@@ -11825,7 +11908,7 @@ var ControlAndPluginService = /** @class */ (function () {
     return ControlAndPluginService;
 }());
 ControlAndPluginService.decorators = [
-    { type: core.Injectable },
+    { type: core$1.Injectable },
 ];
 /**
  * @nocollapse
@@ -11833,6 +11916,7 @@ ControlAndPluginService.decorators = [
 ControlAndPluginService.ctorParameters = function () { return [
     { type: FilterService, },
     { type: GridExtraService, },
+    { type: core.TranslateService, },
 ]; };
 var __awaiter$2 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -12032,11 +12116,11 @@ var SlickPaginationComponent = /** @class */ (function () {
     return SlickPaginationComponent;
 }());
 SlickPaginationComponent.decorators = [
-    { type: core.Component, args: [{
+    { type: core$1.Component, args: [{
                 selector: 'slick-pagination',
                 template: "\n    <div class=\"slick-pagination\">\n        <div class=\"slick-pagination-nav\">\n            <nav aria-label=\"Page navigation\">\n            <ul class=\"pagination\">\n                <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-first fa fa-angle-double-left\" aria-label=\"First\" (click)=\"changeToFirstPage($event)\">\n                </a>\n                </li>\n                <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-prev fa fa-angle-left\" aria-label=\"Previous\" (click)=\"changeToPreviousPage($event)\">\n                </a>\n                </li>\n            </ul>\n            </nav>\n\n            <div class=\"slick-page-number\">\n            page {{pageNumber}} of {{pageCount}}\n            </div>\n\n            <nav aria-label=\"Page navigation\">\n            <ul class=\"pagination\">\n                <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-next text-center fa fa-lg fa-angle-right\" aria-label=\"Next\" (click)=\"changeToNextPage($event)\">\n                </a>\n                </li>\n                <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-end fa fa-lg fa-angle-double-right\" aria-label=\"Last\" (click)=\"changeToLastPage($event)\">\n                </a>\n                </li>\n            </ul>\n            </nav>\n        </div>\n        <span class=\"slick-pagination-settings\">\n            <select id=\"items-per-page-label\" [value]=\"itemsPerPage\" (change)=\"onChangeItemPerPage($event)\">\n            <option value=\"{{pageSize}}\" *ngFor=\"let pageSize of paginationPageSizes;\">{{pageSize}}</option>\n            </select>\n            items per page,\n            <span class=\"slick-pagination-count\">\n            {{dataFrom}}-{{dataTo}} of {{totalItems}} items\n            </span>\n        </span>\n        </div>\n  "
             },] },
-    { type: core.Injectable },
+    { type: core$1.Injectable },
 ];
 /**
  * @nocollapse
@@ -12046,8 +12130,8 @@ SlickPaginationComponent.ctorParameters = function () { return [
     { type: SortService, },
 ]; };
 SlickPaginationComponent.propDecorators = {
-    'gridPaginationOptions': [{ type: core.Input },],
-    'grid': [{ type: core.Input },],
+    'gridPaginationOptions': [{ type: core$1.Input },],
+    'grid': [{ type: core$1.Input },],
 };
 /*! jQuery UI - v1.11.3 - 2015-02-22
 * http://jqueryui.com
@@ -33267,17 +33351,19 @@ var AngularSlickgridComponent = /** @class */ (function () {
      * @param {?} gridEventService
      * @param {?} resizer
      * @param {?} controlAndPluginService
+     * @param {?} translate
      */
-    function AngularSlickgridComponent(filterService, sortService, gridExtraService, gridEventService, resizer, controlAndPluginService) {
+    function AngularSlickgridComponent(filterService, sortService, gridExtraService, gridEventService, resizer, controlAndPluginService, translate) {
         this.filterService = filterService;
         this.sortService = sortService;
         this.gridExtraService = gridExtraService;
         this.gridEventService = gridEventService;
         this.resizer = resizer;
         this.controlAndPluginService = controlAndPluginService;
+        this.translate = translate;
         this.showPagination = false;
-        this.dataviewChanged = new core.EventEmitter();
-        this.gridChanged = new core.EventEmitter();
+        this.dataviewChanged = new core$1.EventEmitter();
+        this.gridChanged = new core$1.EventEmitter();
         this.gridHeight = 100;
         this.gridWidth = 600;
     }
@@ -33339,6 +33425,10 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.attachResizeHook(this.grid, this._gridOptions);
         // attach grid extra service
         var /** @type {?} */ gridExtraService = this.gridExtraService.init(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
+        // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
+        if (this._gridOptions.enableTranslate) {
+            this.controlAndPluginService.translateHeaders();
+        }
     };
     /**
      * @param {?} grid
@@ -33348,6 +33438,13 @@ var AngularSlickgridComponent = /** @class */ (function () {
      */
     AngularSlickgridComponent.prototype.attachDifferentHooks = function (grid, options, dataView) {
         var _this = this;
+        // on locale change, we have to manually translate the Headers, GridMenu
+        this.translate.onLangChange.subscribe(function (event) {
+            if (options.enableTranslate) {
+                _this.controlAndPluginService.translateHeaders();
+                _this.controlAndPluginService.translateGridMenu();
+            }
+        });
         // attach external sorting (backend) when available or default onSort (dataView)
         if (options.enableSorting) {
             (options.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, options) : this.sortService.attachLocalOnSort(grid, options, this._dataView);
@@ -33468,8 +33565,8 @@ var AngularSlickgridComponent = /** @class */ (function () {
     return AngularSlickgridComponent;
 }());
 AngularSlickgridComponent.decorators = [
-    { type: core.Injectable },
-    { type: core.Component, args: [{
+    { type: core$1.Injectable },
+    { type: core$1.Component, args: [{
                 selector: 'angular-slickgrid',
                 template: "\n    <div id=\"slickGridContainer-{{gridId}}\" class=\"gridPane\">\n    <div attr.id='{{gridId}}'\n            class=\"slickgrid-container\"\n            [style.height]=\"gridHeightString\"\n            [style.width]=\"gridWidthString\">\n    </div>\n\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\" *ngIf=\"showPagination\" [gridPaginationOptions]=\"gridPaginationOptions\"></slick-pagination>\n    </div>\n  "
             },] },
@@ -33484,16 +33581,17 @@ AngularSlickgridComponent.ctorParameters = function () { return [
     { type: GridEventService, },
     { type: ResizerService, },
     { type: ControlAndPluginService, },
+    { type: core.TranslateService, },
 ]; };
 AngularSlickgridComponent.propDecorators = {
-    'dataviewChanged': [{ type: core.Output },],
-    'gridChanged': [{ type: core.Output },],
-    'gridId': [{ type: core.Input },],
-    'columnDefinitions': [{ type: core.Input },],
-    'gridOptions': [{ type: core.Input },],
-    'gridHeight': [{ type: core.Input },],
-    'gridWidth': [{ type: core.Input },],
-    'dataset': [{ type: core.Input },],
+    'dataviewChanged': [{ type: core$1.Output },],
+    'gridChanged': [{ type: core$1.Output },],
+    'gridId': [{ type: core$1.Input },],
+    'columnDefinitions': [{ type: core$1.Input },],
+    'gridOptions': [{ type: core$1.Input },],
+    'gridHeight': [{ type: core$1.Input },],
+    'gridWidth': [{ type: core$1.Input },],
+    'dataset': [{ type: core$1.Input },],
 };
 var AngularSlickgridModule = /** @class */ (function () {
     function AngularSlickgridModule() {
@@ -33501,7 +33599,7 @@ var AngularSlickgridModule = /** @class */ (function () {
     return AngularSlickgridModule;
 }());
 AngularSlickgridModule.decorators = [
-    { type: core.NgModule, args: [{
+    { type: core$1.NgModule, args: [{
                 imports: [
                     common.CommonModule
                 ],
@@ -33587,13 +33685,14 @@ exports.ɵbd = hyperlinkFormatter;
 exports.ɵbf = percentCompleteBarFormatter;
 exports.ɵbe = percentCompleteFormatter;
 exports.ɵbg = progressBarFormatter;
-exports.ɵbh = yesNoFormatter;
-exports.ɵbj = dateIsoSorter;
-exports.ɵbi = dateSorter;
-exports.ɵbl = dateUsShortSorter;
-exports.ɵbk = dateUsSorter;
-exports.ɵbm = numericSorter;
-exports.ɵbn = stringSorter;
+exports.ɵbh = translateFormatter;
+exports.ɵbi = yesNoFormatter;
+exports.ɵbk = dateIsoSorter;
+exports.ɵbj = dateSorter;
+exports.ɵbm = dateUsShortSorter;
+exports.ɵbl = dateUsSorter;
+exports.ɵbn = numericSorter;
+exports.ɵbo = stringSorter;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

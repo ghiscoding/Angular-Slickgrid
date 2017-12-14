@@ -26,6 +26,7 @@ import { GridEventService } from './../services/gridEvent.service';
 import { GridExtraService } from './../services/gridExtra.service';
 import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
+import { TranslateService } from '@ngx-translate/core';
 export declare class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
     private filterService;
     private sortService;
@@ -33,6 +34,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private gridEventService;
     private resizer;
     private controlAndPluginService;
+    private translate;
     private _dataset;
     private _dataView;
     private _gridOptions;
@@ -49,7 +51,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridHeight: number;
     gridWidth: number;
     dataset: any[];
-    constructor(filterService: FilterService, sortService: SortService, gridExtraService: GridExtraService, gridEventService: GridEventService, resizer: ResizerService, controlAndPluginService: ControlAndPluginService);
+    constructor(filterService: FilterService, sortService: SortService, gridExtraService: GridExtraService, gridEventService: GridEventService, resizer: ResizerService, controlAndPluginService: ControlAndPluginService, translate: TranslateService);
     ngOnInit(): void;
     ngOnDestroy(): void;
     ngAfterViewInit(): void;
