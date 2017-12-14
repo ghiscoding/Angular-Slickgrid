@@ -30,7 +30,6 @@ export const GlobalGridOptions: GridOption = {
   explicitInitialization: true,
   forceFitColumns: false,
   gridMenu: {
-    columnTitle: 'Columns',
     iconCssClass: 'fa fa-bars',
     menuWidth: 16,
     resizeOnShowHeaderRow: false
