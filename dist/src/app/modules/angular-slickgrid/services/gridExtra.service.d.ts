@@ -19,6 +19,7 @@ export declare class GridExtraService {
     getSelectedRows(): any;
     setSelectedRow(rowIndex: number): void;
     setSelectedRows(rowIndexes: number[]): void;
+    renderGrid(): void;
     /** Add an item (data item) to the datagrid
      * @param object dataItem: item object holding all properties of that row
      */

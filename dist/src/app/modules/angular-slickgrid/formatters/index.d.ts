@@ -16,5 +16,6 @@ export declare const Formatters: {
     percentComplete: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     percentCompleteBar: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     progressBar: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
+    translate: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     yesNo: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
 };

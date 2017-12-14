@@ -1,0 +1,18 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div class="container">
+    <h2>{{title}}</h2>
+    <div class="subtitle" [innerHTML]="subTitle"></div>
+
+    <hr/>
+
+    <div class="row col-sm-12">
+        <button class="btn btn-default btn-sm" (click)="switchLanguage()">Switch Language</button>
+        <b>Locale:</b> <span style="font-style: italic">{{selectedLanguage + '.json'}}</span>
+    </div>
+
+    <div class="col-sm-12">
+        <angular-slickgrid gridId="grid12" [columnDefinitions]="columnDefinitions"
+            [gridOptions]="gridOptions" [dataset]="dataset">
+        </angular-slickgrid>
+    </div>
+</div>

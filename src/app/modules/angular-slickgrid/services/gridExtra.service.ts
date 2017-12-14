@@ -83,6 +83,13 @@ export class GridExtraService {
     this._grid.setSelectedRows(rowIndexes);
   }
 
+  renderGrid() {
+    if (this._grid && typeof this._grid.invalidate === 'function') {
+      this._grid.invalidate();
+      this._grid.render();
+    }
+  }
+
   /** Add an item (data item) to the datagrid
    * @param object dataItem: item object holding all properties of that row
    */

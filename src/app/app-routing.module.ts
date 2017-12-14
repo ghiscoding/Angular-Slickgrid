@@ -6,6 +6,7 @@ import { GridEditorComponent } from './examples/grid-editor.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridHeaderButtonComponent } from './examples/grid-headerbutton.component';
 import { GridHeaderMenuComponent } from './examples/grid-headermenu.component';
+import { GridLocalizationComponent } from './examples/grid-localization.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
 import { GridRowSelectionComponent } from './examples/grid-rowselection.component';
@@ -23,6 +24,7 @@ const routes: Routes = [
   { path: 'headermenu', component: GridHeaderMenuComponent },
   { path: 'gridgraphql', component: GridGraphqlComponent },
   { path: 'gridmenu', component: GridMenuComponent },
+  { path: 'localization', component: GridLocalizationComponent },
   { path: 'clientside', component: GridClientSideComponent },
   { path: 'odata', component: GridOdataComponent },
   { path: 'selection', component: GridRowSelectionComponent },
