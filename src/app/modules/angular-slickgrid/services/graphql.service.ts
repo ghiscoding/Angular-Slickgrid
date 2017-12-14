@@ -64,8 +64,7 @@ export class GraphqlService implements BackendService {
     queryQb.find(datasetQb);
 
     const enumSearchProperties = ['direction:', 'field:', 'operator:'];
-    const output = this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
-    return output.replace('\\', '\\\\').replace('\/', '\/\/'); // also escape slashes
+    return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
   }
 
   /**
@@ -168,7 +167,6 @@ export class GraphqlService implements BackendService {
 
           // escaping the search value
           searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
-          searchValue = encodeURIComponent(searchValue); // encode URI of the final search value
 
           if (operator === '*' || lastValueChar === '*') {
             operator = (operator === '*') ? 'endsWith' : 'startsWith';
