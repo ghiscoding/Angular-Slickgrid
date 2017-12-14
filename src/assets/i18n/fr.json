@@ -12,6 +12,12 @@
   "SYNCHRONOUS_RESIZE": "Redimension synchrone",
   "TOGGLE_FILTER_ROW": "Basculer la ligne des filtres",
 
+  "BILLING": {
+    "ADDRESS": {
+      "STREET": "Adresse de facturation",
+      "ZIP": "Code zip de facturation"
+    }
+  },
   "DURATION": "Durée",
   "COMPANY": "Compagnie",
   "COMPLETED": "Terminé",
@@ -22,5 +28,6 @@
   "START": "Début",
   "TASK_X": "Tâche {{x}}",
   "TITLE": "Titre",
+  "TITLE.NAME": "Nom du Titre",
   "TRUE": "Vrai"
 }

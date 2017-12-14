@@ -2,7 +2,7 @@ import { Observable as Observable$1 } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Component, EventEmitter, Injectable, Input, NgModule, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -13666,10 +13666,12 @@ class SlickPaginationComponent {
     /**
      * @param {?} filterService
      * @param {?} sortService
+     * @param {?} translate
      */
-    constructor(filterService, sortService) {
+    constructor(filterService, sortService, translate) {
         this.filterService = filterService;
         this.sortService = sortService;
+        this.translate = translate;
         this.dataFrom = 1;
         this.dataTo = 1;
         this.itemsPerPage = 25;
@@ -13677,6 +13679,7 @@ class SlickPaginationComponent {
         this.pageNumber = 1;
         this.totalItems = 0;
         this.paginationPageSizes = [25, 75, 100];
+        this.fromToParams = { from: this.dataFrom, to: this.dataTo, totalItems: this.totalItems };
     }
     /**
      * @param {?} gridPaginationOptions
@@ -13850,7 +13853,7 @@ SlickPaginationComponent.decorators = [
             </nav>
 
             <div class="slick-page-number">
-            page {{pageNumber}} of {{pageCount}}
+                <span [translate]="'PAGE_X_OF_Y'" [translateParams]="{ x: pageNumber, y: pageCount }"></span>
             </div>
 
             <nav aria-label="Page navigation">
@@ -13870,9 +13873,9 @@ SlickPaginationComponent.decorators = [
             <select id="items-per-page-label" [value]="itemsPerPage" (change)="onChangeItemPerPage($event)">
             <option value="{{pageSize}}" *ngFor="let pageSize of paginationPageSizes;">{{pageSize}}</option>
             </select>
-            items per page,
+            <span [translate]="'ITEMS_PER_PAGE'"></span>,
             <span class="slick-pagination-count">
-            {{dataFrom}}-{{dataTo}} of {{totalItems}} items
+                <span [translate]="'FROM_TO_OF_TOTAL_ITEMS'" [translateParams]="{ from: dataFrom, to: dataTo, totalItems: totalItems }"></span>
             </span>
         </span>
         </div>
@@ -13886,6 +13889,7 @@ SlickPaginationComponent.decorators = [
 SlickPaginationComponent.ctorParameters = () => [
     { type: FilterService, },
     { type: SortService, },
+    { type: TranslateService, },
 ];
 SlickPaginationComponent.propDecorators = {
     'gridPaginationOptions': [{ type: Input },],
@@ -39396,7 +39400,8 @@ class AngularSlickgridModule {
 AngularSlickgridModule.decorators = [
     { type: NgModule, args: [{
                 imports: [
-                    CommonModule
+                    CommonModule,
+                    TranslateModule
                 ],
                 declarations: [
                     AngularSlickgridComponent,

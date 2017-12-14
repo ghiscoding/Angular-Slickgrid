@@ -11940,10 +11940,12 @@ var SlickPaginationComponent = /** @class */ (function () {
     /**
      * @param {?} filterService
      * @param {?} sortService
+     * @param {?} translate
      */
-    function SlickPaginationComponent(filterService, sortService) {
+    function SlickPaginationComponent(filterService, sortService, translate) {
         this.filterService = filterService;
         this.sortService = sortService;
+        this.translate = translate;
         this.dataFrom = 1;
         this.dataTo = 1;
         this.itemsPerPage = 25;
@@ -11951,6 +11953,7 @@ var SlickPaginationComponent = /** @class */ (function () {
         this.pageNumber = 1;
         this.totalItems = 0;
         this.paginationPageSizes = [25, 75, 100];
+        this.fromToParams = { from: this.dataFrom, to: this.dataTo, totalItems: this.totalItems };
     }
     Object.defineProperty(SlickPaginationComponent.prototype, "gridPaginationOptions", {
         /**
@@ -12118,7 +12121,7 @@ var SlickPaginationComponent = /** @class */ (function () {
 SlickPaginationComponent.decorators = [
     { type: core$1.Component, args: [{
                 selector: 'slick-pagination',
-                template: "\n    <div class=\"slick-pagination\">\n        <div class=\"slick-pagination-nav\">\n            <nav aria-label=\"Page navigation\">\n            <ul class=\"pagination\">\n                <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-first fa fa-angle-double-left\" aria-label=\"First\" (click)=\"changeToFirstPage($event)\">\n                </a>\n                </li>\n                <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-prev fa fa-angle-left\" aria-label=\"Previous\" (click)=\"changeToPreviousPage($event)\">\n                </a>\n                </li>\n            </ul>\n            </nav>\n\n            <div class=\"slick-page-number\">\n            page {{pageNumber}} of {{pageCount}}\n            </div>\n\n            <nav aria-label=\"Page navigation\">\n            <ul class=\"pagination\">\n                <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-next text-center fa fa-lg fa-angle-right\" aria-label=\"Next\" (click)=\"changeToNextPage($event)\">\n                </a>\n                </li>\n                <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-end fa fa-lg fa-angle-double-right\" aria-label=\"Last\" (click)=\"changeToLastPage($event)\">\n                </a>\n                </li>\n            </ul>\n            </nav>\n        </div>\n        <span class=\"slick-pagination-settings\">\n            <select id=\"items-per-page-label\" [value]=\"itemsPerPage\" (change)=\"onChangeItemPerPage($event)\">\n            <option value=\"{{pageSize}}\" *ngFor=\"let pageSize of paginationPageSizes;\">{{pageSize}}</option>\n            </select>\n            items per page,\n            <span class=\"slick-pagination-count\">\n            {{dataFrom}}-{{dataTo}} of {{totalItems}} items\n            </span>\n        </span>\n        </div>\n  "
+                template: "\n    <div class=\"slick-pagination\">\n        <div class=\"slick-pagination-nav\">\n            <nav aria-label=\"Page navigation\">\n            <ul class=\"pagination\">\n                <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-first fa fa-angle-double-left\" aria-label=\"First\" (click)=\"changeToFirstPage($event)\">\n                </a>\n                </li>\n                <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-prev fa fa-angle-left\" aria-label=\"Previous\" (click)=\"changeToPreviousPage($event)\">\n                </a>\n                </li>\n            </ul>\n            </nav>\n\n            <div class=\"slick-page-number\">\n                <span [translate]=\"'PAGE_X_OF_Y'\" [translateParams]=\"{ x: pageNumber, y: pageCount }\"></span>\n            </div>\n\n            <nav aria-label=\"Page navigation\">\n            <ul class=\"pagination\">\n                <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-next text-center fa fa-lg fa-angle-right\" aria-label=\"Next\" (click)=\"changeToNextPage($event)\">\n                </a>\n                </li>\n                <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n                <a class=\"page-link icon-seek-end fa fa-lg fa-angle-double-right\" aria-label=\"Last\" (click)=\"changeToLastPage($event)\">\n                </a>\n                </li>\n            </ul>\n            </nav>\n        </div>\n        <span class=\"slick-pagination-settings\">\n            <select id=\"items-per-page-label\" [value]=\"itemsPerPage\" (change)=\"onChangeItemPerPage($event)\">\n            <option value=\"{{pageSize}}\" *ngFor=\"let pageSize of paginationPageSizes;\">{{pageSize}}</option>\n            </select>\n            <span [translate]=\"'ITEMS_PER_PAGE'\"></span>,\n            <span class=\"slick-pagination-count\">\n                <span [translate]=\"'FROM_TO_OF_TOTAL_ITEMS'\" [translateParams]=\"{ from: dataFrom, to: dataTo, totalItems: totalItems }\"></span>\n            </span>\n        </span>\n        </div>\n  "
             },] },
     { type: core$1.Injectable },
 ];
@@ -12128,6 +12131,7 @@ SlickPaginationComponent.decorators = [
 SlickPaginationComponent.ctorParameters = function () { return [
     { type: FilterService, },
     { type: SortService, },
+    { type: core.TranslateService, },
 ]; };
 SlickPaginationComponent.propDecorators = {
     'gridPaginationOptions': [{ type: core$1.Input },],
@@ -33601,7 +33605,8 @@ var AngularSlickgridModule = /** @class */ (function () {
 AngularSlickgridModule.decorators = [
     { type: core$1.NgModule, args: [{
                 imports: [
-                    common.CommonModule
+                    common.CommonModule,
+                    core.TranslateModule
                 ],
                 declarations: [
                     AngularSlickgridComponent,

@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSlickgridComponent } from './../components/angular-slickgrid.component';
@@ -14,7 +15,8 @@ import { SortService } from './../services/sort.service';
 
 @NgModule({
   imports: [
-    CommonModule
+    CommonModule,
+    TranslateModule
   ],
   declarations: [
     AngularSlickgridComponent,

@@ -14,7 +14,7 @@
         </nav>
 
         <div class="slick-page-number">
-        page {{pageNumber}} of {{pageCount}}
+            <span [translate]="'PAGE_X_OF_Y'" [translateParams]="{ x: pageNumber, y: pageCount }"></span>
         </div>
 
         <nav aria-label="Page navigation">
@@ -34,9 +34,9 @@
         <select id="items-per-page-label" [value]="itemsPerPage" (change)="onChangeItemPerPage($event)">
         <option value="{{pageSize}}" *ngFor="let pageSize of paginationPageSizes;">{{pageSize}}</option>
         </select>
-        items per page,
+        <span [translate]="'ITEMS_PER_PAGE'"></span>,
         <span class="slick-pagination-count">
-        {{dataFrom}}-{{dataTo}} of {{totalItems}} items
+            <span [translate]="'FROM_TO_OF_TOTAL_ITEMS'" [translateParams]="{ from: dataFrom, to: dataTo, totalItems: totalItems }"></span>
         </span>
     </span>
     </div>

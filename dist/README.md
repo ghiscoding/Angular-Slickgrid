@@ -40,12 +40,12 @@ This is a work in progress, but so far here are some of the features that `angul
   - Optimized DataView which brings a lot of functionalities (sort, grouping, and more)
     - even server side data is saved into the SlickGrid DataView
   - All the [SlickGrid Events](https://github.com/6pac/SlickGrid/wiki/Grid-Events) are supported, see the [Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-&-DataView-Events)
+- Localization support with `ngx-translate`, please read the [Wiki - Localization](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Localization)
 - ... more to come
 
 ## Missing features (planned items, not necessarily in order of execution)
 The following are SlickGrid features which are not yet included in this library but will be in the eventual future.
 - Export to CSV
-- Support of Locale with `ngx-translate`
 - Filters to support multi-select dropdown and eventually custom filters
 
 ### License

@@ -12,6 +12,12 @@
   "SYNCHRONOUS_RESIZE": "Synchronous resize",
   "TOGGLE_FILTER_ROW": "Toggle Filter Row",
 
+  "BILLING": {
+    "ADDRESS": {
+      "STREET": "Billing Address Street",
+      "ZIP": "Billing Address Zip"
+    }
+  },
   "DURATION": "Duration",
   "COMPANY": "Company",
   "COMPLETED": "Completed",
