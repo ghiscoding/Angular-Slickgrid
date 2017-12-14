@@ -11,4 +11,5 @@ export interface GraphqlServiceOption extends BackendServiceOption {
   filteringOptions?: GraphqlFilteringOption[];
   sortingOptions?: GraphqlSortingOption[];
   dataFilters?: string[];
+  keepArgumentFieldDoubleQuotes?: boolean;
 }

@@ -44,5 +44,5 @@ export declare class GraphqlService implements BackendService {
      * @param enumSearchWords array of enum words to filter
      * @returns outputStr output string
      */
-    trimDoubleQuotesOnEnumField(inputStr: string, enumSearchWords: string[]): string;
+    trimDoubleQuotesOnEnumField(inputStr: string, enumSearchWords: string[], keepArgumentFieldDoubleQuotes: any): string;
 }

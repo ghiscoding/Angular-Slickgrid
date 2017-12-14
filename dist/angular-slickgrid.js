@@ -12351,7 +12351,7 @@ class GraphqlService {
         datasetQb.filter(datasetFilters);
         queryQb.find(datasetQb);
         const /** @type {?} */ enumSearchProperties = ['direction:', 'field:', 'operator:'];
-        return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
+        return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.serviceOptions.keepArgumentFieldDoubleQuotes);
     }
     /**
      * From an input array of strings, we want to build a GraphQL query string.
@@ -12542,17 +12542,22 @@ class GraphqlService {
      * query { users (orderBy:[{field:"billing.street.name", direction: ASC}}
      * @param {?} inputStr input string
      * @param {?} enumSearchWords array of enum words to filter
+     * @param {?} keepArgumentFieldDoubleQuotes
      * @return {?} outputStr output string
      */
-    trimDoubleQuotesOnEnumField(inputStr, enumSearchWords) {
+    trimDoubleQuotesOnEnumField(inputStr, enumSearchWords, keepArgumentFieldDoubleQuotes) {
         const /** @type {?} */ patternWordInQuotes = `\s?((field:\s*)?".*?")`;
         let /** @type {?} */ patternRegex = enumSearchWords.join(patternWordInQuotes + '|');
         patternRegex += patternWordInQuotes; // the last one should also have the pattern but without the pipe "|"
         // example with (field: & direction:):  /field:s?(".*?")|direction:s?(".*?")/
         const /** @type {?} */ reg = new RegExp(patternRegex, 'g');
-        return inputStr.replace(reg, function (group1, group2, group3) {
+        return inputStr.replace(reg, (group1, group2, group3) => {
             // remove double quotes except when the string starts with a "field:"
-            const /** @type {?} */ rep = (group1.startsWith('field:') && group1.includes('.')) ? group1 : group1.replace(/"/g, '');
+            let /** @type {?} */ removeDoubleQuotes = true;
+            if (group1.startsWith('field:') && keepArgumentFieldDoubleQuotes) {
+                removeDoubleQuotes = false;
+            }
+            const /** @type {?} */ rep = removeDoubleQuotes ? group1.replace(/"/g, '') : group1;
             return rep;
         });
     }

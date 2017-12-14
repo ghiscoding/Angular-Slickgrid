@@ -84,8 +84,8 @@ export class GridGraphqlComponent implements OnInit {
       }
     };
 
-    const paginationOption = this.getPaginationOption(this.isWithCursor);
-    this.graphqlService.initOptions(paginationOption);
+    const initOptions = this.getPaginationOption(this.isWithCursor);
+    this.graphqlService.initOptions(initOptions);
   }
 
   displaySpinner(isProcessing) {
@@ -140,6 +140,9 @@ export class GridGraphqlComponent implements OnInit {
         }
       };
     }
+    // when dealing with complex objects, we want to keep our field name with double quotes
+    // example with gender: query { users (orderBy:[{field:"gender",direction:ASC}]) {}
+    paginationOption.keepArgumentFieldDoubleQuotes = true;
     return paginationOption;
   }
 

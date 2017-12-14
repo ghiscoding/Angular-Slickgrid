@@ -64,7 +64,7 @@ export class GraphqlService implements BackendService {
     queryQb.find(datasetQb);
 
     const enumSearchProperties = ['direction:', 'field:', 'operator:'];
-    return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
+    return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.serviceOptions.keepArgumentFieldDoubleQuotes);
   }
 
   /**
@@ -293,7 +293,7 @@ export class GraphqlService implements BackendService {
    * @param enumSearchWords array of enum words to filter
    * @returns outputStr output string
    */
-  trimDoubleQuotesOnEnumField(inputStr: string, enumSearchWords: string[]) {
+  trimDoubleQuotesOnEnumField(inputStr: string, enumSearchWords: string[], keepArgumentFieldDoubleQuotes) {
     const patternWordInQuotes = `\s?((field:\s*)?".*?")`;
     let patternRegex = enumSearchWords.join(patternWordInQuotes + '|');
     patternRegex += patternWordInQuotes; // the last one should also have the pattern but without the pipe "|"
@@ -301,9 +301,13 @@ export class GraphqlService implements BackendService {
     // example with (field: & direction:):  /field:s?(".*?")|direction:s?(".*?")/
     const reg = new RegExp(patternRegex, 'g');
 
-    return inputStr.replace(reg, function (group1, group2, group3) {
+    return inputStr.replace(reg, (group1, group2, group3) => {
       // remove double quotes except when the string starts with a "field:"
-      const rep = (group1.startsWith('field:') && group1.includes('.')) ? group1 : group1.replace(/"/g, '');
+      let removeDoubleQuotes = true;
+      if (group1.startsWith('field:') && keepArgumentFieldDoubleQuotes) {
+        removeDoubleQuotes = false;
+      }
+      const rep = removeDoubleQuotes ? group1.replace(/"/g, '') : group1;
       return rep;
     });
   }

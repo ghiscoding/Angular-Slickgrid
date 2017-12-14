@@ -47,6 +47,7 @@ export interface GridOption {
     multiColumnSort?: boolean;
     onBackendEventApi?: BackendEventChanged;
     pagination?: Pagination;
+    params?: any;
     registerPlugins?: any | any[];
     rowHeight?: number;
     rowSelectionOptions?: {
