@@ -10589,8 +10589,7 @@ var GraphqlService = /** @class */ (function () {
         datasetQb.filter(datasetFilters);
         queryQb.find(datasetQb);
         var /** @type {?} */ enumSearchProperties = ['direction:', 'field:', 'operator:'];
-        var /** @type {?} */ output = this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
-        return output.replace('\\', '\\\\').replace('\/', '\/\/'); // also escape slashes
+        return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
     };
     /**
      * From an input array of strings, we want to build a GraphQL query string.
@@ -10694,7 +10693,6 @@ var GraphqlService = /** @class */ (function () {
                     }
                     // escaping the search value
                     searchValue = searchValue.replace("'", "''"); // escape single quotes by doubling them
-                    searchValue = encodeURIComponent(searchValue); // encode URI of the final search value
                     if (operator === '*' || lastValueChar === '*') {
                         operator = (operator === '*') ? 'endsWith' : 'startsWith';
                     }
@@ -33311,7 +33309,6 @@ var GlobalGridOptions = {
     explicitInitialization: true,
     forceFitColumns: false,
     gridMenu: {
-        columnTitle: 'Columns',
         iconCssClass: 'fa fa-bars',
         menuWidth: 16,
         resizeOnShowHeaderRow: false
