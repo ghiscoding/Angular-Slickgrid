@@ -64,7 +64,8 @@ export class GraphqlService implements BackendService {
     queryQb.find(datasetQb);
 
     const enumSearchProperties = ['direction:', 'field:', 'operator:'];
-    return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
+    const output = this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties);
+    return output.replace('\\', '\\\\').replace('\/', '\/\/'); // also escape slashes
   }
 
   /**
