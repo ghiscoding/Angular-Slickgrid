@@ -162,57 +162,21 @@ label {
 // Checkbox Selector Plugin
 // ----------------------------------------------
 
-.slick-cell-checkboxsel {
-  border: $row-checkbox-selector-border;
-  background: $row-checkbox-selector-background;
-  /*
-  input[type="checkbox"]{
-    display:none;
-  }
-  input[type="checkbox"] + label {
-    color: #88E2E2;
-    font-size: 25px;
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
-  }
-  input[type="checkbox"]:checked + label {
-    background: #fff;
-  }
-  input[type="checkbox"] + label:before {
-    display:inline-block;
-    content: "\f096";
-    cursor:pointer;
-  }
-
-  input[type="checkbox"]:checked + label:before {
-    content:"\f046";
-    position: relative;
-    left: 2px;
-  }
-  */
+.slickgrid-container input[type=checkbox] {
+  display:none;  /* to hide the checkbox itself */
 }
-#selector-all-btn.slick-selector {
-  border-right: $selector-border-right !important;
-  .selector-checkbox {
-    opacity: 0.1;
-    font-size: ($font-size-base-value + 2px) !important;
+.slickgrid-container input[type=checkbox] + label:before {
+   font-family: $icon-font-family;
+   color: $chekbox-selector-color;
+   font-weight: bold;
+   display: inline-block;
+   content: $chekbox-selector-icon;
+   font-size: $chekbox-selector-size;
+   cursor: pointer;
+ }
+ .slickgrid-container input[type=checkbox] + label:before {
+   opacity: $chekbox-selector-opacity; /* unchecked icon */
   }
-  .selected {
-    .selector-checkbox {
-      opacity: 1;
-    }
+ .slickgrid-container input[type=checkbox]:checked + label:before {
+   opacity: 1; /* checked icon */
   }
-}
-.slick-selector {
-  border-right: $selector-border-right !important;
-  .selector-checkbox {
-    opacity: 0.1;
-    font-size: ($font-size-base-value + 2px) !important;
-  }
-}
-.slick-selector.selected {
-  .selector-checkbox {
-    opacity: 1;
-  }
-}
