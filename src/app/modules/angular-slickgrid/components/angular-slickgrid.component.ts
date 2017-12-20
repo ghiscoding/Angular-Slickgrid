@@ -138,6 +138,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.translate.onLangChange.subscribe((event) => {
       if (options.enableTranslate) {
         this.controlAndPluginService.translateHeaders();
+        this.controlAndPluginService.translateColumnPicker();
         this.controlAndPluginService.translateGridMenu();
       }
     });
