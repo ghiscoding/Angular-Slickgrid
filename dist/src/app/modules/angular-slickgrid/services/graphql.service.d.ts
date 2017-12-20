@@ -6,7 +6,7 @@ export declare class GraphqlService implements BackendService {
      * Build the GraphQL query, since the service include/exclude cursor, the output query will be different.
      * @param serviceOptions GraphqlServiceOption
      */
-    buildQuery(serviceOptions?: GraphqlServiceOption): string;
+    buildQuery(): string;
     /**
      * From an input array of strings, we want to build a GraphQL query string.
      * The process has to take the dot notation and parse it into a valid GraphQL query
@@ -18,7 +18,7 @@ export declare class GraphqlService implements BackendService {
      * firstName, lastName, shipping{address{street, zip}}
      * @param inputArray
      */
-    buildFilterQuery(inputArray: any): string;
+    buildFilterQuery(inputArray: string[]): string;
     initOptions(serviceOptions?: GraphqlServiceOption): void;
     resetPaginationOptions(): void;
     updateOptions(serviceOptions?: GraphqlServiceOption): void;
@@ -44,5 +44,5 @@ export declare class GraphqlService implements BackendService {
      * @param enumSearchWords array of enum words to filter
      * @returns outputStr output string
      */
-    trimDoubleQuotesOnEnumField(inputStr: string, enumSearchWords: string[], keepArgumentFieldDoubleQuotes: any): string;
+    trimDoubleQuotesOnEnumField(inputStr: string, enumSearchWords: string[], keepArgumentFieldDoubleQuotes: boolean): string;
 }

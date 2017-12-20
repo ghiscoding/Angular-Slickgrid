@@ -10553,22 +10553,34 @@ var GraphqlService = /** @class */ (function () {
     }
     /**
      * Build the GraphQL query, since the service include/exclude cursor, the output query will be different.
-     * @param {?=} serviceOptions GraphqlServiceOption
      * @return {?}
      */
-    GraphqlService.prototype.buildQuery = function (serviceOptions) {
-        if (!this.serviceOptions.datasetName || !this.serviceOptions.dataFilters) {
-            throw new Error('GraphQL Service requires "datasetName" & "dataFilters" properties for it to work');
+    GraphqlService.prototype.buildQuery = function () {
+        if (!this.serviceOptions || !this.serviceOptions.datasetName || (!this.serviceOptions.columnIds && !this.serviceOptions.dataFilters && !this.serviceOptions.columnDefinitions)) {
+            throw new Error('GraphQL Service requires "datasetName" & ("dataFilters" or "columnDefinitions") properties for it to work');
         }
         var /** @type {?} */ queryQb = new GraphqlQueryBuilder('query');
         var /** @type {?} */ datasetQb = new GraphqlQueryBuilder(this.serviceOptions.datasetName);
         var /** @type {?} */ pageInfoQb = new GraphqlQueryBuilder('pageInfo');
         var /** @type {?} */ dataQb = (this.serviceOptions.isWithCursor) ? new GraphqlQueryBuilder('edges') : new GraphqlQueryBuilder('nodes');
-        var /** @type {?} */ filters = this.buildFilterQuery(this.serviceOptions.dataFilters);
+        // get all the columnds Ids for the filters to work
+        var /** @type {?} */ columnIds;
+        if (this.serviceOptions.columnDefinitions) {
+            columnIds = Array.isArray(this.serviceOptions.columnDefinitions) ? this.serviceOptions.columnDefinitions.map(function (column) { return column.field; }) : [];
+        }
+        else {
+            columnIds = this.serviceOptions.columnIds || this.serviceOptions.dataFilters || [];
+        }
+        // Slickgrid also requires the "id" field to be part of DataView
+        // push it to the GraphQL query if it wasn't already part of the list
+        if (columnIds.indexOf('id') === -1) {
+            columnIds.push('id');
+        }
+        var /** @type {?} */ filters = this.buildFilterQuery(columnIds);
         if (this.serviceOptions.isWithCursor) {
             // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
             pageInfoQb.find('hasNextPage', 'endCursor');
-            dataQb.find(['cursor', { 'node': filters }]);
+            dataQb.find(['cursor', { node: filters }]);
         }
         else {
             // ...pageInfo { hasNextPage }, nodes { _filters_ }
@@ -10577,7 +10589,7 @@ var GraphqlService = /** @class */ (function () {
         }
         datasetQb.find(['totalCount', pageInfoQb, dataQb]);
         // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
-        var /** @type {?} */ datasetFilters = this.serviceOptions.paginationOptions;
+        var /** @type {?} */ datasetFilters = (this.serviceOptions.paginationOptions);
         if (this.serviceOptions.sortingOptions) {
             // orderBy: [{ field:x, direction: 'ASC' }]
             datasetFilters.orderBy = this.serviceOptions.sortingOptions;
@@ -10590,7 +10602,7 @@ var GraphqlService = /** @class */ (function () {
         datasetQb.filter(datasetFilters);
         queryQb.find(datasetQb);
         var /** @type {?} */ enumSearchProperties = ['direction:', 'field:', 'operator:'];
-        return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.serviceOptions.keepArgumentFieldDoubleQuotes);
+        return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.serviceOptions.keepArgumentFieldDoubleQuotes || false);
     };
     /**
      * From an input array of strings, we want to build a GraphQL query string.
@@ -10660,6 +10672,9 @@ var GraphqlService = /** @class */ (function () {
         var _this = this;
         var /** @type {?} */ searchByArray = [];
         var /** @type {?} */ serviceOptions = args.grid.getOptions();
+        if (serviceOptions.onBackendEventApi === undefined || !serviceOptions.onBackendEventApi.filterTypingDebounce) {
+            throw new Error('Something went wrong in the GraphqlService, "onBackendEventApi" is not initialized');
+        }
         var /** @type {?} */ debounceTypingDelay = 0;
         if (event.type === 'keyup' || event.type === 'keydown') {
             debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || 700;
@@ -11632,7 +11647,7 @@ var ControlAndPluginService = /** @class */ (function () {
         this._columnDefinitions = columnDefinitions;
         this.visibleColumns = columnDefinitions;
         if (options.enableColumnPicker) {
-            this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
+            this.columnPickerControl = this.createColumnPicker(grid, columnDefinitions, options);
         }
         if (options.enableGridMenu) {
             this.gridMenuControl = this.createGridMenu(grid, columnDefinitions, options);
@@ -11695,6 +11710,21 @@ var ControlAndPluginService = /** @class */ (function () {
      * @param {?} options
      * @return {?}
      */
+    ControlAndPluginService.prototype.createColumnPicker = function (grid, columnDefinitions, options) {
+        // localization support for the picker
+        var /** @type {?} */ forceFitTitle = options.enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : 'Force fit columns';
+        var /** @type {?} */ syncResizeTitle = options.enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : 'Synchronous resize';
+        options.columnPicker = options.columnPicker || {};
+        options.columnPicker.forceFitTitle = options.columnPicker.forceFitTitle || forceFitTitle;
+        options.columnPicker.syncResizeTitle = options.columnPicker.syncResizeTitle || syncResizeTitle;
+        this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
+    };
+    /**
+     * @param {?} grid
+     * @param {?} columnDefinitions
+     * @param {?} options
+     * @return {?}
+     */
     ControlAndPluginService.prototype.createGridMenu = function (grid, columnDefinitions, options) {
         var _this = this;
         this.prepareGridMenu(grid, options);
@@ -11703,24 +11733,6 @@ var ControlAndPluginService = /** @class */ (function () {
             gridMenuControl.onBeforeMenuShow.subscribe(function (e, args) {
                 if (options.gridMenu && typeof options.gridMenu.onBeforeMenuShow === 'function') {
                     options.gridMenu.onBeforeMenuShow(e, args);
-                }
-                else {
-                    // when using i18n with Grid Menu, we have a problem with the last 2 checkbox
-                    // they are written in plain English within the SlickGrid Controls
-                    // and so we don't have access directly to their text, however with a jQuery hack,
-                    // we can somehow change the text with jQuery but it's very patchy
-                    if (options.enableTranslate) {
-                        setTimeout(function () {
-                            var /** @type {?} */ forceFitElm = jquery("label:contains('Force fit columns')");
-                            var /** @type {?} */ syncResizeElm = jquery("label:contains('Synchronous resize')");
-                            if (forceFitElm && forceFitElm[0] && forceFitElm[0].lastChild && forceFitElm[0].lastChild.textContent) {
-                                forceFitElm[0].lastChild.textContent = _this.translate.instant('FORCE_FIT_COLUMNS');
-                            }
-                            if (syncResizeElm && syncResizeElm[0] && syncResizeElm[0].lastChild && syncResizeElm[0].lastChild.textContent) {
-                                syncResizeElm[0].lastChild.textContent = _this.translate.instant('SYNCHRONOUS_RESIZE');
-                            }
-                        }, 10);
-                    }
                 }
             });
             gridMenuControl.onCommand.subscribe(function (e, args) {
@@ -11843,7 +11855,7 @@ var ControlAndPluginService = /** @class */ (function () {
                 };
             }
         }
-        // add the custom command title if there's no command
+        // add the custom command title if there are commands
         if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
             var /** @type {?} */ customTitle = options.enableTranslate ? this.translate.instant('COMMANDS') : 'Commands';
             options.gridMenu.customTitle = options.gridMenu.customTitle || customTitle;
@@ -11856,14 +11868,33 @@ var ControlAndPluginService = /** @class */ (function () {
      */
     ControlAndPluginService.prototype.prepareGridMenu = function (grid, options) {
         var /** @type {?} */ columnTitle = options.enableTranslate ? this.translate.instant('COLUMNS') : 'Columns';
+        var /** @type {?} */ forceFitTitle = options.enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : 'Force fit columns';
+        var /** @type {?} */ syncResizeTitle = options.enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : 'Synchronous resize';
         options.gridMenu = options.gridMenu || {};
         options.gridMenu.columnTitle = options.gridMenu.columnTitle || columnTitle;
+        options.gridMenu.forceFitTitle = options.gridMenu.forceFitTitle || forceFitTitle;
+        options.gridMenu.syncResizeTitle = options.gridMenu.syncResizeTitle || syncResizeTitle;
         options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
         options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
         options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
         options.gridMenu.customItems = options.gridMenu.customItems || [];
         this.addGridMenuCustomCommands(grid, options);
         // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
+    };
+    /**
+     * Translate the Column Picker and it's last 2 checkboxes
+     * Note that the only way that seems to work is to destroy and re-create the Column Picker
+     * Changing only the columnPicker.columnTitle with i18n translate was not enough.
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.translateColumnPicker = function () {
+        // destroy and re-create the Column Picker which seems to be the only way to translate properly
+        if (this.columnPickerControl) {
+            this.columnPickerControl.destroy();
+            this.columnPickerControl = null;
+        }
+        this._gridOptions.columnPicker = undefined;
+        this.createColumnPicker(this._grid, this.visibleColumns, this._gridOptions);
     };
     /**
      * Translate the Grid Menu ColumnTitle and CustomTitle.
@@ -28065,7 +28096,7 @@ if (typeof Slick === "undefined") {
             return totalWidth;
         }
         function getHeadersWidth() {
-            var headersWidth = getColumnTotalWidth(true);
+            var headersWidth = getColumnTotalWidth(!options.autoHeight);
             return Math.max(headersWidth, viewportW) + 1000;
         }
         function getCanvasWidth() {
@@ -29170,11 +29201,14 @@ if (typeof Slick === "undefined") {
                     cellCss += (" " + cellCssClasses[key][row][m.id]);
                 }
             }
-            var value = null;
+            var value = null, formatterResult = '';
             if (item) {
                 value = getDataItemValueForColumn(item, m);
+                formatterResult = getFormatter(row, m)(row, cell, value, m, item);
+                if (formatterResult === null || formatterResult === undefined) {
+                    formatterResult = '';
+                }
             }
-            var formatterResult = getFormatter(row, m)(row, cell, value, m, item);
             // get addl css class names from object type formatter return and from string type return of onBeforeAppendCell
             var addlCssClasses = trigger(self.onBeforeAppendCell, { row: row, cell: cell, grid: self, value: value, dataContext: item }) || '';
             addlCssClasses += (formatterResult.addClasses ? (addlCssClasses ? ' ' : '') + formatterResult.addClasses : '');
@@ -29945,6 +29979,21 @@ if (typeof Slick === "undefined") {
             var handled = e.isImmediatePropagationStopped();
             var keyCode = Slick.keyCode;
             if (!handled) {
+                if (!e.shiftKey && !e.altKey) {
+                    if (options.editable && currentEditor && currentEditor.keyCaptureList) {
+                        if (currentEditor.keyCaptureList.indexOf(e.which) > -1) {
+                            return;
+                        }
+                    }
+                    if (e.which == keyCode.HOME) {
+                        handled = (e.ctrlKey) ? navigateTop() : navigateRowStart();
+                    }
+                    else if (e.which == keyCode.END) {
+                        handled = (e.ctrlKey) ? navigateBottom() : navigateRowEnd();
+                    }
+                }
+            }
+            if (!handled) {
                 if (!e.shiftKey && !e.altKey && !e.ctrlKey) {
                     // editor may specify an array of keys to bubble
                     if (options.editable && currentEditor && currentEditor.keyCaptureList) {
@@ -30488,6 +30537,40 @@ if (typeof Slick === "undefined") {
         function navigatePageUp() {
             scrollPage(-1);
         }
+        function navigateTop() {
+            navigateToRow(0);
+        }
+        function navigateBottom() {
+            navigateToRow(getDataLength() - 1);
+        }
+        function navigateToRow(row) {
+            var num_rows = getDataLength();
+            if (!num_rows)
+                return true;
+            if (row < 0)
+                row = 0;
+            else if (row >= num_rows)
+                row = num_rows - 1;
+            scrollCellIntoView(row, 0, true);
+            if (options.enableCellNavigation && activeRow != null) {
+                var cell = 0, prevCell = null;
+                var prevActivePosX = activePosX;
+                while (cell <= activePosX) {
+                    if (canCellBeActive(row, cell)) {
+                        prevCell = cell;
+                    }
+                    cell += getColspan(row, cell);
+                }
+                if (prevCell !== null) {
+                    setActiveCellInternal(getCellNode(row, prevCell));
+                    activePosX = prevActivePosX;
+                }
+                else {
+                    resetActiveCell();
+                }
+            }
+            return true;
+        }
         function getColspan(row, cell) {
             var metadata = data.getItemMetadata && data.getItemMetadata(row);
             if (!metadata || !metadata.columns) {
@@ -30673,6 +30756,26 @@ if (typeof Slick === "undefined") {
             }
             return pos;
         }
+        function gotoRowStart(row, cell, posX) {
+            var newCell = findFirstFocusableCell(row);
+            if (newCell === null)
+                return null;
+            return {
+                "row": row,
+                "cell": newCell,
+                "posX": posX
+            };
+        }
+        function gotoRowEnd(row, cell, posX) {
+            var newCell = findLastFocusableCell(row);
+            if (newCell === null)
+                return null;
+            return {
+                "row": row,
+                "cell": newCell,
+                "posX": posX
+            };
+        }
         function navigateRight() {
             return navigate("right");
         }
@@ -30690,6 +30793,12 @@ if (typeof Slick === "undefined") {
         }
         function navigatePrev() {
             return navigate("prev");
+        }
+        function navigateRowStart() {
+            return navigate("home");
+        }
+        function navigateRowEnd() {
+            return navigate("end");
         }
         /**
          * @param {string} dir Navigation direction.
@@ -30712,7 +30821,9 @@ if (typeof Slick === "undefined") {
                 "left": -1,
                 "right": 1,
                 "prev": -1,
-                "next": 1
+                "next": 1,
+                "home": -1,
+                "end": 1
             };
             tabbingDirection = tabbingDirections[dir];
             var stepFunctions = {
@@ -30721,7 +30832,9 @@ if (typeof Slick === "undefined") {
                 "left": gotoLeft,
                 "right": gotoRight,
                 "prev": gotoPrev,
-                "next": gotoNext
+                "next": gotoNext,
+                "home": gotoRowStart,
+                "end": gotoRowEnd
             };
             var stepFn = stepFunctions[dir];
             var pos = stepFn(activeRow, activeCell, activePosX);
@@ -30931,7 +31044,7 @@ if (typeof Slick === "undefined") {
         //////////////////////////////////////////////////////////////////////////////////////////////
         // Public API
         $.extend(this, {
-            "slickGridVersion": "2.3.10",
+            "slickGridVersion": "2.3.12",
             // Events
             "onScroll": new Slick.Event(),
             "onSort": new Slick.Event(),
@@ -31014,6 +31127,7 @@ if (typeof Slick === "undefined") {
             "getHeadersWidth": getHeadersWidth,
             "getCanvasWidth": getCanvasWidth,
             "focus": setFocus,
+            "scrollTo": scrollTo,
             "getCellFromPoint": getCellFromPoint,
             "getCellFromEvent": getCellFromEvent,
             "getActiveCell": getActiveCell,
@@ -31035,6 +31149,10 @@ if (typeof Slick === "undefined") {
             "navigateRight": navigateRight,
             "navigatePageUp": navigatePageUp,
             "navigatePageDown": navigatePageDown,
+            "navigateTop": navigateTop,
+            "navigateBottom": navigateBottom,
+            "navigateRowStart": navigateRowStart,
+            "navigateRowEnd": navigateRowEnd,
             "gotoCell": gotoCell,
             "getTopPanel": getTopPanel,
             "setTopPanelVisibility": setTopPanelVisibility,
@@ -31067,7 +31185,10 @@ if (typeof Slick === "undefined") {
         var $menu;
         var columnCheckboxes;
         var defaults = {
-            fadeSpeed: 250
+            fadeSpeed: 250,
+            // the last 2 checkboxes titles
+            forceFitTitle: "Force fit columns",
+            syncResizeTitle: "Synchronous resize"
         };
         function init() {
             grid.onHeaderContextMenu.subscribe(handleHeaderContextMenu);
@@ -31076,8 +31197,9 @@ if (typeof Slick === "undefined") {
             $menu = $("<div class='slick-columnpicker' style='display:none' />").appendTo(document.body);
             var $close = $("<button type='button' class='close' data-dismiss='slick-columnpicker' aria-label='Close'><span class='close' aria-hidden='true'>&times;</span></button>").appendTo($menu);
             // user could pass a title on top of the columns list
-            if (options.columnPickerTitle) {
-                var $title = $("<div class='title'/>").append(options.columnPickerTitle);
+            if (options.columnPickerTitle || (options.columnPicker && options.columnPicker.columnTitle)) {
+                var columnTitle = options.columnPickerTitle || options.columnPicker.columnTitle;
+                var $title = $("<div class='title'/>").append(columnTitle);
                 $title.appendTo($menu);
             }
             $menu.on("click", updateColumn);
@@ -31117,20 +31239,22 @@ if (typeof Slick === "undefined") {
                     .prepend($input)
                     .appendTo($li);
             }
+            var forceFitTitle = (options.columnPicker && options.columnPicker.forceFitTitle) || defaults.forceFitTitle;
             $("<hr/>").appendTo($list);
             $li = $("<li />").appendTo($list);
             $input = $("<input type='checkbox' />").data("option", "autoresize");
             $("<label />")
-                .text("Force fit columns")
+                .text(forceFitTitle)
                 .prepend($input)
                 .appendTo($li);
             if (grid.getOptions().forceFitColumns) {
                 $input.attr("checked", "checked");
             }
+            var syncResizeTitle = (options.columnPicker && options.columnPicker.syncResizeTitle) || defaults.syncResizeTitle;
             $li = $("<li />").appendTo($list);
             $input = $("<input type='checkbox' />").data("option", "syncresize");
             $("<label />")
-                .text("Synchronous resize")
+                .text(syncResizeTitle)
                 .prepend($input)
                 .appendTo($li);
             if (grid.getOptions().syncColumnCellResize) {
@@ -31230,8 +31354,10 @@ if (typeof Slick === "undefined") {
         var columnCheckboxes;
         var _defaults = {
             fadeSpeed: 250,
+            forceFitTitle: "Force fit columns",
             menuWidth: 18,
-            resizeOnShowHeaderRow: false
+            resizeOnShowHeaderRow: false,
+            syncResizeTitle: "Synchronous resize"
         };
         function init(grid) {
             var gridMenuWidth = (_options.gridMenu && _options.gridMenu.menuWidth) || _defaults.menuWidth;
@@ -31348,20 +31474,22 @@ if (typeof Slick === "undefined") {
                     .prepend($input)
                     .appendTo($li);
             }
+            var forceFitTitle = (_options.gridMenu && _options.gridMenu.forceFitTitle) || _defaults.forceFitTitle;
             $("<hr/>").appendTo($list);
             $li = $("<li />").appendTo($list);
             $input = $("<input type='checkbox' />").data("option", "autoresize");
             $("<label />")
-                .text("Force fit columns")
+                .text(forceFitTitle)
                 .prepend($input)
                 .appendTo($li);
             if (_grid.getOptions().forceFitColumns) {
                 $input.attr("checked", "checked");
             }
+            var syncResizeTitle = (_options.gridMenu && _options.gridMenu.syncResizeTitle) || _defaults.syncResizeTitle;
             $li = $("<li />").appendTo($list);
             $input = $("<input type='checkbox' />").data("option", "syncresize");
             $("<label />")
-                .text("Synchronous resize")
+                .text(syncResizeTitle)
                 .prepend($input)
                 .appendTo($li);
             if (_grid.getOptions().syncColumnCellResize) {
@@ -31489,9 +31617,15 @@ if (typeof Slick === "undefined") {
     }
 })(jQuery);
 (function ($) {
-    function SlickGridPager(dataView, grid, $container) {
+    function SlickGridPager(dataView, grid, $container, options) {
         var $status;
+        var _options;
+        var _defaults = {
+            showAllText: "Showing all {rowCount} rows",
+            showPageText: "Showing page {pageNum} of {pageCount}"
+        };
         function init() {
+            _options = $.extend(true, {}, _defaults, options);
             dataView.onPagingInfoChanged.subscribe(function (e, pagingInfo) {
                 updatePager(pagingInfo);
             });
@@ -31599,10 +31733,10 @@ if (typeof Slick === "undefined") {
                 $container.find(".ui-icon-seek-prev").addClass("ui-state-disabled");
             }
             if (pagingInfo.pageSize == 0) {
-                $status.text("Showing all " + pagingInfo.totalRows + " rows");
+                $status.text(_options.showAllText.replace('{rowCount}', pagingInfo.totalRows + "").replace('{pageCount}', pagingInfo.totalPages + ""));
             }
             else {
-                $status.text("Showing page " + (pagingInfo.pageNum + 1) + " of " + pagingInfo.totalPages);
+                $status.text(_options.showPageText.replace('{pageNum}', pagingInfo.pageNum + "").replace('{pageCount}', pagingInfo.totalPages + ""));
             }
         }
         init();
@@ -32488,6 +32622,7 @@ if (typeof Slick === "undefined") {
             _handler.unsubscribeAll();
         }
         function handleSelectedRowsChanged(e, args) {
+            var UID = createUID();
             var selectedRows = _grid.getSelectedRows();
             var lookup = {}, row, i;
             for (i = 0; i < selectedRows.length; i++) {
@@ -32504,10 +32639,10 @@ if (typeof Slick === "undefined") {
             _selectedRowsLookup = lookup;
             _grid.render();
             if (selectedRows.length && selectedRows.length == _grid.getDataLength()) {
-                _grid.updateColumnHeader(_options.columnId, "<input type='checkbox' checked='checked'>", _options.toolTip);
+                _grid.updateColumnHeader(_options.columnId, "<input id='header-selector" + UID + "' type='checkbox' checked='checked'><label for='header-selector" + UID + "'></label>", _options.toolTip);
             }
             else {
-                _grid.updateColumnHeader(_options.columnId, "<input type='checkbox'>", _options.toolTip);
+                _grid.updateColumnHeader(_options.columnId, "<input id='header-selector" + UID + "' type='checkbox'><label for='header-selector" + UID + "'></label>", _options.toolTip);
             }
         }
         function handleKeyDown(e, args) {
@@ -32604,9 +32739,10 @@ if (typeof Slick === "undefined") {
             return _checkboxColumnCellIndex;
         }
         function getColumnDefinition() {
+            var UID = createUID();
             return {
                 id: _options.columnId,
-                name: "<input type='checkbox'>",
+                name: "<input id='header-selector" + UID + "' type='checkbox'><label for='header-selector" + UID + "'></label>",
                 toolTip: _options.toolTip,
                 field: "sel",
                 width: _options.width,
@@ -32616,11 +32752,15 @@ if (typeof Slick === "undefined") {
                 formatter: checkboxSelectionFormatter
             };
         }
+        function createUID() {
+            return Math.round(10000000 * Math.random());
+        }
         function checkboxSelectionFormatter(row, cell, value, columnDef, dataContext) {
+            var UID = createUID() + row;
             if (dataContext) {
                 return _selectedRowsLookup[row]
-                    ? "<input type='checkbox' checked='checked'>"
-                    : "<input type='checkbox'>";
+                    ? "<input id='selector" + UID + "' type='checkbox' checked='checked'><label for='selector" + UID + "'></label>"
+                    : "<input id='selector" + UID + "' type='checkbox'><label for='selector" + UID + "'></label>";
             }
             return null;
         }
@@ -33449,6 +33589,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.translate.onLangChange.subscribe(function (event) {
             if (options.enableTranslate) {
                 _this.controlAndPluginService.translateHeaders();
+                _this.controlAndPluginService.translateColumnPicker();
                 _this.controlAndPluginService.translateGridMenu();
             }
         });
