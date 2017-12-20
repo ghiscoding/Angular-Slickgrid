@@ -26,20 +26,35 @@ export class GraphqlService implements BackendService {
    * Build the GraphQL query, since the service include/exclude cursor, the output query will be different.
    * @param serviceOptions GraphqlServiceOption
    */
-  buildQuery(serviceOptions?: GraphqlServiceOption) {
-    if (!this.serviceOptions.datasetName || !this.serviceOptions.dataFilters) {
-      throw new Error('GraphQL Service requires "datasetName" & "dataFilters" properties for it to work');
+  buildQuery() {
+    if (!this.serviceOptions || !this.serviceOptions.datasetName || (!this.serviceOptions.columnIds && !this.serviceOptions.dataFilters && !this.serviceOptions.columnDefinitions)) {
+      throw new Error('GraphQL Service requires "datasetName" & ("dataFilters" or "columnDefinitions") properties for it to work');
     }
     const queryQb = new QueryBuilder('query');
     const datasetQb = new QueryBuilder(this.serviceOptions.datasetName);
     const pageInfoQb = new QueryBuilder('pageInfo');
     const dataQb = (this.serviceOptions.isWithCursor) ? new QueryBuilder('edges') : new QueryBuilder('nodes');
-    const filters = this.buildFilterQuery(this.serviceOptions.dataFilters);
+
+    // get all the columnds Ids for the filters to work
+    let columnIds: string[];
+    if (this.serviceOptions.columnDefinitions) {
+      columnIds = Array.isArray(this.serviceOptions.columnDefinitions) ? this.serviceOptions.columnDefinitions.map((column) => column.field) : [];
+    } else {
+      columnIds = this.serviceOptions.columnIds || this.serviceOptions.dataFilters || [];
+    }
+
+    // Slickgrid also requires the "id" field to be part of DataView
+    // push it to the GraphQL query if it wasn't already part of the list
+    if (!columnIds.includes('id')) {
+      columnIds.push('id');
+    }
+
+    const filters = this.buildFilterQuery(columnIds);
 
     if (this.serviceOptions.isWithCursor) {
       // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
       pageInfoQb.find('hasNextPage', 'endCursor');
-      dataQb.find(['cursor', { 'node': filters }]);
+      dataQb.find(['cursor', { node: filters }]);
     } else {
       // ...pageInfo { hasNextPage }, nodes { _filters_ }
       pageInfoQb.find('hasNextPage');
@@ -49,7 +64,7 @@ export class GraphqlService implements BackendService {
     datasetQb.find(['totalCount', pageInfoQb, dataQb]);
 
     // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
-    const datasetFilters: GraphqlDatasetFilter = this.serviceOptions.paginationOptions;
+    const datasetFilters: GraphqlDatasetFilter = this.serviceOptions.paginationOptions as GraphqlDatasetFilter;
     if (this.serviceOptions.sortingOptions) {
       // orderBy: [{ field:x, direction: 'ASC' }]
       datasetFilters.orderBy = this.serviceOptions.sortingOptions;
@@ -64,7 +79,7 @@ export class GraphqlService implements BackendService {
     queryQb.find(datasetQb);
 
     const enumSearchProperties = ['direction:', 'field:', 'operator:'];
-    return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.serviceOptions.keepArgumentFieldDoubleQuotes);
+    return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.serviceOptions.keepArgumentFieldDoubleQuotes || false);
   }
 
   /**
@@ -78,15 +93,15 @@ export class GraphqlService implements BackendService {
    * firstName, lastName, shipping{address{street, zip}}
    * @param inputArray
    */
-  buildFilterQuery(inputArray) {
+  buildFilterQuery(inputArray: string[]) {
 
-    const set = (o = {}, a) => {
+    const set = (o: any = {}, a: any) => {
       const k = a.shift();
       o[k] = a.length ? set(o[k], a) : null;
       return o;
     };
 
-    const output = inputArray.reduce((o, a) => set(o, a.split('.')), {});
+    const output = inputArray.reduce((o: any, a: string) => set(o, a.split('.')), {});
 
     return JSON.stringify(output)
       .replace(/\"|\:|null/g, '')
@@ -113,7 +128,7 @@ export class GraphqlService implements BackendService {
     } else {
       // first, last, offset
       paginationOptions = this.serviceOptions.paginationOptions as GraphqlPaginationOption;
-      paginationOptions.offset = 0 ;
+      paginationOptions.offset = 0;
     }
     this.updateOptions({ paginationOptions });
   }
@@ -128,6 +143,10 @@ export class GraphqlService implements BackendService {
   onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
     const searchByArray: GraphqlFilteringOption[] = [];
     const serviceOptions: BackendServiceOption = args.grid.getOptions();
+    if (serviceOptions.onBackendEventApi === undefined || !serviceOptions.onBackendEventApi.filterTypingDebounce) {
+      throw new Error('Something went wrong in the GraphqlService, "onBackendEventApi" is not initialized');
+    }
+
     let debounceTypingDelay = 0;
     if (event.type === 'keyup' || event.type === 'keydown') {
       debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || 700;
@@ -167,7 +186,6 @@ export class GraphqlService implements BackendService {
 
           // escaping the search value
           searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
-
           if (operator === '*' || lastValueChar === '*') {
             operator = (operator === '*') ? 'endsWith' : 'startsWith';
           }
@@ -293,11 +311,10 @@ export class GraphqlService implements BackendService {
    * @param enumSearchWords array of enum words to filter
    * @returns outputStr output string
    */
-  trimDoubleQuotesOnEnumField(inputStr: string, enumSearchWords: string[], keepArgumentFieldDoubleQuotes) {
+  trimDoubleQuotesOnEnumField(inputStr: string, enumSearchWords: string[], keepArgumentFieldDoubleQuotes: boolean) {
     const patternWordInQuotes = `\s?((field:\s*)?".*?")`;
     let patternRegex = enumSearchWords.join(patternWordInQuotes + '|');
     patternRegex += patternWordInQuotes; // the last one should also have the pattern but without the pipe "|"
-
     // example with (field: & direction:):  /field:s?(".*?")|direction:s?(".*?")/
     const reg = new RegExp(patternRegex, 'g');
 
