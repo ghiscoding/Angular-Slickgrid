@@ -1,6 +1,7 @@
+import { Column } from './../models/column.interface';
 import { Formatter } from './../models/formatter.interface';
 
-export const percentCompleteFormatter: Formatter = (row: number, cell: number, value: any, columnDef: any, dataContext: any): string => {
+export const percentCompleteFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any): string => {
   if (value === null || value === '') {
     return '-';
   } else if (value < 50) {
