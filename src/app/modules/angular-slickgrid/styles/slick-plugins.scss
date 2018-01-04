@@ -12,13 +12,11 @@
    * display way below the lower boundary of the column thus hiding them.
    */
   display: inline-block;
-  float: left;
   margin-bottom: 100px;
 }
 
 .slick-header-button {
   display: inline-block;
-  float: right;
   vertical-align: top;
   margin: 1px;
   /**
@@ -51,111 +49,111 @@
 // ----------------------------------------------
 
 .slick-header-menubutton {
- background-position: center center;
- background-repeat: no-repeat;
- cursor: pointer;
- display: none;
- position: absolute;
+  background-position: center center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  display: none;
+  position: absolute;
 
- // The next few items are already defined in the slick-headermenu.less file and it should stay that way, *unless* you also replace the button image included there.
- bottom: 0;
- right: 3px;
- top: 0;
- width: 14px;
+  // The next few items are already defined in the slick-headermenu.less file and it should stay that way, *unless* you also replace the button image included there.
+  bottom: 0;
+  right: 3px;
+  top: 0;
+  width: 14px;
 }
 .slick-header-menubutton:before {
- font-family: $icon-font-family;
- font-size: 14px;
- content: "\f13a";
+  font-family: $icon-font-family;
+  font-size: 14px;
+  content: "\f13a";
 }
 
 .slick-header-column:hover {
- .slick-header-menubutton {
-   display: inline-block;
- }
+  .slick-header-menubutton {
+    display: inline-block;
+  }
 }
 .slick-header-menu {
- background: none repeat scroll 0 0 white;
- border: 1px solid #BFBDBD;
- min-width: 175px;
- padding: 4px;
- z-index: 100000;
- cursor: default;
- display: inline-block;
- margin: 0;
- position: absolute;
+  background: none repeat scroll 0 0 white;
+  border: 1px solid #BFBDBD;
+  min-width: 175px;
+  padding: 4px;
+  z-index: 100000;
+  cursor: default;
+  display: inline-block;
+  margin: 0;
+  position: absolute;
 
- button {
-   border: 1px solid #BFBDBD;
-   background-color: white;
-   width: 45px;
-   padding: 4px;
-   margin: 4px 4px 4px 0;
- }
+  button {
+    border: 1px solid #BFBDBD;
+    background-color: white;
+    width: 45px;
+    padding: 4px;
+    margin: 4px 4px 4px 0;
+  }
 
- .filter {
-   border: 1px solid #BFBDBD;
-   font-size: 8pt;
-   height: 400px;
-   margin-top: 6px;
-   overflow: scroll;
-   padding: 4px;
-   white-space: nowrap;
-   width: 200px;
- }
+  .filter {
+    border: 1px solid #BFBDBD;
+    font-size: 8pt;
+    height: 400px;
+    margin-top: 6px;
+    overflow: scroll;
+    padding: 4px;
+    white-space: nowrap;
+    width: 200px;
+  }
 
- .textfilter {
-   & > label {
-     display: inline-block;
-     margin-left: 5px;
-     margin-right: 10px;
-   }
+  .textfilter {
+    & > label {
+      display: inline-block;
+      margin-left: 5px;
+      margin-right: 10px;
+    }
 
-   & > input[type=text] {
-     width: 70%;
-   }
- }
+    & > input[type=text] {
+      width: 70%;
+    }
+  }
 }
 
 label {
- display: block;
- margin-bottom: 5px;
+  display: block;
+  margin-bottom: 5px;
 }
 
 .slick-header-menuitem {
- border: 1px solid transparent;
- padding: 2px 4px;
- cursor: pointer;
- list-style: none outside none;
- margin: 0;
+  border: 1px solid transparent;
+  padding: 2px 4px;
+  cursor: pointer;
+  list-style: none outside none;
+  margin: 0;
 }
 
 .slick-header-menuicon {
- background-position: center center;
- background-repeat: no-repeat;
- display: inline-block;
- height: 16px;
- margin-right: 4px;
- vertical-align: middle;
- width: 16px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: inline-block;
+  height: 16px;
+  margin-right: 4px;
+  vertical-align: middle;
+  width: 16px;
 }
 
 .slick-header-menucontent {
- display: inline-block;
- vertical-align: middle;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .slick-header-menuitem:hover {
- border-color: #BFBDBD;
- background-color: rgb(246, 246, 246);
+  border-color: #BFBDBD;
+  background-color: rgb(246, 246, 246);
 }
 .slick-header-menuitem-disabled {
- border-color: transparent !important;
- background: inherit !important;
+  border-color: transparent !important;
+  background: inherit !important;
 }
 /* Disabled */
 .slick-header-menuitem-disabled {
- color: silver;
+  color: silver;
 }
 
 // ----------------------------------------------
@@ -166,17 +164,17 @@ label {
   display:none;  /* to hide the checkbox itself */
 }
 .slickgrid-container input[type=checkbox] + label:before {
-   font-family: $icon-font-family;
-   color: $chekbox-selector-color;
-   font-weight: bold;
-   display: inline-block;
-   content: $chekbox-selector-icon;
-   font-size: $chekbox-selector-size;
-   cursor: pointer;
- }
- .slickgrid-container input[type=checkbox] + label:before {
-   opacity: $chekbox-selector-opacity; /* unchecked icon */
-  }
- .slickgrid-container input[type=checkbox]:checked + label:before {
-   opacity: 1; /* checked icon */
-  }
+  font-family: $icon-font-family;
+  color: $chekbox-selector-color;
+  font-weight: bold;
+  display: inline-block;
+  content: $chekbox-selector-icon;
+  font-size: $chekbox-selector-size;
+  cursor: pointer;
+}
+.slickgrid-container input[type=checkbox] + label:before {
+  opacity: $chekbox-selector-opacity; /* unchecked icon */
+}
+.slickgrid-container input[type=checkbox]:checked + label:before {
+  opacity: 1; /* checked icon */
+}

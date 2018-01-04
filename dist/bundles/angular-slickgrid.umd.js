@@ -9938,8 +9938,20 @@ var FilterService = /** @class */ (function () {
      * @return {?}
      */
     FilterService.prototype.clearFilters = function () {
-        // remove the text inside each search input fields
-        jquery('.slick-headerrow-column .search-filter').val('');
+        // remove the text inside each search filter fields
+        jquery('.slick-headerrow-column .search-filter').each(function (index, elm) {
+            // clear the value and trigger an event
+            // the event is for GraphQL & OData Services to detect the changes and call a new query
+            switch (elm.tagName) {
+                case 'SELECT':
+                    jquery(elm).val('').trigger('change');
+                    break;
+                case 'INPUT':
+                default:
+                    jquery(elm).val('').trigger('keyup');
+                    break;
+            }
+        });
         // we need to loop through all columnFilters and delete them 1 by 1
         // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
         for (var /** @type {?} */ columnId in this._columnFilters) {
