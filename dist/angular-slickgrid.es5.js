@@ -9968,6 +9968,18 @@ var FilterService = /** @class */ (function () {
         }
     };
     /**
+     * @return {?}
+     */
+    FilterService.prototype.destroyFilters = function () {
+        // we need to loop through all columnFilters and delete them 1 by 1
+        // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
+        for (var /** @type {?} */ columnId in this._columnFilters) {
+            if (columnId && this._columnFilters[columnId]) {
+                delete this._columnFilters[columnId];
+            }
+        }
+    };
+    /**
      * @param {?} operator
      * @param {?} value1
      * @param {?} value2
@@ -33556,8 +33568,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
      */
     AngularSlickgridComponent.prototype.ngOnDestroy = function () {
         this._dataView = [];
+        this._gridOptions = {};
         this.controlAndPluginService.destroy();
-        this.filterService.clearFilters();
+        this.filterService.destroyFilters();
         this.resizer.destroy();
         this.grid.destroy();
     };

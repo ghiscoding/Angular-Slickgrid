@@ -19,6 +19,7 @@ export declare class FilterService {
     attachBackendOnFilterSubscribe(event: Event, args: any): Promise<void>;
     /** Clear the search filters (below the column titles) */
     clearFilters(): void;
+    destroyFilters(): void;
     testFilterCondition(operator: string, value1: any, value2: any): boolean;
     /**
      * Attach a local filter hook to the grid
