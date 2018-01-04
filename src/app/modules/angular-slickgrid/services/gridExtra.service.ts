@@ -90,7 +90,8 @@ export class GridExtraService {
     }
   }
 
-  /** Add an item (data item) to the datagrid
+  /**
+   * Add an item (data item) to the datagrid
    * @param object dataItem: item object holding all properties of that row
    */
   addItemToDatagrid(item) {
@@ -113,7 +114,8 @@ export class GridExtraService {
     const datasetLength = this._dataView.getLength();
   }
 
-  /** Update an existing item with new properties inside the datagrid
+  /**
+   * Update an existing item with new properties inside the datagrid
    * @param object item: item object holding all properties of that row
    */
   updateDataGridItem(item: any) {
