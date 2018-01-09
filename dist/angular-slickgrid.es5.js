@@ -9512,14 +9512,20 @@ var booleanFilterCondition = function (options) {
 };
 var testFilterCondition = function (operator, value1, value2) {
     switch (operator) {
-        case '<': return (value1 < value2);
-        case '<=': return (value1 <= value2);
-        case '>': return (value1 > value2);
-        case '>=': return (value1 >= value2);
+        case '<':
+        case 'LT': return (value1 < value2);
+        case '<=':
+        case 'LE': return (value1 <= value2);
+        case '>':
+        case 'GT': return (value1 > value2);
+        case '>=':
+        case 'GE': return (value1 >= value2);
         case '!=':
-        case '<>': return (value1 !== value2);
+        case '<>':
+        case 'NE': return (value1 !== value2);
         case '=':
-        case '==': return (value1 === value2);
+        case '==':
+        case 'EQ': return (value1 === value2);
     }
     return true;
 };
@@ -9638,13 +9644,17 @@ var FilterConditions = {
 var inputFilterTemplate = function (searchTerm, columnDef) {
     return "<input type=\"text\" class=\"form-control search-filter\" style=\"font-family: Segoe UI Symbol;\" placeholder=\"&#128269;\">";
 };
-var selectFilterTemplate = function (searchTerm, columnDef) {
+var selectFilterTemplate = function (searchTerm, columnDef, i18n) {
     if (!columnDef.filter.selectOptions) {
-        throw new Error("SelectOptions with value/label is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')");
+        throw new Error("SelectOptions with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')");
     }
     var /** @type {?} */ options = '';
     columnDef.filter.selectOptions.forEach(function (option) {
-        options += "<option value=\"" + option.value + "\">" + option.label + "</option>";
+        if (!option || (option.label === undefined && option.labelKey === undefined)) {
+            throw new Error("SelectOptions with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')");
+        }
+        var /** @type {?} */ textLabel = (option.labelKey && i18n && typeof i18n.instant === 'function') ? i18n.instant(option.labelKey) : option.label;
+        options += "<option value=\"" + option.value + "\">" + textLabel + "</option>";
     });
     return "<select class=\"form-control search-filter\">" + options + "</select>";
 };
@@ -9866,7 +9876,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var FilterService = /** @class */ (function () {
-    function FilterService() {
+    /**
+     * @param {?} translate
+     */
+    function FilterService(translate) {
+        this.translate = translate;
         this._columnFilters = {};
         this.onFilterChanged = new EventEmitter();
     }
@@ -9968,18 +9982,6 @@ var FilterService = /** @class */ (function () {
         }
     };
     /**
-     * @return {?}
-     */
-    FilterService.prototype.destroyFilters = function () {
-        // we need to loop through all columnFilters and delete them 1 by 1
-        // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
-        for (var /** @type {?} */ columnId in this._columnFilters) {
-            if (columnId && this._columnFilters[columnId]) {
-                delete this._columnFilters[columnId];
-            }
-        }
-    };
-    /**
      * @param {?} operator
      * @param {?} value1
      * @param {?} value2
@@ -10074,7 +10076,23 @@ var FilterService = /** @class */ (function () {
      * @return {?}
      */
     FilterService.prototype.destroy = function () {
-        this.subscriber.unsubscribe();
+        this.destroyFilters();
+        if (this.subscriber && typeof this.subscriber.unsubscribe === 'function') {
+            this.subscriber.unsubscribe();
+        }
+    };
+    /**
+     * Destroy the filters, since it's a singleton, we don't want to affect other grids with same columns
+     * @return {?}
+     */
+    FilterService.prototype.destroyFilters = function () {
+        // we need to loop through all columnFilters and delete them 1 by 1
+        // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
+        for (var /** @type {?} */ columnId in this._columnFilters) {
+            if (columnId && this._columnFilters[columnId]) {
+                delete this._columnFilters[columnId];
+            }
+        }
     };
     /**
      * @param {?} e
@@ -10128,7 +10146,7 @@ var FilterService = /** @class */ (function () {
                 else {
                     // custom Select template
                     if (columnDef_1.filter.type === FormElementType.select) {
-                        filterTemplate = FilterTemplates.select(searchTerm, columnDef_1);
+                        filterTemplate = FilterTemplates.select(searchTerm, columnDef_1, this_1.translate);
                     }
                 }
                 // when hiding/showing (Column Picker or Grid Menu), it will come re-create yet again the filters
@@ -10204,6 +10222,15 @@ var FilterService = /** @class */ (function () {
     };
     return FilterService;
 }());
+FilterService.decorators = [
+    { type: Injectable },
+];
+/**
+ * @nocollapse
+ */
+FilterService.ctorParameters = function () { return [
+    { type: TranslateService, },
+]; };
 var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try {
@@ -10328,7 +10355,9 @@ var SortService = /** @class */ (function () {
      * @return {?}
      */
     SortService.prototype.destroy = function () {
-        this.subscriber.unsubscribe();
+        if (this.subscriber && typeof this.subscriber.unsubscribe === 'function') {
+            this.subscriber.unsubscribe();
+        }
     };
     /**
      * A simple function that is attached to the subscriber and emit a change when the sort is called.
@@ -10910,18 +10939,22 @@ var GridExtraService = /** @class */ (function () {
         this._grid.setSelectedRows([rowNumber]);
         this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
         var /** @type {?} */ item = this._dataView.getItem(rowNumber);
-        item.rowClass = 'highlight';
-        this._dataView.updateItem(item.id, item);
-        var /** @type {?} */ gridOptions = (this._grid.getOptions());
-        // highlight the row for a user defined timeout
-        var /** @type {?} */ rowElm = jquery("#" + gridOptions.gridId)
-            .find(".highlight.row" + rowNumber)
-            .first();
-        // delete the row's CSS that was attached for highlighting
-        setTimeout(function () {
-            delete item.rowClass;
-            _this._dataView.updateItem(item.id, item);
-        }, fadeDelay + 10);
+        if (item && item.id) {
+            item.rowClass = 'highlight';
+            this._dataView.updateItem(item.id, item);
+            var /** @type {?} */ gridOptions = (this._grid.getOptions());
+            // highlight the row for a user defined timeout
+            var /** @type {?} */ rowElm = jquery("#" + gridOptions.gridId)
+                .find(".highlight.row" + rowNumber)
+                .first();
+            // delete the row's CSS that was attached for highlighting
+            setTimeout(function () {
+                if (item && item.id) {
+                    delete item.rowClass;
+                    _this._dataView.updateItem(item.id, item);
+                }
+            }, fadeDelay + 10);
+        }
     };
     /**
      * @return {?}
@@ -10984,14 +11017,16 @@ var GridExtraService = /** @class */ (function () {
         if (itemId === -1) {
             throw new Error("Could not find the item in the item in the grid or it's associated \"id\"");
         }
-        // Update the item itself inside the dataView
-        this._dataView.updateItem(itemId, item);
-        // highlight the row we just updated
-        this.highlightRow(row, 1500);
-        // refresh dataview & grid
-        this._dataView.refresh();
-        // get new dataset length
-        var /** @type {?} */ datasetLength = this._dataView.getLength();
+        if (item && itemId >= 0) {
+            // Update the item itself inside the dataView
+            this._dataView.updateItem(itemId, item);
+            // highlight the row we just updated
+            this.highlightRow(row, 1500);
+            // refresh dataview & grid
+            this._dataView.refresh();
+            // get new dataset length
+            var /** @type {?} */ datasetLength = this._dataView.getLength();
+        }
     };
     return GridExtraService;
 }());
@@ -33569,10 +33604,11 @@ var AngularSlickgridComponent = /** @class */ (function () {
     AngularSlickgridComponent.prototype.ngOnDestroy = function () {
         this._dataView = [];
         this._gridOptions = {};
-        this.controlAndPluginService.destroy();
-        this.filterService.destroyFilters();
-        this.resizer.destroy();
         this.grid.destroy();
+        this.controlAndPluginService.destroy();
+        this.filterService.destroy();
+        this.resizer.destroy();
+        this.sortService.destroy();
     };
     /**
      * @return {?}

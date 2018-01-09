@@ -11284,14 +11284,20 @@ const booleanFilterCondition = (options) => {
 
 const testFilterCondition = (operator, value1, value2) => {
     switch (operator) {
-        case '<': return (value1 < value2);
-        case '<=': return (value1 <= value2);
-        case '>': return (value1 > value2);
-        case '>=': return (value1 >= value2);
+        case '<':
+        case 'LT': return (value1 < value2);
+        case '<=':
+        case 'LE': return (value1 <= value2);
+        case '>':
+        case 'GT': return (value1 > value2);
+        case '>=':
+        case 'GE': return (value1 >= value2);
         case '!=':
-        case '<>': return (value1 !== value2);
+        case '<>':
+        case 'NE': return (value1 !== value2);
         case '=':
-        case '==': return (value1 === value2);
+        case '==':
+        case 'EQ': return (value1 === value2);
     }
     return true;
 };
@@ -11421,13 +11427,17 @@ const inputFilterTemplate = (searchTerm, columnDef) => {
     return `<input type="text" class="form-control search-filter" style="font-family: Segoe UI Symbol;" placeholder="&#128269;">`;
 };
 
-const selectFilterTemplate = (searchTerm, columnDef) => {
+const selectFilterTemplate = (searchTerm, columnDef, i18n) => {
     if (!columnDef.filter.selectOptions) {
-        throw new Error(`SelectOptions with value/label is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')`);
+        throw new Error(`SelectOptions with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')`);
     }
     let /** @type {?} */ options = '';
     columnDef.filter.selectOptions.forEach((option) => {
-        options += `<option value="${option.value}">${option.label}</option>`;
+        if (!option || (option.label === undefined && option.labelKey === undefined)) {
+            throw new Error(`SelectOptions with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')`);
+        }
+        const /** @type {?} */ textLabel = (option.labelKey && i18n && typeof i18n.instant === 'function') ? i18n.instant(option.labelKey) : option.label;
+        options += `<option value="${option.value}">${textLabel}</option>`;
     });
     return `<select class="form-control search-filter">${options}</select>`;
 };
@@ -11671,7 +11681,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 class FilterService {
-    constructor() {
+    /**
+     * @param {?} translate
+     */
+    constructor(translate) {
+        this.translate = translate;
         this._columnFilters = {};
         this.onFilterChanged = new EventEmitter();
     }
@@ -11761,18 +11775,6 @@ class FilterService {
             this._dataView.refresh();
             this._grid.invalidate();
             this._grid.render();
-        }
-    }
-    /**
-     * @return {?}
-     */
-    destroyFilters() {
-        // we need to loop through all columnFilters and delete them 1 by 1
-        // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
-        for (const /** @type {?} */ columnId in this._columnFilters) {
-            if (columnId && this._columnFilters[columnId]) {
-                delete this._columnFilters[columnId];
-            }
         }
     }
     /**
@@ -11868,7 +11870,23 @@ class FilterService {
      * @return {?}
      */
     destroy() {
-        this.subscriber.unsubscribe();
+        this.destroyFilters();
+        if (this.subscriber && typeof this.subscriber.unsubscribe === 'function') {
+            this.subscriber.unsubscribe();
+        }
+    }
+    /**
+     * Destroy the filters, since it's a singleton, we don't want to affect other grids with same columns
+     * @return {?}
+     */
+    destroyFilters() {
+        // we need to loop through all columnFilters and delete them 1 by 1
+        // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
+        for (const /** @type {?} */ columnId in this._columnFilters) {
+            if (columnId && this._columnFilters[columnId]) {
+                delete this._columnFilters[columnId];
+            }
+        }
     }
     /**
      * @param {?} e
@@ -11921,7 +11939,7 @@ class FilterService {
                 else {
                     // custom Select template
                     if (columnDef.filter.type === FormElementType.select) {
-                        filterTemplate = FilterTemplates.select(searchTerm, columnDef);
+                        filterTemplate = FilterTemplates.select(searchTerm, columnDef, this.translate);
                     }
                 }
                 // when hiding/showing (Column Picker or Grid Menu), it will come re-create yet again the filters
@@ -11991,6 +12009,15 @@ class FilterService {
         return evt.notify(args, e, args.grid);
     }
 }
+FilterService.decorators = [
+    { type: Injectable },
+];
+/**
+ * @nocollapse
+ */
+FilterService.ctorParameters = () => [
+    { type: TranslateService, },
+];
 
 var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -12099,7 +12126,9 @@ class SortService {
      * @return {?}
      */
     destroy() {
-        this.subscriber.unsubscribe();
+        if (this.subscriber && typeof this.subscriber.unsubscribe === 'function') {
+            this.subscriber.unsubscribe();
+        }
     }
     /**
      * A simple function that is attached to the subscriber and emit a change when the sort is called.
@@ -12663,18 +12692,22 @@ class GridExtraService {
         this._grid.setSelectedRows([rowNumber]);
         this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
         const /** @type {?} */ item = this._dataView.getItem(rowNumber);
-        item.rowClass = 'highlight';
-        this._dataView.updateItem(item.id, item);
-        const /** @type {?} */ gridOptions = (this._grid.getOptions());
-        // highlight the row for a user defined timeout
-        const /** @type {?} */ rowElm = jquery(`#${gridOptions.gridId}`)
-            .find(`.highlight.row${rowNumber}`)
-            .first();
-        // delete the row's CSS that was attached for highlighting
-        setTimeout(() => {
-            delete item.rowClass;
+        if (item && item.id) {
+            item.rowClass = 'highlight';
             this._dataView.updateItem(item.id, item);
-        }, fadeDelay + 10);
+            const /** @type {?} */ gridOptions = (this._grid.getOptions());
+            // highlight the row for a user defined timeout
+            const /** @type {?} */ rowElm = jquery(`#${gridOptions.gridId}`)
+                .find(`.highlight.row${rowNumber}`)
+                .first();
+            // delete the row's CSS that was attached for highlighting
+            setTimeout(() => {
+                if (item && item.id) {
+                    delete item.rowClass;
+                    this._dataView.updateItem(item.id, item);
+                }
+            }, fadeDelay + 10);
+        }
     }
     /**
      * @return {?}
@@ -12737,14 +12770,16 @@ class GridExtraService {
         if (itemId === -1) {
             throw new Error(`Could not find the item in the item in the grid or it's associated "id"`);
         }
-        // Update the item itself inside the dataView
-        this._dataView.updateItem(itemId, item);
-        // highlight the row we just updated
-        this.highlightRow(row, 1500);
-        // refresh dataview & grid
-        this._dataView.refresh();
-        // get new dataset length
-        const /** @type {?} */ datasetLength = this._dataView.getLength();
+        if (item && itemId >= 0) {
+            // Update the item itself inside the dataView
+            this._dataView.updateItem(itemId, item);
+            // highlight the row we just updated
+            this.highlightRow(row, 1500);
+            // refresh dataview & grid
+            this._dataView.refresh();
+            // get new dataset length
+            const /** @type {?} */ datasetLength = this._dataView.getLength();
+        }
     }
 }
 
@@ -39378,10 +39413,11 @@ class AngularSlickgridComponent {
     ngOnDestroy() {
         this._dataView = [];
         this._gridOptions = {};
-        this.controlAndPluginService.destroy();
-        this.filterService.destroyFilters();
-        this.resizer.destroy();
         this.grid.destroy();
+        this.controlAndPluginService.destroy();
+        this.filterService.destroy();
+        this.resizer.destroy();
+        this.sortService.destroy();
     }
     /**
      * @return {?}
