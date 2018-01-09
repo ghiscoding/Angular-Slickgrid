@@ -95,10 +95,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   ngOnDestroy(): void {
     this._dataView = [];
     this._gridOptions = {};
-    this.controlAndPluginService.destroy();
-    this.filterService.destroyFilters();
-    this.resizer.destroy();
     this.grid.destroy();
+    this.controlAndPluginService.destroy();
+    this.filterService.destroy();
+    this.resizer.destroy();
+    this.sortService.destroy();
   }
 
   ngAfterViewInit() {

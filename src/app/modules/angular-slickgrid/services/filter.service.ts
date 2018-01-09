@@ -66,7 +66,7 @@ export class FilterService {
     // call the service to get a query back
     const query = await serviceOptions.onBackendEventApi.service.onFilterChanged(event, args);
 
-        // the process could be an Observable (like HttpClient) or a Promise
+    // the process could be an Observable (like HttpClient) or a Promise
     // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
     const observableOrPromise = serviceOptions.onBackendEventApi.process(query);
     const responseProcess = await castToPromise(observableOrPromise);
@@ -107,16 +107,6 @@ export class FilterService {
       this._dataView.refresh();
       this._grid.invalidate();
       this._grid.render();
-    }
-  }
-
-  destroyFilters() {
-    // we need to loop through all columnFilters and delete them 1 by 1
-    // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
-    for (const columnId in this._columnFilters) {
-      if (columnId && this._columnFilters[columnId]) {
-        delete this._columnFilters[columnId];
-      }
     }
   }
 
@@ -208,7 +198,23 @@ export class FilterService {
   }
 
   destroy() {
-    this.subscriber.unsubscribe();
+    this.destroyFilters();
+    if (this.subscriber && typeof this.subscriber.unsubscribe === 'function') {
+      this.subscriber.unsubscribe();
+    }
+  }
+
+  /**
+   * Destroy the filters, since it's a singleton, we don't want to affect other grids with same columns
+   */
+  destroyFilters() {
+    // we need to loop through all columnFilters and delete them 1 by 1
+    // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
+    for (const columnId in this._columnFilters) {
+      if (columnId && this._columnFilters[columnId]) {
+        delete this._columnFilters[columnId];
+      }
+    }
   }
 
   callbackSearchEvent(e: any, args: any) {
