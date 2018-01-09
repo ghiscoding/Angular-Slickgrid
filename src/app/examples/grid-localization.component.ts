@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, Editors, FieldType, Formatter, Formatters, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
+import { Column, Editors, FieldType, Formatter, Formatters, FormElementType, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -24,6 +24,7 @@ export class GridLocalizationComponent implements OnInit {
       <ul>
         <li>You can easily implement logic to switch between Formatters "dateIso" or "dateUs", depending on current locale.</li>
       </ul>
+      <li>For the Select (dropdown) filter, you need to fill in the "labelKey" property, if found it will use it, else it will use "label"</li>
     </ol>
   `;
 
@@ -38,11 +39,19 @@ export class GridLocalizationComponent implements OnInit {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'title', headerKey: 'TITLE', formatter: this.taskTranslateFormatter, sortable: true, minWidth: 100 },
-      { id: 'duration', name: 'Duration (days)', field: 'duration', headerKey: 'DURATION', sortable: true, minWidth: 100 },
-      { id: 'start', name: 'Start', field: 'start', headerKey: 'START', formatter: Formatters.dateIso, minWidth: 100 },
-      { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, minWidth: 100 },
-      { id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', formatter: Formatters.translate, params: { i18n: this.translate }, sortable: true, minWidth: 100 }
+      { id: 'title', name: 'Title', field: 'title', headerKey: 'TITLE', formatter: this.taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true },
+      { id: 'duration', name: 'Duration (days)', field: 'duration', headerKey: 'DURATION', sortable: true, minWidth: 100, filterable: true },
+      { id: 'start', name: 'Start', field: 'start', headerKey: 'START', formatter: Formatters.dateIso, minWidth: 100, filterable: true },
+      { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, minWidth: 100, filterable: true },
+      { id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', formatter: Formatters.translate, params: { i18n: this.translate }, sortable: true,
+        minWidth: 100,
+        filterable: true,
+        filter: {
+          searchTerm: '', // default selection
+          type: FormElementType.select,
+          selectOptions: [ { value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' } ]
+        }
+      }
       // OR via your own custom translate formatter
       // { id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', formatter: translateFormatter, sortable: true, minWidth: 100 }
     ];
@@ -52,6 +61,7 @@ export class GridLocalizationComponent implements OnInit {
         sidePadding: 15
       },
       enableAutoResize: true,
+      enableFiltering: true,
       enableTranslate: true
     };
 

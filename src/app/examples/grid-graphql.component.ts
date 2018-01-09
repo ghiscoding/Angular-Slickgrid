@@ -48,7 +48,7 @@ export class GridGraphqlComponent implements OnInit {
         filter: {
           searchTerm: '', // default selection
           type: FormElementType.select,
-          selectOptions: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
+          selectOptions: [ { value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' } ]
         }
       },
       { id: 'company', name: 'Company', field: 'company', headerKey: 'COMPANY', filterable: true },

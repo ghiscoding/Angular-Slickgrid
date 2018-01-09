@@ -1,4 +1,4 @@
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { castToPromise } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { FilterTemplates } from './../filter-templates';
@@ -12,11 +12,13 @@ import {
   GridOption,
   SlickEvent
 } from './../models/index';
+import { TranslateService } from '@ngx-translate/core';
 import $ from 'jquery';
 
 // using external js modules in Angular
 declare var Slick: any;
 
+@Injectable()
 export class FilterService {
   _columnFilters: ColumnFilters = {};
   _columnDefinitions: Column[];
@@ -26,6 +28,8 @@ export class FilterService {
   _onFilterChangedOptions: any;
   subscriber: SlickEvent;
   onFilterChanged = new EventEmitter<string>();
+
+  constructor(private translate: TranslateService) {}
 
   init(grid: any, gridOptions: GridOption, columnDefinitions: Column[]): void {
     this._columnDefinitions = columnDefinitions;
@@ -261,7 +265,7 @@ export class FilterService {
         } else {
           // custom Select template
           if (columnDef.filter.type === FormElementType.select) {
-            filterTemplate = FilterTemplates.select(searchTerm, columnDef);
+            filterTemplate = FilterTemplates.select(searchTerm, columnDef, this.translate);
           }
         }
 

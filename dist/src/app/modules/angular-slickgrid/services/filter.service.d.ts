@@ -1,6 +1,8 @@
 import { EventEmitter } from '@angular/core';
 import { Column, ColumnFilters, GridOption, SlickEvent } from './../models/index';
+import { TranslateService } from '@ngx-translate/core';
 export declare class FilterService {
+    private translate;
     _columnFilters: ColumnFilters;
     _columnDefinitions: Column[];
     _dataView: any;
@@ -9,6 +11,7 @@ export declare class FilterService {
     _onFilterChangedOptions: any;
     subscriber: SlickEvent;
     onFilterChanged: EventEmitter<string>;
+    constructor(translate: TranslateService);
     init(grid: any, gridOptions: GridOption, columnDefinitions: Column[]): void;
     /**
      * Attach a backend filter hook to the grid
@@ -19,7 +22,6 @@ export declare class FilterService {
     attachBackendOnFilterSubscribe(event: Event, args: any): Promise<void>;
     /** Clear the search filters (below the column titles) */
     clearFilters(): void;
-    destroyFilters(): void;
     testFilterCondition(operator: string, value1: any, value2: any): boolean;
     /**
      * Attach a local filter hook to the grid
@@ -30,6 +32,10 @@ export declare class FilterService {
     attachLocalOnFilter(grid: any, options: GridOption, dataView: any): void;
     customFilter(item: any, args: any): boolean;
     destroy(): void;
+    /**
+     * Destroy the filters, since it's a singleton, we don't want to affect other grids with same columns
+     */
+    destroyFilters(): void;
     callbackSearchEvent(e: any, args: any): void;
     addFilterTemplateToHeaderRow(args: any): void;
     /**
