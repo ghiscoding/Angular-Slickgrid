@@ -12704,7 +12704,10 @@ class GridExtraService {
             setTimeout(() => {
                 if (item && item.id) {
                     delete item.rowClass;
-                    this._dataView.updateItem(item.id, item);
+                    const /** @type {?} */ gridIdx = this._dataView.getIdxById(item.id);
+                    if (gridIdx !== undefined) {
+                        this._dataView.updateItem(item.id, item);
+                    }
                 }
             }, fadeDelay + 10);
         }
@@ -12770,7 +12773,8 @@ class GridExtraService {
         if (itemId === -1) {
             throw new Error(`Could not find the item in the item in the grid or it's associated "id"`);
         }
-        if (item && itemId >= 0) {
+        const /** @type {?} */ gridIdx = this._dataView.getIdxById(itemId);
+        if (gridIdx !== undefined) {
             // Update the item itself inside the dataView
             this._dataView.updateItem(itemId, item);
             // highlight the row we just updated

@@ -10951,7 +10951,10 @@ var GridExtraService = /** @class */ (function () {
             setTimeout(function () {
                 if (item && item.id) {
                     delete item.rowClass;
-                    _this._dataView.updateItem(item.id, item);
+                    var /** @type {?} */ gridIdx = _this._dataView.getIdxById(item.id);
+                    if (gridIdx !== undefined) {
+                        _this._dataView.updateItem(item.id, item);
+                    }
                 }
             }, fadeDelay + 10);
         }
@@ -11017,7 +11020,8 @@ var GridExtraService = /** @class */ (function () {
         if (itemId === -1) {
             throw new Error("Could not find the item in the item in the grid or it's associated \"id\"");
         }
-        if (item && itemId >= 0) {
+        var /** @type {?} */ gridIdx = this._dataView.getIdxById(itemId);
+        if (gridIdx !== undefined) {
             // Update the item itself inside the dataView
             this._dataView.updateItem(itemId, item);
             // highlight the row we just updated

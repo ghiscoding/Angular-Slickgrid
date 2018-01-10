@@ -71,7 +71,10 @@ export class GridExtraService {
       setTimeout(() => {
         if (item && item.id) {
           delete item.rowClass;
-          this._dataView.updateItem(item.id, item);
+          const gridIdx = this._dataView.getIdxById(item.id);
+          if (gridIdx !== undefined) {
+            this._dataView.updateItem(item.id, item);
+          }
         }
       }, fadeDelay + 10);
     }
@@ -125,11 +128,13 @@ export class GridExtraService {
   updateDataGridItem(item: any) {
     const row = this._dataView.getRowById(item.id);
     const itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
+
     if (itemId === -1) {
       throw new Error(`Could not find the item in the item in the grid or it's associated "id"`);
     }
 
-    if (item && itemId >= 0) {
+    const gridIdx = this._dataView.getIdxById(itemId);
+    if (gridIdx !== undefined) {
       // Update the item itself inside the dataView
       this._dataView.updateItem(itemId, item);
 
