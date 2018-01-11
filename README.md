@@ -55,7 +55,7 @@ The following are SlickGrid features which are not yet included in this library 
 You like and use this great library `Angular-Slickgrid`? You can always upvote :star: and/or contribute :)
 
 ## Like my work?
-If you like my work, you can support me with caffeine :smile:
+If you like my work, you can also support me with caffeine :smile:
 [Buy Me a Coffee](https://ko-fi.com/N4N679OT)
 
 ## Screenshots
