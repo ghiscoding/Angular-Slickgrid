@@ -2,14 +2,20 @@ import { FieldType } from '../models';
 
 export const testFilterCondition = (operator: string, value1: any, value2: any): boolean => {
   switch (operator) {
-    case '<': return (value1 < value2);
-    case '<=': return (value1 <= value2);
-    case '>': return (value1 > value2);
-    case '>=': return (value1 >= value2);
+    case '<':
+    case 'LT': return (value1 < value2);
+    case '<=':
+    case 'LE': return (value1 <= value2);
+    case '>':
+    case 'GT': return (value1 > value2);
+    case '>=':
+    case 'GE': return (value1 >= value2);
     case '!=':
-    case '<>': return (value1 !== value2);
+    case '<>':
+    case 'NE': return (value1 !== value2);
     case '=':
-    case '==': return (value1 === value2);
+    case '==':
+    case 'EQ': return (value1 === value2);
   }
   return true;
 };

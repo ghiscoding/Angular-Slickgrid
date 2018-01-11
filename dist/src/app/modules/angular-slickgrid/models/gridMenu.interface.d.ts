@@ -5,6 +5,8 @@ export interface GridMenu {
     iconImage?: string;
     iconCssClass?: string;
     leaveOpen?: boolean;
+    forceFitTitle?: string;
+    syncResizeTitle?: string;
     menuWidth?: number;
     resizeOnShowHeaderRow?: boolean;
     customItems?: CustomGridMenu[];

@@ -94,10 +94,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   ngOnDestroy(): void {
     this._dataView = [];
-    this.controlAndPluginService.destroy();
-    this.filterService.clearFilters();
-    this.resizer.destroy();
+    this._gridOptions = {};
     this.grid.destroy();
+    this.controlAndPluginService.destroy();
+    this.filterService.destroy();
+    this.resizer.destroy();
+    this.sortService.destroy();
   }
 
   ngAfterViewInit() {
@@ -138,6 +140,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.translate.onLangChange.subscribe((event) => {
       if (options.enableTranslate) {
         this.controlAndPluginService.translateHeaders();
+        this.controlAndPluginService.translateColumnPicker();
         this.controlAndPluginService.translateGridMenu();
       }
     });

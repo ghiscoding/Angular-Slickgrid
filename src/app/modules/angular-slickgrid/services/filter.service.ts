@@ -1,4 +1,4 @@
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { castToPromise } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { FilterTemplates } from './../filter-templates';
@@ -12,11 +12,13 @@ import {
   GridOption,
   SlickEvent
 } from './../models/index';
+import { TranslateService } from '@ngx-translate/core';
 import $ from 'jquery';
 
 // using external js modules in Angular
 declare var Slick: any;
 
+@Injectable()
 export class FilterService {
   _columnFilters: ColumnFilters = {};
   _columnDefinitions: Column[];
@@ -26,6 +28,8 @@ export class FilterService {
   _onFilterChangedOptions: any;
   subscriber: SlickEvent;
   onFilterChanged = new EventEmitter<string>();
+
+  constructor(private translate: TranslateService) {}
 
   init(grid: any, gridOptions: GridOption, columnDefinitions: Column[]): void {
     this._columnDefinitions = columnDefinitions;
@@ -66,7 +70,7 @@ export class FilterService {
     // call the service to get a query back
     const query = await serviceOptions.onBackendEventApi.service.onFilterChanged(event, args);
 
-        // the process could be an Observable (like HttpClient) or a Promise
+    // the process could be an Observable (like HttpClient) or a Promise
     // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
     const observableOrPromise = serviceOptions.onBackendEventApi.process(query);
     const responseProcess = await castToPromise(observableOrPromise);
@@ -79,8 +83,20 @@ export class FilterService {
 
   /** Clear the search filters (below the column titles) */
   clearFilters() {
-    // remove the text inside each search input fields
-    $('.slick-headerrow-column .search-filter').val('');
+    // remove the text inside each search filter fields
+    $('.slick-headerrow-column .search-filter').each((index: number, elm: HTMLElement) => {
+      // clear the value and trigger an event
+      // the event is for GraphQL & OData Services to detect the changes and call a new query
+      switch (elm.tagName) {
+        case 'SELECT':
+          $(elm).val('').trigger('change');
+          break;
+        case 'INPUT':
+        default:
+          $(elm).val('').trigger('keyup');
+          break;
+      }
+    });
 
     // we need to loop through all columnFilters and delete them 1 by 1
     // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
@@ -186,7 +202,23 @@ export class FilterService {
   }
 
   destroy() {
-    this.subscriber.unsubscribe();
+    this.destroyFilters();
+    if (this.subscriber && typeof this.subscriber.unsubscribe === 'function') {
+      this.subscriber.unsubscribe();
+    }
+  }
+
+  /**
+   * Destroy the filters, since it's a singleton, we don't want to affect other grids with same columns
+   */
+  destroyFilters() {
+    // we need to loop through all columnFilters and delete them 1 by 1
+    // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
+    for (const columnId in this._columnFilters) {
+      if (columnId && this._columnFilters[columnId]) {
+        delete this._columnFilters[columnId];
+      }
+    }
   }
 
   callbackSearchEvent(e: any, args: any) {
@@ -233,7 +265,7 @@ export class FilterService {
         } else {
           // custom Select template
           if (columnDef.filter.type === FormElementType.select) {
-            filterTemplate = FilterTemplates.select(searchTerm, columnDef);
+            filterTemplate = FilterTemplates.select(searchTerm, columnDef, this.translate);
           }
         }
 

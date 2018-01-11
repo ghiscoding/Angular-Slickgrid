@@ -27,6 +27,7 @@ export declare class ControlAndPluginService {
      * @param {any} dataView
      */
     attachDifferentControlOrPlugins(grid: any, columnDefinitions: Column[], options: GridOption, dataView: any): void;
+    createColumnPicker(grid: any, columnDefinitions: Column[], options: GridOption): void;
     createGridMenu(grid: any, columnDefinitions: Column[], options: GridOption): any;
     hideColumn(column: Column): void;
     removeColumnByIndex(array: any[], index: number): any[];
@@ -34,6 +35,12 @@ export declare class ControlAndPluginService {
     destroy(): void;
     private addGridMenuCustomCommands(grid, options);
     private prepareGridMenu(grid, options);
+    /**
+     * Translate the Column Picker and it's last 2 checkboxes
+     * Note that the only way that seems to work is to destroy and re-create the Column Picker
+     * Changing only the columnPicker.columnTitle with i18n translate was not enough.
+     */
+    translateColumnPicker(): void;
     /**
      * Translate the Grid Menu ColumnTitle and CustomTitle.
      * Note that the only way that seems to work is to destroy and re-create the Grid Menu

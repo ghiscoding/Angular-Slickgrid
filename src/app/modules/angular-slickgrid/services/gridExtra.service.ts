@@ -57,20 +57,27 @@ export class GridExtraService {
     this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
 
     const item = this._dataView.getItem(rowNumber);
-    item.rowClass = 'highlight';
-    this._dataView.updateItem(item.id, item);
-    const gridOptions = this._grid.getOptions() as GridOption;
-
-    // highlight the row for a user defined timeout
-    const rowElm = $(`#${gridOptions.gridId}`)
-        .find(`.highlight.row${rowNumber}`)
-        .first();
-
-    // delete the row's CSS that was attached for highlighting
-    setTimeout(() => {
-      delete item.rowClass;
+    if (item && item.id) {
+      item.rowClass = 'highlight';
       this._dataView.updateItem(item.id, item);
-    }, fadeDelay + 10);
+      const gridOptions = this._grid.getOptions() as GridOption;
+
+      // highlight the row for a user defined timeout
+      const rowElm = $(`#${gridOptions.gridId}`)
+          .find(`.highlight.row${rowNumber}`)
+          .first();
+
+      // delete the row's CSS that was attached for highlighting
+      setTimeout(() => {
+        if (item && item.id) {
+          delete item.rowClass;
+          const gridIdx = this._dataView.getIdxById(item.id);
+          if (gridIdx !== undefined) {
+            this._dataView.updateItem(item.id, item);
+          }
+        }
+      }, fadeDelay + 10);
+    }
   }
 
   getSelectedRows() {
@@ -90,7 +97,8 @@ export class GridExtraService {
     }
   }
 
-  /** Add an item (data item) to the datagrid
+  /**
+   * Add an item (data item) to the datagrid
    * @param object dataItem: item object holding all properties of that row
    */
   addItemToDatagrid(item) {
@@ -113,26 +121,31 @@ export class GridExtraService {
     const datasetLength = this._dataView.getLength();
   }
 
-  /** Update an existing item with new properties inside the datagrid
+  /**
+   * Update an existing item with new properties inside the datagrid
    * @param object item: item object holding all properties of that row
    */
   updateDataGridItem(item: any) {
     const row = this._dataView.getRowById(item.id);
     const itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
+
     if (itemId === -1) {
       throw new Error(`Could not find the item in the item in the grid or it's associated "id"`);
     }
 
-    // Update the item itself inside the dataView
-    this._dataView.updateItem(itemId, item);
+    const gridIdx = this._dataView.getIdxById(itemId);
+    if (gridIdx !== undefined) {
+      // Update the item itself inside the dataView
+      this._dataView.updateItem(itemId, item);
 
-    // highlight the row we just updated
-    this.highlightRow(row, 1500);
+      // highlight the row we just updated
+      this.highlightRow(row, 1500);
 
-    // refresh dataview & grid
-    this._dataView.refresh();
+      // refresh dataview & grid
+      this._dataView.refresh();
 
-    // get new dataset length
-    const datasetLength = this._dataView.getLength();
+      // get new dataset length
+      const datasetLength = this._dataView.getLength();
+    }
   }
 }
