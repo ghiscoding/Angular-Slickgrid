@@ -54,6 +54,10 @@ The following are SlickGrid features which are not yet included in this library 
 ## Use it, like it?
 You like and use this great library `Angular-Slickgrid`? You can always upvote :star: and/or contribute :)
 
+## Like my work?
+If you like my work, you can support me with caffeine :smile:
+[Buy Me a Coffee](https://ko-fi.com/N4N679OT)
+
 ## Screenshots
 
 Screenshots from the demo app with the `Bootstrap` theme (that is the only available theme, but there is a lot of SASS variables to make it look like Material, or other theme if you wish to. If you create a new theme, please submit a PR).
