@@ -11,8 +11,9 @@ import { dateTimeUsAmPmFormatter } from './dateTimeUsAmPmFormatter';
 import { dateTimeUsFormatter } from './dateTimeUsFormatter';
 import { dateUsFormatter } from './dateUsFormatter';
 import { deleteIconFormatter } from './deleteIconFormatter';
-import { hyperlinkFormatter } from './hyperlinkFormatter';
 import { editIconFormatter } from './editIconFormatter';
+import { hyperlinkFormatter } from './hyperlinkFormatter';
+import { infoIconFormatter } from './infoIconFormatter';
 import { percentCompleteFormatter } from './percentCompleteFormatter';
 import { percentCompleteBarFormatter } from './percentCompleteBarFormatter';
 import { progressBarFormatter } from './progressBarFormatter';
@@ -41,6 +42,7 @@ export const Formatters = {
   deleteIcon: deleteIconFormatter,
   editIcon: editIconFormatter,
   hyperlink: hyperlinkFormatter,
+  infoIcon: infoIconFormatter,
   percentComplete: percentCompleteFormatter,
   percentCompleteBar: percentCompleteBarFormatter,
   progressBar: progressBarFormatter,
