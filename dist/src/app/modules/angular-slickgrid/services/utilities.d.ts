@@ -8,7 +8,7 @@ import 'rxjs/add/operator/toPromise';
  * @param input object which could be of type Promise or Observable
  * @param fromServiceName string representing the caller service name and will be used if we throw a casting problem error
  */
-export declare function castToPromise(input: Promise<any> | Observable<any>, fromServiceName?: string): Promise<any> | Observable<any>;
+export declare function castToPromise<T>(input: Promise<T> | Observable<T>, fromServiceName?: string): Promise<T>;
 /**
  * From a Date FieldType, return it's equivalent moment.js format
  * refer to moment.js for the format standard used: https://momentjs.com/docs/#/parsing/string-format/

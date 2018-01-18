@@ -13,6 +13,7 @@ export declare const Formatters: {
     deleteIcon: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     editIcon: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     hyperlink: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
+    infoIcon: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     percentComplete: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     percentCompleteBar: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;
     progressBar: (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => string;

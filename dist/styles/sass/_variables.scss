@@ -54,10 +54,14 @@ $header-row-background-color:           #ffffff !default;
 $header-row-count:                      2 !default;                           // how many rows to display on the header
 $header-row-filter-padding:             4px !default;
 $header-column-height:                  (16px * $header-row-count) !default;  // header is calculated by rows to show
-$header-border-top:                     0 none !default;
+$header-border-top:                     0 none !default;                      // header, column titles, that is without the Filters
 $header-border-right:                   0 none !default;
 $header-border-bottom:                  0 none !default;
 $header-border-left:                    0 none !default;
+$header-filter-row-border-top:          0 none !default;                      // header row is where the Filters are showing
+$header-filter-row-border-right:        0 none !default;
+$header-filter-row-border-bottom:       0 none !default;
+$header-filter-row-border-left:         0 none !default;
 $header-resizable-hover:                1px solid #d0d0d0 !default;
 $header-scroll-width-to-remove:         16px !default;                        // without this, the header (which doesn't have scrolling) will be wider than the data viewport
 
@@ -133,3 +137,9 @@ $pagination-text-color:                 #808080 !default;
 
 /* selector plugin */
 $selector-border-right:                 1px solid rgb(196, 196, 196) !default;
+
+/* Viewport */
+$viewport-border-top:                   0 none !default;                      // header row is where the Filters are showing
+$viewport-border-right:                 0 none !default;
+$viewport-border-bottom:                0 none !default;
+$viewport-border-left:                  0 none !default;

@@ -45,6 +45,11 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     showPagination: boolean;
     dataviewChanged: EventEmitter<any>;
     gridChanged: EventEmitter<any>;
+    onDataviewCreated: EventEmitter<any>;
+    onGridCreated: EventEmitter<any>;
+    onBeforeGridCreate: EventEmitter<boolean>;
+    onBeforeGridDestroy: EventEmitter<any>;
+    onGridDestroyed: EventEmitter<boolean>;
     gridId: string;
     columnDefinitions: Column[];
     gridOptions: GridOption;
@@ -54,6 +59,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     constructor(filterService: FilterService, sortService: SortService, gridExtraService: GridExtraService, gridEventService: GridEventService, resizer: ResizerService, controlAndPluginService: ControlAndPluginService, translate: TranslateService);
     ngOnInit(): void;
     ngOnDestroy(): void;
+    destroy(): void;
     ngAfterViewInit(): void;
     attachDifferentHooks(grid: any, options: GridOption, dataView: any): void;
     attachResizeHook(grid: any, options: GridOption): void;

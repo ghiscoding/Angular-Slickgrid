@@ -35,6 +35,7 @@ export declare class ControlAndPluginService {
     destroy(): void;
     private addGridMenuCustomCommands(grid, options);
     private prepareGridMenu(grid, options);
+    private refreshBackendDataset(options);
     /**
      * Translate the Column Picker and it's last 2 checkboxes
      * Note that the only way that seems to work is to destroy and re-create the Column Picker

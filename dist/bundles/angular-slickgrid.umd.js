@@ -8721,6 +8721,7 @@ var moment_ = Object.freeze({
 var moment = moment_min || moment_;
 /**
  * Try casting an input of type Promise | Observable into a Promise type.
+ * @template T
  * @param {?} input object which could be of type Promise or Observable
  * @param {?=} fromServiceName string representing the caller service name and will be used if we throw a casting problem error
  * @return {?}
@@ -9692,6 +9693,7 @@ var moment$10 = moment_min || moment_; // patch to fix rollup "moment has no def
 var FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
 var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$10(value).format(FORMAT$7) : ''; };
 var deleteIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-trash pointer delete-icon\" aria-hidden=\"true\"></i>"; };
+var editIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-pencil pointer edit-icon\" aria-hidden=\"true\"></i>"; };
 var hyperlinkFormatter = function (row, cell, value, columnDef, dataContext) {
     var /** @type {?} */ matchUrl = value.match(/^(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/, 'i');
     if (matchUrl && Array.isArray(matchUrl)) {
@@ -9699,7 +9701,7 @@ var hyperlinkFormatter = function (row, cell, value, columnDef, dataContext) {
     }
     return '';
 };
-var editIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-pencil pointer edit-icon\" aria-hidden=\"true\"></i>"; };
+var infoIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-info-circle pointer info-icon\" aria-hidden=\"true\"></i>"; };
 var percentCompleteFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {
         return '-';
@@ -9775,6 +9777,7 @@ var Formatters = {
     deleteIcon: deleteIconFormatter,
     editIcon: editIconFormatter,
     hyperlink: hyperlinkFormatter,
+    infoIcon: infoIconFormatter,
     percentComplete: percentCompleteFormatter,
     percentCompleteBar: percentCompleteBarFormatter,
     progressBar: progressBarFormatter,
@@ -10935,6 +10938,11 @@ var GridExtraService = /** @class */ (function () {
         if (fadeDelay === void 0) { fadeDelay = 1500; }
         // chain current item Metadata with our own Metadata for implementing highligh CSS styling
         var /** @type {?} */ previousMetadata = this._dataView.getItemMetadata;
+        // create a SelectionModel if there's not one yet
+        if (!this._grid.getSelectionModel()) {
+            var /** @type {?} */ rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
+            this._grid.setSelectionModel(rowSelectionPlugin);
+        }
         this._grid.setSelectedRows([rowNumber]);
         this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
         var /** @type {?} */ item = this._dataView.getItem(rowNumber);
@@ -11664,12 +11672,14 @@ var ResizerService = /** @class */ (function () {
         timer$2 = setTimeout(function () {
             // calculate new available sizes but with minimum height of 220px
             newSizes = newSizes || _this.calculateGridNewDimensions(_this._gridOptions);
-            if (newSizes) {
+            var /** @type {?} */ gridElm = jquery("#" + _this._gridOptions.gridId) || {};
+            var /** @type {?} */ gridContainerElm = jquery("#" + _this._gridOptions.gridContainerId) || {};
+            if (newSizes && gridElm.length > 0) {
                 // apply these new height/width to the datagrid
-                jquery("#" + _this._gridOptions.gridId).height(newSizes.height);
-                jquery("#" + _this._gridOptions.gridId).width(newSizes.width);
-                jquery("#" + _this._gridOptions.gridContainerId).height(newSizes.height);
-                jquery("#" + _this._gridOptions.gridContainerId).width(newSizes.width);
+                gridElm.height(newSizes.height);
+                gridElm.width(newSizes.width);
+                gridContainerElm.height(newSizes.height);
+                gridContainerElm.width(newSizes.width);
                 // resize the slickgrid canvas on all browser except some IE versions
                 // exclude all IE below IE11
                 // IE11 wants to be a better standard (W3C) follower (finally) they even changed their appName output to also have 'Netscape'
@@ -11788,10 +11798,9 @@ var ControlAndPluginService = /** @class */ (function () {
      * @return {?}
      */
     ControlAndPluginService.prototype.createGridMenu = function (grid, columnDefinitions, options) {
-        var _this = this;
         this.prepareGridMenu(grid, options);
         var /** @type {?} */ gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
-        if (options.gridMenu) {
+        if (grid && options.gridMenu) {
             gridMenuControl.onBeforeMenuShow.subscribe(function (e, args) {
                 if (options.gridMenu && typeof options.gridMenu.onBeforeMenuShow === 'function') {
                     options.gridMenu.onBeforeMenuShow(e, args);
@@ -11807,7 +11816,7 @@ var ControlAndPluginService = /** @class */ (function () {
                     options.gridMenu.onMenuClose(e, args);
                 }
                 // we also want to resize the columns if the user decided to hide certain column(s)
-                _this._grid.autosizeColumns();
+                grid.autosizeColumns();
             });
         }
         return gridMenuControl;
@@ -11883,7 +11892,7 @@ var ControlAndPluginService = /** @class */ (function () {
     ControlAndPluginService.prototype.addGridMenuCustomCommands = function (grid, options) {
         var _this = this;
         if (options.enableFiltering) {
-            if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
+            if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: 'fa fa-filter text-danger',
                     title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
@@ -11891,7 +11900,7 @@ var ControlAndPluginService = /** @class */ (function () {
                     command: 'clear-filter'
                 });
             }
-            if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'toggle-filter'; }).length === 0) {
+            if (options && options.gridMenu && options.gridMenu.showToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'toggle-filter'; }).length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: 'fa fa-random',
                     title: options.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
@@ -11899,25 +11908,41 @@ var ControlAndPluginService = /** @class */ (function () {
                     command: 'toggle-filter'
                 });
             }
+            if (options && options.gridMenu && options.onBackendEventApi && options.gridMenu.showRefreshDatasetCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'refresh-dataset'; }).length === 0) {
+                options.gridMenu.customItems.push({
+                    iconCssClass: 'fa fa-refresh',
+                    title: options.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
+                    disabled: false,
+                    command: 'refresh-dataset'
+                });
+            }
+            // Command callback, what will be executed after command is clicked
             if (options.gridMenu) {
                 options.gridMenu.onCommand = function (e, args) {
-                    if (args.command === 'toggle-filter') {
-                        grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
-                    }
-                    else if (args.command === 'toggle-toppanel') {
-                        grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
-                    }
-                    else if (args.command === 'clear-filter') {
-                        _this.filterService.clearFilters();
-                        _this._dataView.refresh();
-                    }
-                    else {
-                        alert('Command: ' + args.command);
+                    if (args && args.command) {
+                        switch (args.command) {
+                            case 'toggle-filter':
+                                grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
+                                break;
+                            case 'toggle-toppanel':
+                                grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
+                                break;
+                            case 'clear-filter':
+                                _this.filterService.clearFilters();
+                                _this._dataView.refresh();
+                                break;
+                            case 'refresh-dataset':
+                                _this.refreshBackendDataset(options);
+                                break;
+                            default:
+                                alert('Command: ' + args.command);
+                                break;
+                        }
                     }
                 };
             }
         }
-        // add the custom command title if there are commands
+        // add the custom "Commands" title if there are any commands
         if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
             var /** @type {?} */ customTitle = options.enableTranslate ? this.translate.instant('COMMANDS') : 'Commands';
             options.gridMenu.customTitle = options.gridMenu.customTitle || customTitle;
@@ -11940,8 +11965,35 @@ var ControlAndPluginService = /** @class */ (function () {
         options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
         options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
         options.gridMenu.customItems = options.gridMenu.customItems || [];
+        options.gridMenu.showClearAllFiltersCommand = options.gridMenu.showClearAllFiltersCommand || true;
+        options.gridMenu.showRefreshDatasetCommand = options.gridMenu.showRefreshDatasetCommand || true;
+        options.gridMenu.showToggleFilterCommand = options.gridMenu.showToggleFilterCommand || true;
         this.addGridMenuCustomCommands(grid, options);
         // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
+    };
+    /**
+     * @param {?} options
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.refreshBackendDataset = function (options) {
+        var /** @type {?} */ query;
+        if (options.onBackendEventApi.service) {
+            query = options.onBackendEventApi.service.buildQuery();
+        }
+        if (query && query !== '') {
+            if (options.onBackendEventApi.preProcess) {
+                options.onBackendEventApi.preProcess();
+            }
+            // the process could be an Observable (like HttpClient) or a Promise
+            // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+            var /** @type {?} */ observableOrPromise = options.onBackendEventApi.process(query);
+            castToPromise(observableOrPromise).then(function (responseProcess) {
+                // send the response process to the postProcess callback
+                if (options.onBackendEventApi.postProcess) {
+                    options.onBackendEventApi.postProcess(responseProcess);
+                }
+            });
+        }
     };
     /**
      * Translate the Column Picker and it's last 2 checkboxes
@@ -33519,7 +33571,10 @@ var GlobalGridOptions = {
     gridMenu: {
         iconCssClass: 'fa fa-bars',
         menuWidth: 16,
-        resizeOnShowHeaderRow: false
+        resizeOnShowHeaderRow: false,
+        showClearAllFiltersCommand: true,
+        showRefreshDatasetCommand: true,
+        showToggleFilterCommand: true
     },
     headerRowHeight: 35,
     locale: 'en',
@@ -33573,6 +33628,11 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.showPagination = false;
         this.dataviewChanged = new core$1.EventEmitter();
         this.gridChanged = new core$1.EventEmitter();
+        this.onDataviewCreated = new core$1.EventEmitter();
+        this.onGridCreated = new core$1.EventEmitter();
+        this.onBeforeGridCreate = new core$1.EventEmitter();
+        this.onBeforeGridDestroy = new core$1.EventEmitter();
+        this.onGridDestroyed = new core$1.EventEmitter();
         this.gridHeight = 100;
         this.gridWidth = 600;
     }
@@ -33598,6 +33658,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
      * @return {?}
      */
     AngularSlickgridComponent.prototype.ngOnInit = function () {
+        this.onBeforeGridCreate.emit(true);
         this.gridHeightString = this.gridHeight + "px";
         this.gridWidthString = this.gridWidth + "px";
     };
@@ -33605,6 +33666,14 @@ var AngularSlickgridComponent = /** @class */ (function () {
      * @return {?}
      */
     AngularSlickgridComponent.prototype.ngOnDestroy = function () {
+        this.onBeforeGridDestroy.emit(this.grid);
+        this.destroy();
+        this.onGridDestroyed.emit(true);
+    };
+    /**
+     * @return {?}
+     */
+    AngularSlickgridComponent.prototype.destroy = function () {
         this._dataView = [];
         this._gridOptions = {};
         this.grid.destroy();
@@ -33626,6 +33695,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
         this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);
         // emit the Grid & DataView object to make them available in parent component
+        this.onGridCreated.emit(this.grid);
+        this.onDataviewCreated.emit(this._dataView);
+        // OBSOLETE in future releases, previous emitter functions (decided to rename them with onX prefix)
         this.gridChanged.emit(this.grid);
         this.dataviewChanged.emit(this._dataView);
         this.grid.init();
@@ -33707,14 +33779,14 @@ var AngularSlickgridComponent = /** @class */ (function () {
      */
     AngularSlickgridComponent.prototype.attachResizeHook = function (grid, options) {
         // expand/autofit columns on first page load
-        if (this._gridOptions.autoFitColumnsOnFirstLoad) {
-            this.grid.autosizeColumns();
+        if (grid && options.autoFitColumnsOnFirstLoad) {
+            grid.autosizeColumns();
         }
         // auto-resize grid on browser resize
         this.resizer.init(grid, options);
         if (options.enableAutoResize) {
             this.resizer.attachAutoResizeDataGrid();
-            if (options.autoFitColumnsOnFirstLoad) {
+            if (grid && options.autoFitColumnsOnFirstLoad) {
                 grid.autosizeColumns();
             }
         }
@@ -33749,7 +33821,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 this.showPagination = true;
                 this.gridPaginationOptions = this.mergeGridOptions();
             }
-            if (this._gridOptions.enableAutoResize) {
+            if (this.grid && this._gridOptions.enableAutoResize) {
                 // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
                 this.resizer.resizeGrid(10);
                 // this.grid.autosizeColumns();
@@ -33798,6 +33870,11 @@ AngularSlickgridComponent.ctorParameters = function () { return [
 AngularSlickgridComponent.propDecorators = {
     'dataviewChanged': [{ type: core$1.Output },],
     'gridChanged': [{ type: core$1.Output },],
+    'onDataviewCreated': [{ type: core$1.Output },],
+    'onGridCreated': [{ type: core$1.Output },],
+    'onBeforeGridCreate': [{ type: core$1.Output },],
+    'onBeforeGridDestroy': [{ type: core$1.Output },],
+    'onGridDestroyed': [{ type: core$1.Output },],
     'gridId': [{ type: core$1.Input },],
     'columnDefinitions': [{ type: core$1.Input },],
     'gridOptions': [{ type: core$1.Input },],
@@ -33895,17 +33972,18 @@ exports.ɵy = dateUsFormatter;
 exports.ɵbb = deleteIconFormatter;
 exports.ɵbc = editIconFormatter;
 exports.ɵbd = hyperlinkFormatter;
-exports.ɵbf = percentCompleteBarFormatter;
-exports.ɵbe = percentCompleteFormatter;
-exports.ɵbg = progressBarFormatter;
-exports.ɵbh = translateFormatter;
-exports.ɵbi = yesNoFormatter;
-exports.ɵbk = dateIsoSorter;
-exports.ɵbj = dateSorter;
-exports.ɵbm = dateUsShortSorter;
-exports.ɵbl = dateUsSorter;
-exports.ɵbn = numericSorter;
-exports.ɵbo = stringSorter;
+exports.ɵbe = infoIconFormatter;
+exports.ɵbg = percentCompleteBarFormatter;
+exports.ɵbf = percentCompleteFormatter;
+exports.ɵbh = progressBarFormatter;
+exports.ɵbi = translateFormatter;
+exports.ɵbj = yesNoFormatter;
+exports.ɵbl = dateIsoSorter;
+exports.ɵbk = dateSorter;
+exports.ɵbn = dateUsShortSorter;
+exports.ɵbm = dateUsSorter;
+exports.ɵbo = numericSorter;
+exports.ɵbp = stringSorter;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
