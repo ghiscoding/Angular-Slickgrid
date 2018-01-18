@@ -1,6 +1,9 @@
 import { Column, GridOption } from './../models';
 import $ from 'jquery';
 
+// using external js modules in Angular
+declare var Slick: any;
+
 export class GridExtraService {
   private _grid: any;
   private _dataView: any;
@@ -53,6 +56,13 @@ export class GridExtraService {
   highlightRow(rowNumber: number, fadeDelay: number = 1500) {
     // chain current item Metadata with our own Metadata for implementing highligh CSS styling
     const previousMetadata = this._dataView.getItemMetadata;
+
+    // create a SelectionModel if there's not one yet
+    if (!this._grid.getSelectionModel()) {
+      const rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
+      this._grid.setSelectionModel(rowSelectionPlugin);
+    }
+
     this._grid.setSelectedRows([rowNumber]);
     this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
 
