@@ -28,7 +28,7 @@
       </div>
 
     <angular-slickgrid gridId="grid1"
-                (dataviewChanged)="dataviewReady($event)" (gridChanged)="gridReady($event)"
+                (onDataviewCreated)="dataviewReady($event)" (onGridCreated)="gridReady($event)"
               [columnDefinitions]="columnDefinitions"
               [gridOptions]="gridOptions"
               [dataset]="dataset">

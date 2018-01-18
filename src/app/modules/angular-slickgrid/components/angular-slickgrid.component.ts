@@ -63,6 +63,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   @Output() dataviewChanged = new EventEmitter<any>();
   @Output() gridChanged = new EventEmitter<any>();
+  @Output() onDataviewCreated = new EventEmitter<any>();
+  @Output() onGridCreated = new EventEmitter<any>();
+  @Output() onBeforeGridCreate = new EventEmitter<boolean>();
+  @Output() onBeforeGridDestroy = new EventEmitter<any>();
+  @Output() onGridDestroyed = new EventEmitter<boolean>();
   @Input() gridId: string;
   @Input() columnDefinitions: Column[];
   @Input() gridOptions: GridOption;
@@ -88,11 +93,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   ) { }
 
   ngOnInit(): void {
+    this.onBeforeGridCreate.emit(true);
     this.gridHeightString = `${this.gridHeight}px`;
     this.gridWidthString = `${this.gridWidth}px`;
   }
 
   ngOnDestroy(): void {
+    this.onBeforeGridDestroy.emit(this.grid);
+    this.destroy();
+    this.onGridDestroyed.emit(true);
+  }
+
+  destroy() {
     this._dataView = [];
     this._gridOptions = {};
     this.grid.destroy();
@@ -115,6 +127,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.attachDifferentHooks(this.grid, this._gridOptions, this._dataView);
 
     // emit the Grid & DataView object to make them available in parent component
+    this.onGridCreated.emit(this.grid);
+    this.onDataviewCreated.emit(this._dataView);
+
+    // OBSOLETE in future releases, previous emitter functions (decided to rename them with onX prefix)
     this.gridChanged.emit(this.grid);
     this.dataviewChanged.emit(this._dataView);
 
