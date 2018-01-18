@@ -238,46 +238,35 @@ export class ControlAndPluginService {
           }
         );
       }
+
+      // Command callback, what will be executed after command is clicked
       if (options.gridMenu) {
         options.gridMenu.onCommand = (e, args) => {
-          if (args.command === 'toggle-filter') {
-            grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
-          } else if (args.command === 'toggle-toppanel') {
-            grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
-          } else if (args.command === 'clear-filter') {
-            this.filterService.clearFilters();
-            this._dataView.refresh();
-          } else if (args.command === 'refresh-dataset') {
-            let query;
-            if (options.onBackendEventApi.service instanceof GraphqlService) {
-              query = this.graphql.buildQuery();
-            } else if (options.onBackendEventApi.service instanceof GridOdataService) {
-              query = this.odata.buildQuery();
+          if (args && args.command) {
+            switch (args.command) {
+              case 'toggle-filter':
+                grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
+                break;
+              case 'toggle-toppanel':
+                grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
+                break;
+              case 'clear-filter':
+                this.filterService.clearFilters();
+                this._dataView.refresh();
+                break;
+              case 'refresh-dataset':
+                this.refreshBackendDataset(options);
+                break;
+              default:
+                alert('Command: ' + args.command);
+                break;
             }
-
-            if (query && query !== '') {
-              if (options.onBackendEventApi.preProcess) {
-                options.onBackendEventApi.preProcess();
-              }
-              // the process could be an Observable (like HttpClient) or a Promise
-              // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-              const observableOrPromise = options.onBackendEventApi.process(query);
-
-              castToPromise(observableOrPromise).then((responseProcess: any) => {
-                // send the response process to the postProcess callback
-                if (options.onBackendEventApi.postProcess) {
-                  options.onBackendEventApi.postProcess(responseProcess);
-                }
-              });
-            }
-          } else {
-            alert('Command: ' + args.command);
           }
         };
       }
     }
 
-    // add the custom command title if there are commands
+    // add the custom "Commands" title if there are any commands
     if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
       const customTitle = options.enableTranslate ? this.translate.instant('COMMANDS') : 'Commands';
       options.gridMenu.customTitle = options.gridMenu.customTitle || customTitle;
@@ -302,6 +291,32 @@ export class ControlAndPluginService {
     options.gridMenu.showToggleFilterCommand = options.gridMenu.showToggleFilterCommand || true;
     this.addGridMenuCustomCommands(grid, options);
     // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
+  }
+
+  private refreshBackendDataset(options) {
+    let query;
+
+    if (options.onBackendEventApi.service instanceof GraphqlService) {
+      query = this.graphql.buildQuery();
+    } else if (options.onBackendEventApi.service instanceof GridOdataService) {
+      query = this.odata.buildQuery();
+    }
+
+    if (query && query !== '') {
+      if (options.onBackendEventApi.preProcess) {
+        options.onBackendEventApi.preProcess();
+      }
+      // the process could be an Observable (like HttpClient) or a Promise
+      // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+      const observableOrPromise = options.onBackendEventApi.process(query);
+
+      castToPromise(observableOrPromise).then((responseProcess: any) => {
+        // send the response process to the postProcess callback
+        if (options.onBackendEventApi.postProcess) {
+          options.onBackendEventApi.postProcess(responseProcess);
+        }
+      });
+    }
   }
 
   /**
