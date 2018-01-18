@@ -190,15 +190,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   attachResizeHook(grid: any, options: GridOption) {
     // expand/autofit columns on first page load
-    if (this._gridOptions.autoFitColumnsOnFirstLoad) {
-      this.grid.autosizeColumns();
+    if (grid && options.autoFitColumnsOnFirstLoad) {
+      grid.autosizeColumns();
     }
 
     // auto-resize grid on browser resize
     this.resizer.init(grid, options);
     if (options.enableAutoResize) {
       this.resizer.attachAutoResizeDataGrid();
-      if (options.autoFitColumnsOnFirstLoad) {
+      if (grid && options.autoFitColumnsOnFirstLoad) {
         grid.autosizeColumns();
       }
     } else {
@@ -232,7 +232,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         this.showPagination = true;
         this.gridPaginationOptions = this.mergeGridOptions();
       }
-      if (this._gridOptions.enableAutoResize) {
+      if (this.grid &&  this._gridOptions.enableAutoResize) {
         // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
         this.resizer.resizeGrid(10);
         // this.grid.autosizeColumns();
