@@ -1,3 +1,5 @@
+import { GridOdataService } from './grid-odata.service';
+import { GraphqlService } from './graphql.service';
 import { Injectable } from '@angular/core';
 import { FilterService } from './filter.service';
 import { GridExtraUtils } from './gridExtraUtils';
@@ -15,6 +17,7 @@ import {
 } from './../models';
 import $ from 'jquery';
 import { TranslateService } from '@ngx-translate/core';
+import { castToPromise } from './../services/utilities';
 
 // using external js modules in Angular
 declare var Slick: any;
@@ -36,7 +39,7 @@ export class ControlAndPluginService {
   gridMenuControl: any;
   rowSelectionPlugin: any;
 
-  constructor(private filterService: FilterService, private gridExtraService: GridExtraService, private translate: TranslateService) { }
+  constructor(private filterService: FilterService, private odata: GridOdataService, private graphql: GraphqlService, private gridExtraService: GridExtraService, private translate: TranslateService) { }
 
   /**
    * Attach/Create different Controls or Plugins after the Grid is created
@@ -225,6 +228,16 @@ export class ControlAndPluginService {
           }
         );
       }
+      if (options && options.gridMenu && options.onBackendEventApi && options.gridMenu.showRefreshDatasetCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
+        options.gridMenu.customItems.push(
+          {
+            iconCssClass: 'fa fa-refresh',
+            title: options.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
+            disabled: false,
+            command: 'refresh-dataset'
+          }
+        );
+      }
       if (options.gridMenu) {
         options.gridMenu.onCommand = (e, args) => {
           if (args.command === 'toggle-filter') {
@@ -234,6 +247,29 @@ export class ControlAndPluginService {
           } else if (args.command === 'clear-filter') {
             this.filterService.clearFilters();
             this._dataView.refresh();
+          } else if (args.command === 'refresh-dataset') {
+            let query;
+            if (options.onBackendEventApi.service instanceof GraphqlService) {
+              query = this.graphql.buildQuery();
+            } else if (options.onBackendEventApi.service instanceof GridOdataService) {
+              query = this.odata.buildQuery();
+            }
+
+            if (query && query !== '') {
+              if (options.onBackendEventApi.preProcess) {
+                options.onBackendEventApi.preProcess();
+              }
+              // the process could be an Observable (like HttpClient) or a Promise
+              // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+              const observableOrPromise = options.onBackendEventApi.process(query);
+
+              castToPromise(observableOrPromise).then((responseProcess: any) => {
+                // send the response process to the postProcess callback
+                if (options.onBackendEventApi.postProcess) {
+                  options.onBackendEventApi.postProcess(responseProcess);
+                }
+              });
+            }
           } else {
             alert('Command: ' + args.command);
           }
@@ -261,6 +297,9 @@ export class ControlAndPluginService {
     options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
     options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
     options.gridMenu.customItems = options.gridMenu.customItems || [];
+    options.gridMenu.showClearAllFiltersCommand = options.gridMenu.showClearAllFiltersCommand || true;
+    options.gridMenu.showRefreshDatasetCommand = options.gridMenu.showRefreshDatasetCommand || true;
+    options.gridMenu.showToggleFilterCommand = options.gridMenu.showToggleFilterCommand || true;
     this.addGridMenuCustomCommands(grid, options);
     // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
   }

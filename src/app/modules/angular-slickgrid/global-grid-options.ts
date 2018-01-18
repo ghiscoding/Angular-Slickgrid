@@ -34,6 +34,7 @@ export const GlobalGridOptions: GridOption = {
     menuWidth: 16,
     resizeOnShowHeaderRow: false,
     showClearAllFiltersCommand: true,
+    showRefreshDatasetCommand: true,
     showToggleFilterCommand: true
   },
   headerRowHeight: 35,

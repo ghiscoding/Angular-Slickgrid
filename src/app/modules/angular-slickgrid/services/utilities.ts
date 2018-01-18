@@ -11,8 +11,8 @@ const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "m
  * @param input object which could be of type Promise or Observable
  * @param fromServiceName string representing the caller service name and will be used if we throw a casting problem error
  */
-export function castToPromise(input: Promise<any> | Observable<any>, fromServiceName: string = '') {
-  let promise = input;
+export function castToPromise<T>(input: Promise<T> | Observable<T>, fromServiceName: string = ''): Promise<T> {
+  let promise: any = input;
 
   if (input instanceof Promise) {
     // if it's already a Promise then return it
