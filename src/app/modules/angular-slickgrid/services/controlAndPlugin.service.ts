@@ -1,5 +1,3 @@
-import { GridOdataService } from './grid-odata.service';
-import { GraphqlService } from './graphql.service';
 import { Injectable } from '@angular/core';
 import { FilterService } from './filter.service';
 import { GridExtraUtils } from './gridExtraUtils';
@@ -39,7 +37,7 @@ export class ControlAndPluginService {
   gridMenuControl: any;
   rowSelectionPlugin: any;
 
-  constructor(private filterService: FilterService, private odata: GridOdataService, private graphql: GraphqlService, private gridExtraService: GridExtraService, private translate: TranslateService) { }
+  constructor(private filterService: FilterService, private gridExtraService: GridExtraService, private translate: TranslateService) { }
 
   /**
    * Attach/Create different Controls or Plugins after the Grid is created
@@ -296,10 +294,8 @@ export class ControlAndPluginService {
   private refreshBackendDataset(options) {
     let query;
 
-    if (options.onBackendEventApi.service instanceof GraphqlService) {
-      query = this.graphql.buildQuery();
-    } else if (options.onBackendEventApi.service instanceof GridOdataService) {
-      query = this.odata.buildQuery();
+    if (options.onBackendEventApi.service) {
+      query = options.onBackendEventApi.service.buildQuery();
     }
 
     if (query && query !== '') {
