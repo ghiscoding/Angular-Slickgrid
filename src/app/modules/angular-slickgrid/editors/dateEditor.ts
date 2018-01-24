@@ -1,6 +1,7 @@
 import { mapFlatpickrDateFormatWithFieldType } from './../services/utilities';
 import { Editor, FieldType, KeyCode } from './../models';
 import $ from 'jquery';
+
 declare function require(name: string);
 const flatpickr = require('flatpickr');
 
@@ -43,22 +44,26 @@ export class DateEditor implements Editor {
 
     this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text flatpickr" />`);
     this.$input.appendTo(this.args.container);
-    this.flatInstance = flatpickr(this.$input[0], pickerOptions);
-    this.flatInstance.open();
+    this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
+    this.show();
   }
 
   destroy() {
+    this.hide();
     // this.flatInstance.destroy();
-    this.flatInstance.close();
     this.$input.remove();
   }
 
   show() {
-    this.flatInstance.open();
+    if (this.flatInstance && typeof this.flatInstance.open === 'function') {
+      this.flatInstance.open();
+    }
   }
 
   hide() {
-    this.flatInstance.close();
+    if (this.flatInstance && typeof this.flatInstance.close === 'function') {
+      this.flatInstance.close();
+    }
   }
 
   focus() {
