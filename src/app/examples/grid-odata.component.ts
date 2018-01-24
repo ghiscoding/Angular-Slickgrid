@@ -77,7 +77,6 @@ export class GridOdataComponent implements OnInit {
           this.displaySpinner(false);
           this.getCustomerCallback(response);
         },
-        filterTypingDebounce: 700,
         service: this.odataService
       }
     };
