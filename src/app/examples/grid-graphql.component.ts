@@ -79,7 +79,6 @@ export class GridGraphqlComponent implements OnInit {
           this.displaySpinner(false);
           this.getCustomerCallback(response);
         },
-        filterTypingDebounce: 700,
         service: this.graphqlService
       }
     };

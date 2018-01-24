@@ -6,6 +6,7 @@ import { OdataService } from './odata.service';
 import * as moment_ from 'moment-mini';
 const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 let timer: any;
+const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 
 @Injectable()
 export class GridOdataService implements BackendService {
@@ -48,12 +49,16 @@ export class GridOdataService implements BackendService {
    * FILTERING
    */
   onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
-    let searchBy: string = '';
+    let searchBy = '';
     const searchByArray = [];
     const serviceOptions: BackendServiceOption = args.grid.getOptions();
+    if (serviceOptions.onBackendEventApi === undefined) {
+      throw new Error('Something went wrong in the GraphqlService, "onBackendEventApi" is not initialized');
+    }
+
     let debounceTypingDelay = 0;
     if (event.type === 'keyup' || event.type === 'keydown') {
-      debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || 700;
+      debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
     }
 
     const promise = new Promise<string>((resolve, reject) => {
@@ -97,14 +102,14 @@ export class GridOdataService implements BackendService {
               this.saveColumnFilter(fieldName, fieldSearchValue, searchTerms);
             }
           } else {
-            let searchBy = '';
+            searchBy = '';
 
             // titleCase the fieldName so that it matches the WebApi names
             const fieldNameTitleCase = String.titleCase(fieldName || '');
 
             // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
             if (searchTerms && searchTerms.length > 0) {
-              let tmpSearchTerms = [];
+              const tmpSearchTerms = [];
 
               if (operator === 'IN') {
                 // example:: (Stage eq "Expired" or Stage eq "Renewal")
@@ -193,7 +198,7 @@ export class GridOdataService implements BackendService {
       sortByArray = new Array(this.defaultSortBy); // when empty, use the default sort
     } else {
       if (sortColumns) {
-        for (let column of sortColumns) {
+        for (const column of sortColumns) {
           let fieldName = column.sortCol.field || column.sortCol.id;
           if (this.odataService.options.caseType === CaseType.pascalCase) {
             fieldName = String.titleCase(fieldName);
