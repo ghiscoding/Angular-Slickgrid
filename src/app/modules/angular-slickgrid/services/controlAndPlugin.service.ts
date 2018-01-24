@@ -8,6 +8,7 @@ import {
   CustomGridMenu,
   Column,
   Formatter,
+  GridMenu,
   GridOption,
   HeaderButtonOnCommandArgs,
   HeaderMenuOnCommandArgs,
@@ -125,8 +126,15 @@ export class ControlAndPluginService {
     this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
   }
 
+  /**
+   * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)
+   * @param grid
+   * @param columnDefinitions
+   * @param options
+   */
   createGridMenu(grid: any, columnDefinitions: Column[], options: GridOption) {
-    this.prepareGridMenu(grid, options);
+    options.gridMenu = { ...this.getDefaultGridMenuOptions(), ...options.gridMenu };
+    this.addGridMenuCustomCommands(grid, options);
 
     const gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
     if (grid && options.gridMenu) {
@@ -145,7 +153,9 @@ export class ControlAndPluginService {
           options.gridMenu.onMenuClose(e, args);
         }
         // we also want to resize the columns if the user decided to hide certain column(s)
-        grid.autosizeColumns();
+        if (grid && typeof grid.autosizeColumns === 'function') {
+          grid.autosizeColumns();
+        }
       });
     }
     return gridMenuControl;
@@ -204,6 +214,11 @@ export class ControlAndPluginService {
     }
   }
 
+  /**
+   * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
+   * @param grid
+   * @param options
+   */
   private addGridMenuCustomCommands(grid: any, options: GridOption) {
     if (options.enableFiltering) {
       if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-filter').length === 0) {
@@ -226,7 +241,7 @@ export class ControlAndPluginService {
           }
         );
       }
-      if (options && options.gridMenu && options.onBackendEventApi && options.gridMenu.showRefreshDatasetCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
+      if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && options.onBackendEventApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: 'fa fa-refresh',
@@ -271,24 +286,22 @@ export class ControlAndPluginService {
     }
   }
 
-  private prepareGridMenu(grid: any, options: GridOption) {
-    const columnTitle = options.enableTranslate ? this.translate.instant('COLUMNS') : 'Columns';
-    const forceFitTitle = options.enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : 'Force fit columns';
-    const syncResizeTitle = options.enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : 'Synchronous resize';
-
-    options.gridMenu = options.gridMenu || {};
-    options.gridMenu.columnTitle = options.gridMenu.columnTitle || columnTitle;
-    options.gridMenu.forceFitTitle = options.gridMenu.forceFitTitle || forceFitTitle;
-    options.gridMenu.syncResizeTitle = options.gridMenu.syncResizeTitle || syncResizeTitle;
-    options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
-    options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
-    options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
-    options.gridMenu.customItems = options.gridMenu.customItems || [];
-    options.gridMenu.showClearAllFiltersCommand = options.gridMenu.showClearAllFiltersCommand || true;
-    options.gridMenu.showRefreshDatasetCommand = options.gridMenu.showRefreshDatasetCommand || true;
-    options.gridMenu.showToggleFilterCommand = options.gridMenu.showToggleFilterCommand || true;
-    this.addGridMenuCustomCommands(grid, options);
-    // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
+  /**
+   * @return default Grid Menu options
+   */
+  private getDefaultGridMenuOptions(): GridMenu {
+    return {
+      columnTitle: this.translate.instant('COLUMNS') || 'Columns',
+      forceFitTitle: this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns',
+      syncResizeTitle: this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize',
+      iconCssClass: 'fa fa-bars',
+      menuWidth: 18,
+      customTitle: undefined,
+      customItems: [],
+      showClearAllFiltersCommand: true,
+      showRefreshDatasetCommand: true,
+      showToggleFilterCommand: true
+    };
   }
 
   private refreshBackendDataset(options) {
@@ -302,6 +315,7 @@ export class ControlAndPluginService {
       if (options.onBackendEventApi.preProcess) {
         options.onBackendEventApi.preProcess();
       }
+
       // the process could be an Observable (like HttpClient) or a Promise
       // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
       const observableOrPromise = options.onBackendEventApi.process(query);
@@ -316,6 +330,22 @@ export class ControlAndPluginService {
   }
 
   /**
+   * Reset all the Grid Menu options which have text to translate
+   * @param grid menu object
+   */
+  private resetGridMenuTranslations(gridMenu: GridMenu) {
+    // we will reset the custom items array since the commands title have to be translated too (no worries, we will re-create it later)
+    gridMenu.customItems = [];
+    delete gridMenu.customTitle;
+
+    gridMenu.columnTitle = this.translate.instant('COLUMNS') || 'Columns';
+    gridMenu.forceFitTitle = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
+    gridMenu.syncResizeTitle = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
+
+    return gridMenu;
+  }
+
+  /**
    * Translate the Column Picker and it's last 2 checkboxes
    * Note that the only way that seems to work is to destroy and re-create the Column Picker
    * Changing only the columnPicker.columnTitle with i18n translate was not enough.
@@ -326,9 +356,11 @@ export class ControlAndPluginService {
       this.columnPickerControl.destroy();
       this.columnPickerControl = null;
     }
+
     this._gridOptions.columnPicker = undefined;
     this.createColumnPicker(this._grid, this.visibleColumns, this._gridOptions);
   }
+
   /**
    * Translate the Grid Menu ColumnTitle and CustomTitle.
    * Note that the only way that seems to work is to destroy and re-create the Grid Menu
@@ -337,7 +369,9 @@ export class ControlAndPluginService {
   translateGridMenu() {
     // destroy and re-create the Grid Menu which seems to be the only way to translate properly
     this.gridMenuControl.destroy();
-    this._gridOptions.gridMenu = undefined;
+
+    // reset all Grid Menu options that have translation text & then re-create the Grid Menu and also the custom items array
+    this._gridOptions.gridMenu = this.resetGridMenuTranslations(this._gridOptions.gridMenu);
     this.createGridMenu(this._grid, this.visibleColumns, this._gridOptions);
   }
 

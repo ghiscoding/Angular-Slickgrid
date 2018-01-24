@@ -23,6 +23,7 @@ export { GraphqlPaginationOption } from './graphqlPaginationOption.interface';
 export { GraphqlServiceOption } from './graphqlServiceOption.interface';
 export { GraphqlSortingOption } from './graphqlSortingOption.interface';
 export { CustomGridMenu } from './customGridMenu.interface';
+export { GridMenu } from './gridMenu.interface';
 export { GridOption } from './gridOption.interface';
 export { HeaderButton } from './headerButton.interface';
 export { HeaderButtonItem } from './headerButtonItem.interface';
