@@ -52,8 +52,11 @@ export interface GridOption {
   multiColumnSort?: boolean;
   onBackendEventApi?: BackendEventChanged;
   pagination?: Pagination;
-  params?: any;
-  registerPlugins?: any | any[]; // e.g.: Slick.CheckboxSelectColumn
+
+  /** if you want to pass custom paramaters to your Formatter/Editor or anything else */
+  params?: any | any[];
+
+  registerPlugins?: any | any[];
   rowHeight?: number;
   rowSelectionOptions?: {
     selectActiveRow: boolean;
