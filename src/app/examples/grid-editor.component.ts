@@ -1,5 +1,6 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { Column, Editors, FieldType, Formatter, Formatters, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   templateUrl: './grid-editor.component.html'
@@ -19,12 +20,13 @@ export class GridEditorComponent implements OnInit {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
-  isAutoEdit: boolean = true;
+  isAutoEdit = true;
   updatedObject: any;
   gridObj: any;
   dataviewObj: any;
+  selectedLanguage = 'en';
 
-  constructor(private gridExtraService: GridExtraService, private resizer: ResizerService) {}
+  constructor(private gridExtraService: GridExtraService, private resizer: ResizerService, private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -60,8 +62,8 @@ export class GridEditorComponent implements OnInit {
         }
       },
       { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, editor: Editors.integer },
-      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, outputType: FieldType.dateUtc, editor: Editors.date },
-      { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, outputType: FieldType.dateUtc, editor: Editors.date },
+      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, outputType: FieldType.dateUtc, editor: Editors.date, params: { i18n: this.translate } },
+      { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, outputType: FieldType.dateUtc, editor: Editors.date, params: { i18n: this.translate } },
       { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, editor: Editors.checkbox }
     ];
 
@@ -137,5 +139,10 @@ export class GridEditorComponent implements OnInit {
     this.isAutoEdit = isAutoEdit;
     this.gridObj.setOptions({ autoEdit: isAutoEdit }); // change the grid option dynamically
     return true;
+  }
+
+  switchLanguage() {
+    this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(this.selectedLanguage);
   }
 }

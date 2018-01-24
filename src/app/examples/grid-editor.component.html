@@ -13,7 +13,13 @@
                 <input type="radio" name="inlineRadioOptions" id="radioFalse" [value]="isAutoEdit" (change)="setAutoEdit(false)"> OFF (double-click)
             </label>
         </span>
+        <div class="row col-sm-12">
+            <button class="btn btn-default btn-sm" (click)="switchLanguage()">Switch Language</button>
+            <b>Locale:</b> <span style="font-style: italic">{{selectedLanguage + '.json'}}</span>
+        </div>
     </div>
+
+
 
     <div class="col-sm-8">
         <div class="alert alert-info" *ngIf="updatedObject">
