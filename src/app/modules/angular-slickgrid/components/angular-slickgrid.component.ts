@@ -67,7 +67,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   @Output() onGridCreated = new EventEmitter<any>();
   @Output() onBeforeGridCreate = new EventEmitter<boolean>();
   @Output() onBeforeGridDestroy = new EventEmitter<any>();
-  @Output() onGridDestroyed = new EventEmitter<boolean>();
+  @Output() onAfterGridDestroyed = new EventEmitter<boolean>();
   @Input() gridId: string;
   @Input() columnDefinitions: Column[];
   @Input() gridOptions: GridOption;
@@ -101,7 +101,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   ngOnDestroy(): void {
     this.onBeforeGridDestroy.emit(this.grid);
     this.destroy();
-    this.onGridDestroyed.emit(true);
+    this.onAfterGridDestroyed.emit(true);
   }
 
   destroy() {
