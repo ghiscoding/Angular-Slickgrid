@@ -244,14 +244,16 @@ export class GraphqlService implements BackendService {
    */
   onPaginationChanged(event: Event, args: PaginationChangedArgs) {
     let paginationOptions;
+    const pageSize = +args.pageSize || 20;
+
     if (this.serviceOptions.isWithCursor) {
       paginationOptions = {
-        first: args.pageSize
+        first: pageSize
       };
     } else {
       paginationOptions = {
-        first: args.pageSize,
-        offset: (args.newPage - 1) * args.pageSize
+        first: pageSize,
+        offset: (args.newPage - 1) * pageSize
       };
     }
 

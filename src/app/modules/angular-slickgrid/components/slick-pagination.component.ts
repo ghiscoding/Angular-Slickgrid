@@ -83,7 +83,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
   }
 
   onChangeItemPerPage(event: any) {
-    const itemsPerPage = event.target.value as number;
+    const itemsPerPage = +event.target.value;
     this.pageCount = Math.ceil(this.totalItems / itemsPerPage);
     this.pageNumber = 1;
     this.itemsPerPage = itemsPerPage;
@@ -100,7 +100,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
 
       // calculate and refresh the multiple properties of the pagination UI
       this.paginationPageSizes = this._gridPaginationOptions.pagination.pageSizes;
-      this.itemsPerPage = this._gridPaginationOptions.pagination.pageSize;
+      this.itemsPerPage = +this._gridPaginationOptions.pagination.pageSize;
       this.totalItems = this._gridPaginationOptions.pagination.totalItems;
       this.dataTo = this.itemsPerPage;
     }
@@ -114,7 +114,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
       this.dataTo = this.totalItems;
     }
     if (this._gridPaginationOptions.onBackendEventApi) {
-      const itemsPerPage = this.itemsPerPage;
+      const itemsPerPage = +this.itemsPerPage;
 
       if (!this._gridPaginationOptions.onBackendEventApi.process || !this._gridPaginationOptions.onBackendEventApi.service) {
         throw new Error(`onBackendEventApi requires at least a "process" function and a "service" defined`);
