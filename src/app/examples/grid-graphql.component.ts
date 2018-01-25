@@ -47,7 +47,6 @@ export class GridGraphqlComponent implements OnInit {
     this.columnDefinitions = [
       { id: 'name', name: 'Name', field: 'name', headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string },
       { id: 'gender', name: 'Gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true,
-        queryField: 'genderTranslated',
         filter: {
           searchTerm: '', // default selection
           type: FormElementType.select,
