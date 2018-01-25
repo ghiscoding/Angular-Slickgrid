@@ -167,7 +167,7 @@ export class FilterService {
       const conditionalFilterFn = (columnDef.filter && columnDef.filter.conditionalFilter) ? columnDef.filter.conditionalFilter : null;
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
 
-      let cellValue = item[columnDef.field];
+      let cellValue = item[columnDef.queryField || columnDef.field];
       let fieldSearchValue = columnFilter.searchTerm;
       if (typeof fieldSearchValue === 'undefined') {
         fieldSearchValue = '';

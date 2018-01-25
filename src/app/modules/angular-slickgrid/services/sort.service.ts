@@ -64,9 +64,10 @@ export class SortService {
 
       dataView.sort(function (dataRow1: any, dataRow2: any) {
         for (let i = 0, l = sortColumns.length; i < l; i++) {
-          const sortDirection = sortColumns[i].sortAsc ? 1 : -1;
-          const sortField = sortColumns[i].sortCol.field;
-          const fieldType = sortColumns[i].sortCol.type || 'string';
+          const columnSortObj = sortColumns[i];
+          const sortDirection = columnSortObj.sortAsc ? 1 : -1;
+          const sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.field;
+          const fieldType = columnSortObj.sortCol.type || 'string';
           const value1 = dataRow1[sortField];
           const value2 = dataRow2[sortField];
           let result = 0;
