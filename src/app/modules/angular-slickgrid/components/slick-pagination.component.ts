@@ -96,6 +96,9 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
       if (isPageNumberReset || this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
         this.pageNumber = 1;
         this.recalculateFromToIndexes();
+
+        // also reset the "offset" of backend service
+        this._gridPaginationOptions.onBackendEventApi.service.resetPaginationOptions();
       }
 
       // calculate and refresh the multiple properties of the pagination UI
