@@ -127,11 +127,16 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
       // the process could be an Observable (like HttpClient) or a Promise
       // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
       const observableOrPromise = this._gridPaginationOptions.onBackendEventApi.process(query);
-      const responseProcess = await castToPromise(observableOrPromise);
+      const processResult = await castToPromise(observableOrPromise);
+
+      // from the result, call our internal post process to update the Dataset and Pagination info
+      if (processResult && this._gridPaginationOptions.onBackendEventApi.internalPostProcess) {
+        this._gridPaginationOptions.onBackendEventApi.internalPostProcess(processResult);
+      }
 
       // send the response process to the postProcess callback
       if (this._gridPaginationOptions.onBackendEventApi.postProcess) {
-        this._gridPaginationOptions.onBackendEventApi.postProcess(responseProcess);
+        this._gridPaginationOptions.onBackendEventApi.postProcess(processResult);
       }
     } else {
       throw new Error('Pagination with a backend service requires "onBackendEventApi" to be defined in your grid options');

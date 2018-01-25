@@ -4,9 +4,12 @@ import { FieldType, Formatters } from './../modules/angular-slickgrid';
 import { GraphqlService } from './../modules/angular-slickgrid/services/graphql.service';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
+import { GraphqlResult } from '../modules/angular-slickgrid/models/graphqlResult.interface';
 
 const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
+const GRAPHQL_QUERY_DATASET_NAME = 'users';
+let globalQuery = '';
 
 @Component({
   templateUrl: './grid-graphql.component.html'
@@ -75,10 +78,7 @@ export class GridGraphqlComponent implements OnInit {
         onInit: (query) => this.getCustomerApiCall(query),
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
-        postProcess: (response) => {
-          this.displaySpinner(false);
-          this.getCustomerCallback(response);
-        },
+        postProcess: (result: GraphqlResult) => this.displaySpinner(false),
         service: this.graphqlService
       }
     };
@@ -117,7 +117,7 @@ export class GridGraphqlComponent implements OnInit {
       // with cursor, paginationOptions can be: { first, last, after, before }
       paginationOption = {
         columnDefinitions: this.columnDefinitions,
-        datasetName: 'users',
+        datasetName: GRAPHQL_QUERY_DATASET_NAME,
         isWithCursor: true,
         paginationOptions: {
           first: defaultPageSize
@@ -127,7 +127,7 @@ export class GridGraphqlComponent implements OnInit {
       // without cursor, paginationOptions can be: { first, last, offset }
       paginationOption = {
         columnDefinitions: this.columnDefinitions,
-        datasetName: 'users',
+        datasetName: GRAPHQL_QUERY_DATASET_NAME,
         isWithCursor: false,
         paginationOptions: {
           first: defaultPageSize,
@@ -141,23 +141,35 @@ export class GridGraphqlComponent implements OnInit {
     return paginationOption;
   }
 
-  getCustomerCallback(data) {
-    this.displaySpinner(false);
+  /**
+   * Calling your GraphQL backend server should always return a Promise or Observable of type GraphqlResult
+   *
+   * @param query
+   * @return Promise<GraphqlResult> | Observable<GraphqlResult>
+   */
+  getCustomerApiCall(query: string): Promise<GraphqlResult> {
+    globalQuery = query;
 
-    this.dataset = data['items'];
-    this.graphqlQuery = data['query'];
-
-    // totalItems property needs to be filled for pagination to work correctly
-    this.gridOptions.pagination.totalItems = data['totalRecordCount'];
-  }
-
-  getCustomerApiCall(query) {
     // in your case, you will call your WebAPI function (wich needs to return a Promise)
     // for the demo purpose, we will call a mock WebAPI function
+    const mockedResult = {
+      // the dataset name is the only unknown property
+      // will be the same defined in your GraphQL Service init, in our case GRAPHQL_QUERY_DATASET_NAME
+      data: {
+        [GRAPHQL_QUERY_DATASET_NAME]: {
+          nodes: [],
+          pageInfo: {
+            hasNextPage: true
+          },
+          totalCount: 100
+        }
+      }
+    };
+
     return new Promise((resolve, reject) => {
       this.graphqlQuery = this.graphqlService.buildQuery();
       setTimeout(() => {
-        resolve({ items: [], totalRecordCount: 100, query });
+        resolve(mockedResult);
       }, 500);
     });
   }

@@ -8,6 +8,7 @@ import {
   CustomGridMenu,
   Column,
   Formatter,
+  GraphqlResult,
   GridMenu,
   GridOption,
   HeaderButtonOnCommandArgs,
@@ -304,26 +305,31 @@ export class ControlAndPluginService {
     };
   }
 
-  private refreshBackendDataset(options) {
+  private refreshBackendDataset(gridOptions) {
     let query;
 
-    if (options.onBackendEventApi.service) {
-      query = options.onBackendEventApi.service.buildQuery();
+    if (gridOptions.onBackendEventApi.service) {
+      query = gridOptions.onBackendEventApi.service.buildQuery();
     }
 
     if (query && query !== '') {
-      if (options.onBackendEventApi.preProcess) {
-        options.onBackendEventApi.preProcess();
+      if (gridOptions.onBackendEventApi.preProcess) {
+        gridOptions.onBackendEventApi.preProcess();
       }
 
       // the process could be an Observable (like HttpClient) or a Promise
       // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-      const observableOrPromise = options.onBackendEventApi.process(query);
+      const observableOrPromise = gridOptions.onBackendEventApi.process(query);
 
-      castToPromise(observableOrPromise).then((responseProcess: any) => {
+      castToPromise(observableOrPromise).then((processResult: GraphqlResult | any) => {
+        // from the result, call our internal post process to update the Dataset and Pagination info
+        if (processResult && gridOptions.onBackendEventApi.internalPostProcess) {
+          gridOptions.onBackendEventApi.internalPostProcess(processResult);
+        }
+
         // send the response process to the postProcess callback
-        if (options.onBackendEventApi.postProcess) {
-          options.onBackendEventApi.postProcess(responseProcess);
+        if (gridOptions.onBackendEventApi.postProcess) {
+          gridOptions.onBackendEventApi.postProcess(processResult);
         }
       });
     }

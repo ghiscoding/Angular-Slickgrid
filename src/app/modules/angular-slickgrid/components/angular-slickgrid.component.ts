@@ -22,9 +22,10 @@ import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, Component, EventEmitter, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
 import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
-import { CellArgs, Column, FormElementType, GridOption } from './../models';
+import { CellArgs, Column, FormElementType, GraphqlResult, GridOption } from './../models';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { FilterService } from './../services/filter.service';
+import { GraphqlService } from './../services/graphql.service';
 import { GridEventService } from './../services/gridEvent.service';
 import { GridExtraService } from './../services/gridExtra.service';
 import { ResizerService } from './../services/resizer.service';
@@ -117,6 +118,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   ngAfterViewInit() {
     // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
     this._dataset = this._dataset || [];
+    this.createBackendApiInternalPostProcessCallback();
     this._gridOptions = this.mergeGridOptions();
 
     this._dataView = new Slick.Data.DataView();
@@ -151,6 +153,24 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
+  /**
+   * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
+   * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+   */
+  createBackendApiInternalPostProcessCallback() {
+    if (this.gridOptions.onBackendEventApi && this.gridOptions.onBackendEventApi.service instanceof GraphqlService) {
+      this.gridOptions.onBackendEventApi.internalPostProcess = (processResult: any) => {
+        // make sure it's an instance of GraphQL Service before trying to execute it
+        if (this.gridOptions.onBackendEventApi.service instanceof GraphqlService && processResult) {
+          const datasetName = this.gridOptions.onBackendEventApi.service.getDatasetName();
+          this._dataset = processResult.data[datasetName].nodes;
+          this.gridOptions.pagination.totalItems = processResult.data[datasetName].totalCount;
+          this.refreshGridData(this._dataset);
+        }
+      }
+    }
+  }
+
   attachDifferentHooks(grid: any, options: GridOption, dataView: any) {
     // on locale change, we have to manually translate the Headers, GridMenu
     this.translate.onLangChange.subscribe((event) => {
@@ -172,6 +192,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       (options.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, options) : this.filterService.attachLocalOnFilter(grid, options, this._dataView);
     }
 
+    // if user set an onInit Backend, we'll run it right away
     if (options.onBackendEventApi && options.onBackendEventApi.onInit) {
       const backendApi = options.onBackendEventApi;
       const query = backendApi.service.buildQuery();
@@ -181,11 +202,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         // the process could be an Observable (like HttpClient) or a Promise
         // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
         const observableOrPromise = options.onBackendEventApi.onInit(query);
-        const responseProcess = await castToPromise(observableOrPromise);
+        const processResult = await castToPromise(observableOrPromise);
+
+        // from the result, fill in the grid dataset array and the pagination total items
+        options.onBackendEventApi.internalPostProcess(processResult);
 
         // send the response process to the postProcess callback
-        if (backendApi.postProcess) {
-          backendApi.postProcess(responseProcess);
+        if (options.onBackendEventApi.postProcess) {
+          options.onBackendEventApi.postProcess(processResult);
         }
       });
     }

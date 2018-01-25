@@ -114,6 +114,10 @@ export class GraphqlService implements BackendService {
     this.serviceOptions = serviceOptions || {};
   }
 
+  getDatasetName() {
+    return this.serviceOptions.datasetName;
+  }
+
   /*
    * Reset the pagination options
    */

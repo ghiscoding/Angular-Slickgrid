@@ -20,6 +20,7 @@ export { GraphqlDatasetFilter } from './graphqlDatasetFilter.interface';
 export { GraphqlCursorPaginationOption } from './graphqlCursorPaginationOption.interface';
 export { GraphqlFilteringOption } from './graphqlFilteringOption.interface';
 export { GraphqlPaginationOption } from './graphqlPaginationOption.interface';
+export { GraphqlResult } from './graphqlResult.interface';
 export { GraphqlServiceOption } from './graphqlServiceOption.interface';
 export { GraphqlSortingOption } from './graphqlSortingOption.interface';
 export { CustomGridMenu } from './customGridMenu.interface';
