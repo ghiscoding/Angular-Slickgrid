@@ -10,7 +10,7 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 
 @Injectable()
 export class GridOdataService implements BackendService {
-  serviceOptions: OdataOption = {};
+  options: OdataOption;
   defaultSortBy = '';
   minUserInactivityOnFilter = 700;
 
@@ -24,8 +24,8 @@ export class GridOdataService implements BackendService {
     this.odataService.options = options;
   }
 
-  updateOptions(options?: OdataOption) {
-    this.serviceOptions = { ...this.serviceOptions, ...options };
+  updateOptions(serviceOptions?: OdataOption) {
+    this.options = { ...this.options, ...serviceOptions };
   }
 
   removeColumnFilter(fieldName: string): void {

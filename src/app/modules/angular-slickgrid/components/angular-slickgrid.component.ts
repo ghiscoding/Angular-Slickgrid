@@ -171,10 +171,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  attachDifferentHooks(grid: any, options: GridOption, dataView: any) {
+  attachDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
     // on locale change, we have to manually translate the Headers, GridMenu
     this.translate.onLangChange.subscribe((event) => {
-      if (options.enableTranslate) {
+      if (gridOptions.enableTranslate) {
         this.controlAndPluginService.translateHeaders();
         this.controlAndPluginService.translateColumnPicker();
         this.controlAndPluginService.translateGridMenu();
@@ -182,34 +182,43 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     });
 
     // attach external sorting (backend) when available or default onSort (dataView)
-    if (options.enableSorting) {
-      (options.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, options) : this.sortService.attachLocalOnSort(grid, options, this._dataView);
+    if (gridOptions.enableSorting) {
+      (gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView);
     }
 
     // attach external filter (backend) when available or default onFilter (dataView)
-    if (options.enableFiltering) {
-      this.filterService.init(grid, options, this.columnDefinitions);
-      (options.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, options) : this.filterService.attachLocalOnFilter(grid, options, this._dataView);
+    if (gridOptions.enableFiltering) {
+      this.filterService.init(grid, gridOptions, this.columnDefinitions);
+      (gridOptions.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, gridOptions) : this.filterService.attachLocalOnFilter(grid, gridOptions, this._dataView);
     }
 
     // if user set an onInit Backend, we'll run it right away
-    if (options.onBackendEventApi && options.onBackendEventApi.onInit) {
-      const backendApi = options.onBackendEventApi;
+    const serviceOptions = (gridOptions.onBackendEventApi && gridOptions.onBackendEventApi.service && gridOptions.onBackendEventApi.service.options) ? gridOptions.onBackendEventApi.service.options : null;
+    const isExecuteCommandOnInit = (!serviceOptions) ? false : serviceOptions['executeProcessCommandOnInit'] || false;
+    if (gridOptions.onBackendEventApi && (gridOptions.onBackendEventApi.onInit || isExecuteCommandOnInit)) {
+      const backendApi = gridOptions.onBackendEventApi;
       const query = backendApi.service.buildQuery();
+      const observableOrPromise = (isExecuteCommandOnInit) ? gridOptions.onBackendEventApi.process(query) : gridOptions.onBackendEventApi.onInit(query);
 
       // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
       setTimeout(async () => {
+        if (gridOptions.onBackendEventApi.preProcess) {
+          gridOptions.onBackendEventApi.preProcess();
+        }
+
         // the process could be an Observable (like HttpClient) or a Promise
         // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-        const observableOrPromise = options.onBackendEventApi.onInit(query);
         const processResult = await castToPromise(observableOrPromise);
 
-        // from the result, fill in the grid dataset array and the pagination total items
-        options.onBackendEventApi.internalPostProcess(processResult);
+        // define what our internal Post Process callback, only available for GraphQL Service for now
+        // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+        if (gridOptions.onBackendEventApi.service instanceof GraphqlService && processResult) {
+          gridOptions.onBackendEventApi.internalPostProcess(processResult);
+        }
 
         // send the response process to the postProcess callback
-        if (options.onBackendEventApi.postProcess) {
-          options.onBackendEventApi.postProcess(processResult);
+        if (gridOptions.onBackendEventApi.postProcess) {
+          gridOptions.onBackendEventApi.postProcess(processResult);
         }
       });
     }

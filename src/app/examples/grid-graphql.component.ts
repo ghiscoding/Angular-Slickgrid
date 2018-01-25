@@ -9,7 +9,6 @@ import { GraphqlResult } from '../modules/angular-slickgrid/models/graphqlResult
 const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
 const GRAPHQL_QUERY_DATASET_NAME = 'users';
-let globalQuery = '';
 
 @Component({
   templateUrl: './grid-graphql.component.html'
@@ -75,7 +74,8 @@ export class GridGraphqlComponent implements OnInit {
         totalItems: 0
       },
       onBackendEventApi: {
-        onInit: (query) => this.getCustomerApiCall(query),
+        // you can define the onInit callback OR enable the "executeProcessCommandOnInit" flag in the service init
+        // onInit: (query) => this.getCustomerApiCall(query)
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (result: GraphqlResult) => this.displaySpinner(false),
@@ -83,7 +83,7 @@ export class GridGraphqlComponent implements OnInit {
       }
     };
 
-    const initOptions = this.getPaginationOption(this.isWithCursor);
+    const initOptions = this.getBackendOptions(this.isWithCursor);
     this.graphqlService.initOptions(initOptions);
   }
 
@@ -105,12 +105,12 @@ export class GridGraphqlComponent implements OnInit {
 
   onWithCursorChange(isWithCursor) {
     this.isWithCursor = isWithCursor;
-    const paginationOption = this.getPaginationOption(isWithCursor);
+    const paginationOption = this.getBackendOptions(isWithCursor);
     this.graphqlService.initOptions(paginationOption);
     this.graphqlQuery = this.graphqlService.buildQuery();
   }
 
-  getPaginationOption(isWithCursor: boolean) {
+  getBackendOptions(isWithCursor: boolean) {
     let paginationOption;
 
     if (isWithCursor) {
@@ -121,7 +121,8 @@ export class GridGraphqlComponent implements OnInit {
         isWithCursor: true,
         paginationOptions: {
           first: defaultPageSize
-        }
+        },
+        executeProcessCommandOnInit: true
       };
     } else {
       // without cursor, paginationOptions can be: { first, last, offset }
@@ -132,7 +133,8 @@ export class GridGraphqlComponent implements OnInit {
         paginationOptions: {
           first: defaultPageSize,
           offset: 0
-        }
+        },
+        executeProcessCommandOnInit: true
       };
     }
     // when dealing with complex objects, we want to keep our field name with double quotes
@@ -148,8 +150,6 @@ export class GridGraphqlComponent implements OnInit {
    * @return Promise<GraphqlResult> | Observable<GraphqlResult>
    */
   getCustomerApiCall(query: string): Promise<GraphqlResult> {
-    globalQuery = query;
-
     // in your case, you will call your WebAPI function (wich needs to return a Promise)
     // for the demo purpose, we will call a mock WebAPI function
     const mockedResult = {
@@ -167,8 +167,8 @@ export class GridGraphqlComponent implements OnInit {
     };
 
     return new Promise((resolve, reject) => {
-      this.graphqlQuery = this.graphqlService.buildQuery();
       setTimeout(() => {
+        this.graphqlQuery = this.graphqlService.buildQuery();
         resolve(mockedResult);
       }, 500);
     });

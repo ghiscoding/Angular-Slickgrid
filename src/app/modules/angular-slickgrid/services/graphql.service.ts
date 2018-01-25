@@ -20,7 +20,7 @@ let timer: any;
 const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 
 export class GraphqlService implements BackendService {
-  serviceOptions: GraphqlServiceOption = {};
+  options: GraphqlServiceOption;
   defaultOrderBy: GraphqlSortingOption = { field: 'id', direction: SortDirection.ASC };
 
   /**
@@ -28,20 +28,20 @@ export class GraphqlService implements BackendService {
    * @param serviceOptions GraphqlServiceOption
    */
   buildQuery() {
-    if (!this.serviceOptions || !this.serviceOptions.datasetName || (!this.serviceOptions.columnIds && !this.serviceOptions.dataFilters && !this.serviceOptions.columnDefinitions)) {
+    if (!this.options || !this.options.datasetName || (!this.options.columnIds && !this.options.dataFilters && !this.options.columnDefinitions)) {
       throw new Error('GraphQL Service requires "datasetName" & ("dataFilters" or "columnDefinitions") properties for it to work');
     }
     const queryQb = new QueryBuilder('query');
-    const datasetQb = new QueryBuilder(this.serviceOptions.datasetName);
+    const datasetQb = new QueryBuilder(this.options.datasetName);
     const pageInfoQb = new QueryBuilder('pageInfo');
-    const dataQb = (this.serviceOptions.isWithCursor) ? new QueryBuilder('edges') : new QueryBuilder('nodes');
+    const dataQb = (this.options.isWithCursor) ? new QueryBuilder('edges') : new QueryBuilder('nodes');
 
     // get all the columnds Ids for the filters to work
     let columnIds: string[];
-    if (this.serviceOptions.columnDefinitions) {
-      columnIds = Array.isArray(this.serviceOptions.columnDefinitions) ? this.serviceOptions.columnDefinitions.map((column) => column.field) : [];
+    if (this.options.columnDefinitions) {
+      columnIds = Array.isArray(this.options.columnDefinitions) ? this.options.columnDefinitions.map((column) => column.field) : [];
     } else {
-      columnIds = this.serviceOptions.columnIds || this.serviceOptions.dataFilters || [];
+      columnIds = this.options.columnIds || this.options.dataFilters || [];
     }
 
     // Slickgrid also requires the "id" field to be part of DataView
@@ -52,7 +52,7 @@ export class GraphqlService implements BackendService {
 
     const filters = this.buildFilterQuery(columnIds);
 
-    if (this.serviceOptions.isWithCursor) {
+    if (this.options.isWithCursor) {
       // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
       pageInfoQb.find('hasNextPage', 'endCursor');
       dataQb.find(['cursor', { node: filters }]);
@@ -65,14 +65,14 @@ export class GraphqlService implements BackendService {
     datasetQb.find(['totalCount', pageInfoQb, dataQb]);
 
     // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
-    const datasetFilters: GraphqlDatasetFilter = this.serviceOptions.paginationOptions as GraphqlDatasetFilter;
-    if (this.serviceOptions.sortingOptions) {
+    const datasetFilters: GraphqlDatasetFilter = this.options.paginationOptions as GraphqlDatasetFilter;
+    if (this.options.sortingOptions) {
       // orderBy: [{ field:x, direction: 'ASC' }]
-      datasetFilters.orderBy = this.serviceOptions.sortingOptions;
+      datasetFilters.orderBy = this.options.sortingOptions;
     }
-    if (this.serviceOptions.filteringOptions) {
+    if (this.options.filteringOptions) {
       // filterBy: [{ field: date, operator: '>', value: '2000-10-10' }]
-      datasetFilters.filterBy = this.serviceOptions.filteringOptions;
+      datasetFilters.filterBy = this.options.filteringOptions;
     }
 
     // query { users(first: 20, orderBy: [], filterBy: [])}
@@ -80,7 +80,7 @@ export class GraphqlService implements BackendService {
     queryQb.find(datasetQb);
 
     const enumSearchProperties = ['direction:', 'field:', 'operator:'];
-    return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.serviceOptions.keepArgumentFieldDoubleQuotes || false);
+    return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.options.keepArgumentFieldDoubleQuotes || false);
   }
 
   /**
@@ -111,11 +111,11 @@ export class GraphqlService implements BackendService {
   }
 
   initOptions(serviceOptions?: GraphqlServiceOption): void {
-    this.serviceOptions = serviceOptions || {};
+    this.options = serviceOptions || {};
   }
 
   getDatasetName() {
-    return this.serviceOptions.datasetName;
+    return this.options.datasetName;
   }
 
   /*
@@ -123,7 +123,7 @@ export class GraphqlService implements BackendService {
    */
   resetPaginationOptions() {
     let paginationOptions;
-    if (this.serviceOptions.isWithCursor) {
+    if (this.options.isWithCursor) {
       // first, last, after, before
       paginationOptions = {
         after: '',
@@ -132,14 +132,14 @@ export class GraphqlService implements BackendService {
       } as GraphqlCursorPaginationOption;
     } else {
       // first, last, offset
-      paginationOptions = this.serviceOptions.paginationOptions as GraphqlPaginationOption;
+      paginationOptions = this.options.paginationOptions as GraphqlPaginationOption;
       paginationOptions.offset = 0;
     }
     this.updateOptions({ paginationOptions });
   }
 
   updateOptions(serviceOptions?: GraphqlServiceOption) {
-    this.serviceOptions = { ...this.serviceOptions, ...serviceOptions };
+    this.options = { ...this.options, ...serviceOptions };
   }
 
   /*
@@ -250,7 +250,7 @@ export class GraphqlService implements BackendService {
     let paginationOptions;
     const pageSize = +args.pageSize || 20;
 
-    if (this.serviceOptions.isWithCursor) {
+    if (this.options.isWithCursor) {
       paginationOptions = {
         first: pageSize
       };
