@@ -67,7 +67,7 @@ export class GridOdataService implements BackendService {
         if (args.columnFilters.hasOwnProperty(columnId)) {
           const columnFilter = args.columnFilters[columnId];
           const columnDef = columnFilter.columnDef;
-          const fieldName = columnDef.field || columnDef.name;
+          const fieldName = columnDef.queryField || columnDef.field || columnDef.name;
           const fieldType = columnDef.type || 'string';
           let fieldSearchValue = columnFilter.searchTerm;
           if (typeof fieldSearchValue === 'undefined') {
@@ -199,7 +199,7 @@ export class GridOdataService implements BackendService {
     } else {
       if (sortColumns) {
         for (const column of sortColumns) {
-          let fieldName = column.sortCol.field || column.sortCol.id;
+          let fieldName = column.sortCol.queryField || column.sortCol.field || column.sortCol.id;
           if (this.odataService.options.caseType === CaseType.pascalCase) {
             fieldName = String.titleCase(fieldName);
           }
