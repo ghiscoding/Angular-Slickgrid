@@ -47,6 +47,7 @@ export class GridGraphqlComponent implements OnInit {
     this.columnDefinitions = [
       { id: 'name', name: 'Name', field: 'name', headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string },
       { id: 'gender', name: 'Gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true,
+        queryField: 'genderTranslated',
         filter: {
           searchTerm: '', // default selection
           type: FormElementType.select,
@@ -122,6 +123,7 @@ export class GridGraphqlComponent implements OnInit {
         paginationOptions: {
           first: defaultPageSize
         },
+        addLocaleIntoQuery: true,
         executeProcessCommandOnInit: true
       };
     } else {
@@ -134,6 +136,7 @@ export class GridGraphqlComponent implements OnInit {
           first: defaultPageSize,
           offset: 0
         },
+        addLocaleIntoQuery: true,
         executeProcessCommandOnInit: true
       };
     }

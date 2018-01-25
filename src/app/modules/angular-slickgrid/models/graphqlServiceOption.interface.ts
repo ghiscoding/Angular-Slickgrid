@@ -6,6 +6,12 @@ import { GraphqlCursorPaginationOption } from './graphqlCursorPaginationOption.i
 import { GraphqlPaginationOption } from './graphqlPaginationOption.interface';
 
 export interface GraphqlServiceOption extends BackendServiceOption {
+  /**
+   * When using Translation, we probably want to add locale in the query for the filterBy/orderBy to work
+   * ex.: users(first: 10, offset: 0, locale: "en-CA", filterBy: [{field: name, operator: EQ, value:"John"}]) {
+   */
+  addLocaleIntoQuery?: boolean;
+
   /** Array of column ids that are included in the column definitions */
   columnIds?: string[];
 

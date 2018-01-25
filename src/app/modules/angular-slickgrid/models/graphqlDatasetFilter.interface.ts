@@ -7,6 +7,7 @@ export interface GraphqlDatasetFilter {
   offset?: number;
   after?: string;
   before?: string;
+  locale?: string;
   filterBy?: GraphqlFilteringOption[];
   orderBy?: GraphqlSortingOption[];
 }

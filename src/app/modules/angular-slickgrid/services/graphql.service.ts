@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { mapOperatorType, parseUtcDate } from './utilities';
 import {
   BackendService,
@@ -16,12 +18,16 @@ import {
   SortDirection
 } from './../models';
 import QueryBuilder from './graphqlQueryBuilder';
+
 let timer: any;
 const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 
+@Injectable()
 export class GraphqlService implements BackendService {
   options: GraphqlServiceOption;
   defaultOrderBy: GraphqlSortingOption = { field: 'id', direction: SortDirection.ASC };
+
+  constructor(private translate: TranslateService) {}
 
   /**
    * Build the GraphQL query, since the service include/exclude cursor, the output query will be different.
@@ -73,6 +79,10 @@ export class GraphqlService implements BackendService {
     if (this.options.filteringOptions) {
       // filterBy: [{ field: date, operator: '>', value: '2000-10-10' }]
       datasetFilters.filterBy = this.options.filteringOptions;
+    }
+    if (this.options.addLocaleIntoQuery) {
+      // first: 20, ... locale: "en-CA"
+      datasetFilters.locale = this.translate.currentLang || 'en';
     }
 
     // query { users(first: 20, orderBy: [], filterBy: [])}
@@ -167,7 +177,7 @@ export class GraphqlService implements BackendService {
         if (args.columnFilters.hasOwnProperty(columnId)) {
           const columnFilter = args.columnFilters[columnId];
           const columnDef = columnFilter.columnDef;
-          const fieldName = columnDef.field || columnDef.name || '';
+          const fieldName = columnDef.queryField || columnDef.field || columnDef.name || '';
           const fieldType = columnDef.type || 'string';
           let fieldSearchValue = columnFilter.searchTerm;
           if (typeof fieldSearchValue === 'undefined') {
@@ -283,7 +293,7 @@ export class GraphqlService implements BackendService {
     } else {
       if (sortColumns) {
         for (const column of sortColumns) {
-          const fieldName = column.sortCol.field || column.sortCol.id;
+          const fieldName = column.sortCol.queryField || column.sortCol.field || column.sortCol.id;
           const direction = column.sortAsc ? SortDirection.ASC : SortDirection.DESC;
           sortByArray.push({
             field: fieldName,
