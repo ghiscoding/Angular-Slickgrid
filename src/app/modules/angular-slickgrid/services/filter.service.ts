@@ -56,33 +56,34 @@ export class FilterService {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
     }
-    const gridOptions: GridOption = args.grid.getOptions();
+    const gridOptions: GridOption = args.grid.getOptions() || {};
 
-    if (!gridOptions || !gridOptions.onBackendEventApi || !gridOptions.onBackendEventApi.process || !gridOptions.onBackendEventApi.service) {
-      throw new Error(`onBackendEventApi requires at least a "process" function and a "service" defined`);
+    const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+    if (!backendApi || !backendApi.process || !backendApi.service) {
+      throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }
 
     // run a preProcess callback if defined
-    if (gridOptions.onBackendEventApi.preProcess) {
-      gridOptions.onBackendEventApi.preProcess();
+    if (backendApi.preProcess) {
+      backendApi.preProcess();
     }
 
     // call the service to get a query back
-    const query = await gridOptions.onBackendEventApi.service.onFilterChanged(event, args);
+    const query = await backendApi.service.onFilterChanged(event, args);
 
     // the process could be an Observable (like HttpClient) or a Promise
     // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-    const observableOrPromise = gridOptions.onBackendEventApi.process(query);
+    const observableOrPromise = backendApi.process(query);
     const processResult = await castToPromise(observableOrPromise);
 
     // from the result, call our internal post process to update the Dataset and Pagination info
-    if (processResult && gridOptions.onBackendEventApi.internalPostProcess) {
-      gridOptions.onBackendEventApi.internalPostProcess(processResult);
+    if (processResult && backendApi.internalPostProcess) {
+      backendApi.internalPostProcess(processResult);
     }
 
     // send the response process to the postProcess callback
-    if (gridOptions.onBackendEventApi.postProcess !== undefined) {
-      gridOptions.onBackendEventApi.postProcess(processResult);
+    if (backendApi.postProcess !== undefined) {
+      backendApi.postProcess(processResult);
     }
   }
 

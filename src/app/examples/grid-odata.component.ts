@@ -34,12 +34,7 @@ export class GridOdataComponent implements OnInit {
   processing = false;
   status = { text: '', class: '' };
 
-  constructor(private http: HttpClient, private odataService: GridOdataService) {
-    this.odataService.initOptions({
-      caseType: CaseType.pascalCase,
-      top: defaultPageSize
-    });
-  }
+  constructor(private http: HttpClient, private odataService: GridOdataService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -68,7 +63,12 @@ export class GridOdataComponent implements OnInit {
         pageSize: defaultPageSize,
         totalItems: 0
       },
-      onBackendEventApi: {
+      backendServiceApi: {
+        service: this.odataService,
+        options: {
+          caseType: CaseType.pascalCase,
+          top: defaultPageSize
+        },
         onInit: (query) => this.getCustomerApiCall(query),
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
@@ -76,8 +76,7 @@ export class GridOdataComponent implements OnInit {
           console.log(response);
           this.displaySpinner(false);
           this.getCustomerCallback(response);
-        },
-        service: this.odataService
+        }
       }
     };
   }

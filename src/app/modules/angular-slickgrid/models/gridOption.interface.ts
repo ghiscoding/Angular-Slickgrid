@@ -1,5 +1,9 @@
 import { AutoResizeOption } from './autoResizeOption.interface';
 import { BackendEventChanged } from './backendEventChanged.interface';
+import { BackendServiceApi } from './backendServiceApi.interface';
+import { BackendService } from './backendService.interface';
+import { BackendServiceOption } from './backendServiceOption.interface';
+import { GraphqlServiceOption } from './graphqlServiceOption.interface';
 import { ColumnPicker } from './columnPicker.interface';
 import { CheckboxSelector } from './checkboxSelector.interface';
 import { GridMenu } from './gridMenu.interface';
@@ -19,6 +23,9 @@ export interface GridOption {
     enableForHeaderCells: boolean;
     maxToolTipLength: number;
   };
+
+  /** Backend Service API definition (GraphQL/OData Services), also goes with onBackendEventApi */
+  backendServiceApi?: BackendServiceApi,
   cellHighlightCssClass?: string | null;
   checkboxSelector?: CheckboxSelector;
   columnPicker?: ColumnPicker;
@@ -50,7 +57,11 @@ export interface GridOption {
   headerMenu?: HeaderMenu;
   locale?: string;
   multiColumnSort?: boolean;
+
+  /** DEPRECATED, Please use "backendServiceApi" instead */
   onBackendEventApi?: BackendEventChanged;
+
+  /** Pagination options, these are used ONLY with a Backend Service API (GraphQL/OData Services) */
   pagination?: Pagination;
 
   /** if you want to pass custom paramaters to your Formatter/Editor or anything else */

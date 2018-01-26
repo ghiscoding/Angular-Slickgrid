@@ -1,3 +1,4 @@
+import { BackendServiceApi } from './../models/backendServiceApi.interface';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { mapOperatorType, parseUtcDate } from './utilities';
@@ -18,6 +19,7 @@ import {
   SortDirection
 } from './../models';
 import QueryBuilder from './graphqlQueryBuilder';
+import { GridOption } from '../models/gridOption.interface';
 
 let timer: any;
 const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
@@ -157,14 +159,17 @@ export class GraphqlService implements BackendService {
    */
   onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
     const searchByArray: GraphqlFilteringOption[] = [];
-    const serviceOptions: BackendServiceOption = args.grid.getOptions();
-    if (serviceOptions.onBackendEventApi === undefined) {
-      throw new Error('Something went wrong in the GraphqlService, "onBackendEventApi" is not initialized');
+    const serviceOptions: GridOption = args.grid.getOptions();
+    const backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
+
+    if (backendApi === undefined) {
+      throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');
     }
 
+    // only add a delay when user is typing, on select dropdown filter it will execute right away
     let debounceTypingDelay = 0;
     if (event.type === 'keyup' || event.type === 'keydown') {
-      debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
+      debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
     }
 
     const promise = new Promise<string>((resolve, reject) => {

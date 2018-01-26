@@ -158,15 +158,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
    */
   createBackendApiInternalPostProcessCallback() {
-    if (this.gridOptions.onBackendEventApi && this.gridOptions.onBackendEventApi.service instanceof GraphqlService) {
-      this.gridOptions.onBackendEventApi.internalPostProcess = (processResult: any) => {
-        // make sure it's an instance of GraphQL Service before trying to execute it
-        if (this.gridOptions.onBackendEventApi.service instanceof GraphqlService && processResult) {
-          const datasetName = this.gridOptions.onBackendEventApi.service.getDatasetName();
+    if (this.gridOptions && (this.gridOptions.backendServiceApi || this.gridOptions.onBackendEventApi)) {
+      const backendApi = this.gridOptions.backendServiceApi || this.gridOptions.onBackendEventApi;
+
+      // internalPostProcess only works with a GraphQL Service, so make sure it is that type
+      if (backendApi.service instanceof GraphqlService) {
+        backendApi.internalPostProcess = (processResult: any) => {
+          const datasetName = backendApi.service.getDatasetName();
           this._dataset = processResult.data[datasetName].nodes;
           this.gridOptions.pagination.totalItems = processResult.data[datasetName].totalCount;
           this.refreshGridData(this._dataset);
-        }
+        };
       }
     }
   }
@@ -183,44 +185,55 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // attach external sorting (backend) when available or default onSort (dataView)
     if (gridOptions.enableSorting) {
-      (gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView);
+      (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView);
     }
 
     // attach external filter (backend) when available or default onFilter (dataView)
     if (gridOptions.enableFiltering) {
       this.filterService.init(grid, gridOptions, this.columnDefinitions);
-      (gridOptions.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, gridOptions) : this.filterService.attachLocalOnFilter(grid, gridOptions, this._dataView);
+      (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, gridOptions) : this.filterService.attachLocalOnFilter(grid, gridOptions, this._dataView);
     }
 
-    // if user set an onInit Backend, we'll run it right away
-    const serviceOptions = (gridOptions.onBackendEventApi && gridOptions.onBackendEventApi.service && gridOptions.onBackendEventApi.service.options) ? gridOptions.onBackendEventApi.service.options : null;
-    const isExecuteCommandOnInit = (!serviceOptions) ? false : serviceOptions['executeProcessCommandOnInit'] || false;
-    if (gridOptions.onBackendEventApi && (gridOptions.onBackendEventApi.onInit || isExecuteCommandOnInit)) {
-      const backendApi = gridOptions.onBackendEventApi;
-      const query = backendApi.service.buildQuery();
-      const observableOrPromise = (isExecuteCommandOnInit) ? gridOptions.onBackendEventApi.process(query) : gridOptions.onBackendEventApi.onInit(query);
+    // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
+    if (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) {
+      if (gridOptions.onBackendEventApi) {
+        console.warn(`"onBackendEventApi" has been DEPRECATED, please consider using "backendServiceApi" in the short term since "onBackendEventApi" will be removed in future versions. You can take look at the Angular-Slickgrid Wikis for OData/GraphQL Services implementation`);
+      }
 
-      // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
-      setTimeout(async () => {
-        if (gridOptions.onBackendEventApi.preProcess) {
-          gridOptions.onBackendEventApi.preProcess();
-        }
+      if (gridOptions.backendServiceApi && gridOptions.backendServiceApi.service && gridOptions.backendServiceApi.options) {
+        gridOptions.backendServiceApi.service.initOptions(gridOptions.backendServiceApi.options);
+      }
 
-        // the process could be an Observable (like HttpClient) or a Promise
-        // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-        const processResult = await castToPromise(observableOrPromise);
+      const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+      const serviceOptions = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : null;
+      const isExecuteCommandOnInit = (!serviceOptions) ? false : (serviceOptions['executeProcessCommandOnInit'] || false);
 
-        // define what our internal Post Process callback, only available for GraphQL Service for now
-        // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
-        if (gridOptions.onBackendEventApi.service instanceof GraphqlService && processResult) {
-          gridOptions.onBackendEventApi.internalPostProcess(processResult);
-        }
+      if (backendApi.onInit || isExecuteCommandOnInit) {
+        const query = backendApi.service.buildQuery();
+        const observableOrPromise = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
 
-        // send the response process to the postProcess callback
-        if (gridOptions.onBackendEventApi.postProcess) {
-          gridOptions.onBackendEventApi.postProcess(processResult);
-        }
-      });
+        // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
+        setTimeout(async () => {
+          if (backendApi.preProcess) {
+            backendApi.preProcess();
+          }
+
+          // the process could be an Observable (like HttpClient) or a Promise
+          // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+          const processResult = await castToPromise(observableOrPromise);
+
+          // define what our internal Post Process callback, only available for GraphQL Service for now
+          // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+          if (backendApi.service instanceof GraphqlService && processResult) {
+            backendApi.internalPostProcess(processResult);
+          }
+
+          // send the response process to the postProcess callback
+          if (backendApi.postProcess) {
+            backendApi.postProcess(processResult);
+          }
+        });
+      }
     }
 
     // on cell click, mainly used with the columnDef.action callback

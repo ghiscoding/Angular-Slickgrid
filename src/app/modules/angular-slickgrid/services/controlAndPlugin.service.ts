@@ -221,6 +221,8 @@ export class ControlAndPluginService {
    * @param options
    */
   private addGridMenuCustomCommands(grid: any, options: GridOption) {
+    const backendApi = options.backendServiceApi || options.onBackendEventApi || null;
+
     if (options.enableFiltering) {
       if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-filter').length === 0) {
         options.gridMenu.customItems.push(
@@ -242,7 +244,7 @@ export class ControlAndPluginService {
           }
         );
       }
-      if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && options.onBackendEventApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
+      if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: 'fa fa-refresh',
@@ -307,29 +309,33 @@ export class ControlAndPluginService {
 
   private refreshBackendDataset(gridOptions) {
     let query;
+    const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+    if (!backendApi || !backendApi.service || !backendApi.process) {
+      throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
+    }
 
-    if (gridOptions.onBackendEventApi.service) {
-      query = gridOptions.onBackendEventApi.service.buildQuery();
+    if (backendApi.service) {
+      query = backendApi.service.buildQuery();
     }
 
     if (query && query !== '') {
-      if (gridOptions.onBackendEventApi.preProcess) {
-        gridOptions.onBackendEventApi.preProcess();
+      if (backendApi.preProcess) {
+        backendApi.preProcess();
       }
 
       // the process could be an Observable (like HttpClient) or a Promise
       // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-      const observableOrPromise = gridOptions.onBackendEventApi.process(query);
+      const observableOrPromise = backendApi.process(query);
 
       castToPromise(observableOrPromise).then((processResult: GraphqlResult | any) => {
         // from the result, call our internal post process to update the Dataset and Pagination info
-        if (processResult && gridOptions.onBackendEventApi.internalPostProcess) {
-          gridOptions.onBackendEventApi.internalPostProcess(processResult);
+        if (processResult && backendApi.internalPostProcess) {
+          backendApi.internalPostProcess(processResult);
         }
 
         // send the response process to the postProcess callback
-        if (gridOptions.onBackendEventApi.postProcess) {
-          gridOptions.onBackendEventApi.postProcess(processResult);
+        if (backendApi.postProcess) {
+          backendApi.postProcess(processResult);
         }
       });
     }

@@ -73,18 +73,16 @@ export class GridGraphqlComponent implements OnInit {
         pageSize: defaultPageSize,
         totalItems: 0
       },
-      onBackendEventApi: {
+      backendServiceApi: {
+        service: this.graphqlService,
+        options: this.getBackendOptions(this.isWithCursor),
         // you can define the onInit callback OR enable the "executeProcessCommandOnInit" flag in the service init
         // onInit: (query) => this.getCustomerApiCall(query)
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
-        postProcess: (result: GraphqlResult) => this.displaySpinner(false),
-        service: this.graphqlService
+        postProcess: (result: GraphqlResult) => this.displaySpinner(false)
       }
     };
-
-    const initOptions = this.getBackendOptions(this.isWithCursor);
-    this.graphqlService.initOptions(initOptions);
   }
 
   displaySpinner(isProcessing) {

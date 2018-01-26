@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { BackendService, BackendServiceOption, CaseType, FilterChangedArgs, FieldType, OdataOption, PaginationChangedArgs, SortChangedArgs } from './../models';
 import { OdataService } from './odata.service';
 import * as moment_ from 'moment-mini';
+import { GridOption } from '../models/gridOption.interface';
 const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 let timer: any;
 const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
@@ -51,14 +52,17 @@ export class GridOdataService implements BackendService {
   onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
     let searchBy = '';
     const searchByArray = [];
-    const serviceOptions: BackendServiceOption = args.grid.getOptions();
-    if (serviceOptions.onBackendEventApi === undefined) {
-      throw new Error('Something went wrong in the GraphqlService, "onBackendEventApi" is not initialized');
+    const serviceOptions: GridOption = args.grid.getOptions();
+    const backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
+
+    if (backendApi === undefined) {
+      throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');
     }
 
+    // only add a delay when user is typing, on select dropdown filter it will execute right away
     let debounceTypingDelay = 0;
     if (event.type === 'keyup' || event.type === 'keydown') {
-      debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
+      debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
     }
 
     const promise = new Promise<string>((resolve, reject) => {
