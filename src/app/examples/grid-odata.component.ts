@@ -66,10 +66,10 @@ export class GridOdataComponent implements OnInit {
       backendServiceApi: {
         service: this.odataService,
         options: {
+          executeProcessCommandOnInit: true,
           caseType: CaseType.pascalCase,
           top: defaultPageSize
         },
-        onInit: (query) => this.getCustomerApiCall(query),
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {
@@ -115,7 +115,7 @@ export class GridOdataComponent implements OnInit {
       let skip = 0;
       let orderBy = '';
       let countTotalItems = 100;
-      let columnFilters = {};
+      const columnFilters = {};
 
       for (const param of queryParams) {
         if (param.includes('$top=')) {

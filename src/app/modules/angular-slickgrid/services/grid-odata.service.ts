@@ -23,6 +23,7 @@ export class GridOdataService implements BackendService {
 
   initOptions(options: OdataOption): void {
     this.odataService.options = options;
+    this.options = options;
   }
 
   updateOptions(serviceOptions?: OdataOption) {
