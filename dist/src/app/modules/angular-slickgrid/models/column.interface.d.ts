@@ -40,6 +40,7 @@ export interface Column {
     outputType?: FieldType;
     params?: any;
     previousWidth?: number;
+    queryField?: string;
     resizable?: boolean;
     rerenderOnResize?: boolean;
     showHidden?: boolean;

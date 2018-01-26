@@ -10553,9 +10553,6 @@ function mapMomentDateFormatWithFieldType(fieldType) {
         case FieldType.dateTimeUsShortAmPm:
             map = 'M/D/YY h:m:s a';
             break;
-        case FieldType.dateTimeUsAM_PM:
-            map = 'M/D/YY h:m:s A';
-            break;
         case FieldType.dateUtc:
             map = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
             break;
@@ -10621,16 +10618,13 @@ function mapFlatpickrDateFormatWithFieldType(fieldType) {
             map = 'm/d/Y h:i:S K'; // there is no lowercase in Flatpickr :(
             break;
         case FieldType.dateTimeUsAM_PM:
-            map = 'm/d/Y h:i:S K';
+            map = 'M/D/YY h:i:s K';
             break;
         case FieldType.dateTimeUsShort:
             map = 'M/D/YY H:i:s';
             break;
         case FieldType.dateTimeUsShortAmPm:
             map = 'M/D/YY h:i:s K'; // there is no lowercase in Flatpickr :(
-            break;
-        case FieldType.dateTimeUsAM_PM:
-            map = 'M/D/YY h:i:s K';
             break;
         case FieldType.dateUtc:
             map = 'Z';
@@ -10731,50 +10725,74 @@ class DateEditor {
      * @return {?}
      */
     init() {
-        const /** @type {?} */ gridOptions = this.args.grid.getOptions();
+        const /** @type {?} */ gridOptions = (this.args.grid.getOptions());
         this.defaultDate = this.args.item[this.args.column.field] || null;
         const /** @type {?} */ inputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
         const /** @type {?} */ outputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.outputType || FieldType.dateUtc);
-        const /** @type {?} */ locale = (gridOptions && gridOptions.locale) ? gridOptions.locale : 'en';
+        const /** @type {?} */ currentLocale = this.getCurrentLocale(this.args.column, gridOptions);
         const /** @type {?} */ pickerOptions = {
             defaultDate: this.defaultDate,
             altInput: true,
             altFormat: inputFormat,
             dateFormat: outputFormat,
             closeOnSelect: false,
+            locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
             onChange: (selectedDates, dateStr, instance) => {
                 this.save();
             },
         };
+        this.$input = jquery(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text flatpickr" />`);
+        this.$input.appendTo(this.args.container);
+        this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
+        this.show();
+    }
+    /**
+     * @param {?} columnDef
+     * @param {?} gridOptions
+     * @return {?}
+     */
+    getCurrentLocale(columnDef, gridOptions) {
+        const /** @type {?} */ params = columnDef.params || {};
+        if (params.i18n && params.i18n instanceof TranslateService) {
+            return params.i18n.currentLang;
+        }
+        return (gridOptions && gridOptions.locale) ? gridOptions.locale : 'en';
+    }
+    /**
+     * @param {?} locale
+     * @return {?}
+     */
+    loadFlatpickrLocale(locale) {
         // change locale if needed, Flatpickr reference: https://chmln.github.io/flatpickr/localization/
         if (locale !== 'en') {
             const /** @type {?} */ localeDefault = require(`flatpickr/dist/l10n/${locale}.js`).default;
-            pickerOptions['locale'] = (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
+            return (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
         }
-        this.$input = jquery(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text flatpickr" />`);
-        this.$input.appendTo(this.args.container);
-        this.flatInstance = flatpickr(this.$input[0], pickerOptions);
-        this.flatInstance.open();
+        return 'en';
     }
     /**
      * @return {?}
      */
     destroy() {
+        this.hide();
         // this.flatInstance.destroy();
-        this.flatInstance.close();
         this.$input.remove();
     }
     /**
      * @return {?}
      */
     show() {
-        this.flatInstance.open();
+        if (this.flatInstance && typeof this.flatInstance.open === 'function') {
+            this.flatInstance.open();
+        }
     }
     /**
      * @return {?}
      */
     hide() {
-        this.flatInstance.close();
+        if (this.flatInstance && typeof this.flatInstance.close === 'function') {
+            this.flatInstance.close();
+        }
     }
     /**
      * @return {?}
@@ -11374,16 +11392,19 @@ const numberFilterCondition = (options) => {
 const stringFilterCondition = (options) => {
     // make sure the cell value is a string by casting it when possible
     options.cellValue = (options.cellValue === undefined || options.cellValue === null) ? '' : options.cellValue.toString();
+    // make both the cell value and search value lower for case insensitive comparison
+    const /** @type {?} */ cellValue = options.cellValue.toLowerCase();
+    const /** @type {?} */ searchTerm = options.searchTerm.toLowerCase();
     if (options.operator === '*') {
-        return options.cellValue.startsWith(options.searchTerm);
+        return cellValue.endsWith(searchTerm);
     }
     else if (options.operator === '' && options.cellValueLastChar === '*') {
-        return options.cellValue.endsWith(options.searchTerm);
+        return cellValue.startsWith(searchTerm);
     }
     else if (options.operator === '') {
-        return options.cellValue.includes(options.searchTerm);
+        return cellValue.includes(searchTerm);
     }
-    return testFilterCondition(options.operator || '==', options.cellValue.toLowerCase(), options.searchTerm.toLowerCase());
+    return testFilterCondition(options.operator || '==', cellValue, searchTerm);
 };
 
 const executeMappedCondition = (options) => {
@@ -11728,23 +11749,28 @@ class FilterService {
             if (!args || !args.grid) {
                 throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
             }
-            const /** @type {?} */ serviceOptions = args.grid.getOptions();
-            if (!serviceOptions || !serviceOptions.onBackendEventApi || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
-                throw new Error(`onBackendEventApi requires at least a "process" function and a "service" defined`);
+            const /** @type {?} */ gridOptions = args.grid.getOptions() || {};
+            const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+            if (!backendApi || !backendApi.process || !backendApi.service) {
+                throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
             }
             // run a preProcess callback if defined
-            if (serviceOptions.onBackendEventApi.preProcess) {
-                serviceOptions.onBackendEventApi.preProcess();
+            if (backendApi.preProcess) {
+                backendApi.preProcess();
             }
             // call the service to get a query back
-            const /** @type {?} */ query = yield serviceOptions.onBackendEventApi.service.onFilterChanged(event, args);
+            const /** @type {?} */ query = yield backendApi.service.onFilterChanged(event, args);
             // the process could be an Observable (like HttpClient) or a Promise
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-            const /** @type {?} */ observableOrPromise = serviceOptions.onBackendEventApi.process(query);
-            const /** @type {?} */ responseProcess = yield castToPromise(observableOrPromise);
+            const /** @type {?} */ observableOrPromise = backendApi.process(query);
+            const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+            // from the result, call our internal post process to update the Dataset and Pagination info
+            if (processResult && backendApi.internalPostProcess) {
+                backendApi.internalPostProcess(processResult);
+            }
             // send the response process to the postProcess callback
-            if (serviceOptions.onBackendEventApi.postProcess !== undefined) {
-                serviceOptions.onBackendEventApi.postProcess(responseProcess);
+            if (backendApi.postProcess !== undefined) {
+                backendApi.postProcess(processResult);
             }
         });
     }
@@ -11836,7 +11862,7 @@ class FilterService {
             const /** @type {?} */ fieldType = columnDef.type || FieldType.string;
             const /** @type {?} */ conditionalFilterFn = (columnDef.filter && columnDef.filter.conditionalFilter) ? columnDef.filter.conditionalFilter : null;
             const /** @type {?} */ filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
-            let /** @type {?} */ cellValue = item[columnDef.field];
+            let /** @type {?} */ cellValue = item[columnDef.queryField || columnDef.field];
             let /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
             if (typeof fieldSearchValue === 'undefined') {
                 fieldSearchValue = '';
@@ -12056,21 +12082,26 @@ class SortService {
             if (!args || !args.grid) {
                 throw new Error('Something went wrong when trying to attach the "attachBackendOnSortSubscribe(event, args)" function, it seems that "args" is not populated correctly');
             }
-            const /** @type {?} */ serviceOptions = args.grid.getOptions();
-            if (!serviceOptions || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
-                throw new Error(`onBackendEventApi requires at least a "process" function and a "service" defined`);
+            const /** @type {?} */ gridOptions = args.grid.getOptions() || {};
+            const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+            if (!backendApi || !backendApi.process || !backendApi.service) {
+                throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
             }
-            if (serviceOptions.onBackendEventApi.preProcess) {
-                serviceOptions.onBackendEventApi.preProcess();
+            if (backendApi.preProcess) {
+                backendApi.preProcess();
             }
-            const /** @type {?} */ query = serviceOptions.onBackendEventApi.service.onSortChanged(event, args);
+            const /** @type {?} */ query = backendApi.service.onSortChanged(event, args);
             // the process could be an Observable (like HttpClient) or a Promise
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-            const /** @type {?} */ observableOrPromise = serviceOptions.onBackendEventApi.process(query);
-            const /** @type {?} */ responseProcess = yield castToPromise(observableOrPromise);
+            const /** @type {?} */ observableOrPromise = backendApi.process(query);
+            const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+            // from the result, call our internal post process to update the Dataset and Pagination info
+            if (processResult && backendApi.internalPostProcess) {
+                backendApi.internalPostProcess(processResult);
+            }
             // send the response process to the postProcess callback
-            if (serviceOptions.onBackendEventApi.postProcess) {
-                serviceOptions.onBackendEventApi.postProcess(responseProcess);
+            if (backendApi.postProcess) {
+                backendApi.postProcess(processResult);
             }
         });
     }
@@ -12090,9 +12121,10 @@ class SortService {
             const /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
             dataView.sort(function (dataRow1, dataRow2) {
                 for (let /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
-                    const /** @type {?} */ sortDirection = sortColumns[i].sortAsc ? 1 : -1;
-                    const /** @type {?} */ sortField = sortColumns[i].sortCol.field;
-                    const /** @type {?} */ fieldType = sortColumns[i].sortCol.type || 'string';
+                    const /** @type {?} */ columnSortObj = sortColumns[i];
+                    const /** @type {?} */ sortDirection = columnSortObj.sortAsc ? 1 : -1;
+                    const /** @type {?} */ sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.field;
+                    const /** @type {?} */ fieldType = columnSortObj.sortCol.type || 'string';
                     const /** @type {?} */ value1 = dataRow1[sortField];
                     const /** @type {?} */ value2 = dataRow2[sortField];
                     let /** @type {?} */ result = 0;
@@ -12364,9 +12396,13 @@ class GraphqlQueryBuilder {
 }
 
 let timer;
+const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 class GraphqlService {
-    constructor() {
-        this.serviceOptions = {};
+    /**
+     * @param {?} translate
+     */
+    constructor(translate) {
+        this.translate = translate;
         this.defaultOrderBy = { field: 'id', direction: SortDirection.ASC };
     }
     /**
@@ -12374,20 +12410,20 @@ class GraphqlService {
      * @return {?}
      */
     buildQuery() {
-        if (!this.serviceOptions || !this.serviceOptions.datasetName || (!this.serviceOptions.columnIds && !this.serviceOptions.dataFilters && !this.serviceOptions.columnDefinitions)) {
+        if (!this.options || !this.options.datasetName || (!this.options.columnIds && !this.options.dataFilters && !this.options.columnDefinitions)) {
             throw new Error('GraphQL Service requires "datasetName" & ("dataFilters" or "columnDefinitions") properties for it to work');
         }
         const /** @type {?} */ queryQb = new GraphqlQueryBuilder('query');
-        const /** @type {?} */ datasetQb = new GraphqlQueryBuilder(this.serviceOptions.datasetName);
+        const /** @type {?} */ datasetQb = new GraphqlQueryBuilder(this.options.datasetName);
         const /** @type {?} */ pageInfoQb = new GraphqlQueryBuilder('pageInfo');
-        const /** @type {?} */ dataQb = (this.serviceOptions.isWithCursor) ? new GraphqlQueryBuilder('edges') : new GraphqlQueryBuilder('nodes');
+        const /** @type {?} */ dataQb = (this.options.isWithCursor) ? new GraphqlQueryBuilder('edges') : new GraphqlQueryBuilder('nodes');
         // get all the columnds Ids for the filters to work
         let /** @type {?} */ columnIds;
-        if (this.serviceOptions.columnDefinitions) {
-            columnIds = Array.isArray(this.serviceOptions.columnDefinitions) ? this.serviceOptions.columnDefinitions.map((column) => column.field) : [];
+        if (this.options.columnDefinitions) {
+            columnIds = Array.isArray(this.options.columnDefinitions) ? this.options.columnDefinitions.map((column) => column.field) : [];
         }
         else {
-            columnIds = this.serviceOptions.columnIds || this.serviceOptions.dataFilters || [];
+            columnIds = this.options.columnIds || this.options.dataFilters || [];
         }
         // Slickgrid also requires the "id" field to be part of DataView
         // push it to the GraphQL query if it wasn't already part of the list
@@ -12395,7 +12431,7 @@ class GraphqlService {
             columnIds.push('id');
         }
         const /** @type {?} */ filters = this.buildFilterQuery(columnIds);
-        if (this.serviceOptions.isWithCursor) {
+        if (this.options.isWithCursor) {
             // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
             pageInfoQb.find('hasNextPage', 'endCursor');
             dataQb.find(['cursor', { node: filters }]);
@@ -12407,20 +12443,24 @@ class GraphqlService {
         }
         datasetQb.find(['totalCount', pageInfoQb, dataQb]);
         // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
-        const /** @type {?} */ datasetFilters = (this.serviceOptions.paginationOptions);
-        if (this.serviceOptions.sortingOptions) {
+        const /** @type {?} */ datasetFilters = (this.options.paginationOptions);
+        if (this.options.sortingOptions) {
             // orderBy: [{ field:x, direction: 'ASC' }]
-            datasetFilters.orderBy = this.serviceOptions.sortingOptions;
+            datasetFilters.orderBy = this.options.sortingOptions;
         }
-        if (this.serviceOptions.filteringOptions) {
+        if (this.options.filteringOptions) {
             // filterBy: [{ field: date, operator: '>', value: '2000-10-10' }]
-            datasetFilters.filterBy = this.serviceOptions.filteringOptions;
+            datasetFilters.filterBy = this.options.filteringOptions;
+        }
+        if (this.options.addLocaleIntoQuery) {
+            // first: 20, ... locale: "en-CA"
+            datasetFilters.locale = this.translate.currentLang || 'en';
         }
         // query { users(first: 20, orderBy: [], filterBy: [])}
         datasetQb.filter(datasetFilters);
         queryQb.find(datasetQb);
         const /** @type {?} */ enumSearchProperties = ['direction:', 'field:', 'operator:'];
-        return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.serviceOptions.keepArgumentFieldDoubleQuotes || false);
+        return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.options.keepArgumentFieldDoubleQuotes || false);
     }
     /**
      * From an input array of strings, we want to build a GraphQL query string.
@@ -12430,7 +12470,7 @@ class GraphqlService {
      * INPUT
      *  ['firstName', 'lastName', 'billing.address.street', 'billing.address.zip']
      * OUTPUT
-     * firstName, lastName, shipping{address{street, zip}}
+     * firstName, lastName, billing{address{street, zip}}
      * @param {?} inputArray
      * @return {?}
      */
@@ -12451,14 +12491,20 @@ class GraphqlService {
      * @return {?}
      */
     initOptions(serviceOptions) {
-        this.serviceOptions = serviceOptions || {};
+        this.options = serviceOptions || {};
+    }
+    /**
+     * @return {?}
+     */
+    getDatasetName() {
+        return this.options.datasetName;
     }
     /**
      * @return {?}
      */
     resetPaginationOptions() {
         let /** @type {?} */ paginationOptions;
-        if (this.serviceOptions.isWithCursor) {
+        if (this.options.isWithCursor) {
             // first, last, after, before
             paginationOptions = /** @type {?} */ ({
                 after: '',
@@ -12468,7 +12514,7 @@ class GraphqlService {
         }
         else {
             // first, last, offset
-            paginationOptions = /** @type {?} */ (this.serviceOptions.paginationOptions);
+            paginationOptions = /** @type {?} */ (this.options.paginationOptions);
             paginationOptions.offset = 0;
         }
         this.updateOptions({ paginationOptions });
@@ -12478,7 +12524,7 @@ class GraphqlService {
      * @return {?}
      */
     updateOptions(serviceOptions) {
-        this.serviceOptions = Object.assign({}, this.serviceOptions, serviceOptions);
+        this.options = Object.assign({}, this.options, serviceOptions);
     }
     /**
      * @param {?} event
@@ -12488,12 +12534,14 @@ class GraphqlService {
     onFilterChanged(event, args) {
         const /** @type {?} */ searchByArray = [];
         const /** @type {?} */ serviceOptions = args.grid.getOptions();
-        if (serviceOptions.onBackendEventApi === undefined || !serviceOptions.onBackendEventApi.filterTypingDebounce) {
-            throw new Error('Something went wrong in the GraphqlService, "onBackendEventApi" is not initialized');
+        const /** @type {?} */ backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
+        if (backendApi === undefined) {
+            throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');
         }
+        // only add a delay when user is typing, on select dropdown filter it will execute right away
         let /** @type {?} */ debounceTypingDelay = 0;
         if (event.type === 'keyup' || event.type === 'keydown') {
-            debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || 700;
+            debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
         }
         const /** @type {?} */ promise = new Promise((resolve, reject) => {
             if (!args || !args.grid) {
@@ -12504,7 +12552,7 @@ class GraphqlService {
                 if (args.columnFilters.hasOwnProperty(columnId)) {
                     const /** @type {?} */ columnFilter = args.columnFilters[columnId];
                     const /** @type {?} */ columnDef = columnFilter.columnDef;
-                    const /** @type {?} */ fieldName = columnDef.field || columnDef.name || '';
+                    const /** @type {?} */ fieldName = columnDef.queryField || columnDef.field || columnDef.name || '';
                     const /** @type {?} */ fieldType = columnDef.type || 'string';
                     let /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
                     if (typeof fieldSearchValue === 'undefined') {
@@ -12553,15 +12601,16 @@ class GraphqlService {
      */
     onPaginationChanged(event, args) {
         let /** @type {?} */ paginationOptions;
-        if (this.serviceOptions.isWithCursor) {
+        const /** @type {?} */ pageSize = +args.pageSize || 20;
+        if (this.options.isWithCursor) {
             paginationOptions = {
-                first: args.pageSize
+                first: pageSize
             };
         }
         else {
             paginationOptions = {
-                first: args.pageSize,
-                offset: (args.newPage - 1) * args.pageSize
+                first: pageSize,
+                offset: (args.newPage - 1) * pageSize
             };
         }
         this.updateOptions({ paginationOptions });
@@ -12584,7 +12633,7 @@ class GraphqlService {
         else {
             if (sortColumns) {
                 for (const /** @type {?} */ column of sortColumns) {
-                    const /** @type {?} */ fieldName = column.sortCol.field || column.sortCol.id;
+                    const /** @type {?} */ fieldName = column.sortCol.queryField || column.sortCol.field || column.sortCol.id;
                     const /** @type {?} */ direction = column.sortAsc ? SortDirection.ASC : SortDirection.DESC;
                     sortByArray.push({
                         field: fieldName,
@@ -12634,6 +12683,15 @@ class GraphqlService {
         });
     }
 }
+GraphqlService.decorators = [
+    { type: Injectable },
+];
+/**
+ * @nocollapse
+ */
+GraphqlService.ctorParameters = () => [
+    { type: TranslateService, },
+];
 
 class GridExtraService {
     /**
@@ -13050,13 +13108,13 @@ class OdataService {
 }
 
 let timer$1;
+const DEFAULT_FILTER_TYPING_DEBOUNCE$1 = 750;
 class GridOdataService {
     /**
      * @param {?} odataService
      */
     constructor(odataService) {
         this.odataService = odataService;
-        this.serviceOptions = {};
         this.defaultSortBy = '';
         this.minUserInactivityOnFilter = 700;
     }
@@ -13074,11 +13132,11 @@ class GridOdataService {
         this.odataService.options = options;
     }
     /**
-     * @param {?=} options
+     * @param {?=} serviceOptions
      * @return {?}
      */
-    updateOptions(options) {
-        this.serviceOptions = Object.assign({}, this.serviceOptions, options);
+    updateOptions(serviceOptions) {
+        this.options = Object.assign({}, this.options, serviceOptions);
     }
     /**
      * @param {?} fieldName
@@ -13110,11 +13168,17 @@ class GridOdataService {
      * @return {?}
      */
     onFilterChanged(event, args) {
+        let /** @type {?} */ searchBy = '';
         const /** @type {?} */ searchByArray = [];
         const /** @type {?} */ serviceOptions = args.grid.getOptions();
+        const /** @type {?} */ backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
+        if (backendApi === undefined) {
+            throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');
+        }
+        // only add a delay when user is typing, on select dropdown filter it will execute right away
         let /** @type {?} */ debounceTypingDelay = 0;
         if (event.type === 'keyup' || event.type === 'keydown') {
-            debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || 700;
+            debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE$1;
         }
         const /** @type {?} */ promise = new Promise((resolve, reject) => {
             // loop through all columns to inspect filters
@@ -13122,7 +13186,7 @@ class GridOdataService {
                 if (args.columnFilters.hasOwnProperty(columnId)) {
                     const /** @type {?} */ columnFilter = args.columnFilters[columnId];
                     const /** @type {?} */ columnDef = columnFilter.columnDef;
-                    const /** @type {?} */ fieldName = columnDef.field || columnDef.name;
+                    const /** @type {?} */ fieldName = columnDef.queryField || columnDef.field || columnDef.name;
                     const /** @type {?} */ fieldType = columnDef.type || 'string';
                     let /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
                     if (typeof fieldSearchValue === 'undefined') {
@@ -13154,12 +13218,12 @@ class GridOdataService {
                         }
                     }
                     else {
-                        let /** @type {?} */ searchBy = '';
+                        searchBy = '';
                         // titleCase the fieldName so that it matches the WebApi names
                         const /** @type {?} */ fieldNameTitleCase = String.titleCase(fieldName || '');
                         // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
                         if (searchTerms && searchTerms.length > 0) {
-                            let /** @type {?} */ tmpSearchTerms = [];
+                            const /** @type {?} */ tmpSearchTerms = [];
                             if (operator === 'IN') {
                                 // example:: (Stage eq "Expired" or Stage eq "Renewal")
                                 for (let /** @type {?} */ j = 0, /** @type {?} */ lnj = searchTerms.length; j < lnj; j++) {
@@ -13249,8 +13313,8 @@ class GridOdataService {
         }
         else {
             if (sortColumns) {
-                for (let /** @type {?} */ column of sortColumns) {
-                    let /** @type {?} */ fieldName = column.sortCol.field || column.sortCol.id;
+                for (const /** @type {?} */ column of sortColumns) {
+                    let /** @type {?} */ fieldName = column.sortCol.queryField || column.sortCol.field || column.sortCol.id;
                     if (this.odataService.options.caseType === CaseType.pascalCase) {
                         fieldName = String.titleCase(fieldName);
                     }
@@ -13532,13 +13596,15 @@ class ControlAndPluginService {
         this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
     }
     /**
+     * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)
      * @param {?} grid
      * @param {?} columnDefinitions
      * @param {?} options
      * @return {?}
      */
     createGridMenu(grid, columnDefinitions, options) {
-        this.prepareGridMenu(grid, options);
+        options.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), options.gridMenu);
+        this.addGridMenuCustomCommands(grid, options);
         const /** @type {?} */ gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
         if (grid && options.gridMenu) {
             gridMenuControl.onBeforeMenuShow.subscribe((e, args) => {
@@ -13556,7 +13622,9 @@ class ControlAndPluginService {
                     options.gridMenu.onMenuClose(e, args);
                 }
                 // we also want to resize the columns if the user decided to hide certain column(s)
-                grid.autosizeColumns();
+                if (grid && typeof grid.autosizeColumns === 'function') {
+                    grid.autosizeColumns();
+                }
             });
         }
         return gridMenuControl;
@@ -13600,6 +13668,9 @@ class ControlAndPluginService {
             this.columnPickerControl = null;
         }
         if (this.gridMenuControl) {
+            this.gridMenuControl.onBeforeMenuShow.unsubscribe();
+            this.gridMenuControl.onCommand.unsubscribe();
+            this.gridMenuControl.onMenuClose.unsubscribe();
             this.gridMenuControl.destroy();
             this.gridMenuControl = null;
         }
@@ -13625,11 +13696,13 @@ class ControlAndPluginService {
         }
     }
     /**
+     * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
      * @param {?} grid
      * @param {?} options
      * @return {?}
      */
     addGridMenuCustomCommands(grid, options) {
+        const /** @type {?} */ backendApi = options.backendServiceApi || options.onBackendEventApi || null;
         if (options.enableFiltering) {
             if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'clear-filter').length === 0) {
                 options.gridMenu.customItems.push({
@@ -13647,7 +13720,7 @@ class ControlAndPluginService {
                     command: 'toggle-filter'
                 });
             }
-            if (options && options.gridMenu && options.onBackendEventApi && options.gridMenu.showRefreshDatasetCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'refresh-dataset').length === 0) {
+            if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'refresh-dataset').length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: 'fa fa-refresh',
                     title: options.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
@@ -13688,51 +13761,67 @@ class ControlAndPluginService {
         }
     }
     /**
-     * @param {?} grid
-     * @param {?} options
-     * @return {?}
+     * @return {?} default Grid Menu options
      */
-    prepareGridMenu(grid, options) {
-        const /** @type {?} */ columnTitle = options.enableTranslate ? this.translate.instant('COLUMNS') : 'Columns';
-        const /** @type {?} */ forceFitTitle = options.enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : 'Force fit columns';
-        const /** @type {?} */ syncResizeTitle = options.enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : 'Synchronous resize';
-        options.gridMenu = options.gridMenu || {};
-        options.gridMenu.columnTitle = options.gridMenu.columnTitle || columnTitle;
-        options.gridMenu.forceFitTitle = options.gridMenu.forceFitTitle || forceFitTitle;
-        options.gridMenu.syncResizeTitle = options.gridMenu.syncResizeTitle || syncResizeTitle;
-        options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
-        options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
-        options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
-        options.gridMenu.customItems = options.gridMenu.customItems || [];
-        options.gridMenu.showClearAllFiltersCommand = options.gridMenu.showClearAllFiltersCommand || true;
-        options.gridMenu.showRefreshDatasetCommand = options.gridMenu.showRefreshDatasetCommand || true;
-        options.gridMenu.showToggleFilterCommand = options.gridMenu.showToggleFilterCommand || true;
-        this.addGridMenuCustomCommands(grid, options);
-        // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
+    getDefaultGridMenuOptions() {
+        return {
+            columnTitle: this.translate.instant('COLUMNS') || 'Columns',
+            forceFitTitle: this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns',
+            syncResizeTitle: this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize',
+            iconCssClass: 'fa fa-bars',
+            menuWidth: 18,
+            customTitle: undefined,
+            customItems: [],
+            showClearAllFiltersCommand: true,
+            showRefreshDatasetCommand: true,
+            showToggleFilterCommand: true
+        };
     }
     /**
-     * @param {?} options
+     * @param {?} gridOptions
      * @return {?}
      */
-    refreshBackendDataset(options) {
+    refreshBackendDataset(gridOptions) {
         let /** @type {?} */ query;
-        if (options.onBackendEventApi.service) {
-            query = options.onBackendEventApi.service.buildQuery();
+        const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+        if (!backendApi || !backendApi.service || !backendApi.process) {
+            throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
+        }
+        if (backendApi.service) {
+            query = backendApi.service.buildQuery();
         }
         if (query && query !== '') {
-            if (options.onBackendEventApi.preProcess) {
-                options.onBackendEventApi.preProcess();
+            if (backendApi.preProcess) {
+                backendApi.preProcess();
             }
             // the process could be an Observable (like HttpClient) or a Promise
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-            const /** @type {?} */ observableOrPromise = options.onBackendEventApi.process(query);
-            castToPromise(observableOrPromise).then((responseProcess) => {
+            const /** @type {?} */ observableOrPromise = backendApi.process(query);
+            castToPromise(observableOrPromise).then((processResult) => {
+                // from the result, call our internal post process to update the Dataset and Pagination info
+                if (processResult && backendApi.internalPostProcess) {
+                    backendApi.internalPostProcess(processResult);
+                }
                 // send the response process to the postProcess callback
-                if (options.onBackendEventApi.postProcess) {
-                    options.onBackendEventApi.postProcess(responseProcess);
+                if (backendApi.postProcess) {
+                    backendApi.postProcess(processResult);
                 }
             });
         }
+    }
+    /**
+     * Reset all the Grid Menu options which have text to translate
+     * @param {?} gridMenu
+     * @return {?}
+     */
+    resetGridMenuTranslations(gridMenu) {
+        // we will reset the custom items array since the commands title have to be translated too (no worries, we will re-create it later)
+        gridMenu.customItems = [];
+        delete gridMenu.customTitle;
+        gridMenu.columnTitle = this.translate.instant('COLUMNS') || 'Columns';
+        gridMenu.forceFitTitle = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
+        gridMenu.syncResizeTitle = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
+        return gridMenu;
     }
     /**
      * Translate the Column Picker and it's last 2 checkboxes
@@ -13758,7 +13847,8 @@ class ControlAndPluginService {
     translateGridMenu() {
         // destroy and re-create the Grid Menu which seems to be the only way to translate properly
         this.gridMenuControl.destroy();
-        this._gridOptions.gridMenu = undefined;
+        // reset all Grid Menu options that have translation text & then re-create the Grid Menu and also the custom items array
+        this._gridOptions.gridMenu = this.resetGridMenuTranslations(this._gridOptions.gridMenu);
         this.createGridMenu(this._grid, this.visibleColumns, this._gridOptions);
     }
     /**
@@ -13917,7 +14007,7 @@ class SlickPaginationComponent {
      * @return {?}
      */
     onChangeItemPerPage(event) {
-        const /** @type {?} */ itemsPerPage = (event.target.value);
+        const /** @type {?} */ itemsPerPage = +event.target.value;
         this.pageCount = Math.ceil(this.totalItems / itemsPerPage);
         this.pageNumber = 1;
         this.itemsPerPage = itemsPerPage;
@@ -13928,15 +14018,21 @@ class SlickPaginationComponent {
      * @return {?}
      */
     refreshPagination(isPageNumberReset) {
+        const /** @type {?} */ backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
+        if (!backendApi || !backendApi.service || !backendApi.process) {
+            throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
+        }
         if (this._gridPaginationOptions && this._gridPaginationOptions.pagination) {
             // if totalItems changed, we should always go back to the first page and recalculation the From-To indexes
             if (isPageNumberReset || this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
                 this.pageNumber = 1;
                 this.recalculateFromToIndexes();
+                // also reset the "offset" of backend service
+                backendApi.service.resetPaginationOptions();
             }
             // calculate and refresh the multiple properties of the pagination UI
             this.paginationPageSizes = this._gridPaginationOptions.pagination.pageSizes;
-            this.itemsPerPage = this._gridPaginationOptions.pagination.pageSize;
+            this.itemsPerPage = +this._gridPaginationOptions.pagination.pageSize;
             this.totalItems = this._gridPaginationOptions.pagination.totalItems;
             this.dataTo = this.itemsPerPage;
         }
@@ -13950,25 +14046,30 @@ class SlickPaginationComponent {
     onPageChanged(event, pageNumber) {
         return __awaiter$2(this, void 0, void 0, function* () {
             this.recalculateFromToIndexes();
+            const /** @type {?} */ backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
+            if (!backendApi || !backendApi.service || !backendApi.process) {
+                throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
+            }
             if (this.dataTo > this.totalItems) {
                 this.dataTo = this.totalItems;
             }
-            if (this._gridPaginationOptions.onBackendEventApi) {
-                const /** @type {?} */ itemsPerPage = this.itemsPerPage;
-                if (!this._gridPaginationOptions.onBackendEventApi.process || !this._gridPaginationOptions.onBackendEventApi.service) {
-                    throw new Error(`onBackendEventApi requires at least a "process" function and a "service" defined`);
+            if (backendApi) {
+                const /** @type {?} */ itemsPerPage = +this.itemsPerPage;
+                if (backendApi.preProcess) {
+                    backendApi.preProcess();
                 }
-                if (this._gridPaginationOptions.onBackendEventApi.preProcess) {
-                    this._gridPaginationOptions.onBackendEventApi.preProcess();
-                }
-                const /** @type {?} */ query = this._gridPaginationOptions.onBackendEventApi.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
+                const /** @type {?} */ query = backendApi.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
                 // the process could be an Observable (like HttpClient) or a Promise
                 // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-                const /** @type {?} */ observableOrPromise = this._gridPaginationOptions.onBackendEventApi.process(query);
-                const /** @type {?} */ responseProcess = yield castToPromise(observableOrPromise);
+                const /** @type {?} */ observableOrPromise = backendApi.process(query);
+                const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+                // from the result, call our internal post process to update the Dataset and Pagination info
+                if (processResult && backendApi.internalPostProcess) {
+                    backendApi.internalPostProcess(processResult);
+                }
                 // send the response process to the postProcess callback
-                if (this._gridPaginationOptions.onBackendEventApi.postProcess) {
-                    this._gridPaginationOptions.onBackendEventApi.postProcess(responseProcess);
+                if (backendApi.postProcess) {
+                    backendApi.postProcess(processResult);
                 }
             }
             else {
@@ -39448,7 +39549,7 @@ class AngularSlickgridComponent {
         this.onGridCreated = new EventEmitter();
         this.onBeforeGridCreate = new EventEmitter();
         this.onBeforeGridDestroy = new EventEmitter();
-        this.onGridDestroyed = new EventEmitter();
+        this.onAfterGridDestroyed = new EventEmitter();
         this.gridHeight = 100;
         this.gridWidth = 600;
     }
@@ -39480,7 +39581,7 @@ class AngularSlickgridComponent {
     ngOnDestroy() {
         this.onBeforeGridDestroy.emit(this.grid);
         this.destroy();
-        this.onGridDestroyed.emit(true);
+        this.onAfterGridDestroyed.emit(true);
     }
     /**
      * @return {?}
@@ -39500,6 +39601,7 @@ class AngularSlickgridComponent {
     ngAfterViewInit() {
         // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
         this._dataset = this._dataset || [];
+        this.createBackendApiInternalPostProcessCallback();
         this._gridOptions = this.mergeGridOptions();
         this._dataView = new Slick.Data.DataView();
         this.controlAndPluginService.createPluginBeforeGridCreation(this.columnDefinitions, this._gridOptions);
@@ -39526,43 +39628,84 @@ class AngularSlickgridComponent {
         }
     }
     /**
+     * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
+     * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+     * @return {?}
+     */
+    createBackendApiInternalPostProcessCallback() {
+        if (this.gridOptions && (this.gridOptions.backendServiceApi || this.gridOptions.onBackendEventApi)) {
+            const /** @type {?} */ backendApi = this.gridOptions.backendServiceApi || this.gridOptions.onBackendEventApi;
+            // internalPostProcess only works with a GraphQL Service, so make sure it is that type
+            if (backendApi.service instanceof GraphqlService) {
+                backendApi.internalPostProcess = (processResult) => {
+                    const /** @type {?} */ datasetName = backendApi.service.getDatasetName();
+                    if (!processResult || !processResult.data || !processResult.data[datasetName]) {
+                        throw new Error(`Your GraphQL result is invalid and/or does not follow the required result structure. Please check the result and/or review structure to use in Angular-Slickgrid Wiki in the GraphQL section.`);
+                    }
+                    this._dataset = processResult.data[datasetName].nodes;
+                    this.gridOptions.pagination.totalItems = processResult.data[datasetName].totalCount;
+                    this.refreshGridData(this._dataset);
+                };
+            }
+        }
+    }
+    /**
      * @param {?} grid
-     * @param {?} options
+     * @param {?} gridOptions
      * @param {?} dataView
      * @return {?}
      */
-    attachDifferentHooks(grid, options, dataView) {
+    attachDifferentHooks(grid, gridOptions, dataView) {
         // on locale change, we have to manually translate the Headers, GridMenu
         this.translate.onLangChange.subscribe((event) => {
-            if (options.enableTranslate) {
+            if (gridOptions.enableTranslate) {
                 this.controlAndPluginService.translateHeaders();
                 this.controlAndPluginService.translateColumnPicker();
                 this.controlAndPluginService.translateGridMenu();
             }
         });
         // attach external sorting (backend) when available or default onSort (dataView)
-        if (options.enableSorting) {
-            (options.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, options) : this.sortService.attachLocalOnSort(grid, options, this._dataView);
+        if (gridOptions.enableSorting) {
+            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView);
         }
         // attach external filter (backend) when available or default onFilter (dataView)
-        if (options.enableFiltering) {
-            this.filterService.init(grid, options, this.columnDefinitions);
-            (options.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, options) : this.filterService.attachLocalOnFilter(grid, options, this._dataView);
+        if (gridOptions.enableFiltering) {
+            this.filterService.init(grid, gridOptions, this.columnDefinitions);
+            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, gridOptions) : this.filterService.attachLocalOnFilter(grid, gridOptions, this._dataView);
         }
-        if (options.onBackendEventApi && options.onBackendEventApi.onInit) {
-            const /** @type {?} */ backendApi = options.onBackendEventApi;
-            const /** @type {?} */ query = backendApi.service.buildQuery();
-            // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
-            setTimeout(() => __awaiter$3(this, void 0, void 0, function* () {
-                // the process could be an Observable (like HttpClient) or a Promise
-                // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-                const /** @type {?} */ observableOrPromise = options.onBackendEventApi.onInit(query);
-                const /** @type {?} */ responseProcess = yield castToPromise(observableOrPromise);
-                // send the response process to the postProcess callback
-                if (backendApi.postProcess) {
-                    backendApi.postProcess(responseProcess);
-                }
-            }));
+        // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
+        if (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) {
+            if (gridOptions.onBackendEventApi) {
+                console.warn(`"onBackendEventApi" has been DEPRECATED, please consider using "backendServiceApi" in the short term since "onBackendEventApi" will be removed in future versions. You can take look at the Angular-Slickgrid Wikis for OData/GraphQL Services implementation`);
+            }
+            if (gridOptions.backendServiceApi && gridOptions.backendServiceApi.service && gridOptions.backendServiceApi.options) {
+                gridOptions.backendServiceApi.service.initOptions(gridOptions.backendServiceApi.options);
+            }
+            const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+            const /** @type {?} */ serviceOptions = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : null;
+            const /** @type {?} */ isExecuteCommandOnInit = (!serviceOptions) ? false : (serviceOptions['executeProcessCommandOnInit'] || false);
+            if (backendApi.onInit || isExecuteCommandOnInit) {
+                const /** @type {?} */ query = backendApi.service.buildQuery();
+                const /** @type {?} */ observableOrPromise = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
+                // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
+                setTimeout(() => __awaiter$3(this, void 0, void 0, function* () {
+                    if (backendApi.preProcess) {
+                        backendApi.preProcess();
+                    }
+                    // the process could be an Observable (like HttpClient) or a Promise
+                    // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+                    const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+                    // define what our internal Post Process callback, only available for GraphQL Service for now
+                    // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+                    if (backendApi.service instanceof GraphqlService && processResult) {
+                        backendApi.internalPostProcess(processResult);
+                    }
+                    // send the response process to the postProcess callback
+                    if (backendApi.postProcess) {
+                        backendApi.postProcess(processResult);
+                    }
+                }));
+            }
         }
         // on cell click, mainly used with the columnDef.action callback
         this.gridEventService.attachOnCellChange(grid, this._gridOptions, dataView);
@@ -39687,7 +39830,7 @@ AngularSlickgridComponent.propDecorators = {
     'onGridCreated': [{ type: Output },],
     'onBeforeGridCreate': [{ type: Output },],
     'onBeforeGridDestroy': [{ type: Output },],
-    'onGridDestroyed': [{ type: Output },],
+    'onAfterGridDestroyed': [{ type: Output },],
     'gridId': [{ type: Input },],
     'columnDefinitions': [{ type: Input },],
     'gridOptions': [{ type: Input },],

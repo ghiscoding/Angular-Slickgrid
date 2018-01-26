@@ -1,4 +1,4 @@
-import { Editor } from './../models';
+import { Column, Editor, GridOption } from './../models';
 export declare class DateEditor implements Editor {
     private args;
     $input: any;
@@ -6,6 +6,8 @@ export declare class DateEditor implements Editor {
     defaultDate: string;
     constructor(args: any);
     init(): void;
+    getCurrentLocale(columnDef: Column, gridOptions: GridOption): any;
+    loadFlatpickrLocale(locale: string): any;
     destroy(): void;
     show(): void;
     hide(): void;

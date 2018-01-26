@@ -3,13 +3,13 @@ import { BackendService, FilterChangedArgs, OdataOption, PaginationChangedArgs, 
 import { OdataService } from './odata.service';
 export declare class GridOdataService implements BackendService {
     private odataService;
-    serviceOptions: OdataOption;
+    options: OdataOption;
     defaultSortBy: string;
     minUserInactivityOnFilter: number;
     constructor(odataService: OdataService);
     buildQuery(): string;
     initOptions(options: OdataOption): void;
-    updateOptions(options?: OdataOption): void;
+    updateOptions(serviceOptions?: OdataOption): void;
     removeColumnFilter(fieldName: string): void;
     resetPaginationOptions(): void;
     saveColumnFilter(fieldName: string, value: string, terms?: any[]): void;

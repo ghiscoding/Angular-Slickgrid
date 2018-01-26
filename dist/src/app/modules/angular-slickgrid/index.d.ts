@@ -18,6 +18,7 @@ export { FormElementType } from './models/formElementType';
 export { GraphqlDatasetFilter } from './models/graphqlDatasetFilter.interface';
 export { GraphqlCursorPaginationOption } from './models/graphqlCursorPaginationOption.interface';
 export { GraphqlFilteringOption } from './models/graphqlFilteringOption.interface';
+export { GraphqlResult } from './models/graphqlResult.interface';
 export { GraphqlPaginationOption } from './models/graphqlPaginationOption.interface';
 export { GraphqlServiceOption } from './models/graphqlServiceOption.interface';
 export { GraphqlSortingOption } from './models/graphqlSortingOption.interface';

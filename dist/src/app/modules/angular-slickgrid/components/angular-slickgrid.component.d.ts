@@ -49,7 +49,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     onGridCreated: EventEmitter<any>;
     onBeforeGridCreate: EventEmitter<boolean>;
     onBeforeGridDestroy: EventEmitter<any>;
-    onGridDestroyed: EventEmitter<boolean>;
+    onAfterGridDestroyed: EventEmitter<boolean>;
     gridId: string;
     columnDefinitions: Column[];
     gridOptions: GridOption;
@@ -61,7 +61,12 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     ngOnDestroy(): void;
     destroy(): void;
     ngAfterViewInit(): void;
-    attachDifferentHooks(grid: any, options: GridOption, dataView: any): void;
+    /**
+     * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
+     * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+     */
+    createBackendApiInternalPostProcessCallback(): void;
+    attachDifferentHooks(grid: any, gridOptions: GridOption, dataView: any): void;
     attachResizeHook(grid: any, options: GridOption): void;
     mergeGridOptions(): GridOption;
     /**

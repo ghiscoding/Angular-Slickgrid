@@ -28,14 +28,33 @@ export declare class ControlAndPluginService {
      */
     attachDifferentControlOrPlugins(grid: any, columnDefinitions: Column[], options: GridOption, dataView: any): void;
     createColumnPicker(grid: any, columnDefinitions: Column[], options: GridOption): void;
+    /**
+     * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)
+     * @param grid
+     * @param columnDefinitions
+     * @param options
+     */
     createGridMenu(grid: any, columnDefinitions: Column[], options: GridOption): any;
     hideColumn(column: Column): void;
     removeColumnByIndex(array: any[], index: number): any[];
     autoResizeColumns(): void;
     destroy(): void;
+    /**
+     * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
+     * @param grid
+     * @param options
+     */
     private addGridMenuCustomCommands(grid, options);
-    private prepareGridMenu(grid, options);
-    private refreshBackendDataset(options);
+    /**
+     * @return default Grid Menu options
+     */
+    private getDefaultGridMenuOptions();
+    private refreshBackendDataset(gridOptions);
+    /**
+     * Reset all the Grid Menu options which have text to translate
+     * @param grid menu object
+     */
+    private resetGridMenuTranslations(gridMenu);
     /**
      * Translate the Column Picker and it's last 2 checkboxes
      * Note that the only way that seems to work is to destroy and re-create the Column Picker

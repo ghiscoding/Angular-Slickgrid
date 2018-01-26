@@ -1,7 +1,10 @@
+import { TranslateService } from '@ngx-translate/core';
 import { BackendService, FilterChangedArgs, GraphqlServiceOption, GraphqlSortingOption, PaginationChangedArgs, SortChangedArgs } from './../models';
 export declare class GraphqlService implements BackendService {
-    serviceOptions: GraphqlServiceOption;
+    private translate;
+    options: GraphqlServiceOption;
     defaultOrderBy: GraphqlSortingOption;
+    constructor(translate: TranslateService);
     /**
      * Build the GraphQL query, since the service include/exclude cursor, the output query will be different.
      * @param serviceOptions GraphqlServiceOption
@@ -15,11 +18,12 @@ export declare class GraphqlService implements BackendService {
      * INPUT
      *  ['firstName', 'lastName', 'billing.address.street', 'billing.address.zip']
      * OUTPUT
-     * firstName, lastName, shipping{address{street, zip}}
+     * firstName, lastName, billing{address{street, zip}}
      * @param inputArray
      */
     buildFilterQuery(inputArray: string[]): string;
     initOptions(serviceOptions?: GraphqlServiceOption): void;
+    getDatasetName(): string;
     resetPaginationOptions(): void;
     updateOptions(serviceOptions?: GraphqlServiceOption): void;
     onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string>;

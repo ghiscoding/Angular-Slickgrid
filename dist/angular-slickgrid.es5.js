@@ -8785,9 +8785,6 @@ function mapMomentDateFormatWithFieldType(fieldType) {
         case FieldType.dateTimeUsShortAmPm:
             map = 'M/D/YY h:m:s a';
             break;
-        case FieldType.dateTimeUsAM_PM:
-            map = 'M/D/YY h:m:s A';
-            break;
         case FieldType.dateUtc:
             map = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
             break;
@@ -8853,16 +8850,13 @@ function mapFlatpickrDateFormatWithFieldType(fieldType) {
             map = 'm/d/Y h:i:S K'; // there is no lowercase in Flatpickr :(
             break;
         case FieldType.dateTimeUsAM_PM:
-            map = 'm/d/Y h:i:S K';
+            map = 'M/D/YY h:i:s K';
             break;
         case FieldType.dateTimeUsShort:
             map = 'M/D/YY H:i:s';
             break;
         case FieldType.dateTimeUsShortAmPm:
             map = 'M/D/YY h:i:s K'; // there is no lowercase in Flatpickr :(
-            break;
-        case FieldType.dateTimeUsAM_PM:
-            map = 'M/D/YY h:i:s K';
             break;
         case FieldType.dateUtc:
             map = 'Z';
@@ -8963,50 +8957,74 @@ var DateEditor = /** @class */ (function () {
      */
     DateEditor.prototype.init = function () {
         var _this = this;
-        var /** @type {?} */ gridOptions = this.args.grid.getOptions();
+        var /** @type {?} */ gridOptions = (this.args.grid.getOptions());
         this.defaultDate = this.args.item[this.args.column.field] || null;
         var /** @type {?} */ inputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
         var /** @type {?} */ outputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.outputType || FieldType.dateUtc);
-        var /** @type {?} */ locale = (gridOptions && gridOptions.locale) ? gridOptions.locale : 'en';
+        var /** @type {?} */ currentLocale = this.getCurrentLocale(this.args.column, gridOptions);
         var /** @type {?} */ pickerOptions = {
             defaultDate: this.defaultDate,
             altInput: true,
             altFormat: inputFormat,
             dateFormat: outputFormat,
             closeOnSelect: false,
+            locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
             onChange: function (selectedDates, dateStr, instance) {
                 _this.save();
             },
         };
+        this.$input = jquery("<input type=\"text\" data-defaultDate=\"" + this.defaultDate + "\" class=\"editor-text flatpickr\" />");
+        this.$input.appendTo(this.args.container);
+        this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
+        this.show();
+    };
+    /**
+     * @param {?} columnDef
+     * @param {?} gridOptions
+     * @return {?}
+     */
+    DateEditor.prototype.getCurrentLocale = function (columnDef, gridOptions) {
+        var /** @type {?} */ params = columnDef.params || {};
+        if (params.i18n && params.i18n instanceof TranslateService) {
+            return params.i18n.currentLang;
+        }
+        return (gridOptions && gridOptions.locale) ? gridOptions.locale : 'en';
+    };
+    /**
+     * @param {?} locale
+     * @return {?}
+     */
+    DateEditor.prototype.loadFlatpickrLocale = function (locale) {
         // change locale if needed, Flatpickr reference: https://chmln.github.io/flatpickr/localization/
         if (locale !== 'en') {
             var /** @type {?} */ localeDefault = require("flatpickr/dist/l10n/" + locale + ".js").default;
-            pickerOptions['locale'] = (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
+            return (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
         }
-        this.$input = jquery("<input type=\"text\" data-defaultDate=\"" + this.defaultDate + "\" class=\"editor-text flatpickr\" />");
-        this.$input.appendTo(this.args.container);
-        this.flatInstance = flatpickr(this.$input[0], pickerOptions);
-        this.flatInstance.open();
+        return 'en';
     };
     /**
      * @return {?}
      */
     DateEditor.prototype.destroy = function () {
+        this.hide();
         // this.flatInstance.destroy();
-        this.flatInstance.close();
         this.$input.remove();
     };
     /**
      * @return {?}
      */
     DateEditor.prototype.show = function () {
-        this.flatInstance.open();
+        if (this.flatInstance && typeof this.flatInstance.open === 'function') {
+            this.flatInstance.open();
+        }
     };
     /**
      * @return {?}
      */
     DateEditor.prototype.hide = function () {
-        this.flatInstance.close();
+        if (this.flatInstance && typeof this.flatInstance.close === 'function') {
+            this.flatInstance.close();
+        }
     };
     /**
      * @return {?}
@@ -9595,16 +9613,19 @@ var numberFilterCondition = function (options) {
 var stringFilterCondition = function (options) {
     // make sure the cell value is a string by casting it when possible
     options.cellValue = (options.cellValue === undefined || options.cellValue === null) ? '' : options.cellValue.toString();
+    // make both the cell value and search value lower for case insensitive comparison
+    var /** @type {?} */ cellValue = options.cellValue.toLowerCase();
+    var /** @type {?} */ searchTerm = options.searchTerm.toLowerCase();
     if (options.operator === '*') {
-        return options.cellValue.startsWith(options.searchTerm);
+        return cellValue.endsWith(searchTerm);
     }
     else if (options.operator === '' && options.cellValueLastChar === '*') {
-        return options.cellValue.endsWith(options.searchTerm);
+        return cellValue.startsWith(searchTerm);
     }
     else if (options.operator === '') {
-        return options.cellValue.includes(options.searchTerm);
+        return cellValue.includes(searchTerm);
     }
-    return testFilterCondition(options.operator || '==', options.cellValue.toLowerCase(), options.searchTerm.toLowerCase());
+    return testFilterCondition(options.operator || '==', cellValue, searchTerm);
 };
 var executeMappedCondition = function (options) {
     // execute the mapped type, or default to String condition check
@@ -9920,31 +9941,36 @@ var FilterService = /** @class */ (function () {
      */
     FilterService.prototype.attachBackendOnFilterSubscribe = function (event, args) {
         return __awaiter(this, void 0, void 0, function () {
-            var serviceOptions, query, observableOrPromise, responseProcess;
+            var gridOptions, backendApi, query, observableOrPromise, processResult;
             return __generator(this, function (_g) {
                 switch (_g.label) {
                     case 0:
                         if (!args || !args.grid) {
                             throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
                         }
-                        serviceOptions = args.grid.getOptions();
-                        if (!serviceOptions || !serviceOptions.onBackendEventApi || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
-                            throw new Error("onBackendEventApi requires at least a \"process\" function and a \"service\" defined");
+                        gridOptions = args.grid.getOptions() || {};
+                        backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+                        if (!backendApi || !backendApi.process || !backendApi.service) {
+                            throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
                         }
                         // run a preProcess callback if defined
-                        if (serviceOptions.onBackendEventApi.preProcess) {
-                            serviceOptions.onBackendEventApi.preProcess();
+                        if (backendApi.preProcess) {
+                            backendApi.preProcess();
                         }
-                        return [4 /*yield*/, serviceOptions.onBackendEventApi.service.onFilterChanged(event, args)];
+                        return [4 /*yield*/, backendApi.service.onFilterChanged(event, args)];
                     case 1:
                         query = _g.sent();
-                        observableOrPromise = serviceOptions.onBackendEventApi.process(query);
+                        observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 2:
-                        responseProcess = _g.sent();
+                        processResult = _g.sent();
+                        // from the result, call our internal post process to update the Dataset and Pagination info
+                        if (processResult && backendApi.internalPostProcess) {
+                            backendApi.internalPostProcess(processResult);
+                        }
                         // send the response process to the postProcess callback
-                        if (serviceOptions.onBackendEventApi.postProcess !== undefined) {
-                            serviceOptions.onBackendEventApi.postProcess(responseProcess);
+                        if (backendApi.postProcess !== undefined) {
+                            backendApi.postProcess(processResult);
                         }
                         return [2 /*return*/];
                 }
@@ -10041,7 +10067,7 @@ var FilterService = /** @class */ (function () {
             var /** @type {?} */ fieldType = columnDef.type || FieldType.string;
             var /** @type {?} */ conditionalFilterFn = (columnDef.filter && columnDef.filter.conditionalFilter) ? columnDef.filter.conditionalFilter : null;
             var /** @type {?} */ filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
-            var /** @type {?} */ cellValue = item[columnDef.field];
+            var /** @type {?} */ cellValue = item[columnDef.queryField || columnDef.field];
             var /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
             if (typeof fieldSearchValue === 'undefined') {
                 fieldSearchValue = '';
@@ -10274,28 +10300,33 @@ var SortService = /** @class */ (function () {
      */
     SortService.prototype.attachBackendOnSortSubscribe = function (event, args) {
         return __awaiter$1(this, void 0, void 0, function () {
-            var serviceOptions, query, observableOrPromise, responseProcess;
+            var gridOptions, backendApi, query, observableOrPromise, processResult;
             return __generator(this, function (_g) {
                 switch (_g.label) {
                     case 0:
                         if (!args || !args.grid) {
                             throw new Error('Something went wrong when trying to attach the "attachBackendOnSortSubscribe(event, args)" function, it seems that "args" is not populated correctly');
                         }
-                        serviceOptions = args.grid.getOptions();
-                        if (!serviceOptions || !serviceOptions.onBackendEventApi.process || !serviceOptions.onBackendEventApi.service) {
-                            throw new Error("onBackendEventApi requires at least a \"process\" function and a \"service\" defined");
+                        gridOptions = args.grid.getOptions() || {};
+                        backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+                        if (!backendApi || !backendApi.process || !backendApi.service) {
+                            throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
                         }
-                        if (serviceOptions.onBackendEventApi.preProcess) {
-                            serviceOptions.onBackendEventApi.preProcess();
+                        if (backendApi.preProcess) {
+                            backendApi.preProcess();
                         }
-                        query = serviceOptions.onBackendEventApi.service.onSortChanged(event, args);
-                        observableOrPromise = serviceOptions.onBackendEventApi.process(query);
+                        query = backendApi.service.onSortChanged(event, args);
+                        observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 1:
-                        responseProcess = _g.sent();
+                        processResult = _g.sent();
+                        // from the result, call our internal post process to update the Dataset and Pagination info
+                        if (processResult && backendApi.internalPostProcess) {
+                            backendApi.internalPostProcess(processResult);
+                        }
                         // send the response process to the postProcess callback
-                        if (serviceOptions.onBackendEventApi.postProcess) {
-                            serviceOptions.onBackendEventApi.postProcess(responseProcess);
+                        if (backendApi.postProcess) {
+                            backendApi.postProcess(processResult);
                         }
                         return [2 /*return*/];
                 }
@@ -10318,9 +10349,10 @@ var SortService = /** @class */ (function () {
             var /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
             dataView.sort(function (dataRow1, dataRow2) {
                 for (var /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
-                    var /** @type {?} */ sortDirection = sortColumns[i].sortAsc ? 1 : -1;
-                    var /** @type {?} */ sortField = sortColumns[i].sortCol.field;
-                    var /** @type {?} */ fieldType = sortColumns[i].sortCol.type || 'string';
+                    var /** @type {?} */ columnSortObj = sortColumns[i];
+                    var /** @type {?} */ sortDirection = columnSortObj.sortAsc ? 1 : -1;
+                    var /** @type {?} */ sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.field;
+                    var /** @type {?} */ fieldType = columnSortObj.sortCol.type || 'string';
                     var /** @type {?} */ value1 = dataRow1[sortField];
                     var /** @type {?} */ value2 = dataRow2[sortField];
                     var /** @type {?} */ result = 0;
@@ -10602,9 +10634,13 @@ var GraphqlQueryBuilder = /** @class */ (function () {
     return GraphqlQueryBuilder;
 }());
 var timer;
+var DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 var GraphqlService = /** @class */ (function () {
-    function GraphqlService() {
-        this.serviceOptions = {};
+    /**
+     * @param {?} translate
+     */
+    function GraphqlService(translate) {
+        this.translate = translate;
         this.defaultOrderBy = { field: 'id', direction: SortDirection.ASC };
     }
     /**
@@ -10612,20 +10648,20 @@ var GraphqlService = /** @class */ (function () {
      * @return {?}
      */
     GraphqlService.prototype.buildQuery = function () {
-        if (!this.serviceOptions || !this.serviceOptions.datasetName || (!this.serviceOptions.columnIds && !this.serviceOptions.dataFilters && !this.serviceOptions.columnDefinitions)) {
+        if (!this.options || !this.options.datasetName || (!this.options.columnIds && !this.options.dataFilters && !this.options.columnDefinitions)) {
             throw new Error('GraphQL Service requires "datasetName" & ("dataFilters" or "columnDefinitions") properties for it to work');
         }
         var /** @type {?} */ queryQb = new GraphqlQueryBuilder('query');
-        var /** @type {?} */ datasetQb = new GraphqlQueryBuilder(this.serviceOptions.datasetName);
+        var /** @type {?} */ datasetQb = new GraphqlQueryBuilder(this.options.datasetName);
         var /** @type {?} */ pageInfoQb = new GraphqlQueryBuilder('pageInfo');
-        var /** @type {?} */ dataQb = (this.serviceOptions.isWithCursor) ? new GraphqlQueryBuilder('edges') : new GraphqlQueryBuilder('nodes');
+        var /** @type {?} */ dataQb = (this.options.isWithCursor) ? new GraphqlQueryBuilder('edges') : new GraphqlQueryBuilder('nodes');
         // get all the columnds Ids for the filters to work
         var /** @type {?} */ columnIds;
-        if (this.serviceOptions.columnDefinitions) {
-            columnIds = Array.isArray(this.serviceOptions.columnDefinitions) ? this.serviceOptions.columnDefinitions.map(function (column) { return column.field; }) : [];
+        if (this.options.columnDefinitions) {
+            columnIds = Array.isArray(this.options.columnDefinitions) ? this.options.columnDefinitions.map(function (column) { return column.field; }) : [];
         }
         else {
-            columnIds = this.serviceOptions.columnIds || this.serviceOptions.dataFilters || [];
+            columnIds = this.options.columnIds || this.options.dataFilters || [];
         }
         // Slickgrid also requires the "id" field to be part of DataView
         // push it to the GraphQL query if it wasn't already part of the list
@@ -10633,7 +10669,7 @@ var GraphqlService = /** @class */ (function () {
             columnIds.push('id');
         }
         var /** @type {?} */ filters = this.buildFilterQuery(columnIds);
-        if (this.serviceOptions.isWithCursor) {
+        if (this.options.isWithCursor) {
             // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
             pageInfoQb.find('hasNextPage', 'endCursor');
             dataQb.find(['cursor', { node: filters }]);
@@ -10645,20 +10681,24 @@ var GraphqlService = /** @class */ (function () {
         }
         datasetQb.find(['totalCount', pageInfoQb, dataQb]);
         // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
-        var /** @type {?} */ datasetFilters = (this.serviceOptions.paginationOptions);
-        if (this.serviceOptions.sortingOptions) {
+        var /** @type {?} */ datasetFilters = (this.options.paginationOptions);
+        if (this.options.sortingOptions) {
             // orderBy: [{ field:x, direction: 'ASC' }]
-            datasetFilters.orderBy = this.serviceOptions.sortingOptions;
+            datasetFilters.orderBy = this.options.sortingOptions;
         }
-        if (this.serviceOptions.filteringOptions) {
+        if (this.options.filteringOptions) {
             // filterBy: [{ field: date, operator: '>', value: '2000-10-10' }]
-            datasetFilters.filterBy = this.serviceOptions.filteringOptions;
+            datasetFilters.filterBy = this.options.filteringOptions;
+        }
+        if (this.options.addLocaleIntoQuery) {
+            // first: 20, ... locale: "en-CA"
+            datasetFilters.locale = this.translate.currentLang || 'en';
         }
         // query { users(first: 20, orderBy: [], filterBy: [])}
         datasetQb.filter(datasetFilters);
         queryQb.find(datasetQb);
         var /** @type {?} */ enumSearchProperties = ['direction:', 'field:', 'operator:'];
-        return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.serviceOptions.keepArgumentFieldDoubleQuotes || false);
+        return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.options.keepArgumentFieldDoubleQuotes || false);
     };
     /**
      * From an input array of strings, we want to build a GraphQL query string.
@@ -10668,7 +10708,7 @@ var GraphqlService = /** @class */ (function () {
      * INPUT
      *  ['firstName', 'lastName', 'billing.address.street', 'billing.address.zip']
      * OUTPUT
-     * firstName, lastName, shipping{address{street, zip}}
+     * firstName, lastName, billing{address{street, zip}}
      * @param {?} inputArray
      * @return {?}
      */
@@ -10690,14 +10730,20 @@ var GraphqlService = /** @class */ (function () {
      * @return {?}
      */
     GraphqlService.prototype.initOptions = function (serviceOptions) {
-        this.serviceOptions = serviceOptions || {};
+        this.options = serviceOptions || {};
+    };
+    /**
+     * @return {?}
+     */
+    GraphqlService.prototype.getDatasetName = function () {
+        return this.options.datasetName;
     };
     /**
      * @return {?}
      */
     GraphqlService.prototype.resetPaginationOptions = function () {
         var /** @type {?} */ paginationOptions;
-        if (this.serviceOptions.isWithCursor) {
+        if (this.options.isWithCursor) {
             // first, last, after, before
             paginationOptions = /** @type {?} */ ({
                 after: '',
@@ -10707,7 +10753,7 @@ var GraphqlService = /** @class */ (function () {
         }
         else {
             // first, last, offset
-            paginationOptions = /** @type {?} */ (this.serviceOptions.paginationOptions);
+            paginationOptions = /** @type {?} */ (this.options.paginationOptions);
             paginationOptions.offset = 0;
         }
         this.updateOptions({ paginationOptions: paginationOptions });
@@ -10717,7 +10763,7 @@ var GraphqlService = /** @class */ (function () {
      * @return {?}
      */
     GraphqlService.prototype.updateOptions = function (serviceOptions) {
-        this.serviceOptions = Object.assign({}, this.serviceOptions, serviceOptions);
+        this.options = Object.assign({}, this.options, serviceOptions);
     };
     /**
      * @param {?} event
@@ -10728,12 +10774,14 @@ var GraphqlService = /** @class */ (function () {
         var _this = this;
         var /** @type {?} */ searchByArray = [];
         var /** @type {?} */ serviceOptions = args.grid.getOptions();
-        if (serviceOptions.onBackendEventApi === undefined || !serviceOptions.onBackendEventApi.filterTypingDebounce) {
-            throw new Error('Something went wrong in the GraphqlService, "onBackendEventApi" is not initialized');
+        var /** @type {?} */ backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
+        if (backendApi === undefined) {
+            throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');
         }
+        // only add a delay when user is typing, on select dropdown filter it will execute right away
         var /** @type {?} */ debounceTypingDelay = 0;
         if (event.type === 'keyup' || event.type === 'keydown') {
-            debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || 700;
+            debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
         }
         var /** @type {?} */ promise = new Promise(function (resolve, reject) {
             if (!args || !args.grid) {
@@ -10744,7 +10792,7 @@ var GraphqlService = /** @class */ (function () {
                 if (args.columnFilters.hasOwnProperty(columnId)) {
                     var /** @type {?} */ columnFilter = args.columnFilters[columnId];
                     var /** @type {?} */ columnDef = columnFilter.columnDef;
-                    var /** @type {?} */ fieldName = columnDef.field || columnDef.name || '';
+                    var /** @type {?} */ fieldName = columnDef.queryField || columnDef.field || columnDef.name || '';
                     var /** @type {?} */ fieldType = columnDef.type || 'string';
                     var /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
                     if (typeof fieldSearchValue === 'undefined') {
@@ -10793,15 +10841,16 @@ var GraphqlService = /** @class */ (function () {
      */
     GraphqlService.prototype.onPaginationChanged = function (event, args) {
         var /** @type {?} */ paginationOptions;
-        if (this.serviceOptions.isWithCursor) {
+        var /** @type {?} */ pageSize = +args.pageSize || 20;
+        if (this.options.isWithCursor) {
             paginationOptions = {
-                first: args.pageSize
+                first: pageSize
             };
         }
         else {
             paginationOptions = {
-                first: args.pageSize,
-                offset: (args.newPage - 1) * args.pageSize
+                first: pageSize,
+                offset: (args.newPage - 1) * pageSize
             };
         }
         this.updateOptions({ paginationOptions: paginationOptions });
@@ -10825,7 +10874,7 @@ var GraphqlService = /** @class */ (function () {
             if (sortColumns) {
                 for (var _g = 0, sortColumns_1 = sortColumns; _g < sortColumns_1.length; _g++) {
                     var column = sortColumns_1[_g];
-                    var /** @type {?} */ fieldName = column.sortCol.field || column.sortCol.id;
+                    var /** @type {?} */ fieldName = column.sortCol.queryField || column.sortCol.field || column.sortCol.id;
                     var /** @type {?} */ direction = column.sortAsc ? SortDirection.ASC : SortDirection.DESC;
                     sortByArray.push({
                         field: fieldName,
@@ -10876,6 +10925,15 @@ var GraphqlService = /** @class */ (function () {
     };
     return GraphqlService;
 }());
+GraphqlService.decorators = [
+    { type: Injectable },
+];
+/**
+ * @nocollapse
+ */
+GraphqlService.ctorParameters = function () { return [
+    { type: TranslateService, },
+]; };
 var GridExtraService = /** @class */ (function () {
     function GridExtraService() {
     }
@@ -11307,13 +11365,13 @@ var OdataService = /** @class */ (function () {
     return OdataService;
 }());
 var timer$1;
+var DEFAULT_FILTER_TYPING_DEBOUNCE$1 = 750;
 var GridOdataService = /** @class */ (function () {
     /**
      * @param {?} odataService
      */
     function GridOdataService(odataService) {
         this.odataService = odataService;
-        this.serviceOptions = {};
         this.defaultSortBy = '';
         this.minUserInactivityOnFilter = 700;
     }
@@ -11331,11 +11389,11 @@ var GridOdataService = /** @class */ (function () {
         this.odataService.options = options;
     };
     /**
-     * @param {?=} options
+     * @param {?=} serviceOptions
      * @return {?}
      */
-    GridOdataService.prototype.updateOptions = function (options) {
-        this.serviceOptions = Object.assign({}, this.serviceOptions, options);
+    GridOdataService.prototype.updateOptions = function (serviceOptions) {
+        this.options = Object.assign({}, this.options, serviceOptions);
     };
     /**
      * @param {?} fieldName
@@ -11368,11 +11426,17 @@ var GridOdataService = /** @class */ (function () {
      */
     GridOdataService.prototype.onFilterChanged = function (event, args) {
         var _this = this;
+        var /** @type {?} */ searchBy = '';
         var /** @type {?} */ searchByArray = [];
         var /** @type {?} */ serviceOptions = args.grid.getOptions();
+        var /** @type {?} */ backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
+        if (backendApi === undefined) {
+            throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');
+        }
+        // only add a delay when user is typing, on select dropdown filter it will execute right away
         var /** @type {?} */ debounceTypingDelay = 0;
         if (event.type === 'keyup' || event.type === 'keydown') {
-            debounceTypingDelay = serviceOptions.onBackendEventApi.filterTypingDebounce || 700;
+            debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE$1;
         }
         var /** @type {?} */ promise = new Promise(function (resolve, reject) {
             // loop through all columns to inspect filters
@@ -11380,7 +11444,7 @@ var GridOdataService = /** @class */ (function () {
                 if (args.columnFilters.hasOwnProperty(columnId)) {
                     var /** @type {?} */ columnFilter = args.columnFilters[columnId];
                     var /** @type {?} */ columnDef = columnFilter.columnDef;
-                    var /** @type {?} */ fieldName = columnDef.field || columnDef.name;
+                    var /** @type {?} */ fieldName = columnDef.queryField || columnDef.field || columnDef.name;
                     var /** @type {?} */ fieldType = columnDef.type || 'string';
                     var /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
                     if (typeof fieldSearchValue === 'undefined') {
@@ -11412,7 +11476,7 @@ var GridOdataService = /** @class */ (function () {
                         }
                     }
                     else {
-                        var /** @type {?} */ searchBy = '';
+                        searchBy = '';
                         // titleCase the fieldName so that it matches the WebApi names
                         var /** @type {?} */ fieldNameTitleCase = String.titleCase(fieldName || '');
                         // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
@@ -11509,7 +11573,7 @@ var GridOdataService = /** @class */ (function () {
             if (sortColumns) {
                 for (var _g = 0, sortColumns_2 = sortColumns; _g < sortColumns_2.length; _g++) {
                     var column = sortColumns_2[_g];
-                    var /** @type {?} */ fieldName = column.sortCol.field || column.sortCol.id;
+                    var /** @type {?} */ fieldName = column.sortCol.queryField || column.sortCol.field || column.sortCol.id;
                     if (this.odataService.options.caseType === CaseType.pascalCase) {
                         fieldName = String.titleCase(fieldName);
                     }
@@ -11793,13 +11857,15 @@ var ControlAndPluginService = /** @class */ (function () {
         this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
     };
     /**
+     * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)
      * @param {?} grid
      * @param {?} columnDefinitions
      * @param {?} options
      * @return {?}
      */
     ControlAndPluginService.prototype.createGridMenu = function (grid, columnDefinitions, options) {
-        this.prepareGridMenu(grid, options);
+        options.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), options.gridMenu);
+        this.addGridMenuCustomCommands(grid, options);
         var /** @type {?} */ gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
         if (grid && options.gridMenu) {
             gridMenuControl.onBeforeMenuShow.subscribe(function (e, args) {
@@ -11817,7 +11883,9 @@ var ControlAndPluginService = /** @class */ (function () {
                     options.gridMenu.onMenuClose(e, args);
                 }
                 // we also want to resize the columns if the user decided to hide certain column(s)
-                grid.autosizeColumns();
+                if (grid && typeof grid.autosizeColumns === 'function') {
+                    grid.autosizeColumns();
+                }
             });
         }
         return gridMenuControl;
@@ -11861,6 +11929,9 @@ var ControlAndPluginService = /** @class */ (function () {
             this.columnPickerControl = null;
         }
         if (this.gridMenuControl) {
+            this.gridMenuControl.onBeforeMenuShow.unsubscribe();
+            this.gridMenuControl.onCommand.unsubscribe();
+            this.gridMenuControl.onMenuClose.unsubscribe();
             this.gridMenuControl.destroy();
             this.gridMenuControl = null;
         }
@@ -11886,12 +11957,14 @@ var ControlAndPluginService = /** @class */ (function () {
         }
     };
     /**
+     * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
      * @param {?} grid
      * @param {?} options
      * @return {?}
      */
     ControlAndPluginService.prototype.addGridMenuCustomCommands = function (grid, options) {
         var _this = this;
+        var /** @type {?} */ backendApi = options.backendServiceApi || options.onBackendEventApi || null;
         if (options.enableFiltering) {
             if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
                 options.gridMenu.customItems.push({
@@ -11909,7 +11982,7 @@ var ControlAndPluginService = /** @class */ (function () {
                     command: 'toggle-filter'
                 });
             }
-            if (options && options.gridMenu && options.onBackendEventApi && options.gridMenu.showRefreshDatasetCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'refresh-dataset'; }).length === 0) {
+            if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'refresh-dataset'; }).length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: 'fa fa-refresh',
                     title: options.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
@@ -11950,51 +12023,67 @@ var ControlAndPluginService = /** @class */ (function () {
         }
     };
     /**
-     * @param {?} grid
-     * @param {?} options
-     * @return {?}
+     * @return {?} default Grid Menu options
      */
-    ControlAndPluginService.prototype.prepareGridMenu = function (grid, options) {
-        var /** @type {?} */ columnTitle = options.enableTranslate ? this.translate.instant('COLUMNS') : 'Columns';
-        var /** @type {?} */ forceFitTitle = options.enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : 'Force fit columns';
-        var /** @type {?} */ syncResizeTitle = options.enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : 'Synchronous resize';
-        options.gridMenu = options.gridMenu || {};
-        options.gridMenu.columnTitle = options.gridMenu.columnTitle || columnTitle;
-        options.gridMenu.forceFitTitle = options.gridMenu.forceFitTitle || forceFitTitle;
-        options.gridMenu.syncResizeTitle = options.gridMenu.syncResizeTitle || syncResizeTitle;
-        options.gridMenu.iconCssClass = options.gridMenu.iconCssClass || 'fa fa-bars';
-        options.gridMenu.menuWidth = options.gridMenu.menuWidth || 18;
-        options.gridMenu.customTitle = options.gridMenu.customTitle || undefined;
-        options.gridMenu.customItems = options.gridMenu.customItems || [];
-        options.gridMenu.showClearAllFiltersCommand = options.gridMenu.showClearAllFiltersCommand || true;
-        options.gridMenu.showRefreshDatasetCommand = options.gridMenu.showRefreshDatasetCommand || true;
-        options.gridMenu.showToggleFilterCommand = options.gridMenu.showToggleFilterCommand || true;
-        this.addGridMenuCustomCommands(grid, options);
-        // options.gridMenu.resizeOnShowHeaderRow = options.showHeaderRow;
+    ControlAndPluginService.prototype.getDefaultGridMenuOptions = function () {
+        return {
+            columnTitle: this.translate.instant('COLUMNS') || 'Columns',
+            forceFitTitle: this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns',
+            syncResizeTitle: this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize',
+            iconCssClass: 'fa fa-bars',
+            menuWidth: 18,
+            customTitle: undefined,
+            customItems: [],
+            showClearAllFiltersCommand: true,
+            showRefreshDatasetCommand: true,
+            showToggleFilterCommand: true
+        };
     };
     /**
-     * @param {?} options
+     * @param {?} gridOptions
      * @return {?}
      */
-    ControlAndPluginService.prototype.refreshBackendDataset = function (options) {
+    ControlAndPluginService.prototype.refreshBackendDataset = function (gridOptions) {
         var /** @type {?} */ query;
-        if (options.onBackendEventApi.service) {
-            query = options.onBackendEventApi.service.buildQuery();
+        var /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+        if (!backendApi || !backendApi.service || !backendApi.process) {
+            throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
+        }
+        if (backendApi.service) {
+            query = backendApi.service.buildQuery();
         }
         if (query && query !== '') {
-            if (options.onBackendEventApi.preProcess) {
-                options.onBackendEventApi.preProcess();
+            if (backendApi.preProcess) {
+                backendApi.preProcess();
             }
             // the process could be an Observable (like HttpClient) or a Promise
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-            var /** @type {?} */ observableOrPromise = options.onBackendEventApi.process(query);
-            castToPromise(observableOrPromise).then(function (responseProcess) {
+            var /** @type {?} */ observableOrPromise = backendApi.process(query);
+            castToPromise(observableOrPromise).then(function (processResult) {
+                // from the result, call our internal post process to update the Dataset and Pagination info
+                if (processResult && backendApi.internalPostProcess) {
+                    backendApi.internalPostProcess(processResult);
+                }
                 // send the response process to the postProcess callback
-                if (options.onBackendEventApi.postProcess) {
-                    options.onBackendEventApi.postProcess(responseProcess);
+                if (backendApi.postProcess) {
+                    backendApi.postProcess(processResult);
                 }
             });
         }
+    };
+    /**
+     * Reset all the Grid Menu options which have text to translate
+     * @param {?} gridMenu
+     * @return {?}
+     */
+    ControlAndPluginService.prototype.resetGridMenuTranslations = function (gridMenu) {
+        // we will reset the custom items array since the commands title have to be translated too (no worries, we will re-create it later)
+        gridMenu.customItems = [];
+        delete gridMenu.customTitle;
+        gridMenu.columnTitle = this.translate.instant('COLUMNS') || 'Columns';
+        gridMenu.forceFitTitle = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
+        gridMenu.syncResizeTitle = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
+        return gridMenu;
     };
     /**
      * Translate the Column Picker and it's last 2 checkboxes
@@ -12020,7 +12109,8 @@ var ControlAndPluginService = /** @class */ (function () {
     ControlAndPluginService.prototype.translateGridMenu = function () {
         // destroy and re-create the Grid Menu which seems to be the only way to translate properly
         this.gridMenuControl.destroy();
-        this._gridOptions.gridMenu = undefined;
+        // reset all Grid Menu options that have translation text & then re-create the Grid Menu and also the custom items array
+        this._gridOptions.gridMenu = this.resetGridMenuTranslations(this._gridOptions.gridMenu);
         this.createGridMenu(this._grid, this.visibleColumns, this._gridOptions);
     };
     /**
@@ -12195,7 +12285,7 @@ var SlickPaginationComponent = /** @class */ (function () {
      * @return {?}
      */
     SlickPaginationComponent.prototype.onChangeItemPerPage = function (event) {
-        var /** @type {?} */ itemsPerPage = (event.target.value);
+        var /** @type {?} */ itemsPerPage = +event.target.value;
         this.pageCount = Math.ceil(this.totalItems / itemsPerPage);
         this.pageNumber = 1;
         this.itemsPerPage = itemsPerPage;
@@ -12206,15 +12296,21 @@ var SlickPaginationComponent = /** @class */ (function () {
      * @return {?}
      */
     SlickPaginationComponent.prototype.refreshPagination = function (isPageNumberReset) {
+        var /** @type {?} */ backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
+        if (!backendApi || !backendApi.service || !backendApi.process) {
+            throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
+        }
         if (this._gridPaginationOptions && this._gridPaginationOptions.pagination) {
             // if totalItems changed, we should always go back to the first page and recalculation the From-To indexes
             if (isPageNumberReset || this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
                 this.pageNumber = 1;
                 this.recalculateFromToIndexes();
+                // also reset the "offset" of backend service
+                backendApi.service.resetPaginationOptions();
             }
             // calculate and refresh the multiple properties of the pagination UI
             this.paginationPageSizes = this._gridPaginationOptions.pagination.pageSizes;
-            this.itemsPerPage = this._gridPaginationOptions.pagination.pageSize;
+            this.itemsPerPage = +this._gridPaginationOptions.pagination.pageSize;
             this.totalItems = this._gridPaginationOptions.pagination.totalItems;
             this.dataTo = this.itemsPerPage;
         }
@@ -12227,30 +12323,35 @@ var SlickPaginationComponent = /** @class */ (function () {
      */
     SlickPaginationComponent.prototype.onPageChanged = function (event, pageNumber) {
         return __awaiter$2(this, void 0, void 0, function () {
-            var itemsPerPage, query, observableOrPromise, responseProcess;
+            var backendApi, itemsPerPage, query, observableOrPromise, processResult;
             return __generator(this, function (_g) {
                 switch (_g.label) {
                     case 0:
                         this.recalculateFromToIndexes();
+                        backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
+                        if (!backendApi || !backendApi.service || !backendApi.process) {
+                            throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
+                        }
                         if (this.dataTo > this.totalItems) {
                             this.dataTo = this.totalItems;
                         }
-                        if (!this._gridPaginationOptions.onBackendEventApi) return [3 /*break*/, 2];
-                        itemsPerPage = this.itemsPerPage;
-                        if (!this._gridPaginationOptions.onBackendEventApi.process || !this._gridPaginationOptions.onBackendEventApi.service) {
-                            throw new Error("onBackendEventApi requires at least a \"process\" function and a \"service\" defined");
+                        if (!backendApi) return [3 /*break*/, 2];
+                        itemsPerPage = +this.itemsPerPage;
+                        if (backendApi.preProcess) {
+                            backendApi.preProcess();
                         }
-                        if (this._gridPaginationOptions.onBackendEventApi.preProcess) {
-                            this._gridPaginationOptions.onBackendEventApi.preProcess();
-                        }
-                        query = this._gridPaginationOptions.onBackendEventApi.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
-                        observableOrPromise = this._gridPaginationOptions.onBackendEventApi.process(query);
+                        query = backendApi.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
+                        observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 1:
-                        responseProcess = _g.sent();
+                        processResult = _g.sent();
+                        // from the result, call our internal post process to update the Dataset and Pagination info
+                        if (processResult && backendApi.internalPostProcess) {
+                            backendApi.internalPostProcess(processResult);
+                        }
                         // send the response process to the postProcess callback
-                        if (this._gridPaginationOptions.onBackendEventApi.postProcess) {
-                            this._gridPaginationOptions.onBackendEventApi.postProcess(responseProcess);
+                        if (backendApi.postProcess) {
+                            backendApi.postProcess(processResult);
                         }
                         return [3 /*break*/, 3];
                     case 2: throw new Error('Pagination with a backend service requires "onBackendEventApi" to be defined in your grid options');
@@ -33633,7 +33734,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.onGridCreated = new EventEmitter();
         this.onBeforeGridCreate = new EventEmitter();
         this.onBeforeGridDestroy = new EventEmitter();
-        this.onGridDestroyed = new EventEmitter();
+        this.onAfterGridDestroyed = new EventEmitter();
         this.gridHeight = 100;
         this.gridWidth = 600;
     }
@@ -33669,7 +33770,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
     AngularSlickgridComponent.prototype.ngOnDestroy = function () {
         this.onBeforeGridDestroy.emit(this.grid);
         this.destroy();
-        this.onGridDestroyed.emit(true);
+        this.onAfterGridDestroyed.emit(true);
     };
     /**
      * @return {?}
@@ -33689,6 +33790,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
     AngularSlickgridComponent.prototype.ngAfterViewInit = function () {
         // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
         this._dataset = this._dataset || [];
+        this.createBackendApiInternalPostProcessCallback();
         this._gridOptions = this.mergeGridOptions();
         this._dataView = new Slick.Data.DataView();
         this.controlAndPluginService.createPluginBeforeGridCreation(this.columnDefinitions, this._gridOptions);
@@ -33715,51 +33817,93 @@ var AngularSlickgridComponent = /** @class */ (function () {
         }
     };
     /**
+     * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
+     * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+     * @return {?}
+     */
+    AngularSlickgridComponent.prototype.createBackendApiInternalPostProcessCallback = function () {
+        var _this = this;
+        if (this.gridOptions && (this.gridOptions.backendServiceApi || this.gridOptions.onBackendEventApi)) {
+            var /** @type {?} */ backendApi_1 = this.gridOptions.backendServiceApi || this.gridOptions.onBackendEventApi;
+            // internalPostProcess only works with a GraphQL Service, so make sure it is that type
+            if (backendApi_1.service instanceof GraphqlService) {
+                backendApi_1.internalPostProcess = function (processResult) {
+                    var /** @type {?} */ datasetName = backendApi_1.service.getDatasetName();
+                    if (!processResult || !processResult.data || !processResult.data[datasetName]) {
+                        throw new Error("Your GraphQL result is invalid and/or does not follow the required result structure. Please check the result and/or review structure to use in Angular-Slickgrid Wiki in the GraphQL section.");
+                    }
+                    _this._dataset = processResult.data[datasetName].nodes;
+                    _this.gridOptions.pagination.totalItems = processResult.data[datasetName].totalCount;
+                    _this.refreshGridData(_this._dataset);
+                };
+            }
+        }
+    };
+    /**
      * @param {?} grid
-     * @param {?} options
+     * @param {?} gridOptions
      * @param {?} dataView
      * @return {?}
      */
-    AngularSlickgridComponent.prototype.attachDifferentHooks = function (grid, options, dataView) {
+    AngularSlickgridComponent.prototype.attachDifferentHooks = function (grid, gridOptions, dataView) {
         var _this = this;
         // on locale change, we have to manually translate the Headers, GridMenu
         this.translate.onLangChange.subscribe(function (event) {
-            if (options.enableTranslate) {
+            if (gridOptions.enableTranslate) {
                 _this.controlAndPluginService.translateHeaders();
                 _this.controlAndPluginService.translateColumnPicker();
                 _this.controlAndPluginService.translateGridMenu();
             }
         });
         // attach external sorting (backend) when available or default onSort (dataView)
-        if (options.enableSorting) {
-            (options.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, options) : this.sortService.attachLocalOnSort(grid, options, this._dataView);
+        if (gridOptions.enableSorting) {
+            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView);
         }
         // attach external filter (backend) when available or default onFilter (dataView)
-        if (options.enableFiltering) {
-            this.filterService.init(grid, options, this.columnDefinitions);
-            (options.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, options) : this.filterService.attachLocalOnFilter(grid, options, this._dataView);
+        if (gridOptions.enableFiltering) {
+            this.filterService.init(grid, gridOptions, this.columnDefinitions);
+            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, gridOptions) : this.filterService.attachLocalOnFilter(grid, gridOptions, this._dataView);
         }
-        if (options.onBackendEventApi && options.onBackendEventApi.onInit) {
-            var /** @type {?} */ backendApi_1 = options.onBackendEventApi;
-            var /** @type {?} */ query_1 = backendApi_1.service.buildQuery();
-            // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
-            setTimeout(function () { return __awaiter$3(_this, void 0, void 0, function () {
-                var observableOrPromise, responseProcess;
-                return __generator(this, function (_g) {
-                    switch (_g.label) {
-                        case 0:
-                            observableOrPromise = options.onBackendEventApi.onInit(query_1);
-                            return [4 /*yield*/, castToPromise(observableOrPromise)];
-                        case 1:
-                            responseProcess = _g.sent();
-                            // send the response process to the postProcess callback
-                            if (backendApi_1.postProcess) {
-                                backendApi_1.postProcess(responseProcess);
-                            }
-                            return [2 /*return*/];
-                    }
-                });
-            }); });
+        // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
+        if (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) {
+            if (gridOptions.onBackendEventApi) {
+                console.warn("\"onBackendEventApi\" has been DEPRECATED, please consider using \"backendServiceApi\" in the short term since \"onBackendEventApi\" will be removed in future versions. You can take look at the Angular-Slickgrid Wikis for OData/GraphQL Services implementation");
+            }
+            if (gridOptions.backendServiceApi && gridOptions.backendServiceApi.service && gridOptions.backendServiceApi.options) {
+                gridOptions.backendServiceApi.service.initOptions(gridOptions.backendServiceApi.options);
+            }
+            var /** @type {?} */ backendApi_2 = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+            var /** @type {?} */ serviceOptions = (backendApi_2 && backendApi_2.service && backendApi_2.service.options) ? backendApi_2.service.options : null;
+            var /** @type {?} */ isExecuteCommandOnInit = (!serviceOptions) ? false : (serviceOptions['executeProcessCommandOnInit'] || false);
+            if (backendApi_2.onInit || isExecuteCommandOnInit) {
+                var /** @type {?} */ query = backendApi_2.service.buildQuery();
+                var /** @type {?} */ observableOrPromise_1 = (isExecuteCommandOnInit) ? backendApi_2.process(query) : backendApi_2.onInit(query);
+                // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
+                setTimeout(function () { return __awaiter$3(_this, void 0, void 0, function () {
+                    var processResult;
+                    return __generator(this, function (_g) {
+                        switch (_g.label) {
+                            case 0:
+                                if (backendApi_2.preProcess) {
+                                    backendApi_2.preProcess();
+                                }
+                                return [4 /*yield*/, castToPromise(observableOrPromise_1)];
+                            case 1:
+                                processResult = _g.sent();
+                                // define what our internal Post Process callback, only available for GraphQL Service for now
+                                // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+                                if (backendApi_2.service instanceof GraphqlService && processResult) {
+                                    backendApi_2.internalPostProcess(processResult);
+                                }
+                                // send the response process to the postProcess callback
+                                if (backendApi_2.postProcess) {
+                                    backendApi_2.postProcess(processResult);
+                                }
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+            }
         }
         // on cell click, mainly used with the columnDef.action callback
         this.gridEventService.attachOnCellChange(grid, this._gridOptions, dataView);
@@ -33875,7 +34019,7 @@ AngularSlickgridComponent.propDecorators = {
     'onGridCreated': [{ type: Output },],
     'onBeforeGridCreate': [{ type: Output },],
     'onBeforeGridDestroy': [{ type: Output },],
-    'onGridDestroyed': [{ type: Output },],
+    'onAfterGridDestroyed': [{ type: Output },],
     'gridId': [{ type: Input },],
     'columnDefinitions': [{ type: Input },],
     'gridOptions': [{ type: Input },],
