@@ -2,7 +2,6 @@ import { Component, OnInit, Input, AfterViewInit, Injectable } from '@angular/co
 import { castToPromise } from './../services/utilities';
 import { FilterService } from '../services/filter.service';
 import { SortService } from './../services/sort.service';
-import { TranslateService } from '@ngx-translate/core';
 import { Column, GridOption } from './../models';
 
 @Component({
@@ -34,7 +33,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
   paginationPageSizes = [25, 75, 100];
   fromToParams: any = { from: this.dataFrom, to: this.dataTo, totalItems: this.totalItems };
 
-  constructor(private filterService: FilterService, private sortService: SortService, private translate: TranslateService) { }
+  constructor(private filterService: FilterService, private sortService: SortService) { }
 
   ngOnInit() {
   }
