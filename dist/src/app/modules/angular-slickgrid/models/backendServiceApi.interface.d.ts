@@ -15,7 +15,7 @@ export interface BackendServiceApi {
     /** On Processing, we get the query back from the service, and we need to provide a Promise/Observable. For example: this.http.get(myGraphqlUrl) */
     process: (query: string) => Promise<GraphqlResult | any> | Observable<GraphqlResult | any>;
     /** After executing the query, what action to perform? For example, stop the spinner */
-    postProcess?: (response: any) => void;
+    postProcess?: (response: GraphqlResult | any) => void;
     /** How long to wait until we start querying backend to avoid sending too many requests to backend server. Default to 750ms */
     filterTypingDebounce?: number;
     /**

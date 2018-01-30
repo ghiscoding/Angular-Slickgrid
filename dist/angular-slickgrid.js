@@ -13130,6 +13130,7 @@ class GridOdataService {
      */
     initOptions(options) {
         this.odataService.options = options;
+        this.options = options;
     }
     /**
      * @param {?=} serviceOptions
@@ -13907,12 +13908,10 @@ class SlickPaginationComponent {
     /**
      * @param {?} filterService
      * @param {?} sortService
-     * @param {?} translate
      */
-    constructor(filterService, sortService, translate) {
+    constructor(filterService, sortService) {
         this.filterService = filterService;
         this.sortService = sortService;
-        this.translate = translate;
         this.dataFrom = 1;
         this.dataTo = 1;
         this.itemsPerPage = 25;
@@ -14141,7 +14140,6 @@ SlickPaginationComponent.decorators = [
 SlickPaginationComponent.ctorParameters = () => [
     { type: FilterService, },
     { type: SortService, },
-    { type: TranslateService, },
 ];
 SlickPaginationComponent.propDecorators = {
     'gridPaginationOptions': [{ type: Input },],

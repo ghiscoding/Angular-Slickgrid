@@ -11387,6 +11387,7 @@ var GridOdataService = /** @class */ (function () {
      */
     GridOdataService.prototype.initOptions = function (options) {
         this.odataService.options = options;
+        this.options = options;
     };
     /**
      * @param {?=} serviceOptions
@@ -12180,12 +12181,10 @@ var SlickPaginationComponent = /** @class */ (function () {
     /**
      * @param {?} filterService
      * @param {?} sortService
-     * @param {?} translate
      */
-    function SlickPaginationComponent(filterService, sortService, translate) {
+    function SlickPaginationComponent(filterService, sortService) {
         this.filterService = filterService;
         this.sortService = sortService;
-        this.translate = translate;
         this.dataFrom = 1;
         this.dataTo = 1;
         this.itemsPerPage = 25;
@@ -12382,7 +12381,6 @@ SlickPaginationComponent.decorators = [
 SlickPaginationComponent.ctorParameters = function () { return [
     { type: FilterService, },
     { type: SortService, },
-    { type: TranslateService, },
 ]; };
 SlickPaginationComponent.propDecorators = {
     'gridPaginationOptions': [{ type: Input },],
