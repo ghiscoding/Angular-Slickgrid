@@ -296,8 +296,10 @@ export class FilterService {
         const filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FormElementType.input;
         switch (filterType) {
           case FormElementType.select:
-          case FormElementType.multiSelect:
             elm.change((e: any) => this.callbackSearchEvent(e, { columnDef, operator: 'EQ' }));
+            break;
+          case FormElementType.multiSelect:
+            elm.change((e: any) => this.callbackSearchEvent(e, { columnDef, operator: 'IN' }));
             break;
           case FormElementType.input:
           default:
