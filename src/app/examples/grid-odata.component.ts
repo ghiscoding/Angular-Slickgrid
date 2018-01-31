@@ -57,7 +57,6 @@ export class GridOdataComponent implements OnInit {
       },
       enableFiltering: true,
       enableCellNavigation: true,
-      enablePagination: true,
       pagination: {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
         pageSize: defaultPageSize,
