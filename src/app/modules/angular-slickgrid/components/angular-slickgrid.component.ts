@@ -293,7 +293,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.grid.invalidate();
       this.grid.render();
 
-      if (this._gridOptions.enablePagination) {
+      if (this._gridOptions.enablePagination || this._gridOptions.backendServiceApi) {
         this.showPagination = true;
         this.gridPaginationOptions = this.mergeGridOptions();
       }
