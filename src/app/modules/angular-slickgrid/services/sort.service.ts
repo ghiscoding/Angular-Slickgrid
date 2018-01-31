@@ -63,7 +63,7 @@ export class SortService {
       // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
       const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({sortAsc: args.sortAsc, sortCol: args.sortCol});
 
-      dataView.sort(function (dataRow1: any, dataRow2: any) {
+      dataView.sort((dataRow1: any, dataRow2: any) => {
         for (let i = 0, l = sortColumns.length; i < l; i++) {
           const columnSortObj = sortColumns[i];
           const sortDirection = columnSortObj.sortAsc ? 1 : -1;
