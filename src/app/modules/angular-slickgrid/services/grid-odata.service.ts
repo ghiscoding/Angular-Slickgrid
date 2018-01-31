@@ -13,7 +13,6 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 export class GridOdataService implements BackendService {
   options: OdataOption;
   defaultSortBy = '';
-  minUserInactivityOnFilter = 700;
 
   constructor(private odataService: OdataService) { }
 
@@ -57,7 +56,7 @@ export class GridOdataService implements BackendService {
     const backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
 
     if (backendApi === undefined) {
-      throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');
+      throw new Error('Something went wrong in the GridOdataService, "backendServiceApi" is not initialized');
     }
 
     // only add a delay when user is typing, on select dropdown filter it will execute right away
@@ -182,9 +181,11 @@ export class GridOdataService implements BackendService {
    * PAGINATION
    */
   onPaginationChanged(event: Event, args: PaginationChangedArgs) {
+    const pageSize = +args.pageSize || 20;
+
     this.odataService.updateOptions({
-      top: args.pageSize,
-      skip: (args.newPage - 1) * args.pageSize
+      top: pageSize,
+      skip: (args.newPage - 1) * pageSize
     });
 
     // build the OData query which we will use in the WebAPI callback
