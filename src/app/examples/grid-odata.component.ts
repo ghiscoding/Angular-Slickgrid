@@ -8,7 +8,8 @@ const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
 
 @Component({
-  templateUrl: './grid-odata.component.html'
+  templateUrl: './grid-odata.component.html',
+  providers: [GridOdataService]
 })
 @Injectable()
 export class GridOdataComponent implements OnInit {

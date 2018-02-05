@@ -5,8 +5,6 @@ import { Injector, APP_INITIALIZER, NgModule } from '@angular/core';
 import { LOCATION_INITIALIZED } from '@angular/common';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { GridOdataService } from './modules/angular-slickgrid/services/grid-odata.service';
-import { ResizerService } from './modules/angular-slickgrid/services/resizer.service';
 
 import { AppComponent } from './app.component';
 import { GridAddItemComponent } from './examples/grid-additem.component';
@@ -81,7 +79,15 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
         deps: [HttpClient]
       }
     }),
-    AngularSlickgridModule
+    AngularSlickgridModule.forRoot({
+      // add any Global Grid Options/Config you might want
+      // to avoid passing the same options over and over in each grids of your App
+      enableAutoResize: true,
+      autoResize: {
+        containerId: 'grid-container',
+        sidePadding: 15
+      }
+    })
   ],
   providers: [
     {
@@ -89,9 +95,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
       useFactory: appInitializerFactory,
       deps: [TranslateService, Injector],
       multi: true
-    },
-    GridOdataService,
-    ResizerService
+    }
   ],
   bootstrap: [AppComponent]
 })

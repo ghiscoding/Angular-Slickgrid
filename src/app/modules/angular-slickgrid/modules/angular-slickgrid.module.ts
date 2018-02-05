@@ -1,4 +1,5 @@
-import { TranslateModule } from '@ngx-translate/core';
+import { GridOdataService } from './../services/grid-odata.service';
+import { GridOption } from './../models/gridOption.interface';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSlickgridComponent } from './../components/angular-slickgrid.component';
@@ -12,6 +13,7 @@ import { OdataService } from './../services/odata.service';
 import { ResizerService } from './../services/resizer.service';
 import { SlickPaginationComponent } from './../components/slick-pagination.component';
 import { SortService } from './../services/sort.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
@@ -25,16 +27,24 @@ import { SortService } from './../services/sort.service';
   exports: [
     AngularSlickgridComponent,
     SlickPaginationComponent
-  ],
-  providers: [
-    ControlAndPluginService,
-    GraphqlService,
-    GridEventService,
-    GridExtraService,
-    OdataService,
-    FilterService,
-    SortService,
-    ResizerService
   ]
 })
-export class AngularSlickgridModule { }
+export class AngularSlickgridModule {
+  static forRoot(config: GridOption = {}) {
+    return {
+      ngModule: AngularSlickgridModule,
+      providers: [
+        {provide: 'config', useValue: config},
+        ControlAndPluginService,
+        FilterService,
+        GraphqlService,
+        GridEventService,
+        GridExtraService,
+        GridOdataService,
+        OdataService,
+        ResizerService,
+        SortService
+      ]
+    };
+  }
+}

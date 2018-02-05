@@ -11,7 +11,8 @@ const sampleDataRoot = '/assets/data';
 const GRAPHQL_QUERY_DATASET_NAME = 'users';
 
 @Component({
-  templateUrl: './grid-graphql.component.html'
+  templateUrl: './grid-graphql.component.html',
+  providers: [GraphqlService]
 })
 @Injectable()
 export class GridGraphqlComponent implements OnInit {

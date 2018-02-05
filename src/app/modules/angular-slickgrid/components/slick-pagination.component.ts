@@ -11,12 +11,14 @@ import { Column, GridOption } from './../models';
 @Injectable()
 export class SlickPaginationComponent implements AfterViewInit, OnInit {
   private _gridPaginationOptions: GridOption;
+  private _isFirstRender = true;
 
   @Input()
   set gridPaginationOptions(gridPaginationOptions: GridOption) {
     this._gridPaginationOptions = gridPaginationOptions;
-    if (!gridPaginationOptions || !gridPaginationOptions.pagination || (gridPaginationOptions.pagination.totalItems !== this.totalItems)) {
+    if (this._isFirstRender || !gridPaginationOptions || !gridPaginationOptions.pagination || (gridPaginationOptions.pagination.totalItems !== this.totalItems)) {
       this.refreshPagination();
+      this._isFirstRender = false;
     }
   }
   get gridPaginationOptions(): GridOption {
@@ -96,6 +98,11 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
     }
 
     if (this._gridPaginationOptions && this._gridPaginationOptions.pagination) {
+      // set the number of items per page if not already set
+      if (!this.itemsPerPage) {
+        this.itemsPerPage = +(backendApi['options'] && backendApi['options'].paginationOptions && backendApi['options'].paginationOptions.first) ? backendApi['options'].paginationOptions.first : this._gridPaginationOptions.pagination.pageSize;
+      }
+
       // if totalItems changed, we should always go back to the first page and recalculation the From-To indexes
       if (isPageNumberReset || this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
         this.pageNumber = 1;
@@ -103,11 +110,6 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
 
         // also reset the "offset" of backend service
         backendApi.service.resetPaginationOptions();
-      }
-
-      // set the number of items per page if not already set
-      if (!this.itemsPerPage) {
-        this.itemsPerPage = +(backendApi['options'] && backendApi['options'].paginationOptions && backendApi['options'].paginationOptions.first) ? backendApi['options'].paginationOptions.first : this._gridPaginationOptions.pagination.pageSize;
       }
 
       // calculate and refresh the multiple properties of the pagination UI
