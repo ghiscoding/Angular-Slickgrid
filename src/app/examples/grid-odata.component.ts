@@ -64,11 +64,6 @@ export class GridOdataComponent implements OnInit {
       },
       backendServiceApi: {
         service: this.odataService,
-        options: {
-          executeProcessCommandOnInit: true,
-          caseType: CaseType.pascalCase,
-          top: defaultPageSize
-        },
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {

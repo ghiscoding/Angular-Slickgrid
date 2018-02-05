@@ -25,7 +25,7 @@ export interface GridOption {
   };
 
   /** Backend Service API definition (GraphQL/OData Services), also goes with onBackendEventApi */
-  backendServiceApi?: BackendServiceApi,
+  backendServiceApi?: BackendServiceApi;
   cellHighlightCssClass?: string | null;
   checkboxSelector?: CheckboxSelector;
   columnPicker?: ColumnPicker;

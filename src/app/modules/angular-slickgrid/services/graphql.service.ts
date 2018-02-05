@@ -1,5 +1,6 @@
 import { BackendServiceApi } from './../models/backendServiceApi.interface';
 import { Injectable } from '@angular/core';
+import { Pagination } from './../models/pagination.interface';
 import { TranslateService } from '@ngx-translate/core';
 import { mapOperatorType, parseUtcDate } from './utilities';
 import {
@@ -27,7 +28,12 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 @Injectable()
 export class GraphqlService implements BackendService {
   options: GraphqlServiceOption;
+  pagination: Pagination;
   defaultOrderBy: GraphqlSortingOption = { field: 'id', direction: SortDirection.ASC };
+  defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption = {
+    first: 25,
+    offset: 0
+  };
 
   constructor(private translate: TranslateService) {}
 
@@ -73,7 +79,15 @@ export class GraphqlService implements BackendService {
     datasetQb.find(['totalCount', pageInfoQb, dataQb]);
 
     // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
-    const datasetFilters: GraphqlDatasetFilter = this.options.paginationOptions as GraphqlDatasetFilter;
+    const datasetFilters: GraphqlDatasetFilter = {
+      ...this.options.paginationOptions,
+      first: (this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : this.pagination.pageSize || this.defaultPaginationOptions.first
+    };
+
+    if (!this.options.isWithCursor) {
+      datasetFilters.offset = (this.options.paginationOptions && this.options.paginationOptions['offset']) ? this.options.paginationOptions['offset'] : this.defaultPaginationOptions['offset'];
+    }
+
     if (this.options.sortingOptions) {
       // orderBy: [{ field:x, direction: 'ASC' }]
       datasetFilters.orderBy = this.options.sortingOptions;
@@ -122,8 +136,17 @@ export class GraphqlService implements BackendService {
       .replace(/\}$/, '');
   }
 
-  initOptions(serviceOptions?: GraphqlServiceOption): void {
+  initOptions(serviceOptions?: GraphqlServiceOption, pagination?: Pagination): void {
     this.options = serviceOptions || {};
+    this.pagination = pagination;
+  }
+
+  /**
+   * Get an initialization of Pagination options
+   * @return Pagination Options
+   */
+  getInitPaginationOptions(): GraphqlDatasetFilter {
+    return (this.options.isWithCursor) ? { first: this.pagination.pageSize } : { first: this.pagination.pageSize, offset: 0 };
   }
 
   getDatasetName() {
@@ -144,7 +167,7 @@ export class GraphqlService implements BackendService {
       } as GraphqlCursorPaginationOption;
     } else {
       // first, last, offset
-      paginationOptions = this.options.paginationOptions as GraphqlPaginationOption;
+      paginationOptions = (this.options.paginationOptions || this.getInitPaginationOptions()) as GraphqlPaginationOption;
       paginationOptions.offset = 0;
     }
     this.updateOptions({ paginationOptions });

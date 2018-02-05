@@ -203,13 +203,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         console.warn(`"onBackendEventApi" has been DEPRECATED, please consider using "backendServiceApi" in the short term since "onBackendEventApi" will be removed in future versions. You can take look at the Angular-Slickgrid Wikis for OData/GraphQL Services implementation`);
       }
 
-      if (gridOptions.backendServiceApi && gridOptions.backendServiceApi.service && gridOptions.backendServiceApi.options) {
-        gridOptions.backendServiceApi.service.initOptions(gridOptions.backendServiceApi.options);
+      if (gridOptions.backendServiceApi && gridOptions.backendServiceApi.service) {
+        gridOptions.backendServiceApi.service.initOptions(gridOptions.backendServiceApi.options || {}, gridOptions.pagination);
       }
 
       const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
       const serviceOptions = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : null;
-      const isExecuteCommandOnInit = (!serviceOptions) ? false : (serviceOptions['executeProcessCommandOnInit'] || false);
+      const isExecuteCommandOnInit = (!serviceOptions) ? false : (serviceOptions['executeProcessCommandOnInit'] || true);
 
       if (backendApi.onInit || isExecuteCommandOnInit) {
         const query = backendApi.service.buildQuery();

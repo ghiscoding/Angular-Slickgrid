@@ -1,12 +1,13 @@
 import { BackendServiceOption } from './backendServiceOption.interface';
-import { SortChangedArgs } from './sortChangedArgs.interface';
-import { PaginationChangedArgs } from './paginationChangedArgs.interface';
 import { FilterChangedArgs } from './filterChangedArgs.interface';
+import { Pagination } from './pagination.interface';
+import { PaginationChangedArgs } from './paginationChangedArgs.interface';
+import { SortChangedArgs } from './sortChangedArgs.interface';
 
 export interface BackendService {
   options?: BackendServiceOption;
   buildQuery: (serviceOptions?: BackendServiceOption) => string;
-  initOptions: (serviceOptions?: BackendServiceOption) => void;
+  initOptions: (serviceOptions?: BackendServiceOption, pagination?: Pagination) => void;
   getDatasetName?: () => string;
   resetPaginationOptions: () => void;
   updateOptions: (serviceOptions?: BackendServiceOption) => void;

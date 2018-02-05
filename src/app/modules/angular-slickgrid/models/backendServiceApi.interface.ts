@@ -8,7 +8,7 @@ import { Observable } from 'rxjs/Observable';
 
 export interface BackendServiceApi {
   /** Backend Service Options */
-  options: OdataOption | GraphqlServiceOption;
+  options?: OdataOption | GraphqlServiceOption;
 
   /** Backend Service instance (could be OData or GraphQL Service) */
   service: BackendService;

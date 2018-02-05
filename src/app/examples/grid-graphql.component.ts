@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Injectable, Input, OnInit, Output, Pipe, PipeTransform } from '@angular/core';
-import { CaseType, Column, FormElementType, GridOption } from './../modules/angular-slickgrid/models';
+import { CaseType, Column, FormElementType, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid/models';
 import { FieldType, Formatters } from './../modules/angular-slickgrid';
 import { GraphqlService } from './../modules/angular-slickgrid/services/graphql.service';
 import { HttpClient } from '@angular/common/http';
@@ -107,39 +107,19 @@ export class GridGraphqlComponent implements OnInit {
     this.graphqlQuery = this.graphqlService.buildQuery();
   }
 
-  getBackendOptions(isWithCursor: boolean) {
-    let paginationOption;
+  getBackendOptions(withCursor: boolean): GraphqlServiceOption {
+    // with cursor, paginationOptions can be: { first, last, after, before }
+    // without cursor, paginationOptions can be: { first, last, offset }
+    return {
+      columnDefinitions: this.columnDefinitions,
+      datasetName: GRAPHQL_QUERY_DATASET_NAME,
+      isWithCursor: withCursor,
+      addLocaleIntoQuery: true,
 
-    if (isWithCursor) {
-      // with cursor, paginationOptions can be: { first, last, after, before }
-      paginationOption = {
-        columnDefinitions: this.columnDefinitions,
-        datasetName: GRAPHQL_QUERY_DATASET_NAME,
-        isWithCursor: true,
-        paginationOptions: {
-          first: defaultPageSize
-        },
-        addLocaleIntoQuery: true,
-        executeProcessCommandOnInit: true
-      };
-    } else {
-      // without cursor, paginationOptions can be: { first, last, offset }
-      paginationOption = {
-        columnDefinitions: this.columnDefinitions,
-        datasetName: GRAPHQL_QUERY_DATASET_NAME,
-        isWithCursor: false,
-        paginationOptions: {
-          first: defaultPageSize,
-          offset: 0
-        },
-        addLocaleIntoQuery: true,
-        executeProcessCommandOnInit: true
-      };
-    }
-    // when dealing with complex objects, we want to keep our field name with double quotes
-    // example with gender: query { users (orderBy:[{field:"gender",direction:ASC}]) {}
-    paginationOption.keepArgumentFieldDoubleQuotes = true;
-    return paginationOption;
+      // when dealing with complex objects, we want to keep our field name with double quotes
+      // example with gender: query { users (orderBy:[{field:"gender",direction:ASC}]) {}
+      keepArgumentFieldDoubleQuotes: true
+    };
   }
 
   /**
