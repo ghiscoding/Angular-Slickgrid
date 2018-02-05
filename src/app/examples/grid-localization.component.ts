@@ -8,23 +8,28 @@ import { TranslateService } from '@ngx-translate/core';
 @Injectable()
 export class GridLocalizationComponent implements OnInit {
   title = 'Example 12: Localization (i18n)';
-  subTitle = `Support multiple locales with the i18next plugin, following these steps
-    <ol class="small">
-      <li>You first need to "enableTranslate" in the Grid Options</li>
-      <li>In the Column Definitions, you have following options</li>
+  subTitle = `Support multiple locales with the i18next plugin, following these steps (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Localization" target="_blank">Wiki link</a>)
+  <ol class="small">
+    <li>You first need to "enableTranslate" in the Grid Options</li>
+    <li>In the Column Definitions, you have following options</li>
+    <ul>
+      <li>To translate a header title, use "headerKey" with a translate key (headerKey: 'TITLE')</li>
+      <li>For the cell values, you need to use a Formatter, there's 2 ways of doing it</li>
       <ul>
-        <li>To translate a header title, use "headerKey" with a translate key (headerKey: 'TITLE')</li>
-        <li>For the cell values, you need to use a Formatter, there's 2 ways of doing it</li>
-        <ul>
-          <li>formatter: myCustomTranslateFormatter <b>&lt;= "Title" column uses it</b></li>
-          <li>formatter: Formatters.translate, params: { i18n: this.translateService } <b>&lt;= "Completed" column uses it</b></li>
-        </ul>
+        <li>formatter: myCustomTranslateFormatter <b>&lt;= "Title" column uses it</b></li>
+        <li>formatter: Formatters.translate, params: { i18n: this.translateService } <b>&lt;= "Completed" column uses it</b></li>
       </ul>
-      <li>For date localization, you need to create your own custom formatter. </li>
+    </ul>
+    <li>For date localization, you need to create your own custom formatter. </li>
+    <ul>
+      <li>You can easily implement logic to switch between Formatters "dateIso" or "dateUs", depending on current locale.</li>
+    </ul>
+    <li>For the Select (dropdown) filter, you can fill in the "labelKey" property, if found it will use it, else it will use "label"</li>
       <ul>
-        <li>You can easily implement logic to switch between Formatters "dateIso" or "dateUs", depending on current locale.</li>
+        <li>What if your select options have totally different value/label pair? In this case, you can use the <b>customStructure: { label: 'customLabel', value: 'customValue'}</b> to change the property name(s) to use.'</li>
+        <li>What if you want to use "customStructure" and translation? Simply pass this flag <b>enableTranslateLabel: true</b></li>
+        <li>More info on the Select Filter <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Select-Filter" target="_blank">Wiki page</a>
       </ul>
-      <li>For the Select (dropdown) filter, you need to fill in the "labelKey" property, if found it will use it, else it will use "label"</li>
     </ol>
   `;
 
