@@ -153,9 +153,14 @@ export class ControlAndPluginService {
         if (options.gridMenu && typeof options.gridMenu.onMenuClose === 'function') {
           options.gridMenu.onMenuClose(e, args);
         }
+
         // we also want to resize the columns if the user decided to hide certain column(s)
         if (grid && typeof grid.autosizeColumns === 'function') {
-          grid.autosizeColumns();
+          // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree)
+          const gridUid = grid.getUID();
+          if (gridUid && $(`.${gridUid}`).length > 0) {
+            grid.autosizeColumns();
+          }
         }
       });
     }
