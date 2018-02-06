@@ -35,6 +35,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private resizer;
     private controlAndPluginService;
     private translate;
+    private forRootConfig;
     private _dataset;
     private _dataView;
     private _gridOptions;
@@ -56,7 +57,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridHeight: number;
     gridWidth: number;
     dataset: any[];
-    constructor(filterService: FilterService, sortService: SortService, gridExtraService: GridExtraService, gridEventService: GridEventService, resizer: ResizerService, controlAndPluginService: ControlAndPluginService, translate: TranslateService);
+    constructor(filterService: FilterService, sortService: SortService, gridExtraService: GridExtraService, gridEventService: GridEventService, resizer: ResizerService, controlAndPluginService: ControlAndPluginService, translate: TranslateService, forRootConfig: GridOption);
     ngOnInit(): void;
     ngOnDestroy(): void;
     destroy(): void;
@@ -65,7 +66,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
      * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
      * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
      */
-    createBackendApiInternalPostProcessCallback(): void;
+    createBackendApiInternalPostProcessCallback(gridOptions: GridOption): void;
     attachDifferentHooks(grid: any, gridOptions: GridOption, dataView: any): void;
     attachResizeHook(grid: any, options: GridOption): void;
     mergeGridOptions(): GridOption;
@@ -73,7 +74,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
      * When dataset changes, we need to refresh the entire grid UI & possibly resize it as well
      * @param {object} dataset
      */
-    refreshGridData(dataset: any[]): void;
+    refreshGridData(dataset: any[], totalCount?: number): void;
     /** Toggle the filter row displayed on first row
      * @param {boolean} isShowing
      */

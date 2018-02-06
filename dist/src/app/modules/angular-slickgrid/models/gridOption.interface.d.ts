@@ -48,7 +48,6 @@ export interface GridOption {
     headerRowHeight?: number;
     headerButton?: HeaderButton;
     headerMenu?: HeaderMenu;
-    locale?: string;
     multiColumnSort?: boolean;
     /** DEPRECATED, Please use "backendServiceApi" instead */
     onBackendEventApi?: BackendEventChanged;

@@ -1,9 +1,12 @@
+import { Pagination } from './../models/pagination.interface';
 import { TranslateService } from '@ngx-translate/core';
-import { BackendService, FilterChangedArgs, GraphqlServiceOption, GraphqlSortingOption, PaginationChangedArgs, SortChangedArgs } from './../models';
+import { BackendService, FilterChangedArgs, GraphqlCursorPaginationOption, GraphqlDatasetFilter, GraphqlPaginationOption, GraphqlServiceOption, GraphqlSortingOption, PaginationChangedArgs, SortChangedArgs } from './../models';
 export declare class GraphqlService implements BackendService {
     private translate;
     options: GraphqlServiceOption;
+    pagination: Pagination;
     defaultOrderBy: GraphqlSortingOption;
+    defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption;
     constructor(translate: TranslateService);
     /**
      * Build the GraphQL query, since the service include/exclude cursor, the output query will be different.
@@ -22,7 +25,12 @@ export declare class GraphqlService implements BackendService {
      * @param inputArray
      */
     buildFilterQuery(inputArray: string[]): string;
-    initOptions(serviceOptions?: GraphqlServiceOption): void;
+    initOptions(serviceOptions?: GraphqlServiceOption, pagination?: Pagination): void;
+    /**
+     * Get an initialization of Pagination options
+     * @return Pagination Options
+     */
+    getInitPaginationOptions(): GraphqlDatasetFilter;
     getDatasetName(): string;
     resetPaginationOptions(): void;
     updateOptions(serviceOptions?: GraphqlServiceOption): void;

@@ -3,7 +3,7 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Component, EventEmitter, Injectable, Input, NgModule, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Injectable, Input, NgModule, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 let CaseType = {};
@@ -10756,7 +10756,7 @@ class DateEditor {
         if (params.i18n && params.i18n instanceof TranslateService) {
             return params.i18n.currentLang;
         }
-        return (gridOptions && gridOptions.locale) ? gridOptions.locale : 'en';
+        return 'en';
     }
     /**
      * @param {?} locale
@@ -11454,12 +11454,15 @@ const selectFilterTemplate = (searchTerm, columnDef, i18n) => {
         throw new Error(`SelectOptions with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')`);
     }
     let /** @type {?} */ options = '';
+    const /** @type {?} */ labelName = (columnDef.filter.customStructure) ? columnDef.filter.customStructure.label : 'label';
+    const /** @type {?} */ valueName = (columnDef.filter.customStructure) ? columnDef.filter.customStructure.value : 'value';
     columnDef.filter.selectOptions.forEach((option) => {
-        if (!option || (option.label === undefined && option.labelKey === undefined)) {
+        if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
             throw new Error(`SelectOptions with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')`);
         }
-        const /** @type {?} */ textLabel = (option.labelKey && i18n && typeof i18n.instant === 'function') ? i18n.instant(option.labelKey) : option.label;
-        options += `<option value="${option.value}">${textLabel}</option>`;
+        const /** @type {?} */ labelKey = option.labelKey || option[labelName];
+        const /** @type {?} */ textLabel = ((option.labelKey || columnDef.filter.enableTranslateLabel) && i18n && typeof i18n.instant === 'function') ? i18n.instant(labelKey || ' ') : labelKey;
+        options += `<option value="${option[valueName]}">${textLabel}</option>`;
     });
     return `<select class="form-control search-filter">${options}</select>`;
 };
@@ -11990,8 +11993,10 @@ class FilterService {
                 const /** @type {?} */ filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FormElementType.input;
                 switch (filterType) {
                     case FormElementType.select:
-                    case FormElementType.multiSelect:
                         elm.change((e) => this.callbackSearchEvent(e, { columnDef, operator: 'EQ' }));
+                        break;
+                    case FormElementType.multiSelect:
+                        elm.change((e) => this.callbackSearchEvent(e, { columnDef, operator: 'IN' }));
                         break;
                     case FormElementType.input:
                     default:
@@ -12119,7 +12124,7 @@ class SortService {
             // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
             // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
             const /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
-            dataView.sort(function (dataRow1, dataRow2) {
+            dataView.sort((dataRow1, dataRow2) => {
                 for (let /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
                     const /** @type {?} */ columnSortObj = sortColumns[i];
                     const /** @type {?} */ sortDirection = columnSortObj.sortAsc ? 1 : -1;
@@ -12404,6 +12409,10 @@ class GraphqlService {
     constructor(translate) {
         this.translate = translate;
         this.defaultOrderBy = { field: 'id', direction: SortDirection.ASC };
+        this.defaultPaginationOptions = {
+            first: 25,
+            offset: 0
+        };
     }
     /**
      * Build the GraphQL query, since the service include/exclude cursor, the output query will be different.
@@ -12443,7 +12452,10 @@ class GraphqlService {
         }
         datasetQb.find(['totalCount', pageInfoQb, dataQb]);
         // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
-        const /** @type {?} */ datasetFilters = (this.options.paginationOptions);
+        const /** @type {?} */ datasetFilters = Object.assign({}, this.options.paginationOptions, { first: (this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : this.pagination.pageSize || this.defaultPaginationOptions.first });
+        if (!this.options.isWithCursor) {
+            datasetFilters.offset = (this.options.paginationOptions && this.options.paginationOptions['offset']) ? this.options.paginationOptions['offset'] : this.defaultPaginationOptions['offset'];
+        }
         if (this.options.sortingOptions) {
             // orderBy: [{ field:x, direction: 'ASC' }]
             datasetFilters.orderBy = this.options.sortingOptions;
@@ -12488,10 +12500,19 @@ class GraphqlService {
     }
     /**
      * @param {?=} serviceOptions
+     * @param {?=} pagination
      * @return {?}
      */
-    initOptions(serviceOptions) {
+    initOptions(serviceOptions, pagination) {
         this.options = serviceOptions || {};
+        this.pagination = pagination;
+    }
+    /**
+     * Get an initialization of Pagination options
+     * @return {?} Pagination Options
+     */
+    getInitPaginationOptions() {
+        return (this.options.isWithCursor) ? { first: this.pagination.pageSize } : { first: this.pagination.pageSize, offset: 0 };
     }
     /**
      * @return {?}
@@ -12514,7 +12535,7 @@ class GraphqlService {
         }
         else {
             // first, last, offset
-            paginationOptions = /** @type {?} */ (this.options.paginationOptions);
+            paginationOptions = /** @type {?} */ ((this.options.paginationOptions || this.getInitPaginationOptions()));
             paginationOptions.offset = 0;
         }
         this.updateOptions({ paginationOptions });
@@ -13115,8 +13136,10 @@ class GridOdataService {
      */
     constructor(odataService) {
         this.odataService = odataService;
-        this.defaultSortBy = '';
-        this.minUserInactivityOnFilter = 700;
+        this.defaultOptions = {
+            top: 25,
+            orderBy: ''
+        };
     }
     /**
      * @return {?}
@@ -13126,11 +13149,13 @@ class GridOdataService {
     }
     /**
      * @param {?} options
+     * @param {?=} pagination
      * @return {?}
      */
-    initOptions(options) {
-        this.odataService.options = options;
+    initOptions(options, pagination) {
+        this.odataService.options = Object.assign({}, this.defaultOptions, options, { top: options.top || pagination.pageSize || this.defaultOptions.top });
         this.options = options;
+        this.pagination = pagination;
     }
     /**
      * @param {?=} serviceOptions
@@ -13174,7 +13199,7 @@ class GridOdataService {
         const /** @type {?} */ serviceOptions = args.grid.getOptions();
         const /** @type {?} */ backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
         if (backendApi === undefined) {
-            throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');
+            throw new Error('Something went wrong in the GridOdataService, "backendServiceApi" is not initialized');
         }
         // only add a delay when user is typing, on select dropdown filter it will execute right away
         let /** @type {?} */ debounceTypingDelay = 0;
@@ -13293,9 +13318,10 @@ class GridOdataService {
      * @return {?}
      */
     onPaginationChanged(event, args) {
+        const /** @type {?} */ pageSize = +args.pageSize || 20;
         this.odataService.updateOptions({
-            top: args.pageSize,
-            skip: (args.newPage - 1) * args.pageSize
+            top: pageSize,
+            skip: (args.newPage - 1) * pageSize
         });
         // build the OData query which we will use in the WebAPI callback
         return this.odataService.buildQuery();
@@ -13310,7 +13336,7 @@ class GridOdataService {
         const /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
         // build the SortBy string, it could be multisort, example: customerNo asc, purchaserName desc
         if (sortColumns && sortColumns.length === 0) {
-            sortByArray = new Array(this.defaultSortBy); // when empty, use the default sort
+            sortByArray = new Array(this.defaultOptions.orderBy); // when empty, use the default sort
         }
         else {
             if (sortColumns) {
@@ -13429,7 +13455,7 @@ class ResizerService {
         // calculate bottom padding
         // if using pagination, we need to add the pagination height to this bottom padding
         let /** @type {?} */ bottomPadding = (gridOptions.autoResize && gridOptions.autoResize.bottomPadding) ? gridOptions.autoResize.bottomPadding : DATAGRID_BOTTOM_PADDING;
-        if (bottomPadding && gridOptions.enablePagination) {
+        if (bottomPadding && (gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
             bottomPadding += DATAGRID_PAGINATION_HEIGHT;
         }
         const /** @type {?} */ gridHeight = windowElm.height() || 0;
@@ -13624,7 +13650,11 @@ class ControlAndPluginService {
                 }
                 // we also want to resize the columns if the user decided to hide certain column(s)
                 if (grid && typeof grid.autosizeColumns === 'function') {
-                    grid.autosizeColumns();
+                    // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree)
+                    const /** @type {?} */ gridUid = grid.getUID();
+                    if (gridUid && jquery(`.${gridUid}`).length > 0) {
+                        grid.autosizeColumns();
+                    }
                 }
             });
         }
@@ -13912,9 +13942,9 @@ class SlickPaginationComponent {
     constructor(filterService, sortService) {
         this.filterService = filterService;
         this.sortService = sortService;
+        this._isFirstRender = true;
         this.dataFrom = 1;
         this.dataTo = 1;
-        this.itemsPerPage = 25;
         this.pageCount = 0;
         this.pageNumber = 1;
         this.totalItems = 0;
@@ -13927,8 +13957,9 @@ class SlickPaginationComponent {
      */
     set gridPaginationOptions(gridPaginationOptions) {
         this._gridPaginationOptions = gridPaginationOptions;
-        if (!gridPaginationOptions || !gridPaginationOptions.pagination || (gridPaginationOptions.pagination.totalItems !== this.totalItems)) {
+        if (this._isFirstRender || !gridPaginationOptions || !gridPaginationOptions.pagination || (gridPaginationOptions.pagination.totalItems !== this.totalItems)) {
             this.refreshPagination();
+            this._isFirstRender = false;
         }
     }
     /**
@@ -14022,6 +14053,10 @@ class SlickPaginationComponent {
             throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
         }
         if (this._gridPaginationOptions && this._gridPaginationOptions.pagination) {
+            // set the number of items per page if not already set
+            if (!this.itemsPerPage) {
+                this.itemsPerPage = +(backendApi['options'] && backendApi['options'].paginationOptions && backendApi['options'].paginationOptions.first) ? backendApi['options'].paginationOptions.first : this._gridPaginationOptions.pagination.pageSize;
+            }
             // if totalItems changed, we should always go back to the first page and recalculation the From-To indexes
             if (isPageNumberReset || this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
                 this.pageNumber = 1;
@@ -14031,7 +14066,6 @@ class SlickPaginationComponent {
             }
             // calculate and refresh the multiple properties of the pagination UI
             this.paginationPageSizes = this._gridPaginationOptions.pagination.pageSizes;
-            this.itemsPerPage = +this._gridPaginationOptions.pagination.pageSize;
             this.totalItems = this._gridPaginationOptions.pagination.totalItems;
             this.dataTo = this.itemsPerPage;
         }
@@ -39501,7 +39535,6 @@ const GlobalGridOptions = {
         showToggleFilterCommand: true
     },
     headerRowHeight: 35,
-    locale: 'en',
     multiColumnSort: true,
     pagination: {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
@@ -39531,8 +39564,9 @@ class AngularSlickgridComponent {
      * @param {?} resizer
      * @param {?} controlAndPluginService
      * @param {?} translate
+     * @param {?} forRootConfig
      */
-    constructor(filterService, sortService, gridExtraService, gridEventService, resizer, controlAndPluginService, translate) {
+    constructor(filterService, sortService, gridExtraService, gridEventService, resizer, controlAndPluginService, translate, forRootConfig) {
         this.filterService = filterService;
         this.sortService = sortService;
         this.gridExtraService = gridExtraService;
@@ -39540,6 +39574,7 @@ class AngularSlickgridComponent {
         this.resizer = resizer;
         this.controlAndPluginService = controlAndPluginService;
         this.translate = translate;
+        this.forRootConfig = forRootConfig;
         this.showPagination = false;
         this.dataviewChanged = new EventEmitter();
         this.gridChanged = new EventEmitter();
@@ -39599,8 +39634,8 @@ class AngularSlickgridComponent {
     ngAfterViewInit() {
         // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
         this._dataset = this._dataset || [];
-        this.createBackendApiInternalPostProcessCallback();
         this._gridOptions = this.mergeGridOptions();
+        this.createBackendApiInternalPostProcessCallback(this._gridOptions);
         this._dataView = new Slick.Data.DataView();
         this.controlAndPluginService.createPluginBeforeGridCreation(this.columnDefinitions, this._gridOptions);
         this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this._gridOptions);
@@ -39628,11 +39663,12 @@ class AngularSlickgridComponent {
     /**
      * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
      * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+     * @param {?} gridOptions
      * @return {?}
      */
-    createBackendApiInternalPostProcessCallback() {
-        if (this.gridOptions && (this.gridOptions.backendServiceApi || this.gridOptions.onBackendEventApi)) {
-            const /** @type {?} */ backendApi = this.gridOptions.backendServiceApi || this.gridOptions.onBackendEventApi;
+    createBackendApiInternalPostProcessCallback(gridOptions) {
+        if (gridOptions && (gridOptions.backendServiceApi || gridOptions.onBackendEventApi)) {
+            const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
             // internalPostProcess only works with a GraphQL Service, so make sure it is that type
             if (backendApi.service instanceof GraphqlService) {
                 backendApi.internalPostProcess = (processResult) => {
@@ -39641,8 +39677,7 @@ class AngularSlickgridComponent {
                         throw new Error(`Your GraphQL result is invalid and/or does not follow the required result structure. Please check the result and/or review structure to use in Angular-Slickgrid Wiki in the GraphQL section.`);
                     }
                     this._dataset = processResult.data[datasetName].nodes;
-                    this.gridOptions.pagination.totalItems = processResult.data[datasetName].totalCount;
-                    this.refreshGridData(this._dataset);
+                    this.refreshGridData(this._dataset, processResult.data[datasetName].totalCount);
                 };
             }
         }
@@ -39676,12 +39711,12 @@ class AngularSlickgridComponent {
             if (gridOptions.onBackendEventApi) {
                 console.warn(`"onBackendEventApi" has been DEPRECATED, please consider using "backendServiceApi" in the short term since "onBackendEventApi" will be removed in future versions. You can take look at the Angular-Slickgrid Wikis for OData/GraphQL Services implementation`);
             }
-            if (gridOptions.backendServiceApi && gridOptions.backendServiceApi.service && gridOptions.backendServiceApi.options) {
-                gridOptions.backendServiceApi.service.initOptions(gridOptions.backendServiceApi.options);
+            if (gridOptions.backendServiceApi && gridOptions.backendServiceApi.service) {
+                gridOptions.backendServiceApi.service.initOptions(gridOptions.backendServiceApi.options || {}, gridOptions.pagination);
             }
             const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
             const /** @type {?} */ serviceOptions = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : null;
-            const /** @type {?} */ isExecuteCommandOnInit = (!serviceOptions) ? false : (serviceOptions['executeProcessCommandOnInit'] || false);
+            const /** @type {?} */ isExecuteCommandOnInit = (!serviceOptions) ? false : (serviceOptions['executeProcessCommandOnInit'] || true);
             if (backendApi.onInit || isExecuteCommandOnInit) {
                 const /** @type {?} */ query = backendApi.service.buildQuery();
                 const /** @type {?} */ observableOrPromise = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
@@ -39745,25 +39780,32 @@ class AngularSlickgridComponent {
     mergeGridOptions() {
         this.gridOptions.gridId = this.gridId;
         this.gridOptions.gridContainerId = `slickGridContainer-${this.gridId}`;
-        if (this.gridOptions.enableFiltering) {
+        if (this.gridOptions.enableFiltering || this.forRootConfig.enableFiltering) {
             this.gridOptions.showHeaderRow = true;
         }
         // use jquery extend to deep merge and avoid immutable properties changed in GlobalGridOptions after route change
-        return jquery.extend(true, {}, GlobalGridOptions, this.gridOptions);
+        return jquery.extend(true, {}, GlobalGridOptions, this.forRootConfig, this.gridOptions);
     }
     /**
      * When dataset changes, we need to refresh the entire grid UI & possibly resize it as well
      * @param {?} dataset
+     * @param {?=} totalCount
      * @return {?}
      */
-    refreshGridData(dataset) {
+    refreshGridData(dataset, totalCount) {
         if (dataset && this.grid) {
             this._dataView.setItems(dataset);
             // this.grid.setData(dataset);
             this.grid.invalidate();
             this.grid.render();
-            if (this._gridOptions.enablePagination) {
+            if (this._gridOptions.enablePagination || this._gridOptions.backendServiceApi) {
                 this.showPagination = true;
+                // before merging the grid options, make sure that it has the totalItems count
+                // once we have that, we can merge and pass all these options to the pagination component
+                if (!this.gridOptions.pagination) {
+                    this.gridOptions.pagination = (this._gridOptions.pagination) ? this._gridOptions.pagination : null;
+                }
+                this.gridOptions.pagination.totalItems = totalCount || dataset.length;
                 this.gridPaginationOptions = this.mergeGridOptions();
             }
             if (this.grid && this._gridOptions.enableAutoResize) {
@@ -39820,6 +39862,7 @@ AngularSlickgridComponent.ctorParameters = () => [
     { type: ResizerService, },
     { type: ControlAndPluginService, },
     { type: TranslateService, },
+    { type: undefined, decorators: [{ type: Inject, args: ['config',] },] },
 ];
 AngularSlickgridComponent.propDecorators = {
     'dataviewChanged': [{ type: Output },],
@@ -39838,6 +39881,27 @@ AngularSlickgridComponent.propDecorators = {
 };
 
 class AngularSlickgridModule {
+    /**
+     * @param {?=} config
+     * @return {?}
+     */
+    static forRoot(config = {}) {
+        return {
+            ngModule: AngularSlickgridModule,
+            providers: [
+                { provide: 'config', useValue: config },
+                ControlAndPluginService,
+                FilterService,
+                GraphqlService,
+                GridEventService,
+                GridExtraService,
+                GridOdataService,
+                OdataService,
+                ResizerService,
+                SortService
+            ]
+        };
+    }
 }
 AngularSlickgridModule.decorators = [
     { type: NgModule, args: [{
@@ -39852,16 +39916,6 @@ AngularSlickgridModule.decorators = [
                 exports: [
                     AngularSlickgridComponent,
                     SlickPaginationComponent
-                ],
-                providers: [
-                    ControlAndPluginService,
-                    GraphqlService,
-                    GridEventService,
-                    GridExtraService,
-                    OdataService,
-                    FilterService,
-                    SortService,
-                    ResizerService
                 ]
             },] },
 ];

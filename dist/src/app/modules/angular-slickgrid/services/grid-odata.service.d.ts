@@ -1,14 +1,15 @@
 import './global-utilities';
 import { BackendService, FilterChangedArgs, OdataOption, PaginationChangedArgs, SortChangedArgs } from './../models';
 import { OdataService } from './odata.service';
+import { Pagination } from './../models/pagination.interface';
 export declare class GridOdataService implements BackendService {
     private odataService;
     options: OdataOption;
-    defaultSortBy: string;
-    minUserInactivityOnFilter: number;
+    pagination: Pagination;
+    defaultOptions: OdataOption;
     constructor(odataService: OdataService);
     buildQuery(): string;
-    initOptions(options: OdataOption): void;
+    initOptions(options: OdataOption, pagination?: Pagination): void;
     updateOptions(serviceOptions?: OdataOption): void;
     removeColumnFilter(fieldName: string): void;
     resetPaginationOptions(): void;

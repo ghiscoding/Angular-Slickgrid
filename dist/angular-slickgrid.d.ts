@@ -38,6 +38,7 @@ export { percentCompleteFormatter as ɵbf } from './src/app/modules/angular-slic
 export { progressBarFormatter as ɵbh } from './src/app/modules/angular-slickgrid/formatters/progressBarFormatter';
 export { translateFormatter as ɵbi } from './src/app/modules/angular-slickgrid/formatters/translateFormatter';
 export { yesNoFormatter as ɵbj } from './src/app/modules/angular-slickgrid/formatters/yesNoFormatter';
+export { GridOption as ɵbq } from './src/app/modules/angular-slickgrid/models';
 export { dateIsoSorter as ɵbl } from './src/app/modules/angular-slickgrid/sorters/dateIsoSorter';
 export { dateSorter as ɵbk } from './src/app/modules/angular-slickgrid/sorters/dateSorter';
 export { dateUsShortSorter as ɵbn } from './src/app/modules/angular-slickgrid/sorters/dateUsShortSorter';

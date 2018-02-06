@@ -6,11 +6,12 @@ export declare class SlickPaginationComponent implements AfterViewInit, OnInit {
     private filterService;
     private sortService;
     private _gridPaginationOptions;
+    private _isFirstRender;
     gridPaginationOptions: GridOption;
     grid: any;
     dataFrom: number;
     dataTo: number;
-    itemsPerPage: number;
+    itemsPerPage: any;
     pageCount: number;
     pageNumber: number;
     totalItems: number;
