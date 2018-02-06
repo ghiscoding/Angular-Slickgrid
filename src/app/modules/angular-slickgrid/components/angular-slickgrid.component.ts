@@ -274,7 +274,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   mergeGridOptions(): GridOption {
     this.gridOptions.gridId = this.gridId;
     this.gridOptions.gridContainerId = `slickGridContainer-${this.gridId}`;
-    if (this.gridOptions.enableFiltering) {
+    if (this.gridOptions.enableFiltering || this.forRootConfig.enableFiltering) {
       this.gridOptions.showHeaderRow = true;
     }
     // use jquery extend to deep merge and avoid immutable properties changed in GlobalGridOptions after route change
