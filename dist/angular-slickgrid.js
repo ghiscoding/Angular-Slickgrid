@@ -39805,7 +39805,9 @@ class AngularSlickgridComponent {
                 if (!this.gridOptions.pagination) {
                     this.gridOptions.pagination = (this._gridOptions.pagination) ? this._gridOptions.pagination : null;
                 }
-                this.gridOptions.pagination.totalItems = totalCount || dataset.length;
+                if (this.gridOptions.pagination && totalCount) {
+                    this.gridOptions.pagination.totalItems = totalCount;
+                }
                 this.gridPaginationOptions = this.mergeGridOptions();
             }
             if (this.grid && this._gridOptions.enableAutoResize) {
