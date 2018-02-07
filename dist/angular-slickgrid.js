@@ -11581,7 +11581,7 @@ const translateFormatter = (row, cell, value, columnDef, dataContext) => {
         throw new Error(`The translate formatter requires the ngx-translate "TranslateService" to be provided as a column params.
     For example: this.columnDefinitions = [{ id: title, field: title, formatter: Formatters.translate, params: { i18n: this.translateService }`);
     }
-    return params.i18n.instant(value);
+    return params.i18n.instant(value || ' ');
 };
 
 const yesNoFormatter = (row, cell, value, columnDef, dataContext) => value ? 'Yes' : 'No';
@@ -11841,7 +11841,7 @@ class FilterService {
         this.subscriber = new Slick.Event();
         this.emitFilterChangedBy('local');
         dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
-        dataView.setFilter(this.customFilter);
+        dataView.setFilter(this.customFilter.bind(this, dataView));
         this.subscriber.subscribe((e, args) => {
             const /** @type {?} */ columnId = args.columnId;
             if (columnId != null) {
@@ -11853,11 +11853,12 @@ class FilterService {
         });
     }
     /**
+     * @param {?} dataView
      * @param {?} item
      * @param {?} args
      * @return {?}
      */
-    customFilter(item, args) {
+    customFilter(dataView, item, args) {
         for (const /** @type {?} */ columnId of Object.keys(args.columnFilters)) {
             const /** @type {?} */ columnFilter = args.columnFilters[columnId];
             const /** @type {?} */ columnIndex = args.grid.getColumnIndex(columnId);
@@ -11879,6 +11880,12 @@ class FilterService {
             if (searchTerm === '') {
                 return true;
             }
+            // when using localization (i18n), we should use the formatter output to search as the new cell value
+            if (columnDef && columnDef.params && columnDef.params.useFormatterOuputToFilter) {
+                const /** @type {?} */ rowIndex = (dataView && typeof dataView.getIdxById === 'function') ? dataView.getIdxById(item.id) : 0;
+                cellValue = columnDef.formatter(rowIndex, columnIndex, cellValue, columnDef, item);
+            }
+            // make sure cell value is always a string
             if (typeof cellValue === 'number') {
                 cellValue = cellValue.toString();
             }

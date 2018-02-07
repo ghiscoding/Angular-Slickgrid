@@ -9774,7 +9774,7 @@ var translateFormatter = function (row, cell, value, columnDef, dataContext) {
     if (!params.i18n || !(params.i18n instanceof core.TranslateService)) {
         throw new Error("The translate formatter requires the ngx-translate \"TranslateService\" to be provided as a column params.\n    For example: this.columnDefinitions = [{ id: title, field: title, formatter: Formatters.translate, params: { i18n: this.translateService }");
     }
-    return params.i18n.instant(value);
+    return params.i18n.instant(value || ' ');
 };
 var yesNoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? 'Yes' : 'No'; };
 // import { Group, GroupTotals } from '../core'
@@ -10044,7 +10044,7 @@ var FilterService = /** @class */ (function () {
         this.subscriber = new Slick.Event();
         this.emitFilterChangedBy('local');
         dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
-        dataView.setFilter(this.customFilter);
+        dataView.setFilter(this.customFilter.bind(this, dataView));
         this.subscriber.subscribe(function (e, args) {
             var /** @type {?} */ columnId = args.columnId;
             if (columnId != null) {
@@ -10056,11 +10056,12 @@ var FilterService = /** @class */ (function () {
         });
     };
     /**
+     * @param {?} dataView
      * @param {?} item
      * @param {?} args
      * @return {?}
      */
-    FilterService.prototype.customFilter = function (item, args) {
+    FilterService.prototype.customFilter = function (dataView, item, args) {
         for (var _g = 0, _h = Object.keys(args.columnFilters); _g < _h.length; _g++) {
             var columnId = _h[_g];
             var /** @type {?} */ columnFilter = args.columnFilters[columnId];
@@ -10083,6 +10084,12 @@ var FilterService = /** @class */ (function () {
             if (searchTerm === '') {
                 return true;
             }
+            // when using localization (i18n), we should use the formatter output to search as the new cell value
+            if (columnDef && columnDef.params && columnDef.params.useFormatterOuputToFilter) {
+                var /** @type {?} */ rowIndex = (dataView && typeof dataView.getIdxById === 'function') ? dataView.getIdxById(item.id) : 0;
+                cellValue = columnDef.formatter(rowIndex, columnIndex, cellValue, columnDef, item);
+            }
+            // make sure cell value is always a string
             if (typeof cellValue === 'number') {
                 cellValue = cellValue.toString();
             }

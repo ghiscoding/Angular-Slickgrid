@@ -30,7 +30,7 @@ export declare class FilterService {
      * @param dataView
      */
     attachLocalOnFilter(grid: any, options: GridOption, dataView: any): void;
-    customFilter(item: any, args: any): boolean;
+    customFilter(dataView: any, item: any, args: any): boolean;
     destroy(): void;
     /**
      * Destroy the filters, since it's a singleton, we don't want to affect other grids with same columns
