@@ -26,7 +26,7 @@ export class GridOdataService implements BackendService {
   }
 
   initOptions(options: OdataOption, pagination?: Pagination): void {
-    this.odataService.options = { ...this.defaultOptions, ...options, top: options.top || pagination.pageSize || this.defaultOptions.top };
+    this.odataService.options = { ...this.defaultOptions, ...options, top: options.top || (pagination ? pagination.pageSize : null) || this.defaultOptions.top };
     this.options = options;
     this.pagination = pagination;
   }
@@ -57,7 +57,7 @@ export class GridOdataService implements BackendService {
    */
   onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
     let searchBy = '';
-    const searchByArray = [];
+    const searchByArray: string[] = [];
     const serviceOptions: GridOption = args.grid.getOptions();
     const backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
 

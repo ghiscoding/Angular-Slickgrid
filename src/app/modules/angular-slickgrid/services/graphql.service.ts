@@ -24,14 +24,15 @@ import { GridOption } from '../models/gridOption.interface';
 
 let timer: any;
 const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
+const ITEMS_PER_PAGE = 25;
 
 @Injectable()
 export class GraphqlService implements BackendService {
   options: GraphqlServiceOption;
-  pagination: Pagination;
+  pagination: Pagination | undefined;
   defaultOrderBy: GraphqlSortingOption = { field: 'id', direction: SortDirection.ASC };
   defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption = {
-    first: 25,
+    first: ITEMS_PER_PAGE,
     offset: 0
   };
 
@@ -81,11 +82,11 @@ export class GraphqlService implements BackendService {
     // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
     const datasetFilters: GraphqlDatasetFilter = {
       ...this.options.paginationOptions,
-      first: (this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : this.pagination.pageSize || this.defaultPaginationOptions.first
+      first: (this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : (this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null || this.defaultPaginationOptions.first
     };
 
     if (!this.options.isWithCursor) {
-      datasetFilters.offset = (this.options.paginationOptions && this.options.paginationOptions['offset']) ? this.options.paginationOptions['offset'] : this.defaultPaginationOptions['offset'];
+      datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +this.options.paginationOptions['offset'] : 0);
     }
 
     if (this.options.sortingOptions) {
@@ -146,11 +147,11 @@ export class GraphqlService implements BackendService {
    * @return Pagination Options
    */
   getInitPaginationOptions(): GraphqlDatasetFilter {
-    return (this.options.isWithCursor) ? { first: this.pagination.pageSize } : { first: this.pagination.pageSize, offset: 0 };
+    return (this.options.isWithCursor) ? { first: (this.pagination ? this.pagination.pageSize : ITEMS_PER_PAGE) } : { first: (this.pagination ? this.pagination.pageSize : ITEMS_PER_PAGE), offset: 0 };
   }
 
-  getDatasetName() {
-    return this.options.datasetName;
+  getDatasetName(): string {
+    return this.options.datasetName || '';
   }
 
   /*
@@ -215,7 +216,7 @@ export class GraphqlService implements BackendService {
             throw new Error(`GraphQL filter term property must be provided type "string", if you use filter with options then make sure your ids are also string. For example: filter: {type: FormElementType.select, selectOptions: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
           }
 
-          const searchTerms = columnFilter.listTerm || [];
+          const searchTerms = columnFilter ? columnFilter.listTerm : null || [];
           fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
           const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
           let operator = columnFilter.operator || ((matches) ? matches[1] : '');

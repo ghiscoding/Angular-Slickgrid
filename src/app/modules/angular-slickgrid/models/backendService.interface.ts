@@ -12,6 +12,6 @@ export interface BackendService {
   resetPaginationOptions: () => void;
   updateOptions: (serviceOptions?: BackendServiceOption) => void;
   onFilterChanged: (event: Event, args: FilterChangedArgs) => Promise<string>;
-  onPaginationChanged: (event: Event, args: PaginationChangedArgs) => string;
+  onPaginationChanged: (event: Event | undefined, args: PaginationChangedArgs) => string;
   onSortChanged: (event: Event, args: SortChangedArgs) => string;
 }

@@ -353,7 +353,7 @@ export class ControlAndPluginService {
    * Reset all the Grid Menu options which have text to translate
    * @param grid menu object
    */
-  private resetGridMenuTranslations(gridMenu: GridMenu) {
+  private resetGridMenuTranslations(gridMenu: GridMenu): GridMenu {
     // we will reset the custom items array since the commands title have to be translated too (no worries, we will re-create it later)
     gridMenu.customItems = [];
     delete gridMenu.customTitle;
@@ -391,7 +391,9 @@ export class ControlAndPluginService {
     this.gridMenuControl.destroy();
 
     // reset all Grid Menu options that have translation text & then re-create the Grid Menu and also the custom items array
-    this._gridOptions.gridMenu = this.resetGridMenuTranslations(this._gridOptions.gridMenu);
+    if (this._gridOptions && this._gridOptions.gridMenu) {
+      this._gridOptions.gridMenu = this.resetGridMenuTranslations(this._gridOptions.gridMenu);
+    }
     this.createGridMenu(this._grid, this.visibleColumns, this._gridOptions);
   }
 
