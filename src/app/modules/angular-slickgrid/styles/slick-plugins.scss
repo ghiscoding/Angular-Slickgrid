@@ -178,3 +178,27 @@ label {
 .slickgrid-container input[type=checkbox]:checked + label:before {
   opacity: 1; /* checked icon */
 }
+
+// ----------------------------------------------
+// Multi-Select Filter
+// ----------------------------------------------
+.ms-choice > span {
+  font-size: 12px;
+  font-family: "Helvetica Neue", Helvetica, Arial
+}
+.ms-filter.search-filter {
+  width: 100% !important;
+}
+.ms-drop {
+  max-width: 250px;
+  label {
+    input[type="checkbox"] {
+      margin: 2px;
+    }
+    span {
+      margin-left: 2px;
+      position: relative;
+      top: 1px;
+    }
+  }
+}

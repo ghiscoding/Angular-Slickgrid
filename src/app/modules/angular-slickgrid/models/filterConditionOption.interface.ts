@@ -4,7 +4,8 @@ export interface FilterConditionOption {
   operator: string;
   cellValue: any;
   fieldType: FieldType;
-  searchTerm: string;
+  listTerm?: string[] | number[];
+  searchTerm?: string;
   filterSearchType?: FieldType;
   cellValueLastChar?: string;
 }

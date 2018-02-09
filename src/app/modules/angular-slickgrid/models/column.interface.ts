@@ -1,3 +1,4 @@
+import { ColumnFilter } from './columnFilter.interface';
 import { Editor } from './editor.interface';
 import { FieldType } from './fieldType';
 import { Formatter } from './formatter.interface';
@@ -14,7 +15,7 @@ export interface Column {
   defaultSortAsc?: boolean;
   editor?: any;
   field: string;
-  filter?: any;
+  filter?: ColumnFilter;
   filterable?: boolean;
   filterSearchType?: FieldType;
   filterTemplate?: any;

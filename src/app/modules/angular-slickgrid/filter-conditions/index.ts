@@ -6,6 +6,7 @@ import { dateUsFilterCondition } from './dateUsFilterCondition';
 import { dateUsShortFilterCondition } from './dateUsShortFilterCondition';
 import { dateUtcFilterCondition } from './dateUtcFilterCondition';
 import { executeMappedCondition } from './executeMappedCondition';
+import { collectionSearchFilterCondition } from './collectionSearchFilterCondition';
 import { numberFilterCondition } from './numberFilterCondition';
 import { stringFilterCondition } from './stringFilterCondition';
 import { testFilterCondition } from './filterUtilities';
@@ -18,6 +19,7 @@ export const FilterConditions = {
   dateUtcFilter: dateUtcFilterCondition,
   dateUsFilter: dateUsFilterCondition,
   dateUsShortFilter: dateUsShortFilterCondition,
+  collectionSearchFilter: collectionSearchFilterCondition,
   numberFilter: numberFilterCondition,
   stringFilter: stringFilterCondition,
   testFilter: testFilterCondition

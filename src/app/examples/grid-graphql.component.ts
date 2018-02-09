@@ -54,7 +54,14 @@ export class GridGraphqlComponent implements OnInit {
           selectOptions: [ { value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' } ]
         }
       },
-      { id: 'company', name: 'Company', field: 'company', headerKey: 'COMPANY', filterable: true },
+      { id: 'company', name: 'Company', field: 'company', headerKey: 'COMPANY',
+        filterable: true,
+        filter: {
+          // listTerm: [], // default selection
+          type: FormElementType.multiSelect,
+          selectOptions: [{ value: 'ABC', label: 'Company ABC'}, { value: 'XYZ', label: 'Company XYZ'}]
+        }
+      },
       { id: 'billing.address.street', name: 'Billing Address Street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', filterable: true, sortable: true },
       { id: 'billing.address.zip', name: 'Billing Address Zip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', filterable: true, sortable: true },
     ];
@@ -86,6 +93,7 @@ export class GridGraphqlComponent implements OnInit {
   }
 
   displaySpinner(isProcessing) {
+    console.log('processing', isProcessing);
     this.processing = isProcessing;
     this.status = (isProcessing)
       ? { text: 'processing...', class: 'alert alert-danger' }
@@ -149,6 +157,7 @@ export class GridGraphqlComponent implements OnInit {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         this.graphqlQuery = this.graphqlService.buildQuery();
+        console.log(this.graphqlQuery);
         resolve(mockedResult);
       }, 500);
     });

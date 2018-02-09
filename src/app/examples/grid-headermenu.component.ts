@@ -101,6 +101,7 @@ export class GridHeaderMenuComponent implements OnInit {
               if (col.columnId !== args.column.id) {
                 return { sortCol: this.columnDefinitions[this.gridObj.getColumnIndex(col.columnId)], sortAsc: col.sortAsc };
               }
+              return col;
             });
             // add to the column array, the column sorted by the header menu
             const isSortedAsc = (args.command === 'sort-asc');

@@ -4,6 +4,7 @@ import { Column, FieldType, Formatter, Formatters, FormElementType, GridOption }
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
+const NB_ITEMS = 500;
 
 @Component({
   templateUrl: './grid-clientside.component.html'
@@ -33,10 +34,23 @@ export class GridClientSideComponent implements OnInit {
   dataset: any[];
 
   ngOnInit(): void {
+    // prepare a multi-select array to filter with
+    const multiSelectFilterArray = [];
+    for (let i = 0; i < NB_ITEMS; i++) {
+      multiSelectFilterArray.push({ value: i, label: i});
+    }
+
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', filterable: true, sortable: true, type: FieldType.string },
       { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, type: FieldType.string },
-      { id: 'duration', name: 'Duration (days)', field: 'duration', filterable: true, sortable: true, type: FieldType.number },
+      { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number,
+        filterable: true,
+        filter: {
+          listTerm: [], // default selection
+          type: FormElementType.multiSelect,
+          selectOptions: multiSelectFilterArray
+        }
+      },
       { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, filterable: true, sortable: true },
       { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, filterable: true, sortable: true, type: FieldType.date },
       { id: 'usDateShort', name: 'US Date Short', field: 'usDateShort', filterable: true, sortable: true, type: FieldType.dateUsShort },
@@ -63,7 +77,7 @@ export class GridClientSideComponent implements OnInit {
 
     // mock a dataset
     this.dataset = [];
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < NB_ITEMS; i++) {
       const randomDuration = Math.round(Math.random() * 100);
       const randomYear = randomBetween(2000, 2025);
       const randomYearShort = randomBetween(10, 25);

@@ -16,6 +16,7 @@ export const testFilterCondition = (operator: string, value1: any, value2: any):
     case '=':
     case '==':
     case 'EQ': return (value1 === value2);
+    case 'IN': return (value2.includes(value1));
   }
   return true;
 };

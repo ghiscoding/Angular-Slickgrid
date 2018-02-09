@@ -16,6 +16,8 @@ import { TranslateService } from '@ngx-translate/core';
 import $ from 'jquery';
 
 // using external js modules in Angular
+declare var jquery: any;
+declare var $: any;
 declare var Slick: any;
 
 @Injectable()
@@ -169,7 +171,8 @@ export class FilterService {
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
 
       let cellValue = item[columnDef.queryField || columnDef.field];
-      let fieldSearchValue = columnFilter.searchTerm;
+      const listTerm = (columnFilter && columnFilter.listTerm) ? columnFilter.listTerm : null;
+      let fieldSearchValue = (columnFilter && columnFilter.searchTerm) ? columnFilter.searchTerm : undefined;
       if (typeof fieldSearchValue === 'undefined') {
         fieldSearchValue = '';
       }
@@ -181,7 +184,7 @@ export class FilterService {
       const lastValueChar = (!!matches) ? matches[3] : '';
 
       // no need to query if search value is empty
-      if (searchTerm === '') {
+      if (searchTerm === '' && !listTerm) {
         return true;
       }
 
@@ -198,6 +201,7 @@ export class FilterService {
 
       const conditionOptions = {
         fieldType,
+        listTerm,
         searchTerm,
         cellValue,
         operator,
@@ -234,85 +238,117 @@ export class FilterService {
     }
   }
 
-  callbackSearchEvent(e: any, args: any) {
-    if (e.target.value === '' || e.target.value === null) {
+  callbackSearchEvent(e: Event | undefined, args: { columnDef: Column, operator?: string, listTerm?: string[] | number[] }) {
+    const targetValue = (e && e.target) ? (e.target as HTMLInputElement).value : undefined;
+    const listTerm = (args && args.listTerm && Array.isArray(args.listTerm)) ? args.listTerm : [];
+    const columnId = (args && args.columnDef) ? args.columnDef.id || '' : '';
+
+    if (!targetValue && listTerm.length === 0) {
       // delete the property from the columnFilters when it becomes empty
       // without doing this, it would leave an incorrect state of the previous column filters when filtering on another column
-      delete this._columnFilters[args.columnDef.id];
+      delete this._columnFilters[columnId];
     } else {
-      this._columnFilters[args.columnDef.id] = {
-        columnId: args.columnDef.id,
-        columnDef: args.columnDef,
-        searchTerm: e.target.value,
+      const colId = '' + columnId as string;
+      this._columnFilters[colId] = {
+        columnId: colId,
+        columnDef: args.columnDef || null,
+        listTerm: args.listTerm || undefined,
+        searchTerm: ((e && e.target) ? (e.target as HTMLInputElement).value : null),
         operator: args.operator || null
       };
     }
 
     this.triggerEvent(this.subscriber, {
-      columnId: args.columnDef.id,
-      columnDef: args.columnDef,
+      columnId,
+      columnDef: args.columnDef || null,
       columnFilters: this._columnFilters,
-      searchTerm: e.target.value,
+      listTerm: args.listTerm || undefined,
+      searchTerm: ((e && e.target) ? (e.target as HTMLInputElement).value : null),
       serviceOptions: this._onFilterChangedOptions,
       grid: this._grid
     }, e);
   }
 
-  addFilterTemplateToHeaderRow(args: any) {
-    for (let i = 0; i < this._columnDefinitions.length; i++) {
-      if (this._columnDefinitions[i].id !== 'selector' && this._columnDefinitions[i].filterable) {
-        let filterTemplate = '';
-        let elm = null;
-        let header;
-        const columnDef = this._columnDefinitions[i];
-        const columnId = columnDef.id;
-        const listTerm = (columnDef.filter && columnDef.filter.listTerm) ? columnDef.filter.listTerm : null;
-        let searchTerm = (columnDef.filter && columnDef.filter.searchTerm) ? columnDef.filter.searchTerm : '';
+  addFilterTemplateToHeaderRow(args: { column: Column; grid: any; node: any}) {
+    const columnDef = args.column;
+    const columnId = columnDef.id || '';
 
-        // keep the filter in a columnFilters for later reference
-        this.keepColumnFilters(searchTerm, listTerm, columnDef);
+    if (columnDef && columnId !== 'selector' && columnDef.filterable) {
+      let filterTemplate = '';
+      let elm = null;
+      let header;
+      const listTerm: string[] | number[] = (columnDef.filter && columnDef.filter.listTerm) ? columnDef.filter.listTerm : null;
+      let searchTerm = (columnDef.filter && columnDef.filter.searchTerm) ? columnDef.filter.searchTerm : '';
 
-        if (!columnDef.filter) {
-          searchTerm = (columnDef.filter && columnDef.filter.searchTerm) ? columnDef.filter.searchTerm : null;
-          filterTemplate = FilterTemplates.input(searchTerm, columnDef);
-        } else {
-          // custom Select template
-          if (columnDef.filter.type === FormElementType.select) {
-            filterTemplate = FilterTemplates.select(searchTerm, columnDef, this.translate);
-          }
+      // keep the filter in a columnFilters for later reference
+      this.keepColumnFilters(searchTerm, listTerm, columnDef);
+
+      if (!columnDef.filter) {
+        searchTerm = (columnDef.filter && columnDef.filter.searchTerm) ? columnDef.filter.searchTerm : null;
+        filterTemplate = FilterTemplates.input(searchTerm, columnDef);
+      } else {
+        // custom Select template
+        if (columnDef.filter.type === FormElementType.select) {
+          filterTemplate = FilterTemplates.select(searchTerm, columnDef, this.translate);
+        } else if (columnDef.filter.type === FormElementType.multiSelect) {
+          filterTemplate = FilterTemplates.multiSelect(listTerm, columnDef, this.translate);
         }
+      }
 
-        // when hiding/showing (Column Picker or Grid Menu), it will come re-create yet again the filters
-        // because of that we need to first get searchTerm from the columnFilters (that is what the user input last)
-        // if nothing is found, we can then use the optional searchTerm passed to the Grid Option (that is couple lines before)
-        const inputSearchTerm = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerm : searchTerm || null;
+      // when hiding/showing (Column Picker or Grid Menu), it will come re-create yet again the filters
+      // because of that we need to first get searchTerm from the columnFilters (that is what the user input last)
+      // if nothing is found, we can then use the optional searchTerm passed to the Grid Option (that is couple lines before)
+      const inputSearchTerm = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerm : searchTerm || null;
 
-        // create the DOM Element
-        header = this._grid.getHeaderRowColumn(columnDef.id);
-        $(header).empty();
+      // create the DOM Element
+      header = this._grid.getHeaderRowColumn(columnDef.id);
+      $(header).empty();
 
-        elm = $(filterTemplate);
-        elm.attr('id', `filter-${columnDef.id}`);
-        elm.data('columnId', columnDef.id);
-        elm.val(inputSearchTerm);
-        if (elm && typeof elm.appendTo === 'function') {
-          elm.appendTo(header);
-        }
+      elm = $(filterTemplate);
+      elm.attr('id', `filter-${columnDef.id}`);
+      elm.data('columnId', columnDef.id);
+      elm.val(inputSearchTerm);
+      if (elm && typeof elm.appendTo === 'function') {
+        elm.appendTo(header);
+      }
 
-        // depending on the DOM Element type, we will watch the correct event
-        const filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FormElementType.input;
-        switch (filterType) {
-          case FormElementType.select:
-            elm.change((e: any) => this.callbackSearchEvent(e, { columnDef, operator: 'EQ' }));
-            break;
-          case FormElementType.multiSelect:
-            elm.change((e: any) => this.callbackSearchEvent(e, { columnDef, operator: 'IN' }));
-            break;
-          case FormElementType.input:
-          default:
-            elm.keyup((e: any) => this.callbackSearchEvent(e, { columnDef }));
-            break;
-        }
+      // depending on the DOM Element type, we will watch the correct event
+      const filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FormElementType.input;
+      switch (filterType) {
+        case FormElementType.select:
+          elm.change((e: any) => this.callbackSearchEvent(e, { columnDef, operator: 'EQ' }));
+          break;
+        case FormElementType.multiSelect:
+          FilterTemplates.multiSelectPostCreation(columnDef, listTerm, this.callbackSearchEvent.bind(this));
+          /*
+          $('select.ms-filter').each((index, currentElm) => {
+            const elmMultiSelect = $(currentElm).multipleSelect({
+              container: 'body',
+              minimumCountSelected: 2,
+              countSelected: '# de % sélectionné',
+              allSelected: `Tout sélectionnés`,
+              selectAllText: `Sélectionner tout`,
+              onClose: () => {
+                const selectedItems = elmMultiSelect.multipleSelect('getSelects');
+                this.callbackSearchEvent(undefined, { columnDef, operator: 'IN', listTerm: selectedItems });
+              }
+            });
+
+            // run a query if user has some default search terms
+            if (listTerm && Array.isArray(listTerm)) {
+              for (let k = 0, ln = listTerm.length; k < ln; k++) {
+                listTerm[k] = (listTerm[k] || '') + ''; // make sure all search terms are strings
+              }
+              elmMultiSelect.multipleSelect('setSelects', listTerm);
+              this.callbackSearchEvent(undefined, { columnDef, operator: 'IN', listTerm });
+            }
+          });
+          */
+          break;
+        case FormElementType.input:
+        default:
+          elm.keyup((e: any) => this.callbackSearchEvent(e, { columnDef }));
+          break;
       }
     }
   }
@@ -326,7 +362,7 @@ export class FilterService {
     this.subscriber.subscribe(() => this.onFilterChanged.emit(`onFilterChanged by ${sender}`));
   }
 
-  private keepColumnFilters(searchTerm: string, listTerm: any, columnDef: any) {
+  private keepColumnFilters(searchTerm: string | number, listTerm: any, columnDef: any) {
     if (searchTerm) {
       this._columnFilters[columnDef.id] = {
         columnId: columnDef.id,

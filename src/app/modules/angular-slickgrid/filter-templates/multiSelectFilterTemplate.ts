@@ -1,7 +1,7 @@
 import { Column, Filter } from './../models';
 import { TranslateService } from '@ngx-translate/core';
 
-export const selectFilterTemplate: Filter = (searchTerm: string | number, columnDef: Column, i18n?: TranslateService) => {
+export const multiSelectFilterTemplate: Filter = (searchTerms: string[] | number[], columnDef: Column, i18n?: TranslateService) => {
   if (!columnDef.filter.selectOptions) {
     throw new Error(`SelectOptions with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')`);
   }
@@ -17,5 +17,5 @@ export const selectFilterTemplate: Filter = (searchTerm: string | number, column
     const textLabel = ((option.labelKey || columnDef.filter.enableTranslateLabel) && i18n && typeof i18n.instant === 'function') ? i18n.instant(labelKey || ' ') : labelKey;
     options += `<option value="${option[valueName]}">${textLabel}</option>`;
   });
-  return `<select class="form-control search-filter">${options}</select>`;
+  return `<select class="ms-filter search-filter" multiple="multiple">${options}</select>`;
 };
