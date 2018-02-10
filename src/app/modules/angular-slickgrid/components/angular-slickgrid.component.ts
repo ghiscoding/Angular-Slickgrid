@@ -31,11 +31,11 @@ import { GridExtraService } from './../services/gridExtra.service';
 import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
 import { TranslateService } from '@ngx-translate/core';
-
 import $ from 'jquery';
 
 // using external js modules in Angular
 declare var Slick: any;
+declare var $: any;
 
 @Injectable()
 @Component({

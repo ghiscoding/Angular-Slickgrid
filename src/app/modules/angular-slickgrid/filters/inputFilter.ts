@@ -3,6 +3,9 @@ import { FilterCallback } from './../models/filterCallback.interface';
 import { Column, Filter } from './../models';
 import $ from 'jquery';
 
+// using external js modules in Angular
+declare var $: any;
+
 export class InputFilter implements Filter {
   private $filterElm: any;
   grid: any;

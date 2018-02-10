@@ -21,6 +21,7 @@ import { castToPromise } from './../services/utilities';
 
 // using external js modules in Angular
 declare var Slick: any;
+declare var $: any;
 
 @Injectable()
 export class ControlAndPluginService {

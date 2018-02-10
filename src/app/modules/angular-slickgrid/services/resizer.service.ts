@@ -1,5 +1,6 @@
 import { GridOption } from './../models';
 import $ from 'jquery';
+declare var $: any;
 
 // global constants, height/width are in pixels
 const DATAGRID_MIN_HEIGHT = 180;

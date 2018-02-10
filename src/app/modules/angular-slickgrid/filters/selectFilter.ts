@@ -4,6 +4,9 @@ import { Column, Filter } from './../models';
 import { TranslateService } from '@ngx-translate/core';
 import $ from 'jquery';
 
+// using external js modules in Angular
+declare var $: any;
+
 export class SelectFilter implements Filter {
   $filterElm: any;
   grid: any;
