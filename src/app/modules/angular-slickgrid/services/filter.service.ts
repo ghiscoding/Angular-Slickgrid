@@ -1,7 +1,9 @@
+import { Filter } from './../models/filter.interface';
+import { FilterArguments } from './../models/filterArguments.interface';
 import { EventEmitter, Injectable } from '@angular/core';
 import { castToPromise } from './utilities';
 import { FilterConditions } from './../filter-conditions';
-import { FilterTemplates } from './../filter-templates';
+import { Filters } from './../filters';
 import {
   BackendServiceOption,
   Column,
@@ -22,16 +24,17 @@ declare var Slick: any;
 
 @Injectable()
 export class FilterService {
-  _columnFilters: ColumnFilters = {};
-  _columnDefinitions: Column[];
-  _dataView: any;
-  _grid: any;
-  _gridOptions: GridOption;
-  _onFilterChangedOptions: any;
-  subscriber: SlickEvent;
+  private _filters: any[] = [];
+  private _columnFilters: ColumnFilters = {};
+  private _columnDefinitions: Column[];
+  private _dataView: any;
+  private _grid: any;
+  private _gridOptions: GridOption;
+  private _onFilterChangedOptions: any;
+  private subscriber: SlickEvent;
   onFilterChanged = new EventEmitter<string>();
 
-  constructor(private translate: TranslateService) {}
+  constructor(private translate: TranslateService) { }
 
   init(grid: any, gridOptions: GridOption, columnDefinitions: Column[]): void {
     this._columnDefinitions = columnDefinitions;
@@ -49,6 +52,7 @@ export class FilterService {
     this.emitFilterChangedBy('remote');
     this.subscriber.subscribe(this.attachBackendOnFilterSubscribe);
 
+    this._filters = [];
     grid.onHeaderRowCellRendered.subscribe((e: Event, args: any) => {
       this.addFilterTemplateToHeaderRow(args);
     });
@@ -91,23 +95,25 @@ export class FilterService {
 
   /** Clear the search filters (below the column titles) */
   clearFilters() {
-    // remove the text inside each search filter fields
-    $('.slick-headerrow-column .search-filter').each((index: number, elm: HTMLElement) => {
-      // clear the value and trigger an event
-      // the event is for GraphQL & OData Services to detect the changes and call a new query
-      switch (elm.tagName) {
-        case 'SELECT':
-          $(elm).val('').trigger('change');
-          break;
-        case 'INPUT':
-        default:
-          $(elm).val('').trigger('keyup');
-          break;
+    const hasBackendServiceApi = (this._gridOptions && this._gridOptions.backendServiceApi) ? this._gridOptions.backendServiceApi : false;
+    const triggerFilterChange = !hasBackendServiceApi;
+
+    this._filters.forEach((filter, index) => {
+      if (filter && typeof filter.clear) {
+        // clear element but don't trigger a change
+        // until we reach the last index to avoid multiple request to the Backend Server
+        const callTrigger = (index === 0 || index === this._filters.length - 1) ? true : false;
+        filter.clear(true);
       }
     });
-
+/*
+    // clear with a trigger only first filter to avoid multiple request to the Backend Server
+    if (hasBackendServiceApi && this._filters.length > 0) {
+      this._filters[0].clear(true);
+    }
+*/
     // we need to loop through all columnFilters and delete them 1 by 1
-    // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
+    // only trying to clear columnFilter (without looping through) would not trigger a dataset change
     for (const columnId in this._columnFilters) {
       if (columnId && this._columnFilters[columnId]) {
         delete this._columnFilters[columnId];
@@ -122,19 +128,6 @@ export class FilterService {
     }
   }
 
-  testFilterCondition(operator: string, value1: any, value2: any): boolean {
-    switch (operator) {
-      case '<': return (value1 < value2) ? true : false;
-      case '<=': return (value1 <= value2) ? true : false;
-      case '>': return (value1 > value2) ? true : false;
-      case '>=': return (value1 >= value2) ? true : false;
-      case '!=':
-      case '<>': return (value1 !== value2) ? true : false;
-      case '=':
-      case '==': return (value1 === value2) ? true : false;
-    }
-    return true;
-  }
   /**
    * Attach a local filter hook to the grid
    * @param grid SlickGrid Grid object
@@ -156,6 +149,7 @@ export class FilterService {
       }
     });
 
+    this._filters = [];
     grid.onHeaderRowCellRendered.subscribe((e: Event, args: any) => {
       this.addFilterTemplateToHeaderRow(args);
     });
@@ -171,7 +165,7 @@ export class FilterService {
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
 
       let cellValue = item[columnDef.queryField || columnDef.field];
-      const listTerm = (columnFilter && columnFilter.listTerm) ? columnFilter.listTerm : null;
+      const searchTerms = (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null;
       let fieldSearchValue = (columnFilter && columnFilter.searchTerm) ? columnFilter.searchTerm : undefined;
       if (typeof fieldSearchValue === 'undefined') {
         fieldSearchValue = '';
@@ -179,12 +173,12 @@ export class FilterService {
       fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
 
       const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
-      const operator = columnFilter.operator || ((matches) ? matches[1] : '');
+      const operator = columnFilter.operator || (columnFilter.type === 'multiSelect' ? 'IN' : null) || ((matches) ? matches[1] : '');
       const searchTerm = (!!matches) ? matches[2] : '';
       const lastValueChar = (!!matches) ? matches[3] : '';
 
       // no need to query if search value is empty
-      if (searchTerm === '' && !listTerm) {
+      if (searchTerm === '' && !searchTerms) {
         return true;
       }
 
@@ -201,7 +195,7 @@ export class FilterService {
 
       const conditionOptions = {
         fieldType,
-        listTerm,
+        searchTerms,
         searchTerm,
         cellValue,
         operator,
@@ -238,12 +232,12 @@ export class FilterService {
     }
   }
 
-  callbackSearchEvent(e: Event | undefined, args: { columnDef: Column, operator?: string, listTerm?: string[] | number[] }) {
+  callbackSearchEvent(e: Event | undefined, args: { columnDef: Column, operator?: string, searchTerms?: string[] | number[] }) {
     const targetValue = (e && e.target) ? (e.target as HTMLInputElement).value : undefined;
-    const listTerm = (args && args.listTerm && Array.isArray(args.listTerm)) ? args.listTerm : [];
+    const searchTerms = (args && args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : [];
     const columnId = (args && args.columnDef) ? args.columnDef.id || '' : '';
 
-    if (!targetValue && listTerm.length === 0) {
+    if (!targetValue && searchTerms.length === 0) {
       // delete the property from the columnFilters when it becomes empty
       // without doing this, it would leave an incorrect state of the previous column filters when filtering on another column
       delete this._columnFilters[columnId];
@@ -252,7 +246,7 @@ export class FilterService {
       this._columnFilters[colId] = {
         columnId: colId,
         columnDef: args.columnDef || null,
-        listTerm: args.listTerm || undefined,
+        searchTerms: args.searchTerms || undefined,
         searchTerm: ((e && e.target) ? (e.target as HTMLInputElement).value : null),
         operator: args.operator || null
       };
@@ -262,93 +256,68 @@ export class FilterService {
       columnId,
       columnDef: args.columnDef || null,
       columnFilters: this._columnFilters,
-      listTerm: args.listTerm || undefined,
+      searchTerms: args.searchTerms || undefined,
       searchTerm: ((e && e.target) ? (e.target as HTMLInputElement).value : null),
       serviceOptions: this._onFilterChangedOptions,
       grid: this._grid
     }, e);
   }
 
-  addFilterTemplateToHeaderRow(args: { column: Column; grid: any; node: any}) {
+  addFilterTemplateToHeaderRow(args: { column: Column; grid: any; node: any }) {
     const columnDef = args.column;
     const columnId = columnDef.id || '';
 
     if (columnDef && columnId !== 'selector' && columnDef.filterable) {
-      let filterTemplate = '';
-      let elm = null;
-      let header;
-      const listTerm: string[] | number[] = (columnDef.filter && columnDef.filter.listTerm) ? columnDef.filter.listTerm : null;
+      let searchTerms: string[] | number[] = (columnDef.filter && columnDef.filter.searchTerms) ? columnDef.filter.searchTerms : null;
       let searchTerm = (columnDef.filter && columnDef.filter.searchTerm) ? columnDef.filter.searchTerm : '';
 
       // keep the filter in a columnFilters for later reference
-      this.keepColumnFilters(searchTerm, listTerm, columnDef);
+      this.keepColumnFilters(searchTerm, searchTerms, columnDef);
 
-      if (!columnDef.filter) {
-        searchTerm = (columnDef.filter && columnDef.filter.searchTerm) ? columnDef.filter.searchTerm : null;
-        filterTemplate = FilterTemplates.input(searchTerm, columnDef);
-      } else {
-        // custom Select template
-        if (columnDef.filter.type === FormElementType.select) {
-          filterTemplate = FilterTemplates.select(searchTerm, columnDef, this.translate);
-        } else if (columnDef.filter.type === FormElementType.multiSelect) {
-          filterTemplate = FilterTemplates.multiSelect(listTerm, columnDef, this.translate);
-        }
-      }
+      // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
+      // because of that we need to first get searchTerm(s) from the columnFilters (that is what the user last entered)
+      // if nothing is found, we can then use the optional searchTerm(s) passed to the Grid Option (that is couple of lines earlier)
+      searchTerm = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerm : searchTerm || null;
+      searchTerms = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerms : searchTerms || null;
 
-      // when hiding/showing (Column Picker or Grid Menu), it will come re-create yet again the filters
-      // because of that we need to first get searchTerm from the columnFilters (that is what the user input last)
-      // if nothing is found, we can then use the optional searchTerm passed to the Grid Option (that is couple lines before)
-      const inputSearchTerm = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerm : searchTerm || null;
-
-      // create the DOM Element
-      header = this._grid.getHeaderRowColumn(columnDef.id);
-      $(header).empty();
-
-      elm = $(filterTemplate);
-      elm.attr('id', `filter-${columnDef.id}`);
-      elm.data('columnId', columnDef.id);
-      elm.val(inputSearchTerm);
-      if (elm && typeof elm.appendTo === 'function') {
-        elm.appendTo(header);
-      }
+      const filterArguments: FilterArguments = {
+        grid: this._grid,
+        searchTerm,
+        searchTerms,
+        columnDef,
+        callback: this.callbackSearchEvent.bind(this),
+        i18n: this.translate
+      };
 
       // depending on the DOM Element type, we will watch the correct event
       const filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FormElementType.input;
+
+      let filter: Filter;
       switch (filterType) {
+        case FormElementType.custom:
+          break;
         case FormElementType.select:
-          elm.change((e: any) => this.callbackSearchEvent(e, { columnDef, operator: 'EQ' }));
+          filter = new Filters.select();
           break;
         case FormElementType.multiSelect:
-          FilterTemplates.multiSelectPostCreation(columnDef, listTerm, this.callbackSearchEvent.bind(this));
-          /*
-          $('select.ms-filter').each((index, currentElm) => {
-            const elmMultiSelect = $(currentElm).multipleSelect({
-              container: 'body',
-              minimumCountSelected: 2,
-              countSelected: '# de % sélectionné',
-              allSelected: `Tout sélectionnés`,
-              selectAllText: `Sélectionner tout`,
-              onClose: () => {
-                const selectedItems = elmMultiSelect.multipleSelect('getSelects');
-                this.callbackSearchEvent(undefined, { columnDef, operator: 'IN', listTerm: selectedItems });
-              }
-            });
-
-            // run a query if user has some default search terms
-            if (listTerm && Array.isArray(listTerm)) {
-              for (let k = 0, ln = listTerm.length; k < ln; k++) {
-                listTerm[k] = (listTerm[k] || '') + ''; // make sure all search terms are strings
-              }
-              elmMultiSelect.multipleSelect('setSelects', listTerm);
-              this.callbackSearchEvent(undefined, { columnDef, operator: 'IN', listTerm });
-            }
-          });
-          */
+          filter = new Filters.multiSelect();
           break;
         case FormElementType.input:
         default:
-          elm.keyup((e: any) => this.callbackSearchEvent(e, { columnDef }));
+          filter = new Filters.input();
           break;
+      }
+
+      if (filter) {
+        filter.init(filterArguments);
+        const filterExistIndex = this._filters.findIndex((filt) => filter.columnDef.name === filt.columnDef.name);
+
+        // add to the filters arrays or replace it when found
+        if (filterExistIndex === -1) {
+          this._filters.push(filter);
+        } else {
+          this._filters[filterExistIndex] = filter;
+        }
       }
     }
   }
@@ -362,16 +331,23 @@ export class FilterService {
     this.subscriber.subscribe(() => this.onFilterChanged.emit(`onFilterChanged by ${sender}`));
   }
 
-  private keepColumnFilters(searchTerm: string | number, listTerm: any, columnDef: any) {
+  private keepColumnFilters(searchTerm: string | number, searchTerms: any, columnDef: any) {
     if (searchTerm) {
       this._columnFilters[columnDef.id] = {
         columnId: columnDef.id,
         columnDef,
-        searchTerm
+        searchTerm,
+        type: columnDef.filter.type
       };
-      if (listTerm) {
-        this._columnFilters.listTerm = listTerm;
-      }
+    }
+    if (searchTerms) {
+      // this._columnFilters.searchTerms = searchTerms;
+      this._columnFilters[columnDef.id] = {
+        columnId: columnDef.id,
+        columnDef,
+        searchTerms,
+        type: columnDef.filter.type
+      };
     }
   }
 

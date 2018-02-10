@@ -43,8 +43,8 @@ export class GridOdataComponent implements OnInit {
       { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
         filter: {
           searchTerm: '', // default selection
-          type: FormElementType.select,
-          selectOptions: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
+          type: FormElementType.multiSelect,
+          collection: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
         }
       },
       { id: 'company', name: 'Company', field: 'company' }
@@ -77,6 +77,7 @@ export class GridOdataComponent implements OnInit {
   }
 
   displaySpinner(isProcessing) {
+    console.log('processing', isProcessing);
     this.processing = isProcessing;
     this.status = (isProcessing)
       ? { text: 'processing...', class: 'alert alert-danger' }
@@ -84,8 +85,6 @@ export class GridOdataComponent implements OnInit {
   }
 
   getCustomerCallback(data) {
-    this.displaySpinner(false);
-
     this.dataset = data['items'];
     this.odataQuery = data['query'];
 

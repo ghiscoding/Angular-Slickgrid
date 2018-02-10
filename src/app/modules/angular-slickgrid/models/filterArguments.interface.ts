@@ -1,16 +1,14 @@
+import { Column } from './column.interface';
 import { TranslateService } from '@ngx-translate/core';
 import { FilterCallback } from './filterCallback.interface';
-import { Column } from './column.interface';
-import { FilterArguments } from './filterArguments.interface';
 
 // export type Filter = (searchTerms: string | number | string[] | number[], columnDef: Column, params?: any) => string;
-export interface Filter {
+export interface FilterArguments {
+  grid: any;
   columnDef: Column;
   callback: FilterCallback;
-  grid: any;
   searchTerm?: string | number;
   searchTerms?: string[] | number[];
   i18n?: TranslateService;
-
-  init: (args: FilterArguments) => void;
+  params?: any | any[];
 }

@@ -1,6 +1,7 @@
 export enum FormElementType {
-  input,
-  multiSelect,
-  select,
-  textarea
+  custom = 'custom',
+  input = 'input', // might need <any> casting
+  multiSelect = 'multiSelect',
+  select = 'select',
+  textarea = 'textarea'
 }

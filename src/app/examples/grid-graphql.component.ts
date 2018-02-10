@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Injectable, Input, OnInit, Output, Pipe, PipeTransform } from '@angular/core';
+import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
 import { CaseType, Column, FormElementType, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid/models';
 import { FieldType, Formatters } from './../modules/angular-slickgrid';
 import { GraphqlService } from './../modules/angular-slickgrid/services/graphql.service';
@@ -49,17 +49,17 @@ export class GridGraphqlComponent implements OnInit {
       { id: 'name', name: 'Name', field: 'name', headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string },
       { id: 'gender', name: 'Gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true,
         filter: {
-          searchTerm: '', // default selection
+          // searchTerm: '', // default selection
           type: FormElementType.select,
-          selectOptions: [ { value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' } ]
+          collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }]
         }
       },
       { id: 'company', name: 'Company', field: 'company', headerKey: 'COMPANY',
         filterable: true,
         filter: {
-          // listTerm: [], // default selection
+          // searchTerms: [], // default selection
           type: FormElementType.multiSelect,
-          selectOptions: [{ value: 'ABC', label: 'Company ABC'}, { value: 'XYZ', label: 'Company XYZ'}]
+          collection: [{ value: 'ABC', label: 'Company ABC'}, { value: 'XYZ', label: 'Company XYZ'}]
         }
       },
       { id: 'billing.address.street', name: 'Billing Address Street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', filterable: true, sortable: true },
@@ -98,15 +98,6 @@ export class GridGraphqlComponent implements OnInit {
     this.status = (isProcessing)
       ? { text: 'processing...', class: 'alert alert-danger' }
       : { text: 'done', class: 'alert alert-success' };
-  }
-
-  filterChange() {
-    console.log('filter change');
-  }
-
-  filterChangeAfter() {
-    console.log('after filter change');
-    this.displaySpinner(false);
   }
 
   onWithCursorChange(isWithCursor) {

@@ -38,7 +38,7 @@ export { Sorter } from './models/sorter.interface';
 
 export { Editors } from './editors/index';
 export { FilterConditions } from './filter-conditions/index';
-export { FilterTemplates } from './filter-templates/index';
+export { Filters } from './filters/index';
 export { Formatters } from './formatters/index';
 export { Sorters } from './sorters/index';
 

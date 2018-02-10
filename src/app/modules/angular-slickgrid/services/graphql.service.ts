@@ -89,11 +89,11 @@ export class GraphqlService implements BackendService {
       datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +this.options.paginationOptions['offset'] : 0);
     }
 
-    if (this.options.sortingOptions) {
+    if (this.options.sortingOptions && Array.isArray(this.options.sortingOptions) && this.options.sortingOptions.length > 0) {
       // orderBy: [{ field:x, direction: 'ASC' }]
       datasetFilters.orderBy = this.options.sortingOptions;
     }
-    if (this.options.filteringOptions) {
+    if (this.options.filteringOptions && Array.isArray(this.options.filteringOptions) && this.options.filteringOptions.length > 0) {
       // filterBy: [{ field: date, operator: '>', value: '2000-10-10' }]
       datasetFilters.filterBy = this.options.filteringOptions;
     }
@@ -200,7 +200,7 @@ export class GraphqlService implements BackendService {
       let searchValue: string | string[] | number[];
 
       if (!args || !args.grid) {
-        throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
+        throw new Error('Something went wrong when trying create the GraphQL Backend Service, it seems that "args" is not populated correctly');
       }
 
       // loop through all columns to inspect filters
@@ -210,11 +210,14 @@ export class GraphqlService implements BackendService {
           const columnDef = columnFilter.columnDef;
           const fieldName = columnDef.queryField || columnDef.field || columnDef.name || '';
           const fieldType = columnDef.type || 'string';
-          const searchTerms = columnFilter ? columnFilter.listTerm : [];
-          let fieldSearchValue = columnFilter.searchTerm || '';
+          const searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
+          let fieldSearchValue = columnFilter.searchTerm;
+          if (typeof fieldSearchValue === 'undefined') {
+            fieldSearchValue = '';
+          }
 
           if (typeof fieldSearchValue !== 'string' && !searchTerms) {
-            throw new Error(`GraphQL filter term property must be provided as type "string", if you use filter with options then make sure your IDs are also string. For example: filter: {type: FormElementType.select, selectOptions: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
+            throw new Error(`GraphQL filter searchTerm property must be provided as type "string", if you use filter with options then make sure your IDs are also string. For example: filter: {type: FormElementType.select, selectOptions: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
           }
 
           fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
@@ -228,7 +231,7 @@ export class GraphqlService implements BackendService {
             continue;
           }
 
-          // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
+          // when having more than 1 search term (we need to create a CSV string for GraphQL "IN" or "NOT IN" filter search)
           if (searchTerms && searchTerms.length > 0) {
             searchValue = searchTerms.join(',');
           } else {

@@ -1,8 +1,8 @@
 import { FilterCondition, FilterConditionOption } from './../models';
 import { testFilterCondition } from './filterUtilities';
 
-function parseBoolean(str: string) {
-  return /(true|1)/i.test(str);
+function parseBoolean(str: number | string) {
+  return /(true|1)/i.test(str + '');
 }
 
 export const booleanFilterCondition: FilterCondition = (options: FilterConditionOption) => {

@@ -11,6 +11,8 @@ export { ColumnFilters } from './columnFilters.interface';
 export { Editor } from './editor.interface';
 export { FieldType } from './fieldType';
 export { Filter } from './filter.interface';
+export { FilterArguments } from './filterArguments.interface';
+export { FilterCallback } from './filterCallback.interface';
 export { FilterChangedArgs } from './filterChangedArgs.interface';
 export { FilterCondition } from './filterCondition.interface';
 export { FilterConditionOption } from './filterConditionOption.interface';

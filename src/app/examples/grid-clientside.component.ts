@@ -46,9 +46,9 @@ export class GridClientSideComponent implements OnInit {
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number,
         filterable: true,
         filter: {
-          listTerm: [], // default selection
+          // searchTerms: [10, 20], // default selection
           type: FormElementType.multiSelect,
-          selectOptions: multiSelectFilterArray
+          collection: multiSelectFilterArray
         }
       },
       { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, filterable: true, sortable: true },
@@ -63,7 +63,7 @@ export class GridClientSideComponent implements OnInit {
         filter: {
           searchTerm: '', // default selection
           type: FormElementType.select,
-          selectOptions: [ { value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' } ]
+          collection: [ { value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' } ]
         }
       }
     ];
