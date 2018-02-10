@@ -300,7 +300,7 @@ export class FilterService {
           filter = new Filters.select();
           break;
         case FormElementType.multiSelect:
-          filter = new Filters.multiSelect();
+          filter = new Filters.multipleSelect();
           break;
         case FormElementType.input:
         default:

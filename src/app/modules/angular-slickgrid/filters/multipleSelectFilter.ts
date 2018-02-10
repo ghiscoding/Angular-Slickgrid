@@ -8,7 +8,7 @@ import $ from 'jquery';
 // using external js modules in Angular
 declare var $: any;
 
-export class MultiSelectFilter implements Filter {
+export class MultipleSelectFilter implements Filter {
   $filterElm: any;
   grid: any;
   searchTerms: string[] | number[];
