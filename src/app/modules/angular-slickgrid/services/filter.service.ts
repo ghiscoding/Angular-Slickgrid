@@ -308,9 +308,6 @@ export class FilterService {
         case FormElementType.select:
           filter = new Filters.select(this.translate);
           break;
-        case FormElementType.multiSelect:
-          filter = new Filters.multiSelect(this.translate);
-          break;
         case FormElementType.multipleSelect:
           filter = new Filters.multipleSelect(this.translate);
           break;
