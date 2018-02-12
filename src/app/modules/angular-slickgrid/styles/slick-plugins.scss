@@ -196,7 +196,8 @@ label {
   max-width: $multiselect-dropdown-max-width;
   border: $multiselect-dropdown-border;
 
-  input[type=checkbox] {
+  input[type="checkbox"],
+  input[type="radio"] {
     /* make input checkbox invisible but don't hide it since multiple-select uses hide for something else */
     opacity: 0;
     width: 0;
@@ -216,6 +217,14 @@ label {
     &:checked + span:before {
       content: $multiselect-icon-checked;
       opacity: 1;
+    }
+  }
+  input[type="radio"] {
+    & + span:before {
+      content: $multiselect-icon-radio-unchecked;
+    }
+    &:checked + span:before {
+      content: $multiselect-icon-radio-checked;
     }
   }
   label {
