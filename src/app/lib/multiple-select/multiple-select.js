@@ -3,6 +3,14 @@
  * @version 1.2.1
  *
  * http://wenzhixin.net.cn/p/multiple-select/
+ *
+ * This is a modified version of multiple-select
+ * @author Ghislain B.
+ *
+ * Some minor changes were applied to the original with the following changes:
+ * - add an "OK" button at the end of the list, you can use it with the option "okButton: true" and you can also change locale with "okButtonText"
+ * - made code changes to support re-styling of the radio/checkbox with Font-Awesome or any other font
+ * - width option was not working when using "container", added some code to support it
  */
 
 (function ($) {
@@ -234,6 +242,8 @@
 
             }
 
+            var dropWidth = isNaN(this.options.width) ? this.options.width : this.options.width + 'px';
+            this.$drop.css('width', dropWidth);
             this.$drop.find('ul').css('max-height', this.options.maxHeight + 'px');
             this.$drop.find('.multiple').css('width', this.options.multipleWidth + 'px');
 
@@ -752,7 +762,6 @@
         filterAcceptOnEnter: false,
         hideOptgroupCheckboxes: false,
         okButton: false,
-
         okButtonText: 'OK',
         selectAllText: 'Select all',
         allSelected: 'All selected',

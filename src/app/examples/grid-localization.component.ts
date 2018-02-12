@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, Editors, FieldType, Formatter, Formatters, FormElementType, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
+import { Column, Editors, FieldType, FilterType, Formatter, Formatters, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -53,8 +53,8 @@ export class GridLocalizationComponent implements OnInit {
         filterable: true,
         filter: {
           searchTerm: '', // default selection
-          type: FormElementType.select,
-          selectOptions: [ { value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' } ]
+          type: FilterType.select,
+          collection: [ { value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' } ]
         }
       }
       // OR via your own custom translate formatter

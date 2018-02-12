@@ -11,53 +11,41 @@ import { Injectable } from '@angular/core';
 declare var $: any;
 
 @Injectable()
-export class MultipleSelectFilter implements Filter {
+export class SingleSelectFilter implements Filter {
   $filterElm: any;
   grid: any;
-  searchTerms: string[] | number[] | boolean[];
+  searchTerm: number | string | boolean;
   columnDef: Column;
   callback: FilterCallback;
   defaultOptions: any;
 
-  /**
-   * Initialize the Filter
-   */
   constructor(private translate: TranslateService) {
     // default options used by this Filter, user can overwrite any of these by passing "otions"
     this.defaultOptions = {
       container: 'body',
       filter: false,  // input search term on top of the select option list
       maxHeight: 200,
-      okButton: true,
-      addTitle: true, // show tooltip of all selected items while hovering the filter
-      countSelected: this.translate.instant('X_OF_Y_SELECTED'),
-      allSelected: this.translate.instant('ALL_SELECTED'),
-      selectAllText: this.translate.instant('SELECT_ALL'),
-      selectAllDelimiter: ['', ''], // remove default square brackets of default text "[Select All]" => "Select All"
-
-      // we will subscribe to the onClose event for triggering our callback
-      onClose: () => {
-        const selectedItems = this.$filterElm.multipleSelect('getSelects');
-        this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: selectedItems });
-      }
+      single: true
     };
   }
 
   /**
-   * Initialize the filter template
+   * Initialize the Filter
    */
   init(args: FilterArguments) {
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
-    this.searchTerms = args.searchTerms || [];
+    this.searchTerm = args.searchTerm;
 
     // step 1, create HTML string template
     const filterTemplate = this.buildTemplateHtmlString();
 
-    // step 2, create the DOM Element of the filter & pre-load search terms
-    // also subscribe to the onClose event
+    // step 2, create the DOM Element of the filter & pre-load search term
     this.createDomElement(filterTemplate);
+
+    // step 3, subscribe to the change event and run the callback when that happens
+    this.$filterElm.change((e: any) => this.callback(e, { columnDef: this.columnDef, operator: 'EQ' }));
   }
 
   /**
@@ -70,7 +58,7 @@ export class MultipleSelectFilter implements Filter {
       this.$filterElm.multipleSelect('setSelects', []);
 
       if (triggerFilterChange) {
-        this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: [] });
+        this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerm: undefined });
       }
     }
   }
@@ -93,7 +81,7 @@ export class MultipleSelectFilter implements Filter {
    */
   private buildTemplateHtmlString() {
     if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
+      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the SingleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.singleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
     const optionCollection = this.columnDef.filter.collection || [];
     const labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
@@ -102,17 +90,18 @@ export class MultipleSelectFilter implements Filter {
     let options = '';
     optionCollection.forEach((option: SelectOption) => {
       if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
-        throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
+        throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.singleSelect, collection: [ { value: '1', label: 'One' } ]')`);
       }
+
       const labelKey = (option.labelKey || option[labelName]) as string;
-      const selected = (this.findValueInSearchTerms(option[valueName]) >= 0) ? 'selected' : '';
+      const selected = (option[valueName] === this.searchTerm) ? 'selected' : '';
       const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
 
       // html text of each select option
       options += `<option value="${option[valueName]}" ${selected}>${textLabel}</option>`;
     });
 
-    return `<select class="ms-filter search-filter" multiple="multiple">${options}</select>`;
+    return `<select class="ms-filter search-filter">${options}</select>`;
   }
 
   /**
@@ -140,17 +129,6 @@ export class MultipleSelectFilter implements Filter {
     // merge options & attach multiSelect
     const options = { ...this.defaultOptions, ...this.columnDef.filter.options };
     this.$filterElm = this.$filterElm.multipleSelect(options);
-  }
-
-  private findValueInSearchTerms(value: number | string): number {
-    if (this.searchTerms && Array.isArray(this.searchTerms)) {
-      for (let i = 0; i < this.searchTerms.length; i++) {
-        if (this.searchTerms[i] && this.searchTerms[i] === value) {
-          return i;
-        }
-      }
-    }
-    return -1;
   }
 
   private subscribeOnClose() {

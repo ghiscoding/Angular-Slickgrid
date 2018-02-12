@@ -1,12 +1,10 @@
-import { FilterArguments } from './../models/filterArguments.interface';
-import { FilterCallback } from './../models/filterCallback.interface';
-import { Column, Filter } from './../models';
+import { Column, Filter, FilterArguments, FilterCallback } from './../modules/angular-slickgrid';
 import $ from 'jquery';
 
 // using external js modules in Angular
 declare var $: any;
 
-export class InputFilter implements Filter {
+export class CustomInputFilter implements Filter {
   private $filterElm: any;
   grid: any;
   searchTerm: string | number | boolean;
@@ -63,7 +61,7 @@ export class InputFilter implements Filter {
    * Create the HTML template as a string
    */
   private buildTemplateHtmlString() {
-    return `<input type="text" class="form-control search-filter" style="font-family: Segoe UI Symbol;" placeholder="&#128269;">`;
+    return `<input type="text" class="form-control search-filter" placeholder="Custom Filter">`;
   }
 
   /**

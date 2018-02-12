@@ -5,13 +5,30 @@ import { FilterArguments } from './filterArguments.interface';
 
 // export type Filter = (searchTerms: string | number | string[] | number[], columnDef: Column, params?: any) => string;
 export interface Filter {
+  /** Column definition */
   columnDef: Column;
-  callback: FilterCallback;
-  grid: any;
-  searchTerm?: string | number;
-  searchTerms?: string[] | number[];
 
+  /** Callback that will be run after the filter triggers */
+  callback: FilterCallback;
+
+  /** SlickGrid grid object */
+  grid: any;
+
+  /** Defined search term to pre-load */
+  searchTerm?: string | number | boolean;
+
+  /** Array of defined search terms to pre-load */
+  searchTerms?: string[] | number[] | boolean[];
+
+  /** You can use "params" to pass any types of arguments to your Filter */
+  params?: any | any[];
+
+  /** Funtion to initialize the Filter class */
   init: (args: FilterArguments) => void;
+
+  /** Clear filter function */
   clear: () => void;
+
+  /** Destroy filter function */
   destroy: () => void;
 }

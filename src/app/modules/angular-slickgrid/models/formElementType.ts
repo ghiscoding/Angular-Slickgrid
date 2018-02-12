@@ -4,5 +4,6 @@ export enum FormElementType {
   multiSelect = 'multiSelect',
   multipleSelect = 'multipleSelect',
   select = 'select',
+  singleSelect = 'singleSelect',
   textarea = 'textarea'
 }

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
-import { CaseType, Column, FormElementType, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid/models';
+import { CaseType, Column, FilterType, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid/models';
 import { FieldType, Formatters } from './../modules/angular-slickgrid';
 import { GraphqlService } from './../modules/angular-slickgrid/services/graphql.service';
 import { HttpClient } from '@angular/common/http';
@@ -50,7 +50,7 @@ export class GridGraphqlComponent implements OnInit {
       { id: 'gender', name: 'Gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true,
         filter: {
           // searchTerm: '', // default selection
-          type: FormElementType.select,
+          type: FilterType.singleSelect,
           collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }]
         }
       },
@@ -58,7 +58,7 @@ export class GridGraphqlComponent implements OnInit {
         filterable: true,
         filter: {
           // searchTerms: [], // default selection
-          type: FormElementType.multipleSelect,
+          type: FilterType.multipleSelect,
           collection: [{ value: 'ABC', label: 'Company ABC'}, { value: 'XYZ', label: 'Company XYZ'}]
         }
       },

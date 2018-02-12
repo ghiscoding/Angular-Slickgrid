@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter, Injectable } from '@angular/core';
-import { CaseType, Column, FormElementType, GridOption } from './../modules/angular-slickgrid/models';
+import { CaseType, Column, FilterType, GridOption } from './../modules/angular-slickgrid/models';
 import { FieldType, Formatters } from './../modules/angular-slickgrid';
 import { GridOdataService } from './../modules/angular-slickgrid/services/grid-odata.service';
 import { HttpClient } from '@angular/common/http';
@@ -43,7 +43,7 @@ export class GridOdataComponent implements OnInit {
       { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
         filter: {
           searchTerm: '', // default selection
-          type: FormElementType.multiSelect,
+          type: FilterType.singleSelect,
           collection: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
         }
       },

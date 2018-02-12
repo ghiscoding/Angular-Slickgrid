@@ -1,5 +1,6 @@
 import { Column } from './column.interface';
 import { Filter } from './filter.interface';
+import { FilterType } from './filterType';
 import { FormElementType } from './formElementType';
 
 export interface ColumnFilter {
@@ -16,16 +17,16 @@ export interface ColumnFilter {
   customFilter?: Filter;
 
   /** Search term (singular) */
-  searchTerm?: string | number;
+  searchTerm?: string | number | boolean;
 
   /** Search terms (collection) */
-  searchTerms?: string[] | number[];
+  searchTerms?: string[] | number[] | boolean[];
 
   /** Operator to use when filtering (>, >=, EQ, IN, ...) */
   operator?: string;
 
   /** Type of Filter to use (input, select, multi-select, custom) */
-  type?: FormElementType;
+  type?: FilterType | FormElementType;
 
   /** A collection of items/options (commonly used with a Select/Multi-Select Filter) */
   collection?: any[];
@@ -46,7 +47,7 @@ export interface ColumnFilter {
   };
 
   /**
-   * Use "params" to pass any type of arguments to your Custom Filter (type: FormElementType.custom)
+   * Use "params" to pass any type of arguments to your Custom Filter (type: FilterType.custom)
    * for example, to pass the option collection to a select Filter we can type this:
    * params: { options: [{ value: true, label: 'True' }, { value: true, label: 'True'} ]}
    * */

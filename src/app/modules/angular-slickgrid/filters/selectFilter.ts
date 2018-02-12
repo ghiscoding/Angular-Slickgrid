@@ -10,14 +10,14 @@ declare var $: any;
 export class SelectFilter implements Filter {
   $filterElm: any;
   grid: any;
-  searchTerm: string | number;
+  searchTerm: string | number | boolean;
   columnDef: Column;
   callback: FilterCallback;
 
   constructor(private translate: TranslateService) {}
 
   /**
-   * Initialize the filter template
+   * Initialize the Filter
    */
   init(args: FilterArguments) {
     this.grid = args.grid;
@@ -62,7 +62,7 @@ export class SelectFilter implements Filter {
 
   private buildTemplateHtmlString() {
     if (!this.columnDef || !this.columnDef.filter || (!this.columnDef.filter.collection && !this.columnDef.filter.selectOptions)) {
-      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FormElementType.select, collection: [{ value: true, label: 'True' }, { value: true, label: 'True'}] }`);
+      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
     if (!this.columnDef.filter.collection && this.columnDef.filter.selectOptions) {
       console.warn(`[Angular-SlickGrid] The Select Filter "selectOptions" property will de deprecated in future version, please use the new property "collection" instead, which is more generic and not only inteded for Select.`);
@@ -75,7 +75,7 @@ export class SelectFilter implements Filter {
     let options = '';
     optionCollection.forEach((option: any) => {
       if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
-        throw new Error(`SelectOptions with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')`);
+        throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.select, collection: [ { value: '1', label: 'One' } ]')`);
       }
       const labelKey = option.labelKey || option[labelName];
       const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;

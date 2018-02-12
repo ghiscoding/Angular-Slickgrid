@@ -10,7 +10,7 @@ import {
   ColumnFilters,
   FieldType,
   FilterChangedArgs,
-  FormElementType,
+  FilterType,
   GridOption,
   SlickEvent
 } from './../models/index';
@@ -106,12 +106,12 @@ export class FilterService {
         filter.clear(true);
       }
     });
-/*
-    // clear with a trigger only first filter to avoid multiple request to the Backend Server
-    if (hasBackendServiceApi && this._filters.length > 0) {
-      this._filters[0].clear(true);
-    }
-*/
+    /*
+        // clear with a trigger only first filter to avoid multiple request to the Backend Server
+        if (hasBackendServiceApi && this._filters.length > 0) {
+          this._filters[0].clear(true);
+        }
+    */
     // we need to loop through all columnFilters and delete them 1 by 1
     // only trying to clear columnFilter (without looping through) would not trigger a dataset change
     for (const columnId in this._columnFilters) {
@@ -140,7 +140,7 @@ export class FilterService {
     this.emitFilterChangedBy('local');
 
     dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
-    dataView.setFilter(this.customFilter.bind(this, dataView));
+    dataView.setFilter(this.customLocalFilter.bind(this, dataView));
 
     this.subscriber.subscribe((e: any, args: any) => {
       const columnId = args.columnId;
@@ -155,7 +155,7 @@ export class FilterService {
     });
   }
 
-  customFilter(dataView: any, item: any, args: any) {
+  customLocalFilter(dataView: any, item: any, args: any) {
     for (const columnId of Object.keys(args.columnFilters)) {
       const columnFilter = args.columnFilters[columnId];
       const columnIndex = args.grid.getColumnIndex(columnId);
@@ -166,20 +166,49 @@ export class FilterService {
 
       let cellValue = item[columnDef.queryField || columnDef.field];
       const searchTerms = (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null;
-      let fieldSearchValue = (columnFilter && columnFilter.searchTerm) ? columnFilter.searchTerm : undefined;
+      let fieldSearchValue = (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined;
+
       if (typeof fieldSearchValue === 'undefined') {
         fieldSearchValue = '';
       }
       fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
 
       const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
-      const operator = columnFilter.operator || (columnFilter.type === 'multiSelect' ? 'IN' : null) || ((matches) ? matches[1] : '');
+      let operator = columnFilter.operator || ((matches) ? matches[1] : '');
       const searchTerm = (!!matches) ? matches[2] : '';
       const lastValueChar = (!!matches) ? matches[3] : '';
+
+      // when using a Filter that is not a custom type, we want to make sure that we have a default operator type
+      // for example a multiple-select should always be using IN, while a single select will use an EQ
+      const filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
+      if (!operator && filterType !== FilterType.custom) {
+        switch (filterType) {
+          case FilterType.select:
+          case FilterType.multipleSelect:
+            operator = 'IN';
+            break;
+          case FilterType.singleSelect:
+            operator = 'EQ';
+            break;
+          default:
+            operator = operator;
+            break;
+        }
+      }
 
       // no need to query if search value is empty
       if (searchTerm === '' && !searchTerms) {
         return true;
+      }
+
+      // filter search terms should always be string (even though we permit the end user to input numbers)
+      // so make sure each term are strings
+      // run a query if user has some default search terms
+      if (searchTerms && Array.isArray(searchTerms)) {
+        for (let k = 0, ln = searchTerms.length; k < ln; k++) {
+          // make sure all search terms are strings
+          searchTerms[k] = ((searchTerms[k] === undefined || searchTerms[k] === null) ? '' : searchTerms[k]) + '';
+        }
       }
 
       // when using localization (i18n), we should use the formatter output to search as the new cell value
@@ -275,8 +304,8 @@ export class FilterService {
     const columnId = columnDef.id || '';
 
     if (columnDef && columnId !== 'selector' && columnDef.filterable) {
-      let searchTerms: string[] | number[] = (columnDef.filter && columnDef.filter.searchTerms) ? columnDef.filter.searchTerms : null;
-      let searchTerm = (columnDef.filter && columnDef.filter.searchTerm) ? columnDef.filter.searchTerm : '';
+      let searchTerms: string[] | number[] | boolean[] = (columnDef.filter && columnDef.filter.searchTerms) ? columnDef.filter.searchTerms : null;
+      let searchTerm = (columnDef.filter && (columnDef.filter.searchTerm !== undefined || columnDef.filter.searchTerm !== null)) ? columnDef.filter.searchTerm : '';
 
       // keep the filter in a columnFilters for later reference
       this.keepColumnFilters(searchTerm, searchTerms, columnDef);
@@ -295,23 +324,26 @@ export class FilterService {
         callback: this.callbackSearchEvent.bind(this)
       };
 
-      // depending on the DOM Element type, we will watch the correct event
-      const filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FormElementType.input;
+      // depending on the Filter type, we will watch the correct event
+      const filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
 
       let filter: Filter;
       switch (filterType) {
-        case FormElementType.custom:
+        case FilterType.custom:
           if (columnDef && columnDef.filter && columnDef.filter.customFilter) {
             filter = columnDef.filter.customFilter;
           }
           break;
-        case FormElementType.select:
+        case FilterType.select:
           filter = new Filters.select(this.translate);
           break;
-        case FormElementType.multipleSelect:
+        case FilterType.multipleSelect:
           filter = new Filters.multipleSelect(this.translate);
           break;
-        case FormElementType.input:
+        case FilterType.singleSelect:
+          filter = new Filters.singleSelect(this.translate);
+          break;
+        case FilterType.input:
         default:
           filter = new Filters.input();
           break;
@@ -340,13 +372,13 @@ export class FilterService {
     this.subscriber.subscribe(() => this.onFilterChanged.emit(`onFilterChanged by ${sender}`));
   }
 
-  private keepColumnFilters(searchTerm: string | number, searchTerms: any, columnDef: any) {
-    if (searchTerm) {
+  private keepColumnFilters(searchTerm: string | number | boolean, searchTerms: any, columnDef: any) {
+    if (searchTerm !== undefined && searchTerm !== null && searchTerm !== '') {
       this._columnFilters[columnDef.id] = {
         columnId: columnDef.id,
         columnDef,
         searchTerm,
-        type: columnDef.filter.type
+        type: (columnDef && columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input
       };
     }
     if (searchTerms) {
@@ -355,7 +387,7 @@ export class FilterService {
         columnId: columnDef.id,
         columnDef,
         searchTerms,
-        type: columnDef.filter.type
+        type: (columnDef && columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input
       };
     }
   }

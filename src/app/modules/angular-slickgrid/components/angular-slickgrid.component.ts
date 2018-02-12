@@ -22,7 +22,7 @@ import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
 import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
-import { BackendServiceOption, CellArgs, Column, FormElementType, GraphqlResult, GridOption } from './../models';
+import { BackendServiceOption, CellArgs, Column, GraphqlResult, GridOption } from './../models';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { FilterService } from './../services/filter.service';
 import { GraphqlService } from './../services/graphql.service';

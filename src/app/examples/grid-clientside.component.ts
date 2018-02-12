@@ -1,5 +1,6 @@
+import { CustomInputFilter } from './custom-inputFilter';
 import { Component, OnInit } from '@angular/core';
-import { Column, FieldType, Formatter, Formatters, FormElementType, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, FilterType, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -26,6 +27,7 @@ export class GridClientSideComponent implements OnInit {
         <li>FieldType of dateUtc/date (from dataset) can use an extra option of "filterSearchType" to let user filter more easily. For example, in the "UTC Date" field below, you can type "&gt;02/28/2017", also when dealing with UTC you have to take the time difference in consideration.</li>
       </ul>
       <li>On String filters, (*) can be used as startsWith (Hello* => matches "Hello Word") ... endsWith (*Doe => matches: "John Doe")</li>
+      <li>Custom Filter are now possible, "Description" column below, is a customized InputFilter with different placeholder. See <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Custom-Filter" target="_blank">Wiki - Custom Filter</a>
     </ul>
   `;
 
@@ -34,22 +36,31 @@ export class GridClientSideComponent implements OnInit {
   dataset: any[];
 
   ngOnInit(): void {
-    // prepare a multi-select array to filter with
+    // prepare a multiple-select array to filter with
     const multiSelectFilterArray = [];
     for (let i = 0; i < NB_ITEMS; i++) {
-      multiSelectFilterArray.push({ value: i, label: i});
+      multiSelectFilterArray.push({ value: i, label: i });
     }
 
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'title', filterable: true, sortable: true, type: FieldType.string },
-      { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, type: FieldType.string },
+      { id: 'title', name: 'Title', field: 'title', filterable: true, sortable: true, type: FieldType.string,  },
+      { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true,
+        type: FieldType.string,
+        filter: {
+          type: FilterType.custom,
+          customFilter: new CustomInputFilter() // create a new instance to avoid singleton issues
+        }
+       },
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number,
+        minWidth: 55,
         filterable: true,
         filter: {
-          // searchTerms: [10, 20], // default selection
-          type: FormElementType.multipleSelect,
-          options: { filter: true },
-          collection: multiSelectFilterArray
+          collection: multiSelectFilterArray,
+          type: FilterType.multipleSelect,
+          searchTerms: [1, 10, 20], // default selection
+
+          // we could add certain option(s) to the "multiple-select" plugin
+          options: { maxHeight: 250 }
         }
       },
       { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, filterable: true, sortable: true },
@@ -62,9 +73,13 @@ export class GridClientSideComponent implements OnInit {
         sortable: true,
         filterable: true,
         filter: {
-          searchTerm: '', // default selection
-          type: FormElementType.select,
-          collection: [ { value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' } ]
+          collection: [ { value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' } ],
+          type: FilterType.singleSelect,
+          // searchTerm: true, // default selection
+          options: {
+            // you can add "multiple-select" plugin options like styling the first row
+            width: 100
+          },
         }
       }
     ];
