@@ -56,7 +56,7 @@ export class GridMenuComponent implements OnInit {
         filter: {
           searchTerm: '', // default selection
           type: FormElementType.select,
-          selectOptions: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }]
+          collection: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }]
         }
       }
     ];

@@ -39,6 +39,7 @@ export { HtmlElementPosition } from './htmlElementPosition.interface';
 export { KeyCode } from './keyCode.enum';
 export { OdataOption } from './odataOption.interface';
 export { OnEventArgs } from './onEventArgs.interface';
+export { OperatorString } from './operatorString';
 export { OperatorType } from './operatorType';
 export { Pagination } from './pagination.interface';
 export { PaginationChangedArgs } from './paginationChangedArgs.interface';

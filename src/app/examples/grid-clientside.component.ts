@@ -47,7 +47,8 @@ export class GridClientSideComponent implements OnInit {
         filterable: true,
         filter: {
           // searchTerms: [10, 20], // default selection
-          type: FormElementType.multiSelect,
+          type: FormElementType.multipleSelect,
+          options: { filter: true },
           collection: multiSelectFilterArray
         }
       },

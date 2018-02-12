@@ -13,9 +13,8 @@ export class SelectFilter implements Filter {
   searchTerm: string | number;
   columnDef: Column;
   callback: FilterCallback;
-  i18n?: TranslateService;
 
-  constructor() {}
+  constructor(private translate: TranslateService) {}
 
   /**
    * Initialize the filter template
@@ -25,7 +24,6 @@ export class SelectFilter implements Filter {
     this.callback = args.callback;
     this.columnDef = args.columnDef;
     this.searchTerm = args.searchTerm;
-    this.i18n = args.i18n;
 
     // step 1, create HTML string template
     const filterTemplate = this.buildTemplateHtmlString();
@@ -46,6 +44,15 @@ export class SelectFilter implements Filter {
       if (triggerFilterChange) {
         this.$filterElm.trigger('change');
       }
+    }
+  }
+
+  /**
+   * destroy the filter
+   */
+  destroy() {
+    if (this.$filterElm) {
+      this.$filterElm.off('change').remove();
     }
   }
 
@@ -71,7 +78,7 @@ export class SelectFilter implements Filter {
         throw new Error(`SelectOptions with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')`);
       }
       const labelKey = option.labelKey || option[labelName];
-      const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.i18n && typeof this.i18n.instant === 'function') ? this.i18n.instant(labelKey || ' ') : labelKey;
+      const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
       options += `<option value="${option[valueName]}">${textLabel}</option>`;
     });
     return `<select class="form-control search-filter">${options}</select>`;

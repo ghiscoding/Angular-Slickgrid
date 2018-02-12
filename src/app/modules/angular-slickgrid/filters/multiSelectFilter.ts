@@ -1,42 +1,23 @@
+import { Injectable } from '@angular/core';
 import { Column, Filter } from './../models';
 import { FilterArguments } from '../models/filterArguments.interface';
 import { FilterCallback } from './../models/filterCallback.interface';
 import { HtmlElementPosition } from './../models/htmlElementPosition.interface';
 import { TranslateService } from '@ngx-translate/core';
 import $ from 'jquery';
-import { Injectable } from '@angular/core';
 
 // using external js modules in Angular
 declare var $: any;
 
 @Injectable()
-export class MultipleSelectFilter implements Filter {
+export class MultiSelectFilter implements Filter {
   $filterElm: any;
   grid: any;
   searchTerms: string[] | number[];
   columnDef: Column;
   callback: FilterCallback;
-  i18n: TranslateService;
-  defaultOptions: any;
 
-  constructor(private translate: TranslateService) {
-    this.defaultOptions = {
-      container: 'body',
-      filter: false,
-      minimumCountSelected: 3,
-      maxHeight: 200,
-      okButton: true,
-      addTitle: true,
-      countSelected: this.translate.instant('X_OF_Y_SELECTED'),
-      allSelected: this.translate.instant('ALL_SELECTED'),
-      selectAllText: this.translate.instant('SELECT_ALL'),
-      selectAllDelimiter: ['', ''],
-      onClose: () => {
-        const selectedItems = this.$filterElm.multipleSelect('getSelects');
-        this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: selectedItems });
-      }
-    };
-  }
+  constructor(private translate: TranslateService) {}
 
   /**
    * Initialize the filter template
@@ -50,19 +31,27 @@ export class MultipleSelectFilter implements Filter {
     // step 1, create HTML string template
     const filterTemplate = this.buildTemplateHtmlString();
 
-    // step 2, create the DOM Element of the filter & pre-load search terms
-    // also subscribe to the onClose event
+    // step 2, create the DOM Element of the filter & subscribe to the onClose event
     this.createDomElement(filterTemplate);
+
+    // step 3, subscribe to the select close event and run the callback when that happens
+    /*
+    this.$filterElm.on('sumo:closed', (sumo) => {
+      console.log('Drop down closed', sumo);
+      // const selectedItems = this.$filterElm.SumoSelect('getSelects');
+      //  this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: selectedItems });
+    });
+    */
   }
 
   /**
    * Clear the filter values
    */
   clear(triggerFilterChange = true) {
-    if (this.$filterElm && this.$filterElm.multipleSelect) {
+    if (this.$filterElm && this.$filterElm.SumoSelect) {
       // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
       // this.$filterElm = $(`#${this.$filterElm[0].id}`);
-      this.$filterElm.multipleSelect('setSelects', []);
+      this.$filterElm.SumoSelect('setSelects', []);
 
       if (triggerFilterChange) {
         this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: [] });
@@ -88,7 +77,7 @@ export class MultipleSelectFilter implements Filter {
    */
   private buildTemplateHtmlString() {
     if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the Multi-Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FormElementType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: true, label: 'True'}] }`);
+      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the Multi-Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FormElementType.multiSelect, collection: [{ value: true, label: 'True' }, { value: true, label: 'True'}] }`);
     }
     const optionCollection = this.columnDef.filter.collection || [];
     const labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
@@ -100,11 +89,11 @@ export class MultipleSelectFilter implements Filter {
         throw new Error(`SelectOptions with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')`);
       }
       const labelKey = option.labelKey || option[labelName];
-      const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.i18n && typeof this.i18n.instant === 'function') ? this.i18n.instant(labelKey || ' ') : labelKey;
-      options += `<option value="${option[valueName]}" selected="selected">${textLabel}</option>`;
+      const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+      options += `<option value="${option[valueName]}">${textLabel}</option>`;
     });
 
-    return `<select class="ms-filter search-filter" multiple="multiple">${options}</select>`;
+    return `<select class="sumo-filter search-filter" multiple="multiple">${options}</select>`;
   }
 
   /**
@@ -127,17 +116,39 @@ export class MultipleSelectFilter implements Filter {
       this.$filterElm.appendTo($headerElm);
     }
 
-    // merge options & attach multiSelect
-    const options = { ...this.defaultOptions, ...this.columnDef.filter.options };
-    this.$filterElm = this.$filterElm.multipleSelect(options);
-  }
-
-  private subscribeOnClose() {
-    this.$filterElm.multipleSelect({
+    this.$filterElm.SumoSelect({
+      placeholder: 'This is a placeholder',
+      okCancelInMulti: false,
+      triggerChangeCombined: true,
+      forceCustomRendering: true,
+      selectAll: true,
+      container: 'body'});
+    /*
+    this.$filterElm = this.$filterElm.SumoSelect({
+      container: 'body',
+      minimumCountSelected: 2,
+      countSelected: '# de % sélectionné',
+      allSelected: `Tout sélectionnés`,
+      selectAllText: `Sélectionner tout`,
       onClose: () => {
-        const selectedItems = this.$filterElm.multipleSelect('getSelects');
+        const selectedItems = this.$filterElm.SumoSelect('getSelects');
         this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: selectedItems });
       }
     });
+    */
+  }
+
+  private findSelectedItems(item) {
+    // return this.searchTerms.findIndex((searchItem: any) => searchItem === item);
+  }
+
+  private preLoadSearchTerms() {
+    // run a query if user has some default search terms
+    if (this.searchTerms && Array.isArray(this.searchTerms)) {
+      for (let k = 0, ln = this.searchTerms.length; k < ln; k++) {
+        this.searchTerms[k] = (this.searchTerms[k] || '') + ''; // make sure all search terms are strings
+      }
+      this.$filterElm.SumoSelect('setSelects', this.searchTerms);
+    }
   }
 }

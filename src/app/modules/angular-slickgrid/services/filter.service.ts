@@ -99,7 +99,7 @@ export class FilterService {
     const triggerFilterChange = !hasBackendServiceApi;
 
     this._filters.forEach((filter, index) => {
-      if (filter && typeof filter.clear) {
+      if (filter && filter.clear) {
         // clear element but don't trigger a change
         // until we reach the last index to avoid multiple request to the Backend Server
         const callTrigger = (index === 0 || index === this._filters.length - 1) ? true : false;
@@ -230,6 +230,13 @@ export class FilterService {
         delete this._columnFilters[columnId];
       }
     }
+
+    // also destroy each Filter instances
+    this._filters.forEach((filter, index) => {
+      if (filter && filter.destroy) {
+        filter.destroy(true);
+      }
+    });
   }
 
   callbackSearchEvent(e: Event | undefined, args: { columnDef: Column, operator?: string, searchTerms?: string[] | number[] }) {
@@ -285,8 +292,7 @@ export class FilterService {
         searchTerm,
         searchTerms,
         columnDef,
-        callback: this.callbackSearchEvent.bind(this),
-        i18n: this.translate
+        callback: this.callbackSearchEvent.bind(this)
       };
 
       // depending on the DOM Element type, we will watch the correct event
@@ -295,12 +301,18 @@ export class FilterService {
       let filter: Filter;
       switch (filterType) {
         case FormElementType.custom:
+          if (columnDef && columnDef.filter && columnDef.filter.customFilter) {
+            filter = columnDef.filter.customFilter;
+          }
           break;
         case FormElementType.select:
-          filter = new Filters.select();
+          filter = new Filters.select(this.translate);
           break;
         case FormElementType.multiSelect:
-          filter = new Filters.multipleSelect();
+          filter = new Filters.multiSelect(this.translate);
+          break;
+        case FormElementType.multipleSelect:
+          filter = new Filters.multipleSelect(this.translate);
           break;
         case FormElementType.input:
         default:

@@ -47,11 +47,12 @@
     "moment-mini": "^2.18.1",
     "multiple-select": "^1.2.1",
     "slickgrid": "^2.3.12",
+    "sumoselect": "^3.0.3",
     "vinyl-paths": "^2.1.0"
   },
   "devDependencies": {
     "@angular/animations": "^5.0.0",
-    "@angular/cli": "1.5.4",
+    "@angular/cli": "^1.6.0",
     "@angular/common": "^5.0.0",
     "@angular/compiler": "^5.0.0",
     "@angular/compiler-cli": "^5.0.0",
@@ -94,7 +95,7 @@
     "rxjs": "^5.4.2",
     "ts-node": "~3.3.0",
     "tslint": "^5.8.0",
-    "typescript": "^2.3.4",
+    "typescript": "~2.4.2",
     "yargs": "^9.0.1",
     "zone.js": "^0.8.17"
   }

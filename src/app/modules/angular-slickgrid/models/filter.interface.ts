@@ -10,7 +10,8 @@ export interface Filter {
   grid: any;
   searchTerm?: string | number;
   searchTerms?: string[] | number[];
-  i18n?: TranslateService;
 
   init: (args: FilterArguments) => void;
+  clear: () => void;
+  destroy: () => void;
 }

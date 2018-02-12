@@ -58,7 +58,7 @@ export class GridGraphqlComponent implements OnInit {
         filterable: true,
         filter: {
           // searchTerms: [], // default selection
-          type: FormElementType.multiSelect,
+          type: FormElementType.multipleSelect,
           collection: [{ value: 'ABC', label: 'Company ABC'}, { value: 'XYZ', label: 'Company XYZ'}]
         }
       },

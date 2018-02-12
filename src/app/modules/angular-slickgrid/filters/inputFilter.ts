@@ -46,6 +46,15 @@ export class InputFilter implements Filter {
     }
   }
 
+  /**
+   * destroy the filter
+   */
+  destroy() {
+    if (this.$filterElm) {
+      this.$filterElm.off('keyup').remove();
+    }
+  }
+
   //
   // private functions
   // ------------------
