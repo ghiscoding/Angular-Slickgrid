@@ -121,14 +121,14 @@ export class MultipleSelectFilter implements Filter {
    * @param filterTemplate
    */
   private createDomElement(filterTemplate: string) {
-    if (typeof this.$filterElm.multipleSelect !== 'function') {
-      throw new Error(`multiple-select.js was not found, make sure to modify your "angular-cli.json" file and include "../node_modules/angular-slickgrid/lib/multiple-select/multiple-select.js" and it's css or SASS file`);
-    }
     const $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
     $($headerElm).empty();
 
     // create the DOM element & add an ID and filter class
     this.$filterElm = $(filterTemplate);
+    if (typeof this.$filterElm.multipleSelect !== 'function') {
+      throw new Error(`multiple-select.js was not found, make sure to modify your "angular-cli.json" file and include "../node_modules/angular-slickgrid/lib/multiple-select/multiple-select.js" and it's css or SASS file`);
+    }
     this.$filterElm.attr('id', `filter-${this.columnDef.id}`);
     this.$filterElm.data('columnId', this.columnDef.id);
 

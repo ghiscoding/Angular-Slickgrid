@@ -25,7 +25,7 @@ export interface ColumnFilter {
   /** Operator to use when filtering (>, >=, EQ, IN, ...) */
   operator?: string;
 
-  /** Type of Filter to use (input, select, multi-select, custom) */
+  /** Filter Type to use (input, multipleSelect, singleSelect, select, custom) */
   type?: FilterType | FormElementType;
 
   /** A collection of items/options (commonly used with a Select/Multi-Select Filter) */

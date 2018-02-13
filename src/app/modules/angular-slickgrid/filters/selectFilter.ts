@@ -65,7 +65,7 @@ export class SelectFilter implements Filter {
       throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
     if (!this.columnDef.filter.collection && this.columnDef.filter.selectOptions) {
-      console.warn(`[Angular-SlickGrid] The Select Filter "selectOptions" property will de deprecated in future version, please use the new property "collection" instead, which is more generic and not only inteded for Select.`);
+      console.warn(`[Angular-SlickGrid] The Select Filter "selectOptions" property will de deprecated in future version. Please use the new "collection" property which is more generic and can be used with other Filters (not just Select).`);
     }
 
     const optionCollection = this.columnDef.filter.collection || this.columnDef.filter.selectOptions || [];

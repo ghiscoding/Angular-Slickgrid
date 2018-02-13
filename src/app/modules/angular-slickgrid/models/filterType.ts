@@ -1,16 +1,16 @@
 export enum FilterType {
-  /** Custom Filter type */
-  custom = 'custom',
-
   /** Input Filter type */
-  input = 'input', // might need <any> casting
+  input,
+
+  /** Select Filter type, just a regular select dropdown. You might want to try "singleSelect" which has a nicer look and feel. */
+  select,
 
   /** Multiple-Select Filter type */
-  multipleSelect = 'multipleSelect',
-
-  /** Select Filter type */
-  select = 'select',
+  multipleSelect,
 
   /** Single Filter type */
-  singleSelect = 'singleSelect'
+  singleSelect,
+
+  /** Custom Filter type */
+  custom,
 }

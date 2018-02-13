@@ -16,9 +16,10 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build-lib": "npm-run-all packagr sass:build sass:copy copy:i18n",
+    "build-lib": "npm-run-all packagr sass:build sass:copy copy:i18n copy:lib",
     "build-lib-pack": "npm-run-all build-lib pack-lib copy-pack del-pack",
     "copy:i18n": "cross-env copyfiles -f src/assets/i18n/*.json dist/i18n",
+    "copy:lib": "cross-env copyfiles --up 2 src/assets/lib/** dist",
     "copy-pack": "cross-env copyfiles -f *.tgz ../Angular-Slickgrid-PackageTest",
     "del-pack": "cross-env del *.tgz",
     "pack-lib": "npm pack ./dist",
@@ -50,7 +51,7 @@
   },
   "devDependencies": {
     "@angular/animations": "^5.0.0",
-    "@angular/cli": "^1.6.0",
+    "@angular/cli": "^1.5.4",
     "@angular/common": "^5.0.0",
     "@angular/compiler": "^5.0.0",
     "@angular/compiler-cli": "^5.0.0",
@@ -93,7 +94,7 @@
     "rxjs": "^5.4.2",
     "ts-node": "~3.3.0",
     "tslint": "^5.8.0",
-    "typescript": "~2.4.2",
+    "typescript": "^2.3.4",
     "yargs": "^9.0.1",
     "zone.js": "^0.8.17"
   }
