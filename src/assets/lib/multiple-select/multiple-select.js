@@ -11,6 +11,7 @@
  * - add an "OK" button at the end of the list, you can use it with the option "okButton: true" and you can also change locale with "okButtonText"
  * - made code changes to support re-styling of the radio/checkbox with Font-Awesome or any other font
  * - width option was not working when using "container", added some code to support it
+ * - "offsetLeft" (default to 0) if we want the drop to be offset from the select element (by default it is aligned left to the element with 0 offset)
  */
 
 (function ($) {
@@ -452,12 +453,24 @@
                 this.$noResults.show();
             }
 
+            if (this.options.offsetLeft) {
+              var offset = this.$drop.offset();
+              var leftPos = offset.left - this.options.offsetLeft;
+
+              this.$drop.offset({
+                top: offset.top,
+                left: leftPos
+              });
+            }
+
             if (this.options.container) {
                 var offset = this.$drop.offset();
+                var leftPos = this.options.offsetLeft ? (offset.left - this.options.offsetLeft) : offset.left;
+
                 this.$drop.appendTo($(this.options.container));
                 this.$drop.offset({
                     top: offset.top,
-                    left: offset.left
+                    left:  leftPos
                 });
             }
 
@@ -749,6 +762,7 @@
         multipleWidth: 80,
         single: false,
         filter: false,
+        offsetLeft: 0,
         width: undefined,
         dropWidth: undefined,
         maxHeight: 250,
