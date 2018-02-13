@@ -56,7 +56,6 @@ export class GridMenuComponent implements OnInit {
         filter: {
           collection: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }],
           type: FilterType.singleSelect,
-          searchTerm: '', // default selection
           filterOptions: {
             // you can add "multiple-select" plugin options like styling the first row
             offsetLeft: 14,

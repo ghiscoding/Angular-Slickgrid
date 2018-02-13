@@ -49,7 +49,6 @@ export class GridGraphqlComponent implements OnInit {
       { id: 'name', name: 'Name', field: 'name', headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string },
       { id: 'gender', name: 'Gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true,
         filter: {
-          // searchTerm: '', // default selection
           type: FilterType.singleSelect,
           collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }]
         }
@@ -57,7 +56,6 @@ export class GridGraphqlComponent implements OnInit {
       { id: 'company', name: 'Company', field: 'company', headerKey: 'COMPANY',
         filterable: true,
         filter: {
-          // searchTerms: [], // default selection
           type: FilterType.multipleSelect,
           collection: [{ value: 'ABC', label: 'Company ABC'}, { value: 'XYZ', label: 'Company XYZ'}]
         }

@@ -54,7 +54,6 @@ export class GridLocalizationComponent implements OnInit {
         filter: {
           collection: [ { value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' } ],
           type: FilterType.singleSelect,
-          searchTerm: '', // default selection
           filterOptions: {
             width: 150
           }

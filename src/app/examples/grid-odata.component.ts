@@ -42,7 +42,6 @@ export class GridOdataComponent implements OnInit {
       { id: 'name', name: 'Name', field: 'name', filterable: true, sortable: true, type: FieldType.string },
       { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
         filter: {
-          searchTerm: '', // default selection
           type: FilterType.singleSelect,
           collection: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
         }
