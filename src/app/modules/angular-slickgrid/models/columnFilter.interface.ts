@@ -32,7 +32,7 @@ export interface ColumnFilter {
   collection?: any[];
 
   /** Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250} */
-  options?: any;
+  filterOptions?: any;
 
   /** DEPRECATED, please use "collection" instead which is more generic and not specific to a Select Filter. Refer to the Select Filter Wiki page for more info: https://github.com/ghiscoding/Angular-Slickgrid/wiki/Select-Filter  */
   selectOptions?: any[];

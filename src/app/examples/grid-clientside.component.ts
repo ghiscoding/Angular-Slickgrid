@@ -48,7 +48,7 @@ export class GridClientSideComponent implements OnInit {
         type: FieldType.string,
         filter: {
           type: FilterType.custom,
-          customFilter: new CustomInputFilter() // create a new instance to avoid singleton issues
+          customFilter: new CustomInputFilter() // create a new instance to make each Filter independent from each other
         }
        },
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number,
@@ -60,7 +60,7 @@ export class GridClientSideComponent implements OnInit {
           searchTerms: [1, 10, 20], // default selection
 
           // we could add certain option(s) to the "multiple-select" plugin
-          options: { maxHeight: 250 }
+          filterOptions: { maxHeight: 250 }
         }
       },
       { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, filterable: true, sortable: true },
@@ -76,8 +76,9 @@ export class GridClientSideComponent implements OnInit {
           collection: [ { value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' } ],
           type: FilterType.singleSelect,
           // searchTerm: true, // default selection
-          options: {
+          filterOptions: {
             // you can add "multiple-select" plugin options like styling the first row
+            offsetLeft: 14,
             width: 100
           },
         }
