@@ -11,7 +11,7 @@ export declare class SlickPaginationComponent implements AfterViewInit, OnInit {
     grid: any;
     dataFrom: number;
     dataTo: number;
-    itemsPerPage: any;
+    itemsPerPage: number;
     pageCount: number;
     pageNumber: number;
     totalItems: number;
@@ -28,6 +28,6 @@ export declare class SlickPaginationComponent implements AfterViewInit, OnInit {
     changeToPreviousPage(event: any): void;
     onChangeItemPerPage(event: any): void;
     refreshPagination(isPageNumberReset?: boolean): void;
-    onPageChanged(event?: Event, pageNumber?: number): Promise<void>;
+    onPageChanged(event: Event | undefined, pageNumber: number): Promise<void>;
     recalculateFromToIndexes(): void;
 }

@@ -1,7 +1,9 @@
 import { BackendService } from './index';
+import { BackendServiceOption } from './backendServiceOption.interface';
 import { Observable } from 'rxjs/Observable';
 import { GraphqlResult } from './graphqlResult.interface';
 export interface BackendEventChanged {
+    options?: BackendServiceOption;
     /** On init (or on page load), what action to perform? */
     onInit?: (query: string) => Promise<GraphqlResult | any> | Observable<GraphqlResult | any>;
     /** Before executing the query, what action to perform? For example, start a spinner */

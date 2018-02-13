@@ -4,7 +4,7 @@ import { BackendService, FilterChangedArgs, GraphqlCursorPaginationOption, Graph
 export declare class GraphqlService implements BackendService {
     private translate;
     options: GraphqlServiceOption;
-    pagination: Pagination;
+    pagination: Pagination | undefined;
     defaultOrderBy: GraphqlSortingOption;
     defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption;
     constructor(translate: TranslateService);

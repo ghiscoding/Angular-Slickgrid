@@ -7,6 +7,7 @@ export declare const FilterConditions: {
     dateUtcFilter: (options: FilterConditionOption) => boolean;
     dateUsFilter: (options: FilterConditionOption) => boolean;
     dateUsShortFilter: (options: FilterConditionOption) => boolean;
+    collectionSearchFilter: (options: FilterConditionOption) => boolean;
     numberFilter: (options: FilterConditionOption) => boolean;
     stringFilter: (options: FilterConditionOption) => boolean;
     testFilter: (operator: string, value1: any, value2: any) => boolean;

@@ -8,6 +8,8 @@ export interface BackendServiceOption {
     filteringOptions?: any[];
     /** array of Filtering Options, ex.: { field: name, direction: DESC }  */
     sortingOptions?: any[];
+    /** Execute the process callback command on component init (page load) */
+    executeProcessCommandOnInit?: boolean;
     /** Backend Event callbacks that will be used by the Backend Service */
     onBackendEventApi?: BackendEventChanged;
 }

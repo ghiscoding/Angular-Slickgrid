@@ -82,14 +82,29 @@ FieldType[FieldType.dateTimeUsAM_PM] = "dateTimeUsAM_PM";
 FieldType[FieldType.dateTimeUsShort] = "dateTimeUsShort";
 FieldType[FieldType.dateTimeUsShortAmPm] = "dateTimeUsShortAmPm";
 FieldType[FieldType.dateTimeUsShortAM_PM] = "dateTimeUsShortAM_PM";
+var FilterType = {};
+FilterType.input = 0;
+FilterType.select = 1;
+FilterType.multipleSelect = 2;
+FilterType.singleSelect = 3;
+FilterType.custom = 4;
+FilterType[FilterType.input] = "input";
+FilterType[FilterType.select] = "select";
+FilterType[FilterType.multipleSelect] = "multipleSelect";
+FilterType[FilterType.singleSelect] = "singleSelect";
+FilterType[FilterType.custom] = "custom";
 var FormElementType = {};
 FormElementType.input = 0;
-FormElementType.multiSelect = 1;
-FormElementType.select = 2;
-FormElementType.textarea = 3;
+FormElementType.select = 1;
+FormElementType.multipleSelect = 2;
+FormElementType.singleSelect = 3;
+FormElementType.custom = 4;
+FormElementType.textarea = 5;
 FormElementType[FormElementType.input] = "input";
-FormElementType[FormElementType.multiSelect] = "multiSelect";
 FormElementType[FormElementType.select] = "select";
+FormElementType[FormElementType.multipleSelect] = "multipleSelect";
+FormElementType[FormElementType.singleSelect] = "singleSelect";
+FormElementType[FormElementType.custom] = "custom";
 FormElementType[FormElementType.textarea] = "textarea";
 var KeyCode = {};
 KeyCode.BACKSPACE = 8;
@@ -9524,7 +9539,7 @@ var Editors = {
  * @return {?}
  */
 function parseBoolean(str) {
-    return /(true|1)/i.test(str);
+    return /(true|1)/i.test(str + '');
 }
 var booleanFilterCondition = function (options) {
     return parseBoolean(options.cellValue) === parseBoolean(options.searchTerm);
@@ -9545,6 +9560,7 @@ var testFilterCondition = function (operator, value1, value2) {
         case '=':
         case '==':
         case 'EQ': return (value1 === value2);
+        case 'IN': return (value2.includes(value1));
     }
     return true;
 };
@@ -9607,15 +9623,22 @@ var dateUtcFilterCondition = function (options) {
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
+var collectionSearchFilterCondition = function (options) {
+    // multiple-select will always return text, so we should make our cell values text as well
+    var /** @type {?} */ cellValue = options.cellValue + '';
+    return testFilterCondition(options.operator || 'IN', cellValue, options.searchTerms || []);
+};
 var numberFilterCondition = function (options) {
-    return testFilterCondition(options.operator || '==', parseFloat(options.cellValue), parseFloat(options.searchTerm));
+    var /** @type {?} */ cellValue = parseFloat(options.cellValue);
+    var /** @type {?} */ searchTerm = (typeof options.searchTerm === 'string') ? parseFloat(options.searchTerm) : options.searchTerm;
+    return testFilterCondition(options.operator || '==', cellValue, searchTerm);
 };
 var stringFilterCondition = function (options) {
     // make sure the cell value is a string by casting it when possible
     options.cellValue = (options.cellValue === undefined || options.cellValue === null) ? '' : options.cellValue.toString();
     // make both the cell value and search value lower for case insensitive comparison
     var /** @type {?} */ cellValue = options.cellValue.toLowerCase();
-    var /** @type {?} */ searchTerm = options.searchTerm.toLowerCase();
+    var /** @type {?} */ searchTerm = (typeof options.searchTerm === 'string') ? options.searchTerm.toLowerCase() : options.searchTerm;
     if (options.operator === '*') {
         return cellValue.endsWith(searchTerm);
     }
@@ -9628,6 +9651,10 @@ var stringFilterCondition = function (options) {
     return testFilterCondition(options.operator || '==', cellValue, searchTerm);
 };
 var executeMappedCondition = function (options) {
+    // when using a multi-select ('IN' operator) we will not use the field type but instead go directly with a collection search
+    if (options && options.operator && options.operator.toUpperCase() === 'IN') {
+        return collectionSearchFilterCondition(options);
+    }
     // execute the mapped type, or default to String condition check
     switch (options.fieldType) {
         case FieldType.boolean:
@@ -9659,33 +9686,464 @@ var FilterConditions = {
     dateUtcFilter: dateUtcFilterCondition,
     dateUsFilter: dateUsFilterCondition,
     dateUsShortFilter: dateUsShortFilterCondition,
+    collectionSearchFilter: collectionSearchFilterCondition,
     numberFilter: numberFilterCondition,
     stringFilter: stringFilterCondition,
     testFilter: testFilterCondition
 };
-var inputFilterTemplate = function (searchTerm, columnDef) {
-    return "<input type=\"text\" class=\"form-control search-filter\" style=\"font-family: Segoe UI Symbol;\" placeholder=\"&#128269;\">";
-};
-var selectFilterTemplate = function (searchTerm, columnDef, i18n) {
-    if (!columnDef.filter.selectOptions) {
-        throw new Error("SelectOptions with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')");
+var InputFilter = /** @class */ (function () {
+    function InputFilter() {
     }
-    var /** @type {?} */ options = '';
-    var /** @type {?} */ labelName = (columnDef.filter.customStructure) ? columnDef.filter.customStructure.label : 'label';
-    var /** @type {?} */ valueName = (columnDef.filter.customStructure) ? columnDef.filter.customStructure.value : 'value';
-    columnDef.filter.selectOptions.forEach(function (option) {
-        if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
-            throw new Error("SelectOptions with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FormElementType.select, selectOptions: [ { value: '1', label: 'One' } ]')");
+    /**
+     * Initialize the Filter
+     * @param {?} args
+     * @return {?}
+     */
+    InputFilter.prototype.init = function (args) {
+        var _this = this;
+        this.grid = args.grid;
+        this.callback = args.callback;
+        this.columnDef = args.columnDef;
+        this.searchTerm = args.searchTerm;
+        // step 1, create HTML string template
+        var /** @type {?} */ filterTemplate = this.buildTemplateHtmlString();
+        // step 2, create the DOM Element of the filter & initialize it if searchTerm is filled
+        this.$filterElm = this.createDomElement(filterTemplate);
+        // step 3, subscribe to the keyup event and run the callback when that happens
+        this.$filterElm.keyup(function (e) { return _this.callback(e, { columnDef: _this.columnDef }); });
+    };
+    /**
+     * Clear the filter value
+     * @param {?=} triggerFilterKeyup
+     * @return {?}
+     */
+    InputFilter.prototype.clear = function (triggerFilterKeyup) {
+        if (triggerFilterKeyup === void 0) { triggerFilterKeyup = true; }
+        if (this.$filterElm) {
+            this.$filterElm.val('');
+            if (triggerFilterKeyup) {
+                this.$filterElm.trigger('keyup');
+            }
         }
-        var /** @type {?} */ labelKey = option.labelKey || option[labelName];
-        var /** @type {?} */ textLabel = ((option.labelKey || columnDef.filter.enableTranslateLabel) && i18n && typeof i18n.instant === 'function') ? i18n.instant(labelKey || ' ') : labelKey;
-        options += "<option value=\"" + option[valueName] + "\">" + textLabel + "</option>";
-    });
-    return "<select class=\"form-control search-filter\">" + options + "</select>";
-};
-var FilterTemplates = {
-    input: inputFilterTemplate,
-    select: selectFilterTemplate
+    };
+    /**
+     * destroy the filter
+     * @return {?}
+     */
+    InputFilter.prototype.destroy = function () {
+        if (this.$filterElm) {
+            this.$filterElm.off('keyup').remove();
+        }
+    };
+    /**
+     * Create the HTML template as a string
+     * @return {?}
+     */
+    InputFilter.prototype.buildTemplateHtmlString = function () {
+        return "<input type=\"text\" class=\"form-control search-filter\" style=\"font-family: Segoe UI Symbol;\" placeholder=\"&#128269;\">";
+    };
+    /**
+     * From the html template string, create a DOM element
+     * @param {?} filterTemplate
+     * @return {?}
+     */
+    InputFilter.prototype.createDomElement = function (filterTemplate) {
+        var /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        $($headerElm).empty();
+        // create the DOM element & add an ID and filter class
+        var /** @type {?} */ $filterElm = $(filterTemplate);
+        $filterElm.val(this.searchTerm);
+        $filterElm.attr('id', "filter-" + this.columnDef.id);
+        $filterElm.data('columnId', this.columnDef.id);
+        // append the new DOM element to the header row
+        if ($filterElm && typeof $filterElm.appendTo === 'function') {
+            $filterElm.appendTo($headerElm);
+        }
+        return $filterElm;
+    };
+    return InputFilter;
+}());
+var MultipleSelectFilter = /** @class */ (function () {
+    /**
+     * Initialize the Filter
+     * @param {?} translate
+     */
+    function MultipleSelectFilter(translate) {
+        var _this = this;
+        this.translate = translate;
+        // default options used by this Filter, user can overwrite any of these by passing "otions"
+        this.defaultOptions = {
+            container: 'body',
+            filter: false,
+            maxHeight: 200,
+            okButton: true,
+            addTitle: true,
+            countSelected: this.translate.instant('X_OF_Y_SELECTED'),
+            allSelected: this.translate.instant('ALL_SELECTED'),
+            selectAllText: this.translate.instant('SELECT_ALL'),
+            selectAllDelimiter: ['', ''],
+            // we will subscribe to the onClose event for triggering our callback
+            onClose: function () {
+                var selectedItems = _this.$filterElm.multipleSelect('getSelects');
+                _this.callback(undefined, { columnDef: _this.columnDef, operator: 'IN', searchTerms: selectedItems });
+            }
+        };
+    }
+    /**
+     * Initialize the filter template
+     * @param {?} args
+     * @return {?}
+     */
+    MultipleSelectFilter.prototype.init = function (args) {
+        this.grid = args.grid;
+        this.callback = args.callback;
+        this.columnDef = args.columnDef;
+        this.searchTerms = args.searchTerms || [];
+        // step 1, create HTML string template
+        var /** @type {?} */ filterTemplate = this.buildTemplateHtmlString();
+        // step 2, create the DOM Element of the filter & pre-load search terms
+        // also subscribe to the onClose event
+        this.createDomElement(filterTemplate);
+    };
+    /**
+     * Clear the filter values
+     * @param {?=} triggerFilterChange
+     * @return {?}
+     */
+    MultipleSelectFilter.prototype.clear = function (triggerFilterChange) {
+        if (triggerFilterChange === void 0) { triggerFilterChange = true; }
+        if (this.$filterElm && this.$filterElm.multipleSelect) {
+            // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
+            // this.$filterElm = $(`#${this.$filterElm[0].id}`);
+            this.$filterElm.multipleSelect('setSelects', []);
+            if (triggerFilterChange) {
+                this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: [] });
+            }
+        }
+    };
+    /**
+     * destroy the filter
+     * @return {?}
+     */
+    MultipleSelectFilter.prototype.destroy = function () {
+        if (this.$filterElm) {
+            this.$filterElm.off().remove();
+        }
+    };
+    /**
+     * Create the HTML template as a string
+     * @return {?}
+     */
+    MultipleSelectFilter.prototype.buildTemplateHtmlString = function () {
+        var _this = this;
+        if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
+        }
+        var /** @type {?} */ optionCollection = this.columnDef.filter.collection || [];
+        var /** @type {?} */ labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+        var /** @type {?} */ valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
+        var /** @type {?} */ options = '';
+        optionCollection.forEach(function (option) {
+            if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
+                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.multipleSelect, collection: [ { value: '1', label: 'One' } ]')");
+            }
+            var /** @type {?} */ labelKey = ((option.labelKey || option[labelName]));
+            var /** @type {?} */ selected = (_this.findValueInSearchTerms(option[valueName]) >= 0) ? 'selected' : '';
+            var /** @type {?} */ textLabel = ((option.labelKey || _this.columnDef.filter.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
+            // html text of each select option
+            options += "<option value=\"" + option[valueName] + "\" " + selected + ">" + textLabel + "</option>";
+        });
+        return "<select class=\"ms-filter search-filter\" multiple=\"multiple\">" + options + "</select>";
+    };
+    /**
+     * From the html template string, create a DOM element
+     * Subscribe to the onClose event and run the callback when that happens
+     * @param {?} filterTemplate
+     * @return {?}
+     */
+    MultipleSelectFilter.prototype.createDomElement = function (filterTemplate) {
+        var /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        $($headerElm).empty();
+        // create the DOM element & add an ID and filter class
+        this.$filterElm = $(filterTemplate);
+        if (typeof this.$filterElm.multipleSelect !== 'function') {
+            throw new Error("multiple-select.js was not found, make sure to modify your \"angular-cli.json\" file and include \"../node_modules/angular-slickgrid/lib/multiple-select/multiple-select.js\" and it's css or SASS file");
+        }
+        this.$filterElm.attr('id', "filter-" + this.columnDef.id);
+        this.$filterElm.data('columnId', this.columnDef.id);
+        // append the new DOM element to the header row
+        if (this.$filterElm && typeof this.$filterElm.appendTo === 'function') {
+            this.$filterElm.appendTo($headerElm);
+        }
+        // merge options & attach multiSelect
+        var /** @type {?} */ options = Object.assign({}, this.defaultOptions, this.columnDef.filter.filterOptions);
+        this.$filterElm = this.$filterElm.multipleSelect(options);
+    };
+    /**
+     * @param {?} value
+     * @return {?}
+     */
+    MultipleSelectFilter.prototype.findValueInSearchTerms = function (value) {
+        if (this.searchTerms && Array.isArray(this.searchTerms)) {
+            for (var /** @type {?} */ i = 0; i < this.searchTerms.length; i++) {
+                if (this.searchTerms[i] && this.searchTerms[i] === value) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    };
+    /**
+     * @return {?}
+     */
+    MultipleSelectFilter.prototype.subscribeOnClose = function () {
+        var _this = this;
+        this.$filterElm.multipleSelect({
+            onClose: function () {
+                var /** @type {?} */ selectedItems = _this.$filterElm.multipleSelect('getSelects');
+                _this.callback(undefined, { columnDef: _this.columnDef, operator: 'IN', searchTerms: selectedItems });
+            }
+        });
+    };
+    return MultipleSelectFilter;
+}());
+MultipleSelectFilter.decorators = [
+    { type: Injectable },
+];
+/**
+ * @nocollapse
+ */
+MultipleSelectFilter.ctorParameters = function () { return [
+    { type: TranslateService, },
+]; };
+var SelectFilter = /** @class */ (function () {
+    /**
+     * @param {?} translate
+     */
+    function SelectFilter(translate) {
+        this.translate = translate;
+    }
+    /**
+     * Initialize the Filter
+     * @param {?} args
+     * @return {?}
+     */
+    SelectFilter.prototype.init = function (args) {
+        var _this = this;
+        this.grid = args.grid;
+        this.callback = args.callback;
+        this.columnDef = args.columnDef;
+        this.searchTerm = args.searchTerm;
+        // step 1, create HTML string template
+        var /** @type {?} */ filterTemplate = this.buildTemplateHtmlString();
+        // step 2, create the DOM Element of the filter & initialize it if searchTerm is filled
+        this.$filterElm = this.createDomElement(filterTemplate);
+        // step 3, subscribe to the change event and run the callback when that happens
+        this.$filterElm.change(function (e) { return _this.callback(e, { columnDef: _this.columnDef, operator: 'EQ' }); });
+    };
+    /**
+     * Clear the filter values
+     * @param {?=} triggerFilterChange
+     * @return {?}
+     */
+    SelectFilter.prototype.clear = function (triggerFilterChange) {
+        if (triggerFilterChange === void 0) { triggerFilterChange = true; }
+        if (this.$filterElm) {
+            this.$filterElm.val('');
+            if (triggerFilterChange) {
+                this.$filterElm.trigger('change');
+            }
+        }
+    };
+    /**
+     * destroy the filter
+     * @return {?}
+     */
+    SelectFilter.prototype.destroy = function () {
+        if (this.$filterElm) {
+            this.$filterElm.off('change').remove();
+        }
+    };
+    /**
+     * @return {?}
+     */
+    SelectFilter.prototype.buildTemplateHtmlString = function () {
+        var _this = this;
+        if (!this.columnDef || !this.columnDef.filter || (!this.columnDef.filter.collection && !this.columnDef.filter.selectOptions)) {
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
+        }
+        if (!this.columnDef.filter.collection && this.columnDef.filter.selectOptions) {
+            console.warn("[Angular-SlickGrid] The Select Filter \"selectOptions\" property will de deprecated in future version. Please use the new \"collection\" property which is more generic and can be used with other Filters (not just Select).");
+        }
+        var /** @type {?} */ optionCollection = this.columnDef.filter.collection || this.columnDef.filter.selectOptions || [];
+        var /** @type {?} */ labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+        var /** @type {?} */ valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
+        var /** @type {?} */ options = '';
+        optionCollection.forEach(function (option) {
+            if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
+                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.select, collection: [ { value: '1', label: 'One' } ]')");
+            }
+            var /** @type {?} */ labelKey = option.labelKey || option[labelName];
+            var /** @type {?} */ textLabel = ((option.labelKey || _this.columnDef.filter.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
+            options += "<option value=\"" + option[valueName] + "\">" + textLabel + "</option>";
+        });
+        return "<select class=\"form-control search-filter\">" + options + "</select>";
+    };
+    /**
+     * From the html template string, create a DOM element
+     * @param {?} filterTemplate
+     * @return {?}
+     */
+    SelectFilter.prototype.createDomElement = function (filterTemplate) {
+        var /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        $($headerElm).empty();
+        // create the DOM element & add an ID and filter class
+        var /** @type {?} */ $filterElm = $(filterTemplate);
+        $filterElm.val(this.searchTerm);
+        $filterElm.attr('id', "filter-" + this.columnDef.id);
+        $filterElm.data('columnId', this.columnDef.id);
+        // append the new DOM element to the header row
+        if ($filterElm && typeof $filterElm.appendTo === 'function') {
+            $filterElm.appendTo($headerElm);
+        }
+        return $filterElm;
+    };
+    return SelectFilter;
+}());
+var SingleSelectFilter = /** @class */ (function () {
+    /**
+     * @param {?} translate
+     */
+    function SingleSelectFilter(translate) {
+        this.translate = translate;
+        // default options used by this Filter, user can overwrite any of these by passing "otions"
+        this.defaultOptions = {
+            container: 'body',
+            filter: false,
+            maxHeight: 200,
+            single: true
+        };
+    }
+    /**
+     * Initialize the Filter
+     * @param {?} args
+     * @return {?}
+     */
+    SingleSelectFilter.prototype.init = function (args) {
+        var _this = this;
+        this.grid = args.grid;
+        this.callback = args.callback;
+        this.columnDef = args.columnDef;
+        this.searchTerm = args.searchTerm;
+        // step 1, create HTML string template
+        var /** @type {?} */ filterTemplate = this.buildTemplateHtmlString();
+        // step 2, create the DOM Element of the filter & pre-load search term
+        this.createDomElement(filterTemplate);
+        // step 3, subscribe to the change event and run the callback when that happens
+        this.$filterElm.change(function (e) { return _this.callback(e, { columnDef: _this.columnDef, operator: 'EQ' }); });
+    };
+    /**
+     * Clear the filter values
+     * @param {?=} triggerFilterChange
+     * @return {?}
+     */
+    SingleSelectFilter.prototype.clear = function (triggerFilterChange) {
+        if (triggerFilterChange === void 0) { triggerFilterChange = true; }
+        if (this.$filterElm && this.$filterElm.multipleSelect) {
+            // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
+            // this.$filterElm = $(`#${this.$filterElm[0].id}`);
+            this.$filterElm.multipleSelect('setSelects', []);
+            if (triggerFilterChange) {
+                this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerm: undefined });
+            }
+        }
+    };
+    /**
+     * destroy the filter
+     * @return {?}
+     */
+    SingleSelectFilter.prototype.destroy = function () {
+        if (this.$filterElm) {
+            this.$filterElm.off().remove();
+        }
+    };
+    /**
+     * Create the HTML template as a string
+     * @return {?}
+     */
+    SingleSelectFilter.prototype.buildTemplateHtmlString = function () {
+        var _this = this;
+        if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the SingleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.singleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
+        }
+        var /** @type {?} */ optionCollection = this.columnDef.filter.collection || [];
+        var /** @type {?} */ labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+        var /** @type {?} */ valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
+        var /** @type {?} */ options = '';
+        optionCollection.forEach(function (option) {
+            if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
+                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.singleSelect, collection: [ { value: '1', label: 'One' } ]')");
+            }
+            var /** @type {?} */ labelKey = ((option.labelKey || option[labelName]));
+            var /** @type {?} */ selected = (option[valueName] === _this.searchTerm) ? 'selected' : '';
+            var /** @type {?} */ textLabel = ((option.labelKey || _this.columnDef.filter.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
+            // html text of each select option
+            options += "<option value=\"" + option[valueName] + "\" " + selected + ">" + textLabel + "</option>";
+        });
+        return "<select class=\"ms-filter search-filter\">" + options + "</select>";
+    };
+    /**
+     * From the html template string, create a DOM element
+     * Subscribe to the onClose event and run the callback when that happens
+     * @param {?} filterTemplate
+     * @return {?}
+     */
+    SingleSelectFilter.prototype.createDomElement = function (filterTemplate) {
+        var /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        $($headerElm).empty();
+        // create the DOM element & add an ID and filter class
+        this.$filterElm = $(filterTemplate);
+        if (typeof this.$filterElm.multipleSelect !== 'function') {
+            throw new Error("multiple-select.js was not found, make sure to modify your \"angular-cli.json\" file and include \"../node_modules/angular-slickgrid/lib/multiple-select/multiple-select.js\" and it's css or SASS file");
+        }
+        this.$filterElm.attr('id', "filter-" + this.columnDef.id);
+        this.$filterElm.data('columnId', this.columnDef.id);
+        // append the new DOM element to the header row
+        if (this.$filterElm && typeof this.$filterElm.appendTo === 'function') {
+            this.$filterElm.appendTo($headerElm);
+        }
+        // merge options & attach multiSelect
+        var /** @type {?} */ options = Object.assign({}, this.defaultOptions, this.columnDef.filter.filterOptions);
+        this.$filterElm = this.$filterElm.multipleSelect(options);
+    };
+    /**
+     * @return {?}
+     */
+    SingleSelectFilter.prototype.subscribeOnClose = function () {
+        var _this = this;
+        this.$filterElm.multipleSelect({
+            onClose: function () {
+                var /** @type {?} */ selectedItems = _this.$filterElm.multipleSelect('getSelects');
+                _this.callback(undefined, { columnDef: _this.columnDef, operator: 'IN', searchTerms: selectedItems });
+            }
+        });
+    };
+    return SingleSelectFilter;
+}());
+SingleSelectFilter.decorators = [
+    { type: Injectable },
+];
+/**
+ * @nocollapse
+ */
+SingleSelectFilter.ctorParameters = function () { return [
+    { type: TranslateService, },
+]; };
+var Filters = {
+    input: InputFilter,
+    multipleSelect: MultipleSelectFilter,
+    singleSelect: SingleSelectFilter,
+    select: SelectFilter
 };
 var arrayToCsvFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value && Array.isArray(value)) {
@@ -9775,7 +10233,7 @@ var translateFormatter = function (row, cell, value, columnDef, dataContext) {
     if (!params.i18n || !(params.i18n instanceof TranslateService)) {
         throw new Error("The translate formatter requires the ngx-translate \"TranslateService\" to be provided as a column params.\n    For example: this.columnDefinitions = [{ id: title, field: title, formatter: Formatters.translate, params: { i18n: this.translateService }");
     }
-    return params.i18n.instant(value || ' ');
+    return value ? params.i18n.instant(value) : '';
 };
 var yesNoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? 'Yes' : 'No'; };
 // import { Group, GroupTotals } from '../core'
@@ -9908,6 +10366,7 @@ var FilterService = /** @class */ (function () {
      */
     function FilterService(translate) {
         this.translate = translate;
+        this._filters = [];
         this._columnFilters = {};
         this.onFilterChanged = new EventEmitter();
     }
@@ -9933,6 +10392,7 @@ var FilterService = /** @class */ (function () {
         this.subscriber = new Slick.Event();
         this.emitFilterChangedBy('remote');
         this.subscriber.subscribe(this.attachBackendOnFilterSubscribe);
+        this._filters = [];
         grid.onHeaderRowCellRendered.subscribe(function (e, args) {
             _this.addFilterTemplateToHeaderRow(args);
         });
@@ -9985,22 +10445,24 @@ var FilterService = /** @class */ (function () {
      * @return {?}
      */
     FilterService.prototype.clearFilters = function () {
-        // remove the text inside each search filter fields
-        jquery('.slick-headerrow-column .search-filter').each(function (index, elm) {
-            // clear the value and trigger an event
-            // the event is for GraphQL & OData Services to detect the changes and call a new query
-            switch (elm.tagName) {
-                case 'SELECT':
-                    jquery(elm).val('').trigger('change');
-                    break;
-                case 'INPUT':
-                default:
-                    jquery(elm).val('').trigger('keyup');
-                    break;
+        var _this = this;
+        var /** @type {?} */ hasBackendServiceApi = (this._gridOptions && this._gridOptions.backendServiceApi) ? this._gridOptions.backendServiceApi : false;
+        this._filters.forEach(function (filter, index) {
+            if (filter && filter.clear) {
+                // clear element but don't trigger a change
+                // until we reach the last index to avoid multiple request to the Backend Server
+                var /** @type {?} */ callTrigger = (index === 0 || index === _this._filters.length - 1) ? true : false;
+                filter.clear(true);
             }
         });
+        /*
+            // clear with a trigger only first filter to avoid multiple request to the Backend Server
+            if (hasBackendServiceApi && this._filters.length > 0) {
+              this._filters[0].clear(true);
+            }
+        */
         // we need to loop through all columnFilters and delete them 1 by 1
-        // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
+        // only trying to clear columnFilter (without looping through) would not trigger a dataset change
         for (var /** @type {?} */ columnId in this._columnFilters) {
             if (columnId && this._columnFilters[columnId]) {
                 delete this._columnFilters[columnId];
@@ -10012,25 +10474,6 @@ var FilterService = /** @class */ (function () {
             this._grid.invalidate();
             this._grid.render();
         }
-    };
-    /**
-     * @param {?} operator
-     * @param {?} value1
-     * @param {?} value2
-     * @return {?}
-     */
-    FilterService.prototype.testFilterCondition = function (operator, value1, value2) {
-        switch (operator) {
-            case '<': return (value1 < value2) ? true : false;
-            case '<=': return (value1 <= value2) ? true : false;
-            case '>': return (value1 > value2) ? true : false;
-            case '>=': return (value1 >= value2) ? true : false;
-            case '!=':
-            case '<>': return (value1 !== value2) ? true : false;
-            case '=':
-            case '==': return (value1 === value2) ? true : false;
-        }
-        return true;
     };
     /**
      * Attach a local filter hook to the grid
@@ -10045,13 +10488,14 @@ var FilterService = /** @class */ (function () {
         this.subscriber = new Slick.Event();
         this.emitFilterChangedBy('local');
         dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
-        dataView.setFilter(this.customFilter.bind(this, dataView));
+        dataView.setFilter(this.customLocalFilter.bind(this, dataView));
         this.subscriber.subscribe(function (e, args) {
             var /** @type {?} */ columnId = args.columnId;
             if (columnId != null) {
                 dataView.refresh();
             }
         });
+        this._filters = [];
         grid.onHeaderRowCellRendered.subscribe(function (e, args) {
             _this.addFilterTemplateToHeaderRow(args);
         });
@@ -10062,7 +10506,7 @@ var FilterService = /** @class */ (function () {
      * @param {?} args
      * @return {?}
      */
-    FilterService.prototype.customFilter = function (dataView, item, args) {
+    FilterService.prototype.customLocalFilter = function (dataView, item, args) {
         for (var _g = 0, _h = Object.keys(args.columnFilters); _g < _h.length; _g++) {
             var columnId = _h[_g];
             var /** @type {?} */ columnFilter = args.columnFilters[columnId];
@@ -10072,7 +10516,8 @@ var FilterService = /** @class */ (function () {
             var /** @type {?} */ conditionalFilterFn = (columnDef.filter && columnDef.filter.conditionalFilter) ? columnDef.filter.conditionalFilter : null;
             var /** @type {?} */ filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
             var /** @type {?} */ cellValue = item[columnDef.queryField || columnDef.field];
-            var /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
+            var /** @type {?} */ searchTerms = (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null;
+            var /** @type {?} */ fieldSearchValue = (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined;
             if (typeof fieldSearchValue === 'undefined') {
                 fieldSearchValue = '';
             }
@@ -10081,9 +10526,35 @@ var FilterService = /** @class */ (function () {
             var /** @type {?} */ operator = columnFilter.operator || ((matches) ? matches[1] : '');
             var /** @type {?} */ searchTerm = (!!matches) ? matches[2] : '';
             var /** @type {?} */ lastValueChar = (!!matches) ? matches[3] : '';
+            // when using a Filter that is not a custom type, we want to make sure that we have a default operator type
+            // for example a multiple-select should always be using IN, while a single select will use an EQ
+            var /** @type {?} */ filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
+            if (!operator && filterType !== FilterType.custom) {
+                switch (filterType) {
+                    case FilterType.select:
+                    case FilterType.multipleSelect:
+                        operator = 'IN';
+                        break;
+                    case FilterType.singleSelect:
+                        operator = 'EQ';
+                        break;
+                    default:
+                        operator = operator;
+                        break;
+                }
+            }
             // no need to query if search value is empty
-            if (searchTerm === '') {
+            if (searchTerm === '' && !searchTerms) {
                 return true;
+            }
+            // filter search terms should always be string (even though we permit the end user to input numbers)
+            // so make sure each term are strings
+            // run a query if user has some default search terms
+            if (searchTerms && Array.isArray(searchTerms)) {
+                for (var /** @type {?} */ k = 0, /** @type {?} */ ln = searchTerms.length; k < ln; k++) {
+                    // make sure all search terms are strings
+                    searchTerms[k] = ((searchTerms[k] === undefined || searchTerms[k] === null) ? '' : searchTerms[k]) + '';
+                }
             }
             // when using localization (i18n), we should use the formatter output to search as the new cell value
             if (columnDef && columnDef.params && columnDef.params.useFormatterOuputToFilter) {
@@ -10096,6 +10567,7 @@ var FilterService = /** @class */ (function () {
             }
             var /** @type {?} */ conditionOptions = {
                 fieldType: fieldType,
+                searchTerms: searchTerms,
                 searchTerm: searchTerm,
                 cellValue: cellValue,
                 operator: operator,
@@ -10132,6 +10604,12 @@ var FilterService = /** @class */ (function () {
                 delete this._columnFilters[columnId];
             }
         }
+        // also destroy each Filter instances
+        this._filters.forEach(function (filter, index) {
+            if (filter && filter.destroy) {
+                filter.destroy(true);
+            }
+        });
     };
     /**
      * @param {?} e
@@ -10139,24 +10617,30 @@ var FilterService = /** @class */ (function () {
      * @return {?}
      */
     FilterService.prototype.callbackSearchEvent = function (e, args) {
-        if (e.target.value === '' || e.target.value === null) {
+        var /** @type {?} */ targetValue = (e && e.target) ? ((e.target)).value : undefined;
+        var /** @type {?} */ searchTerms = (args && args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : [];
+        var /** @type {?} */ columnId = (args && args.columnDef) ? args.columnDef.id || '' : '';
+        if (!targetValue && searchTerms.length === 0) {
             // delete the property from the columnFilters when it becomes empty
             // without doing this, it would leave an incorrect state of the previous column filters when filtering on another column
-            delete this._columnFilters[args.columnDef.id];
+            delete this._columnFilters[columnId];
         }
         else {
-            this._columnFilters[args.columnDef.id] = {
-                columnId: args.columnDef.id,
-                columnDef: args.columnDef,
-                searchTerm: e.target.value,
+            var /** @type {?} */ colId = ('' + columnId);
+            this._columnFilters[colId] = {
+                columnId: colId,
+                columnDef: args.columnDef || null,
+                searchTerms: args.searchTerms || undefined,
+                searchTerm: ((e && e.target) ? ((e.target)).value : null),
                 operator: args.operator || null
             };
         }
         this.triggerEvent(this.subscriber, {
-            columnId: args.columnDef.id,
-            columnDef: args.columnDef,
+            columnId: columnId,
+            columnDef: args.columnDef || null,
             columnFilters: this._columnFilters,
-            searchTerm: e.target.value,
+            searchTerms: args.searchTerms || undefined,
+            searchTerm: ((e && e.target) ? ((e.target)).value : null),
             serviceOptions: this._onFilterChangedOptions,
             grid: this._grid
         }, e);
@@ -10166,61 +10650,59 @@ var FilterService = /** @class */ (function () {
      * @return {?}
      */
     FilterService.prototype.addFilterTemplateToHeaderRow = function (args) {
-        var _this = this;
-        var _loop_1 = function (i) {
-            if (this_1._columnDefinitions[i].id !== 'selector' && this_1._columnDefinitions[i].filterable) {
-                var /** @type {?} */ filterTemplate = '';
-                var /** @type {?} */ elm = null;
-                var /** @type {?} */ header = void 0;
-                var /** @type {?} */ columnDef_1 = this_1._columnDefinitions[i];
-                var /** @type {?} */ columnId = columnDef_1.id;
-                var /** @type {?} */ listTerm = (columnDef_1.filter && columnDef_1.filter.listTerm) ? columnDef_1.filter.listTerm : null;
-                var /** @type {?} */ searchTerm = (columnDef_1.filter && columnDef_1.filter.searchTerm) ? columnDef_1.filter.searchTerm : '';
-                // keep the filter in a columnFilters for later reference
-                this_1.keepColumnFilters(searchTerm, listTerm, columnDef_1);
-                if (!columnDef_1.filter) {
-                    searchTerm = (columnDef_1.filter && columnDef_1.filter.searchTerm) ? columnDef_1.filter.searchTerm : null;
-                    filterTemplate = FilterTemplates.input(searchTerm, columnDef_1);
+        var /** @type {?} */ columnDef = args.column;
+        var /** @type {?} */ columnId = columnDef.id || '';
+        if (columnDef && columnId !== 'selector' && columnDef.filterable) {
+            var /** @type {?} */ searchTerms = (columnDef.filter && columnDef.filter.searchTerms) ? columnDef.filter.searchTerms : null;
+            var /** @type {?} */ searchTerm = (columnDef.filter && (columnDef.filter.searchTerm !== undefined || columnDef.filter.searchTerm !== null)) ? columnDef.filter.searchTerm : '';
+            // keep the filter in a columnFilters for later reference
+            this.keepColumnFilters(searchTerm, searchTerms, columnDef);
+            // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
+            // because of that we need to first get searchTerm(s) from the columnFilters (that is what the user last entered)
+            // if nothing is found, we can then use the optional searchTerm(s) passed to the Grid Option (that is couple of lines earlier)
+            searchTerm = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerm : searchTerm || null;
+            searchTerms = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerms : searchTerms || null;
+            var /** @type {?} */ filterArguments = {
+                grid: this._grid,
+                searchTerm: searchTerm,
+                searchTerms: searchTerms,
+                columnDef: columnDef,
+                callback: this.callbackSearchEvent.bind(this)
+            };
+            // depending on the Filter type, we will watch the correct event
+            var /** @type {?} */ filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
+            var /** @type {?} */ filter_1;
+            switch (filterType) {
+                case FilterType.custom:
+                    if (columnDef && columnDef.filter && columnDef.filter.customFilter) {
+                        filter_1 = columnDef.filter.customFilter;
+                    }
+                    break;
+                case FilterType.select:
+                    filter_1 = new Filters.select(this.translate);
+                    break;
+                case FilterType.multipleSelect:
+                    filter_1 = new Filters.multipleSelect(this.translate);
+                    break;
+                case FilterType.singleSelect:
+                    filter_1 = new Filters.singleSelect(this.translate);
+                    break;
+                case FilterType.input:
+                default:
+                    filter_1 = new Filters.input();
+                    break;
+            }
+            if (filter_1) {
+                filter_1.init(filterArguments);
+                var /** @type {?} */ filterExistIndex = this._filters.findIndex(function (filt) { return filter_1.columnDef.name === filt.columnDef.name; });
+                // add to the filters arrays or replace it when found
+                if (filterExistIndex === -1) {
+                    this._filters.push(filter_1);
                 }
                 else {
-                    // custom Select template
-                    if (columnDef_1.filter.type === FormElementType.select) {
-                        filterTemplate = FilterTemplates.select(searchTerm, columnDef_1, this_1.translate);
-                    }
-                }
-                // when hiding/showing (Column Picker or Grid Menu), it will come re-create yet again the filters
-                // because of that we need to first get searchTerm from the columnFilters (that is what the user input last)
-                // if nothing is found, we can then use the optional searchTerm passed to the Grid Option (that is couple lines before)
-                var /** @type {?} */ inputSearchTerm = (this_1._columnFilters[columnDef_1.id]) ? this_1._columnFilters[columnDef_1.id].searchTerm : searchTerm || null;
-                // create the DOM Element
-                header = this_1._grid.getHeaderRowColumn(columnDef_1.id);
-                jquery(header).empty();
-                elm = jquery(filterTemplate);
-                elm.attr('id', "filter-" + columnDef_1.id);
-                elm.data('columnId', columnDef_1.id);
-                elm.val(inputSearchTerm);
-                if (elm && typeof elm.appendTo === 'function') {
-                    elm.appendTo(header);
-                }
-                // depending on the DOM Element type, we will watch the correct event
-                var /** @type {?} */ filterType = (columnDef_1.filter && columnDef_1.filter.type) ? columnDef_1.filter.type : FormElementType.input;
-                switch (filterType) {
-                    case FormElementType.select:
-                        elm.change(function (e) { return _this.callbackSearchEvent(e, { columnDef: columnDef_1, operator: 'EQ' }); });
-                        break;
-                    case FormElementType.multiSelect:
-                        elm.change(function (e) { return _this.callbackSearchEvent(e, { columnDef: columnDef_1, operator: 'IN' }); });
-                        break;
-                    case FormElementType.input:
-                    default:
-                        elm.keyup(function (e) { return _this.callbackSearchEvent(e, { columnDef: columnDef_1 }); });
-                        break;
+                    this._filters[filterExistIndex] = filter_1;
                 }
             }
-        };
-        var this_1 = this;
-        for (var /** @type {?} */ i = 0; i < this._columnDefinitions.length; i++) {
-            _loop_1(/** @type {?} */ i);
         }
     };
     /**
@@ -10235,20 +10717,27 @@ var FilterService = /** @class */ (function () {
     };
     /**
      * @param {?} searchTerm
-     * @param {?} listTerm
+     * @param {?} searchTerms
      * @param {?} columnDef
      * @return {?}
      */
-    FilterService.prototype.keepColumnFilters = function (searchTerm, listTerm, columnDef) {
-        if (searchTerm) {
+    FilterService.prototype.keepColumnFilters = function (searchTerm, searchTerms, columnDef) {
+        if (searchTerm !== undefined && searchTerm !== null && searchTerm !== '') {
             this._columnFilters[columnDef.id] = {
                 columnId: columnDef.id,
                 columnDef: columnDef,
-                searchTerm: searchTerm
+                searchTerm: searchTerm,
+                type: (columnDef && columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input
             };
-            if (listTerm) {
-                this._columnFilters.listTerm = listTerm;
-            }
+        }
+        if (searchTerms) {
+            // this._columnFilters.searchTerms = searchTerms;
+            this._columnFilters[columnDef.id] = {
+                columnId: columnDef.id,
+                columnDef: columnDef,
+                searchTerms: searchTerms,
+                type: (columnDef && columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input
+            };
         }
     };
     /**
@@ -10647,6 +11136,7 @@ var GraphqlQueryBuilder = /** @class */ (function () {
 }());
 var timer;
 var DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
+var ITEMS_PER_PAGE = 25;
 var GraphqlService = /** @class */ (function () {
     /**
      * @param {?} translate
@@ -10655,7 +11145,7 @@ var GraphqlService = /** @class */ (function () {
         this.translate = translate;
         this.defaultOrderBy = { field: 'id', direction: SortDirection.ASC };
         this.defaultPaginationOptions = {
-            first: 25,
+            first: ITEMS_PER_PAGE,
             offset: 0
         };
     }
@@ -10697,15 +11187,15 @@ var GraphqlService = /** @class */ (function () {
         }
         datasetQb.find(['totalCount', pageInfoQb, dataQb]);
         // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
-        var /** @type {?} */ datasetFilters = Object.assign({}, this.options.paginationOptions, { first: (this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : this.pagination.pageSize || this.defaultPaginationOptions.first });
+        var /** @type {?} */ datasetFilters = Object.assign({}, this.options.paginationOptions, { first: (this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : (this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null || this.defaultPaginationOptions.first });
         if (!this.options.isWithCursor) {
-            datasetFilters.offset = (this.options.paginationOptions && this.options.paginationOptions['offset']) ? this.options.paginationOptions['offset'] : this.defaultPaginationOptions['offset'];
+            datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +this.options.paginationOptions['offset'] : 0);
         }
-        if (this.options.sortingOptions) {
+        if (this.options.sortingOptions && Array.isArray(this.options.sortingOptions) && this.options.sortingOptions.length > 0) {
             // orderBy: [{ field:x, direction: 'ASC' }]
             datasetFilters.orderBy = this.options.sortingOptions;
         }
-        if (this.options.filteringOptions) {
+        if (this.options.filteringOptions && Array.isArray(this.options.filteringOptions) && this.options.filteringOptions.length > 0) {
             // filterBy: [{ field: date, operator: '>', value: '2000-10-10' }]
             datasetFilters.filterBy = this.options.filteringOptions;
         }
@@ -10758,13 +11248,13 @@ var GraphqlService = /** @class */ (function () {
      * @return {?} Pagination Options
      */
     GraphqlService.prototype.getInitPaginationOptions = function () {
-        return (this.options.isWithCursor) ? { first: this.pagination.pageSize } : { first: this.pagination.pageSize, offset: 0 };
+        return (this.options.isWithCursor) ? { first: (this.pagination ? this.pagination.pageSize : ITEMS_PER_PAGE) } : { first: (this.pagination ? this.pagination.pageSize : ITEMS_PER_PAGE), offset: 0 };
     };
     /**
      * @return {?}
      */
     GraphqlService.prototype.getDatasetName = function () {
-        return this.options.datasetName;
+        return this.options.datasetName || '';
     };
     /**
      * @return {?}
@@ -10812,8 +11302,9 @@ var GraphqlService = /** @class */ (function () {
             debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
         }
         var /** @type {?} */ promise = new Promise(function (resolve, reject) {
+            var /** @type {?} */ searchValue;
             if (!args || !args.grid) {
-                throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
+                throw new Error('Something went wrong when trying create the GraphQL Backend Service, it seems that "args" is not populated correctly');
             }
             // loop through all columns to inspect filters
             for (var /** @type {?} */ columnId in args.columnFilters) {
@@ -10822,27 +11313,33 @@ var GraphqlService = /** @class */ (function () {
                     var /** @type {?} */ columnDef = columnFilter.columnDef;
                     var /** @type {?} */ fieldName = columnDef.queryField || columnDef.field || columnDef.name || '';
                     var /** @type {?} */ fieldType = columnDef.type || 'string';
+                    var /** @type {?} */ searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
                     var /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
                     if (typeof fieldSearchValue === 'undefined') {
                         fieldSearchValue = '';
                     }
-                    if (typeof fieldSearchValue !== 'string') {
-                        throw new Error("GraphQL filter term property must be provided type \"string\", if you use filter with options then make sure your ids are also string. For example: filter: {type: FormElementType.select, selectOptions: [{ id: \"0\", value: \"0\" }, { id: \"1\", value: \"1\" }]");
+                    if (typeof fieldSearchValue !== 'string' && !searchTerms) {
+                        throw new Error("GraphQL filter searchTerm property must be provided as type \"string\", if you use filter with options then make sure your IDs are also string. For example: filter: {type: FilterType.select, collection: [{ id: \"0\", value: \"0\" }, { id: \"1\", value: \"1\" }]");
                     }
-                    var /** @type {?} */ searchTerms = columnFilter.listTerm || [];
                     fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
                     var /** @type {?} */ matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
                     var /** @type {?} */ operator = columnFilter.operator || ((matches) ? matches[1] : '');
-                    var /** @type {?} */ searchValue = (!!matches) ? matches[2] : '';
+                    searchValue = (!!matches) ? matches[2] : '';
                     var /** @type {?} */ lastValueChar = (!!matches) ? matches[3] : '';
                     // no need to query if search value is empty
-                    if (fieldName && searchValue === '') {
+                    if (fieldName && searchValue === '' && searchTerms.length === 0) {
                         continue;
                     }
-                    // escaping the search value
-                    searchValue = searchValue.replace("'", "''"); // escape single quotes by doubling them
-                    if (operator === '*' || lastValueChar === '*') {
-                        operator = (operator === '*') ? 'endsWith' : 'startsWith';
+                    // when having more than 1 search term (we need to create a CSV string for GraphQL "IN" or "NOT IN" filter search)
+                    if (searchTerms && searchTerms.length > 0) {
+                        searchValue = searchTerms.join(',');
+                    }
+                    else {
+                        // escaping the search value
+                        searchValue = searchValue.replace("'", "''"); // escape single quotes by doubling them
+                        if (operator === '*' || lastValueChar === '*') {
+                            operator = (operator === '*') ? 'endsWith' : 'startsWith';
+                        }
                     }
                     searchByArray.push({
                         field: fieldName,
@@ -11000,7 +11497,7 @@ var GridExtraService = /** @class */ (function () {
             var /** @type {?} */ meta = {
                 cssClasses: ''
             };
-            if (typeof previousItemMetadata === 'object' && !jquery.isEmptyObject(previousItemMetadata)) {
+            if (typeof previousItemMetadata === 'object' && !$.isEmptyObject(previousItemMetadata)) {
                 meta = previousItemMetadata(rowNumber);
             }
             if (item && item._dirty) {
@@ -11038,7 +11535,7 @@ var GridExtraService = /** @class */ (function () {
             this._dataView.updateItem(item.id, item);
             var /** @type {?} */ gridOptions = (this._grid.getOptions());
             // highlight the row for a user defined timeout
-            var /** @type {?} */ rowElm = jquery("#" + gridOptions.gridId)
+            var /** @type {?} */ rowElm = $("#" + gridOptions.gridId)
                 .find(".highlight.row" + rowNumber)
                 .first();
             // delete the row's CSS that was attached for highlighting
@@ -11230,7 +11727,7 @@ var OdataService = /** @class */ (function () {
             // filterBy are passed manually by the user, however we will only add it if the column wasn't yet filtered
             if (!!this._odataOptions.filterBy && !!this._odataOptions.filterBy.fieldName && !this._columnFilters[this._odataOptions.filterBy.fieldName.toLowerCase()]) {
                 if (this._odataOptions.filterBy.searchTerm !== '') {
-                    this.saveColumnFilter(this._odataOptions.filterBy.fieldName.toLowerCase(), this._odataOptions.filterBy.searchTerm, this._odataOptions.filterBy.listTerm);
+                    this.saveColumnFilter(this._odataOptions.filterBy.fieldName.toLowerCase(), this._odataOptions.filterBy.searchTerm, this._odataOptions.filterBy.searchTerms);
                     this.updateFilterFromListTerms(this._odataOptions.filterBy);
                 }
             }
@@ -11329,7 +11826,7 @@ var OdataService = /** @class */ (function () {
         var /** @type {?} */ searchBy = '';
         var /** @type {?} */ tmpSearchByArray = [];
         var /** @type {?} */ fieldName = filterOptions.fieldName;
-        var /** @type {?} */ fieldSearchTerms = filterOptions.listTerm;
+        var /** @type {?} */ fieldSearchTerms = filterOptions.searchTerms;
         var /** @type {?} */ operator = filterOptions.operator;
         // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
         if (!!fieldSearchTerms && fieldSearchTerms.length > 0) {
@@ -11417,7 +11914,7 @@ var GridOdataService = /** @class */ (function () {
      * @return {?}
      */
     GridOdataService.prototype.initOptions = function (options, pagination) {
-        this.odataService.options = Object.assign({}, this.defaultOptions, options, { top: options.top || pagination.pageSize || this.defaultOptions.top });
+        this.odataService.options = Object.assign({}, this.defaultOptions, options, { top: options.top || (pagination ? pagination.pageSize : null) || this.defaultOptions.top });
         this.options = options;
         this.pagination = pagination;
     };
@@ -11479,14 +11976,14 @@ var GridOdataService = /** @class */ (function () {
                     var /** @type {?} */ columnDef = columnFilter.columnDef;
                     var /** @type {?} */ fieldName = columnDef.queryField || columnDef.field || columnDef.name;
                     var /** @type {?} */ fieldType = columnDef.type || 'string';
+                    var /** @type {?} */ searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
                     var /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
                     if (typeof fieldSearchValue === 'undefined') {
                         fieldSearchValue = '';
                     }
-                    if (typeof fieldSearchValue !== 'string') {
-                        throw new Error("OData filter term property must be provided type \"string\", if you use filter with options then make sure your ids are also string. For example: filter: {type: FormElementType.select, selectOptions: [{ id: \"0\", value: \"0\" }, { id: \"1\", value: \"1\" }]");
+                    if (typeof fieldSearchValue !== 'string' && !searchTerms) {
+                        throw new Error("ODdata filter searchTerm property must be provided as type \"string\", if you use filter with options then make sure your IDs are also string. For example: filter: {type: FilterType.select, collection: [{ id: \"0\", value: \"0\" }, { id: \"1\", value: \"1\" }]");
                     }
-                    var /** @type {?} */ searchTerms = columnFilter.listTerm || [];
                     fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
                     var /** @type {?} */ matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
                     var /** @type {?} */ operator = columnFilter.operator || ((matches) ? matches[1] : '');
@@ -11694,7 +12191,7 @@ var ResizerService = /** @class */ (function () {
     ResizerService.prototype.attachAutoResizeDataGrid = function () {
         var _this = this;
         // if we can't find the grid to resize, return without attaching anything
-        var /** @type {?} */ gridDomElm = jquery("#" + (this._gridOptions && this._gridOptions.gridId ? this._gridOptions.gridId : 'grid1'));
+        var /** @type {?} */ gridDomElm = $("#" + (this._gridOptions && this._gridOptions.gridId ? this._gridOptions.gridId : 'grid1'));
         if (gridDomElm === undefined || gridDomElm.offset() === undefined) {
             return null;
         }
@@ -11702,7 +12199,7 @@ var ResizerService = /** @class */ (function () {
         this.resizeGrid();
         // -- 2nd attach a trigger on the Window DOM element, so that it happens also when resizing after first load
         // -- attach auto-resize to Window object only if it exist
-        jquery(window).on('resize.grid', function () {
+        $(window).on('resize.grid', function () {
             // for some yet unknown reason, calling the resize twice removes any stuttering/flickering when changing the height and makes it much smoother
             _this.resizeGrid();
             _this.resizeGrid();
@@ -11715,9 +12212,9 @@ var ResizerService = /** @class */ (function () {
      * @return {?}
      */
     ResizerService.prototype.calculateGridNewDimensions = function (gridOptions) {
-        var /** @type {?} */ gridDomElm = jquery("#" + gridOptions.gridId);
-        var /** @type {?} */ containerElm = (gridOptions.autoResize && gridOptions.autoResize.containerId) ? jquery("#" + gridOptions.autoResize.containerId) : jquery("#" + gridOptions.gridContainerId);
-        var /** @type {?} */ windowElm = jquery(window);
+        var /** @type {?} */ gridDomElm = $("#" + gridOptions.gridId);
+        var /** @type {?} */ containerElm = (gridOptions.autoResize && gridOptions.autoResize.containerId) ? $("#" + gridOptions.autoResize.containerId) : $("#" + gridOptions.gridContainerId);
+        var /** @type {?} */ windowElm = $(window);
         if (windowElm === undefined || containerElm === undefined || gridDomElm === undefined) {
             return null;
         }
@@ -11752,7 +12249,7 @@ var ResizerService = /** @class */ (function () {
      * @return {?}
      */
     ResizerService.prototype.destroy = function () {
-        jquery(window).off('resize.grid');
+        $(window).off('resize.grid');
     };
     /**
      * Resize the datagrid to fit the browser height & width
@@ -11771,8 +12268,8 @@ var ResizerService = /** @class */ (function () {
         timer$2 = setTimeout(function () {
             // calculate new available sizes but with minimum height of 220px
             newSizes = newSizes || _this.calculateGridNewDimensions(_this._gridOptions);
-            var /** @type {?} */ gridElm = jquery("#" + _this._gridOptions.gridId) || {};
-            var /** @type {?} */ gridContainerElm = jquery("#" + _this._gridOptions.gridContainerId) || {};
+            var /** @type {?} */ gridElm = $("#" + _this._gridOptions.gridId) || {};
+            var /** @type {?} */ gridContainerElm = $("#" + _this._gridOptions.gridContainerId) || {};
             if (newSizes && gridElm.length > 0) {
                 // apply these new height/width to the datagrid
                 gridElm.height(newSizes.height);
@@ -11920,7 +12417,7 @@ var ControlAndPluginService = /** @class */ (function () {
                 if (grid && typeof grid.autosizeColumns === 'function') {
                     // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree)
                     var /** @type {?} */ gridUid = grid.getUID();
-                    if (gridUid && jquery("." + gridUid).length > 0) {
+                    if (gridUid && $("." + gridUid).length > 0) {
                         grid.autosizeColumns();
                     }
                 }
@@ -12148,7 +12645,9 @@ var ControlAndPluginService = /** @class */ (function () {
         // destroy and re-create the Grid Menu which seems to be the only way to translate properly
         this.gridMenuControl.destroy();
         // reset all Grid Menu options that have translation text & then re-create the Grid Menu and also the custom items array
-        this._gridOptions.gridMenu = this.resetGridMenuTranslations(this._gridOptions.gridMenu);
+        if (this._gridOptions && this._gridOptions.gridMenu) {
+            this._gridOptions.gridMenu = this.resetGridMenuTranslations(this._gridOptions.gridMenu);
+        }
         this.createGridMenu(this._grid, this.visibleColumns, this._gridOptions);
     };
     /**
@@ -12340,7 +12839,7 @@ var SlickPaginationComponent = /** @class */ (function () {
         if (this._gridPaginationOptions && this._gridPaginationOptions.pagination) {
             // set the number of items per page if not already set
             if (!this.itemsPerPage) {
-                this.itemsPerPage = +(backendApi['options'] && backendApi['options'].paginationOptions && backendApi['options'].paginationOptions.first) ? backendApi['options'].paginationOptions.first : this._gridPaginationOptions.pagination.pageSize;
+                this.itemsPerPage = +((backendApi && backendApi.options && backendApi.options.paginationOptions && backendApi.options.paginationOptions.first) ? backendApi.options.paginationOptions.first : this._gridPaginationOptions.pagination.pageSize);
             }
             // if totalItems changed, we should always go back to the first page and recalculation the From-To indexes
             if (isPageNumberReset || this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
@@ -12357,8 +12856,8 @@ var SlickPaginationComponent = /** @class */ (function () {
         this.pageCount = Math.ceil(this.totalItems / this.itemsPerPage);
     };
     /**
-     * @param {?=} event
-     * @param {?=} pageNumber
+     * @param {?} event
+     * @param {?} pageNumber
      * @return {?}
      */
     SlickPaginationComponent.prototype.onPageChanged = function (event, pageNumber) {
@@ -33867,9 +34366,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         if (gridOptions && (gridOptions.backendServiceApi || gridOptions.onBackendEventApi)) {
             var /** @type {?} */ backendApi_1 = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
             // internalPostProcess only works with a GraphQL Service, so make sure it is that type
-            if (backendApi_1.service instanceof GraphqlService) {
+            if (backendApi_1 && backendApi_1.service && backendApi_1.service instanceof GraphqlService) {
                 backendApi_1.internalPostProcess = function (processResult) {
-                    var /** @type {?} */ datasetName = backendApi_1.service.getDatasetName();
+                    var /** @type {?} */ datasetName = (backendApi_1 && backendApi_1.service && typeof backendApi_1.service.getDatasetName === 'function') ? backendApi_1.service.getDatasetName() : '';
                     if (!processResult || !processResult.data || !processResult.data[datasetName]) {
                         throw new Error("Your GraphQL result is invalid and/or does not follow the required result structure. Please check the result and/or review structure to use in Angular-Slickgrid Wiki in the GraphQL section.");
                     }
@@ -33913,10 +34412,10 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 gridOptions.backendServiceApi.service.initOptions(gridOptions.backendServiceApi.options || {}, gridOptions.pagination);
             }
             var /** @type {?} */ backendApi_2 = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
-            var /** @type {?} */ serviceOptions = (backendApi_2 && backendApi_2.service && backendApi_2.service.options) ? backendApi_2.service.options : null;
-            var /** @type {?} */ isExecuteCommandOnInit = (!serviceOptions) ? false : (serviceOptions['executeProcessCommandOnInit'] || true);
-            if (backendApi_2.onInit || isExecuteCommandOnInit) {
-                var /** @type {?} */ query = backendApi_2.service.buildQuery();
+            var /** @type {?} */ serviceOptions = (backendApi_2 && backendApi_2.service && backendApi_2.service.options) ? backendApi_2.service.options : {};
+            var /** @type {?} */ isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && serviceOptions.hasOwnProperty('executeProcessCommandOnInit')) ? serviceOptions['executeProcessCommandOnInit'] : true);
+            if (backendApi_2 && backendApi_2.service && (backendApi_2.onInit || isExecuteCommandOnInit)) {
+                var /** @type {?} */ query = (typeof backendApi_2.service.buildQuery === 'function') ? backendApi_2.service.buildQuery() : '';
                 var /** @type {?} */ observableOrPromise_1 = (isExecuteCommandOnInit) ? backendApi_2.process(query) : backendApi_2.onInit(query);
                 // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
                 setTimeout(function () { return __awaiter$3(_this, void 0, void 0, function () {
@@ -33932,7 +34431,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
                                 processResult = _g.sent();
                                 // define what our internal Post Process callback, only available for GraphQL Service for now
                                 // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
-                                if (backendApi_2.service instanceof GraphqlService && processResult) {
+                                if (processResult && backendApi_2 && backendApi_2.service instanceof GraphqlService && backendApi_2.internalPostProcess) {
                                     backendApi_2.internalPostProcess(processResult);
                                 }
                                 // send the response process to the postProcess callback
@@ -33989,7 +34488,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
             this.gridOptions.showHeaderRow = true;
         }
         // use jquery extend to deep merge and avoid immutable properties changed in GlobalGridOptions after route change
-        return jquery.extend(true, {}, GlobalGridOptions, this.forRootConfig, this.gridOptions);
+        return $.extend(true, {}, GlobalGridOptions, this.forRootConfig, this.gridOptions);
     };
     /**
      * When dataset changes, we need to refresh the entire grid UI & possibly resize it as well
@@ -34008,7 +34507,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 // before merging the grid options, make sure that it has the totalItems count
                 // once we have that, we can merge and pass all these options to the pagination component
                 if (!this.gridOptions.pagination) {
-                    this.gridOptions.pagination = (this._gridOptions.pagination) ? this._gridOptions.pagination : null;
+                    this.gridOptions.pagination = (this._gridOptions.pagination) ? this._gridOptions.pagination : undefined;
                 }
                 if (this.gridOptions.pagination && totalCount) {
                     this.gridOptions.pagination.totalItems = totalCount;
@@ -34127,5 +34626,5 @@ AngularSlickgridModule.ctorParameters = function () { return []; };
 /**
  * Generated bundle index. Do not edit.
  */
-export { CaseType, FieldType, FormElementType, KeyCode, OperatorType, SortDirection, Editors, FilterConditions, FilterTemplates, Formatters, Sorters, FilterService, SortService, GridEventService, GraphqlService, GridExtraService, GridExtraUtils, GridOdataService, OdataService, ResizerService, ControlAndPluginService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, TextEditor as ɵf, booleanFilterCondition as ɵh, dateFilterCondition as ɵi, dateIsoFilterCondition as ɵj, dateUsFilterCondition as ɵl, dateUsShortFilterCondition as ɵm, dateUtcFilterCondition as ɵk, executeMappedCondition as ɵg, testFilterCondition as ɵp, numberFilterCondition as ɵn, stringFilterCondition as ɵo, inputFilterTemplate as ɵq, selectFilterTemplate as ɵr, arrayToCsvFormatter as ɵs, checkboxFormatter as ɵt, checkmarkFormatter as ɵu, complexObjectFormatter as ɵv, dateIsoFormatter as ɵw, dateTimeIsoAmPmFormatter as ɵx, dateTimeUsAmPmFormatter as ɵba, dateTimeUsFormatter as ɵz, dateUsFormatter as ɵy, deleteIconFormatter as ɵbb, editIconFormatter as ɵbc, hyperlinkFormatter as ɵbd, infoIconFormatter as ɵbe, percentCompleteBarFormatter as ɵbg, percentCompleteFormatter as ɵbf, progressBarFormatter as ɵbh, translateFormatter as ɵbi, yesNoFormatter as ɵbj, dateIsoSorter as ɵbl, dateSorter as ɵbk, dateUsShortSorter as ɵbn, dateUsSorter as ɵbm, numericSorter as ɵbo, stringSorter as ɵbp };
+export { CaseType, FieldType, FilterType, FormElementType, KeyCode, OperatorType, SortDirection, Editors, FilterConditions, Filters, Formatters, Sorters, FilterService, SortService, GridEventService, GraphqlService, GridExtraService, GridExtraUtils, GridOdataService, OdataService, ResizerService, ControlAndPluginService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, TextEditor as ɵf, booleanFilterCondition as ɵh, collectionSearchFilterCondition as ɵn, dateFilterCondition as ɵi, dateIsoFilterCondition as ɵj, dateUsFilterCondition as ɵl, dateUsShortFilterCondition as ɵm, dateUtcFilterCondition as ɵk, executeMappedCondition as ɵg, testFilterCondition as ɵq, numberFilterCondition as ɵo, stringFilterCondition as ɵp, InputFilter as ɵr, MultipleSelectFilter as ɵs, SelectFilter as ɵu, SingleSelectFilter as ɵt, arrayToCsvFormatter as ɵv, checkboxFormatter as ɵw, checkmarkFormatter as ɵx, complexObjectFormatter as ɵy, dateIsoFormatter as ɵz, dateTimeIsoAmPmFormatter as ɵba, dateTimeUsAmPmFormatter as ɵbd, dateTimeUsFormatter as ɵbc, dateUsFormatter as ɵbb, deleteIconFormatter as ɵbe, editIconFormatter as ɵbf, hyperlinkFormatter as ɵbg, infoIconFormatter as ɵbh, percentCompleteBarFormatter as ɵbj, percentCompleteFormatter as ɵbi, progressBarFormatter as ɵbk, translateFormatter as ɵbl, yesNoFormatter as ɵbm, dateIsoSorter as ɵbo, dateSorter as ɵbn, dateUsShortSorter as ɵbq, dateUsSorter as ɵbp, numericSorter as ɵbr, stringSorter as ɵbs };
 //# sourceMappingURL=angular-slickgrid.es5.js.map
