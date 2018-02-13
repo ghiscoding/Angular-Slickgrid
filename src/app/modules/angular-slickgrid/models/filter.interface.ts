@@ -5,6 +5,8 @@ import { FilterArguments } from './filterArguments.interface';
 
 // export type Filter = (searchTerms: string | number | string[] | number[], columnDef: Column, params?: any) => string;
 export interface Filter {
+  // Properties which must be Public
+
   /** Column definition */
   columnDef: Column;
 
