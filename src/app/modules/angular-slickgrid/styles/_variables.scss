@@ -10,6 +10,7 @@ $border-color:                          #dddddd !default;
 $font-size-base-value:                  14 !default;
 $font-size-base:          			        $font-size-base-value + 0px !default;
 $font-family:                           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
+$primary-checkbox-color:                         #31708F !default;
 
 /* Slickgrid container, including headers but excluding pagination */
 $container-border-top:                  0 none !default;
@@ -104,7 +105,7 @@ $grid-menu-box-shadow:                  2px 2px 2px silver !default;
 $grid-menu-icon-font-size:              14px;
 
 /* Checkbox Selector / Row Selection */
-$chekbox-selector-color:                #31708F !default;
+$chekbox-selector-color:                $primary-checkbox-color !default;
 $chekbox-selector-size:                 13px !default;
 $chekbox-selector-icon:                 "\f00c" !default;
 $chekbox-selector-opacity:              0.15 !default;
@@ -118,6 +119,31 @@ $large-editor-textarea-height:          80px !default;
 $large-editor-textarea-width:           250px !default;
 $large-editor-button-text-align:        right !default;
 $large-editor-footer-spacing:           2px !default;
+
+/* Multiple-Select Filter */
+$multiselect-input-filter-border:       1px solid #ccc !default;
+$multiselect-input-filter-font-family:  "Helvetica Neue", Helvetica, Arial !default;
+$multiselect-input-filter-font-size:    12px !default;
+$multiselect-dropdown-border:           1px solid #bbb !default;
+$multiselect-dropdown-max-width:        250px !default;
+$multiselect-checkbox-margin-left:      4px !default;
+$multiselect-checkbox-hover-bg-color:   #f0f0f0 !default;
+$multiselect-select-all-border-bottom:  1px solid #ddd !default;
+$multiselect-select-all-text-color:     #555 !default;
+$multiselect-icon-color:                $primary-checkbox-color !default;
+$multiselect-icon-checked:              "\f14a" !default;
+$multiselect-icon-unchecked:            "\f096" !default;
+$multiselect-icon-radio-checked:        "\f058" !default;
+$multiselect-icon-radio-unchecked:      "\f1db" !default;
+$multiselect-icon-font-size:            16px !default;
+$multiselect-unchecked-opacity:         0.5 !default;
+$multiselect-ok-button-bg-color:        #fff !default;
+$multiselect-ok-button-bg-hover-color:  #e7e7e7 !default;
+$multiselect-ok-button-text-color:      #444 !default;
+$multiselect-ok-button-border:          1px solid #ddd !default;
+$multiselect-ok-button-height:          26px !default;
+$multiselect-ok-button-width:           100% !default;
+$multiselect-ok-button-text-align:      center !default;
 
 /* pagination variables */
 $pagination-button-hover-color:         #E6E6E6 !default;

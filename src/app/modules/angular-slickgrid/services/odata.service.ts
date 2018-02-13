@@ -52,7 +52,7 @@ export class OdataService {
       // filterBy are passed manually by the user, however we will only add it if the column wasn't yet filtered
       if (!!this._odataOptions.filterBy && !!this._odataOptions.filterBy.fieldName && !this._columnFilters[this._odataOptions.filterBy.fieldName.toLowerCase()]) {
         if (this._odataOptions.filterBy.searchTerm !== '') {
-          this.saveColumnFilter(this._odataOptions.filterBy.fieldName.toLowerCase(), this._odataOptions.filterBy.searchTerm, this._odataOptions.filterBy.listTerm);
+          this.saveColumnFilter(this._odataOptions.filterBy.fieldName.toLowerCase(), this._odataOptions.filterBy.searchTerm, this._odataOptions.filterBy.searchTerms);
           this.updateFilterFromListTerms(this._odataOptions.filterBy);
         }
       }
@@ -120,7 +120,7 @@ export class OdataService {
     let searchBy = '';
     const tmpSearchByArray = [];
     const fieldName = filterOptions.fieldName;
-    const fieldSearchTerms = filterOptions.listTerm;
+    const fieldSearchTerms = filterOptions.searchTerms;
     const operator = filterOptions.operator;
 
     // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)

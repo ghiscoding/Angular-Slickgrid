@@ -7,5 +7,5 @@ export interface GraphqlResult {
       },
       totalCount: number
     }
-  }
+  };
 }

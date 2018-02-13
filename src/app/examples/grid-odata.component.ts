@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter, Injectable } from '@angular/core';
-import { CaseType, Column, FormElementType, GridOption } from './../modules/angular-slickgrid/models';
+import { CaseType, Column, FilterType, GridOption } from './../modules/angular-slickgrid/models';
 import { FieldType, Formatters } from './../modules/angular-slickgrid';
 import { GridOdataService } from './../modules/angular-slickgrid/services/grid-odata.service';
 import { HttpClient } from '@angular/common/http';
@@ -42,9 +42,8 @@ export class GridOdataComponent implements OnInit {
       { id: 'name', name: 'Name', field: 'name', filterable: true, sortable: true, type: FieldType.string },
       { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
         filter: {
-          searchTerm: '', // default selection
-          type: FormElementType.select,
-          selectOptions: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
+          type: FilterType.singleSelect,
+          collection: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
         }
       },
       { id: 'company', name: 'Company', field: 'company' }
@@ -77,6 +76,7 @@ export class GridOdataComponent implements OnInit {
   }
 
   displaySpinner(isProcessing) {
+    console.log('processing', isProcessing);
     this.processing = isProcessing;
     this.status = (isProcessing)
       ? { text: 'processing...', class: 'alert alert-danger' }
@@ -84,8 +84,6 @@ export class GridOdataComponent implements OnInit {
   }
 
   getCustomerCallback(data) {
-    this.displaySpinner(false);
-
     this.dataset = data['items'];
     this.odataQuery = data['query'];
 

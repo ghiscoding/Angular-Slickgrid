@@ -24,14 +24,15 @@ import { GridOption } from '../models/gridOption.interface';
 
 let timer: any;
 const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
+const ITEMS_PER_PAGE = 25;
 
 @Injectable()
 export class GraphqlService implements BackendService {
   options: GraphqlServiceOption;
-  pagination: Pagination;
+  pagination: Pagination | undefined;
   defaultOrderBy: GraphqlSortingOption = { field: 'id', direction: SortDirection.ASC };
   defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption = {
-    first: 25,
+    first: ITEMS_PER_PAGE,
     offset: 0
   };
 
@@ -81,18 +82,18 @@ export class GraphqlService implements BackendService {
     // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
     const datasetFilters: GraphqlDatasetFilter = {
       ...this.options.paginationOptions,
-      first: (this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : this.pagination.pageSize || this.defaultPaginationOptions.first
+      first: (this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : (this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null || this.defaultPaginationOptions.first
     };
 
     if (!this.options.isWithCursor) {
-      datasetFilters.offset = (this.options.paginationOptions && this.options.paginationOptions['offset']) ? this.options.paginationOptions['offset'] : this.defaultPaginationOptions['offset'];
+      datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +this.options.paginationOptions['offset'] : 0);
     }
 
-    if (this.options.sortingOptions) {
+    if (this.options.sortingOptions && Array.isArray(this.options.sortingOptions) && this.options.sortingOptions.length > 0) {
       // orderBy: [{ field:x, direction: 'ASC' }]
       datasetFilters.orderBy = this.options.sortingOptions;
     }
-    if (this.options.filteringOptions) {
+    if (this.options.filteringOptions && Array.isArray(this.options.filteringOptions) && this.options.filteringOptions.length > 0) {
       // filterBy: [{ field: date, operator: '>', value: '2000-10-10' }]
       datasetFilters.filterBy = this.options.filteringOptions;
     }
@@ -146,11 +147,11 @@ export class GraphqlService implements BackendService {
    * @return Pagination Options
    */
   getInitPaginationOptions(): GraphqlDatasetFilter {
-    return (this.options.isWithCursor) ? { first: this.pagination.pageSize } : { first: this.pagination.pageSize, offset: 0 };
+    return (this.options.isWithCursor) ? { first: (this.pagination ? this.pagination.pageSize : ITEMS_PER_PAGE) } : { first: (this.pagination ? this.pagination.pageSize : ITEMS_PER_PAGE), offset: 0 };
   }
 
-  getDatasetName() {
-    return this.options.datasetName;
+  getDatasetName(): string {
+    return this.options.datasetName || '';
   }
 
   /*
@@ -196,8 +197,10 @@ export class GraphqlService implements BackendService {
     }
 
     const promise = new Promise<string>((resolve, reject) => {
+      let searchValue: string | string[] | number[];
+
       if (!args || !args.grid) {
-        throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
+        throw new Error('Something went wrong when trying create the GraphQL Backend Service, it seems that "args" is not populated correctly');
       }
 
       // loop through all columns to inspect filters
@@ -207,30 +210,36 @@ export class GraphqlService implements BackendService {
           const columnDef = columnFilter.columnDef;
           const fieldName = columnDef.queryField || columnDef.field || columnDef.name || '';
           const fieldType = columnDef.type || 'string';
+          const searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
           let fieldSearchValue = columnFilter.searchTerm;
           if (typeof fieldSearchValue === 'undefined') {
             fieldSearchValue = '';
           }
-          if (typeof fieldSearchValue !== 'string') {
-            throw new Error(`GraphQL filter term property must be provided type "string", if you use filter with options then make sure your ids are also string. For example: filter: {type: FormElementType.select, selectOptions: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
+
+          if (typeof fieldSearchValue !== 'string' && !searchTerms) {
+            throw new Error(`GraphQL filter searchTerm property must be provided as type "string", if you use filter with options then make sure your IDs are also string. For example: filter: {type: FilterType.select, collection: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
           }
 
-          const searchTerms = columnFilter.listTerm || [];
           fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
           const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
           let operator = columnFilter.operator || ((matches) ? matches[1] : '');
-          let searchValue = (!!matches) ? matches[2] : '';
+          searchValue = (!!matches) ? matches[2] : '';
           const lastValueChar = (!!matches) ? matches[3] : '';
 
           // no need to query if search value is empty
-          if (fieldName && searchValue === '') {
+          if (fieldName && searchValue === '' && searchTerms.length === 0) {
             continue;
           }
 
-          // escaping the search value
-          searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
-          if (operator === '*' || lastValueChar === '*') {
-            operator = (operator === '*') ? 'endsWith' : 'startsWith';
+          // when having more than 1 search term (we need to create a CSV string for GraphQL "IN" or "NOT IN" filter search)
+          if (searchTerms && searchTerms.length > 0) {
+            searchValue = searchTerms.join(',');
+          } else {
+            // escaping the search value
+            searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
+            if (operator === '*' || lastValueChar === '*') {
+              operator = (operator === '*') ? 'endsWith' : 'startsWith';
+            }
           }
 
           searchByArray.push({

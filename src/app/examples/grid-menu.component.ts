@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, FieldType, FilterService, Formatter, Formatters, FormElementType, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, FilterType, FilterService, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
 import * as $ from 'jquery';
 
 // create a custom Formatter to highlight negative values in red
@@ -54,9 +54,13 @@ export class GridMenuComponent implements OnInit {
         sortable: true,
         filterable: true,
         filter: {
-          searchTerm: '', // default selection
-          type: FormElementType.select,
-          selectOptions: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }]
+          collection: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }],
+          type: FilterType.singleSelect,
+          filterOptions: {
+            // you can add "multiple-select" plugin options like styling the first row
+            offsetLeft: 14,
+            width: 100
+          },
         }
       }
     ];

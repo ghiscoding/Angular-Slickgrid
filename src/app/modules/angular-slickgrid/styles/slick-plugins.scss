@@ -178,3 +178,89 @@ label {
 .slickgrid-container input[type=checkbox]:checked + label:before {
   opacity: 1; /* checked icon */
 }
+
+// ----------------------------------------------
+// Multi-Select Filter
+// ----------------------------------------------
+.ms-choice {
+  border: $multiselect-input-filter-border;
+  span {
+    font-size: $multiselect-input-filter-font-size;
+    font-family: $multiselect-input-filter-font-family
+  }
+}
+.ms-filter.search-filter {
+  width: 100% !important;
+}
+.ms-drop {
+  max-width: $multiselect-dropdown-max-width;
+  border: $multiselect-dropdown-border;
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    /* make input checkbox invisible but don't hide it since multiple-select uses hide for something else */
+    opacity: 0;
+    width: 0;
+
+    & + span:before {
+      cursor: pointer;
+      color: $multiselect-icon-color;
+      content: $multiselect-icon-unchecked;
+      display: inline-block;
+      font-family: $icon-font-family;
+      font-size: $multiselect-icon-font-size;
+      font-weight: normal;
+      width: 20px;
+      opacity: $multiselect-unchecked-opacity;
+    }
+
+    &:checked + span:before {
+      content: $multiselect-icon-checked;
+      opacity: 1;
+    }
+  }
+  input[type="radio"] {
+    & + span:before {
+      content: $multiselect-icon-radio-unchecked;
+    }
+    &:checked + span:before {
+      content: $multiselect-icon-radio-checked;
+    }
+  }
+  label {
+    span {
+      cursor: pointer;
+      margin-left: $multiselect-checkbox-margin-left;
+      position: relative;
+      top: 1px;
+    }
+    &:hover {
+      cursor: pointer;
+      background-color: $multiselect-checkbox-hover-bg-color;
+    }
+  }
+  .ms-select-all {
+    border-bottom: $multiselect-select-all-border-bottom;
+    label {
+      font-weight: normal;
+      padding: 5px 8px;
+      color: $multiselect-select-all-text-color;
+    }
+  }
+  .ms-ok-button {
+    cursor: pointer;
+    display: block;
+    width: $multiselect-ok-button-width;
+    height: $multiselect-ok-button-height;
+    padding: 0;
+    border: $multiselect-ok-button-border;
+    text-align: $multiselect-ok-button-text-align;
+    color: $multiselect-ok-button-text-color;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    background-color: $multiselect-ok-button-bg-color;
+    &:hover {
+      background-color: $multiselect-ok-button-bg-hover-color;
+    }
+  }
+}

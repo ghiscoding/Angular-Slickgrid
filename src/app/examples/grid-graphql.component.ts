@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Injectable, Input, OnInit, Output, Pipe, PipeTransform } from '@angular/core';
-import { CaseType, Column, FormElementType, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid/models';
+import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
+import { CaseType, Column, FilterType, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid/models';
 import { FieldType, Formatters } from './../modules/angular-slickgrid';
 import { GraphqlService } from './../modules/angular-slickgrid/services/graphql.service';
 import { HttpClient } from '@angular/common/http';
@@ -49,12 +49,17 @@ export class GridGraphqlComponent implements OnInit {
       { id: 'name', name: 'Name', field: 'name', headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string },
       { id: 'gender', name: 'Gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true,
         filter: {
-          searchTerm: '', // default selection
-          type: FormElementType.select,
-          selectOptions: [ { value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' } ]
+          type: FilterType.singleSelect,
+          collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }]
         }
       },
-      { id: 'company', name: 'Company', field: 'company', headerKey: 'COMPANY', filterable: true },
+      { id: 'company', name: 'Company', field: 'company', headerKey: 'COMPANY',
+        filterable: true,
+        filter: {
+          type: FilterType.multipleSelect,
+          collection: [{ value: 'ABC', label: 'Company ABC'}, { value: 'XYZ', label: 'Company XYZ'}]
+        }
+      },
       { id: 'billing.address.street', name: 'Billing Address Street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', filterable: true, sortable: true },
       { id: 'billing.address.zip', name: 'Billing Address Zip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', filterable: true, sortable: true },
     ];
@@ -86,19 +91,11 @@ export class GridGraphqlComponent implements OnInit {
   }
 
   displaySpinner(isProcessing) {
+    console.log('processing', isProcessing);
     this.processing = isProcessing;
     this.status = (isProcessing)
       ? { text: 'processing...', class: 'alert alert-danger' }
       : { text: 'done', class: 'alert alert-success' };
-  }
-
-  filterChange() {
-    console.log('filter change');
-  }
-
-  filterChangeAfter() {
-    console.log('after filter change');
-    this.displaySpinner(false);
   }
 
   onWithCursorChange(isWithCursor) {
@@ -149,6 +146,7 @@ export class GridGraphqlComponent implements OnInit {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         this.graphqlQuery = this.graphqlService.buildQuery();
+        console.log(this.graphqlQuery);
         resolve(mockedResult);
       }, 500);
     });

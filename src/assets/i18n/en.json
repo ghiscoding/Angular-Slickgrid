@@ -1,4 +1,5 @@
 {
+  "ALL_SELECTED": "All Selected",
   "CLEAR_ALL_FILTERS": "Clear All Filters",
   "COLUMNS": "Columns",
   "COMMANDS": "Commands",
@@ -10,8 +11,10 @@
   "PAGE": "Page",
   "PAGE_X_OF_Y": "page {{x}} of {{y}}",
   "REFRESH_DATASET": "Refresh Dataset",
+  "SELECT_ALL": "Select All",
   "SYNCHRONOUS_RESIZE": "Synchronous resize",
   "TOGGLE_FILTER_ROW": "Toggle Filter Row",
+  "X_OF_Y_SELECTED": "# of % selected",
 
   "BILLING": {
     "ADDRESS": {

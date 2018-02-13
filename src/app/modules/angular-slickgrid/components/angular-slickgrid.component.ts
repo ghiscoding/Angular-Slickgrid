@@ -22,7 +22,7 @@ import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
 import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
-import { CellArgs, Column, FormElementType, GraphqlResult, GridOption } from './../models';
+import { BackendServiceOption, CellArgs, Column, GraphqlResult, GridOption } from './../models';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { FilterService } from './../services/filter.service';
 import { GraphqlService } from './../services/graphql.service';
@@ -31,11 +31,11 @@ import { GridExtraService } from './../services/gridExtra.service';
 import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
 import { TranslateService } from '@ngx-translate/core';
-
 import $ from 'jquery';
 
 // using external js modules in Angular
 declare var Slick: any;
+declare var $: any;
 
 @Injectable()
 @Component({
@@ -163,9 +163,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
 
       // internalPostProcess only works with a GraphQL Service, so make sure it is that type
-      if (backendApi.service instanceof GraphqlService) {
+      if (backendApi && backendApi.service && backendApi.service instanceof GraphqlService) {
         backendApi.internalPostProcess = (processResult: any) => {
-          const datasetName = backendApi.service.getDatasetName();
+          const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
           if (!processResult || !processResult.data || !processResult.data[datasetName]) {
             throw new Error(`Your GraphQL result is invalid and/or does not follow the required result structure. Please check the result and/or review structure to use in Angular-Slickgrid Wiki in the GraphQL section.`);
           }
@@ -208,11 +208,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
 
       const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
-      const serviceOptions = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : null;
-      const isExecuteCommandOnInit = (!serviceOptions) ? false : (serviceOptions['executeProcessCommandOnInit'] || true);
+      const serviceOptions: BackendServiceOption = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : {};
+      const isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && serviceOptions.hasOwnProperty('executeProcessCommandOnInit')) ? serviceOptions['executeProcessCommandOnInit'] : true);
 
-      if (backendApi.onInit || isExecuteCommandOnInit) {
-        const query = backendApi.service.buildQuery();
+      if (backendApi && backendApi.service && (backendApi.onInit || isExecuteCommandOnInit)) {
+        const query = (typeof backendApi.service.buildQuery === 'function') ? backendApi.service.buildQuery() : '';
         const observableOrPromise = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
 
         // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
@@ -227,7 +227,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
           // define what our internal Post Process callback, only available for GraphQL Service for now
           // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
-          if (backendApi.service instanceof GraphqlService && processResult) {
+          if (processResult && backendApi && backendApi.service instanceof GraphqlService && backendApi.internalPostProcess) {
             backendApi.internalPostProcess(processResult);
           }
 
@@ -299,7 +299,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         // before merging the grid options, make sure that it has the totalItems count
         // once we have that, we can merge and pass all these options to the pagination component
         if (!this.gridOptions.pagination) {
-          this.gridOptions.pagination = (this._gridOptions.pagination) ? this._gridOptions.pagination : null;
+          this.gridOptions.pagination = (this._gridOptions.pagination) ? this._gridOptions.pagination : undefined;
         }
         if (this.gridOptions.pagination && totalCount) {
           this.gridOptions.pagination.totalItems = totalCount;

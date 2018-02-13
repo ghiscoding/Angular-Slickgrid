@@ -24,9 +24,6 @@ export interface GraphqlServiceOption extends BackendServiceOption {
   /** Column definitions, you can pass this instead of "columnIds" */
   columnDefinitions?: Column[];
 
-  /** Execute the process callback command on component init (page load) */
-  executeProcessCommandOnInit?: boolean;
-
   /** (NOT FULLY IMPLEMENTED) Is the GraphQL Server using cursors? */
   isWithCursor?: boolean;
 
