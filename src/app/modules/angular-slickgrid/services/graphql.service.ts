@@ -78,7 +78,7 @@ export class GraphqlService implements BackendService {
     // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
     const datasetFilters: GraphqlDatasetFilter = {
       ...this.options.paginationOptions,
-      first: (this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : (this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null || this.defaultPaginationOptions.first
+      first: ((this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : ((this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null)) || this.defaultPaginationOptions.first
     };
 
     if (!this.options.isWithCursor) {
