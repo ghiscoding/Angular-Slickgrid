@@ -1,14 +1,10 @@
-import { BackendServiceApi } from './../models/backendServiceApi.interface';
 import { Injectable } from '@angular/core';
 import { Pagination } from './../models/pagination.interface';
 import { TranslateService } from '@ngx-translate/core';
-import { mapOperatorType, parseUtcDate } from './utilities';
+import { mapOperatorType } from './utilities';
 import {
   BackendService,
-  BackendServiceOption,
-  CaseType,
   FilterChangedArgs,
-  FieldType,
   GraphqlCursorPaginationOption,
   GraphqlDatasetFilter,
   GraphqlFilteringOption,
@@ -209,7 +205,6 @@ export class GraphqlService implements BackendService {
           const columnFilter = args.columnFilters[columnId];
           const columnDef = columnFilter.columnDef;
           const fieldName = columnDef.queryField || columnDef.field || columnDef.name || '';
-          const fieldType = columnDef.type || 'string';
           const searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
           let fieldSearchValue = columnFilter.searchTerm;
           if (typeof fieldSearchValue === 'undefined') {

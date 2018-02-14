@@ -1,10 +1,13 @@
 import { mapFlatpickrDateFormatWithFieldType } from './../services/utilities';
-import { Column, Editor, FieldType, GridOption, KeyCode } from './../models';
+import { Column, Editor, FieldType, GridOption } from './../models';
 import { TranslateService } from '@ngx-translate/core';
 import $ from 'jquery';
 
 declare function require(name: string);
-const flatpickr = require('flatpickr');
+require('flatpickr');
+
+// using external js modules in Angular
+declare var $: any;
 
 /*
  * An example of a date picker editor using Flatpickr

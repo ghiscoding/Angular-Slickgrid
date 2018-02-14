@@ -5,31 +5,24 @@ import { castToPromise } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { Filters } from './../filters';
 import {
-  BackendServiceOption,
   Column,
   ColumnFilters,
   FieldType,
-  FilterChangedArgs,
   FilterType,
   GridOption,
   SlickEvent
 } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
-import $ from 'jquery';
 
 // using external js modules in Angular
-declare var jquery: any;
-declare var $: any;
 declare var Slick: any;
 
 @Injectable()
 export class FilterService {
   private _filters: any[] = [];
   private _columnFilters: ColumnFilters = {};
-  private _columnDefinitions: Column[];
   private _dataView: any;
   private _grid: any;
-  private _gridOptions: GridOption;
   private _onFilterChangedOptions: any;
   private subscriber: SlickEvent;
   onFilterChanged = new EventEmitter<string>();
@@ -37,8 +30,6 @@ export class FilterService {
   constructor(private translate: TranslateService) { }
 
   init(grid: any, gridOptions: GridOption, columnDefinitions: Column[]): void {
-    this._columnDefinitions = columnDefinitions;
-    this._gridOptions = gridOptions;
     this._grid = grid;
   }
 
@@ -95,23 +86,13 @@ export class FilterService {
 
   /** Clear the search filters (below the column titles) */
   clearFilters() {
-    const hasBackendServiceApi = (this._gridOptions && this._gridOptions.backendServiceApi) ? this._gridOptions.backendServiceApi : false;
-    const triggerFilterChange = !hasBackendServiceApi;
-
     this._filters.forEach((filter, index) => {
       if (filter && filter.clear) {
-        // clear element but don't trigger a change
-        // until we reach the last index to avoid multiple request to the Backend Server
-        const callTrigger = (index === 0 || index === this._filters.length - 1) ? true : false;
+        // clear element and trigger a change
         filter.clear(true);
       }
     });
-    /*
-        // clear with a trigger only first filter to avoid multiple request to the Backend Server
-        if (hasBackendServiceApi && this._filters.length > 0) {
-          this._filters[0].clear(true);
-        }
-    */
+
     // we need to loop through all columnFilters and delete them 1 by 1
     // only trying to clear columnFilter (without looping through) would not trigger a dataset change
     for (const columnId in this._columnFilters) {
@@ -366,7 +347,7 @@ export class FilterService {
   /**
    * A simple function that is attached to the subscriber and emit a change when the sort is called.
    * Other services, like Pagination, can then subscribe to it.
-   * @param {string} sender
+   * @param sender
    */
   emitFilterChangedBy(sender: string) {
     this.subscriber.subscribe(() => this.onFilterChanged.emit(`onFilterChanged by ${sender}`));

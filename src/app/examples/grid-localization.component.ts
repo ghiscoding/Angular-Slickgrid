@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, Editors, FieldType, FilterType, Formatter, Formatters, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
+import { Column, FilterType, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -38,7 +38,7 @@ export class GridLocalizationComponent implements OnInit {
   dataset: any[];
   selectedLanguage: string;
 
-  constructor(private gridExtraService: GridExtraService, private translate: TranslateService) {
+  constructor(private translate: TranslateService) {
     this.selectedLanguage = this.translate.getDefaultLang();
   }
 
@@ -82,7 +82,6 @@ export class GridLocalizationComponent implements OnInit {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
-      const randomPercent = Math.round(Math.random() * 100);
 
       this.dataset[i] = {
         id: i,

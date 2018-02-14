@@ -1,7 +1,6 @@
 import { Column, Filter } from './../models';
 import { FilterArguments } from '../models/filterArguments.interface';
 import { FilterCallback } from './../models/filterCallback.interface';
-import { HtmlElementPosition } from './../models/htmlElementPosition.interface';
 import { SelectOption } from './../models/selectOption.interface';
 import { TranslateService } from '@ngx-translate/core';
 import $ from 'jquery';
@@ -151,14 +150,5 @@ export class MultipleSelectFilter implements Filter {
       }
     }
     return -1;
-  }
-
-  private subscribeOnClose() {
-    this.$filterElm.multipleSelect({
-      onClose: () => {
-        const selectedItems = this.$filterElm.multipleSelect('getSelects');
-        this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: selectedItems });
-      }
-    });
   }
 }

@@ -1,4 +1,3 @@
-import { TranslateService } from '@ngx-translate/core';
 import { FilterCallback } from './filterCallback.interface';
 import { Column } from './column.interface';
 import { FilterArguments } from './filterArguments.interface';

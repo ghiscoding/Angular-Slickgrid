@@ -44,7 +44,7 @@ export default class GraphqlQueryBuilder {
 
   /**
    * Outlines the properties you wish to be returned from the query.
-   * @param {string|object} properties representing each attribute you want Returned
+   * @param properties representing each attribute you want Returned
    */
   find(...searches: any[]) { // THIS NEED TO BE A "FUNCTION" to scope 'arguments'
     if (!searches) {
@@ -59,7 +59,7 @@ export default class GraphqlQueryBuilder {
 
   /**
    * set an alias for this result.
-   * @param {string} alias
+   * @param alias
    */
   setAlias(alias: string) {
     this.alias = alias;
@@ -67,7 +67,7 @@ export default class GraphqlQueryBuilder {
 
   /**
    * Return to the formatted query string
-   * @return {string}
+   * @return
    */
   toString() {
     if (this.body === undefined) {

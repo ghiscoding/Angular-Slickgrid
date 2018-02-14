@@ -1,8 +1,10 @@
 import $ from 'jquery';
 import { Editor, KeyCode } from './../models';
 
+// using external js modules in Angular
+declare var $: any;
+
 const defaultDecimalPlaces = 0;
-const allowEmptyValue = false;
 
 /*
  * An example of a 'detached' editor.

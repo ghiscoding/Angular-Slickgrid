@@ -1,5 +1,4 @@
 import { ColumnFilter } from './columnFilter.interface';
-import { Editor } from './editor.interface';
 import { FieldType } from './fieldType';
 import { Formatter } from './formatter.interface';
 import { HeaderButtonItem } from './headerButtonItem.interface';

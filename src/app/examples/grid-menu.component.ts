@@ -1,16 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, FieldType, FilterType, FilterService, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
-import * as $ from 'jquery';
-
-// create a custom Formatter to highlight negative values in red
-const columnsWithHighlightingById = {};
-const highlightingFormatter = (row, cell, value, columnDef, dataContext) => {
-  if (columnsWithHighlightingById[columnDef.id] && value < 0) {
-    return `<div style="color:red; font-weight:bold;">${value}</div>`;
-  } else {
-    return value;
-  }
-};
+import { Column, FieldType, FilterType, FilterService, Formatters, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-menu.component.html'

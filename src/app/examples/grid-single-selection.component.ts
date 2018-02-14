@@ -1,5 +1,5 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { Column, FieldType, Formatter, Formatters, GridExtraService, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, Formatters, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   selector: 'grid-single-selection',
@@ -19,7 +19,7 @@ export class GridSingleSelectionComponent implements OnInit {
   dataviewObj: any;
   isMultiSelect = true;
 
-  constructor(private gridExtraService: GridExtraService) {}
+  constructor() {}
 
   ngOnInit(): void {
     this.prepareGrid();

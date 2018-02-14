@@ -1,6 +1,6 @@
 import { CustomInputFilter } from './custom-inputFilter';
 import { Component, OnInit } from '@angular/core';
-import { Column, FieldType, FilterType, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, FilterType, Formatters, GridOption } from './../modules/angular-slickgrid';
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -50,7 +50,7 @@ export class GridClientSideComponent implements OnInit {
           type: FilterType.custom,
           customFilter: new CustomInputFilter() // create a new instance to make each Filter independent from each other
         }
-       },
+      },
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number,
         minWidth: 55,
         filterable: true,

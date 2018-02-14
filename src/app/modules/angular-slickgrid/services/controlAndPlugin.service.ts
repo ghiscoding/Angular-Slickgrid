@@ -1,13 +1,9 @@
 import { Injectable } from '@angular/core';
 import { FilterService } from './filter.service';
-import { GridExtraUtils } from './gridExtraUtils';
-import { GridExtraService } from './gridExtra.service';
 import {
   CellArgs,
-  CheckboxSelector,
   CustomGridMenu,
   Column,
-  Formatter,
   GraphqlResult,
   GridMenu,
   GridOption,
@@ -40,14 +36,14 @@ export class ControlAndPluginService {
   gridMenuControl: any;
   rowSelectionPlugin: any;
 
-  constructor(private filterService: FilterService, private gridExtraService: GridExtraService, private translate: TranslateService) { }
+  constructor(private filterService: FilterService, private translate: TranslateService) { }
 
   /**
    * Attach/Create different Controls or Plugins after the Grid is created
-   * @param {any} grid
-   * @param {Column[]} columnDefinitions
-   * @param {GridOptions} options
-   * @param {any} dataView
+   * @param grid
+   * @param columnDefinitions
+   * @param options
+   * @param dataView
    */
   attachDifferentControlOrPlugins(grid: any, columnDefinitions: Column[], options: GridOption, dataView: any) {
     this._grid = grid;
@@ -401,7 +397,7 @@ export class ControlAndPluginService {
   /**
    * Translate manually the header titles.
    * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
-   * @param {string} locale locale to use
+   * @param locale locale to use
    */
   translateHeaders(locale?: string) {
     if (locale) {
@@ -421,8 +417,8 @@ export class ControlAndPluginService {
   /**
    * Attach/Create different plugins before the Grid creation.
    * For example the multi-select have to be added to the column definition before the grid is created to work properly
-   * @param {Column[]} columnDefinitions
-   * @param {GridOptions} options
+   * @param columnDefinitions
+   * @param options
    */
   createPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption) {
     if (options.enableCheckboxSelector) {

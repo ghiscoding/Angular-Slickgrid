@@ -1,6 +1,6 @@
 import { EventEmitter } from '@angular/core';
 import { castToPromise } from './utilities';
-import { BackendServiceOption, FieldType, GridOption, Sorter } from './../models';
+import { FieldType, GridOption } from './../models';
 import { Sorters } from './../sorters';
 
 export class SortService {
@@ -114,7 +114,7 @@ export class SortService {
   /**
    * A simple function that is attached to the subscriber and emit a change when the sort is called.
    * Other services, like Pagination, can then subscribe to it.
-   * @param {string} sender
+   * @param sender
    */
   emitSortChangedBy(sender: string) {
     this.subscriber.subscribe(() => this.onSortChanged.emit(`onSortChanged by ${sender}`));

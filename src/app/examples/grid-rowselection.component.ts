@@ -1,5 +1,5 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { Column, FieldType, Formatter, Formatters, GridExtraService, GridExtraUtils, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, Formatters, GridExtraService, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-rowselection.component.html'

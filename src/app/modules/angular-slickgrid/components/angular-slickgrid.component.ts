@@ -22,7 +22,7 @@ import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
 import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
-import { BackendServiceOption, CellArgs, Column, GraphqlResult, GridOption } from './../models';
+import { BackendServiceOption, Column, GridOption } from './../models';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { FilterService } from './../services/filter.service';
 import { GraphqlService } from './../services/graphql.service';
@@ -146,7 +146,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.attachResizeHook(this.grid, this._gridOptions);
 
     // attach grid extra service
-    const gridExtraService = this.gridExtraService.init(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
+    this.gridExtraService.init(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
 
     // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
     if (this._gridOptions.enableTranslate) {
@@ -283,7 +283,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   /**
    * When dataset changes, we need to refresh the entire grid UI & possibly resize it as well
-   * @param {object} dataset
+   * @param dataset
    */
   refreshGridData(dataset: any[], totalCount?: number) {
     if (dataset && this.grid) {
@@ -315,7 +315,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   /** Toggle the filter row displayed on first row
-   * @param {boolean} isShowing
+   * @param isShowing
    */
   showHeaderRow(isShowing: boolean) {
     this.grid.setHeaderRowVisibility(isShowing);

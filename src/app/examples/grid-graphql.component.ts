@@ -1,13 +1,11 @@
-import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
-import { CaseType, Column, FilterType, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid/models';
-import { FieldType, Formatters } from './../modules/angular-slickgrid';
+import { Component, Injectable, OnInit } from '@angular/core';
+import { Column, FilterType, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid/models';
+import { FieldType } from './../modules/angular-slickgrid';
 import { GraphqlService } from './../modules/angular-slickgrid/services/graphql.service';
-import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { GraphqlResult } from '../modules/angular-slickgrid/models/graphqlResult.interface';
 
 const defaultPageSize = 20;
-const sampleDataRoot = '/assets/data';
 const GRAPHQL_QUERY_DATASET_NAME = 'users';
 
 @Component({
@@ -40,7 +38,7 @@ export class GridGraphqlComponent implements OnInit {
   isWithCursor = false;
   selectedLanguage: string;
 
-  constructor(private http: HttpClient, private graphqlService: GraphqlService, private translate: TranslateService) {
+  constructor(private graphqlService: GraphqlService, private translate: TranslateService) {
     this.selectedLanguage = this.translate.getDefaultLang();
   }
 

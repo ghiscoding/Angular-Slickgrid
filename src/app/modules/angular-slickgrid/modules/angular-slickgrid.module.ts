@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSlickgridComponent } from './../components/angular-slickgrid.component';
 import { ControlAndPluginService } from '../services/controlAndPlugin.service';
-import { Formatters } from './../formatters';
 import { FilterService } from './../services/filter.service';
 import { GridEventService } from './../services/gridEvent.service';
 import { GridExtraService } from '../services/gridExtra.service';

@@ -1,17 +1,12 @@
 import { AutoResizeOption } from './autoResizeOption.interface';
 import { BackendEventChanged } from './backendEventChanged.interface';
 import { BackendServiceApi } from './backendServiceApi.interface';
-import { BackendService } from './backendService.interface';
-import { BackendServiceOption } from './backendServiceOption.interface';
-import { GraphqlServiceOption } from './graphqlServiceOption.interface';
 import { ColumnPicker } from './columnPicker.interface';
 import { CheckboxSelector } from './checkboxSelector.interface';
 import { GridMenu } from './gridMenu.interface';
 import { HeaderButton } from './headerButton.interface';
 import { HeaderMenu } from './headerMenu.interface';
 import { Pagination } from './pagination.interface';
-import { PaginationChangedArgs } from './paginationChangedArgs.interface';
-import { SortChangedArgs } from './sortChangedArgs.interface';
 
 export interface GridOption {
   asyncEditorLoading?: boolean;
