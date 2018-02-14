@@ -88,11 +88,11 @@ export default class GraphqlQueryBuilder {
       if (itemX instanceof GraphqlQueryBuilder) {
         return itemX.toString();
       } else if (!Array.isArray(itemX) && typeof itemX === 'object') {
-        const propsA = Object.keys(itemX);
-        if (1 !== propsA.length) {
+        const propsAA = Object.keys(itemX);
+        if (1 !== propsAA.length) {
           throw new RangeError(`Alias objects should only have one value. was passed: ${JSON.stringify(itemX)}`);
         }
-        const propS = propsA[0];
+        const propS = propsAA[0];
         const item = itemX[propS];
 
         if (Array.isArray(item)) {
