@@ -134,8 +134,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.onDataviewCreated.emit(this._dataView);
 
     // OBSOLETE in future releases, previous emitter functions (decided to rename them with onX prefix)
-    this.gridChanged.emit(this.grid);
-    this.dataviewChanged.emit(this._dataView);
+    this.gridChanged.emit('DEPRECATED and replaced by "onGridCreated" Event Emitter.');
+    this.dataviewChanged.emit('DEPRECATED and replaced by "onDataviewCreated" Event Emitter.');
 
     this.grid.init();
     this._dataView.beginUpdate();
