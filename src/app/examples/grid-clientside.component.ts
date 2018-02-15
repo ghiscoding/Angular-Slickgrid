@@ -43,8 +43,8 @@ export class GridClientSideComponent implements OnInit {
     }
 
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'title', filterable: true, sortable: true, type: FieldType.string,  },
-      { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true,
+      { id: 'title', name: 'Title', field: 'title', filterable: true, sortable: true, type: FieldType.string, minWidth: 45 },
+      { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 50,
         type: FieldType.string,
         filter: {
           type: FilterType.custom,
@@ -60,25 +60,28 @@ export class GridClientSideComponent implements OnInit {
           searchTerms: [1, 10, 20], // default selection
 
           // we could add certain option(s) to the "multiple-select" plugin
-          filterOptions: { maxHeight: 250 }
+          filterOptions: {
+            maxHeight: 250,
+            width: 175
+          }
         }
       },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, filterable: true, sortable: true },
-      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, filterable: true, sortable: true, type: FieldType.date },
-      { id: 'usDateShort', name: 'US Date Short', field: 'usDateShort', filterable: true, sortable: true, type: FieldType.dateUsShort },
+      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 55, type: FieldType.number, filterable: true, sortable: true },
+      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, filterable: true, sortable: true, type: FieldType.date, minWidth: 60 },
+      { id: 'usDateShort', name: 'US Date Short', field: 'usDateShort', filterable: true, sortable: true, type: FieldType.dateUsShort, minWidth: 55 },
       { id: 'utcDate', name: 'UTC Date', field: 'utcDate', formatter: Formatters.dateTimeIsoAmPm, filterable: true, sortable: true, minWidth: 115, type: FieldType.dateUtc, filterSearchType: FieldType.dateTimeIso },
       { id: 'utcDate2', name: 'UTC Date (filterSearchType: dateUS)', field: 'utcDate', filterable: true, sortable: true, minWidth: 115, type: FieldType.dateUtc, filterSearchType: FieldType.dateUs },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', maxWidth: 80, formatter: Formatters.checkmark,
+      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', minWidth: 85, maxWidth: 85, formatter: Formatters.checkmark,
         type: FieldType.boolean,
         sortable: true,
         filterable: true,
         filter: {
-          collection: [ { value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' } ],
+          collection: [ { value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' } ],
           type: FilterType.singleSelect,
+
+          // we could add certain option(s) to the "multiple-select" plugin
           filterOptions: {
-            // you can add "multiple-select" plugin options like styling the first row
-            offsetLeft: 14,
-            width: 100
+            autoDropWidth: true
           },
         }
       }
