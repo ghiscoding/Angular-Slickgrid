@@ -44,7 +44,15 @@ export class SingleSelectFilter implements Filter {
     this.createDomElement(filterTemplate);
 
     // step 3, subscribe to the change event and run the callback when that happens
-    this.$filterElm.change((e: any) => this.callback(e, { columnDef: this.columnDef, operator: 'EQ' }));
+    // also add/remove "filled" class for styling purposes
+    this.$filterElm.change((e: any) => {
+      if (e && e.target && e.target.value) {
+        this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled') ;
+      } else {
+        this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
+      }
+      this.callback(e, { columnDef: this.columnDef, operator: 'EQ' });
+    });
   }
 
   /**
