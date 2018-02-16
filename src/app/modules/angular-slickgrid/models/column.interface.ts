@@ -1,4 +1,5 @@
 import { ColumnFilter } from './columnFilter.interface';
+import { Editor } from './editor.interface';
 import { FieldType } from './fieldType';
 import { Formatter } from './formatter.interface';
 import { HeaderButtonItem } from './headerButtonItem.interface';
@@ -7,12 +8,25 @@ import { OnEventArgs } from './onEventArgs.interface';
 import { Sorter } from './sorter.interface';
 
 export interface Column {
-  asyncPostRender?: any;
+  /** async background post-rendering formatter */
+  asyncPostRender?: (domCellNode: any, row: number, dataContext: any, columnDef: Column) => void;
   cannotTriggerInsert?: boolean;
+
+  /** CSS class to add to the column cell */
   cssClass?: string;
+
+  /** Column span in pixels or `*`, only input the number value */
   colspan?: number | '*';
+
+  /** Do we want default sort to be ascending? True by default */
   defaultSortAsc?: boolean;
-  editor?: any;
+
+  /** Inline editor for the cell value */
+  editor?: Editor | any;
+
+  /** By default the Export will use Formatter output, if you don't want that behavior set this False */
+  exportWithFormatter?: boolean;
+
   field: string;
   filter?: ColumnFilter;
   filterable?: boolean;

@@ -1,19 +1,25 @@
+import { DelimiterType } from './delimiterType.enum';
+import { FileType } from './fileType.enum';
+
 export interface ExportOption {
-  /** export delimiter, can be (comma, tab, ...). Please note that Tab is written as "\t" */
-  delimiter: string;
+  /** export delimiter, can be (comma, tab, ... or even custom string). */
+  delimiter: DelimiterType | string;
 
   /** filename (without extension) */
   filename: string;
 
-  /** file format, typically csv or txt (this will provide the extension) */
-  format: string;
+  /** file type format, typically csv or txt (this will provide the extension) */
+  format: FileType;
 
   /** do we want to include the column named "id" in our export? Skipped by default */
   isIdColumnIncluded?: boolean;
 
-  /** array of column names that we want to exclude from the export */
+  /** array of column field names that we want to exclude from the export */
   skipColumns?: string[];
 
-  /** If you have a problem with getting ï»¿ (UTF-8 BOM) as the first few characters in an Excel spreadsheet after csv import, you can try setting */
-  exporterOlderExcelCompatibility?: boolean;
+  /**
+   * If you want to use UTF-8 and unicode, in most case it's better use it with BOM.
+   * This will basically add a special string  at the beginning of the file "ï»¿" which will tell the application that it is UTF-8 format.
+   */
+  useUtf8WithBom?: boolean;
 }

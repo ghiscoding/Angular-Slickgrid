@@ -10,7 +10,8 @@ import {
   GridOption,
   HeaderButtonOnCommandArgs,
   HeaderMenuOnCommandArgs,
-  HeaderMenuOnBeforeMenuShowArgs
+  HeaderMenuOnBeforeMenuShowArgs,
+  FileType
 } from './../models';
 import $ from 'jquery';
 import { TranslateService } from '@ngx-translate/core';
@@ -286,9 +287,9 @@ export class ControlAndPluginService {
                 break;
               case 'export-csv':
                 this.exportService.exportToFile({
-                  delimiter: '\t',
+                  delimiter: ',',
                   filename: 'export',
-                  format: 'txt'
+                  format: FileType.csv
                 });
                 break;
               case 'toggle-filter':

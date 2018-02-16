@@ -52,6 +52,7 @@ export class GridClientSideComponent implements OnInit {
         }
       },
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number,
+        exportWithFormatter: false,
         minWidth: 55,
         filterable: true,
         filter: {
@@ -66,7 +67,7 @@ export class GridClientSideComponent implements OnInit {
           }
         }
       },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 55, type: FieldType.number, filterable: true, sortable: true },
+      { id: 'complete', name: '% Complete', field: 'percentComplete', exportWithFormatter: false, formatter: Formatters.percentCompleteBar, minWidth: 55, type: FieldType.number, filterable: true, sortable: true },
       { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, filterable: true, sortable: true, type: FieldType.date, minWidth: 60 },
       { id: 'usDateShort', name: 'US Date Short', field: 'usDateShort', filterable: true, sortable: true, type: FieldType.dateUsShort, minWidth: 55 },
       { id: 'utcDate', name: 'UTC Date', field: 'utcDate', formatter: Formatters.dateTimeIsoAmPm, filterable: true, sortable: true, minWidth: 115, type: FieldType.dateUtc, filterSearchType: FieldType.dateTimeIso },

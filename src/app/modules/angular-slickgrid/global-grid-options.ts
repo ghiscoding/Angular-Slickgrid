@@ -1,4 +1,4 @@
-import { GridOption } from './models';
+import { DelimiterType, FileType,  GridOption } from './models';
 
 /**
  * Options that can be passed to the Bootstrap-Datetimepicker directly
@@ -30,11 +30,11 @@ export const GlobalGridOptions: GridOption = {
   enableTextSelectionOnCells: true,
   explicitInitialization: true,
   exportOptions: {
-    delimiter: ',',
+    delimiter: DelimiterType.comma,
     filename: 'export',
-    format: 'csv',
+    format: FileType.csv,
     isIdColumnIncluded: false,
-    exporterOlderExcelCompatibility: true
+    useUtf8WithBom: true
   },
   forceFitColumns: false,
   gridMenu: {
