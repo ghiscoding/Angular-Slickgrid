@@ -57,7 +57,7 @@ export class GridClientSideComponent implements OnInit {
         filter: {
           collection: multiSelectFilterArray,
           type: FilterType.multipleSelect,
-          searchTerms: [1, 10, 20], // default selection
+          searchTerms: [1, 33, 50], // default selection
 
           // we could add certain option(s) to the "multiple-select" plugin
           filterOptions: {
@@ -110,7 +110,8 @@ export class GridClientSideComponent implements OnInit {
       this.dataset[i] = {
         id: i,
         title: 'Task ' + i,
-        description: (i % 28 === 1) ? null : 'desc ' + i, // also add some random to test NULL field
+        // description: (i % 25 === 1) ? '❤🚀👱🦄 - español' : 'desc ' + i, // also add some random to test NULL field
+        description: (i % 28) ? '❤🚀👱🦄 - español - été - noël' : 'desc ' + i, // also add some random to test NULL field
         duration: randomDuration,
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,

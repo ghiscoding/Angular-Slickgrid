@@ -22,18 +22,27 @@ export const GlobalGridOptions: GridOption = {
   enableCellNavigation: false,
   enableColumnPicker: true,
   enableColumnReorder: true,
+  enableExport: true,
   enableGridMenu: true,
   enableMouseHoverHighlightRow: true,
   enablePagination: false,
   enableSorting: true,
   enableTextSelectionOnCells: true,
   explicitInitialization: true,
+  exportOptions: {
+    delimiter: ',',
+    filename: 'export',
+    format: 'csv',
+    isIdColumnIncluded: false,
+    exporterOlderExcelCompatibility: true
+  },
   forceFitColumns: false,
   gridMenu: {
     iconCssClass: 'fa fa-bars',
     menuWidth: 16,
     resizeOnShowHeaderRow: false,
     showClearAllFiltersCommand: true,
+    showExportCsvCommand: true,
     showRefreshDatasetCommand: true,
     showToggleFilterCommand: true
   },

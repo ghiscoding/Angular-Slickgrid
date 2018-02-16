@@ -9,6 +9,7 @@ export { Column } from './column.interface';
 export { ColumnFilter } from './columnFilter.interface';
 export { ColumnFilters } from './columnFilters.interface';
 export { Editor } from './editor.interface';
+export { ExportOption } from './exportOption.interface';
 export { FieldType } from './fieldType';
 export { Filter } from './filter.interface';
 export { FilterArguments } from './filterArguments.interface';

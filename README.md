@@ -28,6 +28,11 @@ This is a work in progress, but so far here are some of the features that `angul
 - Bootstrap Theme with SASS variables for extra customization (if you create a theme, then please make a PR)
 - Auto-resize (boolean flag), will resize the datagrid viewport with available space even on browser resize (basically takes available space of it's container)
 - Inline Editors (number, float, text, longText, date, ... you can also create your own custom ones)
+- Formatters to display something different in UI, for example a boolean flag can be shown as a Font-Awesome checkmark icon
+- Filters (input text, select, multi-select, single-select & even custom filter)
+  - input text also support operators at the beginning of the input text:
+    - `<`, `<=`, `>`, `>=`, `<>`, `!=`, `==`, `*`
+    - `*` can be used for startsWith and endsWith
 - Support all the SlickGrid [Controls](https://github.com/6pac/SlickGrid/tree/master/controls) and [Plugins](https://github.com/6pac/SlickGrid/tree/master/plugins)
 - Row(s) Selection
 - Server side (backend) Services (filtering, sorting, pagination)
@@ -41,12 +46,16 @@ This is a work in progress, but so far here are some of the features that `angul
     - even server side data is saved into the SlickGrid DataView
   - All the [SlickGrid Events](https://github.com/6pac/SlickGrid/wiki/Grid-Events) are supported, see the [Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-&-DataView-Events)
 - Localization support with `ngx-translate`, please read the [Wiki - Localization](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Localization)
+- Export to CSV, Tab Delimited or Semicolon Delimited
 - ... more to come
 
 ## Missing features (planned items, not necessarily in order of execution)
 The following are SlickGrid features which are not yet included in this library but will be in the eventual future.
-- Export to CSV
-- Filters to support multi-select dropdown and eventually custom filters
+
+- Grouping
+
+**NOTE**
+What if `Angular-Slickgrid` is missing feature(s) versus the original `SlickGrid`? Fear not and directly use the `SlickGrid` and `DataView` objects that are expose from the start through Event Emitters. For more info continue reading on [Wiki - SlickGrid & DataView objects](/ghiscoding/Angular-Slickgrid/wiki/SlickGrid-&-DataView-Objects) and [Wiki - Grid & DataView Events](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-&-DataView-Events)
 
 ### License
 [MIT License](LICENSE)

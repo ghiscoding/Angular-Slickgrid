@@ -24,6 +24,7 @@ import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
 import { BackendServiceOption, Column, GridOption } from './../models';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
+import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
 import { GraphqlService } from './../services/graphql.service';
 import { GridEventService } from './../services/gridEvent.service';
@@ -60,6 +61,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   gridPaginationOptions: GridOption;
   gridHeightString: string;
   gridWidthString: string;
+  groupingDefinition: any = {};
   showPagination = false;
 
   @Output() dataviewChanged = new EventEmitter<any>();
@@ -84,12 +86,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   constructor(
+    private controlAndPluginService: ControlAndPluginService,
+    private exportService: ExportService,
     private filterService: FilterService,
-    private sortService: SortService,
     private gridExtraService: GridExtraService,
     private gridEventService: GridEventService,
     private resizer: ResizerService,
-    private controlAndPluginService: ControlAndPluginService,
+    private sortService: SortService,
     private translate: TranslateService,
     @Inject('config') private forRootConfig: GridOption
   ) {}
@@ -151,6 +154,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
     if (this._gridOptions.enableTranslate) {
       this.controlAndPluginService.translateHeaders();
+    }
+
+    // if Export is enabled, initialize the service with the necessary grid and other objects
+    if (this._gridOptions.enableExport) {
+      this.exportService.init(this.grid, this._gridOptions, this._dataView);
     }
   }
 

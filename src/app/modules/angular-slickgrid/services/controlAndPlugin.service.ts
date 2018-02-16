@@ -1,3 +1,4 @@
+import { ExportService } from './export.service';
 import { Injectable } from '@angular/core';
 import { FilterService } from './filter.service';
 import {
@@ -36,7 +37,7 @@ export class ControlAndPluginService {
   gridMenuControl: any;
   rowSelectionPlugin: any;
 
-  constructor(private filterService: FilterService, private translate: TranslateService) { }
+  constructor(private exportService: ExportService, private filterService: FilterService, private translate: TranslateService) { }
 
   /**
    * Attach/Create different Controls or Plugins after the Grid is created
@@ -229,6 +230,7 @@ export class ControlAndPluginService {
     const backendApi = options.backendServiceApi || options.onBackendEventApi || null;
 
     if (options.enableFiltering) {
+      // show grid menu: clear all filters
       if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-filter').length === 0) {
         options.gridMenu.customItems.push(
           {
@@ -239,6 +241,7 @@ export class ControlAndPluginService {
           }
         );
       }
+      // show grid menu: toggle filter row
       if (options && options.gridMenu && options.gridMenu.showToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'toggle-filter').length === 0) {
         options.gridMenu.customItems.push(
           {
@@ -249,6 +252,18 @@ export class ControlAndPluginService {
           }
         );
       }
+      // show grid menu: export to file
+      if (options && options.gridMenu && options.gridMenu.showExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-csv').length === 0) {
+        options.gridMenu.customItems.push(
+          {
+            iconCssClass: 'fa fa-download',
+            title: options.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
+            disabled: false,
+            command: 'export-csv'
+          }
+        );
+      }
+      // show grid menu: refresh dataset
       if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
         options.gridMenu.customItems.push(
           {
@@ -265,6 +280,17 @@ export class ControlAndPluginService {
         options.gridMenu.onCommand = (e, args) => {
           if (args && args.command) {
             switch (args.command) {
+              case 'clear-filter':
+                this.filterService.clearFilters();
+                this._dataView.refresh();
+                break;
+              case 'export-csv':
+                this.exportService.exportToFile({
+                  delimiter: '\t',
+                  filename: 'export',
+                  format: 'txt'
+                });
+                break;
               case 'toggle-filter':
                 grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
                 break;

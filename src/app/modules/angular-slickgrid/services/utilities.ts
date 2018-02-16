@@ -6,6 +6,41 @@ import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
 const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
+/** Simple function to which will loop and create as demanded the number of white spaces,
+ * this will be used in the Excel export
+ * @param int nbSpaces: number of white spaces to create
+ */
+export function addWhiteSpaces(nbSpaces): string {
+  let result = '';
+
+  for (let i = 0; i < nbSpaces; i++) {
+    result += ' ';
+  }
+  return result;
+}
+
+/** decode text into html entity
+ * @param string text: input text
+ * @param string text: output text
+ */
+export function htmlEntityDecode(input: string): string {
+  return input.replace(/&#(\d+);/g, function (match, dec) {
+    return String.fromCharCode(dec);
+  });
+}
+
+/** decode text into html entity
+ * @param string text: input text
+ * @param string text: output text
+ */
+export function htmlEntityEncode(input: any): string {
+  const buf = [];
+  for (let i = input.length - 1; i >= 0; i--) {
+    buf.unshift(['&#', input[i].charCodeAt(), ';'].join(''));
+  }
+  return buf.join('');
+}
+
 /**
  * Try casting an input of type Promise | Observable into a Promise type.
  * @param object which could be of type Promise or Observable

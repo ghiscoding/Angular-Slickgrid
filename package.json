@@ -45,8 +45,9 @@
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
-    "moment-mini": "^2.18.1",
+    "moment-mini": "^2.19.4",
     "slickgrid": "^2.3.12",
+    "text-encoding": "^0.6.4",
     "vinyl-paths": "^2.1.0"
   },
   "devDependencies": {
