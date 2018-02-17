@@ -50,6 +50,6 @@ export interface ColumnFilter {
    * Use "params" to pass any type of arguments to your Custom Filter (type: FilterType.custom)
    * for example, to pass the option collection to a select Filter we can type this:
    * params: { options: [{ value: true, label: 'True' }, { value: true, label: 'True'} ]}
-   * */
+   */
   params?: any;
 }

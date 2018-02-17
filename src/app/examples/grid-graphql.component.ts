@@ -1,10 +1,7 @@
 import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
-import { CaseType, Column, FilterType, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid/models';
-import { FieldType, Formatters } from './../modules/angular-slickgrid';
-import { GraphqlService } from './../modules/angular-slickgrid/services/graphql.service';
+import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { GraphqlResult } from '../modules/angular-slickgrid/models/graphqlResult.interface';
 
 const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
