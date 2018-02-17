@@ -76,7 +76,8 @@ export class InputFilter implements Filter {
 
     // create the DOM element & add an ID and filter class
     const $filterElm = $(filterTemplate);
-    $filterElm.val(this.searchTerm);
+    const searchTerm = (typeof this.searchTerm === 'boolean') ? `${this.searchTerm}` : this.searchTerm;
+    $filterElm.val(searchTerm);
     $filterElm.attr('id', `filter-${this.columnDef.id}`);
     $filterElm.data('columnId', this.columnDef.id);
 
