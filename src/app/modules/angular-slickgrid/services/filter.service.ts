@@ -106,12 +106,7 @@ export class FilterService {
         filter.clear(true);
       }
     });
-    /*
-        // clear with a trigger only first filter to avoid multiple request to the Backend Server
-        if (hasBackendServiceApi && this._filters.length > 0) {
-          this._filters[0].clear(true);
-        }
-    */
+    
     // we need to loop through all columnFilters and delete them 1 by 1
     // only trying to clear columnFilter (without looping through) would not trigger a dataset change
     for (const columnId in this._columnFilters) {
