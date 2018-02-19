@@ -25,12 +25,12 @@ export const GlobalGridOptions: GridOption = {
   enableExport: true,
   enableGridMenu: true,
   enableMouseHoverHighlightRow: true,
-  enablePagination: false,
   enableSorting: true,
   enableTextSelectionOnCells: true,
   explicitInitialization: true,
   exportOptions: {
     delimiter: DelimiterType.comma,
+    exportWithFormatter: false,
     filename: 'export',
     format: FileType.csv,
     isIdColumnIncluded: false,
