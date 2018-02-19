@@ -1,3 +1,4 @@
+import { DelimiterType } from './../models/delimiterType.enum';
 import { ExportService } from './export.service';
 import { Injectable } from '@angular/core';
 import { FilterService } from './filter.service';
@@ -264,6 +265,17 @@ export class ControlAndPluginService {
           }
         );
       }
+      // show grid menu: export to text file as tab delimited
+      if (options && options.gridMenu && options.gridMenu.showExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-text-delimited').length === 0) {
+        options.gridMenu.customItems.push(
+          {
+            iconCssClass: 'fa fa-download',
+            title: options.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
+            disabled: false,
+            command: 'export-text-delimited'
+          }
+        );
+      }
       // show grid menu: refresh dataset
       if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
         options.gridMenu.customItems.push(
@@ -287,9 +299,16 @@ export class ControlAndPluginService {
                 break;
               case 'export-csv':
                 this.exportService.exportToFile({
-                  delimiter: ',',
+                  delimiter: DelimiterType.comma,
                   filename: 'export',
                   format: FileType.csv
+                });
+                break;
+              case 'export-text-delimited':
+                this.exportService.exportToFile({
+                  delimiter: DelimiterType.tab,
+                  filename: 'export',
+                  format: FileType.txt
                 });
                 break;
               case 'toggle-filter':

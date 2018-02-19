@@ -24,8 +24,15 @@ export interface Column {
   /** Inline editor for the cell value */
   editor?: Editor | any;
 
-  /** By default the Export will use Formatter output, if you don't want that behavior set this False */
+  /** Defaults to false, which leads to Formatters being evaluated on export */
   exportWithFormatter?: boolean;
+
+  /**
+   * Do we want to force the cell value to be a string?
+   * When set to True, it will wrap the cell value in double quotes and add an equal sign (=) at the beginning of the cell to force Excel to evaluate it as a string and not change it's format.
+   * For example, without this flag a cell value with "1E06" would be interpreted as a number becoming (1.0E06) by Excel.
+   * When set this flag to True, the cell value will be wrapped with an equal sign and double quotes, which forces Excel to evaluate it as a string. The output will be:: ="1E06" */
+  exportForceToKeepAsString?: boolean;
 
   field: string;
   filter?: ColumnFilter;

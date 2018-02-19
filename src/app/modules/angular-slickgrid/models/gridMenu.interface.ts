@@ -12,6 +12,7 @@ export interface GridMenu {
   resizeOnShowHeaderRow?: boolean;
   showClearAllFiltersCommand?: boolean;
   showExportCsvCommand?: boolean;
+  showExportTextDelimitedCommand?: boolean;
   showRefreshDatasetCommand?: boolean;
   showToggleFilterCommand?: boolean;
   syncResizeTitle?: string;

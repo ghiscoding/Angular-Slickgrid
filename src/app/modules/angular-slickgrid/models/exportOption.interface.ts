@@ -2,6 +2,12 @@ import { DelimiterType } from './delimiterType.enum';
 import { FileType } from './fileType.enum';
 
 export interface ExportOption {
+  /** Defaults to false, which leads to Formatters being evaluated on export */
+  exportWithFormatter?: boolean;
+
+  /** array of column field names that we want to exclude/skip from the export */
+  excludedColumns?: string[];
+
   /** export delimiter, can be (comma, tab, ... or even custom string). */
   delimiter: DelimiterType | string;
 
@@ -13,9 +19,6 @@ export interface ExportOption {
 
   /** do we want to include the column named "id" in our export? Skipped by default */
   isIdColumnIncluded?: boolean;
-
-  /** array of column field names that we want to exclude from the export */
-  skipColumns?: string[];
 
   /**
    * If you want to use UTF-8 and unicode, in most case it's better use it with BOM.
