@@ -76,30 +76,35 @@ export class GridMenuComponent implements OnInit {
             iconCssClass: 'fa fa-filter text-danger',
             title: 'Clear All Filters',
             disabled: false,
-            command: 'clear-filter'
+            command: 'clear-filter',
+            positionOrder: 0
           },
           {
             iconCssClass: 'fa fa-random',
             title: 'Toggle Filter Row',
             disabled: false,
-            command: 'toggle-filter'
+            command: 'toggle-filter',
+            positionOrder: 1
           },
           {
             iconCssClass: 'fa fa-random',
             title: 'Toggle Top Panel',
             disabled: false,
-            command: 'toggle-toppanel'
+            command: 'toggle-toppanel',
+            positionOrder: 2
           },
           {
             iconCssClass: 'fa fa-question-circle',
             title: 'Help',
             disabled: false,
-            command: 'help'
+            command: 'help',
+            positionOrder: 99
           },
           {
             title: 'Disabled command',
             disabled: true,
-            command: 'disabled-command'
+            command: 'disabled-command',
+            positionOrder: 98
           }
         ],
         onCommand: (e, args) => {
