@@ -8,13 +8,14 @@ import { Pagination } from './../models/pagination.interface';
 
 let timer: any;
 const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
+const DEFAULT_ITEMS_PER_PAGE = 25;
 
 @Injectable()
 export class GridOdataService implements BackendService {
   options: OdataOption;
   pagination: Pagination;
   defaultOptions: OdataOption = {
-    top: 25,
+    top: DEFAULT_ITEMS_PER_PAGE,
     orderBy: ''
   };
 
@@ -233,10 +234,10 @@ export class GridOdataService implements BackendService {
   }
 
   /**
-    * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
-    * @param string operator
-    * @returns string map
-    */
+   * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
+   * @param string operator
+   * @returns string map
+   */
   private mapOdataOperator(operator: string) {
     let map = '';
     switch (operator) {

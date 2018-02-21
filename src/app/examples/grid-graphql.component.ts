@@ -1,9 +1,7 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { Column, FilterType, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid/models';
-import { FieldType } from './../modules/angular-slickgrid';
-import { GraphqlService } from './../modules/angular-slickgrid/services/graphql.service';
+import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid';
+import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { GraphqlResult } from '../modules/angular-slickgrid/models/graphqlResult.interface';
 
 const defaultPageSize = 20;
 const GRAPHQL_QUERY_DATASET_NAME = 'users';

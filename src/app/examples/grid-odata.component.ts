@@ -76,7 +76,6 @@ export class GridOdataComponent implements OnInit {
   }
 
   displaySpinner(isProcessing) {
-    console.log('processing', isProcessing);
     this.processing = isProcessing;
     this.status = (isProcessing)
       ? { text: 'processing...', class: 'alert alert-danger' }

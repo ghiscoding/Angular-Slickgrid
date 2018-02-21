@@ -20,7 +20,7 @@ import { GridOption } from '../models/gridOption.interface';
 
 let timer: any;
 const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
-const ITEMS_PER_PAGE = 25;
+const DEFAULT_ITEMS_PER_PAGE = 25;
 
 @Injectable()
 export class GraphqlService implements BackendService {
@@ -28,7 +28,7 @@ export class GraphqlService implements BackendService {
   pagination: Pagination | undefined;
   defaultOrderBy: GraphqlSortingOption = { field: 'id', direction: SortDirection.ASC };
   defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption = {
-    first: ITEMS_PER_PAGE,
+    first: DEFAULT_ITEMS_PER_PAGE,
     offset: 0
   };
 
@@ -143,7 +143,7 @@ export class GraphqlService implements BackendService {
    * @return Pagination Options
    */
   getInitPaginationOptions(): GraphqlDatasetFilter {
-    return (this.options.isWithCursor) ? { first: (this.pagination ? this.pagination.pageSize : ITEMS_PER_PAGE) } : { first: (this.pagination ? this.pagination.pageSize : ITEMS_PER_PAGE), offset: 0 };
+    return (this.options.isWithCursor) ? { first: (this.pagination ? this.pagination.pageSize : DEFAULT_ITEMS_PER_PAGE) } : { first: (this.pagination ? this.pagination.pageSize : DEFAULT_ITEMS_PER_PAGE), offset: 0 };
   }
 
   getDatasetName(): string {

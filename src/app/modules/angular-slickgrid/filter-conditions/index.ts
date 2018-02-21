@@ -14,12 +14,12 @@ import { testFilterCondition } from './filterUtilities';
 export const FilterConditions = {
   executeMappedCondition,
   booleanFilter: booleanFilterCondition,
+  collectionSearchFilter: collectionSearchFilterCondition,
   dateFilter: dateFilterCondition,
   dateIsoFilter: dateIsoFilterCondition,
   dateUtcFilter: dateUtcFilterCondition,
   dateUsFilter: dateUsFilterCondition,
   dateUsShortFilter: dateUsShortFilterCondition,
-  collectionSearchFilter: collectionSearchFilterCondition,
   numberFilter: numberFilterCondition,
   stringFilter: stringFilterCondition,
   testFilter: testFilterCondition
