@@ -57,6 +57,13 @@ export class GridMenuComponent implements OnInit {
     this.visibleColumns = this.columnDefinitions;
 
     this.gridOptions = {
+      columnPicker: {
+        hideForceFitButton: true,
+        hideSyncResizeButton: true,
+        onColumnsChanged: (e, args) => {
+          console.log('Column selection changed from Column Picker, visible columns: ', args.columns);
+        }
+      },
       enableAutoResize: true,
       enableGridMenu: true,
       autoResize: {
@@ -69,6 +76,8 @@ export class GridMenuComponent implements OnInit {
         customTitle: 'Custom Commands',
         columnTitle: 'Columns',
         iconCssClass: 'fa fa-ellipsis-v',
+        hideForceFitButton: true,
+        hideSyncResizeButton: true,
         menuWidth: 17,
         resizeOnShowHeaderRow: true,
         customItems: [
@@ -118,6 +127,9 @@ export class GridMenuComponent implements OnInit {
           } else {
             alert('Command: ' + args.command);
           }
+        },
+        onColumnsChanged: (e, args) => {
+          console.log('Column selection changed from Grid Menu, visible columns: ', args.columns);
         }
       },
     };

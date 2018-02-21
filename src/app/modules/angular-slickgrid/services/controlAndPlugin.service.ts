@@ -125,6 +125,13 @@ export class ControlAndPluginService {
     options.columnPicker.syncResizeTitle = options.columnPicker.syncResizeTitle || syncResizeTitle;
 
     this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
+    if (grid && options.enableColumnPicker) {
+      this.columnPickerControl.onColumnsChanged.subscribe((e: Event, args: CellArgs) => {
+        if (options.columnPicker && typeof options.columnPicker.onColumnsChanged === 'function') {
+          options.columnPicker.onColumnsChanged(e, args);
+        }
+      });
+    }
   }
 
   /**
@@ -142,6 +149,11 @@ export class ControlAndPluginService {
       gridMenuControl.onBeforeMenuShow.subscribe((e: Event, args: CellArgs) => {
         if (options.gridMenu && typeof options.gridMenu.onBeforeMenuShow === 'function') {
           options.gridMenu.onBeforeMenuShow(e, args);
+        }
+      });
+      gridMenuControl.onColumnsChanged.subscribe((e: Event, args: CellArgs) => {
+        if (options.gridMenu && typeof options.gridMenu.onColumnsChanged === 'function') {
+          options.gridMenu.onColumnsChanged(e, args);
         }
       });
       gridMenuControl.onCommand.subscribe((e: Event, args: CellArgs) => {
@@ -195,9 +207,6 @@ export class ControlAndPluginService {
       this.columnPickerControl = null;
     }
     if (this.gridMenuControl) {
-      this.gridMenuControl.onBeforeMenuShow.unsubscribe();
-      this.gridMenuControl.onCommand.unsubscribe();
-      this.gridMenuControl.onMenuClose.unsubscribe();
       this.gridMenuControl.destroy();
       this.gridMenuControl = null;
     }

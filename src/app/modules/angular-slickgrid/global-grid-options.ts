@@ -17,6 +17,10 @@ export const GlobalGridOptions: GridOption = {
   checkboxSelector: {
     cssClass: 'slick-cell-checkboxsel'
   },
+  columnPicker: {
+    hideForceFitButton: false,
+    hideSyncResizeButton: true
+  },
   editable: false,
   enableAutoResize: true,
   enableCellNavigation: false,
@@ -31,6 +35,8 @@ export const GlobalGridOptions: GridOption = {
   exportWithFormatter: false,
   forceFitColumns: false,
   gridMenu: {
+    hideForceFitButton: false,
+    hideSyncResizeButton: true,
     iconCssClass: 'fa fa-bars',
     menuWidth: 16,
     resizeOnShowHeaderRow: false,
