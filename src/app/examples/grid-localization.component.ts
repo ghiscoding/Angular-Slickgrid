@@ -52,6 +52,19 @@ export class GridLocalizationComponent implements OnInit {
       { id: 'duration', name: 'Duration (days)', field: 'duration', headerKey: 'DURATION', sortable: true, minWidth: 100, filterable: true },
       { id: 'start', name: 'Start', field: 'start', headerKey: 'START', formatter: Formatters.dateIso, minWidth: 100, filterable: true },
       { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, minWidth: 100, filterable: true },
+      { id: 'completedCheckmark', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', minWidth: 100,
+        sortable: true,
+        formatter: Formatters.checkmark,
+        exportCustomFormatter: Formatters.translate, params: { i18n: this.translate },
+        filterable: true,
+        filter: {
+          collection: [ { value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' } ],
+          type: FilterType.singleSelect,
+          filterOptions: {
+            autoDropWidth: true
+          }
+        }
+      },
       { id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', formatter: Formatters.translate, params: { i18n: this.translate }, sortable: true,
         minWidth: 100,
         exportWithFormatter: true, // you can set this property in the column definition OR in the grid options, column def has priority over grid options
@@ -60,7 +73,7 @@ export class GridLocalizationComponent implements OnInit {
           collection: [ { value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' } ],
           type: FilterType.singleSelect,
           filterOptions: {
-            width: 150
+            autoDropWidth: true
           }
         }
       }

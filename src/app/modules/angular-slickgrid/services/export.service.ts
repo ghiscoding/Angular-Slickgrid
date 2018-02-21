@@ -6,6 +6,7 @@ import {
   DelimiterType,
   ExportOption,
   FileType,
+  Formatter,
   GraphqlResult,
   GridMenu,
   GridOption,
@@ -142,13 +143,13 @@ export class ExportService {
         // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
         if (itemObj.id != null) {
           // get regular row item data
-          outputDataString += this.getFormattedRegularRow(columns, rowNumber, itemObj);
+          outputDataString += this.readRegularRowData(columns, rowNumber, itemObj);
         } else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
           // get the group row
-          outputDataString += this.getFormattedGroupeTitleRow(itemObj);
+          outputDataString += this.readGroupedTitleRow(itemObj);
         } else if (itemObj.__groupTotals) {
           // else if the row is a Group By and we have agreggators, then a property of '__groupTotals' would exist under that object
-          outputDataString += this.getFormattedGroupedTotalRow(itemObj);
+          outputDataString += this.readGroupedTotalRow(itemObj);
         }
         outputDataString += lineCarriageReturn;
       }
@@ -207,7 +208,7 @@ export class ExportService {
    * @param row
    * @param itemObj
    */
-  getFormattedRegularRow(columns: Column[], row: number, itemObj: any) {
+  readRegularRowData(columns: Column[], row: number, itemObj: any) {
     let idx = 0;
     let rowOutputString = '';
     const delimiter = this._exportOptions.delimiter;
@@ -229,18 +230,27 @@ export class ExportService {
         rowOutputString += `""` + delimiter;
       }
 
-      let itemData = '';
+      // does the user want to evaluate current column Formatter?
       const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._gridOptions.exportWithFormatter;
-      if (isEvaluatingFormatter && !!columnDef.formatter) {
+
+      // did the user provide a Custom Formatter for the export
+      const exportCustomFormatter: Formatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
+
+      let itemData = '';
+
+      if (exportCustomFormatter) {
+        itemData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj);
+      } else if (isEvaluatingFormatter && !!columnDef.formatter) {
         itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj);
       } else {
         itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
       }
+
+      // when CSV we also need to escape double quotes twice, so " becomes ""
       if (format === FileType.csv) {
-        // when CSV we also need to escape double quotes twice, so " becomes ""
-        // and if we have a text of (number)E(number),
         itemData = itemData.toString().replace(/"/gi, `""`);
       }
+
       // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
       // to cancel that effect we can had = in front, ex: ="1E06"
       const keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
@@ -256,7 +266,7 @@ export class ExportService {
    * Get the grouped title(s), for example if we grouped by salesRep, the returned result would be:: 'Sales Rep'
    * @param itemObj
    */
-  getFormattedGroupeTitleRow(itemObj: any) {
+  readGroupedTitleRow(itemObj: any) {
     let groupName = itemObj.value;
     const exportQuoteWrapper = this._exportQuoteWrapper || '';
     const delimiter = this._exportOptions.delimiter;
@@ -281,7 +291,7 @@ export class ExportService {
    * For example if we grouped by "salesRep" and we have a Sum Aggregator on "sales", then the returned output would be:: ["Sum 123$"]
    * @param itemObj
    */
-  getFormattedGroupedTotalRow(itemObj: any) {
+  readGroupedTotalRow(itemObj: any) {
     let exportExponentialWrapper = '';
     const delimiter = this._exportOptions.delimiter;
     const format = this._exportOptions.format;
