@@ -187,7 +187,6 @@ export class ExportService {
 
     // Populate the Column Header, pull the name defined
     columns.forEach((columnDef) => {
-      const fieldId = columnDef.id;
       const fieldName = (columnDef.headerKey) ? this.translate.instant(columnDef.headerKey) : columnDef.name;
       const skippedField = columnDef.excludeFromExport || false;
 
@@ -214,7 +213,6 @@ export class ExportService {
     const delimiter = this._exportOptions.delimiter;
     const format = this._exportOptions.format;
     const exportQuoteWrapper = this._exportQuoteWrapper || '';
-    const columnHeaders = this._columnHeaders || [];
 
     for (let col = 0, ln = columns.length; col < ln; col++) {
       const columnDef = columns[col];
