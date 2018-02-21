@@ -1,19 +1,18 @@
+import { DelimiterType } from './../models/delimiterType.enum';
+import { ExportService } from './export.service';
 import { Injectable } from '@angular/core';
 import { FilterService } from './filter.service';
-import { GridExtraUtils } from './gridExtraUtils';
-import { GridExtraService } from './gridExtra.service';
 import {
   CellArgs,
-  CheckboxSelector,
   CustomGridMenu,
   Column,
-  Formatter,
   GraphqlResult,
   GridMenu,
   GridOption,
   HeaderButtonOnCommandArgs,
   HeaderMenuOnCommandArgs,
-  HeaderMenuOnBeforeMenuShowArgs
+  HeaderMenuOnBeforeMenuShowArgs,
+  FileType
 } from './../models';
 import $ from 'jquery';
 import { TranslateService } from '@ngx-translate/core';
@@ -40,14 +39,14 @@ export class ControlAndPluginService {
   gridMenuControl: any;
   rowSelectionPlugin: any;
 
-  constructor(private filterService: FilterService, private gridExtraService: GridExtraService, private translate: TranslateService) { }
+  constructor(private exportService: ExportService, private filterService: FilterService, private translate: TranslateService) { }
 
   /**
    * Attach/Create different Controls or Plugins after the Grid is created
-   * @param {any} grid
-   * @param {Column[]} columnDefinitions
-   * @param {GridOptions} options
-   * @param {any} dataView
+   * @param grid
+   * @param columnDefinitions
+   * @param options
+   * @param dataView
    */
   attachDifferentControlOrPlugins(grid: any, columnDefinitions: Column[], options: GridOption, dataView: any) {
     this._grid = grid;
@@ -233,68 +232,131 @@ export class ControlAndPluginService {
     const backendApi = options.backendServiceApi || options.onBackendEventApi || null;
 
     if (options.enableFiltering) {
+      // show grid menu: clear all filters
       if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-filter').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: 'fa fa-filter text-danger',
             title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
             disabled: false,
-            command: 'clear-filter'
+            command: 'clear-filter',
+            positionOrder: 50
           }
         );
       }
+      // show grid menu: toggle filter row
       if (options && options.gridMenu && options.gridMenu.showToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'toggle-filter').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: 'fa fa-random',
             title: options.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
             disabled: false,
-            command: 'toggle-filter'
+            command: 'toggle-filter',
+            positionOrder: 51
           }
         );
       }
+
+      // show grid menu: refresh dataset
       if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: 'fa fa-refresh',
             title: options.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
             disabled: false,
-            command: 'refresh-dataset'
+            command: 'refresh-dataset',
+            positionOrder: 54
           }
         );
       }
 
-      // Command callback, what will be executed after command is clicked
-      if (options.gridMenu) {
-        options.gridMenu.onCommand = (e, args) => {
-          if (args && args.command) {
-            switch (args.command) {
-              case 'toggle-filter':
-                grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
-                break;
-              case 'toggle-toppanel':
-                grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
-                break;
-              case 'clear-filter':
-                this.filterService.clearFilters();
-                this._dataView.refresh();
-                break;
-              case 'refresh-dataset':
-                this.refreshBackendDataset(options);
-                break;
-              default:
-                alert('Command: ' + args.command);
-                break;
-            }
-          }
-        };
-      }
     }
+
+    // show grid menu: export to file
+    if (options && options.gridMenu && options.gridMenu.showExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-csv').length === 0) {
+      options.gridMenu.customItems.push(
+        {
+          iconCssClass: 'fa fa-download',
+          title: options.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
+          disabled: false,
+          command: 'export-csv',
+          positionOrder: 52
+        }
+      );
+    }
+    // show grid menu: export to text file as tab delimited
+    if (options && options.gridMenu && options.gridMenu.showExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-text-delimited').length === 0) {
+      options.gridMenu.customItems.push(
+        {
+          iconCssClass: 'fa fa-download',
+          title: options.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
+          disabled: false,
+          command: 'export-text-delimited',
+          positionOrder: 53
+        }
+      );
+    }
+
+    // Command callback, what will be executed after command is clicked
+    if (options.gridMenu && options.gridMenu.customItems.length > 0) {
+      options.gridMenu.onCommand = (e, args) => {
+        if (args && args.command) {
+          switch (args.command) {
+            case 'clear-filter':
+              this.filterService.clearFilters();
+              this._dataView.refresh();
+              break;
+            case 'export-csv':
+              this.exportService.exportToFile({
+                delimiter: DelimiterType.comma,
+                filename: 'export',
+                format: FileType.csv,
+                useUtf8WithBom: true
+              });
+              break;
+            case 'export-text-delimited':
+              this.exportService.exportToFile({
+                delimiter: DelimiterType.tab,
+                filename: 'export',
+                format: FileType.txt,
+                useUtf8WithBom: true
+              });
+              break;
+            case 'toggle-filter':
+              grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
+              break;
+            case 'toggle-toppanel':
+              grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
+              break;
+            case 'clear-filter':
+              this.filterService.clearFilters();
+              this._dataView.refresh();
+              break;
+            case 'refresh-dataset':
+              this.refreshBackendDataset(options);
+              break;
+            default:
+              alert('Command: ' + args.command);
+              break;
+          }
+        }
+      };
+    }
+
+
 
     // add the custom "Commands" title if there are any commands
     if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
       const customTitle = options.enableTranslate ? this.translate.instant('COMMANDS') : 'Commands';
       options.gridMenu.customTitle = options.gridMenu.customTitle || customTitle;
+
+      // sort the custom items by their position in the list
+      options.gridMenu.customItems.sort((itemA, itemB) => {
+        if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
+          return itemA.positionOrder - itemB.positionOrder;
+        }
+        return 0;
+      });
     }
   }
 
@@ -401,7 +463,7 @@ export class ControlAndPluginService {
   /**
    * Translate manually the header titles.
    * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
-   * @param {string} locale locale to use
+   * @param locale locale to use
    */
   translateHeaders(locale?: string) {
     if (locale) {
@@ -421,13 +483,15 @@ export class ControlAndPluginService {
   /**
    * Attach/Create different plugins before the Grid creation.
    * For example the multi-select have to be added to the column definition before the grid is created to work properly
-   * @param {Column[]} columnDefinitions
-   * @param {GridOptions} options
+   * @param columnDefinitions
+   * @param options
    */
   createPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption) {
     if (options.enableCheckboxSelector) {
       this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
-      columnDefinitions.unshift(this.checkboxSelectorPlugin.getColumnDefinition());
+      const selectionColumn: Column = this.checkboxSelectorPlugin.getColumnDefinition();
+      selectionColumn.excludeFromExport = true;
+      columnDefinitions.unshift(selectionColumn);
     }
   }
 }

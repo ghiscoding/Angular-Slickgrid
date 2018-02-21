@@ -8,6 +8,17 @@
     <div class="row col-sm-12">
         <button class="btn btn-default btn-sm" (click)="switchLanguage()">Switch Language</button>
         <b>Locale:</b> <span style="font-style: italic">{{selectedLanguage + '.json'}}</span>
+
+        <span style="margin-left: 20px">
+            <button class="btn btn-default btn-sm" (click)="exportToFile('csv')">
+                <i class="fa fa-download"></i>
+                Download to CSV
+            </button>
+            <button class="btn btn-default btn-sm" (click)="exportToFile('txt')">
+                <i class="fa fa-download"></i>
+                Download to Text
+            </button>
+        </span>
     </div>
 
     <div class="col-sm-12">

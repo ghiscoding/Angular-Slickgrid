@@ -1,5 +1,5 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { Column, FieldType, Formatter, Formatters, GridExtraService, GridExtraUtils, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, Formatters, GridExtraService, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-rowselection.component.html'
@@ -31,8 +31,8 @@ export class GridRowSelectionComponent implements OnInit {
       {id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string},
       {id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number},
       {id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, sortable: true},
-      {id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.dateIso },
-      {id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date },
+      {id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.dateIso, exportWithFormatter: true },
+      {id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, exportWithFormatter: true },
       {id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, sortable: true}
     ];
     this.gridOptions = {

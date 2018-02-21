@@ -31,7 +31,11 @@ export class InputFilter implements Filter {
     this.$filterElm = this.createDomElement(filterTemplate);
 
     // step 3, subscribe to the keyup event and run the callback when that happens
-    this.$filterElm.keyup((e: any) => this.callback(e, { columnDef: this.columnDef }));
+    // also add/remove "filled" class for styling purposes
+    this.$filterElm.keyup((e: any) => {
+      (e && e.target && e.target.value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
+      this.callback(e, { columnDef: this.columnDef });
+    });
   }
 
   /**
@@ -80,6 +84,11 @@ export class InputFilter implements Filter {
     $filterElm.val(searchTerm);
     $filterElm.attr('id', `filter-${this.columnDef.id}`);
     $filterElm.data('columnId', this.columnDef.id);
+
+    // if there's a search term, we will add the "filled" class for styling purposes
+    if (this.searchTerm) {
+      $filterElm.addClass('filled');
+    }
 
     // append the new DOM element to the header row
     if ($filterElm && typeof $filterElm.appendTo === 'function') {

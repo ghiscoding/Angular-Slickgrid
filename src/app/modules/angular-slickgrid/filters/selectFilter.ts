@@ -32,7 +32,11 @@ export class SelectFilter implements Filter {
     this.$filterElm = this.createDomElement(filterTemplate);
 
     // step 3, subscribe to the change event and run the callback when that happens
-    this.$filterElm.change((e: any) => this.callback(e, { columnDef: this.columnDef, operator: 'EQ' }));
+    // also add/remove "filled" class for styling purposes
+    this.$filterElm.change((e: any) => {
+      (e && e.target && e.target.value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
+      this.callback(e, { columnDef: this.columnDef, operator: 'EQ' });
+    });
   }
 
   /**

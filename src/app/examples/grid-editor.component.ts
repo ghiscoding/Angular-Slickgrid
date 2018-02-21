@@ -1,5 +1,5 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { Column, Editors, FieldType, Formatter, Formatters, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
+import { Column, Editors, FieldType, Formatters, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -80,7 +80,7 @@ export class GridEditorComponent implements OnInit {
     };
 
     // mock a dataset
-    let mockedDataset = [];
+    const mockedDataset = [];
     for (let i = 0; i < 1000; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);

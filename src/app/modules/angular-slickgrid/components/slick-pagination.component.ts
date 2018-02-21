@@ -2,7 +2,7 @@ import { Component, OnInit, Input, AfterViewInit, Injectable } from '@angular/co
 import { castToPromise } from './../services/utilities';
 import { FilterService } from '../services/filter.service';
 import { SortService } from './../services/sort.service';
-import { Column, GridOption } from './../models';
+import { GridOption } from './../models';
 
 @Component({
   selector: 'slick-pagination',
@@ -115,7 +115,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
       // calculate and refresh the multiple properties of the pagination UI
       this.paginationPageSizes = this._gridPaginationOptions.pagination.pageSizes;
       this.totalItems = this._gridPaginationOptions.pagination.totalItems;
-      this.dataTo = this.itemsPerPage;
+      this.dataTo = (this.totalItems < this.itemsPerPage) ? this.totalItems : this.itemsPerPage;
     }
     this.pageCount = Math.ceil(this.totalItems / this.itemsPerPage);
   }
@@ -129,6 +129,8 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
     }
 
     if (this.dataTo > this.totalItems) {
+      this.dataTo = this.totalItems;
+    } else if (this.totalItems < this.itemsPerPage) {
       this.dataTo = this.totalItems;
     }
     if (backendApi) {

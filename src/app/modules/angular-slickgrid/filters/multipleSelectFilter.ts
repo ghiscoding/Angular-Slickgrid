@@ -1,7 +1,6 @@
 import { Column, Filter } from './../models';
 import { FilterArguments } from '../models/filterArguments.interface';
 import { FilterCallback } from './../models/filterCallback.interface';
-import { HtmlElementPosition } from './../models/htmlElementPosition.interface';
 import { SelectOption } from './../models/selectOption.interface';
 import { TranslateService } from '@ngx-translate/core';
 import $ from 'jquery';
@@ -18,6 +17,7 @@ export class MultipleSelectFilter implements Filter {
   columnDef: Column;
   callback: FilterCallback;
   defaultOptions: any;
+  isFilled = false;
 
   /**
    * Initialize the Filter
@@ -36,8 +36,16 @@ export class MultipleSelectFilter implements Filter {
       selectAllDelimiter: ['', ''], // remove default square brackets of default text "[Select All]" => "Select All"
 
       // we will subscribe to the onClose event for triggering our callback
+      // also add/remove "filled" class for styling purposes
       onClose: () => {
         const selectedItems = this.$filterElm.multipleSelect('getSelects');
+        if (Array.isArray(selectedItems) && selectedItems.length > 0) {
+          this.isFilled = true;
+          this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
+        } else {
+          this.isFilled = false;
+          this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
+        }
         this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: selectedItems });
       }
     };
@@ -70,6 +78,7 @@ export class MultipleSelectFilter implements Filter {
       this.$filterElm.multipleSelect('setSelects', []);
 
       if (triggerFilterChange) {
+        this.$filterElm.removeClass('filled');
         this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: [] });
       }
     }
@@ -110,6 +119,11 @@ export class MultipleSelectFilter implements Filter {
 
       // html text of each select option
       options += `<option value="${option[valueName]}" ${selected}>${textLabel}</option>`;
+
+      // if there's a search term, we will add the "filled" class for styling purposes
+      if (selected) {
+        this.isFilled = true;
+      }
     });
 
     return `<select class="ms-filter search-filter" multiple="multiple">${options}</select>`;
@@ -132,6 +146,11 @@ export class MultipleSelectFilter implements Filter {
     this.$filterElm.attr('id', `filter-${this.columnDef.id}`);
     this.$filterElm.data('columnId', this.columnDef.id);
 
+    // if there's a search term, we will add the "filled" class for styling purposes
+    if (this.isFilled) {
+      this.$filterElm.addClass('filled');
+    }
+
     // append the new DOM element to the header row
     if (this.$filterElm && typeof this.$filterElm.appendTo === 'function') {
       this.$filterElm.appendTo($headerElm);
@@ -151,14 +170,5 @@ export class MultipleSelectFilter implements Filter {
       }
     }
     return -1;
-  }
-
-  private subscribeOnClose() {
-    this.$filterElm.multipleSelect({
-      onClose: () => {
-        const selectedItems = this.$filterElm.multipleSelect('getSelects');
-        this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: selectedItems });
-      }
-    });
   }
 }

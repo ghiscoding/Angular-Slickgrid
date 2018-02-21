@@ -1,7 +1,6 @@
 import { Column, Filter } from './../models';
 import { FilterArguments } from '../models/filterArguments.interface';
 import { FilterCallback } from './../models/filterCallback.interface';
-import { HtmlElementPosition } from './../models/htmlElementPosition.interface';
 import { SelectOption } from './../models/selectOption.interface';
 import { TranslateService } from '@ngx-translate/core';
 import $ from 'jquery';
@@ -45,7 +44,15 @@ export class SingleSelectFilter implements Filter {
     this.createDomElement(filterTemplate);
 
     // step 3, subscribe to the change event and run the callback when that happens
-    this.$filterElm.change((e: any) => this.callback(e, { columnDef: this.columnDef, operator: 'EQ' }));
+    // also add/remove "filled" class for styling purposes
+    this.$filterElm.change((e: any) => {
+      if (e && e.target && e.target.value) {
+        this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled') ;
+      } else {
+        this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
+      }
+      this.callback(e, { columnDef: this.columnDef, operator: 'EQ' });
+    });
   }
 
   /**
@@ -129,14 +136,5 @@ export class SingleSelectFilter implements Filter {
     // merge options & attach multiSelect
     const options = { ...this.defaultOptions, ...this.columnDef.filter.filterOptions };
     this.$filterElm = this.$filterElm.multipleSelect(options);
-  }
-
-  private subscribeOnClose() {
-    this.$filterElm.multipleSelect({
-      onClose: () => {
-        const selectedItems = this.$filterElm.multipleSelect('getSelects');
-        this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: selectedItems });
-      }
-    });
   }
 }

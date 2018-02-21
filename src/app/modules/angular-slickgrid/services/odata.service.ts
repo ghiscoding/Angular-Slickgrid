@@ -43,9 +43,7 @@ export class OdataService {
         this._odataOptions.filterQueue = [];
         let filterStr = this._odataOptions.filter;
         if (Array.isArray(this._odataOptions.filter)) {
-          const filterBySeparator = this._odataOptions.filterBySeparator || 'and';
-          const separatorSpacedOut = ` ${filterBySeparator} `;
-          filterStr = this._odataOptions.filter.join(separatorSpacedOut);
+          filterStr = this._odataOptions.filter.join(` ${this._odataOptions.filterBySeparator || 'and'} `);
         }
         this._odataOptions.filterQueue.push(`(${filterStr})`);
       }
@@ -58,9 +56,7 @@ export class OdataService {
       }
     }
     if (this._odataOptions.filterQueue.length > 0) {
-      const filterBySeparator = this._odataOptions.filterBySeparator || 'and';
-      const separatorSpacedOut = ` ${filterBySeparator} `;
-      const query = this._odataOptions.filterQueue.join(separatorSpacedOut);
+      const query = this._odataOptions.filterQueue.join(` ${this._odataOptions.filterBySeparator || 'and'} `);
       this._odataOptions.filter = query; // overwrite with
       queryTmpArray.push(`$filter=${query}`);
     }
@@ -102,8 +98,8 @@ export class OdataService {
 
   /**
    * Update the filter by a list of terms usually passed manually by the user as default filters
-   * @param {} filterOptions
-   * @returns {}
+   * @param filterOptions
+   * @returns
    */
   updateFilterFromListTerms(filterOptions: any) {
     // build the filter query

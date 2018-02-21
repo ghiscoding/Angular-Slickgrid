@@ -1,4 +1,4 @@
-import { GridOption } from './models';
+import { DelimiterType, FileType,  GridOption } from './models';
 
 /**
  * Options that can be passed to the Bootstrap-Datetimepicker directly
@@ -22,18 +22,20 @@ export const GlobalGridOptions: GridOption = {
   enableCellNavigation: false,
   enableColumnPicker: true,
   enableColumnReorder: true,
+  enableExport: true,
   enableGridMenu: true,
   enableMouseHoverHighlightRow: true,
-  enablePagination: false,
   enableSorting: true,
   enableTextSelectionOnCells: true,
   explicitInitialization: true,
+  exportWithFormatter: false,
   forceFitColumns: false,
   gridMenu: {
     iconCssClass: 'fa fa-bars',
     menuWidth: 16,
     resizeOnShowHeaderRow: false,
     showClearAllFiltersCommand: true,
+    showExportCsvCommand: true,
     showRefreshDatasetCommand: true,
     showToggleFilterCommand: true
   },

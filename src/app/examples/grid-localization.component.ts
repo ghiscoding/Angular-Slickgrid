@@ -1,6 +1,8 @@
+import { ExportService } from './../modules/angular-slickgrid/services/export.service';
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, Editors, FieldType, FilterType, Formatter, Formatters, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
+import { Column, FilterType, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
+import { FileType, DelimiterType } from '../modules/angular-slickgrid/models';
 
 @Component({
   templateUrl: './grid-localization.component.html'
@@ -30,6 +32,7 @@ export class GridLocalizationComponent implements OnInit {
         <li>What if you want to use "customStructure" and translation? Simply pass this flag <b>enableTranslateLabel: true</b></li>
         <li>More info on the Select Filter <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Select-Filter" target="_blank">Wiki page</a>
       </ul>
+    <li>For more info about "Download to File", read the <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Export-to-File" target="_blank">Wiki page</a></li>
     </ol>
   `;
 
@@ -38,18 +41,20 @@ export class GridLocalizationComponent implements OnInit {
   dataset: any[];
   selectedLanguage: string;
 
-  constructor(private gridExtraService: GridExtraService, private translate: TranslateService) {
+  constructor(private exportService: ExportService, private translate: TranslateService) {
     this.selectedLanguage = this.translate.getDefaultLang();
   }
 
   ngOnInit(): void {
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'id', headerKey: 'TITLE', formatter: this.taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true } },
+      { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80 },
       { id: 'duration', name: 'Duration (days)', field: 'duration', headerKey: 'DURATION', sortable: true, minWidth: 100, filterable: true },
       { id: 'start', name: 'Start', field: 'start', headerKey: 'START', formatter: Formatters.dateIso, minWidth: 100, filterable: true },
       { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, minWidth: 100, filterable: true },
       { id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', formatter: Formatters.translate, params: { i18n: this.translate }, sortable: true,
         minWidth: 100,
+        exportWithFormatter: true, // you can set this property in the column definition OR in the grid options, column def has priority over grid options
         filterable: true,
         filter: {
           collection: [ { value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' } ],
@@ -69,7 +74,14 @@ export class GridLocalizationComponent implements OnInit {
       },
       enableAutoResize: true,
       enableFiltering: true,
-      enableTranslate: true
+      enableTranslate: true,
+
+      // set at the grid option level, meaning all column will evaluate the Formatter (when it has a Formatter defined)
+      exportWithFormatter: true,
+      gridMenu: {
+        showExportCsvCommand: true,           // true by default, so it's optional
+        showExportTextDelimitedCommand: true  // false by default, so if you want it, you will need to enable it
+      }
     };
 
     this.loadData();
@@ -82,16 +94,24 @@ export class GridLocalizationComponent implements OnInit {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
-      const randomPercent = Math.round(Math.random() * 100);
 
       this.dataset[i] = {
         id: i,
+        description: (i % 5) ? 'desc ' + i : '🚀🦄 español', // also add some random to test NULL field
         duration: Math.round(Math.random() * 100) + '',
         start: new Date(randomYear, randomMonth, randomDay),
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
         completed: (i % 5 === 0) ? 'TRUE' : 'FALSE'
       };
     }
+  }
+
+  exportToFile(type = 'csv') {
+    this.exportService.exportToFile({
+      delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
+      filename: 'myExport',
+      format: (type === 'csv') ? FileType.csv : FileType.txt
+    });
   }
 
   switchLanguage() {

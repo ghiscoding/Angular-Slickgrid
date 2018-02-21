@@ -1,16 +1,20 @@
 // Public classes.
 export { AutoResizeOption } from './models/autoResizeOption.interface';
-export { BackendService } from './models/backendService.interface';
 export { BackendEventChanged } from './models/backendEventChanged.interface';
+export { BackendService } from './models/backendService.interface';
+export { BackendServiceApi } from './models/backendServiceApi.interface';
 export { BackendServiceOption } from './models/backendServiceOption.interface';
 export { CaseType } from './models/caseType';
 export { CellArgs } from './models/cellArgs.interface';
 export { Column } from './models/column.interface';
 export { ColumnFilter } from './models/columnFilter.interface';
 export { ColumnFilters } from './models/columnFilters.interface';
+export { DelimiterType } from './models/delimiterType.enum';
 export { Editor } from './models/editor.interface';
+export { ExportOption } from './models/exportOption.interface';
 export { FieldType } from './models/fieldType';
 export { Filter } from './models/filter.interface';
+export { FileType } from './models/fileType.enum';
 export { FilterArguments } from './models/filterArguments.interface';
 export { FilterCallback } from './models/filterCallback.interface';
 export { FilterChangedArgs } from './models/filterChangedArgs.interface';
@@ -46,6 +50,7 @@ export { Filters } from './filters/index';
 export { Formatters } from './formatters/index';
 export { Sorters } from './sorters/index';
 
+export { ExportService } from './services/export.service';
 export { FilterService } from './services/filter.service';
 export { SortService } from './services/sort.service';
 export { GridEventService } from './services/gridEvent.service';

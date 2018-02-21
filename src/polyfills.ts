@@ -40,7 +40,8 @@ import 'core-js/es6/set';
 /** Evergreen browsers require these. **/
 import 'core-js/es6/reflect';
 import 'core-js/es7/reflect';
-
+import 'core-js/es6/array';
+import 'core-js/es7/array';
 
 /**
  * Required to support Web Animations `@angular/animation`.

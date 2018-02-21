@@ -1,6 +1,9 @@
 import $ from 'jquery';
 import { Editor, HtmlElementPosition, KeyCode } from './../models';
 
+// using external js modules in Angular
+declare var $: any;
+
 /*
  * An example of a 'detached' editor.
  * The UI is added onto document BODY and .position(), .show() and .hide() are implemented.
@@ -107,8 +110,8 @@ export class LongTextEditor implements Editor {
     }
 
     return {
-      valid: true,
-      msg: null
+      valid,
+      msg
     };
   }
 }

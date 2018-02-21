@@ -22,8 +22,9 @@ import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
 import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
-import { BackendServiceOption, CellArgs, Column, GraphqlResult, GridOption } from './../models';
+import { BackendServiceOption, Column, GridOption } from './../models';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
+import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
 import { GraphqlService } from './../services/graphql.service';
 import { GridEventService } from './../services/gridEvent.service';
@@ -60,6 +61,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   gridPaginationOptions: GridOption;
   gridHeightString: string;
   gridWidthString: string;
+  groupingDefinition: any = {};
   showPagination = false;
 
   @Output() dataviewChanged = new EventEmitter<any>();
@@ -84,12 +86,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   constructor(
+    private controlAndPluginService: ControlAndPluginService,
+    private exportService: ExportService,
     private filterService: FilterService,
-    private sortService: SortService,
     private gridExtraService: GridExtraService,
     private gridEventService: GridEventService,
     private resizer: ResizerService,
-    private controlAndPluginService: ControlAndPluginService,
+    private sortService: SortService,
     private translate: TranslateService,
     @Inject('config') private forRootConfig: GridOption
   ) {}
@@ -134,8 +137,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.onDataviewCreated.emit(this._dataView);
 
     // OBSOLETE in future releases, previous emitter functions (decided to rename them with onX prefix)
-    this.gridChanged.emit(this.grid);
-    this.dataviewChanged.emit(this._dataView);
+    this.gridChanged.emit('DEPRECATED and replaced by "onGridCreated" Event Emitter.');
+    this.dataviewChanged.emit('DEPRECATED and replaced by "onDataviewCreated" Event Emitter.');
 
     this.grid.init();
     this._dataView.beginUpdate();
@@ -146,11 +149,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.attachResizeHook(this.grid, this._gridOptions);
 
     // attach grid extra service
-    const gridExtraService = this.gridExtraService.init(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
+    this.gridExtraService.init(this.grid, this.columnDefinitions, this._gridOptions, this._dataView);
 
     // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
     if (this._gridOptions.enableTranslate) {
       this.controlAndPluginService.translateHeaders();
+    }
+
+    // if Export is enabled, initialize the service with the necessary grid and other objects
+    if (this._gridOptions.enableExport) {
+      this.exportService.init(this.grid, this._gridOptions, this._dataView);
     }
   }
 
@@ -283,7 +291,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   /**
    * When dataset changes, we need to refresh the entire grid UI & possibly resize it as well
-   * @param {object} dataset
+   * @param dataset
    */
   refreshGridData(dataset: any[], totalCount?: number) {
     if (dataset && this.grid) {
@@ -294,7 +302,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.grid.render();
 
       if (this._gridOptions.enablePagination || this._gridOptions.backendServiceApi) {
-        this.showPagination = true;
+        // do we want to show pagination?
+        // if we have a backendServiceApi and the enablePagination is undefined, we'll assume that we do want to see it, else get that defined value
+        this.showPagination = ((this._gridOptions.backendServiceApi && this._gridOptions.enablePagination === undefined) ? true : this._gridOptions.enablePagination) || false;
 
         // before merging the grid options, make sure that it has the totalItems count
         // once we have that, we can merge and pass all these options to the pagination component
@@ -315,7 +325,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   /** Toggle the filter row displayed on first row
-   * @param {boolean} isShowing
+   * @param isShowing
    */
   showHeaderRow(isShowing: boolean) {
     this.grid.setHeaderRowVisibility(isShowing);

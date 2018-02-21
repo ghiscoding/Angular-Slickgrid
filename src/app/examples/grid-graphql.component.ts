@@ -1,10 +1,9 @@
-import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid';
-import { HttpClient } from '@angular/common/http';
+import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 const defaultPageSize = 20;
-const sampleDataRoot = '/assets/data';
 const GRAPHQL_QUERY_DATASET_NAME = 'users';
 
 @Component({
@@ -37,7 +36,7 @@ export class GridGraphqlComponent implements OnInit {
   isWithCursor = false;
   selectedLanguage: string;
 
-  constructor(private http: HttpClient, private graphqlService: GraphqlService, private translate: TranslateService) {
+  constructor(private graphqlService: GraphqlService, private translate: TranslateService) {
     this.selectedLanguage = this.translate.getDefaultLang();
   }
 
@@ -88,7 +87,6 @@ export class GridGraphqlComponent implements OnInit {
   }
 
   displaySpinner(isProcessing) {
-    console.log('processing', isProcessing);
     this.processing = isProcessing;
     this.status = (isProcessing)
       ? { text: 'processing...', class: 'alert alert-danger' }
@@ -143,7 +141,6 @@ export class GridGraphqlComponent implements OnInit {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         this.graphqlQuery = this.graphqlService.buildQuery();
-        console.log(this.graphqlQuery);
         resolve(mockedResult);
       }, 500);
     });

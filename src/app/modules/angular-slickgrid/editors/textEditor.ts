@@ -1,6 +1,9 @@
 import $ from 'jquery';
 import { Editor, KeyCode } from './../models';
 
+// using external js modules in Angular
+declare var $: any;
+
 /*
  * An example of a 'detached' editor.
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.

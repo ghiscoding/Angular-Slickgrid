@@ -11,18 +11,18 @@
    * This makes all "float:right" elements after it that spill over to the next line
    * display way below the lower boundary of the column thus hiding them.
    */
-  display: inline-block;
+  float: left;
   margin-bottom: 100px;
 }
 
 .slick-header-button {
-  display: inline-block;
-  vertical-align: top;
-  margin: 1px;
-  /**
+ /**
   * This makes all "float:right" elements after it that spill over to the next line
   * display way below the lower boundary of the column thus hiding them.
   */
+  float: right;
+  vertical-align: top;
+  margin: 1px;
   margin-bottom: 100px;
   height: 15px;
   width: 15px;
@@ -160,10 +160,12 @@ label {
 // Checkbox Selector Plugin
 // ----------------------------------------------
 
-.slickgrid-container input[type=checkbox] {
+.slick-column-name > input[type=checkbox],
+.slick-cell-checkboxsel > input[type=checkbox] {
   display:none;  /* to hide the checkbox itself */
 }
-.slickgrid-container input[type=checkbox] + label:before {
+.slick-column-name > input[type=checkbox] + label:before,
+.slick-cell-checkboxsel > input[type=checkbox] + label:before {
   font-family: $icon-font-family;
   color: $chekbox-selector-color;
   font-weight: bold;
@@ -172,10 +174,12 @@ label {
   font-size: $chekbox-selector-size;
   cursor: pointer;
 }
-.slickgrid-container input[type=checkbox] + label:before {
+.slick-column-name > input[type=checkbox] + label:before,
+.slick-cell-checkboxsel > input[type=checkbox] + label:before {
   opacity: $chekbox-selector-opacity; /* unchecked icon */
 }
-.slickgrid-container input[type=checkbox]:checked + label:before {
+.slick-column-name > input[type=checkbox]:checked + label:before,
+.slick-cell-checkboxsel > input[type=checkbox]:checked + label:before {
   opacity: 1; /* checked icon */
 }
 
