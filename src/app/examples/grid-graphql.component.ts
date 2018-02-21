@@ -89,7 +89,6 @@ export class GridGraphqlComponent implements OnInit {
   }
 
   displaySpinner(isProcessing) {
-    console.log('processing', isProcessing);
     this.processing = isProcessing;
     this.status = (isProcessing)
       ? { text: 'processing...', class: 'alert alert-danger' }
@@ -144,7 +143,6 @@ export class GridGraphqlComponent implements OnInit {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         this.graphqlQuery = this.graphqlService.buildQuery();
-        console.log(this.graphqlQuery);
         resolve(mockedResult);
       }, 500);
     });

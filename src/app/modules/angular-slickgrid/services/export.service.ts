@@ -41,11 +41,10 @@ export class ExportService {
   private _hasGroupedItems = false;
   private _exportOptions: ExportOption;
   defaultExportOptions: ExportOption = {
-    exportWithFormatter: false,
     delimiter: DelimiterType.comma,
     filename: 'export',
     format: FileType.csv,
-    isIdColumnIncluded: false
+    useUtf8WithBom: true
   };
 
   constructor(private translate: TranslateService) { }
@@ -68,10 +67,11 @@ export class ExportService {
    *
    * NOTES: The column position needs to match perfectly the JSON Object position because of the way we are pulling the data,
    * which means that if any column(s) got moved in the UI, it has to be reflected in the JSON array output as well
-   *   # Example: exportToFile({ isIdColumnIncluded: true, excludedColumns: ['Item Category Code','Sell-to Customer No'], format: FileType.csv, delimiter: DelimiterType.comma })
+   *
+   * Example: exportToFile({ format: FileType.csv, delimiter: DelimiterType.comma })
    */
   exportToFile(options: ExportOption) {
-    this._exportOptions = $.extend(true, {}, this.defaultExportOptions, this._gridOptions.exportOptions, options);
+    this._exportOptions = $.extend(true, {}, this.defaultExportOptions, options);
 
     // get the CSV output from the grid data
     const dataOutput = this.getDataOutput();
@@ -100,12 +100,6 @@ export class ExportService {
     // a CSV needs double quotes wrapper, the other types do not need any wrapper
     this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
 
-    // excludedColumns should exclude "id" column from the start, unless user specifically said he wants it
-    this._exportOptions.excludedColumns = (this._exportOptions === undefined || this._exportOptions.excludedColumns === undefined) ? [] : this._exportOptions.excludedColumns;
-    if (!this._exportOptions.isIdColumnIncluded) {
-      this._exportOptions.excludedColumns.push('id');
-    }
-
     // data variable which will hold all the fields data of a row
     let outputDataString = '';
 
@@ -113,19 +107,22 @@ export class ExportService {
     this._groupedHeaders = this.getGroupedColumnTitles(columns) || [];
     if (this._groupedHeaders && Array.isArray(this._groupedHeaders)) {
       this._hasGroupedItems = (this._groupedHeaders.length > 0);
-      outputDataString += this._groupedHeaders.map((header) => `${this.translate.instant('GROUP_BY')} [${header.title}]`).join(delimiter);
+      outputDataString += this._groupedHeaders
+        .map((header) => `${this.translate.instant('GROUP_BY')} [${header.title}]`)
+        .join(delimiter);
     }
 
     // get all column headers
     this._columnHeaders = this.getColumnHeaders(columns) || [];
     if (this._columnHeaders && Array.isArray(this._columnHeaders)) {
       // add the header row + add a new line at the end of the row
-      const outputHeaderTitles = this._columnHeaders.map((header) => this._exportQuoteWrapper + header.title + this._exportQuoteWrapper);
+      const outputHeaderTitles = this._columnHeaders
+        .map((header) => this._exportQuoteWrapper + header.title + this._exportQuoteWrapper);
       outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
     }
 
     // Populate the rest of the Grid Data
-    outputDataString += this.getAllGridRowData(this._lineCarriageReturn);
+    outputDataString += this.getAllGridRowData(columns, this._lineCarriageReturn);
 
     return outputDataString;
   }
@@ -133,7 +130,7 @@ export class ExportService {
   /**
    * Get all the grid row data and return that as an output string
    */
-  getAllGridRowData(lineCarriageReturn: string): string {
+  getAllGridRowData(columns: Column[], lineCarriageReturn: string): string {
     let outputDataString = '';
     const lineCount = this._dataView.getLength();
 
@@ -145,7 +142,7 @@ export class ExportService {
         // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
         if (itemObj.id != null) {
           // get regular row item data
-          outputDataString += this.getFormattedRegularRow(rowNumber, itemObj);
+          outputDataString += this.getFormattedRegularRow(columns, rowNumber, itemObj);
         } else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
           // get the group row
           outputDataString += this.getFormattedGroupeTitleRow(itemObj);
@@ -191,12 +188,10 @@ export class ExportService {
     columns.forEach((columnDef) => {
       const fieldId = columnDef.id;
       const fieldName = (columnDef.headerKey) ? this.translate.instant(columnDef.headerKey) : columnDef.name;
-
-      // we might want to skip some columns
-      const skippedFields = this._exportOptions.excludedColumns.filter((skipColumn) => skipColumn === fieldId);
+      const skippedField = columnDef.excludeFromExport || false;
 
       // if column width is 0 then it's not evaluated since that field is considered hidden should not be part of the export
-      if ((columnDef.width ===  undefined || columnDef.width > 0) && skippedFields.length === 0) {
+      if ((columnDef.width ===  undefined || columnDef.width > 0) && !skippedField) {
         columnHeaders.push({
           key: columnDef.field || columnDef.id,
           title: fieldName
@@ -212,32 +207,21 @@ export class ExportService {
    * @param row
    * @param itemObj
    */
-  getFormattedRegularRow(row: number, itemObj: any) {
+  getFormattedRegularRow(columns: Column[], row: number, itemObj: any) {
     let idx = 0;
     let rowOutputString = '';
     const delimiter = this._exportOptions.delimiter;
     const format = this._exportOptions.format;
     const exportQuoteWrapper = this._exportQuoteWrapper || '';
     const columnHeaders = this._columnHeaders || [];
-    const skippedColumns = this._exportOptions.excludedColumns || [];
 
-    for (let col = 0; col < columnHeaders.length; col++) {
-      const key = columnHeaders[col].key;
-      const columnDef: Column = this._grid.getColumns()[col] || {};
+    for (let col = 0, ln = columns.length; col < ln; col++) {
+      const columnDef = columns[col];
+      const fieldId = columnDef.field || columnDef.id || '';
 
-      // we might want to skip certain columns too
-      if (skippedColumns.length > 0) {
-        let bSkipField = false;
-        for (let k = 0; k < skippedColumns.length; k++) {
-          if (key === skippedColumns[k]) {
-            bSkipField = true;
-            break;
-          }
-        }
-        const titleFoundKeys = columnHeaders.filter((header) => header.key === key);
-        if (bSkipField || titleFoundKeys.length < 0) {
+      // skip excluded column
+      if ((columnDef.excludeFromExport || false)) {
           continue;
-        }
       }
 
       // if we are grouping and are on 1st column index, we need to skip this column since it will be used later by the grouping text:: Group by [columnX]
@@ -246,11 +230,11 @@ export class ExportService {
       }
 
       let itemData = '';
-      const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._exportOptions.exportWithFormatter;
-      if (!!columnDef.formatter && isEvaluatingFormatter && columnDef.id === key) {
-        itemData = columnDef.formatter(row, col, itemObj[key], columnDef, itemObj);
+      const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._gridOptions.exportWithFormatter;
+      if (isEvaluatingFormatter && !!columnDef.formatter) {
+        itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj);
       } else {
-        itemData = (itemObj[key] === null || itemObj[key] === undefined) ? '' : itemObj[key];
+        itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
       }
       if (format === FileType.csv) {
         // when CSV we also need to escape double quotes twice, so " becomes ""
@@ -259,7 +243,7 @@ export class ExportService {
       }
       // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
       // to cancel that effect we can had = in front, ex: ="1E06"
-      const keepAsStringWrapper = (columnDef && columnDef.exportForceToKeepAsString) ? '=' : '';
+      const keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
 
       rowOutputString += keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
       idx++;
@@ -287,7 +271,7 @@ export class ExportService {
 
     // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
     // to cancel that effect we can had = in front, ex: ="1E06"
-    // const keepAsStringWrapper = (columnDef && columnDef.exportForceToKeepAsString) ? '=' : '';
+    // const keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
 
     return /*keepAsStringWrapper +*/ exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper + delimiter;
   }

@@ -310,14 +310,16 @@ export class ControlAndPluginService {
               this.exportService.exportToFile({
                 delimiter: DelimiterType.comma,
                 filename: 'export',
-                format: FileType.csv
+                format: FileType.csv,
+                useUtf8WithBom: true
               });
               break;
             case 'export-text-delimited':
               this.exportService.exportToFile({
                 delimiter: DelimiterType.tab,
                 filename: 'export',
-                format: FileType.txt
+                format: FileType.txt,
+                useUtf8WithBom: true
               });
               break;
             case 'toggle-filter':

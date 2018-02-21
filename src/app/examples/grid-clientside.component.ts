@@ -44,14 +44,14 @@ export class GridClientSideComponent implements OnInit {
 
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', filterable: true, sortable: true, type: FieldType.string, minWidth: 45 },
-      { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 50,
+      { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80,
         type: FieldType.string,
         filter: {
           type: FilterType.custom,
           customFilter: new CustomInputFilter() // create a new instance to make each Filter independent from each other
         }
       },
-      { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, exportForceToKeepAsString: true,
+      { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, exportCsvForceToKeepAsString: true,
         minWidth: 55,
         filterable: true,
         filter: {
@@ -91,9 +91,6 @@ export class GridClientSideComponent implements OnInit {
         containerId: 'demo-container',
         sidePadding: 15
       },
-      gridMenu: {
-        showExportTextDelimitedCommand: true
-      },
       enableFiltering: true
     };
 
@@ -113,8 +110,7 @@ export class GridClientSideComponent implements OnInit {
       this.dataset[i] = {
         id: i,
         title: 'Task ' + i,
-        // description: (i % 25 === 1) ? '❤🚀👱🦄 - español' : 'desc ' + i, // also add some random to test NULL field
-        description: (i % 28) ? '❤🚀👱🦄 - español - été - noël' : 'desc ' + i, // also add some random to test NULL field
+        description: (i % 5) ? 'desc ' + i : null, // also add some random to test NULL field
         duration: randomDuration,
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
