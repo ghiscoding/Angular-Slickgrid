@@ -221,7 +221,7 @@ export class ExportService {
       const fieldId = columnDef.field || columnDef.id || '';
 
       // skip excluded column
-      if ((columnDef.excludeFromExport || false)) {
+      if (columnDef.excludeFromExport) {
           continue;
       }
 
