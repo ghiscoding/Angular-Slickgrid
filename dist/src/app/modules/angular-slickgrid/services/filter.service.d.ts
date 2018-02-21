@@ -5,10 +5,8 @@ export declare class FilterService {
     private translate;
     private _filters;
     private _columnFilters;
-    private _columnDefinitions;
     private _dataView;
     private _grid;
-    private _gridOptions;
     private _onFilterChangedOptions;
     private subscriber;
     onFilterChanged: EventEmitter<string>;
@@ -49,7 +47,7 @@ export declare class FilterService {
     /**
      * A simple function that is attached to the subscriber and emit a change when the sort is called.
      * Other services, like Pagination, can then subscribe to it.
-     * @param {string} sender
+     * @param sender
      */
     emitFilterChangedBy(sender: string): void;
     private keepColumnFilters(searchTerm, searchTerms, columnDef);

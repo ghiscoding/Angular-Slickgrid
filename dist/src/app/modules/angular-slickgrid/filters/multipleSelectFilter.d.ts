@@ -10,6 +10,7 @@ export declare class MultipleSelectFilter implements Filter {
     columnDef: Column;
     callback: FilterCallback;
     defaultOptions: any;
+    isFilled: boolean;
     /**
      * Initialize the Filter
      */
@@ -37,5 +38,4 @@ export declare class MultipleSelectFilter implements Filter {
      */
     private createDomElement(filterTemplate);
     private findValueInSearchTerms(value);
-    private subscribeOnClose();
 }

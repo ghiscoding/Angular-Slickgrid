@@ -1,7 +1,6 @@
 export declare class GridExtraService {
     private _grid;
     private _dataView;
-    private _columnDefinition;
     private _gridOptions;
     init(grid: any, columnDefinition: any, gridOptions: any, dataView: any): void;
     getDataItemByRowNumber(rowNumber: number): any;
@@ -12,8 +11,8 @@ export declare class GridExtraService {
     /**
      * Highlight then fade a row for x seconds.
      * The implementation follows this SO answer: https://stackoverflow.com/a/19985148/1212166
-     * @param {number} rowNumber
-     * @param {number} fadeDelay
+     * @param rowNumber
+     * @param fadeDelay
      */
     highlightRow(rowNumber: number, fadeDelay?: number): void;
     getSelectedRows(): any;

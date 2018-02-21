@@ -19,17 +19,17 @@ export default class GraphqlQueryBuilder {
     filter(filters: any): this;
     /**
      * Outlines the properties you wish to be returned from the query.
-     * @param {string|object} properties representing each attribute you want Returned
+     * @param properties representing each attribute you want Returned
      */
     find(...searches: any[]): this;
     /**
      * set an alias for this result.
-     * @param {string} alias
+     * @param alias
      */
     setAlias(alias: string): void;
     /**
      * Return to the formatted query string
-     * @return {string}
+     * @return
      */
     toString(): string;
     private parceFind(_levelA);

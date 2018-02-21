@@ -33,5 +33,4 @@ export declare class SingleSelectFilter implements Filter {
      * @param filterTemplate
      */
     private createDomElement(filterTemplate);
-    private subscribeOnClose();
 }

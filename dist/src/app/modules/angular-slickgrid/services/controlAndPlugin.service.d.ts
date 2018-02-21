@@ -1,10 +1,10 @@
+import { ExportService } from './export.service';
 import { FilterService } from './filter.service';
-import { GridExtraService } from './gridExtra.service';
 import { Column, GridOption } from './../models';
 import { TranslateService } from '@ngx-translate/core';
 export declare class ControlAndPluginService {
+    private exportService;
     private filterService;
-    private gridExtraService;
     private translate;
     private _dataView;
     private _grid;
@@ -18,13 +18,13 @@ export declare class ControlAndPluginService {
     headerMenuPlugin: any;
     gridMenuControl: any;
     rowSelectionPlugin: any;
-    constructor(filterService: FilterService, gridExtraService: GridExtraService, translate: TranslateService);
+    constructor(exportService: ExportService, filterService: FilterService, translate: TranslateService);
     /**
      * Attach/Create different Controls or Plugins after the Grid is created
-     * @param {any} grid
-     * @param {Column[]} columnDefinitions
-     * @param {GridOptions} options
-     * @param {any} dataView
+     * @param grid
+     * @param columnDefinitions
+     * @param options
+     * @param dataView
      */
     attachDifferentControlOrPlugins(grid: any, columnDefinitions: Column[], options: GridOption, dataView: any): void;
     createColumnPicker(grid: any, columnDefinitions: Column[], options: GridOption): void;
@@ -70,14 +70,14 @@ export declare class ControlAndPluginService {
     /**
      * Translate manually the header titles.
      * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
-     * @param {string} locale locale to use
+     * @param locale locale to use
      */
     translateHeaders(locale?: string): void;
     /**
      * Attach/Create different plugins before the Grid creation.
      * For example the multi-select have to be added to the column definition before the grid is created to work properly
-     * @param {Column[]} columnDefinitions
-     * @param {GridOptions} options
+     * @param columnDefinitions
+     * @param options
      */
     createPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption): void;
 }

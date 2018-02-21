@@ -7,7 +7,9 @@
     "umdModuleIds": {
       "@ngx-translate/core": "ngx-translate-core",
       "@ngx-translate/core/index": "ngx-translate-core",
-      "flatpickr": "flatpickr"
+      "flatpickr": "flatpickr",
+      "moment-mini": "moment",
+      "text-encoding": "textEncoding"
     }
   }
 }

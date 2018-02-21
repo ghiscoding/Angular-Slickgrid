@@ -14,8 +14,8 @@ export declare class OdataService {
     saveColumnFilter(fieldName: string, value: any, searchTerms?: any[]): void;
     /**
      * Update the filter by a list of terms usually passed manually by the user as default filters
-     * @param {} filterOptions
-     * @returns {}
+     * @param filterOptions
+     * @returns
      */
     updateFilterFromListTerms(filterOptions: any): void;
     updateFilterFromTerm(filterOptions: any): void;

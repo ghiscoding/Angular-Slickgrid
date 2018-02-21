@@ -7,6 +7,8 @@ export declare class CheckboxEditor implements Editor {
     init(): void;
     destroy(): void;
     focus(): void;
+    hide(): void;
+    show(): void;
     loadValue(item: any): void;
     preClick(): void;
     serializeValue(): boolean;

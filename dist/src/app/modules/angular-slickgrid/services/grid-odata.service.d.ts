@@ -18,9 +18,9 @@ export declare class GridOdataService implements BackendService {
     onPaginationChanged(event: Event, args: PaginationChangedArgs): string;
     onSortChanged(event: Event, args: SortChangedArgs): string;
     /**
-      * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
-      * @param string operator
-      * @returns string map
-      */
+     * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
+     * @param string operator
+     * @returns string map
+     */
     private mapOdataOperator(operator);
 }

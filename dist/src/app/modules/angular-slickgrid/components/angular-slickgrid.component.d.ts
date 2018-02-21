@@ -21,6 +21,7 @@ import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { Column, GridOption } from './../models';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
+import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
 import { GridEventService } from './../services/gridEvent.service';
 import { GridExtraService } from './../services/gridExtra.service';
@@ -28,12 +29,13 @@ import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
 import { TranslateService } from '@ngx-translate/core';
 export declare class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
+    private controlAndPluginService;
+    private exportService;
     private filterService;
-    private sortService;
     private gridExtraService;
     private gridEventService;
     private resizer;
-    private controlAndPluginService;
+    private sortService;
     private translate;
     private forRootConfig;
     private _dataset;
@@ -43,6 +45,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridPaginationOptions: GridOption;
     gridHeightString: string;
     gridWidthString: string;
+    groupingDefinition: any;
     showPagination: boolean;
     dataviewChanged: EventEmitter<any>;
     gridChanged: EventEmitter<any>;
@@ -57,7 +60,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridHeight: number;
     gridWidth: number;
     dataset: any[];
-    constructor(filterService: FilterService, sortService: SortService, gridExtraService: GridExtraService, gridEventService: GridEventService, resizer: ResizerService, controlAndPluginService: ControlAndPluginService, translate: TranslateService, forRootConfig: GridOption);
+    constructor(controlAndPluginService: ControlAndPluginService, exportService: ExportService, filterService: FilterService, gridExtraService: GridExtraService, gridEventService: GridEventService, resizer: ResizerService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
     ngOnInit(): void;
     ngOnDestroy(): void;
     destroy(): void;
@@ -72,11 +75,11 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     mergeGridOptions(): GridOption;
     /**
      * When dataset changes, we need to refresh the entire grid UI & possibly resize it as well
-     * @param {object} dataset
+     * @param dataset
      */
     refreshGridData(dataset: any[], totalCount?: number): void;
     /** Toggle the filter row displayed on first row
-     * @param {boolean} isShowing
+     * @param isShowing
      */
     showHeaderRow(isShowing: boolean): boolean;
     /** Toggle the filter row displayed on first row */
