@@ -2043,12 +2043,19 @@ var progressBarFormatter = function (row, cell, value, columnDef, dataContext) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-var translateFormatter = function (row, cell, value, columnDef, dataContext) {
-    var /** @type {?} */ params = columnDef.params || {};
-    if (!params.i18n || !(params.i18n instanceof TranslateService)) {
-        throw new Error("The translate formatter requires the ngx-translate \"TranslateService\" to be provided as a column params.\n    For example: this.columnDefinitions = [{ id: title, field: title, formatter: Formatters.translate, params: { i18n: this.translateService }");
+var translateFormatter = function (row, cell, value, columnDef, dataContext, grid) {
+    var /** @type {?} */ gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
+    var /** @type {?} */ columnParams = columnDef.params || {};
+    var /** @type {?} */ gridParams = gridOptions.params || {};
+    if ((!columnParams.i18n || !(columnParams.i18n instanceof TranslateService)) && (!gridParams.i18n || !(gridParams.i18n instanceof TranslateService))) {
+        throw new Error("The translate formatter requires the ngx-translate \"TranslateService\" to be provided as a Column Definition params or a Grid Option params.\n    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translateService }}");
     }
-    return value ? params.i18n.instant(value) : '';
+    var /** @type {?} */ translate = gridParams.i18n || columnParams.i18n;
+    // make sure the value is a string (for example a boolean value would throw an error)
+    if (typeof value !== 'string') {
+        value = value + '';
+    }
+    return value ? translate.instant(value) : '';
 };
 /**
  * @fileoverview added by tsickle
@@ -2299,15 +2306,15 @@ var ExportService = /** @class */ (function () {
                 // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
                 if (itemObj.id != null) {
                     // get regular row item data
-                    outputDataString += this.getFormattedRegularRow(columns, rowNumber, itemObj);
+                    outputDataString += this.readRegularRowData(columns, rowNumber, itemObj);
                 }
                 else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
                     // get the group row
-                    outputDataString += this.getFormattedGroupeTitleRow(itemObj);
+                    outputDataString += this.readGroupedTitleRow(itemObj);
                 }
                 else if (itemObj.__groupTotals) {
                     // else if the row is a Group By and we have agreggators, then a property of '__groupTotals' would exist under that object
-                    outputDataString += this.getFormattedGroupedTotalRow(itemObj);
+                    outputDataString += this.readGroupedTotalRow(itemObj);
                 }
                 outputDataString += lineCarriageReturn;
             }
@@ -2340,7 +2347,6 @@ var ExportService = /** @class */ (function () {
         var /** @type {?} */ columnHeaders = [];
         // Populate the Column Header, pull the name defined
         columns.forEach(function (columnDef) {
-            var /** @type {?} */ fieldId = columnDef.id;
             var /** @type {?} */ fieldName = (columnDef.headerKey) ? _this.translate.instant(columnDef.headerKey) : columnDef.name;
             var /** @type {?} */ skippedField = columnDef.excludeFromExport || false;
             // if column width is 0 then it's not evaluated since that field is considered hidden should not be part of the export
@@ -2360,35 +2366,39 @@ var ExportService = /** @class */ (function () {
      * @param {?} itemObj
      * @return {?}
      */
-    ExportService.prototype.getFormattedRegularRow = function (columns, row, itemObj) {
+    ExportService.prototype.readRegularRowData = function (columns, row, itemObj) {
         var /** @type {?} */ idx = 0;
         var /** @type {?} */ rowOutputString = '';
         var /** @type {?} */ delimiter = this._exportOptions.delimiter;
         var /** @type {?} */ format = this._exportOptions.format;
         var /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
-        var /** @type {?} */ columnHeaders = this._columnHeaders || [];
         for (var /** @type {?} */ col = 0, /** @type {?} */ ln = columns.length; col < ln; col++) {
             var /** @type {?} */ columnDef = columns[col];
             var /** @type {?} */ fieldId = columnDef.field || columnDef.id || '';
             // skip excluded column
-            if ((columnDef.excludeFromExport || false)) {
+            if (columnDef.excludeFromExport) {
                 continue;
             }
             // if we are grouping and are on 1st column index, we need to skip this column since it will be used later by the grouping text:: Group by [columnX]
             if (this._hasGroupedItems && idx === 0) {
                 rowOutputString += "\"\"" + delimiter;
             }
-            var /** @type {?} */ itemData = '';
+            // does the user want to evaluate current column Formatter?
             var /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._gridOptions.exportWithFormatter;
-            if (isEvaluatingFormatter && !!columnDef.formatter) {
-                itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj);
+            // did the user provide a Custom Formatter for the export
+            var /** @type {?} */ exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
+            var /** @type {?} */ itemData = '';
+            if (exportCustomFormatter) {
+                itemData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+            }
+            else if (isEvaluatingFormatter && !!columnDef.formatter) {
+                itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
             }
             else {
                 itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
             }
+            // when CSV we also need to escape double quotes twice, so " becomes ""
             if (format === FileType.csv) {
-                // when CSV we also need to escape double quotes twice, so " becomes ""
-                // and if we have a text of (number)E(number),
                 itemData = itemData.toString().replace(/"/gi, "\"\"");
             }
             // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
@@ -2404,7 +2414,7 @@ var ExportService = /** @class */ (function () {
      * @param {?} itemObj
      * @return {?}
      */
-    ExportService.prototype.getFormattedGroupeTitleRow = function (itemObj) {
+    ExportService.prototype.readGroupedTitleRow = function (itemObj) {
         var /** @type {?} */ groupName = itemObj.value;
         var /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
         var /** @type {?} */ delimiter = this._exportOptions.delimiter;
@@ -2425,7 +2435,7 @@ var ExportService = /** @class */ (function () {
      * @param {?} itemObj
      * @return {?}
      */
-    ExportService.prototype.getFormattedGroupedTotalRow = function (itemObj) {
+    ExportService.prototype.readGroupedTotalRow = function (itemObj) {
         var /** @type {?} */ exportExponentialWrapper = '';
         var /** @type {?} */ delimiter = this._exportOptions.delimiter;
         var /** @type {?} */ format = this._exportOptions.format;
@@ -2755,7 +2765,7 @@ var FilterService = /** @class */ (function () {
                 // when using localization (i18n), we should use the formatter output to search as the new cell value
                 if (columnDef && columnDef.params && columnDef.params.useFormatterOuputToFilter) {
                     var /** @type {?} */ rowIndex = (dataView && typeof dataView.getIdxById === 'function') ? dataView.getIdxById(item.id) : 0;
-                    cellValue = columnDef.formatter(rowIndex, columnIndex, cellValue, columnDef, item);
+                    cellValue = columnDef.formatter(rowIndex, columnIndex, cellValue, columnDef, item, this._grid);
                 }
                 // make sure cell value is always a string
                 if (typeof cellValue === 'number') {

@@ -55,18 +55,18 @@ export declare class ExportService {
      * @param row
      * @param itemObj
      */
-    getFormattedRegularRow(columns: Column[], row: number, itemObj: any): string;
+    readRegularRowData(columns: Column[], row: number, itemObj: any): string;
     /**
      * Get the grouped title(s), for example if we grouped by salesRep, the returned result would be:: 'Sales Rep'
      * @param itemObj
      */
-    getFormattedGroupeTitleRow(itemObj: any): string;
+    readGroupedTitleRow(itemObj: any): string;
     /**
      * Get the grouped totals, these are set by Slick Aggregators.
      * For example if we grouped by "salesRep" and we have a Sum Aggregator on "sales", then the returned output would be:: ["Sum 123$"]
      * @param itemObj
      */
-    getFormattedGroupedTotalRow(itemObj: any): string;
+    readGroupedTotalRow(itemObj: any): string;
     /**
      * Get all grouped column titles, translate them when required.
      * For example if the grid is grouped by salesRep and then customerName, we will return their title, something like:: ['Sales Rep', 'Customer Name']

@@ -22,6 +22,11 @@ export interface Column {
     /** Default to false, do we want this column excluded from the export? */
     excludeFromExport?: boolean;
     /**
+     * Export with a Custom Formatter, useful when we want to use a different Formatter for the export.
+     * For example, we might have a boolean field with "Formatters.checkmark" but we would like see a translated value for (True/False).
+     */
+    exportCustomFormatter?: Formatter;
+    /**
      * Defaults to false, which leads to Formatters being evaluated on export.
      * Most often used with dates that are stored as UTC but displayed as Date ISO (or any other format) with a Formatter.
      */
