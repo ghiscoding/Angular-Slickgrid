@@ -10,28 +10,64 @@ import { HeaderMenu } from './headerMenu.interface';
 import { Pagination } from './pagination.interface';
 
 export interface GridOption {
+  /** Defaults to false, which leads to load editor asynchronously (delayed) */
   asyncEditorLoading?: boolean;
+
+  /** Defaults to false, when enabled will automatically open the inlined editor as soon as there is a focus on the cell (can be combined with "enableCellNavigation: true"). */
   autoEdit?: boolean;
+
+  /** Defaults to true, which leads to automatically adjust the size of each column with the available space. Similar to "Force Fit Column" but only happens on first page/component load. */
   autoFitColumnsOnFirstLoad?: boolean;
+
+  /** Auto-resize options (bottom padding, minHeight, ...)  */
   autoResize?: AutoResizeOption;
+
+  /** Auto-tooltip options (enableForCells, enableForHeaderCells, maxToolTipLength) */
   autoTooltipOptions?: {
+    /** are tooltip enabled for all cells? */
     enableForCells: boolean;
+
+    /** are tooltip enabled for column headers */
     enableForHeaderCells: boolean;
+
+    /** what is the maximum tooltip length in pixels (only type the number) */
     maxToolTipLength: number;
   };
 
   /** Backend Service API definition (GraphQL/OData Services), also goes with onBackendEventApi */
   backendServiceApi?: BackendServiceApi;
+
+  /** CSS class for when highlighting a cell value. Useful to change background color of the activated cell */
   cellHighlightCssClass?: string | null;
+
+  /** Checkbox Select Plugin options (columnId, cssClass, toolTip, width) */
   checkboxSelector?: CheckboxSelector;
+
+  /** Checkbox Select Plugin options (columnTitle, forceFitTitle, syncResizeTitle) */
   columnPicker?: ColumnPicker;
+
+  /** Defaults to false, when enabled will give the possibility to edit cell values with inline editors. */
   editable?: boolean;
+
+  /** Do we want to enable asynchronous (delayed) post rendering */
   enableAsyncPostRender?: boolean;
+
+  /** Defaults to true, which will automatically resize the grid whenever the browser size changes  */
   enableAutoResize?: boolean;
+
+  /** Defaults to false, which leads to showing tooltip over cell & header values that are not shown completely (... ellipsis) */
   enableAutoTooltip?: boolean;
+
+  /** Defaults to false, which will let user click on cell and navigate with arrow keys. */
   enableCellNavigation?: boolean;
+
+  /** Defaults to false, when enabled it will add a column for checkbox selection at the 1st column position. A selection will trigger the "onSelectedRowsChanged" event. */
   enableCheckboxSelector?: boolean;
+
+  /** Defaults to true, when enabled will give the possibility to do a right+click on any header title which will open the list of column. User can show/hide a column by using the checkbox from that picker list. */
   enableColumnPicker?: boolean;
+
+  /** Defaults to true, which permits the user to move an entire column from a position to another. */
   enableColumnReorder?: boolean;
 
   /** Do we want to enable the Export to File? (if Yes, it will show up in the Grid Menu) */
@@ -85,7 +121,7 @@ export interface GridOption {
   /** Grid DOM element ID */
   gridId?: string;
 
-  /** Header row height in pixels (header row is where the filters are) */
+  /** Header row height in pixels (only type the number). Header row is where the filters are. */
   headerRowHeight?: number;
 
   /** Header button options */
@@ -109,11 +145,12 @@ export interface GridOption {
   /** Register 1 or more Slick Plugins */
   registerPlugins?: any | any[];
 
-  /** grid row height in pixels (row of cell values) */
+  /** Grid row height in pixels (only type the number). Row of cell values. */
   rowHeight?: number;
 
   /** Row selection options */
   rowSelectionOptions?: {
+    /** do we want to select the active row? */
     selectActiveRow: boolean;
   };
 
@@ -123,6 +160,6 @@ export interface GridOption {
   /** Do we want to show top panel row? */
   showTopPanel?: boolean;
 
-  /** What is the top panel height in pixels */
+  /** What is the top panel height in pixels (only type the number) */
   topPanelHeight?: number;
 }
