@@ -1988,6 +1988,17 @@ var infoIconFormatter = function (row, cell, value, columnDef, dataContext) { re
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+var lowercaseFormatter = function (row, cell, value, columnDef, dataContext) {
+    // make sure the value is a string
+    if (value !== undefined && typeof value !== 'string') {
+        value = value + '';
+    }
+    return value ? value.toLowerCase() : '';
+};
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 var percentCompleteFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {
         return '-';
@@ -2043,6 +2054,9 @@ var progressBarFormatter = function (row, cell, value, columnDef, dataContext) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+/**
+ * Takes a cell value and translates it (i18n). Requires an instance of the Translate Service:: `params: { i18n: this.translate }
+ */
 var translateFormatter = function (row, cell, value, columnDef, dataContext, grid) {
     var /** @type {?} */ gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
     var /** @type {?} */ columnParams = columnDef.params || {};
@@ -2052,10 +2066,42 @@ var translateFormatter = function (row, cell, value, columnDef, dataContext, gri
     }
     var /** @type {?} */ translate = gridParams.i18n || columnParams.i18n;
     // make sure the value is a string (for example a boolean value would throw an error)
-    if (typeof value !== 'string') {
+    if (value !== undefined && typeof value !== 'string') {
         value = value + '';
     }
     return value ? translate.instant(value) : '';
+};
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * Takes a boolean value, cast it to upperCase string and finally translates (i18n) it
+ */
+var translateBooleanFormatter = function (row, cell, value, columnDef, dataContext, grid) {
+    var /** @type {?} */ gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
+    var /** @type {?} */ columnParams = columnDef.params || {};
+    var /** @type {?} */ gridParams = gridOptions.params || {};
+    if ((!columnParams.i18n || !(columnParams.i18n instanceof TranslateService)) && (!gridParams.i18n || !(gridParams.i18n instanceof TranslateService))) {
+        throw new Error("The translate formatter requires the ngx-translate \"TranslateService\" to be provided as a Column Definition params or a Grid Option params.\n    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translateService }}");
+    }
+    var /** @type {?} */ translate = gridParams.i18n || columnParams.i18n;
+    // make sure the value is a string (for example a boolean value would throw an error)
+    if (value !== undefined && typeof value !== 'string') {
+        value = value + '';
+    }
+    return value ? translate.instant(/** @type {?} */ (value.toUpperCase())) : '';
+};
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+var uppercaseFormatter = function (row, cell, value, columnDef, dataContext) {
+    // make sure the value is a string
+    if (value !== undefined && typeof value !== 'string') {
+        value = value + '';
+    }
+    return value ? value.toUpperCase() : '';
 };
 /**
  * @fileoverview added by tsickle
@@ -2066,33 +2112,53 @@ var yesNoFormatter = function (row, cell, value, columnDef, dataContext) { retur
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-/*
-export interface GroupFormatter {
-  (row: number, cell: number, value: any, columnDef: Column, dataContext: Group): string
-}
-export interface GroupTotalsFormatter {
-  (row: number, cell: number, value: any, columnDef: Column, dataContext: GroupTotals): string
-}
-*/
+/**
+ * Provides a list of different Formatters that will change the cell value displayed in the UI
+ */
 var Formatters = {
+    /** Takes an array of string and converts it to a comma delimited string */
     arrayToCsv: arrayToCsvFormatter,
+    /** When value is filled (true), it will display a checkbox Unicode icon */
     checkbox: checkboxFormatter,
+    /** When value is filled (true), it will display a Font-Awesome icon (fa-check) */
     checkmark: checkmarkFormatter,
+    /** Takes a complex data object and return the data under that property (for example: "user.firstName" will return the first name "John") */
     complexObject: complexObjectFormatter,
+    /** Takes a Date object and displays it as an ISO Date format */
     dateIso: dateIsoFormatter,
+    /** Takes a Date object and displays it as an ISO Date+Time format */
     dateTimeIso: dateIsoFormatter,
+    /** Takes a Date object and displays it as an ISO Date+Time+(am/pm) format */
     dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
+    /** Takes a Date object and displays it as an US Date format */
     dateUs: dateUsFormatter,
+    /** Takes a Date object and displays it as an US Date+Time format */
     dateTimeUs: dateTimeUsFormatter,
+    /** Takes a Date object and displays it as an US Date+Time+(am/pm) format */
     dateTimeUsAmPm: dateTimeUsAmPmFormatter,
+    /** Displays a Font-Awesome delete icon (fa-trash) */
     deleteIcon: deleteIconFormatter,
+    /** Displays a Font-Awesome edit icon (fa-pencil) */
     editIcon: editIconFormatter,
+    /** Takes a cell value and transforms it into an hyperlink, given that the value starts with 1 of these (http|ftp|https) */
     hyperlink: hyperlinkFormatter,
+    /** Displays a Font-Awesome edit icon (fa-info-circle) */
     infoIcon: infoIconFormatter,
+    /** Takes a value and displays it all lowercase */
+    lowercase: lowercaseFormatter,
+    /** Takes a cell value number (between 0-100) and displays a red (<50) or green (>=50) bar */
     percentComplete: percentCompleteFormatter,
+    /** Takes a cell value number (between 0-100) and displays Bootstrap "percent-complete-bar" a red (<30), silver (>30 & <70) or green (>=70) bar */
     percentCompleteBar: percentCompleteBarFormatter,
+    /** Takes a cell value number (between 0-100) and displays Bootstrap "progress-bar" a red (<30), silver (>30 & <70) or green (>=70) bar */
     progressBar: progressBarFormatter,
+    /** Takes a cell value and translates it (i18n). Requires an instance of the Translate Service:: `params: { i18n: this.translate } */
     translate: translateFormatter,
+    /** Takes a boolean value, cast it to upperCase string and finally translates it (i18n). */
+    translateBoolean: translateBooleanFormatter,
+    /** Takes a value and displays it all uppercase */
+    uppercase: uppercaseFormatter,
+    /** Takes a boolean value and display a string 'Yes' or 'No' */
     yesNo: yesNoFormatter
 };
 /**
@@ -5712,5 +5778,5 @@ AngularSlickgridModule.ctorParameters = function () { return []; };
 /**
  * Generated bundle index. Do not edit.
  */
-export { CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, KeyCode, OperatorType, SortDirection, Editors, FilterConditions, Filters, Formatters, Sorters, ExportService, FilterService, SortService, GridEventService, GraphqlService, GridExtraService, GridExtraUtils, GridOdataService, OdataService, ResizerService, ControlAndPluginService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, TextEditor as ɵf, booleanFilterCondition as ɵh, collectionSearchFilterCondition as ɵi, dateFilterCondition as ɵj, dateIsoFilterCondition as ɵk, dateUsFilterCondition as ɵm, dateUsShortFilterCondition as ɵn, dateUtcFilterCondition as ɵl, executeMappedCondition as ɵg, testFilterCondition as ɵq, numberFilterCondition as ɵo, stringFilterCondition as ɵp, InputFilter as ɵr, MultipleSelectFilter as ɵs, SelectFilter as ɵu, SingleSelectFilter as ɵt, arrayToCsvFormatter as ɵv, checkboxFormatter as ɵw, checkmarkFormatter as ɵx, complexObjectFormatter as ɵy, dateIsoFormatter as ɵz, dateTimeIsoAmPmFormatter as ɵba, dateTimeUsAmPmFormatter as ɵbd, dateTimeUsFormatter as ɵbc, dateUsFormatter as ɵbb, deleteIconFormatter as ɵbe, editIconFormatter as ɵbf, hyperlinkFormatter as ɵbg, infoIconFormatter as ɵbh, percentCompleteBarFormatter as ɵbj, percentCompleteFormatter as ɵbi, progressBarFormatter as ɵbk, translateFormatter as ɵbl, yesNoFormatter as ɵbm, dateIsoSorter as ɵbo, dateSorter as ɵbn, dateUsShortSorter as ɵbq, dateUsSorter as ɵbp, numericSorter as ɵbr, stringSorter as ɵbs };
+export { CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, KeyCode, OperatorType, SortDirection, Editors, FilterConditions, Filters, Formatters, Sorters, ExportService, FilterService, SortService, GridEventService, GraphqlService, GridExtraService, GridExtraUtils, GridOdataService, OdataService, ResizerService, ControlAndPluginService, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, TextEditor as ɵf, booleanFilterCondition as ɵh, collectionSearchFilterCondition as ɵi, dateFilterCondition as ɵj, dateIsoFilterCondition as ɵk, dateUsFilterCondition as ɵm, dateUsShortFilterCondition as ɵn, dateUtcFilterCondition as ɵl, executeMappedCondition as ɵg, testFilterCondition as ɵq, numberFilterCondition as ɵo, stringFilterCondition as ɵp, InputFilter as ɵr, MultipleSelectFilter as ɵs, SelectFilter as ɵu, SingleSelectFilter as ɵt, arrayToCsvFormatter as ɵv, checkboxFormatter as ɵw, checkmarkFormatter as ɵx, complexObjectFormatter as ɵy, dateIsoFormatter as ɵz, dateTimeIsoAmPmFormatter as ɵba, dateTimeUsAmPmFormatter as ɵbd, dateTimeUsFormatter as ɵbc, dateUsFormatter as ɵbb, deleteIconFormatter as ɵbe, editIconFormatter as ɵbf, hyperlinkFormatter as ɵbg, infoIconFormatter as ɵbh, lowercaseFormatter as ɵbi, percentCompleteBarFormatter as ɵbk, percentCompleteFormatter as ɵbj, progressBarFormatter as ɵbl, translateBooleanFormatter as ɵbn, translateFormatter as ɵbm, uppercaseFormatter as ɵbo, yesNoFormatter as ɵbp, dateIsoSorter as ɵbr, dateSorter as ɵbq, dateUsShortSorter as ɵbt, dateUsSorter as ɵbs, numericSorter as ɵbu, stringSorter as ɵbv };
 //# sourceMappingURL=angular-slickgrid.js.map
