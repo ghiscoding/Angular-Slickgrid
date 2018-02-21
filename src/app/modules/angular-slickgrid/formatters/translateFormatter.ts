@@ -8,5 +8,10 @@ export const translateFormatter: Formatter = (row: number, cell: number, value: 
     For example: this.columnDefinitions = [{ id: title, field: title, formatter: Formatters.translate, params: { i18n: this.translateService }`);
   }
 
+  // make sure the value is a string (for example a boolean value would throw an error)
+  if (typeof value !== 'string') {
+    value = value + '';
+  }
+
   return value ? params.i18n.instant(value) : '';
 };
