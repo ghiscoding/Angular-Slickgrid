@@ -239,9 +239,9 @@ export class ExportService {
       let itemData = '';
 
       if (exportCustomFormatter) {
-        itemData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj);
+        itemData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
       } else if (isEvaluatingFormatter && !!columnDef.formatter) {
-        itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj);
+        itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
       } else {
         itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
       }

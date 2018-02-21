@@ -195,7 +195,7 @@ export class FilterService {
       // when using localization (i18n), we should use the formatter output to search as the new cell value
       if (columnDef && columnDef.params && columnDef.params.useFormatterOuputToFilter) {
         const rowIndex = (dataView && typeof dataView.getIdxById === 'function') ? dataView.getIdxById(item.id) : 0;
-        cellValue = columnDef.formatter(rowIndex, columnIndex, cellValue, columnDef, item);
+        cellValue = columnDef.formatter(rowIndex, columnIndex, cellValue, columnDef, item, this._grid);
       }
 
       // make sure cell value is always a string

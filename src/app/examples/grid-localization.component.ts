@@ -55,7 +55,7 @@ export class GridLocalizationComponent implements OnInit {
       { id: 'completedCheckmark', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', minWidth: 100,
         sortable: true,
         formatter: Formatters.checkmark,
-        exportCustomFormatter: Formatters.translate, params: { i18n: this.translate },
+        exportCustomFormatter: Formatters.translate,
         filterable: true,
         filter: {
           collection: [ { value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' } ],
@@ -65,7 +65,7 @@ export class GridLocalizationComponent implements OnInit {
           }
         }
       },
-      { id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', formatter: Formatters.translate, params: { i18n: this.translate }, sortable: true,
+      { id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', formatter: Formatters.translate, sortable: true,
         minWidth: 100,
         exportWithFormatter: true, // you can set this property in the column definition OR in the grid options, column def has priority over grid options
         filterable: true,
@@ -94,6 +94,9 @@ export class GridLocalizationComponent implements OnInit {
       gridMenu: {
         showExportCsvCommand: true,           // true by default, so it's optional
         showExportTextDelimitedCommand: true  // false by default, so if you want it, you will need to enable it
+      },
+      params: {
+        i18n: this.translate
       }
     };
 
