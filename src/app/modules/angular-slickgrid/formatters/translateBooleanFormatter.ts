@@ -1,8 +1,8 @@
 import { Column, Formatter } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
 
-/** Takes a cell value and translates it (i18n). Requires an instance of the Translate Service:: `params: { i18n: this.translate } */
-export const translateFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
+/** Takes a boolean value, cast it to upperCase string and finally translates (i18n) it */
+export const translateBooleanFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
   const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
   const columnParams = columnDef.params || {};
   const gridParams = gridOptions.params || {};
@@ -18,6 +18,5 @@ export const translateFormatter: Formatter = (row: number, cell: number, value: 
   if (value !== undefined && typeof value !== 'string') {
     value = value + '';
   }
-
-  return value ? translate.instant(value) : '';
+  return value ? translate.instant(value.toUpperCase() as string) : '';
 };

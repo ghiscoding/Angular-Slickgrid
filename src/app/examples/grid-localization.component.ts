@@ -52,13 +52,13 @@ export class GridLocalizationComponent implements OnInit {
       { id: 'duration', name: 'Duration (days)', field: 'duration', headerKey: 'DURATION', sortable: true, minWidth: 100, filterable: true },
       { id: 'start', name: 'Start', field: 'start', headerKey: 'START', formatter: Formatters.dateIso, minWidth: 100, filterable: true },
       { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, minWidth: 100, filterable: true },
-      { id: 'completedCheckmark', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', minWidth: 100,
+      { id: 'completedBool', name: 'Completed', field: 'completedBool', headerKey: 'COMPLETED', minWidth: 100,
         sortable: true,
         formatter: Formatters.checkmark,
-        exportCustomFormatter: Formatters.translate,
+        exportCustomFormatter: Formatters.translateBoolean,
         filterable: true,
         filter: {
-          collection: [ { value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' } ],
+          collection: [ { value: '', label: '' }, { value: true, labelKey: 'TRUE' }, { value: false, labelKey: 'FALSE' } ],
           type: FilterType.singleSelect,
           filterOptions: {
             autoDropWidth: true
@@ -117,6 +117,7 @@ export class GridLocalizationComponent implements OnInit {
         duration: Math.round(Math.random() * 100) + '',
         start: new Date(randomYear, randomMonth, randomDay),
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
+        completedBool: (i % 5 === 0) ? true : false,
         completed: (i % 5 === 0) ? 'TRUE' : 'FALSE'
       };
     }
