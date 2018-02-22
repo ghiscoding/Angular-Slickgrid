@@ -272,11 +272,12 @@
         }
       }
       .slick-resizable-handle {
-        width: 5px;
-        right: 2px;
+        width: 7px;
+        right: -4px;
       }
       .slick-resizable-handle:hover {
         border-right: $header-resizable-hover;
+        right: 0;
       }
     }
   }
