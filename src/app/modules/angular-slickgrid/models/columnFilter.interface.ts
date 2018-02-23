@@ -1,7 +1,10 @@
-import { Column } from './column.interface';
-import { Filter } from './filter.interface';
-import { FilterType } from './filterType';
-import { FormElementType } from './formElementType';
+import {
+  Column,
+  Filter,
+  FilterType,
+  FormElementType,
+  SearchTerm
+} from './../models/index';
 
 export interface ColumnFilter {
   /** Do we want to bypass the Backend Query? Commonly used with an OData Backend Service, if we want to filter without calling the regular OData query. */
@@ -17,10 +20,10 @@ export interface ColumnFilter {
   customFilter?: Filter;
 
   /** Search term (singular) */
-  searchTerm?: string | number | boolean;
+  searchTerm?: SearchTerm;
 
   /** Search terms (collection) */
-  searchTerms?: string[] | number[] | boolean[];
+  searchTerms?: SearchTerm[];
 
   /** Operator to use when filtering (>, >=, EQ, IN, ...) */
   operator?: string;

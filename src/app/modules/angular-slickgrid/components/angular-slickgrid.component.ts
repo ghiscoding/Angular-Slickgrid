@@ -68,6 +68,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   @Output() gridChanged = new EventEmitter<any>();
   @Output() onDataviewCreated = new EventEmitter<any>();
   @Output() onGridCreated = new EventEmitter<any>();
+  @Output() onGridInitialized = new EventEmitter<any>();
   @Output() onBeforeGridCreate = new EventEmitter<boolean>();
   @Output() onBeforeGridDestroy = new EventEmitter<any>();
   @Output() onAfterGridDestroyed = new EventEmitter<boolean>();
@@ -160,6 +161,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (this._gridOptions.enableExport) {
       this.exportService.init(this.grid, this._gridOptions, this._dataView);
     }
+
+    // once all hooks are in placed and the grid is initialized, we can emit an event
+    this.onGridInitialized.emit(this.grid);
+
+    // attach the Backend Service API callback functions only after the grid is initialized
+    // because the preProcess() and onInit() might get triggered
+    if (this._gridOptions && (this._gridOptions.backendServiceApi || this._gridOptions.onBackendEventApi)) {
+      this.attachBackendCallbackFunctions(this._gridOptions);
+    }
   }
 
   /**
@@ -202,6 +212,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // attach external filter (backend) when available or default onFilter (dataView)
     if (gridOptions.enableFiltering) {
       this.filterService.init(grid, gridOptions, this.columnDefinitions);
+
+      // if user entered some "presets", we need to reflect them all in the DOM
+      if (gridOptions.presets && gridOptions.presets.filters) {
+        this.filterService.populateColumnFilterSearchTerms(gridOptions, this.columnDefinitions);
+      }
       (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, gridOptions) : this.filterService.attachLocalOnFilter(grid, gridOptions, this._dataView);
     }
 
@@ -212,38 +227,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
 
       if (gridOptions.backendServiceApi && gridOptions.backendServiceApi.service) {
-        gridOptions.backendServiceApi.service.initOptions(gridOptions.backendServiceApi.options || {}, gridOptions.pagination);
-      }
-
-      const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
-      const serviceOptions: BackendServiceOption = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : {};
-      const isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && serviceOptions.hasOwnProperty('executeProcessCommandOnInit')) ? serviceOptions['executeProcessCommandOnInit'] : true);
-
-      if (backendApi && backendApi.service && (backendApi.onInit || isExecuteCommandOnInit)) {
-        const query = (typeof backendApi.service.buildQuery === 'function') ? backendApi.service.buildQuery() : '';
-        const observableOrPromise = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
-
-        // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
-        setTimeout(async () => {
-          if (backendApi.preProcess) {
-            backendApi.preProcess();
-          }
-
-          // the process could be an Observable (like HttpClient) or a Promise
-          // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-          const processResult = await castToPromise(observableOrPromise);
-
-          // define what our internal Post Process callback, only available for GraphQL Service for now
-          // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
-          if (processResult && backendApi && backendApi.service instanceof GraphqlService && backendApi.internalPostProcess) {
-            backendApi.internalPostProcess(processResult);
-          }
-
-          // send the response process to the postProcess callback
-          if (backendApi.postProcess) {
-            backendApi.postProcess(processResult);
-          }
-        });
+        gridOptions.backendServiceApi.service.initOptions(gridOptions.backendServiceApi.options || {}, gridOptions.pagination, this.gridOptions, this.columnDefinitions);
       }
     }
 
@@ -259,6 +243,51 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       grid.invalidateRows(args.rows);
       grid.render();
     });
+  }
+
+  attachBackendCallbackFunctions(gridOptions: GridOption) {
+    const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+    const serviceOptions: BackendServiceOption = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : {};
+    const isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && serviceOptions.hasOwnProperty('executeProcessCommandOnInit')) ? serviceOptions['executeProcessCommandOnInit'] : true);
+
+    // update backend filters (if need be) before the query runs
+    if (gridOptions && gridOptions.presets) {
+      if (gridOptions.presets.filters) {
+        backendApi.service.updateFilters(gridOptions.presets.filters, true);
+      }
+    } else {
+      const columnFilters = this.filterService.getColumnFilters();
+      if (columnFilters) {
+        backendApi.service.updateFilters(columnFilters);
+      }
+    }
+
+    if (backendApi && backendApi.service && (backendApi.onInit || isExecuteCommandOnInit)) {
+      const query = (typeof backendApi.service.buildQuery === 'function') ? backendApi.service.buildQuery() : '';
+      const observableOrPromise = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
+
+      // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
+      setTimeout(async () => {
+        if (backendApi.preProcess) {
+          backendApi.preProcess();
+        }
+
+        // the process could be an Observable (like HttpClient) or a Promise
+        // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+        const processResult = await castToPromise(observableOrPromise);
+
+        // define what our internal Post Process callback, only available for GraphQL Service for now
+        // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+        if (processResult && backendApi && backendApi.service instanceof GraphqlService && backendApi.internalPostProcess) {
+          backendApi.internalPostProcess(processResult);
+        }
+
+        // send the response process to the postProcess callback
+        if (backendApi.postProcess) {
+          backendApi.postProcess(processResult);
+        }
+      });
+    }
   }
 
   attachResizeHook(grid: any, options: GridOption) {

@@ -1,6 +1,6 @@
 import { CustomInputFilter } from './custom-inputFilter';
 import { Component, OnInit } from '@angular/core';
-import { Column, FieldType, FilterType, Formatters, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, FilterType, Formatters, GridOption, OperatorType } from './../modules/angular-slickgrid';
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -91,7 +91,13 @@ export class GridClientSideComponent implements OnInit {
         containerId: 'demo-container',
         sidePadding: 15
       },
-      enableFiltering: true
+      enableFiltering: true,
+      // use columnDef searchTerms OR use presets as shown below
+/*
+      presets: {
+        filters: [{ columnId: 'duration', searchTerms: [2, 22] }]
+      }
+*/
     };
 
     // mock a dataset

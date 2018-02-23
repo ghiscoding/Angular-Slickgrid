@@ -1,8 +1,5 @@
-import { Column, Filter } from './../models';
-import { FilterArguments } from '../models/filterArguments.interface';
-import { FilterCallback } from './../models/filterCallback.interface';
-import { SelectOption } from './../models/selectOption.interface';
 import { TranslateService } from '@ngx-translate/core';
+import { Column, Filter, FilterArguments, FilterCallback, SearchTerm, SelectOption } from './../models/index';
 import $ from 'jquery';
 import { Injectable } from '@angular/core';
 
@@ -13,7 +10,7 @@ declare var $: any;
 export class SingleSelectFilter implements Filter {
   $filterElm: any;
   grid: any;
-  searchTerm: number | string | boolean;
+  searchTerm: SearchTerm;
   columnDef: Column;
   callback: FilterCallback;
   defaultOptions: any;

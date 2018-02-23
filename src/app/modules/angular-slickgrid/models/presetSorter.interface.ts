@@ -1,6 +1,6 @@
 import { SortDirection, SortDirectionString } from './../models/index';
 
-export interface GraphqlSortingOption {
-  field: string;
+export interface PresetSorter {
+  columnId: string;
   direction: SortDirection | SortDirectionString;
 }

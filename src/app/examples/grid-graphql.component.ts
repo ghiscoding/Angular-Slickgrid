@@ -1,4 +1,5 @@
-import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption } from './../modules/angular-slickgrid';
+import { SearchTerm } from './../modules/angular-slickgrid/models/searchTerm.type';
+import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption, OperatorType, SortDirection } from './../modules/angular-slickgrid';
 import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -45,14 +46,16 @@ export class GridGraphqlComponent implements OnInit {
       { id: 'gender', name: 'Gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true,
         filter: {
           type: FilterType.singleSelect,
-          collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }]
+          collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }],
+          searchTerm: 'female'
         }
       },
       { id: 'company', name: 'Company', field: 'company', headerKey: 'COMPANY',
         filterable: true,
         filter: {
           type: FilterType.multipleSelect,
-          collection: [{ value: 'ABC', label: 'Company ABC'}, { value: 'XYZ', label: 'Company XYZ'}]
+          collection: [{ value: 'acme', label: 'Acme'}, { value: 'abc', label: 'Company ABC'}, { value: 'xyz', label: 'Company XYZ'}],
+          searchTerms: ['abc']
         }
       },
       { id: 'billing.address.street', name: 'Billing Address Street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', filterable: true, sortable: true },
@@ -72,6 +75,19 @@ export class GridGraphqlComponent implements OnInit {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
         pageSize: defaultPageSize,
         totalItems: 0
+      },
+      presets: {
+        // you can also type operator as string, e.g.: operator: 'EQ'
+        filters: [
+          { columnId: 'gender', searchTerm: 'male', operator: OperatorType.equal },
+          { columnId: 'name', searchTerm: 'John Doe', operator: OperatorType.contains },
+          { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' }
+        ],
+        sorters: [
+          { columnId: 'name', direction: SortDirection.asc },
+          { columnId: 'company', direction: SortDirection.desc }
+        ],
+        pagination: { pageNumber: 2 }
       },
       backendServiceApi: {
         service: this.graphqlService,
@@ -107,6 +123,10 @@ export class GridGraphqlComponent implements OnInit {
       datasetName: GRAPHQL_QUERY_DATASET_NAME,
       isWithCursor: withCursor,
       addLocaleIntoQuery: true,
+      paginationOptions: {
+        first: 1,
+        offset: 20
+      },
 
       // when dealing with complex objects, we want to keep our field name with double quotes
       // example with gender: query { users (orderBy:[{field:"gender",direction:ASC}]) {}
@@ -143,6 +163,10 @@ export class GridGraphqlComponent implements OnInit {
         resolve(mockedResult);
       }, 500);
     });
+  }
+
+  saveCurrentFilters(grid) {
+    console.log(this.graphqlService.getCurrentFilters());
   }
 
   switchLanguage() {

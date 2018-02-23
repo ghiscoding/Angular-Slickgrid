@@ -1,6 +1,4 @@
-import { FilterArguments } from './../models/filterArguments.interface';
-import { FilterCallback } from './../models/filterCallback.interface';
-import { Column, Filter } from './../models';
+import { Column, Filter, FilterArguments, FilterCallback, SearchTerm } from './../models/index';
 import $ from 'jquery';
 
 // using external js modules in Angular
@@ -9,7 +7,7 @@ declare var $: any;
 export class InputFilter implements Filter {
   private $filterElm: any;
   grid: any;
-  searchTerm: string | number | boolean;
+  searchTerm: SearchTerm;
   columnDef: Column;
   callback: FilterCallback;
 

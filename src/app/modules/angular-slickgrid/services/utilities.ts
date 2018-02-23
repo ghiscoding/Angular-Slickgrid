@@ -1,4 +1,4 @@
-import { FieldType, OperatorType } from '../models';
+import { FieldType, OperatorType, FilterType, FormElementType } from '../models';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
@@ -194,12 +194,13 @@ export function mapFlatpickrDateFormatWithFieldType(fieldType: FieldType): strin
 }
 
 /**
- * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
+ * Mapper for query operators (ex.: <= is "le", > is "gt")
  * @param operator
  * @returns string map
  */
 export function mapOperatorType(operator: string): OperatorType {
   let map: OperatorType;
+
   switch (operator) {
     case '<':
       map = OperatorType.lessThan;
@@ -242,6 +243,30 @@ export function mapOperatorType(operator: string): OperatorType {
     case 'NIN':
     case 'NOT_IN':
       map = OperatorType.notIn;
+      break;
+    default:
+      map = OperatorType.contains;
+      break;
+  }
+
+  return map;
+}
+
+/**
+ * Mapper for query operator by a Filter Type
+ * For example a multiple-select typically uses 'IN' operator
+ * @param operator
+ * @returns string map
+ */
+export function mapOperatorByFilterType(filterType: FilterType | FormElementType): OperatorType {
+  let map: OperatorType;
+
+  switch (filterType) {
+    case FilterType.multipleSelect:
+      map = OperatorType.in;
+      break;
+    case FilterType.singleSelect:
+      map = OperatorType.equal;
       break;
     default:
       map = OperatorType.contains;

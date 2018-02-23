@@ -1,4 +1,5 @@
 // Public classes.
+/*
 export { AutoResizeOption } from './models/autoResizeOption.interface';
 export { BackendEventChanged } from './models/backendEventChanged.interface';
 export { BackendService } from './models/backendService.interface';
@@ -41,8 +42,10 @@ export { PaginationChangedArgs } from './models/paginationChangedArgs.interface'
 export { SelectOption } from './models/selectOption.interface';
 export { SlickEvent } from './models/slickEvent.interface';
 export { SortChangedArgs } from './models/sortChangedArgs.interface';
-export { SortDirection } from './models/sortDirection';
+export { SortDirection } from './models/sortDirection.enum';
 export { Sorter } from './models/sorter.interface';
+*/
+export * from './models/index';
 
 export { Editors } from './editors/index';
 export { FilterConditions } from './filter-conditions/index';

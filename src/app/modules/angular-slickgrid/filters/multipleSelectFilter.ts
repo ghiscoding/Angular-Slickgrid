@@ -1,10 +1,7 @@
-import { Column, Filter } from './../models';
-import { FilterArguments } from '../models/filterArguments.interface';
-import { FilterCallback } from './../models/filterCallback.interface';
-import { SelectOption } from './../models/selectOption.interface';
-import { TranslateService } from '@ngx-translate/core';
-import $ from 'jquery';
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Column, Filter, FilterArguments, FilterCallback, SearchTerm, SelectOption } from './../models/index';
+import $ from 'jquery';
 
 // using external js modules in Angular
 declare var $: any;
@@ -13,7 +10,7 @@ declare var $: any;
 export class MultipleSelectFilter implements Filter {
   $filterElm: any;
   grid: any;
-  searchTerms: string[] | number[] | boolean[];
+  searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
   defaultOptions: any;

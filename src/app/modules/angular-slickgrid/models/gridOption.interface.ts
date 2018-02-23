@@ -1,3 +1,4 @@
+import { Preset } from './preset.interface';
 import { AutoResizeOption } from './autoResizeOption.interface';
 import { BackendEventChanged } from './backendEventChanged.interface';
 import { BackendServiceApi } from './backendServiceApi.interface';
@@ -136,11 +137,14 @@ export interface GridOption {
   /** DEPRECATED, Please use "backendServiceApi" instead */
   onBackendEventApi?: BackendEventChanged;
 
-  /** Pagination options, these are used ONLY with a Backend Service API (GraphQL/OData Services) */
+  /** Pagination options, these are currently used ONLY with a Backend Service API (GraphQL/OData Services) */
   pagination?: Pagination;
 
   /** if you want to pass custom paramaters to your Formatter/Editor or anything else */
   params?: any | any[];
+
+  /** Query presets before grid load (filters, sorters, pagination) */
+  presets?: Preset;
 
   /** Register 1 or more Slick Plugins */
   registerPlugins?: any | any[];

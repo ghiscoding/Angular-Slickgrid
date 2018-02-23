@@ -1,18 +1,21 @@
-import { Filter } from './../models/filter.interface';
-import { FilterArguments } from './../models/filterArguments.interface';
 import { EventEmitter, Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { Filters } from './../filters';
 import {
   Column,
   ColumnFilters,
+  Filter,
+  FilterArguments,
   FieldType,
   FilterType,
   GridOption,
+  OperatorType,
+  PresetFilter,
+  SearchTerm,
   SlickEvent
 } from './../models/index';
-import { TranslateService } from '@ngx-translate/core';
 
 // using external js modules in Angular
 declare var Slick: any;
@@ -23,6 +26,7 @@ export class FilterService {
   private _columnFilters: ColumnFilters = {};
   private _dataView: any;
   private _grid: any;
+  private _gridOptions: GridOption;
   private _onFilterChangedOptions: any;
   private subscriber: SlickEvent;
   onFilterChanged = new EventEmitter<string>();
@@ -31,6 +35,7 @@ export class FilterService {
 
   init(grid: any, gridOptions: GridOption, columnDefinitions: Column[]): void {
     this._grid = grid;
+    this._gridOptions = gridOptions;
   }
 
   /**
@@ -182,9 +187,8 @@ export class FilterService {
         return true;
       }
 
-      // filter search terms should always be string (even though we permit the end user to input numbers)
-      // so make sure each term are strings
-      // run a query if user has some default search terms
+      // filter search terms should always be string type (even though we permit the end user to input numbers)
+      // so make sure each term are strings, if user has some default search terms, we will cast them to string
       if (searchTerms && Array.isArray(searchTerms)) {
         for (let k = 0, ln = searchTerms.length; k < ln; k++) {
           // make sure all search terms are strings
@@ -223,7 +227,7 @@ export class FilterService {
   }
 
   destroy() {
-    this.destroyFilters();
+    this.destroyColumnFilters();
     if (this.subscriber && typeof this.subscriber.unsubscribe === 'function') {
       this.subscriber.unsubscribe();
     }
@@ -232,7 +236,7 @@ export class FilterService {
   /**
    * Destroy the filters, since it's a singleton, we don't want to affect other grids with same columns
    */
-  destroyFilters() {
+  destroyColumnFilters() {
     // we need to loop through all columnFilters and delete them 1 by 1
     // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
     for (const columnId in this._columnFilters) {
@@ -247,6 +251,10 @@ export class FilterService {
         filter.destroy(true);
       }
     });
+  }
+
+  getColumnFilters() {
+    return this._columnFilters;
   }
 
   callbackSearchEvent(e: Event | undefined, args: { columnDef: Column, operator?: string, searchTerms?: string[] | number[] }) {
@@ -285,7 +293,7 @@ export class FilterService {
     const columnId = columnDef.id || '';
 
     if (columnDef && columnId !== 'selector' && columnDef.filterable) {
-      let searchTerms: string[] | number[] | boolean[] = (columnDef.filter && columnDef.filter.searchTerms) ? columnDef.filter.searchTerms : null;
+      let searchTerms: SearchTerm[] = (columnDef.filter && columnDef.filter.searchTerms) ? columnDef.filter.searchTerms : undefined;
       let searchTerm = (columnDef.filter && (columnDef.filter.searchTerm !== undefined || columnDef.filter.searchTerm !== null)) ? columnDef.filter.searchTerm : '';
 
       // keep the filter in a columnFilters for later reference
@@ -295,7 +303,7 @@ export class FilterService {
       // because of that we need to first get searchTerm(s) from the columnFilters (that is what the user last entered)
       // if nothing is found, we can then use the optional searchTerm(s) passed to the Grid Option (that is couple of lines earlier)
       searchTerm = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerm : searchTerm || null;
-      searchTerms = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerms : searchTerms || null;
+      searchTerms = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerms : searchTerms || undefined;
 
       const filterArguments: FilterArguments = {
         grid: this._grid,
@@ -353,7 +361,36 @@ export class FilterService {
     this.subscriber.subscribe(() => this.onFilterChanged.emit(`onFilterChanged by ${sender}`));
   }
 
-  private keepColumnFilters(searchTerm: string | number | boolean, searchTerms: any, columnDef: any) {
+  /**
+   * When user passes an array of preset filters, we need to pre-polulate each column filter searchTerm(s)
+   * The process is to loop through the preset filters array, find the associated column from columnDefinitions and fill in the filter object searchTerm(s)
+   * This is basically the same as if we would manually add searchTerm(s) to a column filter object in the column definition, but we do it programmatically.
+   * At the end of the day, when creating the Filter (DOM Element), it will use these searchTerm(s) so we can take advantage of that without recoding each Filter type (DOM element)
+   * @param gridOptions
+   * @param columnDefinitions
+   */
+  populateColumnFilterSearchTerms(gridOptions: GridOption, columnDefinitions: Column[]) {
+    if (gridOptions.presets && gridOptions.presets.filters) {
+      const filters = gridOptions.presets.filters;
+      columnDefinitions.forEach((columnDef: Column) =>  {
+        const columnPreset = filters.find((presetFilter: PresetFilter) => {
+          return presetFilter.columnId === columnDef.id;
+        });
+        if (columnPreset && columnPreset.searchTerm) {
+          columnDef.filter = columnDef.filter || {};
+          columnDef.filter.searchTerm = columnPreset.searchTerm;
+        }
+        if (columnPreset && columnPreset.searchTerms) {
+          columnDef.filter = columnDef.filter || {};
+          columnDef.filter.operator = columnDef.filter.operator || OperatorType.in;
+          columnDef.filter.searchTerms = columnPreset.searchTerms;
+        }
+      });
+    }
+    return columnDefinitions;
+  }
+
+  private keepColumnFilters(searchTerm: SearchTerm, searchTerms: any, columnDef: any) {
     if (searchTerm !== undefined && searchTerm !== null && searchTerm !== '') {
       this._columnFilters[columnDef.id] = {
         columnId: columnDef.id,
