@@ -256,7 +256,12 @@ export class GridOdataService implements BackendService {
             }
           } else if (fieldType === FieldType.string) {
             // string field needs to be in single quotes
-            searchBy = `substringof('${searchValue}', ${fieldNameTitleCase})`;
+            if (operator === '') {
+              searchBy = `substringof('${searchValue}', ${fieldNameTitleCase})`;
+            } else {
+              // searchBy = `substringof('${searchValue}', ${fieldNameTitleCase}) ${this.mapOdataOperator(operator)} true`;
+              searchBy = `${fieldNameTitleCase} ${this.mapOdataOperator(operator)} '${searchValue}'`;
+            }
           } else {
             // any other field type (or undefined type)
             searchValue = fieldType === FieldType.number ? searchValue : `'${searchValue}'`;
