@@ -1,11 +1,11 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
 import { Column, FieldType, Formatters, GridExtraService, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-rowselection.component.html'
 })
 @Injectable()
-export class GridRowSelectionComponent implements OnInit {
+export class GridRowSelectionComponent implements OnInit, OnDestroy {
   title = 'Example 10: Grid with Row Selection';
   subTitle = `
     Row selection, single or multi-select (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Row-Selection" target="_blank">Wiki link</a>).
@@ -24,6 +24,12 @@ export class GridRowSelectionComponent implements OnInit {
 
   ngOnInit(): void {
     this.prepareGrid();
+  }
+
+  ngOnDestroy(): void {
+    // unsubscrible any Slick.Event you might have used
+    // a reminder again, these are SlickGrid Event, not RxJS events
+    this.gridObj.onSelectedRowsChanged.unsubscribe();
   }
 
   prepareGrid() {

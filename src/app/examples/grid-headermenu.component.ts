@@ -2,7 +2,7 @@ import { Component, OnInit, Injectable } from '@angular/core';
 import { Column, ControlAndPluginService, GridOption } from './../modules/angular-slickgrid';
 import $ from 'jquery';
 
-// using external js modules in Angular
+// using external non-typed js libraries in Angular
 declare var $: any;
 
 @Component({

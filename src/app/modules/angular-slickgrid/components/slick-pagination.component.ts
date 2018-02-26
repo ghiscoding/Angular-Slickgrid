@@ -1,15 +1,18 @@
-import { Component, OnInit, Input, AfterViewInit, Injectable } from '@angular/core';
+import { Component, OnDestroy, Input, AfterViewInit, Injectable } from '@angular/core';
 import { castToPromise } from './../services/utilities';
 import { FilterService } from '../services/filter.service';
 import { SortService } from './../services/sort.service';
 import { GridOption } from './../models';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'slick-pagination',
   templateUrl: './slick-pagination.component.html'
 })
 @Injectable()
-export class SlickPaginationComponent implements AfterViewInit, OnInit {
+export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
+  private _filterSubcription: Subscription;
+  private _sorterSubcription: Subscription;
   private _gridPaginationOptions: GridOption;
   private _isFirstRender = true;
 
@@ -37,7 +40,8 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
 
   constructor(private filterService: FilterService, private sortService: SortService) { }
 
-  ngOnInit() {
+  ngOnDestroy() {
+    this.dispose();
   }
 
   ngAfterViewInit() {
@@ -47,10 +51,10 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
     }
 
     // Subscribe to Event Emitter of Filter & Sort changed, go back to page 1 when that happen
-    this.filterService.onFilterChanged.subscribe((data) => {
+    this._filterSubcription = this.filterService.onFilterChanged.subscribe((data) => {
       this.refreshPagination(true);
     });
-    this.sortService.onSortChanged.subscribe((data) => {
+    this._sorterSubcription = this.sortService.onSortChanged.subscribe((data) => {
       this.refreshPagination(true);
     });
   }
@@ -80,6 +84,15 @@ export class SlickPaginationComponent implements AfterViewInit, OnInit {
     if (this.pageNumber > 0) {
       this.pageNumber--;
       this.onPageChanged(event, this.pageNumber);
+    }
+  }
+
+  dispose() {
+    if (this._filterSubcription) {
+      this._filterSubcription.unsubscribe();
+    }
+    if (this._sorterSubcription) {
+      this._sorterSubcription.unsubscribe();
     }
   }
 

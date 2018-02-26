@@ -3,7 +3,7 @@ import { Column, Filter, FilterArguments, FilterCallback, SearchTerm, SelectOpti
 import $ from 'jquery';
 import { Injectable } from '@angular/core';
 
-// using external js modules in Angular
+// using external non-typed js libraries in Angular
 declare var $: any;
 
 @Injectable()

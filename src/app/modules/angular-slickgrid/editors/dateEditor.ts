@@ -6,7 +6,7 @@ import $ from 'jquery';
 declare function require(name: string);
 require('flatpickr');
 
-// using external js modules in Angular
+// using external non-typed js libraries in Angular
 declare var $: any;
 
 /*

@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
 import { Column, Editors, FieldType, Formatters, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './grid-editor.component.html'
 })
 @Injectable()
-export class GridEditorComponent implements OnInit {
+export class GridEditorComponent implements OnInit, OnDestroy {
   title = 'Example 3: Editors';
   subTitle = `
   Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors" target="_blank">Wiki link</a>).
@@ -29,6 +29,16 @@ export class GridEditorComponent implements OnInit {
   constructor(private gridExtraService: GridExtraService, private resizer: ResizerService, private translate: TranslateService) {}
 
   ngOnInit(): void {
+    this.prepareGrid();
+  }
+  ngOnDestroy(): void {
+    // unsubscrible any Slick.Event you might have used
+    // a reminder again, these are SlickGrid Event, not RxJS events
+    this.gridObj.onCellChange.unsubscribe();
+    this.gridObj.onClick.unsubscribe();
+  }
+
+  prepareGrid() {
     this.columnDefinitions = [
       {
         id: 'edit', field: 'id',

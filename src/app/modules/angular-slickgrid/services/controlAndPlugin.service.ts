@@ -18,7 +18,7 @@ import $ from 'jquery';
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './../services/utilities';
 
-// using external js modules in Angular
+// using external non-typed js libraries in Angular
 declare var Slick: any;
 declare var $: any;
 
@@ -197,7 +197,7 @@ export class ControlAndPluginService {
     this._grid.autosizeColumns();
   }
 
-  destroy() {
+  dispose() {
     this._grid = null;
     this._dataView = null;
     this.visibleColumns = [];

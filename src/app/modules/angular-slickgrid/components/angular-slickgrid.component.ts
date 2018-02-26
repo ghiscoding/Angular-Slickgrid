@@ -33,8 +33,9 @@ import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
 import { TranslateService } from '@ngx-translate/core';
 import $ from 'jquery';
+import { Subscription } from 'rxjs/Subscription';
 
-// using external js modules in Angular
+// using external non-typed js libraries in Angular
 declare var Slick: any;
 declare var $: any;
 
@@ -56,7 +57,9 @@ declare var $: any;
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
   private _dataset: any[];
   private _dataView: any;
+  private _eventHandler: any = new Slick.EventHandler();
   private _gridOptions: GridOption;
+  private _translateSubscription: Subscription;
   grid: any;
   gridPaginationOptions: GridOption;
   gridHeightString: string;
@@ -113,11 +116,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   destroy() {
     this._dataView = [];
     this._gridOptions = {};
+    this._eventHandler.unsubscribeAll();
+    this.controlAndPluginService.dispose();
+    this.gridEventService.dispose();
+    this.filterService.dispose();
+    this.resizer.dispose();
+    this.sortService.dispose();
     this.grid.destroy();
-    this.controlAndPluginService.destroy();
-    this.filterService.destroy();
-    this.resizer.destroy();
-    this.sortService.destroy();
+    if (this._translateSubscription) {
+      this._translateSubscription.unsubscribe();
+    }
   }
 
   ngAfterViewInit() {
@@ -196,7 +204,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   attachDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
     // on locale change, we have to manually translate the Headers, GridMenu
-    this.translate.onLangChange.subscribe((event) => {
+    this._translateSubscription = this.translate.onLangChange.subscribe((event) => {
       if (gridOptions.enableTranslate) {
         this.controlAndPluginService.translateHeaders();
         this.controlAndPluginService.translateColumnPicker();
@@ -235,11 +243,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.gridEventService.attachOnCellChange(grid, this._gridOptions, dataView);
     this.gridEventService.attachOnClick(grid, this._gridOptions, dataView);
 
-    dataView.onRowCountChanged.subscribe((e: any, args: any) => {
+    this._eventHandler.subscribe(dataView.onRowCountChanged, (e: any, args: any) => {
       grid.updateRowCount();
       grid.render();
     });
-    dataView.onRowsChanged.subscribe((e: any, args: any) => {
+    this._eventHandler.subscribe(dataView.onRowsChanged, (e: any, args: any) => {
       grid.invalidateRows(args.rows);
       grid.render();
     });

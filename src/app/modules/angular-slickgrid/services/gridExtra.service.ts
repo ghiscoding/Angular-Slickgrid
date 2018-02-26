@@ -1,7 +1,7 @@
 import { GridOption } from './../models';
 import $ from 'jquery';
 
-// using external js modules in Angular
+// using external non-typed js libraries in Angular
 declare var $: any;
 declare var Slick: any;
 

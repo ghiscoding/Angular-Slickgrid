@@ -1,7 +1,7 @@
 import { Column, Filter, FilterArguments, FilterCallback } from './../modules/angular-slickgrid';
 import $ from 'jquery';
 
-// using external js modules in Angular
+// using external non-typed js libraries in Angular
 declare var $: any;
 
 export class CustomInputFilter implements Filter {
