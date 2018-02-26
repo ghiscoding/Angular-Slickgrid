@@ -13,11 +13,11 @@ import {
   HeaderButtonOnCommandArgs,
   HeaderMenuOnCommandArgs,
   HeaderMenuOnBeforeMenuShowArgs
-} from './../models';
+} from './../models/index';
 import $ from 'jquery';
 import { TranslateService } from '@ngx-translate/core';
 import { addWhiteSpaces, htmlEntityDecode } from './../services/utilities';
-import { TextEncoder } from 'text-encoding';
+import { TextEncoder } from 'text-encoding-utf-8';
 
 // using external non-typed js libraries in Angular
 declare let Slick: any;
@@ -394,9 +394,9 @@ export class ExportService {
     // Option #1: we need to make Excel knowing that it's dealing with an UTF-8, A correctly formatted UTF8 file can have a Byte Order Mark as its first three octets
     // reference: http://stackoverflow.com/questions/155097/microsoft-excel-mangles-diacritics-in-csv-files
     // Option#2: use a 3rd party extension to javascript encode into UTF-16
-    let outputData = '';
+    let outputData: Uint8Array | string;
     if (options.format === FileType.csv) {
-      outputData = new TextEncoder('utf-16be').encode(csvContent);
+      outputData = new TextEncoder('utf-8').encode(csvContent);
     } else {
       outputData = csvContent;
     }
