@@ -8,6 +8,8 @@ import { GridMenu } from './gridMenu.interface';
 import { HeaderButton } from './headerButton.interface';
 import { HeaderMenu } from './headerMenu.interface';
 import { Pagination } from './pagination.interface';
+import { Column } from './column.interface';
+import { EditCommand } from './editCommand.interface';
 
 export interface GridOption {
   /** Defaults to false, which leads to load editor asynchronously (delayed) */
@@ -48,6 +50,9 @@ export interface GridOption {
 
   /** Defaults to false, when enabled will give the possibility to edit cell values with inline editors. */
   editable?: boolean;
+
+  /** option to intercept edit commands and implement undo support.*/
+  editCommandHandler?: (item: any, column: Column, command: EditCommand) => void;
 
   /** Do we want to enable asynchronous (delayed) post rendering */
   enableAsyncPostRender?: boolean;
