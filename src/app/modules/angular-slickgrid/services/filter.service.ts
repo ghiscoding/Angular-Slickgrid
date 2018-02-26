@@ -147,7 +147,6 @@ export class FilterService {
       const columnIndex = args.grid.getColumnIndex(columnId);
       const columnDef = args.grid.getColumns()[columnIndex];
       const fieldType = columnDef.type || FieldType.string;
-      const conditionalFilterFn = (columnDef.filter && columnDef.filter.conditionalFilter) ? columnDef.filter.conditionalFilter : null;
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
 
       let cellValue = item[columnDef.queryField || columnDef.field];
@@ -216,9 +215,7 @@ export class FilterService {
         cellValueLastChar: lastValueChar,
         filterSearchType
       };
-      if (conditionalFilterFn && typeof conditionalFilterFn === 'function') {
-        conditionalFilterFn(conditionOptions);
-      }
+
       if (!FilterConditions.executeMappedCondition(conditionOptions)) {
         return false;
       }
