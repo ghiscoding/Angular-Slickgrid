@@ -161,7 +161,7 @@ export class GridOdataService implements BackendService {
    */
   updateFilters(columnFilters: ColumnFilters | PresetFilter[], isUpdatedByPreset?: boolean) {
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
-    this._currentFilters = (isUpdatedByPreset) ? columnFilters : Object.values(columnFilters);
+    this._currentFilters = (!!isUpdatedByPreset) ? columnFilters : Object.keys(columnFilters).map(key => columnFilters[key]);
     let searchBy = '';
     const searchByArray: string[] = [];
 
