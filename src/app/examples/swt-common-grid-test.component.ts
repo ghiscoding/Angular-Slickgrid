@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ModuleWithProviders, NgModule, ViewContainerRef, ComponentFactoryResolver, OnChanges, AfterContentInit, AfterViewChecked, ElementRef, Renderer ,EventEmitter,
-    Output} from '@angular/core';
+    Output, AfterViewInit} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Routes, RouterModule } from '@angular/router';
 
@@ -8,17 +8,20 @@ import {SwtCommonGridPaginationComponent} from './swt-common-grid-pagination.com
 import { FilterChangedArgs, PaginationChangedArgs, SortChangedArgs } from '../modules/angular-slickgrid';
 
 import { Logger } from './swt-logger.service';
-
+/**
+ * Main test Component
+ * 
+ * @author Saber Chebka, saber.chebka@gmail.com
+ */
 @Component({
   selector: 'swt-common-grid-test',
   templateUrl: './swt-common-grid-test.component.html'
 })
-export class SwtCommonGridTestComponent implements OnInit {
+export class SwtCommonGridTestComponent implements OnInit, AfterViewInit {
     componentFactory: any;
-
-    // Base Data Request URL, an example of the result is found in the bottom of this class (json, pagination_samples)
-    testurl:string = '/getData.do?';
-    
+    testurl:string = 'http://127.0.0.1:8080/grid!display.do?';
+    currentUrl = this.testurl;
+        
     @ViewChild('commonGrid1') commonGrid: SwtCommonGridComponent;
     @ViewChild('commonGridPag1') commonGridPag: SwtCommonGridPaginationComponent;
     
@@ -38,75 +41,85 @@ export class SwtCommonGridTestComponent implements OnInit {
             this.commonGrid.paginationComponent = this.commonGridPag;
         }
         
+    }
+    
+    ngAfterViewInit() {
+        this.logger.info("method [ngAfterViewInit] - START");
+
         // Init datagrid example:
         this.commonGridPag.processing = true;
-        this.httpClient.get(this.testurl+"&currentPage=1").subscribe(
+        
+        // Real HTTP call
+        this.currentUrl = this.testurl+"&currentPage=1";
+        /*
+        this.httpClient.get(this.currentUrl).subscribe(
             (data: any) => {
-                this.commonGrid.CustomGrid(data.pagination_samples.grid.metadata);
-                this.commonGrid.gridData = data.pagination_samples.grid.rows;
-                this.commonGridPag.pageCount = data.pagination_samples.singletons.maxpage;
+                this.commonGrid.CustomGrid(data.suspectManagement.grid.metadata);
+                this.commonGrid.gridData = data.suspectManagement.grid.rows;
+                this.commonGridPag.pageCount = data.suspectManagement.singletons.maxpage;
                 this.commonGridPag.processing = false;
             }
         );
-    }
+        */
+        this.commonGrid.CustomGrid(data_sample.pagination_samples.grid.metadata);
+        this.commonGrid.gridData = data_sample.pagination_samples.grid.rows;
+        this.commonGridPag.pageCount = data_sample.pagination_samples.grid.rows.maxpage;
+        
+        this.commonGridPag.processing = false;
+        this.logger.info("method [ngAfterViewInit] - END");
+     }
     
     filterChanged(event: FilterChangedArgs){
         this.commonGridPag.processing = true;
-        this.updateGridData(this.testurl+"&currentPage="+this.commonGrid.currentPage+"&selectedSort="+this.commonGrid.sortedGridColumn+"&selectedFilter="+this.commonGrid.filteredGridColumns);
+        this.updateGridData();
     }
     
     paginationChanged(event: PaginationChangedArgs){
         this.commonGridPag.processing = true;
-        this.updateGridData(this.testurl+"&currentPage="+this.commonGrid.currentPage+"&selectedSort="+this.commonGrid.sortedGridColumn+"&selectedFilter="+this.commonGrid.filteredGridColumns);
+        this.updateGridData();
     }
     
     sortChanged(event: SortChangedArgs){
         this.commonGridPag.processing = true;
-        this.updateGridData(this.testurl+"&currentPage="+this.commonGrid.currentPage+"&selectedSort="+this.commonGrid.sortedGridColumn+"&selectedFilter="+this.commonGrid.filteredGridColumns);
+        this.updateGridData();
     }
     
     
-    updateGridData(url: string){
-        this.httpClient.get(url).subscribe(
+    updateGridData(){
+        this.currentUrl = this.testurl+"&currentPage="+this.commonGrid.currentPage+"&selectedSort="+this.commonGrid.sortedGridColumn+"&selectedFilter="+this.commonGrid.filteredGridColumns;
+        // Real HTTP call
+        /*this.httpClient.get(this.currentUrl).subscribe(
             (data: any) => {
-                this.commonGrid.gridData = data.pagination_samples?data.pagination_samples.grid.rows:[];
-                this.commonGridPag.pageCount = data.pagination_samples?data.pagination_samples.singletons.maxpage:1;
+                this.commonGrid.gridData = data.suspectManagement?data.suspectManagement.grid.rows:[];
+                this.commonGridPag.pageCount = data.suspectManagement?data.suspectManagement.singletons.maxpage:1;
                 this.commonGridPag.processing = false;
             }
-        );
+        );*/
+        setTimeout(() => {
+            this.commonGrid.gridData = data_sample.pagination_samples.grid.rows;
+            this.commonGridPag.pageCount = data_sample.pagination_samples.grid.rows.maxpage;
+        }, 750);
     }
 }
 
-/*
-{
+
+export const data_sample= {
     "pagination_samples": {
         "grid": {
             "metadata": {
                 "columns": {
                     "column": [{
                         "sort": true,
-                        "visible": true,
                         "filterable": false,
                         "width": 60,
-                        "format": "",
-                        "type": "image",
                         "dataelement": "hasNote",
-                        "visible_default": true,
-                        "draggable": false,
-                        "columnorder": 1,
                         "heading": "Note"
                     },
                     {
                         "sort": true,
-                        "visible": true,
                         "filterable": true,
                         "width": 125,
-                        "format": "",
-                        "type": "str",
                         "dataelement": "status",
-                        "visible_default": true,
-                        "draggable": true,
-                        "columnorder": 2,
                         "heading": "Status"
                     },
                     {
@@ -114,12 +127,7 @@ export class SwtCommonGridTestComponent implements OnInit {
                         "visible": true,
                         "filterable": true,
                         "width": 125,
-                        "format": "",
-                        "type": "str",
                         "dataelement": "currency",
-                        "visible_default": true,
-                        "draggable": true,
-                        "columnorder": 3,
                         "heading": "Currency"
                     },
                     {
@@ -127,12 +135,7 @@ export class SwtCommonGridTestComponent implements OnInit {
                         "visible": true,
                         "filterable": true,
                         "width": 125,
-                        "format": "",
-                        "type": "num",
                         "dataelement": "amount",
-                        "visible_default": true,
-                        "draggable": true,
-                        "columnorder": 4,
                         "heading": "Amount"
                     },
                     {
@@ -140,12 +143,7 @@ export class SwtCommonGridTestComponent implements OnInit {
                         "visible": true,
                         "filterable": true,
                         "width": 125,
-                        "format": "",
-                        "type": "date",
                         "dataelement": "inputDate",
-                        "visible_default": true,
-                        "draggable": true,
-                        "columnorder": 5,
                         "heading": "Input Date"
                     },
                     {
@@ -153,12 +151,7 @@ export class SwtCommonGridTestComponent implements OnInit {
                         "visible": true,
                         "filterable": true,
                         "width": 125,
-                        "format": "",
-                        "type": "date",
                         "dataelement": "inputTime",
-                        "visible_default": true,
-                        "draggable": true,
-                        "columnorder": 6,
                         "heading": "Input Time"
                     }]
                 }
@@ -166,51 +159,53 @@ export class SwtCommonGridTestComponent implements OnInit {
             "rows": {
                 "row": [{
                     "currency": {
-                        "content": "EUR",
-                        "clickable": false,
-                        "negative": false
+                        "content": "EUR"
                     },
                     "amount": {
-                        "content": "2 203 677,000",
-                        "clickable": false,
-                        "negative": false,
-                        "code": 2203677
+                        "content": "2 203 677,000"
                     },
                     "startTime": {
-                        "content": "06/19/2017 11:52:51",
-                        "clickable": false,
-                        "negative": false
+                        "content": "06/19/2017 11:52:51"
                     },
                     "inputDate": {
-                        "content": "06/19/2017",
-                        "clickable": false,
-                        "negative": false
+                        "content": "06/19/2017"
                     },
                     "status": {
-                        "content": "New",
-                        "clickable": false,
-                        "negative": false,
-                        "code": "new"
+                        "content": "New"
                     },
                     "inputTime": {
-                        "content": "11:52:51",
-                        "clickable": false,
-                        "negative": false
+                        "content": "11:52:51"
                     },
                     "hasNote": {
-                        "content": "false",
-                        "clickable": false,
-                        "negative": false,
-                        "code": "N"
+                        "content": "False"
                     }
                 },
+                {
+                    "currency": {
+                        "content": "USD"
+                    },
+                    "amount": {
+                        "content": "6 203 677,000"
+                    },
+                    "startTime": {
+                        "content": "06/28/2017 10:42:00"
+                    },
+                    "inputDate": {
+                        "content": "06/28/2017"
+                    },
+                    "status": {
+                        "content": "New"
+                    },
+                    "inputTime": {
+                        "content": "10:40:12"
+                    },
+                    "hasNote": {
+                        "content": "True"
+                    }
+                }
                 ],
-                "size": 481,
-                "maxpage": "5"
+                "maxpage": 5
             }
         }
     }
-}
-
-
-*/
+};
