@@ -87,6 +87,17 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  changeToCurrentPage(event: any) {
+    this.pageNumber = event.currentTarget.value;
+    if (this.pageNumber < 1) {
+          this.pageNumber = 1;
+    } else if (this.pageNumber > this.pageCount) {
+          this.pageNumber = this.pageCount;
+    }
+
+    this.onPageChanged(event, this.pageNumber);
+  }
+
   dispose() {
     if (this._filterSubcription) {
       this._filterSubcription.unsubscribe();

@@ -14,7 +14,9 @@
         </nav>
 
         <div class="slick-page-number">
-            <span [translate]="'PAGE_X_OF_Y'" [translateParams]="{ x: pageNumber, y: pageCount }"></span>
+            <span [translate]="'PAGE'"></span>
+            <input type="text" value="{{pageNumber}}" size="1"  (change)="changeToCurrentPage($event)">
+            <span [translate]="'OF'"></span><span> {{pageCount}}</span>
         </div>
 
         <nav aria-label="Page navigation">

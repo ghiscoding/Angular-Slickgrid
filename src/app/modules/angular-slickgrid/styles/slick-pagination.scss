@@ -40,6 +40,13 @@
       margin-top: 6px;
       display: inline-block;
       padding: 0 5px;
+
+      input {
+        background-color: $pagination-page-input-bgcolor;
+        border: $pagination-page-input-border;
+        height: $pagination-page-input-height;
+        width: $pagination-page-input-width;
+      }
     }
 
     .pagination {
