@@ -91,7 +91,10 @@ export class ControlAndPluginService {
       });
     }
     if (options.enableHeaderMenu) {
-      this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenu || {});
+      const headerMenuOptions = options.headerMenu;
+      headerMenuOptions.minWidth = headerMenuOptions.minWidth || 140;
+      headerMenuOptions.autoAlignOffset = headerMenuOptions.autoAlignOffset || 12;
+      this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(headerMenuOptions);
       grid.registerPlugin(this.headerMenuPlugin);
       this.headerMenuPlugin.onCommand.subscribe((e: Event, args: HeaderMenuOnCommandArgs) => {
         if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {

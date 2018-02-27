@@ -46,7 +46,7 @@
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
     "moment-mini": "^2.19.4",
-    "slickgrid": ">=2.3.13",
+    "slickgrid": "^2.3.15",
     "text-encoding-utf-8": "^1.0.2",
     "vinyl-paths": "^2.1.0"
   },
