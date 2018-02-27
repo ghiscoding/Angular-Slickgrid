@@ -15,7 +15,7 @@
 
         <div class="slick-page-number">
             <span [translate]="'PAGE'"></span>
-            <input type="text" value="{{pageNumber}}" size="1"  (change)="changeToCurrentPage($event)">
+            <input type="text" class="form-control" value="{{pageNumber}}" size="1"  (change)="changeToCurrentPage($event)">
             <span [translate]="'OF'"></span><span> {{pageCount}}</span>
         </div>
 

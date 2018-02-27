@@ -1,5 +1,11 @@
 @import './variables';
 
+.slick-cell.active  {
+	input.editor-text {
+		padding: 2px 4px;
+	}
+}
+
 /* Long Text Editor */
 .slick-large-editor-text {
   z-index: 10000;
