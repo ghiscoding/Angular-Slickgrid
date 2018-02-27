@@ -1,10 +1,10 @@
-import { FieldType, OperatorType, FilterType, FormElementType } from '../models';
+import { FieldType, OperatorType, FilterType, FormElementType } from '../models/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
-const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
 /** Simple function to which will loop and create as demanded the number of white spaces,
  * this will be used in the Excel export

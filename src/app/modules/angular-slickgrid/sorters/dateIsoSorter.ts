@@ -1,7 +1,7 @@
 import { mapMomentDateFormatWithFieldType } from './../services/utilities';
-import { FieldType, Sorter } from './../models';
+import { FieldType, Sorter } from './../models/index';
 import * as moment_ from 'moment-mini';
-const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT = mapMomentDateFormatWithFieldType(FieldType.dateIso);
 
 export const dateIsoSorter: Sorter = (value1, value2, sortDirection) => {
