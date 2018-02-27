@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Column, Filter, FilterArguments, FilterCallback, SearchTerm, SelectOption } from './../models/index';
+import { Column, Filter, FilterArguments, FilterCallback, MultipleSelectOption, SearchTerm, SelectOption } from './../models/index';
 import $ from 'jquery';
 import { Injectable } from '@angular/core';
 
@@ -13,7 +13,7 @@ export class SingleSelectFilter implements Filter {
   searchTerm: SearchTerm;
   columnDef: Column;
   callback: FilterCallback;
-  defaultOptions: any;
+  defaultOptions: MultipleSelectOption;
 
   constructor(private translate: TranslateService) {
     // default options used by this Filter, user can overwrite any of these by passing "otions"
@@ -131,7 +131,7 @@ export class SingleSelectFilter implements Filter {
     }
 
     // merge options & attach multiSelect
-    const options = { ...this.defaultOptions, ...this.columnDef.filter.filterOptions };
+    const options: MultipleSelectOption = { ...this.defaultOptions, ...this.columnDef.filter.filterOptions };
     this.$filterElm = this.$filterElm.multipleSelect(options);
   }
 }

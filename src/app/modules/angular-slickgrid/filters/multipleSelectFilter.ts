@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Column, Filter, FilterArguments, FilterCallback, SearchTerm, SelectOption } from './../models/index';
+import { Column, Filter, FilterArguments, FilterCallback, MultipleSelectOption, SearchTerm, SelectOption } from './../models/index';
 import $ from 'jquery';
 
 // using external non-typed js libraries in Angular
@@ -13,7 +13,7 @@ export class MultipleSelectFilter implements Filter {
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
-  defaultOptions: any;
+  defaultOptions: MultipleSelectOption;
   isFilled = false;
 
   /**
@@ -154,7 +154,7 @@ export class MultipleSelectFilter implements Filter {
     }
 
     // merge options & attach multiSelect
-    const options = { ...this.defaultOptions, ...this.columnDef.filter.filterOptions };
+    const options: MultipleSelectOption = { ...this.defaultOptions, ...this.columnDef.filter.filterOptions };
     this.$filterElm = this.$filterElm.multipleSelect(options);
   }
 
