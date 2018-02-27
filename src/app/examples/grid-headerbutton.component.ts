@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Column, GridOption } from './../modules/angular-slickgrid/models';
+import { Column, GridOption } from './../modules/angular-slickgrid/models/index';
 
 // create a custom Formatter to highlight negative values in red
 const columnsWithHighlightingById = {};

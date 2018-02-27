@@ -1,5 +1,5 @@
 import { SearchTerm } from './../modules/angular-slickgrid/models/searchTerm.type';
-import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption, OperatorType, SortDirection } from './../modules/angular-slickgrid';
+import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption, OperatorType, SortDirection } from './../modules/angular-slickgrid/index';
 import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 

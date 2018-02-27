@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Column, GridOption } from './../modules/angular-slickgrid/models';
+import { Column, GridOption } from './../modules/angular-slickgrid/models/index';
 
 @Component({
   templateUrl: './grid-basic.component.html'

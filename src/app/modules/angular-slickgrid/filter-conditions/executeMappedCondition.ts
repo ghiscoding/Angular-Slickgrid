@@ -9,7 +9,7 @@ import { FilterCondition } from '../models/filterCondition.interface';
 import { collectionSearchFilterCondition } from './collectionSearchFilterCondition';
 import { numberFilterCondition } from './numberFilterCondition';
 import { stringFilterCondition } from './stringFilterCondition';
-import { FieldType } from '../models';
+import { FieldType } from '../models/index';
 
 export const executeMappedCondition: FilterCondition = (options: FilterConditionOption) => {
   // when using a multi-select ('IN' operator) we will not use the field type but instead go directly with a collection search

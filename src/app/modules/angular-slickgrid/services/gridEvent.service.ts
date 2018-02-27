@@ -1,4 +1,4 @@
-import { OnEventArgs, CellArgs, GridOption } from './../models';
+import { OnEventArgs, CellArgs, GridOption } from './../models/index';
 
 // using external non-typed js libraries
 declare var Slick: any;

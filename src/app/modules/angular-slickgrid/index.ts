@@ -1,70 +1,14 @@
 // Public classes.
-/*
-export { AutoResizeOption } from './models/autoResizeOption.interface';
-export { BackendEventChanged } from './models/backendEventChanged.interface';
-export { BackendService } from './models/backendService.interface';
-export { BackendServiceApi } from './models/backendServiceApi.interface';
-export { BackendServiceOption } from './models/backendServiceOption.interface';
-export { CaseType } from './models/caseType';
-export { CellArgs } from './models/cellArgs.interface';
-export { Column } from './models/column.interface';
-export { ColumnFilter } from './models/columnFilter.interface';
-export { ColumnFilters } from './models/columnFilters.interface';
-export { DelimiterType } from './models/delimiterType.enum';
-export { Editor } from './models/editor.interface';
-export { ExportOption } from './models/exportOption.interface';
-export { FieldType } from './models/fieldType';
-export { Filter } from './models/filter.interface';
-export { FileType } from './models/fileType.enum';
-export { FilterArguments } from './models/filterArguments.interface';
-export { FilterCallback } from './models/filterCallback.interface';
-export { FilterChangedArgs } from './models/filterChangedArgs.interface';
-export { FilterCondition } from './models/filterCondition.interface';
-export { FilterConditionOption } from './models/filterConditionOption.interface';
-export { FilterType } from './models/filterType';
-export { Formatter } from './models/formatter.interface';
-export { FormElementType } from './models/formElementType';
-export { GraphqlDatasetFilter } from './models/graphqlDatasetFilter.interface';
-export { GraphqlCursorPaginationOption } from './models/graphqlCursorPaginationOption.interface';
-export { GraphqlFilteringOption } from './models/graphqlFilteringOption.interface';
-export { GraphqlResult } from './models/graphqlResult.interface';
-export { GraphqlPaginationOption } from './models/graphqlPaginationOption.interface';
-export { GraphqlServiceOption } from './models/graphqlServiceOption.interface';
-export { GraphqlSortingOption } from './models/graphqlSortingOption.interface';
-export { HtmlElementPosition } from './models/htmlElementPosition.interface';
-export { KeyCode } from './models/keyCode.enum';
-export { GridOption } from './models/gridOption.interface';
-export { OdataOption } from './models/odataOption.interface';
-export { OnEventArgs } from './models/onEventArgs.interface';
-export { OperatorType } from './models/operatorType';
-export { Pagination } from './models/pagination.interface';
-export { PaginationChangedArgs } from './models/paginationChangedArgs.interface';
-export { SelectOption } from './models/selectOption.interface';
-export { SlickEvent } from './models/slickEvent.interface';
-export { SortChangedArgs } from './models/sortChangedArgs.interface';
-export { SortDirection } from './models/sortDirection.enum';
-export { Sorter } from './models/sorter.interface';
-*/
 export * from './models/index';
+export * from './services/index';
 
-export { Editors } from './editors/index';
-export { FilterConditions } from './filter-conditions/index';
-export { Filters } from './filters/index';
-export { Formatters } from './formatters/index';
-export { Sorters } from './sorters/index';
+export * from './editors/index';
+export * from './filter-conditions/index';
+export * from './filters/index';
+export * from './formatters/index';
+export * from './sorters/index';
 
-export { ExportService } from './services/export.service';
-export { FilterService } from './services/filter.service';
-export { SortService } from './services/sort.service';
-export { GridEventService } from './services/gridEvent.service';
-export { GraphqlService } from './services/graphql.service';
-export { GridExtraService } from './services/gridExtra.service';
-export { GridExtraUtils } from './services/gridExtraUtils';
-export { GridOdataService } from './services/grid-odata.service';
-export { OdataService } from './services/odata.service';
-export { ResizerService } from './services/resizer.service';
-export { ControlAndPluginService } from './services/controlAndPlugin.service';
-
+// components & module
 export { SlickPaginationComponent } from './components/slick-pagination.component';
 export { AngularSlickgridComponent } from './components/angular-slickgrid.component';
 export { AngularSlickgridModule } from './modules/angular-slickgrid.module';

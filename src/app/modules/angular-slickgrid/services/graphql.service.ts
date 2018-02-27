@@ -18,7 +18,7 @@ import {
   PresetFilter,
   SortChangedArgs,
   SortDirection
-} from './../models';
+} from './../models/index';
 import QueryBuilder from './graphqlQueryBuilder';
 
 let timer: any;

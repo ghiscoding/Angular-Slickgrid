@@ -1,4 +1,4 @@
-import { GridOption } from './../models';
+import { GridOption } from './../models/index';
 import $ from 'jquery';
 
 // using external non-typed js libraries in Angular

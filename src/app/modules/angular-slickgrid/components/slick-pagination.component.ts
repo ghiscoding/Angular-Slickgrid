@@ -2,7 +2,7 @@ import { Component, OnDestroy, Input, AfterViewInit, Injectable } from '@angular
 import { castToPromise } from './../services/utilities';
 import { FilterService } from '../services/filter.service';
 import { SortService } from './../services/sort.service';
-import { GridOption } from './../models';
+import { GridOption } from './../models/index';
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({

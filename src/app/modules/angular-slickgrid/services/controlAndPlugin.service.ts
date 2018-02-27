@@ -13,7 +13,7 @@ import {
   HeaderMenuOnCommandArgs,
   HeaderMenuOnBeforeMenuShowArgs,
   FileType
-} from './../models';
+} from './../models/index';
 import $ from 'jquery';
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './../services/utilities';

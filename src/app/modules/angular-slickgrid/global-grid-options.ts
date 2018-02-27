@@ -1,4 +1,4 @@
-import { DelimiterType, FileType,  GridOption } from './models';
+import { DelimiterType, FileType,  GridOption } from './models/index';
 
 /**
  * Options that can be passed to the Bootstrap-Datetimepicker directly

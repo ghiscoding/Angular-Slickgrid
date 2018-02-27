@@ -1,4 +1,4 @@
-import { OperatorString, OperatorType, SearchTerm } from './../models';
+import { OperatorString, OperatorType, SearchTerm } from './../models/index';
 
 export interface PresetFilter {
   columnId: string;

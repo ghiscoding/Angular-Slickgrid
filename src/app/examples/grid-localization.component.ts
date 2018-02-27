@@ -2,7 +2,7 @@ import { ExportService } from './../modules/angular-slickgrid/services/export.se
 import { Component, OnInit, Injectable } from '@angular/core';
 import { Column, FilterType, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
-import { FileType, DelimiterType } from '../modules/angular-slickgrid/models';
+import { FileType, DelimiterType } from '../modules/angular-slickgrid/models/index';
 
 @Component({
   templateUrl: './grid-localization.component.html'
