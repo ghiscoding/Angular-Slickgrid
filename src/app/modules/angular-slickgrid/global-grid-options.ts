@@ -21,6 +21,7 @@ export const GlobalGridOptions: GridOption = {
     hideForceFitButton: false,
     hideSyncResizeButton: true
   },
+  datasetIdPropertyName: 'id',
   editable: false,
   enableAutoResize: true,
   enableCellNavigation: false,

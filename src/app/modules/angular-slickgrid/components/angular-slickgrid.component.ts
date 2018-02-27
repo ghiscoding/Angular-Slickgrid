@@ -151,7 +151,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     this.grid.init();
     this._dataView.beginUpdate();
-    this._dataView.setItems(this._dataset);
+    this._dataView.setItems(this._dataset, this._gridOptions.datasetIdPropertyName);
     this._dataView.endUpdate();
 
     // attach resize ONLY after the dataView is ready
@@ -332,7 +332,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    */
   refreshGridData(dataset: any[], totalCount?: number) {
     if (dataset && this.grid) {
-      this._dataView.setItems(dataset);
+      this._dataView.setItems(dataset, this._gridOptions.datasetIdPropertyName);
 
       // this.grid.setData(dataset);
       this.grid.invalidate();
