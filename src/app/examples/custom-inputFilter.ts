@@ -1,4 +1,4 @@
-import { Column, Filter, FilterArguments, FilterCallback } from './../modules/angular-slickgrid';
+import { Column, Filter, FilterArguments, FilterCallback, SearchTerm } from './../modules/angular-slickgrid';
 import $ from 'jquery';
 
 // using external non-typed js libraries in Angular
@@ -7,7 +7,7 @@ declare var $: any;
 export class CustomInputFilter implements Filter {
   private $filterElm: any;
   grid: any;
-  searchTerm: string | number | boolean;
+  searchTerm: SearchTerm;
   columnDef: Column;
   callback: FilterCallback;
 
