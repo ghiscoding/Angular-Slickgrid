@@ -91,7 +91,7 @@ export class ControlAndPluginService {
       });
     }
     if (options.enableHeaderMenu) {
-      const headerMenuOptions = options.headerMenu;
+      const headerMenuOptions = options.headerMenu || {};
       headerMenuOptions.minWidth = headerMenuOptions.minWidth || 140;
       headerMenuOptions.autoAlignOffset = headerMenuOptions.autoAlignOffset || 12;
       this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(headerMenuOptions);

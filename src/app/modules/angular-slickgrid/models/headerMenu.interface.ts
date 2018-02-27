@@ -15,7 +15,7 @@ export interface HeaderMenu {
   buttonImage?: string;
 
   /** A command identifier to be passed to the onCommand event handlers. */
-  command: string;
+  command?: string;
 
   /** Whether the item is disabled. */
   disabled?: boolean;
