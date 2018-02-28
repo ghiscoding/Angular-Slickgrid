@@ -1,10 +1,13 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { mapOperatorType, mapOperatorByFilterType } from './utilities';
 import {
   BackendService,
   Column,
   ColumnFilters,
+  CurrentFilter,
+  CurrentPagination,
+  CurrentSorter,
   FilterChangedArgs,
   GraphqlCursorPaginationOption,
   GraphqlDatasetFilter,
@@ -15,11 +18,10 @@ import {
   GridOption,
   Pagination,
   PaginationChangedArgs,
-  PresetFilter,
-  PresetSorter,
   SortChanged,
   SortChangedArgs,
-  SortDirection
+  SortDirection,
+  SortDirectionString
 } from './../models/index';
 import QueryBuilder from './graphqlQueryBuilder';
 
@@ -29,11 +31,13 @@ const DEFAULT_ITEMS_PER_PAGE = 25;
 
 @Injectable()
 export class GraphqlService implements BackendService {
-  private _currentFilters: ColumnFilters | PresetFilter[];
-  private _currentSorters: PresetSorter[];
+  private _currentFilters: ColumnFilters | CurrentFilter[];
+  private _currentPagination: CurrentPagination;
+  private _currentSorters: CurrentSorter[];
   private _columnDefinitions: Column[];
   private _gridOptions: GridOption;
   private _grid: any;
+  onPaginationRefreshed = new EventEmitter<PaginationChangedArgs>();
   options: GraphqlServiceOption;
   pagination: Pagination | undefined;
   defaultOrderBy: GraphqlSortingOption = { columnId: 'id', direction: SortDirection.ASC };
@@ -168,12 +172,17 @@ export class GraphqlService implements BackendService {
   }
 
   /** Get the Filters that are currently used by the grid */
-  getCurrentFilters(): ColumnFilters | PresetFilter[] {
+  getCurrentFilters(): ColumnFilters | CurrentFilter[] {
     return this._currentFilters;
   }
 
+  /** Get the Pagination that is currently used by the grid */
+  getCurrentPagination(): CurrentPagination {
+    return this._currentPagination;
+  }
+
   /** Get the Sorters that are currently used by the grid */
-  getCurrentSorters(): PresetSorter[] {
+  getCurrentSorters(): CurrentSorter[] {
     return this._currentSorters;
   }
 
@@ -268,21 +277,8 @@ export class GraphqlService implements BackendService {
    *   }
    */
   onPaginationChanged(event: Event, args: PaginationChangedArgs) {
-    let paginationOptions;
-    const pageSize = +args.pageSize || 20;
-
-    if (this.options.isWithCursor) {
-      paginationOptions = {
-        first: pageSize
-      };
-    } else {
-      paginationOptions = {
-        first: pageSize,
-        offset: (args.newPage - 1) * pageSize
-      };
-    }
-
-    this.updateOptions({ paginationOptions });
+    const pageSize = +args.pageSize || this.pagination.pageSize;
+    this.updatePagination(args.newPage, pageSize);
 
     // build the GraphQL query which we will use in the WebAPI callback
     return this.buildQuery();
@@ -307,7 +303,7 @@ export class GraphqlService implements BackendService {
    * loop through all columns to inspect filters & update backend service filteringOptions
    * @param columnFilters
    */
-  updateFilters(columnFilters: ColumnFilters | PresetFilter[], isUpdatedByPreset: boolean) {
+  updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset: boolean) {
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
     this._currentFilters = (!!isUpdatedByPreset) ? columnFilters : Object.keys(columnFilters).map(key => columnFilters[key]);
 
@@ -382,10 +378,36 @@ export class GraphqlService implements BackendService {
   }
 
   /**
+   * Update the pagination component with it's new page number and size
+   * @param newPage
+   * @param pageSize
+   */
+  updatePagination(newPage: number, pageSize: number) {
+    this._currentPagination = {
+      pageNumber: newPage,
+      pageSize
+    };
+
+    let paginationOptions;
+    if (this.options.isWithCursor) {
+      paginationOptions = {
+        first: pageSize
+      };
+    } else {
+      paginationOptions = {
+        first: pageSize,
+        offset: (newPage - 1) * pageSize
+      };
+    }
+
+    this.updateOptions({ paginationOptions });
+  }
+
+  /**
    * loop through all columns to inspect sorters & update backend service sortingOptions
    * @param columnFilters
    */
-  updateSorters(sortColumns?: SortChanged[], presetSorters?: PresetSorter[]) {
+  updateSorters(sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]) {
     let sortByArray: GraphqlSortingOption[] = [];
 
     if (!sortColumns && presetSorters) {
@@ -393,6 +415,7 @@ export class GraphqlService implements BackendService {
 
       // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
       sortByArray.forEach((sorter) => {
+        sorter.direction = sorter.direction.toUpperCase() as SortDirectionString;
         sorter.sortAsc = (sorter.direction.toUpperCase() === SortDirection.ASC);
       });
       this._grid.setSortColumns(sortByArray);

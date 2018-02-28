@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Column, Filter, FilterArguments, FilterCallback, MultipleSelectOption, SearchTerm, SelectOption } from './../models/index';
 import $ from 'jquery';
 
-// using external non-typed js libraries in Angular
+// using external non-typed js libraries
 declare var $: any;
 
 @Injectable()

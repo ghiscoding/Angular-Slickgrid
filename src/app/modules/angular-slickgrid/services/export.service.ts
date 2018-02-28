@@ -19,7 +19,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { addWhiteSpaces, htmlEntityDecode } from './../services/utilities';
 import { TextEncoder } from 'text-encoding-utf-8';
 
-// using external non-typed js libraries in Angular
+// using external non-typed js libraries
 declare let Slick: any;
 declare let $: any;
 

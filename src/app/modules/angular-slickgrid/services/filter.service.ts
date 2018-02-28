@@ -12,12 +12,13 @@ import {
   FilterType,
   GridOption,
   OperatorType,
-  PresetFilter,
+  CurrentFilter,
   SearchTerm,
-  SlickEvent
+  SlickEvent,
+  OperatorString
 } from './../models/index';
 
-// using external non-typed js libraries in Angular
+// using external non-typed js libraries
 declare var Slick: any;
 
 @Injectable()
@@ -263,7 +264,22 @@ export class FilterService {
     return this._columnFilters;
   }
 
-  callbackSearchEvent(e: Event | undefined, args: { columnDef: Column, operator?: string, searchTerms?: string[] | number[] }) {
+  getCurrentLocalFilters(): CurrentFilter[] {
+    const currentFilters: CurrentFilter[] = [];
+    if (this._columnFilters) {
+      for (const colId of Object.keys(this._columnFilters)) {
+        const columnFilter = this._columnFilters[colId];
+        currentFilters.push({
+          columnId: colId,
+          searchTerm: (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined,
+          searchTerms: (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null
+        });
+      }
+    }
+    return currentFilters;
+  }
+
+  callbackSearchEvent(e: Event | undefined, args: { columnDef: Column, operator?: OperatorType | OperatorString, searchTerms?: string[] | number[] }) {
     const targetValue = (e && e.target) ? (e.target as HTMLInputElement).value : undefined;
     const searchTerms = (args && args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : [];
     const columnId = (args && args.columnDef) ? args.columnDef.id || '' : '';
@@ -277,9 +293,9 @@ export class FilterService {
       this._columnFilters[colId] = {
         columnId: colId,
         columnDef: args.columnDef || null,
+        operator: args.operator || undefined,
         searchTerms: args.searchTerms || undefined,
         searchTerm: ((e && e.target) ? (e.target as HTMLInputElement).value : null),
-        operator: args.operator || null
       };
     }
 
@@ -379,7 +395,7 @@ export class FilterService {
     if (gridOptions.presets && gridOptions.presets.filters) {
       const filters = gridOptions.presets.filters;
       columnDefinitions.forEach((columnDef: Column) =>  {
-        const columnPreset = filters.find((presetFilter: PresetFilter) => {
+        const columnPreset = filters.find((presetFilter: CurrentFilter) => {
           return presetFilter.columnId === columnDef.id;
         });
         if (columnPreset && columnPreset.searchTerm) {
@@ -402,6 +418,7 @@ export class FilterService {
         columnId: columnDef.id,
         columnDef,
         searchTerm,
+        operator: (columnDef && columnDef.filter && columnDef.filter.operator) ? columnDef.filter.operator : null,
         type: (columnDef && columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input
       };
     }
@@ -411,6 +428,7 @@ export class FilterService {
         columnId: columnDef.id,
         columnDef,
         searchTerms,
+        operator: (columnDef && columnDef.filter && columnDef.filter.operator) ? columnDef.filter.operator : null,
         type: (columnDef && columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input
       };
     }

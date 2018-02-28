@@ -1,8 +1,7 @@
-import { Component, OnDestroy, Input, AfterViewInit, Injectable } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Input, AfterViewInit, Injectable } from '@angular/core';
 import { castToPromise } from './../services/utilities';
-import { FilterService } from '../services/filter.service';
-import { SortService } from './../services/sort.service';
-import { GridOption } from './../models/index';
+import { GridOption, PaginationChangedArgs } from './../models/index';
+import { FilterService, SortService } from './../services/index';
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({
@@ -38,6 +37,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   paginationPageSizes = [25, 75, 100];
   fromToParams: any = { from: this.dataFrom, to: this.dataTo, totalItems: this.totalItems };
 
+  /** Constructor */
   constructor(private filterService: FilterService, private sortService: SortService) { }
 
   ngOnDestroy() {
@@ -115,7 +115,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     this.onPageChanged(event, this.pageNumber);
   }
 
-  refreshPagination(isPageNumberReset?: boolean) {
+  refreshPagination(isPageNumberReset: boolean = false) {
     const backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
     if (!backendApi || !backendApi.service || !backendApi.process) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
@@ -129,8 +129,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
 
       // if totalItems changed, we should always go back to the first page and recalculation the From-To indexes
       if (isPageNumberReset || this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
-        this.pageNumber = 1;
-        this.recalculateFromToIndexes();
+        this.pageNumber = this._gridPaginationOptions.pagination.pageNumber || 1;
 
         // also reset the "offset" of backend service
         backendApi.service.resetPaginationOptions();
@@ -139,7 +138,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
       // calculate and refresh the multiple properties of the pagination UI
       this.paginationPageSizes = this._gridPaginationOptions.pagination.pageSizes;
       this.totalItems = this._gridPaginationOptions.pagination.totalItems;
-      this.dataTo = (this.totalItems < this.itemsPerPage) ? this.totalItems : this.itemsPerPage;
+      this.recalculateFromToIndexes();
     }
     this.pageCount = Math.ceil(this.totalItems / this.itemsPerPage);
   }
@@ -187,6 +186,6 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
 
   recalculateFromToIndexes() {
     this.dataFrom = (this.pageNumber * this.itemsPerPage) - this.itemsPerPage + 1;
-    this.dataTo = (this.pageNumber * this.itemsPerPage);
+    this.dataTo = (this.totalItems < this.itemsPerPage) ? this.totalItems : (this.pageNumber * this.itemsPerPage);
   }
 }

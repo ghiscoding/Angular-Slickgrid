@@ -3,7 +3,7 @@ import { Column, Filter, FilterArguments, FilterCallback, MultipleSelectOption, 
 import $ from 'jquery';
 import { Injectable } from '@angular/core';
 
-// using external non-typed js libraries in Angular
+// using external non-typed js libraries
 declare var $: any;
 
 @Injectable()

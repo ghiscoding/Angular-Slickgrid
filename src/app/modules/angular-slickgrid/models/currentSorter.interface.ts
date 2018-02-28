@@ -1,6 +1,6 @@
 import { SortDirection, SortDirectionString } from './../models/index';
 
-export interface PresetSorter {
+export interface CurrentSorter {
   columnId: string;
   direction: SortDirection | SortDirectionString;
 }

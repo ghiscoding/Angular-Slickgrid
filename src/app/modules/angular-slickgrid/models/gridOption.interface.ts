@@ -1,16 +1,18 @@
-import { Preset } from './preset.interface';
-import { AutoResizeOption } from './autoResizeOption.interface';
-import { BackendEventChanged } from './backendEventChanged.interface';
-import { BackendServiceApi } from './backendServiceApi.interface';
-import { ColumnPicker } from './columnPicker.interface';
-import { CheckboxSelector } from './checkboxSelector.interface';
-import { ExportOption } from './exportOption.interface';
-import { GridMenu } from './gridMenu.interface';
-import { HeaderButton } from './headerButton.interface';
-import { HeaderMenu } from './headerMenu.interface';
-import { Pagination } from './pagination.interface';
-import { Column } from './column.interface';
-import { EditCommand } from './editCommand.interface';
+import {
+  AutoResizeOption,
+  BackendEventChanged,
+  BackendServiceApi,
+  Column,
+  ColumnPicker,
+  CheckboxSelector,
+  EditCommand,
+  ExportOption,
+  GridMenu,
+  GridState,
+  HeaderButton,
+  HeaderMenu,
+  Pagination
+} from './../models/index';
 
 export interface GridOption {
   /** Defaults to false, which leads to load editor asynchronously (delayed) */
@@ -152,7 +154,7 @@ export interface GridOption {
   params?: any | any[];
 
   /** Query presets before grid load (filters, sorters, pagination) */
-  presets?: Preset;
+  presets?: GridState;
 
   /** Register 1 or more Slick Plugins */
   registerPlugins?: any | any[];

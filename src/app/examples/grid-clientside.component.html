@@ -6,6 +6,7 @@
     <angular-slickgrid gridId="grid2"
               [columnDefinitions]="columnDefinitions"
               [gridOptions]="gridOptions"
-              [dataset]="dataset">
+              [dataset]="dataset"
+              (onBeforeGridDestroy)="saveCurrentGridState($event)">
     </angular-slickgrid>
   </div>

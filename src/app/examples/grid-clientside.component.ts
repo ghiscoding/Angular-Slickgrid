@@ -1,6 +1,6 @@
 import { CustomInputFilter } from './custom-inputFilter';
 import { Component, OnInit } from '@angular/core';
-import { Column, FieldType, FilterType, Formatters, GridOption, OperatorType } from './../modules/angular-slickgrid';
+import { Column, FieldType, FilterType, Formatters, GridOption, GridStateService, OperatorType } from './../modules/angular-slickgrid';
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -34,6 +34,8 @@ export class GridClientSideComponent implements OnInit {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
+
+  constructor(private gridStateService: GridStateService) {}
 
   ngOnInit(): void {
     // prepare a multiple-select array to filter with
@@ -92,16 +94,18 @@ export class GridClientSideComponent implements OnInit {
         sidePadding: 15
       },
       enableFiltering: true,
-      // use columnDef searchTerms OR use presets as shown below
 
+      // use columnDef searchTerms OR use presets as shown below
       presets: {
-        // filters: [{ columnId: 'duration', searchTerms: [2, 22] }],
+        filters: [
+          { columnId: 'duration', searchTerms: [2, 22, 44] },
+          { columnId: 'complete', searchTerm: '>5' }
+        ],
         sorters: [
           { columnId: 'duration', direction: 'DESC' },
           { columnId: 'complete', direction: 'ASC' }
         ],
       }
-
     };
 
     // mock a dataset
@@ -130,5 +134,10 @@ export class GridClientSideComponent implements OnInit {
         effortDriven: (i % 3 === 0)
       };
     }
+  }
+
+  /** Save current Filters, Sorters in LocaleStorage or DB */
+  saveCurrentGridState(grid) {
+    console.log('Client current grid state', this.gridStateService.getCurrentGridState());
   }
 }

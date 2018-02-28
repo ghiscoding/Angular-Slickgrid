@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, FieldType, FilterType, GridOption, OperatorType } from './../modules/angular-slickgrid';
+import { Column, FieldType, FilterType, GridOption, GridStateService, OperatorType } from './../modules/angular-slickgrid';
 import { GridOdataService } from './../modules/angular-slickgrid/services/grid-odata.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -34,7 +34,7 @@ export class GridOdataComponent implements OnInit {
   processing = false;
   status = { text: '', class: '' };
 
-  constructor(private http: HttpClient, private odataService: GridOdataService) {}
+  constructor(private http: HttpClient, private gridStateService: GridStateService, private odataService: GridOdataService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -65,7 +65,8 @@ export class GridOdataComponent implements OnInit {
       presets: {
         // you can also type operator as string, e.g.: operator: 'EQ'
         filters: [{ columnId: 'gender', searchTerm: 'male', operator:  OperatorType.equal }],
-        sorters: [{ columnId: 'name', direction: 'desc' }]
+        sorters: [{ columnId: 'name', direction: 'desc' }],
+        pagination: { pageNumber: 2, pageSize: 20 }
       },
       backendServiceApi: {
         service: this.odataService,
@@ -101,8 +102,7 @@ export class GridOdataComponent implements OnInit {
   }
 
   saveCurrentGridState(grid) {
-    console.log('OData current filters', this.odataService.getCurrentFilters());
-    console.log('OData current sorters', this.odataService.getCurrentSorters());
+    console.log('OData current grid state', this.gridStateService.getCurrentGridState());
   }
 
   /** This function is only here to mock a WebAPI call (since we are using a JSON file for the demo)

@@ -1,13 +1,15 @@
+import { EventEmitter } from '@angular/core';
 import {
   BackendServiceOption,
   Column,
   ColumnFilters,
+  CurrentFilter,
+  CurrentPagination,
+  CurrentSorter,
   FilterChangedArgs,
   GridOption,
   Pagination,
   PaginationChangedArgs,
-  PresetFilter,
-  PresetSorter,
   SortChangedArgs,
   SortChanged
 } from './../models/index';
@@ -29,33 +31,42 @@ export interface BackendService {
   getDatasetName?: () => string;
 
   /** Get the Filters that are currently used by the grid */
-  getCurrentFilters?: () => ColumnFilters | PresetFilter[];
+  getCurrentFilters?: () => ColumnFilters | CurrentFilter[];
+
+  /** Get the Pagination that is currently used by the grid */
+  getCurrentPagination?: () => CurrentPagination;
 
   /** Get the Sorters that are currently used by the grid */
-  getCurrentSorters?: () => ColumnFilters | PresetFilter[];
+  getCurrentSorters?: () => ColumnFilters | CurrentFilter[];
 
   /** Reset the pagination options */
   resetPaginationOptions: () => void;
 
   /** Update the Filters options with a set of new options */
-  updateFilters?: (columnFilters: ColumnFilters | PresetFilter[], isUpdatedByPreset: boolean) => void;
+  updateFilters?: (columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset: boolean) => void;
+
+  /** Update the Pagination component with it's new page number and size */
+  updatePagination?: (newPage: number, pageSize: number) => void;
 
   /** Update the Sorters options with a set of new options */
-  updateSorters?: (sortColumns?: SortChanged[], presetSorters?: PresetSorter[]) => void;
+  updateSorters?: (sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]) => void;
 
   /** Update the backend service options */
   updateOptions: (serviceOptions?: BackendServiceOption) => void;
 
   // --
-  // Events
-  // ---------
+  // Events / Methods
+  // -----------------
 
-  /** Fired when any of the filters changed */
+  /** Fired when the pagination needs to be forced refreshed (by a Preset call) */
+  onPaginationRefreshed?: EventEmitter<PaginationChangedArgs>;
+
+  /** Execute when any of the filters changed */
   onFilterChanged: (event: Event, args: FilterChangedArgs) => Promise<string>;
 
-  /** Fired when the pagination changed */
+  /** Execute when the pagination changed */
   onPaginationChanged: (event: Event | undefined, args: PaginationChangedArgs) => string;
 
-  /** Fired when any of the sorters changed */
+  /** Execute when any of the sorters changed */
   onSortChanged: (event: Event, args: SortChangedArgs) => string;
 }

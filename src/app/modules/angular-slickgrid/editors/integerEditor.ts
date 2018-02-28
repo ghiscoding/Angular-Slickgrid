@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import { Editor, KeyCode } from './../models/index';
 
-// using external non-typed js libraries in Angular
+// using external non-typed js libraries
 declare var $: any;
 
 /*

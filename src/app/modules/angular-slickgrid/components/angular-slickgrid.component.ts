@@ -29,30 +29,21 @@ import { FilterService } from './../services/filter.service';
 import { GraphqlService } from './../services/graphql.service';
 import { GridEventService } from './../services/gridEvent.service';
 import { GridExtraService } from './../services/gridExtra.service';
+import { GridStateService } from './../services/gridState.service';
 import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
 import { TranslateService } from '@ngx-translate/core';
 import $ from 'jquery';
 import { Subscription } from 'rxjs/Subscription';
 
-// using external non-typed js libraries in Angular
+// using external non-typed js libraries
 declare var Slick: any;
 declare var $: any;
 
 @Injectable()
 @Component({
   selector: 'angular-slickgrid',
-  template: `
-    <div id="slickGridContainer-{{gridId}}" class="gridPane">
-    <div attr.id='{{gridId}}'
-            class="slickgrid-container"
-            [style.height]="gridHeightString"
-            [style.width]="gridWidthString">
-    </div>
-
-    <slick-pagination id="slickPagingContainer-{{gridId}}" *ngIf="showPagination" [gridPaginationOptions]="gridPaginationOptions"></slick-pagination>
-    </div>
-  `
+  templateUrl: './angular-slickgrid.component.html'
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
   private _dataset: any[];
@@ -95,6 +86,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private filterService: FilterService,
     private gridExtraService: GridExtraService,
     private gridEventService: GridEventService,
+    private gridStateService: GridStateService,
     private resizer: ResizerService,
     private sortService: SortService,
     private translate: TranslateService,
@@ -178,6 +170,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (this._gridOptions && (this._gridOptions.backendServiceApi || this._gridOptions.onBackendEventApi)) {
       this.attachBackendCallbackFunctions(this._gridOptions);
     }
+
+    this.gridStateService.init(this.grid, this.filterService, this.sortService);
   }
 
   /**
@@ -266,6 +260,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (gridOptions.presets.sorters) {
         backendApi.service.updateSorters(null, gridOptions.presets.sorters);
       }
+      if (gridOptions.presets.pagination) {
+        backendApi.service.updatePagination(gridOptions.presets.pagination.pageNumber, gridOptions.presets.pagination.pageSize);
+      }
     } else {
       const columnFilters = this.filterService.getColumnFilters();
       if (columnFilters) {
@@ -353,6 +350,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         }
         if (this.gridOptions.pagination && totalCount) {
           this.gridOptions.pagination.totalItems = totalCount;
+        }
+        if (this.gridOptions.presets && this.gridOptions.presets.pagination && this.gridOptions.pagination) {
+          this.gridOptions.pagination.pageSize = this.gridOptions.presets.pagination.pageSize;
+          this.gridOptions.pagination.pageNumber = this.gridOptions.presets.pagination.pageNumber;
         }
         this.gridPaginationOptions = this.mergeGridOptions();
       }

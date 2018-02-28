@@ -7,6 +7,7 @@ export * from './grid-odata.service';
 export * from './gridEvent.service';
 export * from './gridExtra.service';
 export * from './gridExtraUtils';
+export * from './gridState.service';
 export * from './odata.service';
 export * from './resizer.service';
 export * from './sort.service';

@@ -1,12 +1,13 @@
 import { EventEmitter } from '@angular/core';
 import { castToPromise } from './utilities';
-import { Column, FieldType, GridOption, SlickEvent, SortChanged, SortDirection, PresetSorter, CellArgs } from './../models/index';
+import { Column, FieldType, GridOption, SlickEvent, SortChanged, SortDirection, CurrentSorter, CellArgs, SortDirectionString } from './../models/index';
 import { Sorters } from './../sorters';
 
-// using external non-typed js libraries in Angular
+// using external non-typed js libraries
 declare var Slick: any;
 
 export class SortService {
+  private _currentLocalSorters: CurrentSorter[] = [];
   private _eventHandler: any = new Slick.EventHandler();
   private _subscriber: SlickEvent = new Slick.Event();
   onSortChanged = new EventEmitter<string>();
@@ -67,6 +68,19 @@ export class SortService {
       // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
       const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({sortAsc: args.sortAsc, sortCol: args.sortCol});
 
+      // keep current sorters
+      this._currentLocalSorters = []; // reset current local sorters
+      if (Array.isArray(sortColumns)) {
+        sortColumns.forEach((sortColumn) => {
+          if (sortColumn.sortCol) {
+            this._currentLocalSorters.push({
+              columnId: sortColumn.sortCol.id,
+              direction: sortColumn.sortAsc ? SortDirection.ASC : SortDirection.DESC
+            });
+          }
+        });
+      }
+
       this.onLocalSortChanged(grid, gridOptions, dataView, sortColumns);
     });
 
@@ -78,6 +92,10 @@ export class SortService {
     });
   }
 
+  getCurrentLocalSorters(): CurrentSorter[] {
+    return this._currentLocalSorters;
+  }
+
   /**
    * load any presets if there are any
    * @param grid
@@ -87,10 +105,11 @@ export class SortService {
    */
   loadLocalPresets(grid: any, gridOptions: GridOption, dataView: any, columnDefinitions: Column[]) {
     const sortCols: SortChanged[] = [];
+    this._currentLocalSorters = []; // reset current local sorters
     if (gridOptions && gridOptions.presets && gridOptions.presets.sorters) {
       const sorters = gridOptions.presets.sorters;
       columnDefinitions.forEach((columnDef: Column) =>  {
-        const columnPreset = sorters.find((presetFilter: PresetSorter) => {
+        const columnPreset = sorters.find((presetFilter: CurrentSorter) => {
           return presetFilter.columnId === columnDef.id;
         });
         if (columnPreset) {
@@ -98,6 +117,12 @@ export class SortService {
             columnId: columnDef.id,
             sortAsc: ((columnPreset.direction.toUpperCase() === SortDirection.ASC) ? true : false),
             sortCol: columnDef
+          });
+
+          // keep current sorters
+          this._currentLocalSorters.push({
+            columnId: columnDef.id + '',
+            direction: columnPreset.direction.toUpperCase() as SortDirectionString
           });
         }
       });

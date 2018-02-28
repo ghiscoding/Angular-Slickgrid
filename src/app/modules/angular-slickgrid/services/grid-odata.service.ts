@@ -6,14 +6,15 @@ import {
   CaseType,
   Column,
   ColumnFilters,
+  CurrentFilter,
+  CurrentPagination,
+  CurrentSorter,
   FilterChangedArgs,
   FieldType,
   GridOption,
   OdataOption,
   Pagination,
   PaginationChangedArgs,
-  PresetFilter,
-  PresetSorter,
   SortChanged,
   SortChangedArgs,
   SortDirection,
@@ -27,8 +28,9 @@ const DEFAULT_ITEMS_PER_PAGE = 25;
 
 @Injectable()
 export class GridOdataService implements BackendService {
-  private _currentFilters: ColumnFilters | PresetFilter[];
-  private _currentSorters: PresetSorter[];
+  private _currentFilters: ColumnFilters | CurrentFilter[];
+  private _currentPagination: CurrentPagination;
+  private _currentSorters: CurrentSorter[];
   private _columnDefinitions: Column[];
   private _gridOptions: GridOption;
   private _grid: any;
@@ -66,12 +68,17 @@ export class GridOdataService implements BackendService {
   }
 
   /** Get the Filters that are currently used by the grid */
-  getCurrentFilters(): ColumnFilters | PresetFilter[] {
+  getCurrentFilters(): ColumnFilters | CurrentFilter[] {
     return this._currentFilters;
   }
 
+  /** Get the Pagination that is currently used by the grid */
+  getCurrentPagination(): CurrentPagination {
+    return this._currentPagination;
+  }
+
   /** Get the Sorters that are currently used by the grid */
-  getCurrentSorters(): PresetSorter[] {
+  getCurrentSorters(): CurrentSorter[] {
     return this._currentSorters;
   }
 
@@ -126,11 +133,7 @@ export class GridOdataService implements BackendService {
    */
   onPaginationChanged(event: Event, args: PaginationChangedArgs) {
     const pageSize = +args.pageSize || 20;
-
-    this.odataService.updateOptions({
-      top: pageSize,
-      skip: (args.newPage - 1) * pageSize
-    });
+    this.updatePagination(args.newPage, pageSize);
 
     // build the OData query which we will use in the WebAPI callback
     return this.odataService.buildQuery();
@@ -153,7 +156,7 @@ export class GridOdataService implements BackendService {
    * loop through all columns to inspect filters & update backend service filteringOptions
    * @param columnFilters
    */
-  updateFilters(columnFilters: ColumnFilters | PresetFilter[], isUpdatedByPreset?: boolean) {
+  updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset?: boolean) {
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
     this._currentFilters = (!!isUpdatedByPreset) ? columnFilters : Object.keys(columnFilters).map(key => columnFilters[key]);
     let searchBy = '';
@@ -279,12 +282,29 @@ export class GridOdataService implements BackendService {
   }
 
   /**
+   * Update the pagination component with it's new page number and size
+   * @param newPage
+   * @param pageSize
+   */
+  updatePagination(newPage: number, pageSize: number) {
+    this._currentPagination = {
+      pageNumber: newPage,
+      pageSize
+    };
+
+    this.odataService.updateOptions({
+      top: pageSize,
+      skip: (newPage - 1) * pageSize
+    });
+  }
+
+  /**
    * loop through all columns to inspect sorters & update backend service orderBy
    * @param columnFilters
    */
-  updateSorters(sortColumns?: SortChanged[], presetSorters?: PresetSorter[]) {
+  updateSorters(sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]) {
     let sortByArray = [];
-    const sorterArray: PresetSorter[] = [];
+    const sorterArray: CurrentSorter[] = [];
 
     if (!sortColumns && presetSorters) {
       sortByArray = presetSorters;

@@ -4,6 +4,8 @@ import {
   FilterType,
   FormElementType,
   MultipleSelectOption,
+  OperatorString,
+  OperatorType,
   SearchTerm
 } from './../models/index';
 
@@ -27,7 +29,7 @@ export interface ColumnFilter {
   searchTerms?: SearchTerm[];
 
   /** Operator to use when filtering (>, >=, EQ, IN, ...) */
-  operator?: string;
+  operator?: OperatorType | OperatorString;
 
   /** Filter Type to use (input, multipleSelect, singleSelect, select, custom) */
   type?: FilterType | FormElementType;

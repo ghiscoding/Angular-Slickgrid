@@ -1,5 +1,5 @@
 import { SearchTerm } from './../modules/angular-slickgrid/models/searchTerm.type';
-import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption, OperatorType, SortDirection } from './../modules/angular-slickgrid/index';
+import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption, OperatorType, SortDirection, GridStateService } from './../modules/angular-slickgrid/index';
 import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -36,7 +36,7 @@ export class GridGraphqlComponent implements OnInit {
   isWithCursor = false;
   selectedLanguage: string;
 
-  constructor(private graphqlService: GraphqlService, private translate: TranslateService) {
+  constructor(private graphqlService: GraphqlService, private gridStateService: GridStateService, private translate: TranslateService) {
     this.selectedLanguage = this.translate.getDefaultLang();
   }
 
@@ -81,10 +81,11 @@ export class GridGraphqlComponent implements OnInit {
           { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' }
         ],
         sorters: [
-          { columnId: 'name', direction: SortDirection.ASC },
+          // direction can typed as 'asc' (uppercase or lowercase) and/or use the SortDirection type
+          { columnId: 'name', direction: 'asc' },
           { columnId: 'company', direction: SortDirection.DESC }
         ],
-        pagination: { pageNumber: 2 }
+        pagination: { pageNumber: 2, pageSize: 20 }
       },
       backendServiceApi: {
         service: this.graphqlService,
@@ -120,10 +121,6 @@ export class GridGraphqlComponent implements OnInit {
       datasetName: GRAPHQL_QUERY_DATASET_NAME,
       isWithCursor: withCursor,
       addLocaleIntoQuery: true,
-      paginationOptions: {
-        first: 1,
-        offset: 20
-      },
 
       // when dealing with complex objects, we want to keep our field name with double quotes
       // example with gender: query { users (orderBy:[{field:"gender",direction:ASC}]) {}
@@ -164,8 +161,7 @@ export class GridGraphqlComponent implements OnInit {
 
   /** Save current Filters, Sorters in LocaleStorage or DB */
   saveCurrentGridState(grid) {
-    console.log('GraphQL current filters', this.graphqlService.getCurrentFilters());
-    console.log('GraphQL current sorters', this.graphqlService.getCurrentSorters());
+    console.log('GraphQL current grid state', this.gridStateService.getCurrentGridState());
   }
 
   switchLanguage() {
