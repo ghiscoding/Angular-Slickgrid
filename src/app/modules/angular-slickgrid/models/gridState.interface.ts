@@ -8,7 +8,7 @@ export interface GridState {
   /** Sorters (and their state, columnId, direction) that are currently applied in the grid */
   sorters?: CurrentSorter[];
 
-  /** Pagiantion (and it's state, pageNumber, pageSize) that are currently applied in the grid */
+  /** Pagination (and it's state, pageNumber, pageSize) that are currently applied in the grid */
   pagination?: {
     pageNumber: number;
     pageSize: number;

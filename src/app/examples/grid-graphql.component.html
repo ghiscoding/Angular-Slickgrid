@@ -38,6 +38,12 @@
         </div>
     </div>
 
-    <angular-slickgrid gridId="grid4" [gridHeight]="250" [gridWidth]="800" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset" (onBeforeGridDestroy)="saveCurrentGridState($event)">
+    <angular-slickgrid gridId="grid4"
+        [gridHeight]="250"
+        [gridWidth]="800"
+        [columnDefinitions]="columnDefinitions"
+        [gridOptions]="gridOptions"
+        [dataset]="dataset"
+        (onBeforeGridDestroy)="saveCurrentGridState($event)">
     </angular-slickgrid>
 </div>

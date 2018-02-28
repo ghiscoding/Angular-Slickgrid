@@ -30,6 +30,10 @@ export class GridStateService {
     this._gridOptions = (grid && grid.getOptions) ? grid.getOptions() : {};
   }
 
+  /**
+   * Get the current grid state (filters/sorters/pagination)
+   * @return grid state
+   */
   getCurrentGridState(): GridState {
     const gridState: GridState = {
       filters: this.getCurrentFilters(),
@@ -43,6 +47,10 @@ export class GridStateService {
     return gridState;
   }
 
+  /**
+   * Get the Filters (and their state, columnId, searchTerm(s)) that are currently applied in the grid
+   * @return current filters
+   */
   getCurrentFilters(): CurrentFilter[] {
     if (this._gridOptions && this._gridOptions.backendServiceApi) {
       const backendService = this._gridOptions.backendServiceApi.service;
@@ -55,6 +63,10 @@ export class GridStateService {
     return null;
   }
 
+  /**
+   * Get current Pagination (and it's state, pageNumber, pageSize) that are currently applied in the grid
+   * @return current pagination state
+   */
   getCurrentPagination(): CurrentPagination {
     if (this._gridOptions && this._gridOptions.backendServiceApi) {
       const backendService = this._gridOptions.backendServiceApi.service;
@@ -67,6 +79,10 @@ export class GridStateService {
     return null;
   }
 
+  /**
+   * Get the current Sorters (and their state, columnId, direction) that are currently applied in the grid
+   * @return current sorters
+   */
   getCurrentSorters(): CurrentSorter[] {
     if (this._gridOptions && this._gridOptions.backendServiceApi) {
       const backendService = this._gridOptions.backendServiceApi.service;
