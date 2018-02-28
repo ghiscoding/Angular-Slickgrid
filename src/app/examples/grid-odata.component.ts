@@ -24,6 +24,7 @@ export class GridOdataComponent implements OnInit {
         <li>The other operators can be used on column type number for example: ">=100" (bigger or equal than 100)</li>
       </ul>
       <li>OData Service could be replaced by other Service type in the future (GraphQL or whichever you provide)</li>
+      <li>You can also preload a grid with certain "presets" like Filters / Sorters / Pagination <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-Preset" target="_blank">Wiki - Grid Preset</a>
     </ul>
   `;
   columnDefinitions: Column[];
