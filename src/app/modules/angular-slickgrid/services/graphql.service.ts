@@ -16,6 +16,8 @@ import {
   Pagination,
   PaginationChangedArgs,
   PresetFilter,
+  PresetSorter,
+  SortChanged,
   SortChangedArgs,
   SortDirection
 } from './../models/index';
@@ -28,11 +30,13 @@ const DEFAULT_ITEMS_PER_PAGE = 25;
 @Injectable()
 export class GraphqlService implements BackendService {
   private _currentFilters: ColumnFilters | PresetFilter[];
+  private _currentSorters: PresetSorter[];
   private _columnDefinitions: Column[];
   private _gridOptions: GridOption;
+  private _grid: any;
   options: GraphqlServiceOption;
   pagination: Pagination | undefined;
-  defaultOrderBy: GraphqlSortingOption = { field: 'id', direction: SortDirection.ASC };
+  defaultOrderBy: GraphqlSortingOption = { columnId: 'id', direction: SortDirection.ASC };
   defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption = {
     first: DEFAULT_ITEMS_PER_PAGE,
     offset: 0
@@ -140,11 +144,14 @@ export class GraphqlService implements BackendService {
       .replace(/\}$/, '');
   }
 
-  initOptions(serviceOptions?: GraphqlServiceOption, pagination?: Pagination, gridOptions?: GridOption, columnDefinitions?: Column[]): void {
+  init(serviceOptions?: GraphqlServiceOption, pagination?: Pagination, grid?: any): void {
+    this._grid = grid;
     this.options = serviceOptions || {};
     this.pagination = pagination;
-    this._columnDefinitions = columnDefinitions || serviceOptions.columnDefinitions;
-    this._gridOptions = gridOptions;
+    if (grid && grid.getColumns && grid.getOptions) {
+      this._columnDefinitions = grid.getColumns() || serviceOptions.columnDefinitions;
+      this._gridOptions = grid.getOptions();
+    }
   }
 
   /**
@@ -155,12 +162,19 @@ export class GraphqlService implements BackendService {
     return (this.options.isWithCursor) ? { first: (this.pagination ? this.pagination.pageSize : DEFAULT_ITEMS_PER_PAGE) } : { first: (this.pagination ? this.pagination.pageSize : DEFAULT_ITEMS_PER_PAGE), offset: 0 };
   }
 
+  /** Get the GraphQL dataset name */
   getDatasetName(): string {
     return this.options.datasetName || '';
   }
 
+  /** Get the Filters that are currently used by the grid */
   getCurrentFilters(): ColumnFilters | PresetFilter[] {
     return this._currentFilters;
+  }
+
+  /** Get the Sorters that are currently used by the grid */
+  getCurrentSorters(): PresetSorter[] {
+    return this._currentSorters;
   }
 
   /*
@@ -210,7 +224,7 @@ export class GraphqlService implements BackendService {
       }
 
       // loop through all columns to inspect filters & set the query
-      this.updateFilters(args.columnFilters);
+      this.updateFilters(args.columnFilters, false);
 
       // reset Pagination, then build the GraphQL query which we will use in the WebAPI callback
       // wait a minimum user typing inactivity before processing any query
@@ -280,27 +294,10 @@ export class GraphqlService implements BackendService {
    * https://github.com/graphql/graphql-relay-js/issues/20#issuecomment-220494222
    */
   onSortChanged(event: Event, args: SortChangedArgs) {
-    let sortByArray: GraphqlSortingOption[] = [];
     const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
 
-    // build the orderBy array, it could be multisort, example
-    // orderBy:[{field: lastName, direction: ASC}, {field: firstName, direction: DESC}]
-    if (sortColumns && sortColumns.length === 0) {
-      sortByArray = new Array(this.defaultOrderBy); // when empty, use the default sort
-    } else {
-      if (sortColumns) {
-        for (const column of sortColumns) {
-          const fieldName = column.sortCol.queryField || column.sortCol.field || column.sortCol.id;
-          const direction = column.sortAsc ? SortDirection.ASC : SortDirection.DESC;
-          sortByArray.push({
-            field: fieldName,
-            direction
-          });
-        }
-      }
-    }
-
-    this.updateOptions({ sortingOptions: sortByArray });
+    // loop through all columns to inspect sorters & set the query
+    this.updateSorters(sortColumns);
 
     // build the GraphQL query which we will use in the WebAPI callback
     return this.buildQuery();
@@ -310,7 +307,7 @@ export class GraphqlService implements BackendService {
    * loop through all columns to inspect filters & update backend service filteringOptions
    * @param columnFilters
    */
-  updateFilters(columnFilters: ColumnFilters | PresetFilter[], isUpdatedByPreset?: boolean) {
+  updateFilters(columnFilters: ColumnFilters | PresetFilter[], isUpdatedByPreset: boolean) {
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
     this._currentFilters = (!!isUpdatedByPreset) ? columnFilters : Object.keys(columnFilters).map(key => columnFilters[key]);
 
@@ -382,6 +379,43 @@ export class GraphqlService implements BackendService {
 
     // update the service options with filters for the buildQuery() to work later
     this.updateOptions({ filteringOptions: searchByArray });
+  }
+
+  /**
+   * loop through all columns to inspect sorters & update backend service sortingOptions
+   * @param columnFilters
+   */
+  updateSorters(sortColumns?: SortChanged[], presetSorters?: PresetSorter[]) {
+    let sortByArray: GraphqlSortingOption[] = [];
+
+    if (!sortColumns && presetSorters) {
+      sortByArray = presetSorters;
+
+      // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
+      sortByArray.forEach((sorter) => {
+        sorter.sortAsc = (sorter.direction.toUpperCase() === SortDirection.ASC);
+      });
+      this._grid.setSortColumns(sortByArray);
+    } else if (sortColumns && !presetSorters) {
+      // build the orderBy array, it could be multisort, example
+      // orderBy:[{field: lastName, direction: ASC}, {field: firstName, direction: DESC}]
+      if (sortColumns && sortColumns.length === 0) {
+        sortByArray = new Array(this.defaultOrderBy); // when empty, use the default sort
+      } else {
+        if (sortColumns) {
+          for (const column of sortColumns) {
+            sortByArray.push({
+              columnId: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
+              direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
+            });
+          }
+        }
+      }
+    }
+
+    // keep current Sorters and update the service options with the new sorting
+    this._currentSorters = sortByArray;
+    this.updateOptions({ sortingOptions: sortByArray });
   }
 
   /**

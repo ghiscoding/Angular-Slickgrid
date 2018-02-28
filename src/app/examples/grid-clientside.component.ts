@@ -43,7 +43,6 @@ export class GridClientSideComponent implements OnInit {
     }
 
     this.columnDefinitions = [
-      { id: 'id', name: 'Title', field: 'title', filterable: true, sortable: true, type: FieldType.string, minWidth: 45 },
       { id: 'title', name: 'Title', field: 'title', filterable: true, sortable: true, type: FieldType.string, minWidth: 45 },
       { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80,
         type: FieldType.string,
@@ -67,7 +66,7 @@ export class GridClientSideComponent implements OnInit {
           }
         }
       },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 55, type: FieldType.number, filterable: true, sortable: true },
+      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 70, type: FieldType.number, filterable: true, sortable: true },
       { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, filterable: true, sortable: true, type: FieldType.date, minWidth: 60, exportWithFormatter: true },
       { id: 'usDateShort', name: 'US Date Short', field: 'usDateShort', filterable: true, sortable: true, type: FieldType.dateUsShort, minWidth: 55 },
       { id: 'utcDate', name: 'UTC Date', field: 'utcDate', formatter: Formatters.dateTimeIsoAmPm, filterable: true, sortable: true, minWidth: 115, type: FieldType.dateUtc, filterSearchType: FieldType.dateTimeIso },
@@ -94,11 +93,15 @@ export class GridClientSideComponent implements OnInit {
       },
       enableFiltering: true,
       // use columnDef searchTerms OR use presets as shown below
-/*
+
       presets: {
-        filters: [{ columnId: 'duration', searchTerms: [2, 22] }]
+        // filters: [{ columnId: 'duration', searchTerms: [2, 22] }],
+        sorters: [
+          { columnId: 'duration', direction: 'DESC' },
+          { columnId: 'complete', direction: 'ASC' }
+        ],
       }
-*/
+
     };
 
     // mock a dataset

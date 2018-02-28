@@ -23,7 +23,7 @@
             [columnDefinitions]="columnDefinitions"
             [gridOptions]="gridOptions"
             [dataset]="dataset"
-            (onBeforeGridDestroy)="saveCurrentFilters($event)">
+            (onBeforeGridDestroy)="saveCurrentGridState($event)">
   </angular-slickgrid>
 </div>
 

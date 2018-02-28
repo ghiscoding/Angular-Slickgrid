@@ -214,7 +214,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // attach external sorting (backend) when available or default onSort (dataView)
     if (gridOptions.enableSorting) {
-      (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView);
+      (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView, this.columnDefinitions);
     }
 
     // attach external filter (backend) when available or default onFilter (dataView)
@@ -235,7 +235,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
 
       if (gridOptions.backendServiceApi && gridOptions.backendServiceApi.service) {
-        gridOptions.backendServiceApi.service.initOptions(gridOptions.backendServiceApi.options || {}, gridOptions.pagination, this.gridOptions, this.columnDefinitions);
+        gridOptions.backendServiceApi.service.init(gridOptions.backendServiceApi.options || {}, gridOptions.pagination, this.grid);
       }
     }
 
@@ -263,10 +263,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (gridOptions.presets.filters) {
         backendApi.service.updateFilters(gridOptions.presets.filters, true);
       }
+      if (gridOptions.presets.sorters) {
+        backendApi.service.updateSorters(null, gridOptions.presets.sorters);
+      }
     } else {
       const columnFilters = this.filterService.getColumnFilters();
       if (columnFilters) {
-        backendApi.service.updateFilters(columnFilters);
+        backendApi.service.updateFilters(columnFilters, false);
       }
     }
 

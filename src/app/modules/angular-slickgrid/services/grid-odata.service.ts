@@ -13,7 +13,11 @@ import {
   Pagination,
   PaginationChangedArgs,
   PresetFilter,
-  SortChangedArgs
+  PresetSorter,
+  SortChanged,
+  SortChangedArgs,
+  SortDirection,
+  SortDirectionString
 } from './../models/index';
 import { OdataService } from './odata.service';
 
@@ -24,8 +28,10 @@ const DEFAULT_ITEMS_PER_PAGE = 25;
 @Injectable()
 export class GridOdataService implements BackendService {
   private _currentFilters: ColumnFilters | PresetFilter[];
+  private _currentSorters: PresetSorter[];
   private _columnDefinitions: Column[];
   private _gridOptions: GridOption;
+  private _grid: any;
   options: OdataOption;
   pagination: Pagination;
   defaultOptions: OdataOption = {
@@ -39,12 +45,16 @@ export class GridOdataService implements BackendService {
     return this.odataService.buildQuery();
   }
 
-  initOptions(options: OdataOption, pagination?: Pagination, gridOptions?: GridOption, columnDefinitions?: Column[]): void {
+  init(options: OdataOption, pagination?: Pagination, grid?: any): void {
+    this._grid = grid;
     this.odataService.options = { ...this.defaultOptions, ...options, top: options.top || (pagination ? pagination.pageSize : null) || this.defaultOptions.top };
     this.options = options;
     this.pagination = pagination;
-    this._columnDefinitions = columnDefinitions || options.columnDefinitions;
-    this._gridOptions = gridOptions;
+
+    if (grid && grid.getColumns && grid.getOptions) {
+      this._columnDefinitions = grid.getColumns() || options.columnDefinitions;
+      this._gridOptions = grid.getOptions();
+    }
   }
 
   updateOptions(serviceOptions?: OdataOption) {
@@ -55,9 +65,14 @@ export class GridOdataService implements BackendService {
     this.odataService.removeColumnFilter(fieldName);
   }
 
-  /** Return the list of current filters */
+  /** Get the Filters that are currently used by the grid */
   getCurrentFilters(): ColumnFilters | PresetFilter[] {
     return this._currentFilters;
+  }
+
+  /** Get the Sorters that are currently used by the grid */
+  getCurrentSorters(): PresetSorter[] {
+    return this._currentSorters;
   }
 
   /*
@@ -125,31 +140,10 @@ export class GridOdataService implements BackendService {
    * SORTING
    */
   onSortChanged(event: Event, args: SortChangedArgs) {
-    let sortByArray = [];
     const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
 
-    // build the SortBy string, it could be multisort, example: customerNo asc, purchaserName desc
-    if (sortColumns && sortColumns.length === 0) {
-      sortByArray = new Array(this.defaultOptions.orderBy); // when empty, use the default sort
-    } else {
-      if (sortColumns) {
-        for (const column of sortColumns) {
-          let fieldName = column.sortCol.queryField || column.sortCol.field || column.sortCol.id;
-          if (this.odataService.options.caseType === CaseType.pascalCase) {
-            fieldName = String.titleCase(fieldName);
-          }
-          const direction = column.sortAsc ? 'asc' : 'desc';
-          const sortByColumnString = `${fieldName} ${direction}`;
-          sortByArray.push(sortByColumnString);
-        }
-      }
-    }
-
-    // transform the sortby array into a CSV string
-    const csvArray = sortByArray.join(',');
-    this.odataService.updateOptions({
-      orderBy: (this.odataService.options.caseType === CaseType.pascalCase) ? String.titleCase(csvArray) : csvArray
-    });
+    // loop through all columns to inspect sorters & set the query
+    this.updateSorters(sortColumns);
 
     // build the OData query which we will use in the WebAPI callback
     return this.odataService.buildQuery();
@@ -282,6 +276,57 @@ export class GridOdataService implements BackendService {
       filter: (searchByArray.length > 0) ? searchByArray.join(' and ') : '',
       skip: undefined
     });
+  }
+
+  /**
+   * loop through all columns to inspect sorters & update backend service orderBy
+   * @param columnFilters
+   */
+  updateSorters(sortColumns?: SortChanged[], presetSorters?: PresetSorter[]) {
+    let sortByArray = [];
+    const sorterArray: PresetSorter[] = [];
+
+    if (!sortColumns && presetSorters) {
+      sortByArray = presetSorters;
+
+      // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
+      sortByArray.forEach((sorter) => {
+        sorter.sortAsc = (sorter.direction.toUpperCase() === SortDirection.ASC);
+      });
+      this._grid.setSortColumns(sortByArray);
+    } else if (sortColumns && !presetSorters) {
+      // build the SortBy string, it could be multisort, example: customerNo asc, purchaserName desc
+      if (sortColumns && sortColumns.length === 0) {
+        sortByArray = new Array(this.defaultOptions.orderBy); // when empty, use the default sort
+      } else {
+        if (sortColumns) {
+          for (const column of sortColumns) {
+            let fieldName = (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '';
+            if (this.odataService.options.caseType === CaseType.pascalCase) {
+              fieldName = String.titleCase(fieldName);
+            }
+
+            sorterArray.push({
+              columnId: fieldName,
+              direction: column.sortAsc ? 'asc' : 'desc'
+            });
+          }
+          sortByArray = sorterArray;
+        }
+      }
+    }
+
+    // transform the sortby array into a CSV string for OData
+    const csvString = sortByArray.map((sorter) => `${sorter.columnId} ${sorter.direction.toLowerCase()}` ).join(',');
+    this.odataService.updateOptions({
+      orderBy: (this.odataService.options.caseType === CaseType.pascalCase) ? String.titleCase(csvString) : csvString
+    });
+
+    // keep current Sorters and update the service options with the new sorting
+    this._currentSorters = sortByArray;
+
+    // build the OData query which we will use in the WebAPI callback
+    return this.odataService.buildQuery();
   }
 
   /**

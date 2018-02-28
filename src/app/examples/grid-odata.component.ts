@@ -64,9 +64,9 @@ export class GridOdataComponent implements OnInit {
       },
       presets: {
         // you can also type operator as string, e.g.: operator: 'EQ'
-        filters: [{ columnId: 'gender', searchTerm: 'male', operator:  OperatorType.equal }]
+        filters: [{ columnId: 'gender', searchTerm: 'male', operator:  OperatorType.equal }],
+        sorters: [{ columnId: 'name', direction: 'desc' }]
       },
-
       backendServiceApi: {
         service: this.odataService,
         preProcess: () => this.displaySpinner(true),
@@ -100,8 +100,9 @@ export class GridOdataComponent implements OnInit {
     return this.getCustomerDataApiMock(query);
   }
 
-  saveCurrentFilters(grid) {
-    console.log(this.odataService.getCurrentFilters());
+  saveCurrentGridState(grid) {
+    console.log('OData current filters', this.odataService.getCurrentFilters());
+    console.log('OData current sorters', this.odataService.getCurrentSorters());
   }
 
   /** This function is only here to mock a WebAPI call (since we are using a JSON file for the demo)

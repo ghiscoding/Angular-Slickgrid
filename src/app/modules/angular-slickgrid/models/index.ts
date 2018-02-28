@@ -54,6 +54,7 @@ export * from './presetSorter.interface';
 export * from './searchTerm.type';
 export * from './selectOption.interface';
 export * from './slickEvent.interface';
+export * from './sortChanged.interface';
 export * from './sortChangedArgs.interface';
 export * from './sortDirection.enum';
 export * from './sortDirectionString';

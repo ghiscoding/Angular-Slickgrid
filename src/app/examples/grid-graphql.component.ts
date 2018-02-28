@@ -51,6 +51,7 @@ export class GridGraphqlComponent implements OnInit {
         }
       },
       { id: 'company', name: 'Company', field: 'company', headerKey: 'COMPANY',
+        sortable: true,
         filterable: true,
         filter: {
           type: FilterType.multipleSelect,
@@ -63,11 +64,7 @@ export class GridGraphqlComponent implements OnInit {
     ];
 
     this.gridOptions = {
-      enableAutoResize: true,
-      autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 15
-      },
+      enableAutoResize: false,
       enableFiltering: true,
       enableCellNavigation: true,
       enableTranslate: true,
@@ -84,8 +81,8 @@ export class GridGraphqlComponent implements OnInit {
           { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' }
         ],
         sorters: [
-          { columnId: 'name', direction: SortDirection.asc },
-          { columnId: 'company', direction: SortDirection.desc }
+          { columnId: 'name', direction: SortDirection.ASC },
+          { columnId: 'company', direction: SortDirection.DESC }
         ],
         pagination: { pageNumber: 2 }
       },
@@ -111,7 +108,7 @@ export class GridGraphqlComponent implements OnInit {
   onWithCursorChange(isWithCursor) {
     this.isWithCursor = isWithCursor;
     const paginationOption = this.getBackendOptions(isWithCursor);
-    this.graphqlService.initOptions(paginationOption);
+    this.graphqlService.init(paginationOption);
     this.graphqlQuery = this.graphqlService.buildQuery();
   }
 
@@ -165,8 +162,10 @@ export class GridGraphqlComponent implements OnInit {
     });
   }
 
-  saveCurrentFilters(grid) {
-    console.log(this.graphqlService.getCurrentFilters());
+  /** Save current Filters, Sorters in LocaleStorage or DB */
+  saveCurrentGridState(grid) {
+    console.log('GraphQL current filters', this.graphqlService.getCurrentFilters());
+    console.log('GraphQL current sorters', this.graphqlService.getCurrentSorters());
   }
 
   switchLanguage() {
