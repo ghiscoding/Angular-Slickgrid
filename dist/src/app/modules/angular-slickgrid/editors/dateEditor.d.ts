@@ -1,4 +1,4 @@
-import { Column, Editor, GridOption } from './../models';
+import { Column, Editor, GridOption } from './../models/index';
 export declare class DateEditor implements Editor {
     private args;
     $input: any;

@@ -1,10 +1,11 @@
-import { OnInit, AfterViewInit } from '@angular/core';
-import { FilterService } from '../services/filter.service';
-import { SortService } from './../services/sort.service';
-import { GridOption } from './../models';
-export declare class SlickPaginationComponent implements AfterViewInit, OnInit {
+import { OnDestroy, AfterViewInit } from '@angular/core';
+import { GridOption } from './../models/index';
+import { FilterService, SortService } from './../services/index';
+export declare class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     private filterService;
     private sortService;
+    private _filterSubcription;
+    private _sorterSubcription;
     private _gridPaginationOptions;
     private _isFirstRender;
     gridPaginationOptions: GridOption;
@@ -18,14 +19,17 @@ export declare class SlickPaginationComponent implements AfterViewInit, OnInit {
     paginationCallback: Function;
     paginationPageSizes: number[];
     fromToParams: any;
+    /** Constructor */
     constructor(filterService: FilterService, sortService: SortService);
-    ngOnInit(): void;
+    ngOnDestroy(): void;
     ngAfterViewInit(): void;
     ceil(number: number): number;
     changeToFirstPage(event: any): void;
     changeToLastPage(event: any): void;
     changeToNextPage(event: any): void;
     changeToPreviousPage(event: any): void;
+    changeToCurrentPage(event: any): void;
+    dispose(): void;
     onChangeItemPerPage(event: any): void;
     refreshPagination(isPageNumberReset?: boolean): void;
     onPageChanged(event: Event | undefined, pageNumber: number): Promise<void>;

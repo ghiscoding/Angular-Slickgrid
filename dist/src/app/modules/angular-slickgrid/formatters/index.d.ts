@@ -1,4 +1,4 @@
-import { Column } from './../models';
+import { Column } from './../models/index';
 /** Provides a list of different Formatters that will change the cell value displayed in the UI */
 export declare const Formatters: {
     arrayToCsv: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;

@@ -1,4 +1,4 @@
-import { Editor } from './../models';
+import { Editor } from './../models/index';
 export declare class TextEditor implements Editor {
     private args;
     $input: any;

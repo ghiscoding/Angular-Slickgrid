@@ -1,15 +1,13 @@
-import { Column, Filter } from './../models';
-import { FilterArguments } from '../models/filterArguments.interface';
-import { FilterCallback } from './../models/filterCallback.interface';
 import { TranslateService } from '@ngx-translate/core';
+import { Column, Filter, FilterArguments, FilterCallback, MultipleSelectOption, SearchTerm } from './../models/index';
 export declare class MultipleSelectFilter implements Filter {
     private translate;
     $filterElm: any;
     grid: any;
-    searchTerms: string[] | number[] | boolean[];
+    searchTerms: SearchTerm[];
     columnDef: Column;
     callback: FilterCallback;
-    defaultOptions: any;
+    defaultOptions: MultipleSelectOption;
     isFilled: boolean;
     /**
      * Initialize the Filter
@@ -27,6 +25,10 @@ export declare class MultipleSelectFilter implements Filter {
      * destroy the filter
      */
     destroy(): void;
+    /**
+     * Set value(s) on the DOM element
+     */
+    setValues(values: any): void;
     /**
      * Create the HTML template as a string
      */

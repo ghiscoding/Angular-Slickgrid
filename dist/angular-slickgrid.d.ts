@@ -44,7 +44,6 @@ export { translateBooleanFormatter as ɵbn } from './src/app/modules/angular-sli
 export { translateFormatter as ɵbm } from './src/app/modules/angular-slickgrid/formatters/translateFormatter';
 export { uppercaseFormatter as ɵbo } from './src/app/modules/angular-slickgrid/formatters/uppercaseFormatter';
 export { yesNoFormatter as ɵbp } from './src/app/modules/angular-slickgrid/formatters/yesNoFormatter';
-export { GridOption as ɵbw } from './src/app/modules/angular-slickgrid/models';
 export { dateIsoSorter as ɵbr } from './src/app/modules/angular-slickgrid/sorters/dateIsoSorter';
 export { dateSorter as ɵbq } from './src/app/modules/angular-slickgrid/sorters/dateSorter';
 export { dateUsShortSorter as ɵbt } from './src/app/modules/angular-slickgrid/sorters/dateUsShortSorter';

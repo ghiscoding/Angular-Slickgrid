@@ -1,4 +1,4 @@
-import { GridOption } from './../models';
+import { GridOption } from './../models/index';
 export declare class ResizerService {
     private _grid;
     private _gridOptions;
@@ -13,9 +13,9 @@ export declare class ResizerService {
      */
     calculateGridNewDimensions(gridOptions: GridOption): any;
     /**
-     * Destroy function when element is destroyed
+     * Dispose function when element is destroyed
      */
-    destroy(): void;
+    dispose(): void;
     /** Resize the datagrid to fit the browser height & width */
     resizeGrid(delay?: number, newSizes?: {
         height: number;

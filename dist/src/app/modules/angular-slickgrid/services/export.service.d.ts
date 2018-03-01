@@ -1,4 +1,4 @@
-import { Column, ExportOption, FileType, GridOption } from './../models';
+import { Column, ExportOption, FileType, GridOption } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
 export interface ExportColumnHeader {
     key: string;

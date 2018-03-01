@@ -1,12 +1,4 @@
-import { AutoResizeOption } from './autoResizeOption.interface';
-import { BackendEventChanged } from './backendEventChanged.interface';
-import { BackendServiceApi } from './backendServiceApi.interface';
-import { ColumnPicker } from './columnPicker.interface';
-import { CheckboxSelector } from './checkboxSelector.interface';
-import { GridMenu } from './gridMenu.interface';
-import { HeaderButton } from './headerButton.interface';
-import { HeaderMenu } from './headerMenu.interface';
-import { Pagination } from './pagination.interface';
+import { AutoResizeOption, BackendEventChanged, BackendServiceApi, Column, ColumnPicker, CheckboxSelector, EditCommand, GridMenu, GridState, HeaderButton, HeaderMenu, Pagination } from './../models/index';
 export interface GridOption {
     /** Defaults to false, which leads to load editor asynchronously (delayed) */
     asyncEditorLoading?: boolean;
@@ -33,8 +25,12 @@ export interface GridOption {
     checkboxSelector?: CheckboxSelector;
     /** Checkbox Select Plugin options (columnTitle, forceFitTitle, syncResizeTitle) */
     columnPicker?: ColumnPicker;
+    /** Unique property name on the dataset used by Slick.Data.DataView */
+    datasetIdPropertyName?: string;
     /** Defaults to false, when enabled will give the possibility to edit cell values with inline editors. */
     editable?: boolean;
+    /** option to intercept edit commands and implement undo support. */
+    editCommandHandler?: (item: any, column: Column, command: EditCommand) => void;
     /** Do we want to enable asynchronous (delayed) post rendering */
     enableAsyncPostRender?: boolean;
     /** Defaults to true, which will automatically resize the grid whenever the browser size changes  */
@@ -93,10 +89,12 @@ export interface GridOption {
     multiColumnSort?: boolean;
     /** DEPRECATED, Please use "backendServiceApi" instead */
     onBackendEventApi?: BackendEventChanged;
-    /** Pagination options, these are used ONLY with a Backend Service API (GraphQL/OData Services) */
+    /** Pagination options, these are currently used ONLY with a Backend Service API (GraphQL/OData Services) */
     pagination?: Pagination;
     /** if you want to pass custom paramaters to your Formatter/Editor or anything else */
     params?: any | any[];
+    /** Query presets before grid load (filters, sorters, pagination) */
+    presets?: GridState;
     /** Register 1 or more Slick Plugins */
     registerPlugins?: any | any[];
     /** Grid row height in pixels (only type the number). Row of cell values. */

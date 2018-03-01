@@ -17,7 +17,7 @@ export interface BackendEventChanged {
     /** How long to wait until we start querying backend to avoid sending too many requests to backend server. Default to 750ms */
     filterTypingDebounce?: number;
     /**
-     * INTERNAL USAGE ONLY by Angular-Validation
+     * INTERNAL USAGE ONLY by Angular-Slickgrid
      * This internal process will be run just before postProcess and is meant to refresh the Dataset & Pagination after a GraphQL call
      */
     internalPostProcess?: (result: GraphqlResult) => void;

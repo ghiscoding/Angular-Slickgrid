@@ -1,12 +1,10 @@
-import { FilterArguments } from './../models/filterArguments.interface';
-import { FilterCallback } from './../models/filterCallback.interface';
-import { Column, Filter } from './../models';
 import { TranslateService } from '@ngx-translate/core';
+import { Column, Filter, FilterArguments, FilterCallback, SearchTerm } from './../models/index';
 export declare class SelectFilter implements Filter {
     private translate;
     $filterElm: any;
     grid: any;
-    searchTerm: string | number | boolean;
+    searchTerm: SearchTerm;
     columnDef: Column;
     callback: FilterCallback;
     constructor(translate: TranslateService);
@@ -22,6 +20,10 @@ export declare class SelectFilter implements Filter {
      * destroy the filter
      */
     destroy(): void;
+    /**
+     * Set value(s) on the DOM element
+     */
+    setValues(values: any): void;
     private buildTemplateHtmlString();
     /**
      * From the html template string, create a DOM element

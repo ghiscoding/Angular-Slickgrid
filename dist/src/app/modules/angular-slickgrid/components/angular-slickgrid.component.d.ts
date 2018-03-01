@@ -19,12 +19,13 @@ import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, EventEmitter, OnDestroy, OnInit } from '@angular/core';
-import { Column, GridOption } from './../models';
+import { Column, GridOption } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
 import { GridEventService } from './../services/gridEvent.service';
 import { GridExtraService } from './../services/gridExtra.service';
+import { GridStateService } from './../services/gridState.service';
 import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -34,13 +35,16 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private filterService;
     private gridExtraService;
     private gridEventService;
+    private gridStateService;
     private resizer;
     private sortService;
     private translate;
     private forRootConfig;
     private _dataset;
     private _dataView;
+    private _eventHandler;
     private _gridOptions;
+    private _translateSubscription;
     grid: any;
     gridPaginationOptions: GridOption;
     gridHeightString: string;
@@ -51,6 +55,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridChanged: EventEmitter<any>;
     onDataviewCreated: EventEmitter<any>;
     onGridCreated: EventEmitter<any>;
+    onGridInitialized: EventEmitter<any>;
     onBeforeGridCreate: EventEmitter<boolean>;
     onBeforeGridDestroy: EventEmitter<any>;
     onAfterGridDestroyed: EventEmitter<boolean>;
@@ -60,7 +65,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridHeight: number;
     gridWidth: number;
     dataset: any[];
-    constructor(controlAndPluginService: ControlAndPluginService, exportService: ExportService, filterService: FilterService, gridExtraService: GridExtraService, gridEventService: GridEventService, resizer: ResizerService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
+    constructor(controlAndPluginService: ControlAndPluginService, exportService: ExportService, filterService: FilterService, gridExtraService: GridExtraService, gridEventService: GridEventService, gridStateService: GridStateService, resizer: ResizerService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
     ngOnInit(): void;
     ngOnDestroy(): void;
     destroy(): void;
@@ -71,6 +76,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
      */
     createBackendApiInternalPostProcessCallback(gridOptions: GridOption): void;
     attachDifferentHooks(grid: any, gridOptions: GridOption, dataView: any): void;
+    attachBackendCallbackFunctions(gridOptions: GridOption): void;
     attachResizeHook(grid: any, options: GridOption): void;
     mergeGridOptions(): GridOption;
     /**

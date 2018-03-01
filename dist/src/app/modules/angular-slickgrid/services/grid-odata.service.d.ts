@@ -1,22 +1,49 @@
 import './global-utilities';
-import { BackendService, FilterChangedArgs, OdataOption, PaginationChangedArgs, SortChangedArgs } from './../models';
+import { BackendService, ColumnFilters, CurrentFilter, CurrentPagination, CurrentSorter, FilterChangedArgs, OdataOption, Pagination, PaginationChangedArgs, SortChanged, SortChangedArgs } from './../models/index';
 import { OdataService } from './odata.service';
-import { Pagination } from './../models/pagination.interface';
 export declare class GridOdataService implements BackendService {
     private odataService;
+    private _currentFilters;
+    private _currentPagination;
+    private _currentSorters;
+    private _columnDefinitions;
+    private _gridOptions;
+    private _grid;
     options: OdataOption;
     pagination: Pagination;
     defaultOptions: OdataOption;
     constructor(odataService: OdataService);
     buildQuery(): string;
-    initOptions(options: OdataOption, pagination?: Pagination): void;
+    init(options: OdataOption, pagination?: Pagination, grid?: any): void;
     updateOptions(serviceOptions?: OdataOption): void;
     removeColumnFilter(fieldName: string): void;
+    /** Get the Filters that are currently used by the grid */
+    getCurrentFilters(): ColumnFilters | CurrentFilter[];
+    /** Get the Pagination that is currently used by the grid */
+    getCurrentPagination(): CurrentPagination;
+    /** Get the Sorters that are currently used by the grid */
+    getCurrentSorters(): CurrentSorter[];
     resetPaginationOptions(): void;
     saveColumnFilter(fieldName: string, value: string, terms?: any[]): void;
     onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string>;
     onPaginationChanged(event: Event, args: PaginationChangedArgs): string;
     onSortChanged(event: Event, args: SortChangedArgs): string;
+    /**
+     * loop through all columns to inspect filters & update backend service filteringOptions
+     * @param columnFilters
+     */
+    updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset?: boolean): void;
+    /**
+     * Update the pagination component with it's new page number and size
+     * @param newPage
+     * @param pageSize
+     */
+    updatePagination(newPage: number, pageSize: number): void;
+    /**
+     * loop through all columns to inspect sorters & update backend service orderBy
+     * @param columnFilters
+     */
+    updateSorters(sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]): string;
     /**
      * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
      * @param string operator
