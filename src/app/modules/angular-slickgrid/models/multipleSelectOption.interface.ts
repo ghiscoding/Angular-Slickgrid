@@ -126,8 +126,11 @@ export interface MultipleSelectOption {
   /** The item styler function, return style string to custom the item style such as background: red. The function take one parameter: value. */
   styler?: () => void;
 
-  labelTemplate?: (any) => any;
-  textTemplate?: (any) => any;
+  /** Returns HTML label attribute of a DOM element */
+  labelTemplate?: (elm: any) => any;
+
+  /** Returns HTML text template of a DOM element */
+  textTemplate?: (elm: any) => any;
 
   // --
   // Events

@@ -58,6 +58,15 @@ export class SelectFilter implements Filter {
     }
   }
 
+  /**
+   * Set value(s) on the DOM element
+   */
+  setValues(values) {
+    if (values) {
+      this.$filterElm.val(values);
+    }
+  }
+
   //
   // private functions
   // ------------------

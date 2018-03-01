@@ -315,17 +315,19 @@ export class FilterService {
     const columnId = columnDef.id || '';
 
     if (columnDef && columnId !== 'selector' && columnDef.filterable) {
-      let searchTerms: SearchTerm[] = (columnDef.filter && columnDef.filter.searchTerms) ? columnDef.filter.searchTerms : undefined;
-      let searchTerm = (columnDef.filter && (columnDef.filter.searchTerm !== undefined || columnDef.filter.searchTerm !== null)) ? columnDef.filter.searchTerm : '';
+      let searchTerms: SearchTerm[];
+      let searchTerm: SearchTerm;
 
-      // keep the filter in a columnFilters for later reference
-      this.keepColumnFilters(searchTerm, searchTerms, columnDef);
-
-      // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
-      // because of that we need to first get searchTerm(s) from the columnFilters (that is what the user last entered)
-      // if nothing is found, we can then use the optional searchTerm(s) passed to the Grid Option (that is couple of lines earlier)
-      searchTerm = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerm : searchTerm || null;
-      searchTerms = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerms : searchTerms || undefined;
+      if (this._columnFilters[columnDef.id]) {
+        searchTerm = this._columnFilters[columnDef.id].searchTerm || undefined;
+        searchTerms = this._columnFilters[columnDef.id].searchTerms || undefined;
+      } else if (columnDef.filter) {
+        // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
+        // because of that we need to first get searchTerm(s) from the columnFilters (that is what the user last entered)
+        searchTerms = columnDef.filter.searchTerms || undefined;
+        searchTerm = columnDef.filter.searchTerm || undefined;
+        this.updateColumnFilters(searchTerm, searchTerms, columnDef);
+      }
 
       const filterArguments: FilterArguments = {
         grid: this._grid,
@@ -370,6 +372,12 @@ export class FilterService {
         } else {
           this._filters[filterExistIndex] = filter;
         }
+
+        // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
+        // we need to also set again the values in the DOM elements if the values were set by a searchTerm(s)
+        if ((searchTerm || searchTerms) && filter.setValues) {
+          filter.setValues(searchTerm || searchTerms);
+        }
       }
     }
   }
@@ -412,7 +420,7 @@ export class FilterService {
     return columnDefinitions;
   }
 
-  private keepColumnFilters(searchTerm: SearchTerm, searchTerms: any, columnDef: any) {
+  private updateColumnFilters(searchTerm: SearchTerm, searchTerms: any, columnDef: any) {
     if (searchTerm !== undefined && searchTerm !== null && searchTerm !== '') {
       this._columnFilters[columnDef.id] = {
         columnId: columnDef.id,
