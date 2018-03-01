@@ -161,11 +161,6 @@ export class GridEditorComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  switchLanguage() {
-    this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(this.selectedLanguage);
-  }
-
   undo() {
     const command = this._commandQueue.pop();
     if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
