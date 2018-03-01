@@ -1,6 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, FilterType, GridOption } from './../modules/angular-slickgrid/models';
-import { FieldType } from './../modules/angular-slickgrid';
+import { Column, FieldType, FilterType, GridOption, GridStateService, OperatorType } from './../modules/angular-slickgrid';
 import { GridOdataService } from './../modules/angular-slickgrid/services/grid-odata.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -25,6 +24,7 @@ export class GridOdataComponent implements OnInit {
         <li>The other operators can be used on column type number for example: ">=100" (bigger or equal than 100)</li>
       </ul>
       <li>OData Service could be replaced by other Service type in the future (GraphQL or whichever you provide)</li>
+      <li>You can also preload a grid with certain "presets" like Filters / Sorters / Pagination <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki - Grid Preset</a>
     </ul>
   `;
   columnDefinitions: Column[];
@@ -35,7 +35,7 @@ export class GridOdataComponent implements OnInit {
   processing = false;
   status = { text: '', class: '' };
 
-  constructor(private http: HttpClient, private odataService: GridOdataService) {}
+  constructor(private http: HttpClient, private gridStateService: GridStateService, private odataService: GridOdataService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -43,7 +43,8 @@ export class GridOdataComponent implements OnInit {
       { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
         filter: {
           type: FilterType.singleSelect,
-          collection: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
+          collection: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ],
+          searchTerm: 'female'
         }
       },
       { id: 'company', name: 'Company', field: 'company' }
@@ -62,12 +63,17 @@ export class GridOdataComponent implements OnInit {
         pageSize: defaultPageSize,
         totalItems: 0
       },
+      presets: {
+        // you can also type operator as string, e.g.: operator: 'EQ'
+        filters: [{ columnId: 'gender', searchTerm: 'male', operator:  OperatorType.equal }],
+        sorters: [{ columnId: 'name', direction: 'desc' }],
+        pagination: { pageNumber: 2, pageSize: 20 }
+      },
       backendServiceApi: {
         service: this.odataService,
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {
-          console.log(response);
           this.displaySpinner(false);
           this.getCustomerCallback(response);
         }
@@ -94,6 +100,10 @@ export class GridOdataComponent implements OnInit {
     // in your case, you will call your WebAPI function (wich needs to return a Promise)
     // for the demo purpose, we will call a mock WebAPI function
     return this.getCustomerDataApiMock(query);
+  }
+
+  saveCurrentGridState(grid) {
+    console.log('OData current grid state', this.gridStateService.getCurrentGridState());
   }
 
   /** This function is only here to mock a WebAPI call (since we are using a JSON file for the demo)

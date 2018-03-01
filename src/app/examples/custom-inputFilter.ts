@@ -1,13 +1,13 @@
-import { Column, Filter, FilterArguments, FilterCallback } from './../modules/angular-slickgrid';
+import { Column, Filter, FilterArguments, FilterCallback, SearchTerm } from './../modules/angular-slickgrid';
 import $ from 'jquery';
 
-// using external js modules in Angular
+// using external non-typed js libraries
 declare var $: any;
 
 export class CustomInputFilter implements Filter {
   private $filterElm: any;
   grid: any;
-  searchTerm: string | number | boolean;
+  searchTerm: SearchTerm;
   columnDef: Column;
   callback: FilterCallback;
 
@@ -50,6 +50,15 @@ export class CustomInputFilter implements Filter {
   destroy() {
     if (this.$filterElm) {
       this.$filterElm.off('keyup').remove();
+    }
+  }
+
+  /**
+   * Set value(s) on the DOM element
+   */
+  setValues(values) {
+    if (values) {
+      this.$filterElm.val(values);
     }
   }
 

@@ -1,7 +1,7 @@
 import $ from 'jquery';
-import { Editor, KeyCode } from './../models';
+import { Editor, KeyCode } from './../models/index';
 
-// using external js modules in Angular
+// using external non-typed js libraries
 declare var $: any;
 
 const defaultDecimalPlaces = 0;

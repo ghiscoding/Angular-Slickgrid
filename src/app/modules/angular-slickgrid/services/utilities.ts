@@ -1,10 +1,10 @@
-import { FieldType, OperatorType } from '../models';
+import { FieldType, OperatorType, FilterType, FormElementType } from '../models/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
-const moment: any = (<any>moment_).default || moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
 /** Simple function to which will loop and create as demanded the number of white spaces,
  * this will be used in the Excel export
@@ -194,12 +194,13 @@ export function mapFlatpickrDateFormatWithFieldType(fieldType: FieldType): strin
 }
 
 /**
- * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
+ * Mapper for query operators (ex.: <= is "le", > is "gt")
  * @param operator
  * @returns string map
  */
 export function mapOperatorType(operator: string): OperatorType {
   let map: OperatorType;
+
   switch (operator) {
     case '<':
       map = OperatorType.lessThan;
@@ -242,6 +243,30 @@ export function mapOperatorType(operator: string): OperatorType {
     case 'NIN':
     case 'NOT_IN':
       map = OperatorType.notIn;
+      break;
+    default:
+      map = OperatorType.contains;
+      break;
+  }
+
+  return map;
+}
+
+/**
+ * Mapper for query operator by a Filter Type
+ * For example a multiple-select typically uses 'IN' operator
+ * @param operator
+ * @returns string map
+ */
+export function mapOperatorByFilterType(filterType: FilterType | FormElementType): OperatorType {
+  let map: OperatorType;
+
+  switch (filterType) {
+    case FilterType.multipleSelect:
+      map = OperatorType.in;
+      break;
+    case FilterType.singleSelect:
+      map = OperatorType.equal;
       break;
     default:
       map = OperatorType.contains;

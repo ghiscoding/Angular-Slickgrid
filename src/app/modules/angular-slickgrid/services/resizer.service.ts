@@ -1,4 +1,4 @@
-import { GridOption } from './../models';
+import { GridOption } from './../models/index';
 import $ from 'jquery';
 declare var $: any;
 
@@ -83,9 +83,9 @@ export class ResizerService {
   }
 
   /**
-   * Destroy function when element is destroyed
+   * Dispose function when element is destroyed
    */
-  destroy() {
+  dispose() {
     $(window).off('resize.grid');
   }
 

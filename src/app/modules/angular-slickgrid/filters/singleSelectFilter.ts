@@ -1,22 +1,19 @@
-import { Column, Filter } from './../models';
-import { FilterArguments } from '../models/filterArguments.interface';
-import { FilterCallback } from './../models/filterCallback.interface';
-import { SelectOption } from './../models/selectOption.interface';
 import { TranslateService } from '@ngx-translate/core';
+import { Column, Filter, FilterArguments, FilterCallback, MultipleSelectOption, SearchTerm, SelectOption } from './../models/index';
 import $ from 'jquery';
 import { Injectable } from '@angular/core';
 
-// using external js modules in Angular
+// using external non-typed js libraries
 declare var $: any;
 
 @Injectable()
 export class SingleSelectFilter implements Filter {
   $filterElm: any;
   grid: any;
-  searchTerm: number | string | boolean;
+  searchTerm: SearchTerm;
   columnDef: Column;
   callback: FilterCallback;
-  defaultOptions: any;
+  defaultOptions: MultipleSelectOption;
 
   constructor(private translate: TranslateService) {
     // default options used by this Filter, user can overwrite any of these by passing "otions"
@@ -79,6 +76,16 @@ export class SingleSelectFilter implements Filter {
     }
   }
 
+  /**
+   * Set value(s) on the DOM element
+   */
+  setValues(values) {
+    if (values) {
+      values = Array.isArray(values) ? values : [values];
+      this.$filterElm.multipleSelect('setSelects', values);
+    }
+  }
+
   //
   // private functions
   // ------------------
@@ -134,7 +141,7 @@ export class SingleSelectFilter implements Filter {
     }
 
     // merge options & attach multiSelect
-    const options = { ...this.defaultOptions, ...this.columnDef.filter.filterOptions };
+    const options: MultipleSelectOption = { ...this.defaultOptions, ...this.columnDef.filter.filterOptions };
     this.$filterElm = this.$filterElm.multipleSelect(options);
   }
 }

@@ -1,12 +1,12 @@
 import { mapFlatpickrDateFormatWithFieldType } from './../services/utilities';
-import { Column, Editor, FieldType, GridOption } from './../models';
+import { Column, Editor, FieldType, GridOption } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
 import $ from 'jquery';
 
 declare function require(name: string);
 require('flatpickr');
 
-// using external js modules in Angular
+// using external non-typed js libraries
 declare var $: any;
 
 /*

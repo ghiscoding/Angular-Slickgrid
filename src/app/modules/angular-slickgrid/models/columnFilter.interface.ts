@@ -1,7 +1,13 @@
-import { Column } from './column.interface';
-import { Filter } from './filter.interface';
-import { FilterType } from './filterType';
-import { FormElementType } from './formElementType';
+import {
+  Column,
+  Filter,
+  FilterType,
+  FormElementType,
+  MultipleSelectOption,
+  OperatorString,
+  OperatorType,
+  SearchTerm
+} from './../models/index';
 
 export interface ColumnFilter {
   /** Do we want to bypass the Backend Query? Commonly used with an OData Backend Service, if we want to filter without calling the regular OData query. */
@@ -17,13 +23,13 @@ export interface ColumnFilter {
   customFilter?: Filter;
 
   /** Search term (singular) */
-  searchTerm?: string | number | boolean;
+  searchTerm?: SearchTerm;
 
   /** Search terms (collection) */
-  searchTerms?: string[] | number[] | boolean[];
+  searchTerms?: SearchTerm[];
 
   /** Operator to use when filtering (>, >=, EQ, IN, ...) */
-  operator?: string;
+  operator?: OperatorType | OperatorString;
 
   /** Filter Type to use (input, multipleSelect, singleSelect, select, custom) */
   type?: FilterType | FormElementType;
@@ -32,7 +38,7 @@ export interface ColumnFilter {
   collection?: any[];
 
   /** Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250} */
-  filterOptions?: any;
+  filterOptions?: MultipleSelectOption | any;
 
   /** DEPRECATED, please use "collection" instead which is more generic and not specific to a Select Filter. Refer to the Select Filter Wiki page for more info: https://github.com/ghiscoding/Angular-Slickgrid/wiki/Select-Filter  */
   selectOptions?: any[];

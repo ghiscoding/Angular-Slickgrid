@@ -14,8 +14,12 @@
             </label>
         </span>
         <div class="row col-sm-12">
-            <button class="btn btn-default btn-sm" (click)="switchLanguage()">Switch Language</button>
-            <b>Locale:</b> <span style="font-style: italic">{{selectedLanguage + '.json'}}</span>
+            <span>
+                <button class="btn btn-default btn-sm" (click)="undo()">
+                    <i class="fa fa-undo"></i>
+                    Undo last edit(s)
+                </button>
+            </span>
         </div>
     </div>
 
@@ -24,6 +28,9 @@
     <div class="col-sm-8">
         <div class="alert alert-info" *ngIf="updatedObject">
             <strong>Update Object:</strong> {{updatedObject | json}}
+        </div>
+        <div class="alert alert-warning" *ngIf="alertWarning">
+            <strong>Update Object:</strong> {{alertWarning}}
         </div>
     </div>
 

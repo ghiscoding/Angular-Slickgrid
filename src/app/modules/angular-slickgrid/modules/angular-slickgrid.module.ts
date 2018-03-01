@@ -8,7 +8,8 @@ import { FilterService } from './../services/filter.service';
 import { GridOdataService } from './../services/grid-odata.service';
 import { GridOption } from './../models/gridOption.interface';
 import { GridEventService } from './../services/gridEvent.service';
-import { GridExtraService } from '../services/gridExtra.service';
+import { GridExtraService } from './../services/gridExtra.service';
+import { GridStateService } from './../services/gridState.service';
 import { GraphqlService } from './../services/graphql.service';
 import { OdataService } from './../services/odata.service';
 import { ResizerService } from './../services/resizer.service';
@@ -42,6 +43,7 @@ export class AngularSlickgridModule {
         GridEventService,
         GridExtraService,
         GridOdataService,
+        GridStateService,
         OdataService,
         ResizerService,
         SortService

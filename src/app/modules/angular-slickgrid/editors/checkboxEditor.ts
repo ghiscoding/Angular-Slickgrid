@@ -1,7 +1,7 @@
 import $ from 'jquery';
-import { Editor } from './../models';
+import { Editor } from './../models/index';
 
-// using external js modules in Angular
+// using external non-typed js libraries
 declare var $: any;
 
 /*

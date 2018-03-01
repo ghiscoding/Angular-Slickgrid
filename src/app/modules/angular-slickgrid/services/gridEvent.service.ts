@@ -1,10 +1,15 @@
-import { OnEventArgs, CellArgs, GridOption } from './../models';
+import { OnEventArgs, CellArgs, GridOption } from './../models/index';
+
+// using external non-typed js libraries
+declare var Slick: any;
 
 export class GridEventService {
+  private _eventHandler: any = new Slick.EventHandler();
+
   /* OnCellChange Event */
   attachOnCellChange(grid: any, gridOptions: GridOption, dataView: any) {
     // subscribe to this Slickgrid event of onCellChange
-    grid.onCellChange.subscribe((e: Event, args: CellArgs) => {
+    this._eventHandler.subscribe(grid.onCellChange, (e: Event, args: CellArgs) => {
       if (!e || !args || !args.grid || args.cell === undefined || !args.grid.getColumns || !args.grid.getDataItem) {
         return;
       }
@@ -31,8 +36,7 @@ export class GridEventService {
   }
   /* OnClick Event */
   attachOnClick(grid: any, gridOptions: GridOption, dataView: any) {
-
-    grid.onClick.subscribe((e: Event, args: CellArgs) => {
+    this._eventHandler.subscribe(grid.onClick, (e: Event, args: CellArgs) => {
       if (!e || !args || !args.grid || args.cell === undefined || !args.grid.getColumns || !args.grid.getDataItem) {
         return;
       }
@@ -62,5 +66,9 @@ export class GridEventService {
         // e.stopImmediatePropagation();
       }
     });
+  }
+
+  dispose() {
+    this._eventHandler.unsubscribeAll();
   }
 }

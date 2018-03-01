@@ -1,0 +1,6 @@
+<div id="slickGridContainer-{{gridId}}" class="gridPane">
+    <div attr.id='{{gridId}}' class="slickgrid-container" [style.height]="gridHeightString" [style.width]="gridWidthString">
+    </div>
+
+    <slick-pagination id="slickPagingContainer-{{gridId}}" *ngIf="showPagination" [gridPaginationOptions]="gridPaginationOptions"></slick-pagination>
+</div>

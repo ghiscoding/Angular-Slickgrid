@@ -1,12 +1,15 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
 import { Column, Editors, FieldType, Formatters, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
+
+// using external non-typed js libraries
+declare var Slick: any;
 
 @Component({
   templateUrl: './grid-editor.component.html'
 })
 @Injectable()
-export class GridEditorComponent implements OnInit {
+export class GridEditorComponent implements OnInit, OnDestroy {
   title = 'Example 3: Editors';
   subTitle = `
   Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors" target="_blank">Wiki link</a>).
@@ -17,10 +20,12 @@ export class GridEditorComponent implements OnInit {
   </ul>
   `;
 
+  private _commandQueue = [];
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
   isAutoEdit = true;
+  alertWarning: any;
   updatedObject: any;
   gridObj: any;
   dataviewObj: any;
@@ -29,6 +34,17 @@ export class GridEditorComponent implements OnInit {
   constructor(private gridExtraService: GridExtraService, private resizer: ResizerService, private translate: TranslateService) {}
 
   ngOnInit(): void {
+    this.prepareGrid();
+  }
+
+  ngOnDestroy(): void {
+    // unsubscrible any Slick.Event you might have used
+    // a reminder again, these are SlickGrid Event, not RxJS events
+    this.gridObj.onCellChange.unsubscribe();
+    this.gridObj.onClick.unsubscribe();
+  }
+
+  prepareGrid() {
     this.columnDefinitions = [
       {
         id: 'edit', field: 'id',
@@ -38,7 +54,7 @@ export class GridEditorComponent implements OnInit {
         // use onCellClick OR grid.onClick.subscribe which you can see down below
         onCellClick: (args: OnEventArgs) => {
           console.log(args);
-          alert(`Editing: ${args.dataContext.title}`);
+          this.alertWarning = `Editing: ${args.dataContext.title}`;
           this.gridExtraService.highlightRow(args.row, 1500);
           this.gridExtraService.setSelectedRow(args.row);
         }
@@ -51,14 +67,14 @@ export class GridEditorComponent implements OnInit {
         // use onCellClick OR grid.onClick.subscribe which you can see down below
         onCellClick: (args: OnEventArgs) => {
           console.log(args);
-          alert(`Deleting: ${args.dataContext.title}`);
+          this.alertWarning = `Deleting: ${args.dataContext.title}`;
         }
       },
       { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, editor: Editors.longText },
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, editor: Editors.text,
         onCellChange: (args: OnEventArgs) => {
-        alert('onCellChange directly attached to the column definition');
-        console.log(args);
+          console.log(args);
+          this.alertWarning = 'onCellChange triggered and attached to the column definition';
         }
       },
       { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, editor: Editors.integer },
@@ -76,7 +92,11 @@ export class GridEditorComponent implements OnInit {
       },
       editable: true,
       enableColumnPicker: true,
-      enableCellNavigation: true
+      enableCellNavigation: true,
+      editCommandHandler: (item, column, editCommand) => {
+        this._commandQueue.push(editCommand);
+        editCommand.execute();
+      }
     };
 
     // mock a dataset
@@ -116,7 +136,7 @@ export class GridEditorComponent implements OnInit {
       const column = GridExtraUtils.getColumnDefinitionAndData(args);
       console.log('onClick', args, column);
       if (column.columnDef.id === 'edit') {
-        alert('open a modal window to edit: ' + column.dataContext.title);
+        this.alertWarning = `open a modal window to edit: ${column.dataContext.title}`;
 
         // highlight the row, to customize the color, you can change the SASS variable $row-highlight-background-color
         this.gridExtraService.highlightRow(args.row, 1500);
@@ -141,8 +161,11 @@ export class GridEditorComponent implements OnInit {
     return true;
   }
 
-  switchLanguage() {
-    this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(this.selectedLanguage);
+  undo() {
+    const command = this._commandQueue.pop();
+    if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+      command.undo();
+      this.gridObj.gotoCell(command.row, command.cell, false);
+    }
   }
 }

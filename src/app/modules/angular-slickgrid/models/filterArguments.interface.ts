@@ -1,13 +1,12 @@
-import { Column } from './column.interface';
 import { TranslateService } from '@ngx-translate/core';
-import { FilterCallback } from './filterCallback.interface';
+import { Column, FilterCallback, SearchTerm } from './../models/index';
 
 export interface FilterArguments {
   grid: any;
   columnDef: Column;
   callback: FilterCallback;
-  searchTerm?: string | number | boolean;
-  searchTerms?: string[] | number[] | boolean[];
+  searchTerm?: SearchTerm;
+  searchTerms?: SearchTerm[];
   i18n?: TranslateService;
   params?: any | any[];
 }

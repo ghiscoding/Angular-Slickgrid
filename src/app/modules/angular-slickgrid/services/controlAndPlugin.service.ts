@@ -13,12 +13,12 @@ import {
   HeaderMenuOnCommandArgs,
   HeaderMenuOnBeforeMenuShowArgs,
   FileType
-} from './../models';
+} from './../models/index';
 import $ from 'jquery';
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './../services/utilities';
 
-// using external js modules in Angular
+// using external non-typed js libraries
 declare var Slick: any;
 declare var $: any;
 
@@ -91,7 +91,10 @@ export class ControlAndPluginService {
       });
     }
     if (options.enableHeaderMenu) {
-      this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenu || {});
+      const headerMenuOptions = options.headerMenu || {};
+      headerMenuOptions.minWidth = headerMenuOptions.minWidth || 140;
+      headerMenuOptions.autoAlignOffset = headerMenuOptions.autoAlignOffset || 12;
+      this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(headerMenuOptions);
       grid.registerPlugin(this.headerMenuPlugin);
       this.headerMenuPlugin.onCommand.subscribe((e: Event, args: HeaderMenuOnCommandArgs) => {
         if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
@@ -197,7 +200,7 @@ export class ControlAndPluginService {
     this._grid.autosizeColumns();
   }
 
-  destroy() {
+  dispose() {
     this._grid = null;
     this._dataView = null;
     this.visibleColumns = [];

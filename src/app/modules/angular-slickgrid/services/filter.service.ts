@@ -1,36 +1,43 @@
-import { Filter } from './../models/filter.interface';
-import { FilterArguments } from './../models/filterArguments.interface';
 import { EventEmitter, Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { Filters } from './../filters';
 import {
   Column,
   ColumnFilters,
+  Filter,
+  FilterArguments,
   FieldType,
   FilterType,
   GridOption,
-  SlickEvent
+  OperatorType,
+  CurrentFilter,
+  SearchTerm,
+  SlickEvent,
+  OperatorString
 } from './../models/index';
-import { TranslateService } from '@ngx-translate/core';
 
-// using external js modules in Angular
+// using external non-typed js libraries
 declare var Slick: any;
 
 @Injectable()
 export class FilterService {
+  private _eventHandler = new Slick.EventHandler();
+  private _subscriber: SlickEvent = new Slick.Event();
   private _filters: any[] = [];
   private _columnFilters: ColumnFilters = {};
   private _dataView: any;
   private _grid: any;
+  private _gridOptions: GridOption;
   private _onFilterChangedOptions: any;
-  private subscriber: SlickEvent;
   onFilterChanged = new EventEmitter<string>();
 
   constructor(private translate: TranslateService) { }
 
   init(grid: any, gridOptions: GridOption, columnDefinitions: Column[]): void {
     this._grid = grid;
+    this._gridOptions = gridOptions;
   }
 
   /**
@@ -39,12 +46,12 @@ export class FilterService {
    * @param gridOptions Grid Options object
    */
   attachBackendOnFilter(grid: any, options: GridOption) {
-    this.subscriber = new Slick.Event();
-    this.emitFilterChangedBy('remote');
-    this.subscriber.subscribe(this.attachBackendOnFilterSubscribe);
-
     this._filters = [];
-    grid.onHeaderRowCellRendered.subscribe((e: Event, args: any) => {
+    this.emitFilterChangedBy('remote');
+    this._subscriber.subscribe(this.attachBackendOnFilterSubscribe);
+
+    // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
+    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: Event, args: any) => {
       this.addFilterTemplateToHeaderRow(args);
     });
   }
@@ -117,21 +124,21 @@ export class FilterService {
    */
   attachLocalOnFilter(grid: any, options: GridOption, dataView: any) {
     this._dataView = dataView;
-    this.subscriber = new Slick.Event();
+    this._filters = [];
     this.emitFilterChangedBy('local');
 
     dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
     dataView.setFilter(this.customLocalFilter.bind(this, dataView));
 
-    this.subscriber.subscribe((e: any, args: any) => {
+    this._subscriber.subscribe((e: any, args: any) => {
       const columnId = args.columnId;
       if (columnId != null) {
         dataView.refresh();
       }
     });
 
-    this._filters = [];
-    grid.onHeaderRowCellRendered.subscribe((e: Event, args: any) => {
+    // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
+    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: Event, args: any) => {
       this.addFilterTemplateToHeaderRow(args);
     });
   }
@@ -141,8 +148,10 @@ export class FilterService {
       const columnFilter = args.columnFilters[columnId];
       const columnIndex = args.grid.getColumnIndex(columnId);
       const columnDef = args.grid.getColumns()[columnIndex];
+      if (!columnDef) {
+        return false;
+      }
       const fieldType = columnDef.type || FieldType.string;
-      const conditionalFilterFn = (columnDef.filter && columnDef.filter.conditionalFilter) ? columnDef.filter.conditionalFilter : null;
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
 
       let cellValue = item[columnDef.queryField || columnDef.field];
@@ -182,9 +191,8 @@ export class FilterService {
         return true;
       }
 
-      // filter search terms should always be string (even though we permit the end user to input numbers)
-      // so make sure each term are strings
-      // run a query if user has some default search terms
+      // filter search terms should always be string type (even though we permit the end user to input numbers)
+      // so make sure each term are strings, if user has some default search terms, we will cast them to string
       if (searchTerms && Array.isArray(searchTerms)) {
         for (let k = 0, ln = searchTerms.length; k < ln; k++) {
           // make sure all search terms are strings
@@ -212,9 +220,7 @@ export class FilterService {
         cellValueLastChar: lastValueChar,
         filterSearchType
       };
-      if (conditionalFilterFn && typeof conditionalFilterFn === 'function') {
-        conditionalFilterFn(conditionOptions);
-      }
+
       if (!FilterConditions.executeMappedCondition(conditionOptions)) {
         return false;
       }
@@ -222,17 +228,22 @@ export class FilterService {
     return true;
   }
 
-  destroy() {
-    this.destroyFilters();
-    if (this.subscriber && typeof this.subscriber.unsubscribe === 'function') {
-      this.subscriber.unsubscribe();
+  dispose() {
+    this.disposeColumnFilters();
+
+    // unsubscribe all SlickGrid events
+    this._eventHandler.unsubscribeAll();
+
+    // unsubscribe local event
+    if (this._subscriber && typeof this._subscriber.unsubscribe === 'function') {
+      this._subscriber.unsubscribe();
     }
   }
 
   /**
-   * Destroy the filters, since it's a singleton, we don't want to affect other grids with same columns
+   * Dispose of the filters, since it's a singleton, we don't want to affect other grids with same columns
    */
-  destroyFilters() {
+  disposeColumnFilters() {
     // we need to loop through all columnFilters and delete them 1 by 1
     // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
     for (const columnId in this._columnFilters) {
@@ -249,7 +260,26 @@ export class FilterService {
     });
   }
 
-  callbackSearchEvent(e: Event | undefined, args: { columnDef: Column, operator?: string, searchTerms?: string[] | number[] }) {
+  getColumnFilters() {
+    return this._columnFilters;
+  }
+
+  getCurrentLocalFilters(): CurrentFilter[] {
+    const currentFilters: CurrentFilter[] = [];
+    if (this._columnFilters) {
+      for (const colId of Object.keys(this._columnFilters)) {
+        const columnFilter = this._columnFilters[colId];
+        currentFilters.push({
+          columnId: colId,
+          searchTerm: (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined,
+          searchTerms: (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null
+        });
+      }
+    }
+    return currentFilters;
+  }
+
+  callbackSearchEvent(e: Event | undefined, args: { columnDef: Column, operator?: OperatorType | OperatorString, searchTerms?: string[] | number[] }) {
     const targetValue = (e && e.target) ? (e.target as HTMLInputElement).value : undefined;
     const searchTerms = (args && args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : [];
     const columnId = (args && args.columnDef) ? args.columnDef.id || '' : '';
@@ -263,13 +293,13 @@ export class FilterService {
       this._columnFilters[colId] = {
         columnId: colId,
         columnDef: args.columnDef || null,
+        operator: args.operator || undefined,
         searchTerms: args.searchTerms || undefined,
         searchTerm: ((e && e.target) ? (e.target as HTMLInputElement).value : null),
-        operator: args.operator || null
       };
     }
 
-    this.triggerEvent(this.subscriber, {
+    this.triggerEvent(this._subscriber, {
       columnId,
       columnDef: args.columnDef || null,
       columnFilters: this._columnFilters,
@@ -285,17 +315,19 @@ export class FilterService {
     const columnId = columnDef.id || '';
 
     if (columnDef && columnId !== 'selector' && columnDef.filterable) {
-      let searchTerms: string[] | number[] | boolean[] = (columnDef.filter && columnDef.filter.searchTerms) ? columnDef.filter.searchTerms : null;
-      let searchTerm = (columnDef.filter && (columnDef.filter.searchTerm !== undefined || columnDef.filter.searchTerm !== null)) ? columnDef.filter.searchTerm : '';
+      let searchTerms: SearchTerm[];
+      let searchTerm: SearchTerm;
 
-      // keep the filter in a columnFilters for later reference
-      this.keepColumnFilters(searchTerm, searchTerms, columnDef);
-
-      // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
-      // because of that we need to first get searchTerm(s) from the columnFilters (that is what the user last entered)
-      // if nothing is found, we can then use the optional searchTerm(s) passed to the Grid Option (that is couple of lines earlier)
-      searchTerm = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerm : searchTerm || null;
-      searchTerms = (this._columnFilters[columnDef.id]) ? this._columnFilters[columnDef.id].searchTerms : searchTerms || null;
+      if (this._columnFilters[columnDef.id]) {
+        searchTerm = this._columnFilters[columnDef.id].searchTerm || undefined;
+        searchTerms = this._columnFilters[columnDef.id].searchTerms || undefined;
+      } else if (columnDef.filter) {
+        // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
+        // because of that we need to first get searchTerm(s) from the columnFilters (that is what the user last entered)
+        searchTerms = columnDef.filter.searchTerms || undefined;
+        searchTerm = columnDef.filter.searchTerm || undefined;
+        this.updateColumnFilters(searchTerm, searchTerms, columnDef);
+      }
 
       const filterArguments: FilterArguments = {
         grid: this._grid,
@@ -340,6 +372,12 @@ export class FilterService {
         } else {
           this._filters[filterExistIndex] = filter;
         }
+
+        // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
+        // we need to also set again the values in the DOM elements if the values were set by a searchTerm(s)
+        if ((searchTerm || searchTerms) && filter.setValues) {
+          filter.setValues(searchTerm || searchTerms);
+        }
       }
     }
   }
@@ -350,15 +388,45 @@ export class FilterService {
    * @param sender
    */
   emitFilterChangedBy(sender: string) {
-    this.subscriber.subscribe(() => this.onFilterChanged.emit(`onFilterChanged by ${sender}`));
+    this._subscriber.subscribe(() => this.onFilterChanged.emit(`onFilterChanged by ${sender}`));
   }
 
-  private keepColumnFilters(searchTerm: string | number | boolean, searchTerms: any, columnDef: any) {
+  /**
+   * When user passes an array of preset filters, we need to pre-polulate each column filter searchTerm(s)
+   * The process is to loop through the preset filters array, find the associated column from columnDefinitions and fill in the filter object searchTerm(s)
+   * This is basically the same as if we would manually add searchTerm(s) to a column filter object in the column definition, but we do it programmatically.
+   * At the end of the day, when creating the Filter (DOM Element), it will use these searchTerm(s) so we can take advantage of that without recoding each Filter type (DOM element)
+   * @param gridOptions
+   * @param columnDefinitions
+   */
+  populateColumnFilterSearchTerms(gridOptions: GridOption, columnDefinitions: Column[]) {
+    if (gridOptions.presets && gridOptions.presets.filters) {
+      const filters = gridOptions.presets.filters;
+      columnDefinitions.forEach((columnDef: Column) =>  {
+        const columnPreset = filters.find((presetFilter: CurrentFilter) => {
+          return presetFilter.columnId === columnDef.id;
+        });
+        if (columnPreset && columnPreset.searchTerm) {
+          columnDef.filter = columnDef.filter || {};
+          columnDef.filter.searchTerm = columnPreset.searchTerm;
+        }
+        if (columnPreset && columnPreset.searchTerms) {
+          columnDef.filter = columnDef.filter || {};
+          columnDef.filter.operator = columnDef.filter.operator || OperatorType.in;
+          columnDef.filter.searchTerms = columnPreset.searchTerms;
+        }
+      });
+    }
+    return columnDefinitions;
+  }
+
+  private updateColumnFilters(searchTerm: SearchTerm, searchTerms: any, columnDef: any) {
     if (searchTerm !== undefined && searchTerm !== null && searchTerm !== '') {
       this._columnFilters[columnDef.id] = {
         columnId: columnDef.id,
         columnDef,
         searchTerm,
+        operator: (columnDef && columnDef.filter && columnDef.filter.operator) ? columnDef.filter.operator : null,
         type: (columnDef && columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input
       };
     }
@@ -368,6 +436,7 @@ export class FilterService {
         columnId: columnDef.id,
         columnDef,
         searchTerms,
+        operator: (columnDef && columnDef.filter && columnDef.filter.operator) ? columnDef.filter.operator : null,
         type: (columnDef && columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input
       };
     }

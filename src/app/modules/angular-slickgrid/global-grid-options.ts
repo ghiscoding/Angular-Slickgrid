@@ -1,4 +1,4 @@
-import { DelimiterType, FileType,  GridOption } from './models';
+import { DelimiterType, FileType,  GridOption } from './models/index';
 
 /**
  * Options that can be passed to the Bootstrap-Datetimepicker directly
@@ -21,6 +21,7 @@ export const GlobalGridOptions: GridOption = {
     hideForceFitButton: false,
     hideSyncResizeButton: true
   },
+  datasetIdPropertyName: 'id',
   editable: false,
   enableAutoResize: true,
   enableCellNavigation: false,

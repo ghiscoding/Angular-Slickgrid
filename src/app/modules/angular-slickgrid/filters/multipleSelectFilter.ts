@@ -1,22 +1,19 @@
-import { Column, Filter } from './../models';
-import { FilterArguments } from '../models/filterArguments.interface';
-import { FilterCallback } from './../models/filterCallback.interface';
-import { SelectOption } from './../models/selectOption.interface';
-import { TranslateService } from '@ngx-translate/core';
-import $ from 'jquery';
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Column, Filter, FilterArguments, FilterCallback, MultipleSelectOption, SearchTerm, SelectOption } from './../models/index';
+import $ from 'jquery';
 
-// using external js modules in Angular
+// using external non-typed js libraries
 declare var $: any;
 
 @Injectable()
 export class MultipleSelectFilter implements Filter {
   $filterElm: any;
   grid: any;
-  searchTerms: string[] | number[] | boolean[];
+  searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
-  defaultOptions: any;
+  defaultOptions: MultipleSelectOption;
   isFilled = false;
 
   /**
@@ -93,6 +90,15 @@ export class MultipleSelectFilter implements Filter {
     }
   }
 
+  /**
+   * Set value(s) on the DOM element
+   */
+  setValues(values) {
+    if (values) {
+      this.$filterElm.multipleSelect('setSelects', values);
+    }
+  }
+
   //
   // private functions
   // ------------------
@@ -157,7 +163,7 @@ export class MultipleSelectFilter implements Filter {
     }
 
     // merge options & attach multiSelect
-    const options = { ...this.defaultOptions, ...this.columnDef.filter.filterOptions };
+    const options: MultipleSelectOption = { ...this.defaultOptions, ...this.columnDef.filter.filterOptions };
     this.$filterElm = this.$filterElm.multipleSelect(options);
   }
 
