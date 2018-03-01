@@ -1,15 +1,24 @@
-import { Editor } from ".";
+import { Editor } from './editor.interface';
 
 export interface EditCommand {
-    row: number;
-    cell: number;
-    editor: Editor | any;
-    serializedValue: any;
-    prevSerializedValue: any;
+  /** The row of the cell being edited */
+  row: number;
 
-    /** Call to commit changes*/
-    execute: () => void;
+  /** The column of the cell being edited */
+  cell: number;
 
-    /** Call to rollback changes*/
-    undo: () => void;
+  /** a reference to the cell editor */
+  editor: Editor | any;
+
+  /** The result of calling editor.serializeValue() right before destroying the editor */
+  serializedValue: any;
+
+  /** The result of calling editor.serializeValue() before the changes have been made by the user */
+  prevSerializedValue: any;
+
+  /** Call to commit changes */
+  execute: () => void;
+
+  /** Call to rollback changes */
+  undo: () => void;
 }

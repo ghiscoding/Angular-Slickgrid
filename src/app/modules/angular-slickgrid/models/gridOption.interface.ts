@@ -57,7 +57,7 @@ export interface GridOption {
   /** Defaults to false, when enabled will give the possibility to edit cell values with inline editors. */
   editable?: boolean;
 
-  /** option to intercept edit commands and implement undo support.*/
+  /** option to intercept edit commands and implement undo support. */
   editCommandHandler?: (item: any, column: Column, command: EditCommand) => void;
 
   /** Do we want to enable asynchronous (delayed) post rendering */
