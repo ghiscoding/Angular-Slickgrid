@@ -229,7 +229,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
 
       if (gridOptions.backendServiceApi && gridOptions.backendServiceApi.service) {
-        gridOptions.backendServiceApi.service.init(gridOptions.backendServiceApi.options || {}, gridOptions.pagination, this.grid);
+        gridOptions.backendServiceApi.service.init(gridOptions.backendServiceApi.options, gridOptions.pagination, this.grid);
       }
     }
 

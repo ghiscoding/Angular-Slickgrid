@@ -38,7 +38,8 @@ export class GridOdataService implements BackendService {
   pagination: Pagination;
   defaultOptions: OdataOption = {
     top: DEFAULT_ITEMS_PER_PAGE,
-    orderBy: ''
+    orderBy: '',
+    caseType: CaseType.pascalCase
   };
 
   constructor(private odataService: OdataService) { }
@@ -49,8 +50,9 @@ export class GridOdataService implements BackendService {
 
   init(options: OdataOption, pagination?: Pagination, grid?: any): void {
     this._grid = grid;
-    this.odataService.options = { ...this.defaultOptions, ...options, top: options.top || (pagination ? pagination.pageSize : null) || this.defaultOptions.top };
-    this.options = options;
+    const mergedOptions = { ...this.defaultOptions, ...options };
+    this.odataService.options = { ...mergedOptions, top: mergedOptions.top || (pagination ? pagination.pageSize : null) || this.defaultOptions.top };
+    this.options = this.odataService.options;
     this.pagination = pagination;
 
     if (grid && grid.getColumns && grid.getOptions) {
@@ -180,7 +182,7 @@ export class GridOdataService implements BackendService {
           throw new Error('[Backend Service API]: Something went wrong in trying to get the column definition of the specified filter (or preset filters). Did you make a typo on the filter columnId?');
         }
 
-        const fieldName = columnDef.queryField || columnDef.field || columnDef.name || '';
+        let fieldName = columnDef.queryField || columnDef.field || columnDef.name || '';
         const fieldType = columnDef.type || 'string';
         const searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
         let fieldSearchValue = columnFilter.searchTerm;
@@ -219,7 +221,9 @@ export class GridOdataService implements BackendService {
           searchBy = '';
 
           // titleCase the fieldName so that it matches the WebApi names
-          const fieldNameTitleCase = String.titleCase(fieldName || '');
+          if (this.odataService.options.caseType === CaseType.pascalCase) {
+            fieldName = String.titleCase(fieldName || '');
+          }
 
           // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
           if (searchTerms && searchTerms.length > 0) {
@@ -228,14 +232,14 @@ export class GridOdataService implements BackendService {
             if (operator === 'IN') {
               // example:: (Stage eq "Expired" or Stage eq "Renewal")
               for (let j = 0, lnj = searchTerms.length; j < lnj; j++) {
-                tmpSearchTerms.push(`${fieldNameTitleCase} eq '${searchTerms[j]}'`);
+                tmpSearchTerms.push(`${fieldName} eq '${searchTerms[j]}'`);
               }
               searchBy = tmpSearchTerms.join(' or ');
               searchBy = `(${searchBy})`;
             } else if (operator === 'NIN' || operator === 'NOTIN' || operator === 'NOT IN') {
               // example:: (Stage ne "Expired" and Stage ne "Renewal")
               for (let k = 0, lnk = searchTerms.length; k < lnk; k++) {
-                tmpSearchTerms.push(`${fieldNameTitleCase} ne '${searchTerms[k]}'`);
+                tmpSearchTerms.push(`${fieldName} ne '${searchTerms[k]}'`);
               }
               searchBy = tmpSearchTerms.join(' and ');
               searchBy = `(${searchBy})`;
@@ -243,26 +247,26 @@ export class GridOdataService implements BackendService {
           } else if (operator === '*' || lastValueChar !== '') {
             // first/last character is a '*' will be a startsWith or endsWith
             searchBy = operator === '*'
-              ? `endswith(${fieldNameTitleCase}, '${searchValue}')`
-              : `startswith(${fieldNameTitleCase}, '${searchValue}')`;
+              ? `endswith(${fieldName}, '${searchValue}')`
+              : `startswith(${fieldName}, '${searchValue}')`;
           } else if (fieldType === FieldType.date) {
             // date field needs to be UTC and within DateTime function
             const dateFormatted = parseUtcDate(searchValue, true);
             if (dateFormatted) {
-              searchBy = `${fieldNameTitleCase} ${this.mapOdataOperator(operator)} DateTime'${dateFormatted}'`;
+              searchBy = `${fieldName} ${this.mapOdataOperator(operator)} DateTime'${dateFormatted}'`;
             }
           } else if (fieldType === FieldType.string) {
             // string field needs to be in single quotes
             if (operator === '') {
-              searchBy = `substringof('${searchValue}', ${fieldNameTitleCase})`;
+              searchBy = `substringof('${searchValue}', ${fieldName})`;
             } else {
-              // searchBy = `substringof('${searchValue}', ${fieldNameTitleCase}) ${this.mapOdataOperator(operator)} true`;
-              searchBy = `${fieldNameTitleCase} ${this.mapOdataOperator(operator)} '${searchValue}'`;
+              // searchBy = `substringof('${searchValue}', ${fieldNameCased}) ${this.mapOdataOperator(operator)} true`;
+              searchBy = `${fieldName} ${this.mapOdataOperator(operator)} '${searchValue}'`;
             }
           } else {
             // any other field type (or undefined type)
             searchValue = fieldType === FieldType.number ? searchValue : `'${searchValue}'`;
-            searchBy = `${fieldNameTitleCase} ${this.mapOdataOperator(operator)} ${searchValue}`;
+            searchBy = `${fieldName} ${this.mapOdataOperator(operator)} ${searchValue}`;
           }
 
           // push to our temp array and also trim white spaces
