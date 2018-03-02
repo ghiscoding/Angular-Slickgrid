@@ -40,7 +40,7 @@ export class GraphqlService implements BackendService {
   onPaginationRefreshed = new EventEmitter<PaginationChangedArgs>();
   options: GraphqlServiceOption;
   pagination: Pagination | undefined;
-  defaultOrderBy: GraphqlSortingOption = { columnId: 'id', direction: SortDirection.ASC };
+  defaultOrderBy: GraphqlSortingOption = { field: 'id', direction: SortDirection.ASC };
   defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption = {
     first: DEFAULT_ITEMS_PER_PAGE,
     offset: 0
@@ -408,27 +408,34 @@ export class GraphqlService implements BackendService {
    * @param columnFilters
    */
   updateSorters(sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]) {
-    let sortByArray: GraphqlSortingOption[] = [];
+    let currentSorters: CurrentSorter[] = [];
+    let graphqlSorters: GraphqlSortingOption[] = [];
 
     if (!sortColumns && presetSorters) {
-      sortByArray = presetSorters;
+      currentSorters = presetSorters;
 
       // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
-      sortByArray.forEach((sorter) => {
+      currentSorters.forEach((sorter) => {
         sorter.direction = sorter.direction.toUpperCase() as SortDirectionString;
         sorter.sortAsc = (sorter.direction.toUpperCase() === SortDirection.ASC);
       });
-      this._grid.setSortColumns(sortByArray);
+      this._grid.setSortColumns(currentSorters);
     } else if (sortColumns && !presetSorters) {
       // build the orderBy array, it could be multisort, example
       // orderBy:[{field: lastName, direction: ASC}, {field: firstName, direction: DESC}]
       if (sortColumns && sortColumns.length === 0) {
-        sortByArray = new Array(this.defaultOrderBy); // when empty, use the default sort
+        graphqlSorters = new Array(this.defaultOrderBy); // when empty, use the default sort
+        currentSorters = new Array({ columnId: this.defaultOrderBy.direction, direction: this.defaultOrderBy.direction });
       } else {
         if (sortColumns) {
           for (const column of sortColumns) {
-            sortByArray.push({
+            currentSorters.push({
               columnId: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
+              direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
+            });
+
+            graphqlSorters.push({
+              field: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
               direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
             });
           }
@@ -437,8 +444,8 @@ export class GraphqlService implements BackendService {
     }
 
     // keep current Sorters and update the service options with the new sorting
-    this._currentSorters = sortByArray;
-    this.updateOptions({ sortingOptions: sortByArray });
+    this._currentSorters = currentSorters;
+    this.updateOptions({ sortingOptions: graphqlSorters });
   }
 
   /**

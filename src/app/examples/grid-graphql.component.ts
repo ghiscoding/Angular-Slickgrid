@@ -32,8 +32,8 @@ export class GridGraphqlComponent implements OnInit {
   dataset = [];
 
   graphqlQuery = '';
-  processing = false;
-  status = { text: '', class: '' };
+  processing = true;
+  status = { text: 'processing...', class: 'alert alert-danger' };
   isWithCursor = false;
   selectedLanguage: string;
 

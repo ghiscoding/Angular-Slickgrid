@@ -32,8 +32,8 @@ export class GridOdataComponent implements OnInit {
   dataset = [];
 
   odataQuery = '';
-  processing = false;
-  status = { text: '', class: '' };
+  processing = true;
+  status = { text: 'processing...', class: 'alert alert-danger' };
 
   constructor(private http: HttpClient, private gridStateService: GridStateService, private odataService: GridOdataService) {}
 

@@ -20,6 +20,7 @@ import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
 import { BackendServiceOption, Column, GridOption } from './../models/index';
@@ -31,10 +32,10 @@ import { GridEventService } from './../services/gridEvent.service';
 import { GridExtraService } from './../services/gridExtra.service';
 import { GridStateService } from './../services/gridState.service';
 import { ResizerService } from './../services/resizer.service';
+import { SharedService } from '../services/shared.service';
 import { SortService } from './../services/sort.service';
-import { TranslateService } from '@ngx-translate/core';
-import $ from 'jquery';
 import { Subscription } from 'rxjs/Subscription';
+import $ from 'jquery';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -88,6 +89,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private gridEventService: GridEventService,
     private gridStateService: GridStateService,
     private resizer: ResizerService,
+    private sharedService: SharedService,
     private sortService: SortService,
     private translate: TranslateService,
     @Inject('config') private forRootConfig: GridOption
@@ -145,6 +147,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this._dataView.beginUpdate();
     this._dataView.setItems(this._dataset, this._gridOptions.datasetIdPropertyName);
     this._dataView.endUpdate();
+
+    // pass all necessary options to the shared service
+    this.sharedService.init(this.grid, this._dataView, this._gridOptions, this.columnDefinitions);
 
     // attach resize ONLY after the dataView is ready
     this.attachResizeHook(this.grid, this._gridOptions);

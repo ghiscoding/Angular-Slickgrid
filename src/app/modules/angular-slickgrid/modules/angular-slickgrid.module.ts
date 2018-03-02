@@ -1,3 +1,4 @@
+import { SharedService } from './../services/shared.service';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
@@ -46,6 +47,7 @@ export class AngularSlickgridModule {
         GridStateService,
         OdataService,
         ResizerService,
+        SharedService,
         SortService
       ]
     };

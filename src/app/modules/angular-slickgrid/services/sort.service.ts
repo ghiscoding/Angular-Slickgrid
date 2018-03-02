@@ -109,8 +109,8 @@ export class SortService {
     if (gridOptions && gridOptions.presets && gridOptions.presets.sorters) {
       const sorters = gridOptions.presets.sorters;
       columnDefinitions.forEach((columnDef: Column) =>  {
-        const columnPreset = sorters.find((presetFilter: CurrentSorter) => {
-          return presetFilter.columnId === columnDef.id;
+        const columnPreset = sorters.find((currentSorter: CurrentSorter) => {
+          return currentSorter.columnId === columnDef.id;
         });
         if (columnPreset) {
           sortCols.push({
