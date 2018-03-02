@@ -129,7 +129,11 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
 
       // if totalItems changed, we should always go back to the first page and recalculation the From-To indexes
       if (isPageNumberReset || this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
-        this.pageNumber = this._gridPaginationOptions.pagination.pageNumber || 1;
+        if (this._isFirstRender && this._gridPaginationOptions.pagination.pageNumber > 1) {
+          this.pageNumber = this._gridPaginationOptions.pagination.pageNumber || 1;
+        } else {
+          this.pageNumber = 1;
+        }
 
         // also reset the "offset" of backend service
         backendApi.service.resetPaginationOptions();
@@ -180,7 +184,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
         backendApi.postProcess(processResult);
       }
     } else {
-      throw new Error('Pagination with a backend service requires "onBackendEventApi" to be defined in your grid options');
+      throw new Error('Pagination with a backend service requires "BackendServiceApi" to be defined in your grid options');
     }
   }
 
