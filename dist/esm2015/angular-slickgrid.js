@@ -2742,7 +2742,7 @@ class GraphqlService {
     constructor(translate) {
         this.translate = translate;
         this.onPaginationRefreshed = new EventEmitter();
-        this.defaultOrderBy = { columnId: 'id', direction: SortDirection.ASC };
+        this.defaultOrderBy = { field: 'id', direction: SortDirection.ASC };
         this.defaultPaginationOptions = {
             first: DEFAULT_ITEMS_PER_PAGE,
             offset: 0
@@ -3067,27 +3067,33 @@ class GraphqlService {
      * @return {?}
      */
     updateSorters(sortColumns, presetSorters) {
-        let /** @type {?} */ sortByArray = [];
+        let /** @type {?} */ currentSorters = [];
+        let /** @type {?} */ graphqlSorters = [];
         if (!sortColumns && presetSorters) {
-            sortByArray = presetSorters;
+            currentSorters = presetSorters;
             // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
-            sortByArray.forEach((sorter) => {
+            currentSorters.forEach((sorter) => {
                 sorter.direction = /** @type {?} */ (sorter.direction.toUpperCase());
                 sorter.sortAsc = (sorter.direction.toUpperCase() === SortDirection.ASC);
             });
-            this._grid.setSortColumns(sortByArray);
+            this._grid.setSortColumns(currentSorters);
         }
         else if (sortColumns && !presetSorters) {
             // build the orderBy array, it could be multisort, example
             // orderBy:[{field: lastName, direction: ASC}, {field: firstName, direction: DESC}]
             if (sortColumns && sortColumns.length === 0) {
-                sortByArray = new Array(this.defaultOrderBy); // when empty, use the default sort
+                graphqlSorters = new Array(this.defaultOrderBy); // when empty, use the default sort
+                currentSorters = new Array({ columnId: this.defaultOrderBy.direction, direction: this.defaultOrderBy.direction });
             }
             else {
                 if (sortColumns) {
                     for (const /** @type {?} */ column of sortColumns) {
-                        sortByArray.push({
+                        currentSorters.push({
                             columnId: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
+                            direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
+                        });
+                        graphqlSorters.push({
+                            field: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
                             direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
                         });
                     }
@@ -3095,8 +3101,8 @@ class GraphqlService {
             }
         }
         // keep current Sorters and update the service options with the new sorting
-        this._currentSorters = sortByArray;
-        this.updateOptions({ sortingOptions: sortByArray });
+        this._currentSorters = currentSorters;
+        this.updateOptions({ sortingOptions: graphqlSorters });
     }
     /**
      * A function which takes an input string and removes double quotes only
@@ -4457,8 +4463,8 @@ class SortService {
         if (gridOptions && gridOptions.presets && gridOptions.presets.sorters) {
             const /** @type {?} */ sorters = gridOptions.presets.sorters;
             columnDefinitions.forEach((columnDef) => {
-                const /** @type {?} */ columnPreset = sorters.find((presetFilter) => {
-                    return presetFilter.columnId === columnDef.id;
+                const /** @type {?} */ columnPreset = sorters.find((currentSorter) => {
+                    return currentSorter.columnId === columnDef.id;
                 });
                 if (columnPreset) {
                     sortCols.push({
@@ -5892,6 +5898,26 @@ const GlobalGridOptions = {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+class SharedService {
+    /**
+     * @param {?} grid
+     * @param {?} dataView
+     * @param {?} gridOptions
+     * @param {?} columnDefinitions
+     * @return {?}
+     */
+    init(grid, dataView, gridOptions, columnDefinitions) {
+        this.grid = grid;
+        this.dataView = dataView;
+        this.gridOptions = gridOptions;
+        this.columnDefinitions = columnDefinitions;
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 class AngularSlickgridComponent {
     /**
      * @param {?} controlAndPluginService
@@ -5901,11 +5927,12 @@ class AngularSlickgridComponent {
      * @param {?} gridEventService
      * @param {?} gridStateService
      * @param {?} resizer
+     * @param {?} sharedService
      * @param {?} sortService
      * @param {?} translate
      * @param {?} forRootConfig
      */
-    constructor(controlAndPluginService, exportService, filterService, gridExtraService, gridEventService, gridStateService, resizer, sortService, translate, forRootConfig) {
+    constructor(controlAndPluginService, exportService, filterService, gridExtraService, gridEventService, gridStateService, resizer, sharedService, sortService, translate, forRootConfig) {
         this.controlAndPluginService = controlAndPluginService;
         this.exportService = exportService;
         this.filterService = filterService;
@@ -5913,6 +5940,7 @@ class AngularSlickgridComponent {
         this.gridEventService = gridEventService;
         this.gridStateService = gridStateService;
         this.resizer = resizer;
+        this.sharedService = sharedService;
         this.sortService = sortService;
         this.translate = translate;
         this.forRootConfig = forRootConfig;
@@ -6000,6 +6028,8 @@ class AngularSlickgridComponent {
         this._dataView.beginUpdate();
         this._dataView.setItems(this._dataset, this._gridOptions.datasetIdPropertyName);
         this._dataView.endUpdate();
+        // pass all necessary options to the shared service
+        this.sharedService.init(this.grid, this._dataView, this._gridOptions, this.columnDefinitions);
         // attach resize ONLY after the dataView is ready
         this.attachResizeHook(this.grid, this._gridOptions);
         // attach grid extra service
@@ -6251,6 +6281,7 @@ AngularSlickgridComponent.ctorParameters = () => [
     { type: GridEventService, },
     { type: GridStateService, },
     { type: ResizerService, },
+    { type: SharedService, },
     { type: SortService, },
     { type: TranslateService, },
     { type: undefined, decorators: [{ type: Inject, args: ['config',] },] },
@@ -6296,6 +6327,7 @@ class AngularSlickgridModule {
                 GridStateService,
                 OdataService,
                 ResizerService,
+                SharedService,
                 SortService
             ]
         };
@@ -6339,5 +6371,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, castToPromise, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFilterType, parseUtcDate, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, TextEditor as ɵf, booleanFilterCondition as ɵh, collectionSearchFilterCondition as ɵi, dateFilterCondition as ɵj, dateIsoFilterCondition as ɵk, dateUsFilterCondition as ɵm, dateUsShortFilterCondition as ɵn, dateUtcFilterCondition as ɵl, executeMappedCondition as ɵg, testFilterCondition as ɵq, numberFilterCondition as ɵo, stringFilterCondition as ɵp, InputFilter as ɵr, MultipleSelectFilter as ɵs, SelectFilter as ɵu, SingleSelectFilter as ɵt, arrayToCsvFormatter as ɵv, checkboxFormatter as ɵw, checkmarkFormatter as ɵx, complexObjectFormatter as ɵy, dateIsoFormatter as ɵz, dateTimeIsoAmPmFormatter as ɵba, dateTimeUsAmPmFormatter as ɵbd, dateTimeUsFormatter as ɵbc, dateUsFormatter as ɵbb, deleteIconFormatter as ɵbe, editIconFormatter as ɵbf, hyperlinkFormatter as ɵbg, infoIconFormatter as ɵbh, lowercaseFormatter as ɵbi, percentCompleteBarFormatter as ɵbk, percentCompleteFormatter as ɵbj, progressBarFormatter as ɵbl, translateBooleanFormatter as ɵbn, translateFormatter as ɵbm, uppercaseFormatter as ɵbo, yesNoFormatter as ɵbp, dateIsoSorter as ɵbr, dateSorter as ɵbq, dateUsShortSorter as ɵbt, dateUsSorter as ɵbs, numericSorter as ɵbu, stringSorter as ɵbv };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, castToPromise, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFilterType, parseUtcDate, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, TextEditor as ɵf, booleanFilterCondition as ɵh, collectionSearchFilterCondition as ɵi, dateFilterCondition as ɵj, dateIsoFilterCondition as ɵk, dateUsFilterCondition as ɵm, dateUsShortFilterCondition as ɵn, dateUtcFilterCondition as ɵl, executeMappedCondition as ɵg, testFilterCondition as ɵq, numberFilterCondition as ɵo, stringFilterCondition as ɵp, InputFilter as ɵr, MultipleSelectFilter as ɵs, SelectFilter as ɵu, SingleSelectFilter as ɵt, arrayToCsvFormatter as ɵv, checkboxFormatter as ɵw, checkmarkFormatter as ɵx, complexObjectFormatter as ɵy, dateIsoFormatter as ɵz, dateTimeIsoAmPmFormatter as ɵba, dateTimeUsAmPmFormatter as ɵbd, dateTimeUsFormatter as ɵbc, dateUsFormatter as ɵbb, deleteIconFormatter as ɵbe, editIconFormatter as ɵbf, hyperlinkFormatter as ɵbg, infoIconFormatter as ɵbh, lowercaseFormatter as ɵbi, percentCompleteBarFormatter as ɵbk, percentCompleteFormatter as ɵbj, progressBarFormatter as ɵbl, translateBooleanFormatter as ɵbn, translateFormatter as ɵbm, uppercaseFormatter as ɵbo, yesNoFormatter as ɵbp, SharedService as ɵbw, dateIsoSorter as ɵbr, dateSorter as ɵbq, dateUsShortSorter as ɵbt, dateUsSorter as ɵbs, numericSorter as ɵbu, stringSorter as ɵbv };
 //# sourceMappingURL=angular-slickgrid.js.map

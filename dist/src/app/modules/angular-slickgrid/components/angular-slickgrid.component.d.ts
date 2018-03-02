@@ -19,6 +19,7 @@ import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, EventEmitter, OnDestroy, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Column, GridOption } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
@@ -27,8 +28,8 @@ import { GridEventService } from './../services/gridEvent.service';
 import { GridExtraService } from './../services/gridExtra.service';
 import { GridStateService } from './../services/gridState.service';
 import { ResizerService } from './../services/resizer.service';
+import { SharedService } from '../services/shared.service';
 import { SortService } from './../services/sort.service';
-import { TranslateService } from '@ngx-translate/core';
 export declare class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
     private controlAndPluginService;
     private exportService;
@@ -37,6 +38,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private gridEventService;
     private gridStateService;
     private resizer;
+    private sharedService;
     private sortService;
     private translate;
     private forRootConfig;
@@ -65,7 +67,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridHeight: number;
     gridWidth: number;
     dataset: any[];
-    constructor(controlAndPluginService: ControlAndPluginService, exportService: ExportService, filterService: FilterService, gridExtraService: GridExtraService, gridEventService: GridEventService, gridStateService: GridStateService, resizer: ResizerService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
+    constructor(controlAndPluginService: ControlAndPluginService, exportService: ExportService, filterService: FilterService, gridExtraService: GridExtraService, gridEventService: GridEventService, gridStateService: GridStateService, resizer: ResizerService, sharedService: SharedService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
     ngOnInit(): void;
     ngOnDestroy(): void;
     destroy(): void;

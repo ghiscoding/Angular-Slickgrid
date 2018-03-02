@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "0.12.1",
+  "version": "0.12.2",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -17,10 +17,10 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "build-lib": "npm-run-all packagr sass:build sass:copy copy:i18n copy:lib",
-    "build-lib-demo": "npm-run-all build-lib del-demo:dist",
+    "build-lib-demo": "npm-run-all build-lib del-demo:dist copy-demo:dist",
     "copy:i18n": "cross-env copyfiles -f src/assets/i18n/*.json dist/i18n",
     "copy:lib": "cross-env copyfiles --up 2 src/assets/lib/** dist",
-    "copy-demo:dist": "cross-env copyfiles dist/**/*.* ../Angular-Slickgrid-demo/node_modules/angular-slickgrid",
+    "copy-demo:dist": "cross-env copyfiles --up 1 dist/**/*.* ../Angular-Slickgrid-demo/node_modules/angular-slickgrid",
     "del-demo:dist": "cross-env rimraf ../Angular-Slickgrid-demo/node_modules/angular-slickgrid",
     "pack-lib": "npm pack ./dist",
     "packagr": "ng-packagr -p ng-package.json",

@@ -2844,7 +2844,7 @@ var GraphqlService = /** @class */ (function () {
     function GraphqlService(translate) {
         this.translate = translate;
         this.onPaginationRefreshed = new core.EventEmitter();
-        this.defaultOrderBy = { columnId: 'id', direction: SortDirection.ASC };
+        this.defaultOrderBy = { field: 'id', direction: SortDirection.ASC };
         this.defaultPaginationOptions = {
             first: DEFAULT_ITEMS_PER_PAGE,
             offset: 0
@@ -3175,29 +3175,35 @@ var GraphqlService = /** @class */ (function () {
      * @return {?}
      */
     GraphqlService.prototype.updateSorters = function (sortColumns, presetSorters) {
-        var /** @type {?} */ sortByArray = [];
+        var /** @type {?} */ currentSorters = [];
+        var /** @type {?} */ graphqlSorters = [];
         if (!sortColumns && presetSorters) {
-            sortByArray = presetSorters;
+            currentSorters = presetSorters;
             // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
-            sortByArray.forEach(function (sorter) {
+            currentSorters.forEach(function (sorter) {
                 sorter.direction = /** @type {?} */ (sorter.direction.toUpperCase());
                 sorter.sortAsc = (sorter.direction.toUpperCase() === SortDirection.ASC);
             });
-            this._grid.setSortColumns(sortByArray);
+            this._grid.setSortColumns(currentSorters);
         }
         else if (sortColumns && !presetSorters) {
             // build the orderBy array, it could be multisort, example
             // orderBy:[{field: lastName, direction: ASC}, {field: firstName, direction: DESC}]
             if (sortColumns && sortColumns.length === 0) {
-                sortByArray = new Array(this.defaultOrderBy); // when empty, use the default sort
+                graphqlSorters = new Array(this.defaultOrderBy); // when empty, use the default sort
+                currentSorters = new Array({ columnId: this.defaultOrderBy.direction, direction: this.defaultOrderBy.direction });
             }
             else {
                 if (sortColumns) {
                     try {
                         for (var sortColumns_1 = __values(sortColumns), sortColumns_1_1 = sortColumns_1.next(); !sortColumns_1_1.done; sortColumns_1_1 = sortColumns_1.next()) {
                             var column = sortColumns_1_1.value;
-                            sortByArray.push({
+                            currentSorters.push({
                                 columnId: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
+                                direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
+                            });
+                            graphqlSorters.push({
+                                field: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
                                 direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
                             });
                         }
@@ -3213,8 +3219,8 @@ var GraphqlService = /** @class */ (function () {
             }
         }
         // keep current Sorters and update the service options with the new sorting
-        this._currentSorters = sortByArray;
-        this.updateOptions({ sortingOptions: sortByArray });
+        this._currentSorters = currentSorters;
+        this.updateOptions({ sortingOptions: graphqlSorters });
         var e_6, _a;
     };
     /**
@@ -4624,8 +4630,8 @@ var SortService = /** @class */ (function () {
         if (gridOptions && gridOptions.presets && gridOptions.presets.sorters) {
             var /** @type {?} */ sorters_1 = gridOptions.presets.sorters;
             columnDefinitions.forEach(function (columnDef) {
-                var /** @type {?} */ columnPreset = sorters_1.find(function (presetFilter) {
-                    return presetFilter.columnId === columnDef.id;
+                var /** @type {?} */ columnPreset = sorters_1.find(function (currentSorter) {
+                    return currentSorter.columnId === columnDef.id;
                 });
                 if (columnPreset) {
                     sortCols.push({
@@ -5997,6 +6003,28 @@ var GlobalGridOptions = {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+var SharedService = /** @class */ (function () {
+    function SharedService() {
+    }
+    /**
+     * @param {?} grid
+     * @param {?} dataView
+     * @param {?} gridOptions
+     * @param {?} columnDefinitions
+     * @return {?}
+     */
+    SharedService.prototype.init = function (grid, dataView, gridOptions, columnDefinitions) {
+        this.grid = grid;
+        this.dataView = dataView;
+        this.gridOptions = gridOptions;
+        this.columnDefinitions = columnDefinitions;
+    };
+    return SharedService;
+}());
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 var AngularSlickgridComponent = /** @class */ (function () {
     /**
      * @param {?} controlAndPluginService
@@ -6006,11 +6034,12 @@ var AngularSlickgridComponent = /** @class */ (function () {
      * @param {?} gridEventService
      * @param {?} gridStateService
      * @param {?} resizer
+     * @param {?} sharedService
      * @param {?} sortService
      * @param {?} translate
      * @param {?} forRootConfig
      */
-    function AngularSlickgridComponent(controlAndPluginService, exportService, filterService, gridExtraService, gridEventService, gridStateService, resizer, sortService, translate, forRootConfig) {
+    function AngularSlickgridComponent(controlAndPluginService, exportService, filterService, gridExtraService, gridEventService, gridStateService, resizer, sharedService, sortService, translate, forRootConfig) {
         this.controlAndPluginService = controlAndPluginService;
         this.exportService = exportService;
         this.filterService = filterService;
@@ -6018,6 +6047,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.gridEventService = gridEventService;
         this.gridStateService = gridStateService;
         this.resizer = resizer;
+        this.sharedService = sharedService;
         this.sortService = sortService;
         this.translate = translate;
         this.forRootConfig = forRootConfig;
@@ -6109,6 +6139,8 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataView.beginUpdate();
         this._dataView.setItems(this._dataset, this._gridOptions.datasetIdPropertyName);
         this._dataView.endUpdate();
+        // pass all necessary options to the shared service
+        this.sharedService.init(this.grid, this._dataView, this._gridOptions, this.columnDefinitions);
         // attach resize ONLY after the dataView is ready
         this.attachResizeHook(this.grid, this._gridOptions);
         // attach grid extra service
@@ -6367,6 +6399,7 @@ AngularSlickgridComponent.ctorParameters = function () { return [
     { type: GridEventService, },
     { type: GridStateService, },
     { type: ResizerService, },
+    { type: SharedService, },
     { type: SortService, },
     { type: core$1.TranslateService, },
     { type: undefined, decorators: [{ type: core.Inject, args: ['config',] },] },
@@ -6414,6 +6447,7 @@ var AngularSlickgridModule = /** @class */ (function () {
                 GridStateService,
                 OdataService,
                 ResizerService,
+                SharedService,
                 SortService
             ]
         };
@@ -6519,6 +6553,7 @@ exports.ɵbn = translateBooleanFormatter;
 exports.ɵbm = translateFormatter;
 exports.ɵbo = uppercaseFormatter;
 exports.ɵbp = yesNoFormatter;
+exports.ɵbw = SharedService;
 exports.ɵbr = dateIsoSorter;
 exports.ɵbq = dateSorter;
 exports.ɵbt = dateUsShortSorter;
