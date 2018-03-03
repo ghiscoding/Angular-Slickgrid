@@ -1,0 +1,14 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div class="container">
+	<div class="col-sm-8">
+		<div class="alert alert-info">
+			<strong>Custom Pagination URL:</strong>
+			<div [innerHTML]="currentUrl"></div>
+		</div>
+	</div>
+	<swt-common-grid-pagination #commonGridPag1></swt-common-grid-pagination>
+	<swt-common-grid #commonGrid1 
+			(onFilterChanged)="filterChanged($event)" 
+			(onPaginationChanged)="paginationChanged($event)" 
+			(onSortChanged)="sortChanged($event)"></swt-common-grid>
+</div>
