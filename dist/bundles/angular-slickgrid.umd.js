@@ -2662,6 +2662,7 @@ var ControlAndPluginService = /** @class */ (function () {
             this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
             var /** @type {?} */ selectionColumn = this.checkboxSelectorPlugin.getColumnDefinition();
             selectionColumn.excludeFromExport = true;
+            selectionColumn.excludeFromQuery = true;
             columnDefinitions.unshift(selectionColumn);
         }
     };
@@ -2886,7 +2887,9 @@ var GraphqlService = /** @class */ (function () {
         if (!this.options || !this.options.datasetName || (!this._columnDefinitions && !this.options.columnDefinitions)) {
             throw new Error('GraphQL Service requires "datasetName" & "columnDefinitions" properties for it to work');
         }
+        // get the column definitions and exclude some if they were tagged as excluded
         var /** @type {?} */ columnDefinitions = this._columnDefinitions || this.options.columnDefinitions;
+        columnDefinitions = columnDefinitions.filter(function (column) { return !column.excludeFromQuery; });
         var /** @type {?} */ queryQb = new GraphqlQueryBuilder('query');
         var /** @type {?} */ datasetQb = new GraphqlQueryBuilder(this.options.datasetName);
         var /** @type {?} */ pageInfoQb = new GraphqlQueryBuilder('pageInfo');
@@ -3624,6 +3627,7 @@ var GridOdataService = /** @class */ (function () {
         this.pagination = pagination;
         if (grid && grid.getColumns && grid.getOptions) {
             this._columnDefinitions = grid.getColumns() || options["columnDefinitions"];
+            this._columnDefinitions = this._columnDefinitions.filter(function (column) { return !column.excludeFromQuery; });
             this._gridOptions = grid.getOptions();
         }
     };
