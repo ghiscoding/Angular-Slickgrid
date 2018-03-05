@@ -503,6 +503,7 @@ export class ControlAndPluginService {
       this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
       const selectionColumn: Column = this.checkboxSelectorPlugin.getColumnDefinition();
       selectionColumn.excludeFromExport = true;
+      selectionColumn.excludeFromQuery = true;
       columnDefinitions.unshift(selectionColumn);
     }
   }

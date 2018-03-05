@@ -29,6 +29,9 @@ export interface Column {
   /** Default to false, do we want this column excluded from the export? */
   excludeFromExport?: boolean;
 
+  /** Defaults to false, do we want to exclude this field from the query (mostly a backend service query) */
+  excludeFromQuery?: boolean;
+
   /**
    * Export with a Custom Formatter, useful when we want to use a different Formatter for the export.
    * For example, we might have a boolean field with "Formatters.checkmark" but we would like see a translated value for (True/False).

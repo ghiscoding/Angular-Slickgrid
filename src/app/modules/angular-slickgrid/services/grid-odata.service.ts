@@ -60,6 +60,8 @@ export class GridOdataService implements BackendService {
 
     if (grid && grid.getColumns && grid.getOptions) {
       this._columnDefinitions = grid.getColumns() || options.columnDefinitions;
+      this._columnDefinitions = this._columnDefinitions.filter((column: Column) => !column.excludeFromQuery);
+
       this._gridOptions = grid.getOptions();
     }
   }

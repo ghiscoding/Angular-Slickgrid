@@ -58,7 +58,11 @@ export class GraphqlService implements BackendService {
     if (!this.options || !this.options.datasetName || (!this._columnDefinitions && !this.options.columnDefinitions)) {
       throw new Error('GraphQL Service requires "datasetName" & "columnDefinitions" properties for it to work');
     }
-    const columnDefinitions = this._columnDefinitions || this.options.columnDefinitions;
+
+    // get the column definitions and exclude some if they were tagged as excluded
+    let columnDefinitions = this._columnDefinitions || this.options.columnDefinitions;
+    columnDefinitions = columnDefinitions.filter((column: Column) => !column.excludeFromQuery);
+
     const queryQb = new QueryBuilder('query');
     const datasetQb = new QueryBuilder(this.options.datasetName);
     const pageInfoQb = new QueryBuilder('pageInfo');
