@@ -6,7 +6,7 @@ import { GridOption } from '../modules/angular-slickgrid';
 /**
  * Custom pagination component: It allows editing the page number manually
  *  << < Page [1] of 5 > >>
- *  
+ *
  * @author Saber Chebka, saber.chebka@gmail.com
  */
 @Component({
@@ -29,7 +29,7 @@ import { GridOption } from '../modules/angular-slickgrid';
 
         <div class="slick-page-number">
             <span [translate]="'PAGE'"></span>
-            <input type="text" value="{{pageNumber}}" size="1"  (change)="changeToCurrentPage($event)">    
+            <input type="text" value="{{pageNumber}}" size="1"  (change)="changeToCurrentPage($event)">
             <span [translate]="'OF'"></span><span> {{pageCount}}</span>
         </div>
 
@@ -71,15 +71,13 @@ import { GridOption } from '../modules/angular-slickgrid';
 })
 export class SwtCommonGridPaginationComponent implements OnInit {
     private logger: Logger = null;
-    //private _datagrid: SwtCommonGridComponent;
-    
+
     @Input('pageCount') pageCount = 1;
-    
     @Input('pageNumber') pageNumber = 1;
-    
+
     totalItems = 0;
     processing = false;
-        
+
     // Reference to the real pagination component
     realPagination =  true;
     _gridPaginationOptions: GridOption;
@@ -88,42 +86,42 @@ export class SwtCommonGridPaginationComponent implements OnInit {
     @Input()
     set gridPaginationOptions(gridPaginationOptions: GridOption) {
       this._gridPaginationOptions = gridPaginationOptions;
-      
+
       // The backendServiceApi is itself the SwtCommonGridComponent (This is a hack)
       this.commonGrid = <SwtCommonGridComponent>this.gridPaginationOptions.backendServiceApi.service;
     }
     get gridPaginationOptions(): GridOption {
       return this._gridPaginationOptions;
     }
-    
-    
-    
+
+
+
     constructor(private httpClient: HttpClient) {
         this.logger = new Logger('grid-pagination', httpClient);
-        this.logger.info("method [constructor] - START/END");
+        this.logger.info('method [constructor] - START/END');
     }
-    
-    
+
+
     ngOnInit() {
         this.logger.info('init: ');
     }
 
-    
+
 
     changeToFirstPage(event: any) {
-      this.logger.info("method [changeToFirstPage] - START/END");
+      this.logger.info('method [changeToFirstPage] - START/END');
       this.pageNumber = 1;
       this.onPageChanged(event, this.pageNumber);
     }
 
     changeToLastPage(event: any) {
-      this.logger.info("method [changeToLastPage] - START/END");
+      this.logger.info('method [changeToLastPage] - START/END');
       this.pageNumber = this.pageCount;
       this.onPageChanged(event, this.pageNumber);
     }
 
     changeToNextPage(event: any) {
-      this.logger.info("method [changeToNextPage] - START/END");
+      this.logger.info('method [changeToNextPage] - START/END');
       if (this.pageNumber < this.pageCount) {
         this.pageNumber++;
         this.onPageChanged(event, this.pageNumber);
@@ -131,29 +129,28 @@ export class SwtCommonGridPaginationComponent implements OnInit {
     }
 
     changeToPreviousPage(event: any) {
-      this.logger.info("method [changeToNextPage] - START/END");
+      this.logger.info('method [changeToNextPage] - START/END');
       if (this.pageNumber > 1) {
         this.pageNumber--;
         this.onPageChanged(event, this.pageNumber);
       }
     }
-    
-    
+
+
     changeToCurrentPage(event: any) {
-        this.logger.info("method [changeToCurrentPage] - START/END");
+        this.logger.info('method [changeToCurrentPage] - START/END');
         this.pageNumber = event.currentTarget.value;
-        if (this.pageNumber <1) {
+        if (this.pageNumber < 1) {
              this.pageNumber = 1;
-        }
-        else if (this.pageNumber> this.pageCount) {
+        } else if (this.pageNumber > this.pageCount) {
              this.pageNumber = this.pageCount;
         }
-                
+
         this.onPageChanged(event, this.pageNumber);
     }
-    
+
     onPageChanged(event?: Event, pageNumber?: number) {
-        this.logger.info("method [onPageChanged] - START/END", this.commonGrid);
+        this.logger.info('method [onPageChanged] - START/END', this.commonGrid);
         this.commonGrid.onPaginationChanged(event, { newPage: pageNumber, pageSize: -1 });
       }
 }
