@@ -1,4 +1,4 @@
-import { OperatorType } from './operatorType';
+import { OperatorType } from './operatorType.enum';
 export interface GraphqlFilteringOption {
   field: string;
   operator: OperatorType;

@@ -5,6 +5,7 @@ import {
   BackendService,
   CaseType,
   Column,
+  ColumnFilter,
   ColumnFilters,
   CurrentFilter,
   CurrentPagination,
@@ -15,6 +16,7 @@ import {
   OdataOption,
   Pagination,
   PaginationChangedArgs,
+  SearchTerm,
   SortChanged,
   SortChangedArgs,
   SortDirection,
@@ -25,17 +27,18 @@ import { OdataService } from './odata.service';
 let timer: any;
 const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 const DEFAULT_ITEMS_PER_PAGE = 25;
+const DEFAULT_PAGE_SIZE = 20;
 
 @Injectable()
 export class GridOdataService implements BackendService {
-  private _currentFilters: ColumnFilters | CurrentFilter[];
+  private _currentFilters: CurrentFilter[];
   private _currentPagination: CurrentPagination;
   private _currentSorters: CurrentSorter[];
   private _columnDefinitions: Column[];
   private _gridOptions: GridOption;
   private _grid: any;
   options: OdataOption;
-  pagination: Pagination;
+  pagination: Pagination | undefined;
   defaultOptions: OdataOption = {
     top: DEFAULT_ITEMS_PER_PAGE,
     orderBy: '',
@@ -70,7 +73,7 @@ export class GridOdataService implements BackendService {
   }
 
   /** Get the Filters that are currently used by the grid */
-  getCurrentFilters(): ColumnFilters | CurrentFilter[] {
+  getCurrentFilters(): CurrentFilter[] {
     return this._currentFilters;
   }
 
@@ -123,7 +126,7 @@ export class GridOdataService implements BackendService {
       clearTimeout(timer);
       timer = setTimeout(() => {
         this.resetPaginationOptions();
-        resolve (this.odataService.buildQuery());
+        resolve(this.odataService.buildQuery());
       }, debounceTypingDelay);
     });
 
@@ -134,7 +137,7 @@ export class GridOdataService implements BackendService {
    * PAGINATION
    */
   onPaginationChanged(event: Event, args: PaginationChangedArgs) {
-    const pageSize = +args.pageSize || 20;
+    const pageSize = +args.pageSize || DEFAULT_PAGE_SIZE;
     this.updatePagination(args.newPage, pageSize);
 
     // build the OData query which we will use in the WebAPI callback
@@ -159,8 +162,7 @@ export class GridOdataService implements BackendService {
    * @param columnFilters
    */
   updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset?: boolean) {
-    // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
-    this._currentFilters = (!!isUpdatedByPreset) ? columnFilters : Object.keys(columnFilters).map(key => columnFilters[key]);
+    this._currentFilters = this.castFilterToColumnFilter(columnFilters);
     let searchBy = '';
     const searchByArray: string[] = [];
 
@@ -170,7 +172,7 @@ export class GridOdataService implements BackendService {
         const columnFilter = columnFilters[columnId];
 
         // if user defined some "presets", then we need to find the filters from the column definitions instead
-        let columnDef: Column;
+        let columnDef: Column | undefined;
         if (isUpdatedByPreset && Array.isArray(this._columnDefinitions)) {
           columnDef = this._columnDefinitions.find((column: Column) => {
             return column.id === columnFilter.columnId;
@@ -307,17 +309,22 @@ export class GridOdataService implements BackendService {
    * @param columnFilters
    */
   updateSorters(sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]) {
-    let sortByArray = [];
+    let sortByArray: any[] = [];
     const sorterArray: CurrentSorter[] = [];
 
     if (!sortColumns && presetSorters) {
+      // make the presets the current sorters, also make sure that all direction are in lowercase for OData
       sortByArray = presetSorters;
+      sortByArray.forEach((sorter) => sorter.direction = sorter.direction.toLowerCase() as SortDirectionString);
 
       // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
-      sortByArray.forEach((sorter) => {
-        sorter.sortAsc = (sorter.direction.toUpperCase() === SortDirection.ASC);
+      const tmpSorterArray = sortByArray.map((sorter) => {
+        return {
+          columnId: sorter.columnId,
+          sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
+        };
       });
-      this._grid.setSortColumns(sortByArray);
+      this._grid.setSortColumns(tmpSorterArray);
     } else if (sortColumns && !presetSorters) {
       // build the SortBy string, it could be multisort, example: customerNo asc, purchaserName desc
       if (sortColumns && sortColumns.length === 0) {
@@ -325,15 +332,17 @@ export class GridOdataService implements BackendService {
       } else {
         if (sortColumns) {
           for (const column of sortColumns) {
-            let fieldName = (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '';
-            if (this.odataService.options.caseType === CaseType.pascalCase) {
-              fieldName = String.titleCase(fieldName);
-            }
+            if (column.sortCol) {
+              let fieldName = (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '';
+              if (this.odataService.options.caseType === CaseType.pascalCase) {
+                fieldName = String.titleCase(fieldName);
+              }
 
-            sorterArray.push({
-              columnId: fieldName,
-              direction: column.sortAsc ? 'asc' : 'desc'
-            });
+              sorterArray.push({
+                columnId: fieldName,
+                direction: column.sortAsc ? 'asc' : 'desc'
+              });
+            }
           }
           sortByArray = sorterArray;
         }
@@ -341,16 +350,42 @@ export class GridOdataService implements BackendService {
     }
 
     // transform the sortby array into a CSV string for OData
-    const csvString = sortByArray.map((sorter) => `${sorter.columnId} ${sorter.direction.toLowerCase()}` ).join(',');
+    sortByArray = sortByArray as CurrentSorter[];
+    const csvString = sortByArray.map((sorter) => `${sorter.columnId} ${sorter.direction.toLowerCase()}`).join(',');
     this.odataService.updateOptions({
       orderBy: (this.odataService.options.caseType === CaseType.pascalCase) ? String.titleCase(csvString) : csvString
     });
 
     // keep current Sorters and update the service options with the new sorting
-    this._currentSorters = sortByArray;
+    this._currentSorters = sortByArray as CurrentSorter[];
 
     // build the OData query which we will use in the WebAPI callback
     return this.odataService.buildQuery();
+  }
+
+  //
+  // private functions
+  // -------------------
+  /**
+   * Cast provided filters (could be in multiple format) into an array of ColumnFilter
+   * @param columnFilters
+   */
+  private castFilterToColumnFilter(columnFilters: ColumnFilters | CurrentFilter[]): CurrentFilter[] {
+    // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
+    const filtersArray: ColumnFilter[] = ((typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters) as CurrentFilter[];
+
+    return filtersArray.map((filter) => {
+      const tmpFilter: CurrentFilter = { columnId: filter.columnId || '' };
+      if (filter.operator) {
+        tmpFilter.operator = filter.operator;
+      }
+      if (Array.isArray(filter.searchTerms)) {
+        tmpFilter.searchTerms = filter.searchTerms;
+      } else {
+        tmpFilter.searchTerm = filter.searchTerm;
+      }
+      return tmpFilter;
+    });
   }
 
   /**

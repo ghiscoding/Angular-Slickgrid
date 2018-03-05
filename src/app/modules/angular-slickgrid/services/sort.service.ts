@@ -15,7 +15,7 @@ export class SortService {
   /**
    * Attach a backend sort (single/multi) hook to the grid
    * @param grid SlickGrid Grid object
-   * @param gridOptions Grid Options objectangular
+   * @param gridOptions Grid Options object
    */
   attachBackendOnSort(grid: any, gridOptions: GridOption) {
     this._subscriber = grid.onSort;
@@ -138,36 +138,38 @@ export class SortService {
     dataView.sort((dataRow1: any, dataRow2: any) => {
       for (let i = 0, l = sortColumns.length; i < l; i++) {
         const columnSortObj = sortColumns[i];
-        const sortDirection = columnSortObj.sortAsc ? 1 : -1;
-        const sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.field;
-        const fieldType = columnSortObj.sortCol.type || 'string';
-        const value1 = dataRow1[sortField];
-        const value2 = dataRow2[sortField];
-        let result = 0;
+        if (columnSortObj && columnSortObj.sortCol) {
+          const sortDirection = columnSortObj.sortAsc ? 1 : -1;
+          const sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.field;
+          const fieldType = columnSortObj.sortCol.type || 'string';
+          const value1 = dataRow1[sortField];
+          const value2 = dataRow2[sortField];
+          let result = 0;
 
-        switch (fieldType) {
-          case FieldType.number:
-            result = Sorters.numeric(value1, value2, sortDirection);
-            break;
-          case FieldType.date:
-            result = Sorters.date(value1, value2, sortDirection);
-            break;
-          case FieldType.dateIso:
-            result = Sorters.dateIso(value1, value2, sortDirection);
-            break;
-          case FieldType.dateUs:
-            result = Sorters.dateUs(value1, value2, sortDirection);
-            break;
-          case FieldType.dateUsShort:
-            result = Sorters.dateUsShort(value1, value2, sortDirection);
-            break;
-          default:
-            result = Sorters.string(value1, value2, sortDirection);
-            break;
-        }
+          switch (fieldType) {
+            case FieldType.number:
+              result = Sorters.numeric(value1, value2, sortDirection);
+              break;
+            case FieldType.date:
+              result = Sorters.date(value1, value2, sortDirection);
+              break;
+            case FieldType.dateIso:
+              result = Sorters.dateIso(value1, value2, sortDirection);
+              break;
+            case FieldType.dateUs:
+              result = Sorters.dateUs(value1, value2, sortDirection);
+              break;
+            case FieldType.dateUsShort:
+              result = Sorters.dateUsShort(value1, value2, sortDirection);
+              break;
+            default:
+              result = Sorters.string(value1, value2, sortDirection);
+              break;
+          }
 
-        if (result !== 0) {
-          return result;
+          if (result !== 0) {
+            return result;
+          }
         }
       }
       return 0;

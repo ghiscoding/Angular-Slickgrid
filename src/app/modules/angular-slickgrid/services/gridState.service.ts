@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
   CurrentFilter,
   CurrentPagination,
@@ -9,7 +8,6 @@ import {
 import { FilterService, SortService } from './../services/index';
 import $ from 'jquery';
 
-@Injectable()
 export class GridStateService {
   private _grid: any;
   private _gridOptions: GridOption;
@@ -51,13 +49,13 @@ export class GridStateService {
    * Get the Filters (and their state, columnId, searchTerm(s)) that are currently applied in the grid
    * @return current filters
    */
-  getCurrentFilters(): CurrentFilter[] {
+  getCurrentFilters(): CurrentFilter[] | null {
     if (this._gridOptions && this._gridOptions.backendServiceApi) {
       const backendService = this._gridOptions.backendServiceApi.service;
-      if (backendService) {
+      if (backendService && backendService.getCurrentFilters) {
         return backendService.getCurrentFilters() as CurrentFilter[];
       }
-    } else {
+    } else if (this.filterService && this.filterService.getCurrentLocalFilters) {
       return this.filterService.getCurrentLocalFilters();
     }
     return null;
@@ -67,10 +65,10 @@ export class GridStateService {
    * Get current Pagination (and it's state, pageNumber, pageSize) that are currently applied in the grid
    * @return current pagination state
    */
-  getCurrentPagination(): CurrentPagination {
+  getCurrentPagination(): CurrentPagination | null {
     if (this._gridOptions && this._gridOptions.backendServiceApi) {
       const backendService = this._gridOptions.backendServiceApi.service;
-      if (backendService) {
+      if (backendService && backendService.getCurrentPagination) {
         return backendService.getCurrentPagination();
       }
     } else {
@@ -83,13 +81,13 @@ export class GridStateService {
    * Get the current Sorters (and their state, columnId, direction) that are currently applied in the grid
    * @return current sorters
    */
-  getCurrentSorters(): CurrentSorter[] {
+  getCurrentSorters(): CurrentSorter[] | null {
     if (this._gridOptions && this._gridOptions.backendServiceApi) {
       const backendService = this._gridOptions.backendServiceApi.service;
-      if (backendService) {
+      if (backendService && backendService.getCurrentSorters) {
         return backendService.getCurrentSorters() as CurrentSorter[];
       }
-    } else {
+    } else if (this.sortService && this.sortService.getCurrentLocalSorters) {
       return this.sortService.getCurrentLocalSorters();
     }
     return null;

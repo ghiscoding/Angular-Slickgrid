@@ -195,7 +195,7 @@ export function mapFlatpickrDateFormatWithFieldType(fieldType: FieldType): strin
 
 /**
  * Mapper for query operators (ex.: <= is "le", > is "gt")
- * @param operator
+ * @param string operator
  * @returns string map
  */
 export function mapOperatorType(operator: string): OperatorType {
@@ -258,7 +258,7 @@ export function mapOperatorType(operator: string): OperatorType {
  * @param operator
  * @returns string map
  */
-export function mapOperatorByFilterType(filterType: FilterType | FormElementType): OperatorType {
+export function mapOperatorByFilterType(filterType: FilterType | FormElementType | string): OperatorType {
   let map: OperatorType;
 
   switch (filterType) {
@@ -294,4 +294,29 @@ export function parseUtcDate(inputDateString: string, useUtc: boolean): string |
   }
 
   return date;
+}
+
+/**
+ * Converts a string to camel case
+ * @param str the string to convert
+ * @return the string in camel case
+ */
+export function toCamelCase(str: string): string {
+  return str.replace(/(?:^\w|[A-Z]|\b\w|[\s+\-_\/])/g, (match: string, offset: number) => {
+    // remove white space or hypens or underscores
+    if (/[\s+\-_\/]/.test(match)) {
+      return '';
+    }
+
+    return offset === 0 ? match.toLowerCase() : match.toUpperCase();
+  });
+}
+
+/**
+ * Converts a string to kebab (hypen) case
+ * @param str the string to convert
+ * @return the string in kebab case
+ */
+export function toKebabCase(str: string): string {
+  return toCamelCase(str).replace(/([A-Z])/g, '-$1').toLowerCase();
 }

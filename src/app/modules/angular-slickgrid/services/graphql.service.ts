@@ -1,9 +1,10 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { mapOperatorType, mapOperatorByFilterType } from './utilities';
 import {
   BackendService,
   Column,
+  ColumnFilter,
   ColumnFilters,
   CurrentFilter,
   CurrentPagination,
@@ -25,9 +26,11 @@ import {
 } from './../models/index';
 import QueryBuilder from './graphqlQueryBuilder';
 
+// timer for keeping track of user typing waits
 let timer: any;
 const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 const DEFAULT_ITEMS_PER_PAGE = 25;
+const DEFAULT_PAGE_SIZE = 20;
 
 @Injectable()
 export class GraphqlService implements BackendService {
@@ -37,7 +40,6 @@ export class GraphqlService implements BackendService {
   private _columnDefinitions: Column[];
   private _gridOptions: GridOption;
   private _grid: any;
-  onPaginationRefreshed = new EventEmitter<PaginationChangedArgs>();
   options: GraphqlServiceOption;
   pagination: Pagination | undefined;
   defaultOrderBy: GraphqlSortingOption = { field: 'id', direction: SortDirection.ASC };
@@ -152,8 +154,9 @@ export class GraphqlService implements BackendService {
     this._grid = grid;
     this.options = serviceOptions || {};
     this.pagination = pagination;
+
     if (grid && grid.getColumns && grid.getOptions) {
-      this._columnDefinitions = grid.getColumns() || serviceOptions.columnDefinitions;
+      this._columnDefinitions = grid.getColumns();
       this._gridOptions = grid.getOptions();
     }
   }
@@ -277,7 +280,7 @@ export class GraphqlService implements BackendService {
    *   }
    */
   onPaginationChanged(event: Event, args: PaginationChangedArgs) {
-    const pageSize = +args.pageSize || this.pagination.pageSize;
+    const pageSize = +args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE);
     this.updatePagination(args.newPage, pageSize);
 
     // build the GraphQL query which we will use in the WebAPI callback
@@ -305,7 +308,7 @@ export class GraphqlService implements BackendService {
    */
   updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset: boolean) {
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
-    this._currentFilters = (!!isUpdatedByPreset) ? columnFilters : Object.keys(columnFilters).map(key => columnFilters[key]);
+    this._currentFilters = this.castFilterToColumnFilter(columnFilters);
 
     const searchByArray: GraphqlFilteringOption[] = [];
     let searchValue: string | string[];
@@ -315,7 +318,7 @@ export class GraphqlService implements BackendService {
         const columnFilter = columnFilters[columnId];
 
         // if user defined some "presets", then we need to find the filters from the column definitions instead
-        let columnDef: Column;
+        let columnDef: Column | undefined;
         if (isUpdatedByPreset && Array.isArray(this._columnDefinitions)) {
           columnDef = this._columnDefinitions.find((column: Column) => {
             return column.id === columnFilter.columnId;
@@ -362,7 +365,7 @@ export class GraphqlService implements BackendService {
 
         // if we didn't find an Operator but we have a Filter Type, we should use default Operator
         if (!operator && columnDef.filter) {
-          operator = mapOperatorByFilterType(columnDef.filter.type);
+          operator = mapOperatorByFilterType(columnDef.filter.type || '');
         }
 
         searchByArray.push({
@@ -412,14 +415,18 @@ export class GraphqlService implements BackendService {
     let graphqlSorters: GraphqlSortingOption[] = [];
 
     if (!sortColumns && presetSorters) {
+      // make the presets the current sorters, also make sure that all direction are in uppercase for GraphQL
       currentSorters = presetSorters;
+      currentSorters.forEach((sorter) => sorter.direction = sorter.direction.toUpperCase() as SortDirectionString);
 
       // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
-      currentSorters.forEach((sorter) => {
-        sorter.direction = sorter.direction.toUpperCase() as SortDirectionString;
-        sorter.sortAsc = (sorter.direction.toUpperCase() === SortDirection.ASC);
+      const tmpSorterArray = currentSorters.map((sorter) => {
+        return {
+          columnId: sorter.columnId,
+          sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
+        };
       });
-      this._grid.setSortColumns(currentSorters);
+      this._grid.setSortColumns(tmpSorterArray);
     } else if (sortColumns && !presetSorters) {
       // build the orderBy array, it could be multisort, example
       // orderBy:[{field: lastName, direction: ASC}, {field: firstName, direction: DESC}]
@@ -429,15 +436,17 @@ export class GraphqlService implements BackendService {
       } else {
         if (sortColumns) {
           for (const column of sortColumns) {
-            currentSorters.push({
-              columnId: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
-              direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
-            });
+            if (column && column.sortCol) {
+              currentSorters.push({
+                columnId: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
+                direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
+              });
 
-            graphqlSorters.push({
-              field: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
-              direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
-            });
+              graphqlSorters.push({
+                field: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
+                direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
+              });
+            }
           }
         }
       }
@@ -482,6 +491,31 @@ export class GraphqlService implements BackendService {
       }
       const rep = removeDoubleQuotes ? group1.replace(/"/g, '') : group1;
       return rep;
+    });
+  }
+
+  //
+  // private functions
+  // -------------------
+  /**
+   * Cast provided filters (could be in multiple format) into an array of ColumnFilter
+   * @param columnFilters
+   */
+  private castFilterToColumnFilter(columnFilters: ColumnFilters | CurrentFilter[]): CurrentFilter[] {
+    // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
+    const filtersArray: ColumnFilter[] = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters;
+
+    return filtersArray.map((filter) => {
+      const tmpFilter: CurrentFilter = { columnId: filter.columnId || '' };
+      if (filter.operator) {
+        tmpFilter.operator = filter.operator;
+      }
+      if (Array.isArray(filter.searchTerms)) {
+        tmpFilter.searchTerms = filter.searchTerms;
+      } else {
+        tmpFilter.searchTerm = filter.searchTerm;
+      }
+      return tmpFilter;
     });
   }
 }

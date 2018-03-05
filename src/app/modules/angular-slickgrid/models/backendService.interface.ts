@@ -1,4 +1,3 @@
-import { EventEmitter } from '@angular/core';
 import {
   BackendServiceOption,
   Column,
@@ -57,9 +56,6 @@ export interface BackendService {
   // --
   // Events / Methods
   // -----------------
-
-  /** Fired when the pagination needs to be forced refreshed (by a Preset call) */
-  onPaginationRefreshed?: EventEmitter<PaginationChangedArgs>;
 
   /** Execute when any of the filters changed */
   onFilterChanged: (event: Event, args: FilterChangedArgs) => Promise<string>;
