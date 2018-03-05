@@ -1,4 +1,3 @@
-import { EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BackendService, ColumnFilters, CurrentFilter, CurrentPagination, CurrentSorter, FilterChangedArgs, GraphqlCursorPaginationOption, GraphqlDatasetFilter, GraphqlPaginationOption, GraphqlServiceOption, GraphqlSortingOption, Pagination, PaginationChangedArgs, SortChanged, SortChangedArgs } from './../models/index';
 export declare class GraphqlService implements BackendService {
@@ -9,7 +8,6 @@ export declare class GraphqlService implements BackendService {
     private _columnDefinitions;
     private _gridOptions;
     private _grid;
-    onPaginationRefreshed: EventEmitter<PaginationChangedArgs>;
     options: GraphqlServiceOption;
     pagination: Pagination | undefined;
     defaultOrderBy: GraphqlSortingOption;
@@ -87,4 +85,9 @@ export declare class GraphqlService implements BackendService {
      * @returns outputStr output string
      */
     trimDoubleQuotesOnEnumField(inputStr: string, enumSearchWords: string[], keepArgumentFieldDoubleQuotes: boolean): string;
+    /**
+     * Cast provided filters (could be in multiple format) into an array of ColumnFilter
+     * @param columnFilters
+     */
+    private castFilterToColumnFilter(columnFilters);
 }

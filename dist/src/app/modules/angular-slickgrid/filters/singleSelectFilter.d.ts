@@ -24,7 +24,7 @@ export declare class SingleSelectFilter implements Filter {
     /**
      * Set value(s) on the DOM element
      */
-    setValues(values: any): void;
+    setValues(values: SearchTerm | SearchTerm[]): void;
     /**
      * Create the HTML template as a string
      */

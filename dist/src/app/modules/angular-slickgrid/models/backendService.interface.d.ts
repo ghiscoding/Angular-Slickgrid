@@ -1,4 +1,3 @@
-import { EventEmitter } from '@angular/core';
 import { BackendServiceOption, Column, ColumnFilters, CurrentFilter, CurrentPagination, CurrentSorter, FilterChangedArgs, GridOption, Pagination, PaginationChangedArgs, SortChangedArgs, SortChanged } from './../models/index';
 export interface BackendService {
     /** Backend Service options */
@@ -27,8 +26,6 @@ export interface BackendService {
     updateSorters?: (sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]) => void;
     /** Update the backend service options */
     updateOptions: (serviceOptions?: BackendServiceOption) => void;
-    /** Fired when the pagination needs to be forced refreshed (by a Preset call) */
-    onPaginationRefreshed?: EventEmitter<PaginationChangedArgs>;
     /** Execute when any of the filters changed */
     onFilterChanged: (event: Event, args: FilterChangedArgs) => Promise<string>;
     /** Execute when the pagination changed */

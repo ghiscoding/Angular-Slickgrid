@@ -19,5 +19,5 @@ export interface Filter {
     /** Destroy filter function */
     destroy: () => void;
     /** Set value(s) on the DOM element */
-    setValues?: (values: SearchTerm | SearchTerm[]) => void;
+    setValues: (values: SearchTerm | SearchTerm[] | undefined) => void;
 }

@@ -22,15 +22,15 @@ export declare class GridStateService {
      * Get the Filters (and their state, columnId, searchTerm(s)) that are currently applied in the grid
      * @return current filters
      */
-    getCurrentFilters(): CurrentFilter[];
+    getCurrentFilters(): CurrentFilter[] | null;
     /**
      * Get current Pagination (and it's state, pageNumber, pageSize) that are currently applied in the grid
      * @return current pagination state
      */
-    getCurrentPagination(): CurrentPagination;
+    getCurrentPagination(): CurrentPagination | null;
     /**
      * Get the current Sorters (and their state, columnId, direction) that are currently applied in the grid
      * @return current sorters
      */
-    getCurrentSorters(): CurrentSorter[];
+    getCurrentSorters(): CurrentSorter[] | null;
 }

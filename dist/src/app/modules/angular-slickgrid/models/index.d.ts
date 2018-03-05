@@ -51,7 +51,7 @@ export * from './multipleSelectOption.interface';
 export * from './odataOption.interface';
 export * from './onEventArgs.interface';
 export * from './operatorString';
-export * from './operatorType';
+export * from './operatorType.enum';
 export * from './pagination.interface';
 export * from './paginationChangedArgs.interface';
 export * from './gridState.interface';

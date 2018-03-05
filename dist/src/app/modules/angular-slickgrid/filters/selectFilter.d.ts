@@ -23,7 +23,7 @@ export declare class SelectFilter implements Filter {
     /**
      * Set value(s) on the DOM element
      */
-    setValues(values: any): void;
+    setValues(values: SearchTerm | SearchTerm[]): void;
     private buildTemplateHtmlString();
     /**
      * From the html template string, create a DOM element

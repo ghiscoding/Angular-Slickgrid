@@ -542,6 +542,28 @@ function parseUtcDate(inputDateString, useUtc) {
     }
     return date;
 }
+/**
+ * Converts a string to camel case
+ * @param {?} str the string to convert
+ * @return {?} the string in camel case
+ */
+function toCamelCase(str) {
+    return str.replace(/(?:^\w|[A-Z]|\b\w|[\s+\-_\/])/g, (match, offset) => {
+        // remove white space or hypens or underscores
+        if (/[\s+\-_\/]/.test(match)) {
+            return '';
+        }
+        return offset === 0 ? match.toLowerCase() : match.toUpperCase();
+    });
+}
+/**
+ * Converts a string to kebab (hypen) case
+ * @param {?} str the string to convert
+ * @return {?} the string in kebab case
+ */
+function toKebabCase(str) {
+    return toCamelCase(str).replace(/([A-Z])/g, '-$1').toLowerCase();
+}
 
 /**
  * @fileoverview added by tsickle
@@ -1690,6 +1712,7 @@ class FilterService {
     attachBackendOnFilter(grid, options) {
         this._filters = [];
         this.emitFilterChangedBy('remote');
+        this._subscriber = new Slick.Event();
         this._subscriber.subscribe(this.attachBackendOnFilterSubscribe);
         // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
         this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e, args) => {
@@ -1769,6 +1792,7 @@ class FilterService {
         this.emitFilterChangedBy('local');
         dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
         dataView.setFilter(this.customLocalFilter.bind(this, dataView));
+        this._subscriber = new Slick.Event();
         this._subscriber.subscribe((e, args) => {
             const /** @type {?} */ columnId = args.columnId;
             if (columnId != null) {
@@ -1905,11 +1929,14 @@ class FilterService {
         if (this._columnFilters) {
             for (const /** @type {?} */ colId of Object.keys(this._columnFilters)) {
                 const /** @type {?} */ columnFilter = this._columnFilters[colId];
-                currentFilters.push({
-                    columnId: colId,
-                    searchTerm: (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined,
-                    searchTerms: (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null
-                });
+                const /** @type {?} */ filter = /** @type {?} */ ({ columnId: colId || '' });
+                if (columnFilter && columnFilter.searchTerms) {
+                    filter.searchTerms = columnFilter.searchTerms;
+                }
+                else {
+                    filter.searchTerm = (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined;
+                }
+                currentFilters.push(filter);
             }
         }
         return currentFilters;
@@ -1935,7 +1962,7 @@ class FilterService {
                 columnDef: args.columnDef || null,
                 operator: args.operator || undefined,
                 searchTerms: args.searchTerms || undefined,
-                searchTerm: ((e && e.target) ? (/** @type {?} */ (e.target)).value : null),
+                searchTerm: ((e && e.target) ? (/** @type {?} */ (e.target)).value : undefined),
             };
         }
         this.triggerEvent(this._subscriber, {
@@ -1943,7 +1970,7 @@ class FilterService {
             columnDef: args.columnDef || null,
             columnFilters: this._columnFilters,
             searchTerms: args.searchTerms || undefined,
-            searchTerm: ((e && e.target) ? (/** @type {?} */ (e.target)).value : null),
+            searchTerm: ((e && e.target) ? (/** @type {?} */ (e.target)).value : undefined),
             serviceOptions: this._onFilterChangedOptions,
             grid: this._grid
         }, e);
@@ -2732,16 +2759,17 @@ class GraphqlQueryBuilder {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+// timer for keeping track of user typing waits
 let timer;
 const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 const DEFAULT_ITEMS_PER_PAGE = 25;
+const DEFAULT_PAGE_SIZE = 20;
 class GraphqlService {
     /**
      * @param {?} translate
      */
     constructor(translate) {
         this.translate = translate;
-        this.onPaginationRefreshed = new EventEmitter();
         this.defaultOrderBy = { field: 'id', direction: SortDirection.ASC };
         this.defaultPaginationOptions = {
             first: DEFAULT_ITEMS_PER_PAGE,
@@ -2844,7 +2872,7 @@ class GraphqlService {
         this.options = serviceOptions || {};
         this.pagination = pagination;
         if (grid && grid.getColumns && grid.getOptions) {
-            this._columnDefinitions = grid.getColumns() || serviceOptions.columnDefinitions;
+            this._columnDefinitions = grid.getColumns();
             this._gridOptions = grid.getOptions();
         }
     }
@@ -2948,7 +2976,7 @@ class GraphqlService {
      * @return {?}
      */
     onPaginationChanged(event, args) {
-        const /** @type {?} */ pageSize = +args.pageSize || this.pagination.pageSize;
+        const /** @type {?} */ pageSize = +args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE);
         this.updatePagination(args.newPage, pageSize);
         // build the GraphQL query which we will use in the WebAPI callback
         return this.buildQuery();
@@ -2973,7 +3001,7 @@ class GraphqlService {
      */
     updateFilters(columnFilters, isUpdatedByPreset) {
         // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
-        this._currentFilters = (!!isUpdatedByPreset) ? columnFilters : Object.keys(columnFilters).map(key => columnFilters[key]);
+        this._currentFilters = this.castFilterToColumnFilter(columnFilters);
         const /** @type {?} */ searchByArray = [];
         let /** @type {?} */ searchValue;
         for (const /** @type {?} */ columnId in columnFilters) {
@@ -3023,7 +3051,7 @@ class GraphqlService {
                 }
                 // if we didn't find an Operator but we have a Filter Type, we should use default Operator
                 if (!operator && columnDef.filter) {
-                    operator = mapOperatorByFilterType(columnDef.filter.type);
+                    operator = mapOperatorByFilterType(columnDef.filter.type || '');
                 }
                 searchByArray.push({
                     field: fieldName,
@@ -3070,13 +3098,17 @@ class GraphqlService {
         let /** @type {?} */ currentSorters = [];
         let /** @type {?} */ graphqlSorters = [];
         if (!sortColumns && presetSorters) {
+            // make the presets the current sorters, also make sure that all direction are in uppercase for GraphQL
             currentSorters = presetSorters;
+            currentSorters.forEach((sorter) => sorter.direction = /** @type {?} */ (sorter.direction.toUpperCase()));
             // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
-            currentSorters.forEach((sorter) => {
-                sorter.direction = /** @type {?} */ (sorter.direction.toUpperCase());
-                sorter.sortAsc = (sorter.direction.toUpperCase() === SortDirection.ASC);
+            const /** @type {?} */ tmpSorterArray = currentSorters.map((sorter) => {
+                return {
+                    columnId: sorter.columnId,
+                    sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
+                };
             });
-            this._grid.setSortColumns(currentSorters);
+            this._grid.setSortColumns(tmpSorterArray);
         }
         else if (sortColumns && !presetSorters) {
             // build the orderBy array, it could be multisort, example
@@ -3088,14 +3120,16 @@ class GraphqlService {
             else {
                 if (sortColumns) {
                     for (const /** @type {?} */ column of sortColumns) {
-                        currentSorters.push({
-                            columnId: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
-                            direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
-                        });
-                        graphqlSorters.push({
-                            field: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
-                            direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
-                        });
+                        if (column && column.sortCol) {
+                            currentSorters.push({
+                                columnId: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
+                                direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
+                            });
+                            graphqlSorters.push({
+                                field: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
+                                direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
+                            });
+                        }
                     }
                 }
             }
@@ -3138,6 +3172,28 @@ class GraphqlService {
             }
             const /** @type {?} */ rep = removeDoubleQuotes ? group1.replace(/"/g, '') : group1;
             return rep;
+        });
+    }
+    /**
+     * Cast provided filters (could be in multiple format) into an array of ColumnFilter
+     * @param {?} columnFilters
+     * @return {?}
+     */
+    castFilterToColumnFilter(columnFilters) {
+        // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
+        const /** @type {?} */ filtersArray = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters;
+        return filtersArray.map((filter) => {
+            const /** @type {?} */ tmpFilter = { columnId: filter.columnId || '' };
+            if (filter.operator) {
+                tmpFilter.operator = filter.operator;
+            }
+            if (Array.isArray(filter.searchTerms)) {
+                tmpFilter.searchTerms = filter.searchTerms;
+            }
+            else {
+                tmpFilter.searchTerm = filter.searchTerm;
+            }
+            return tmpFilter;
         });
     }
 }
@@ -3397,6 +3453,7 @@ class OdataService {
 let timer$1;
 const DEFAULT_FILTER_TYPING_DEBOUNCE$1 = 750;
 const DEFAULT_ITEMS_PER_PAGE$1 = 25;
+const DEFAULT_PAGE_SIZE$1 = 20;
 class GridOdataService {
     /**
      * @param {?} odataService
@@ -3519,7 +3576,7 @@ class GridOdataService {
      * @return {?}
      */
     onPaginationChanged(event, args) {
-        const /** @type {?} */ pageSize = +args.pageSize || 20;
+        const /** @type {?} */ pageSize = +args.pageSize || DEFAULT_PAGE_SIZE$1;
         this.updatePagination(args.newPage, pageSize);
         // build the OData query which we will use in the WebAPI callback
         return this.odataService.buildQuery();
@@ -3543,8 +3600,7 @@ class GridOdataService {
      * @return {?}
      */
     updateFilters(columnFilters, isUpdatedByPreset) {
-        // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
-        this._currentFilters = (!!isUpdatedByPreset) ? columnFilters : Object.keys(columnFilters).map(key => columnFilters[key]);
+        this._currentFilters = this.castFilterToColumnFilter(columnFilters);
         let /** @type {?} */ searchBy = '';
         const /** @type {?} */ searchByArray = [];
         // loop through all columns to inspect filters
@@ -3689,12 +3745,17 @@ class GridOdataService {
         let /** @type {?} */ sortByArray = [];
         const /** @type {?} */ sorterArray = [];
         if (!sortColumns && presetSorters) {
+            // make the presets the current sorters, also make sure that all direction are in lowercase for OData
             sortByArray = presetSorters;
+            sortByArray.forEach((sorter) => sorter.direction = /** @type {?} */ (sorter.direction.toLowerCase()));
             // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
-            sortByArray.forEach((sorter) => {
-                sorter.sortAsc = (sorter.direction.toUpperCase() === SortDirection.ASC);
+            const /** @type {?} */ tmpSorterArray = sortByArray.map((sorter) => {
+                return {
+                    columnId: sorter.columnId,
+                    sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
+                };
             });
-            this._grid.setSortColumns(sortByArray);
+            this._grid.setSortColumns(tmpSorterArray);
         }
         else if (sortColumns && !presetSorters) {
             // build the SortBy string, it could be multisort, example: customerNo asc, purchaserName desc
@@ -3704,28 +3765,53 @@ class GridOdataService {
             else {
                 if (sortColumns) {
                     for (const /** @type {?} */ column of sortColumns) {
-                        let /** @type {?} */ fieldName = (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '';
-                        if (this.odataService.options.caseType === CaseType.pascalCase) {
-                            fieldName = String.titleCase(fieldName);
+                        if (column.sortCol) {
+                            let /** @type {?} */ fieldName = (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '';
+                            if (this.odataService.options.caseType === CaseType.pascalCase) {
+                                fieldName = String.titleCase(fieldName);
+                            }
+                            sorterArray.push({
+                                columnId: fieldName,
+                                direction: column.sortAsc ? 'asc' : 'desc'
+                            });
                         }
-                        sorterArray.push({
-                            columnId: fieldName,
-                            direction: column.sortAsc ? 'asc' : 'desc'
-                        });
                     }
                     sortByArray = sorterArray;
                 }
             }
         }
         // transform the sortby array into a CSV string for OData
+        sortByArray = /** @type {?} */ (sortByArray);
         const /** @type {?} */ csvString = sortByArray.map((sorter) => `${sorter.columnId} ${sorter.direction.toLowerCase()}`).join(',');
         this.odataService.updateOptions({
             orderBy: (this.odataService.options.caseType === CaseType.pascalCase) ? String.titleCase(csvString) : csvString
         });
         // keep current Sorters and update the service options with the new sorting
-        this._currentSorters = sortByArray;
+        this._currentSorters = /** @type {?} */ (sortByArray);
         // build the OData query which we will use in the WebAPI callback
         return this.odataService.buildQuery();
+    }
+    /**
+     * Cast provided filters (could be in multiple format) into an array of ColumnFilter
+     * @param {?} columnFilters
+     * @return {?}
+     */
+    castFilterToColumnFilter(columnFilters) {
+        // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
+        const /** @type {?} */ filtersArray = /** @type {?} */ (((typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters));
+        return filtersArray.map((filter) => {
+            const /** @type {?} */ tmpFilter = { columnId: filter.columnId || '' };
+            if (filter.operator) {
+                tmpFilter.operator = filter.operator;
+            }
+            if (Array.isArray(filter.searchTerms)) {
+                tmpFilter.searchTerms = filter.searchTerms;
+            }
+            else {
+                tmpFilter.searchTerm = filter.searchTerm;
+            }
+            return tmpFilter;
+        });
     }
     /**
      * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
@@ -4068,11 +4154,11 @@ class GridStateService {
     getCurrentFilters() {
         if (this._gridOptions && this._gridOptions.backendServiceApi) {
             const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
-            if (backendService) {
+            if (backendService && backendService.getCurrentFilters) {
                 return /** @type {?} */ (backendService.getCurrentFilters());
             }
         }
-        else {
+        else if (this.filterService && this.filterService.getCurrentLocalFilters) {
             return this.filterService.getCurrentLocalFilters();
         }
         return null;
@@ -4084,7 +4170,7 @@ class GridStateService {
     getCurrentPagination() {
         if (this._gridOptions && this._gridOptions.backendServiceApi) {
             const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
-            if (backendService) {
+            if (backendService && backendService.getCurrentPagination) {
                 return backendService.getCurrentPagination();
             }
         }
@@ -4100,21 +4186,16 @@ class GridStateService {
     getCurrentSorters() {
         if (this._gridOptions && this._gridOptions.backendServiceApi) {
             const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
-            if (backendService) {
+            if (backendService && backendService.getCurrentSorters) {
                 return /** @type {?} */ (backendService.getCurrentSorters());
             }
         }
-        else {
+        else if (this.sortService && this.sortService.getCurrentLocalSorters) {
             return this.sortService.getCurrentLocalSorters();
         }
         return null;
     }
 }
-GridStateService.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-GridStateService.ctorParameters = () => [];
 
 /**
  * @fileoverview added by tsickle
@@ -4366,7 +4447,7 @@ class SortService {
     /**
      * Attach a backend sort (single/multi) hook to the grid
      * @param {?} grid SlickGrid Grid object
-     * @param {?} gridOptions Grid Options objectangular
+     * @param {?} gridOptions Grid Options object
      * @return {?}
      */
     attachBackendOnSort(grid, gridOptions) {
@@ -4496,34 +4577,36 @@ class SortService {
         dataView.sort((dataRow1, dataRow2) => {
             for (let /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
                 const /** @type {?} */ columnSortObj = sortColumns[i];
-                const /** @type {?} */ sortDirection = columnSortObj.sortAsc ? 1 : -1;
-                const /** @type {?} */ sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.field;
-                const /** @type {?} */ fieldType = columnSortObj.sortCol.type || 'string';
-                const /** @type {?} */ value1 = dataRow1[sortField];
-                const /** @type {?} */ value2 = dataRow2[sortField];
-                let /** @type {?} */ result = 0;
-                switch (fieldType) {
-                    case FieldType.number:
-                        result = Sorters.numeric(value1, value2, sortDirection);
-                        break;
-                    case FieldType.date:
-                        result = Sorters.date(value1, value2, sortDirection);
-                        break;
-                    case FieldType.dateIso:
-                        result = Sorters.dateIso(value1, value2, sortDirection);
-                        break;
-                    case FieldType.dateUs:
-                        result = Sorters.dateUs(value1, value2, sortDirection);
-                        break;
-                    case FieldType.dateUsShort:
-                        result = Sorters.dateUsShort(value1, value2, sortDirection);
-                        break;
-                    default:
-                        result = Sorters.string(value1, value2, sortDirection);
-                        break;
-                }
-                if (result !== 0) {
-                    return result;
+                if (columnSortObj && columnSortObj.sortCol) {
+                    const /** @type {?} */ sortDirection = columnSortObj.sortAsc ? 1 : -1;
+                    const /** @type {?} */ sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.field;
+                    const /** @type {?} */ fieldType = columnSortObj.sortCol.type || 'string';
+                    const /** @type {?} */ value1 = dataRow1[sortField];
+                    const /** @type {?} */ value2 = dataRow2[sortField];
+                    let /** @type {?} */ result = 0;
+                    switch (fieldType) {
+                        case FieldType.number:
+                            result = Sorters.numeric(value1, value2, sortDirection);
+                            break;
+                        case FieldType.date:
+                            result = Sorters.date(value1, value2, sortDirection);
+                            break;
+                        case FieldType.dateIso:
+                            result = Sorters.dateIso(value1, value2, sortDirection);
+                            break;
+                        case FieldType.dateUs:
+                            result = Sorters.dateUs(value1, value2, sortDirection);
+                            break;
+                        case FieldType.dateUsShort:
+                            result = Sorters.dateUsShort(value1, value2, sortDirection);
+                            break;
+                        default:
+                            result = Sorters.string(value1, value2, sortDirection);
+                            break;
+                    }
+                    if (result !== 0) {
+                        return result;
+                    }
                 }
             }
             return 0;
@@ -5375,6 +5458,24 @@ const lowercaseFormatter = (row, cell, value, columnDef, dataContext) => {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+const multipleFormatter = (row, cell, value, columnDef, dataContext) => {
+    const /** @type {?} */ params = columnDef.params || {};
+    if (!params.formatters || !Array.isArray(params.formatters)) {
+        throw new Error(`The multiple formatter requires the "formatters" to be provided as a column params.
+    For example: this.columnDefinitions = [{ id: title, field: title, formatter: Formatters.multiple, params: { formatters: [Formatters.lowercase, Formatters.uppercase] }`);
+    }
+    const /** @type {?} */ formatters = params.formatters;
+    let /** @type {?} */ formattedValue = '';
+    for (const /** @type {?} */ formatter of formatters) {
+        formattedValue = formatter(row, cell, value, columnDef, dataContext);
+    }
+    return formattedValue;
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 const percentCompleteFormatter = (row, cell, value, columnDef, dataContext) => {
     if (value === null || value === '') {
         return '-';
@@ -5535,6 +5636,11 @@ const Formatters = {
     infoIcon: infoIconFormatter,
     /** Takes a value and displays it all lowercase */
     lowercase: lowercaseFormatter,
+    /**
+       * You can pipe multiple formatters (executed in sequence), use params to pass the list of formatters. For example::
+       * { field: 'title', formatter: Formatters.multiple, params: { formatters: [ Formatters.lowercase, Formatters.uppercase ] }
+       */
+    multiple: multipleFormatter,
     /** Takes a cell value number (between 0-100) and displays a red (<50) or green (>=50) bar */
     percentComplete: percentCompleteFormatter,
     /** Takes a cell value number (between 0-100) and displays Bootstrap "percent-complete-bar" a red (<30), silver (>30 & <70) or green (>=70) bar */
@@ -5701,14 +5807,15 @@ class SlickPaginationComponent {
             throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
         }
         if (this._gridPaginationOptions && this._gridPaginationOptions.pagination) {
+            const /** @type {?} */ pagination = this._gridPaginationOptions.pagination;
             // set the number of items per page if not already set
             if (!this.itemsPerPage) {
                 this.itemsPerPage = +((backendApi && backendApi.options && backendApi.options.paginationOptions && backendApi.options.paginationOptions.first) ? backendApi.options.paginationOptions.first : this._gridPaginationOptions.pagination.pageSize);
             }
             // if totalItems changed, we should always go back to the first page and recalculation the From-To indexes
-            if (isPageNumberReset || this.totalItems !== this._gridPaginationOptions.pagination.totalItems) {
-                if (this._isFirstRender && this._gridPaginationOptions.pagination.pageNumber > 1) {
-                    this.pageNumber = this._gridPaginationOptions.pagination.pageNumber || 1;
+            if (isPageNumberReset || this.totalItems !== pagination.totalItems) {
+                if (this._isFirstRender && pagination.pageNumber && pagination.pageNumber > 1) {
+                    this.pageNumber = pagination.pageNumber || 1;
                 }
                 else {
                     this.pageNumber = 1;
@@ -6103,11 +6210,12 @@ class AngularSlickgridComponent {
         }
         // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
         if (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) {
+            const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
             if (gridOptions.onBackendEventApi) {
                 console.warn(`"onBackendEventApi" has been DEPRECATED, please consider using "backendServiceApi" in the short term since "onBackendEventApi" will be removed in future versions. You can take look at the Angular-Slickgrid Wikis for OData/GraphQL Services implementation`);
             }
-            if (gridOptions.backendServiceApi && gridOptions.backendServiceApi.service) {
-                gridOptions.backendServiceApi.service.init(gridOptions.backendServiceApi.options, gridOptions.pagination, this.grid);
+            if (backendApi && backendApi.service && backendApi.service.init) {
+                backendApi.service.init(backendApi.options, gridOptions.pagination, this.grid);
             }
         }
         // on cell click, mainly used with the columnDef.action callback
@@ -6131,21 +6239,24 @@ class AngularSlickgridComponent {
         const /** @type {?} */ serviceOptions = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : {};
         const /** @type {?} */ isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && serviceOptions.hasOwnProperty('executeProcessCommandOnInit')) ? serviceOptions['executeProcessCommandOnInit'] : true);
         // update backend filters (if need be) before the query runs
-        if (gridOptions && gridOptions.presets) {
-            if (gridOptions.presets.filters) {
-                backendApi.service.updateFilters(gridOptions.presets.filters, true);
+        if (backendApi) {
+            const /** @type {?} */ backendService = backendApi.service;
+            if (gridOptions && gridOptions.presets) {
+                if (backendService && backendService.updateFilters && gridOptions.presets.filters) {
+                    backendService.updateFilters(gridOptions.presets.filters, true);
+                }
+                if (backendService && backendService.updateSorters && gridOptions.presets.sorters) {
+                    backendService.updateSorters(undefined, gridOptions.presets.sorters);
+                }
+                if (backendService && backendService.updatePagination && gridOptions.presets.pagination) {
+                    backendService.updatePagination(gridOptions.presets.pagination.pageNumber, gridOptions.presets.pagination.pageSize);
+                }
             }
-            if (gridOptions.presets.sorters) {
-                backendApi.service.updateSorters(null, gridOptions.presets.sorters);
-            }
-            if (gridOptions.presets.pagination) {
-                backendApi.service.updatePagination(gridOptions.presets.pagination.pageNumber, gridOptions.presets.pagination.pageSize);
-            }
-        }
-        else {
-            const /** @type {?} */ columnFilters = this.filterService.getColumnFilters();
-            if (columnFilters) {
-                backendApi.service.updateFilters(columnFilters, false);
+            else {
+                const /** @type {?} */ columnFilters = this.filterService.getColumnFilters();
+                if (columnFilters && backendService && backendService.updateFilters) {
+                    backendService.updateFilters(columnFilters, false);
+                }
             }
         }
         if (backendApi && backendApi.service && (backendApi.onInit || isExecuteCommandOnInit)) {
@@ -6212,7 +6323,7 @@ class AngularSlickgridComponent {
      * @return {?}
      */
     refreshGridData(dataset, totalCount) {
-        if (dataset && this.grid) {
+        if (dataset && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
             this._dataView.setItems(dataset, this._gridOptions.datasetIdPropertyName);
             // this.grid.setData(dataset);
             this.grid.invalidate();
@@ -6371,5 +6482,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, castToPromise, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFilterType, parseUtcDate, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, TextEditor as ɵf, booleanFilterCondition as ɵh, collectionSearchFilterCondition as ɵi, dateFilterCondition as ɵj, dateIsoFilterCondition as ɵk, dateUsFilterCondition as ɵm, dateUsShortFilterCondition as ɵn, dateUtcFilterCondition as ɵl, executeMappedCondition as ɵg, testFilterCondition as ɵq, numberFilterCondition as ɵo, stringFilterCondition as ɵp, InputFilter as ɵr, MultipleSelectFilter as ɵs, SelectFilter as ɵu, SingleSelectFilter as ɵt, arrayToCsvFormatter as ɵv, checkboxFormatter as ɵw, checkmarkFormatter as ɵx, complexObjectFormatter as ɵy, dateIsoFormatter as ɵz, dateTimeIsoAmPmFormatter as ɵba, dateTimeUsAmPmFormatter as ɵbd, dateTimeUsFormatter as ɵbc, dateUsFormatter as ɵbb, deleteIconFormatter as ɵbe, editIconFormatter as ɵbf, hyperlinkFormatter as ɵbg, infoIconFormatter as ɵbh, lowercaseFormatter as ɵbi, percentCompleteBarFormatter as ɵbk, percentCompleteFormatter as ɵbj, progressBarFormatter as ɵbl, translateBooleanFormatter as ɵbn, translateFormatter as ɵbm, uppercaseFormatter as ɵbo, yesNoFormatter as ɵbp, SharedService as ɵbw, dateIsoSorter as ɵbr, dateSorter as ɵbq, dateUsShortSorter as ɵbt, dateUsSorter as ɵbs, numericSorter as ɵbu, stringSorter as ɵbv };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, castToPromise, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, TextEditor as ɵf, booleanFilterCondition as ɵh, collectionSearchFilterCondition as ɵi, dateFilterCondition as ɵj, dateIsoFilterCondition as ɵk, dateUsFilterCondition as ɵm, dateUsShortFilterCondition as ɵn, dateUtcFilterCondition as ɵl, executeMappedCondition as ɵg, testFilterCondition as ɵq, numberFilterCondition as ɵo, stringFilterCondition as ɵp, InputFilter as ɵr, MultipleSelectFilter as ɵs, SelectFilter as ɵu, SingleSelectFilter as ɵt, arrayToCsvFormatter as ɵv, checkboxFormatter as ɵw, checkmarkFormatter as ɵx, complexObjectFormatter as ɵy, dateIsoFormatter as ɵz, dateTimeIsoAmPmFormatter as ɵba, dateTimeUsAmPmFormatter as ɵbd, dateTimeUsFormatter as ɵbc, dateUsFormatter as ɵbb, deleteIconFormatter as ɵbe, editIconFormatter as ɵbf, hyperlinkFormatter as ɵbg, infoIconFormatter as ɵbh, lowercaseFormatter as ɵbi, multipleFormatter as ɵbj, percentCompleteBarFormatter as ɵbl, percentCompleteFormatter as ɵbk, progressBarFormatter as ɵbm, translateBooleanFormatter as ɵbo, translateFormatter as ɵbn, uppercaseFormatter as ɵbp, yesNoFormatter as ɵbq, SharedService as ɵbx, dateIsoSorter as ɵbs, dateSorter as ɵbr, dateUsShortSorter as ɵbu, dateUsSorter as ɵbt, numericSorter as ɵbv, stringSorter as ɵbw };
 //# sourceMappingURL=angular-slickgrid.js.map

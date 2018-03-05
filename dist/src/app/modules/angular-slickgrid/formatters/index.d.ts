@@ -16,6 +16,7 @@ export declare const Formatters: {
     hyperlink: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     infoIcon: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     lowercase: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    multiple: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     percentComplete: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     percentCompleteBar: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     progressBar: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;

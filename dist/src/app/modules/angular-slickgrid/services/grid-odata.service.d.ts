@@ -10,7 +10,7 @@ export declare class GridOdataService implements BackendService {
     private _gridOptions;
     private _grid;
     options: OdataOption;
-    pagination: Pagination;
+    pagination: Pagination | undefined;
     defaultOptions: OdataOption;
     constructor(odataService: OdataService);
     buildQuery(): string;
@@ -18,7 +18,7 @@ export declare class GridOdataService implements BackendService {
     updateOptions(serviceOptions?: OdataOption): void;
     removeColumnFilter(fieldName: string): void;
     /** Get the Filters that are currently used by the grid */
-    getCurrentFilters(): ColumnFilters | CurrentFilter[];
+    getCurrentFilters(): CurrentFilter[];
     /** Get the Pagination that is currently used by the grid */
     getCurrentPagination(): CurrentPagination;
     /** Get the Sorters that are currently used by the grid */
@@ -44,6 +44,11 @@ export declare class GridOdataService implements BackendService {
      * @param columnFilters
      */
     updateSorters(sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]): string;
+    /**
+     * Cast provided filters (could be in multiple format) into an array of ColumnFilter
+     * @param columnFilters
+     */
+    private castFilterToColumnFilter(columnFilters);
     /**
      * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
      * @param string operator

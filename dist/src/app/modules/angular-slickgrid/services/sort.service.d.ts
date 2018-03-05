@@ -8,7 +8,7 @@ export declare class SortService {
     /**
      * Attach a backend sort (single/multi) hook to the grid
      * @param grid SlickGrid Grid object
-     * @param gridOptions Grid Options objectangular
+     * @param gridOptions Grid Options object
      */
     attachBackendOnSort(grid: any, gridOptions: GridOption): void;
     attachBackendOnSortSubscribe(event: any, args: any): Promise<void>;

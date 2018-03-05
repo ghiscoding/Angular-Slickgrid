@@ -39,7 +39,7 @@ export declare function mapMomentDateFormatWithFieldType(fieldType: FieldType): 
 export declare function mapFlatpickrDateFormatWithFieldType(fieldType: FieldType): string;
 /**
  * Mapper for query operators (ex.: <= is "le", > is "gt")
- * @param operator
+ * @param string operator
  * @returns string map
  */
 export declare function mapOperatorType(operator: string): OperatorType;
@@ -49,10 +49,22 @@ export declare function mapOperatorType(operator: string): OperatorType;
  * @param operator
  * @returns string map
  */
-export declare function mapOperatorByFilterType(filterType: FilterType | FormElementType): OperatorType;
+export declare function mapOperatorByFilterType(filterType: FilterType | FormElementType | string): OperatorType;
 /**
  * Parse a date passed as a string and return a Date object (if valid)
  * @param inputDateString
  * @returns string date formatted
  */
 export declare function parseUtcDate(inputDateString: string, useUtc: boolean): string | null;
+/**
+ * Converts a string to camel case
+ * @param str the string to convert
+ * @return the string in camel case
+ */
+export declare function toCamelCase(str: string): string;
+/**
+ * Converts a string to kebab (hypen) case
+ * @param str the string to convert
+ * @return the string in kebab case
+ */
+export declare function toKebabCase(str: string): string;
