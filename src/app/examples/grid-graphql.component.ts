@@ -1,7 +1,6 @@
-import { SearchTerm } from './../modules/angular-slickgrid/models/searchTerm.type';
-import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption, OperatorType, SortDirection, GridStateService } from './../modules/angular-slickgrid/index';
-import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
+import { Component, Injectable, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption, OperatorType, SearchTerm, SortDirection, GridStateService } from './../modules/angular-slickgrid';
 
 const defaultPageSize = 20;
 const GRAPHQL_QUERY_DATASET_NAME = 'users';
