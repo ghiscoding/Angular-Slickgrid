@@ -11,6 +11,8 @@ import { GridOdataComponent } from './examples/grid-odata.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
 import { GridRowSelectionComponent } from './examples/grid-rowselection.component';
 import { HomeComponent } from './examples/home.component';
+import { SwtCommonGridTestComponent } from './examples/swt-common-grid-test.component';
+
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -29,6 +31,7 @@ const routes: Routes = [
   { path: 'clientside', component: GridClientSideComponent },
   { path: 'odata', component: GridOdataComponent },
   { path: 'selection', component: GridRowSelectionComponent },
+  { path: 'swt', component: SwtCommonGridTestComponent },
   { path: '', redirectTo: '/basic', pathMatch: 'full' },
   { path: '**', redirectTo: '/basic', pathMatch: 'full' }
 ];
