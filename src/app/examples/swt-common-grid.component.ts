@@ -138,7 +138,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
         this.logger.info('method [pagination] - START');
     }
 
-    get paginationComponent(): SwtCommonGridPaginationComponent{
+    get paginationComponent(): SwtCommonGridPaginationComponent {
         return this._paginationComponent;
     }
 
