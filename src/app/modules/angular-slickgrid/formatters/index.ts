@@ -15,6 +15,7 @@ import { editIconFormatter } from './editIconFormatter';
 import { hyperlinkFormatter } from './hyperlinkFormatter';
 import { infoIconFormatter } from './infoIconFormatter';
 import { lowercaseFormatter } from './lowercaseFormatter';
+import { multipleFormatter } from './multipleFormatter';
 import { percentCompleteFormatter } from './percentCompleteFormatter';
 import { percentCompleteBarFormatter } from './percentCompleteBarFormatter';
 import { progressBarFormatter } from './progressBarFormatter';
@@ -78,6 +79,12 @@ export const Formatters = {
 
   /** Takes a value and displays it all lowercase */
   lowercase: lowercaseFormatter,
+
+  /**
+   * You can pipe multiple formatters (executed in sequence), use params to pass the list of formatters. For example::
+   * { field: 'title', formatter: Formatters.multiple, params: { formatters: [ Formatters.lowercase, Formatters.uppercase ] }
+   */
+  multiple: multipleFormatter,
 
   /** Takes a cell value number (between 0-100) and displays a red (<50) or green (>=50) bar */
   percentComplete: percentCompleteFormatter,
