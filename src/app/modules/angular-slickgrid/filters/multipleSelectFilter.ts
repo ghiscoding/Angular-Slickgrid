@@ -93,7 +93,7 @@ export class MultipleSelectFilter implements Filter {
   /**
    * Set value(s) on the DOM element
    */
-  setValues(values) {
+  setValues(values: SearchTerm[]) {
     if (values) {
       this.$filterElm.multipleSelect('setSelects', values);
     }
