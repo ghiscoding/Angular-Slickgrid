@@ -442,12 +442,12 @@ export class GraphqlService implements BackendService {
           for (const column of sortColumns) {
             if (column && column.sortCol) {
               currentSorters.push({
-                columnId: (column.sortCol.queryField || column.sortCol.queryFieldFilter || column.sortCol.field || column.sortCol.id) + '',
+                columnId: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '',
                 direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
               });
 
               graphqlSorters.push({
-                field: (column.sortCol.queryField || column.sortCol.queryFieldFilter || column.sortCol.field || column.sortCol.id) + '',
+                field: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '',
                 direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
               });
             }

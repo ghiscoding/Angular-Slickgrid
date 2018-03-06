@@ -335,7 +335,7 @@ export class GridOdataService implements BackendService {
         if (sortColumns) {
           for (const column of sortColumns) {
             if (column.sortCol) {
-              let fieldName = (column.sortCol.queryField || column.sortCol.queryFieldFilter || column.sortCol.field || column.sortCol.id) + '';
+              let fieldName = (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '';
               if (this.odataService.options.caseType === CaseType.pascalCase) {
                 fieldName = String.titleCase(fieldName);
               }
