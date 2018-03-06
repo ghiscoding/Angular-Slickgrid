@@ -2,5 +2,9 @@
     <div attr.id='{{gridId}}' class="slickgrid-container" [style.height]="gridHeightString" [style.width]="gridWidthString">
     </div>
 
-    <slick-pagination id="slickPagingContainer-{{gridId}}" *ngIf="showPagination" [gridPaginationOptions]="gridPaginationOptions"></slick-pagination>
+    <slick-pagination id="slickPagingContainer-{{gridId}}"
+        *ngIf="showPagination"
+        (onPaginationChanged)="paginationChanged($event)"
+        [gridPaginationOptions]="gridPaginationOptions">
+    </slick-pagination>
 </div>

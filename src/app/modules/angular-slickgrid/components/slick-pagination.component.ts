@@ -1,4 +1,5 @@
-import { Component, OnDestroy, Input, AfterViewInit, Injectable } from '@angular/core';
+import { Pagination } from './../models/pagination.interface';
+import { AfterViewInit, Component, EventEmitter, Injectable, Input, OnDestroy, Output } from '@angular/core';
 import { castToPromise } from './../services/utilities';
 import { GridOption } from './../models/index';
 import { FilterService, SortService } from './../services/index';
@@ -14,6 +15,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   private _sorterSubcription: Subscription;
   private _gridPaginationOptions: GridOption;
   private _isFirstRender = true;
+  @Output() onPaginationChanged = new EventEmitter<Pagination>();
 
   @Input()
   set gridPaginationOptions(gridPaginationOptions: GridOption) {
@@ -99,6 +101,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   }
 
   dispose() {
+    this.onPaginationChanged.unsubscribe();
     if (this._filterSubcription) {
       this._filterSubcription.unsubscribe();
     }
@@ -187,6 +190,14 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     } else {
       throw new Error('Pagination with a backend service requires "BackendServiceApi" to be defined in your grid options');
     }
+
+    // emit the changes to the parent component
+    this.onPaginationChanged.emit({
+      pageNumber: this.pageNumber,
+      pageSizes: this.paginationPageSizes,
+      pageSize: this.itemsPerPage,
+      totalItems: this.totalItems
+    });
   }
 
   recalculateFromToIndexes() {

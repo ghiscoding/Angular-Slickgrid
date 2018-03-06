@@ -1,3 +1,4 @@
+import { Pagination } from './../models/pagination.interface';
 // import 3rd party vendor libs
 import 'slickgrid/lib/jquery-ui-1.11.3';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
@@ -23,7 +24,7 @@ import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Outp
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
-import { BackendServiceOption, Column, GridOption } from './../models/index';
+import { BackendServiceOption, Column, GridOption, GridStateType } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
@@ -333,6 +334,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
     // use jquery extend to deep merge and avoid immutable properties changed in GlobalGridOptions after route change
     return $.extend(true, {}, GlobalGridOptions, this.forRootConfig, this.gridOptions);
+  }
+
+  paginationChanged(pagination: Pagination) {
+    this.gridStateService.onGridStateChanged.emit({
+      change: { newValues: pagination, type: GridStateType.pagination },
+      gridState: this.gridStateService.getCurrentGridState()
+    });
   }
 
   /**

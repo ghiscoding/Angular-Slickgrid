@@ -9,8 +9,10 @@ declare var Slick: any;
 export class SortService {
   private _currentLocalSorters: CurrentSorter[] = [];
   private _eventHandler: any = new Slick.EventHandler();
-  private _subscriber: SlickEvent = new Slick.Event();
-  onSortChanged = new EventEmitter<string>();
+  private _grid: any;
+  private _gridOptions: GridOption;
+  private _subscriber: SlickEvent;
+  onSortChanged = new EventEmitter<CurrentSorter[]>();
 
   /**
    * Attach a backend sort (single/multi) hook to the grid
@@ -18,8 +20,10 @@ export class SortService {
    * @param gridOptions Grid Options object
    */
   attachBackendOnSort(grid: any, gridOptions: GridOption) {
+    this._grid = grid;
+    this._gridOptions = gridOptions;
     this._subscriber = grid.onSort;
-    this.emitSortChangedBy('remote');
+    this.emitSortChanged('remote');
     this._subscriber.subscribe(this.attachBackendOnSortSubscribe);
   }
 
@@ -61,8 +65,10 @@ export class SortService {
    * @param dataView
    */
   attachLocalOnSort(grid: any, gridOptions: GridOption, dataView: any, columnDefinitions: Column[]) {
+    this._grid = grid;
+    this._gridOptions = gridOptions;
     this._subscriber = grid.onSort;
-    this.emitSortChangedBy('local');
+    this.emitSortChanged('local');
     this._subscriber.subscribe((e: any, args: any) => {
       // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
       // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
@@ -193,7 +199,20 @@ export class SortService {
    * Other services, like Pagination, can then subscribe to it.
    * @param sender
    */
-  emitSortChangedBy(sender: string) {
-    this._subscriber.subscribe(() => this.onSortChanged.emit(`onSortChanged by ${sender}`));
+  emitSortChanged(sender: 'local' | 'remote') {
+    if (this._subscriber && typeof this._subscriber.subscribe === 'function') {
+      this._subscriber.subscribe(() => {
+        if (sender === 'remote') {
+          let currentSorters: CurrentSorter[] = [];
+          const backendService = this._gridOptions.backendServiceApi.service;
+          if (backendService && backendService.getCurrentSorters) {
+            currentSorters = backendService.getCurrentSorters() as CurrentSorter[];
+          }
+          this.onSortChanged.emit(currentSorters);
+        } else if (sender === 'local') {
+          this.onSortChanged.emit(this.getCurrentLocalSorters());
+        }
+      });
+    }
   }
 }

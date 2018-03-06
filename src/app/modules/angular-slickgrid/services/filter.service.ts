@@ -24,14 +24,14 @@ declare var Slick: any;
 @Injectable()
 export class FilterService {
   private _eventHandler = new Slick.EventHandler();
-  private _subscriber: SlickEvent = new Slick.Event();
+  private _subscriber: SlickEvent;
   private _filters: any[] = [];
   private _columnFilters: ColumnFilters = {};
   private _dataView: any;
   private _grid: any;
   private _gridOptions: GridOption;
   private _onFilterChangedOptions: any;
-  onFilterChanged = new EventEmitter<string>();
+  onFilterChanged = new EventEmitter<CurrentFilter[]>();
 
   constructor(private translate: TranslateService) { }
 
@@ -47,10 +47,9 @@ export class FilterService {
    */
   attachBackendOnFilter(grid: any, options: GridOption) {
     this._filters = [];
-    this.emitFilterChangedBy('remote');
-
     this._subscriber = new Slick.Event();
     this._subscriber.subscribe(this.attachBackendOnFilterSubscribe);
+    this.emitFilterChanged('remote');
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
     this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: Event, args: any) => {
@@ -93,6 +92,35 @@ export class FilterService {
     }
   }
 
+  /**
+   * Attach a local filter hook to the grid
+   * @param grid SlickGrid Grid object
+   * @param gridOptions Grid Options object
+   * @param dataView
+   */
+  attachLocalOnFilter(grid: any, options: GridOption, dataView: any) {
+    this._filters = [];
+    this._dataView = dataView;
+    this._subscriber = new Slick.Event();
+
+    dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
+    dataView.setFilter(this.customLocalFilter.bind(this, dataView));
+
+    this._subscriber.subscribe((e: any, args: any) => {
+      const columnId = args.columnId;
+      if (columnId != null) {
+        dataView.refresh();
+      }
+    });
+
+    // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
+    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: Event, args: any) => {
+      this.addFilterTemplateToHeaderRow(args);
+    });
+
+    this.emitFilterChanged('local');
+  }
+
   /** Clear the search filters (below the column titles) */
   clearFilters() {
     this._filters.forEach((filter, index) => {
@@ -116,34 +144,6 @@ export class FilterService {
       this._grid.invalidate();
       this._grid.render();
     }
-  }
-
-  /**
-   * Attach a local filter hook to the grid
-   * @param grid SlickGrid Grid object
-   * @param gridOptions Grid Options object
-   * @param dataView
-   */
-  attachLocalOnFilter(grid: any, options: GridOption, dataView: any) {
-    this._dataView = dataView;
-    this._filters = [];
-    this.emitFilterChangedBy('local');
-
-    dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
-    dataView.setFilter(this.customLocalFilter.bind(this, dataView));
-
-    this._subscriber = new Slick.Event();
-    this._subscriber.subscribe((e: any, args: any) => {
-      const columnId = args.columnId;
-      if (columnId != null) {
-        dataView.refresh();
-      }
-    });
-
-    // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
-    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: Event, args: any) => {
-      this.addFilterTemplateToHeaderRow(args);
-    });
   }
 
   customLocalFilter(dataView: any, item: any, args: any) {
@@ -399,8 +399,21 @@ export class FilterService {
    * Other services, like Pagination, can then subscribe to it.
    * @param sender
    */
-  emitFilterChangedBy(sender: string) {
-    this._subscriber.subscribe(() => this.onFilterChanged.emit(`onFilterChanged by ${sender}`));
+  emitFilterChanged(sender: 'local' | 'remote') {
+    if (this._subscriber && typeof this._subscriber.subscribe === 'function') {
+      this._subscriber.subscribe(() => {
+        if (sender === 'remote') {
+          let currentFilters: CurrentFilter[] = [];
+          const backendService = this._gridOptions.backendServiceApi.service;
+          if (backendService && backendService.getCurrentFilters) {
+            currentFilters = backendService.getCurrentFilters() as CurrentFilter[];
+          }
+          this.onFilterChanged.emit(currentFilters);
+        } else if (sender === 'local') {
+          this.onFilterChanged.emit(this.getCurrentLocalFilters());
+        }
+      });
+    }
   }
 
   /**

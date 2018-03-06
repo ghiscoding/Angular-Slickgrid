@@ -1,11 +1,15 @@
+import { EventEmitter } from '@angular/core';
 import {
   CurrentFilter,
   CurrentPagination,
   CurrentSorter,
   GridOption,
-  GridState
+  GridState,
+  GridStateChange,
+  GridStateType
 } from './../models/index';
 import { FilterService, SortService } from './../services/index';
+import { Subscription } from 'rxjs/Subscription';
 import $ from 'jquery';
 
 export class GridStateService {
@@ -13,7 +17,10 @@ export class GridStateService {
   private _gridOptions: GridOption;
   private _preset: GridState;
   private filterService: FilterService;
+  private _filterSubcription: Subscription;
+  private _sorterSubcription: Subscription;
   private sortService: SortService;
+  onGridStateChanged = new EventEmitter<GridStateChange>();
 
   /**
    * Initialize the Export Service
@@ -26,6 +33,20 @@ export class GridStateService {
     this.filterService = filterService;
     this.sortService = sortService;
     this._gridOptions = (grid && grid.getOptions) ? grid.getOptions() : {};
+
+    // Subscribe to Event Emitter of Filter & Sort changed, go back to page 1 when that happen
+    this._filterSubcription = this.filterService.onFilterChanged.subscribe((currentFilters: CurrentFilter[]) => {
+      this.onGridStateChanged.emit({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: this.getCurrentGridState() });
+    });
+    this._sorterSubcription = this.sortService.onSortChanged.subscribe((currentSorters: CurrentSorter[]) => {
+      this.onGridStateChanged.emit({ change: { newValues: currentSorters, type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
+    });
+  }
+
+  dispose() {
+    this._filterSubcription.unsubscribe();
+    this._sorterSubcription.unsubscribe();
+    this.onGridStateChanged.unsubscribe();
   }
 
   /**
