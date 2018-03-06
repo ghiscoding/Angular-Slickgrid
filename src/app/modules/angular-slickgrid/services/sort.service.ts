@@ -140,7 +140,7 @@ export class SortService {
         const columnSortObj = sortColumns[i];
         if (columnSortObj && columnSortObj.sortCol) {
           const sortDirection = columnSortObj.sortAsc ? 1 : -1;
-          const sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.field;
+          const sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
           const fieldType = columnSortObj.sortCol.type || 'string';
           const value1 = dataRow1[sortField];
           const value2 = dataRow2[sortField];

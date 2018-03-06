@@ -186,7 +186,7 @@ export class GridOdataService implements BackendService {
           throw new Error('[Backend Service API]: Something went wrong in trying to get the column definition of the specified filter (or preset filters). Did you make a typo on the filter columnId?');
         }
 
-        let fieldName = columnDef.queryField || columnDef.field || columnDef.name || '';
+        let fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field || columnDef.name || '';
         const fieldType = columnDef.type || 'string';
         const searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
         let fieldSearchValue = columnFilter.searchTerm;
@@ -335,7 +335,7 @@ export class GridOdataService implements BackendService {
         if (sortColumns) {
           for (const column of sortColumns) {
             if (column.sortCol) {
-              let fieldName = (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '';
+              let fieldName = (column.sortCol.queryField || column.sortCol.queryFieldFilter || column.sortCol.field || column.sortCol.id) + '';
               if (this.odataService.options.caseType === CaseType.pascalCase) {
                 fieldName = String.titleCase(fieldName);
               }

@@ -157,7 +157,7 @@ export class FilterService {
       const fieldType = columnDef.type || FieldType.string;
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
 
-      let cellValue = item[columnDef.queryField || columnDef.field];
+      let cellValue = item[columnDef.queryField || columnDef.queryFieldFilter || columnDef.field];
       const searchTerms = (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null;
       let fieldSearchValue = (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined;
 

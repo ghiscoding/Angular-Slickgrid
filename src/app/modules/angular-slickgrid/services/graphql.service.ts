@@ -334,7 +334,7 @@ export class GraphqlService implements BackendService {
           throw new Error('[Backend Service API]: Something went wrong in trying to get the column definition of the specified filter (or preset filters). Did you make a typo on the filter columnId?');
         }
 
-        const fieldName = columnDef.queryField || columnDef.field || columnDef.name || '';
+        const fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field || columnDef.name || '';
         const searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
         let fieldSearchValue = columnFilter.searchTerm;
         if (typeof fieldSearchValue === 'undefined') {
@@ -442,12 +442,12 @@ export class GraphqlService implements BackendService {
           for (const column of sortColumns) {
             if (column && column.sortCol) {
               currentSorters.push({
-                columnId: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
+                columnId: (column.sortCol.queryField || column.sortCol.queryFieldFilter || column.sortCol.field || column.sortCol.id) + '',
                 direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
               });
 
               graphqlSorters.push({
-                field: (column.sortCol.queryField || column.sortCol.field || column.sortCol.id) + '',
+                field: (column.sortCol.queryField || column.sortCol.queryFieldFilter || column.sortCol.field || column.sortCol.id) + '',
                 direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
               });
             }
