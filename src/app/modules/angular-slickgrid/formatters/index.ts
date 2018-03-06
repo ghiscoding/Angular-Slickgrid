@@ -13,6 +13,7 @@ import { dateUsFormatter } from './dateUsFormatter';
 import { deleteIconFormatter } from './deleteIconFormatter';
 import { editIconFormatter } from './editIconFormatter';
 import { hyperlinkFormatter } from './hyperlinkFormatter';
+import { hyperlinkUriPrefixFormatter } from './hyperlinkUri.formatter';
 import { infoIconFormatter } from './infoIconFormatter';
 import { lowercaseFormatter } from './lowercaseFormatter';
 import { multipleFormatter } from './multipleFormatter';
@@ -71,8 +72,11 @@ export const Formatters = {
   /** Displays a Font-Awesome edit icon (fa-pencil) */
   editIcon: editIconFormatter,
 
-  /** Takes a cell value and transforms it into an hyperlink, given that the value starts with 1 of these (http|ftp|https) */
+  /** Takes an hyperlink cell value and transforms it into a real hyperlink, given that the value starts with 1 of these (http|ftp|https). The structure will be "<a href="hyperlink">hyperlink</a>" */
   hyperlink: hyperlinkFormatter,
+
+  /** Takes an hyperlink URI prefix (passed in column definition "params.uriPrefix") and adds the cell value. The structure will be "<a href="uriPrefix">value</a>"  */
+  hyperlinkUri: hyperlinkUriPrefixFormatter,
 
   /** Displays a Font-Awesome edit icon (fa-info-circle) */
   infoIcon: infoIconFormatter,
