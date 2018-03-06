@@ -1,5 +1,4 @@
-import { CurrentSorter } from './currentSorter.interface';
-import { CurrentFilter } from './currentFilter.interface';
+import { CurrentFilter, CurrentSorter } from './../models/index';
 export interface GridState {
     /** Filters (and their state, columnId, searchTerm(s)) that are currently applied in the grid */
     filters?: CurrentFilter[] | null;

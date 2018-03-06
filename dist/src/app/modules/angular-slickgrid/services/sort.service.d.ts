@@ -3,8 +3,10 @@ import { Column, GridOption, SortChanged, CurrentSorter } from './../models/inde
 export declare class SortService {
     private _currentLocalSorters;
     private _eventHandler;
+    private _grid;
+    private _gridOptions;
     private _subscriber;
-    onSortChanged: EventEmitter<string>;
+    onSortChanged: EventEmitter<CurrentSorter[]>;
     /**
      * Attach a backend sort (single/multi) hook to the grid
      * @param grid SlickGrid Grid object
@@ -35,5 +37,5 @@ export declare class SortService {
      * Other services, like Pagination, can then subscribe to it.
      * @param sender
      */
-    emitSortChangedBy(sender: string): void;
+    emitSortChanged(sender: 'local' | 'remote'): void;
 }

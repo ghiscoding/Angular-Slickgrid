@@ -1,3 +1,4 @@
+import { Pagination } from './../models/pagination.interface';
 import 'slickgrid/lib/jquery-ui-1.11.3';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
@@ -45,7 +46,6 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private _dataset;
     private _dataView;
     private _eventHandler;
-    private _gridOptions;
     private _translateSubscription;
     grid: any;
     gridPaginationOptions: GridOption;
@@ -80,7 +80,8 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     attachDifferentHooks(grid: any, gridOptions: GridOption, dataView: any): void;
     attachBackendCallbackFunctions(gridOptions: GridOption): void;
     attachResizeHook(grid: any, options: GridOption): void;
-    mergeGridOptions(): GridOption;
+    mergeGridOptions(gridOptions: any): GridOption;
+    paginationChanged(pagination: Pagination): void;
     /**
      * When dataset changes, we need to refresh the entire grid UI & possibly resize it as well
      * @param dataset

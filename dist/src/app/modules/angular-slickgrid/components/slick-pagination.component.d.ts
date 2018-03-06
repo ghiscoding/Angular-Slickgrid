@@ -1,4 +1,5 @@
-import { OnDestroy, AfterViewInit } from '@angular/core';
+import { Pagination } from './../models/pagination.interface';
+import { AfterViewInit, EventEmitter, OnDestroy } from '@angular/core';
 import { GridOption } from './../models/index';
 import { FilterService, SortService } from './../services/index';
 export declare class SlickPaginationComponent implements AfterViewInit, OnDestroy {
@@ -8,6 +9,7 @@ export declare class SlickPaginationComponent implements AfterViewInit, OnDestro
     private _sorterSubcription;
     private _gridPaginationOptions;
     private _isFirstRender;
+    onPaginationChanged: EventEmitter<Pagination>;
     gridPaginationOptions: GridOption;
     grid: any;
     dataFrom: number;

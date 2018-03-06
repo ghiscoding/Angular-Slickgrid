@@ -1,3 +1,5 @@
+import { SortService } from './../modules/angular-slickgrid/services/sort.service';
+import { FilterService } from './../modules/angular-slickgrid/services/filter.service';
 import { Component, OnInit, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Column, FieldType, FilterType, GridOdataService, GridOption, GridStateService, OperatorType } from './../modules/angular-slickgrid';
@@ -34,7 +36,11 @@ export class GridOdataComponent implements OnInit {
   processing = true;
   status = { text: 'processing...', class: 'alert alert-danger' };
 
-  constructor(private http: HttpClient, private gridStateService: GridStateService, private odataService: GridOdataService) {}
+  constructor(private http: HttpClient, private gridStateService: GridStateService, private odataService: GridOdataService, private filter: FilterService, private sorter: SortService) {
+    this.gridStateService.onGridStateChanged.subscribe((data) => console.log(data));
+    // this.filter.onFilterChanged.subscribe((data) => console.log(data));
+    // this.sorter.onSortChanged.subscribe((data) => console.log(data));
+  }
 
   ngOnInit(): void {
     this.columnDefinitions = [

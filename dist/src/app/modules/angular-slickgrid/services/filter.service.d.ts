@@ -11,7 +11,7 @@ export declare class FilterService {
     private _grid;
     private _gridOptions;
     private _onFilterChangedOptions;
-    onFilterChanged: EventEmitter<string>;
+    onFilterChanged: EventEmitter<CurrentFilter[]>;
     constructor(translate: TranslateService);
     init(grid: any, gridOptions: GridOption, columnDefinitions: Column[]): void;
     /**
@@ -21,8 +21,6 @@ export declare class FilterService {
      */
     attachBackendOnFilter(grid: any, options: GridOption): void;
     attachBackendOnFilterSubscribe(event: Event, args: any): Promise<void>;
-    /** Clear the search filters (below the column titles) */
-    clearFilters(): void;
     /**
      * Attach a local filter hook to the grid
      * @param grid SlickGrid Grid object
@@ -30,6 +28,8 @@ export declare class FilterService {
      * @param dataView
      */
     attachLocalOnFilter(grid: any, options: GridOption, dataView: any): void;
+    /** Clear the search filters (below the column titles) */
+    clearFilters(): void;
     customLocalFilter(dataView: any, item: any, args: any): boolean;
     dispose(): void;
     /**
@@ -53,7 +53,7 @@ export declare class FilterService {
      * Other services, like Pagination, can then subscribe to it.
      * @param sender
      */
-    emitFilterChangedBy(sender: string): void;
+    emitFilterChanged(sender: 'local' | 'remote'): void;
     /**
      * When user passes an array of preset filters, we need to pre-polulate each column filter searchTerm(s)
      * The process is to loop through the preset filters array, find the associated column from columnDefinitions and fill in the filter object searchTerm(s)

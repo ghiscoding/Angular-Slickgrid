@@ -1,4 +1,4 @@
-import { AutoResizeOption, BackendEventChanged, BackendServiceApi, Column, ColumnPicker, CheckboxSelector, EditCommand, GridMenu, GridState, HeaderButton, HeaderMenu, Pagination } from './../models/index';
+import { AutoResizeOption, BackendEventChanged, BackendServiceApi, Column, ColumnPicker, CheckboxSelector, EditCommand, FilterType, GridMenu, GridState, HeaderButton, HeaderMenu, Pagination } from './../models/index';
 export interface GridOption {
     /** Defaults to false, which leads to load editor asynchronously (delayed) */
     asyncEditorLoading?: boolean;
@@ -27,6 +27,8 @@ export interface GridOption {
     columnPicker?: ColumnPicker;
     /** Unique property name on the dataset used by Slick.Data.DataView */
     datasetIdPropertyName?: string;
+    /** The default filter type to use when none is specified */
+    defaultFilterType?: FilterType;
     /** Defaults to false, when enabled will give the possibility to edit cell values with inline editors. */
     editable?: boolean;
     /** option to intercept edit commands and implement undo support. */

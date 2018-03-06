@@ -1,11 +1,15 @@
-import { CurrentFilter, CurrentPagination, CurrentSorter, GridState } from './../models/index';
+import { EventEmitter } from '@angular/core';
+import { CurrentFilter, CurrentPagination, CurrentSorter, GridState, GridStateChange } from './../models/index';
 import { FilterService, SortService } from './../services/index';
 export declare class GridStateService {
     private _grid;
     private _gridOptions;
     private _preset;
     private filterService;
+    private _filterSubcription;
+    private _sorterSubcription;
     private sortService;
+    onGridStateChanged: EventEmitter<GridStateChange>;
     /**
      * Initialize the Export Service
      * @param grid
@@ -13,6 +17,7 @@ export declare class GridStateService {
      * @param dataView
      */
     init(grid: any, filterService: FilterService, sortService: SortService): void;
+    dispose(): void;
     /**
      * Get the current grid state (filters/sorters/pagination)
      * @return grid state
