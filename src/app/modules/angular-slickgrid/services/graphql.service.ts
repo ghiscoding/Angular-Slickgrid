@@ -1,6 +1,7 @@
+import { FieldType } from './../models/fieldType';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { mapOperatorType, mapOperatorByFilterType } from './utilities';
+import { mapOperatorType, mapOperatorByFilterType, mapOperatorByFieldType } from './utilities';
 import {
   BackendService,
   Column,
@@ -370,6 +371,11 @@ export class GraphqlService implements BackendService {
         // if we didn't find an Operator but we have a Filter Type, we should use default Operator
         if (!operator && columnDef.filter) {
           operator = mapOperatorByFilterType(columnDef.filter.type || '');
+        }
+
+        // if we still don't have an operator then go with the mapping
+        if (!operator) {
+          operator = mapOperatorByFieldType(columnDef.type || FieldType.string);
         }
 
         searchByArray.push({

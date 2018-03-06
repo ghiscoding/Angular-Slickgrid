@@ -258,6 +258,46 @@ export function mapOperatorType(operator: string): OperatorType {
  * @param operator
  * @returns string map
  */
+export function mapOperatorByFieldType(fieldType: FieldType | string): OperatorType {
+  let map: OperatorType;
+
+  switch (fieldType) {
+    case FieldType.string:
+    case FieldType.unknown:
+      map = OperatorType.contains;
+      break;
+    case FieldType.float:
+    case FieldType.number:
+    case FieldType.date:
+    case FieldType.dateIso:
+    case FieldType.date:
+    case FieldType.dateUtc:
+    case FieldType.dateTime:
+    case FieldType.dateTimeIso:
+    case FieldType.dateTimeIsoAmPm:
+    case FieldType.dateTimeIsoAM_PM:
+    case FieldType.dateUs:
+    case FieldType.dateUsShort:
+    case FieldType.dateTimeUs:
+    case FieldType.dateTimeUsAmPm:
+    case FieldType.dateTimeUsAM_PM:
+    case FieldType.dateTimeUsShort:
+    case FieldType.dateTimeUsShortAmPm:
+    case FieldType.dateTimeUsShortAM_PM:
+    default:
+      map = OperatorType.equal;
+      break;
+  }
+
+  return map;
+}
+
+/**
+ * Mapper for query operator by a Filter Type
+ * For example a multiple-select typically uses 'IN' operator
+ * @param operator
+ * @returns string map
+ */
 export function mapOperatorByFilterType(filterType: FilterType | FormElementType | string): OperatorType {
   let map: OperatorType;
 
