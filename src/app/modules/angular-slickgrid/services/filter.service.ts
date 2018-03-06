@@ -343,7 +343,11 @@ export class FilterService {
       };
 
       // depending on the Filter type, we will watch the correct event
-      const filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
+      // or use the global default when no filter type is provided
+      let filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
+      if (!filterType) {
+        filterType = this._gridOptions.defaultFilterType;
+      }
 
       let filter: Filter;
       switch (filterType) {
@@ -360,6 +364,9 @@ export class FilterService {
           break;
         case FilterType.singleSelect:
           filter = new Filters.singleSelect(this.translate);
+          break;
+        case FilterType.inputNoPlaceholder:
+          filter = new Filters.inputNoPlaceholder();
           break;
         case FilterType.input:
         default:
