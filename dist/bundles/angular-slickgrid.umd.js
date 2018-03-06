@@ -405,6 +405,37 @@ function mapOperatorType(operator) {
     }
     return map;
 }
+function mapOperatorByFieldType(fieldType) {
+    var map;
+    switch (fieldType) {
+        case FieldType.string:
+        case FieldType.unknown:
+            map = OperatorType.contains;
+            break;
+        case FieldType.float:
+        case FieldType.number:
+        case FieldType.date:
+        case FieldType.dateIso:
+        case FieldType.date:
+        case FieldType.dateUtc:
+        case FieldType.dateTime:
+        case FieldType.dateTimeIso:
+        case FieldType.dateTimeIsoAmPm:
+        case FieldType.dateTimeIsoAM_PM:
+        case FieldType.dateUs:
+        case FieldType.dateUsShort:
+        case FieldType.dateTimeUs:
+        case FieldType.dateTimeUsAmPm:
+        case FieldType.dateTimeUsAM_PM:
+        case FieldType.dateTimeUsShort:
+        case FieldType.dateTimeUsShortAmPm:
+        case FieldType.dateTimeUsShortAM_PM:
+        default:
+            map = OperatorType.equal;
+            break;
+    }
+    return map;
+}
 function mapOperatorByFilterType(filterType) {
     var map;
     switch (filterType) {
@@ -2317,6 +2348,9 @@ var GraphqlService = /** @class */ (function () {
                 }
                 if (!operator && columnDef.filter) {
                     operator = mapOperatorByFilterType(columnDef.filter.type || '');
+                }
+                if (!operator) {
+                    operator = mapOperatorByFieldType(columnDef.type || FieldType.string);
                 }
                 searchByArray.push({
                     field: fieldName,
@@ -4729,6 +4763,7 @@ exports.castToPromise = castToPromise;
 exports.mapMomentDateFormatWithFieldType = mapMomentDateFormatWithFieldType;
 exports.mapFlatpickrDateFormatWithFieldType = mapFlatpickrDateFormatWithFieldType;
 exports.mapOperatorType = mapOperatorType;
+exports.mapOperatorByFieldType = mapOperatorByFieldType;
 exports.mapOperatorByFilterType = mapOperatorByFilterType;
 exports.parseUtcDate = parseUtcDate;
 exports.toCamelCase = toCamelCase;

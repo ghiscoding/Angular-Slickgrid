@@ -49,6 +49,13 @@ export declare function mapOperatorType(operator: string): OperatorType;
  * @param operator
  * @returns string map
  */
+export declare function mapOperatorByFieldType(fieldType: FieldType | string): OperatorType;
+/**
+ * Mapper for query operator by a Filter Type
+ * For example a multiple-select typically uses 'IN' operator
+ * @param operator
+ * @returns string map
+ */
 export declare function mapOperatorByFilterType(filterType: FilterType | FormElementType | string): OperatorType;
 /**
  * Parse a date passed as a string and return a Date object (if valid)

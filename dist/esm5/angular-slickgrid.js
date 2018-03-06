@@ -363,6 +363,37 @@ function mapOperatorType(operator) {
     }
     return map;
 }
+function mapOperatorByFieldType(fieldType) {
+    var map;
+    switch (fieldType) {
+        case FieldType.string:
+        case FieldType.unknown:
+            map = OperatorType.contains;
+            break;
+        case FieldType.float:
+        case FieldType.number:
+        case FieldType.date:
+        case FieldType.dateIso:
+        case FieldType.date:
+        case FieldType.dateUtc:
+        case FieldType.dateTime:
+        case FieldType.dateTimeIso:
+        case FieldType.dateTimeIsoAmPm:
+        case FieldType.dateTimeIsoAM_PM:
+        case FieldType.dateUs:
+        case FieldType.dateUsShort:
+        case FieldType.dateTimeUs:
+        case FieldType.dateTimeUsAmPm:
+        case FieldType.dateTimeUsAM_PM:
+        case FieldType.dateTimeUsShort:
+        case FieldType.dateTimeUsShortAmPm:
+        case FieldType.dateTimeUsShortAM_PM:
+        default:
+            map = OperatorType.equal;
+            break;
+    }
+    return map;
+}
 function mapOperatorByFilterType(filterType) {
     var map;
     switch (filterType) {
@@ -2275,6 +2306,9 @@ var GraphqlService = /** @class */ (function () {
                 }
                 if (!operator && columnDef.filter) {
                     operator = mapOperatorByFilterType(columnDef.filter.type || '');
+                }
+                if (!operator) {
+                    operator = mapOperatorByFieldType(columnDef.type || FieldType.string);
                 }
                 searchByArray.push({
                     field: fieldName,
@@ -4655,5 +4689,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, castToPromise, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, TextEditor as ɵf, booleanFilterCondition as ɵh, collectionSearchFilterCondition as ɵi, dateFilterCondition as ɵj, dateIsoFilterCondition as ɵk, dateUsFilterCondition as ɵm, dateUsShortFilterCondition as ɵn, dateUtcFilterCondition as ɵl, executeMappedCondition as ɵg, testFilterCondition as ɵq, numberFilterCondition as ɵo, stringFilterCondition as ɵp, InputFilter as ɵr, InputNoPlaceholderFilter as ɵs, MultipleSelectFilter as ɵt, SelectFilter as ɵv, SingleSelectFilter as ɵu, arrayToCsvFormatter as ɵw, checkboxFormatter as ɵx, checkmarkFormatter as ɵy, complexObjectFormatter as ɵz, dateIsoFormatter as ɵba, dateTimeIsoAmPmFormatter as ɵbb, dateTimeUsAmPmFormatter as ɵbe, dateTimeUsFormatter as ɵbd, dateUsFormatter as ɵbc, deleteIconFormatter as ɵbf, editIconFormatter as ɵbg, hyperlinkFormatter as ɵbh, hyperlinkUriPrefixFormatter as ɵbi, infoIconFormatter as ɵbj, lowercaseFormatter as ɵbk, multipleFormatter as ɵbl, percentCompleteBarFormatter as ɵbn, percentCompleteFormatter as ɵbm, progressBarFormatter as ɵbo, translateBooleanFormatter as ɵbq, translateFormatter as ɵbp, uppercaseFormatter as ɵbr, yesNoFormatter as ɵbs, SharedService as ɵbz, dateIsoSorter as ɵbu, dateSorter as ɵbt, dateUsShortSorter as ɵbw, dateUsSorter as ɵbv, numericSorter as ɵbx, stringSorter as ɵby };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, castToPromise, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, TextEditor as ɵf, booleanFilterCondition as ɵh, collectionSearchFilterCondition as ɵi, dateFilterCondition as ɵj, dateIsoFilterCondition as ɵk, dateUsFilterCondition as ɵm, dateUsShortFilterCondition as ɵn, dateUtcFilterCondition as ɵl, executeMappedCondition as ɵg, testFilterCondition as ɵq, numberFilterCondition as ɵo, stringFilterCondition as ɵp, InputFilter as ɵr, InputNoPlaceholderFilter as ɵs, MultipleSelectFilter as ɵt, SelectFilter as ɵv, SingleSelectFilter as ɵu, arrayToCsvFormatter as ɵw, checkboxFormatter as ɵx, checkmarkFormatter as ɵy, complexObjectFormatter as ɵz, dateIsoFormatter as ɵba, dateTimeIsoAmPmFormatter as ɵbb, dateTimeUsAmPmFormatter as ɵbe, dateTimeUsFormatter as ɵbd, dateUsFormatter as ɵbc, deleteIconFormatter as ɵbf, editIconFormatter as ɵbg, hyperlinkFormatter as ɵbh, hyperlinkUriPrefixFormatter as ɵbi, infoIconFormatter as ɵbj, lowercaseFormatter as ɵbk, multipleFormatter as ɵbl, percentCompleteBarFormatter as ɵbn, percentCompleteFormatter as ɵbm, progressBarFormatter as ɵbo, translateBooleanFormatter as ɵbq, translateFormatter as ɵbp, uppercaseFormatter as ɵbr, yesNoFormatter as ɵbs, SharedService as ɵbz, dateIsoSorter as ɵbu, dateSorter as ɵbt, dateUsShortSorter as ɵbw, dateUsSorter as ɵbv, numericSorter as ɵbx, stringSorter as ɵby };
 //# sourceMappingURL=angular-slickgrid.js.map
