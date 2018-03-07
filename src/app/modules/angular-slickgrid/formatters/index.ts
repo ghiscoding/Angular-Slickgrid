@@ -13,7 +13,7 @@ import { dateUsFormatter } from './dateUsFormatter';
 import { deleteIconFormatter } from './deleteIconFormatter';
 import { editIconFormatter } from './editIconFormatter';
 import { hyperlinkFormatter } from './hyperlinkFormatter';
-import { hyperlinkUriPrefixFormatter } from './hyperlinkUri.formatter';
+import { hyperlinkUriPrefixFormatter } from './hyperlinkUriPrefixFormatter';
 import { infoIconFormatter } from './infoIconFormatter';
 import { lowercaseFormatter } from './lowercaseFormatter';
 import { multipleFormatter } from './multipleFormatter';
@@ -76,7 +76,7 @@ export const Formatters = {
   hyperlink: hyperlinkFormatter,
 
   /** Takes an hyperlink URI prefix (passed in column definition "params.uriPrefix") and adds the cell value. The structure will be "<a href="uriPrefix">value</a>"  */
-  hyperlinkUri: hyperlinkUriPrefixFormatter,
+  hyperlinkUriPrefix: hyperlinkUriPrefixFormatter,
 
   /** Displays a Font-Awesome edit icon (fa-info-circle) */
   infoIcon: infoIconFormatter,
