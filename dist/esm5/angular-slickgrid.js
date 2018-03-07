@@ -3955,6 +3955,9 @@ var hyperlinkFormatter = function (row, cell, value, columnDef, dataContext) {
 };
 var hyperlinkUriPrefixFormatter = function (row, cell, value, columnDef, dataContext) {
     var uriPrefix = (columnDef && columnDef.params && columnDef.params.uriPrefix) ? columnDef.params.uriPrefix : '';
+    if (!uriPrefix) {
+        throw new Error("HyperlinkUriPrefix Formatter require a \"uriPrefix\" that can be passed through params. e.g.:: formatter: Formatters.hyperlinkUriPrefix, params: { uriPrefix: '/users/' }");
+    }
     if (value && uriPrefix && typeof uriPrefix === 'string' && !uriPrefix.includes('<script>')) {
         uriPrefix += value;
         return '<a href="' + uriPrefix + '">' + value + '</a>';
@@ -3968,17 +3971,17 @@ var lowercaseFormatter = function (row, cell, value, columnDef, dataContext) {
     }
     return value ? value.toLowerCase() : '';
 };
-var multipleFormatter = function (row, cell, value, columnDef, dataContext) {
+var multipleFormatter = function (row, cell, value, columnDef, dataContext, grid) {
     var params = columnDef.params || {};
     if (!params.formatters || !Array.isArray(params.formatters)) {
         throw new Error("The multiple formatter requires the \"formatters\" to be provided as a column params.\n    For example: this.columnDefinitions = [{ id: title, field: title, formatter: Formatters.multiple, params: { formatters: [Formatters.lowercase, Formatters.uppercase] }");
     }
     var formatters = params.formatters;
-    var formattedValue = '';
+    var currentValue = value;
     try {
         for (var formatters_1 = __values(formatters), formatters_1_1 = formatters_1.next(); !formatters_1_1.done; formatters_1_1 = formatters_1.next()) {
             var formatter = formatters_1_1.value;
-            formattedValue = formatter(row, cell, value, columnDef, dataContext);
+            currentValue = formatter(row, cell, currentValue, columnDef, dataContext, grid);
         }
     }
     catch (e_9_1) { e_9 = { error: e_9_1 }; }
@@ -3988,7 +3991,7 @@ var multipleFormatter = function (row, cell, value, columnDef, dataContext) {
         }
         finally { if (e_9) throw e_9.error; }
     }
-    return formattedValue;
+    return currentValue;
     var e_9, _a;
 };
 var percentCompleteFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -4081,7 +4084,7 @@ var Formatters = {
     deleteIcon: deleteIconFormatter,
     editIcon: editIconFormatter,
     hyperlink: hyperlinkFormatter,
-    hyperlinkUri: hyperlinkUriPrefixFormatter,
+    hyperlinkUriPrefix: hyperlinkUriPrefixFormatter,
     infoIcon: infoIconFormatter,
     lowercase: lowercaseFormatter,
     multiple: multipleFormatter,

@@ -5668,6 +5668,9 @@ const hyperlinkFormatter = (row, cell, value, columnDef, dataContext) => {
  */
 const hyperlinkUriPrefixFormatter = (row, cell, value, columnDef, dataContext) => {
     let /** @type {?} */ uriPrefix = (columnDef && columnDef.params && columnDef.params.uriPrefix) ? columnDef.params.uriPrefix : '';
+    if (!uriPrefix) {
+        throw new Error(`HyperlinkUriPrefix Formatter require a "uriPrefix" that can be passed through params. e.g.:: formatter: Formatters.hyperlinkUriPrefix, params: { uriPrefix: '/users/' }`);
+    }
     if (value && uriPrefix && typeof uriPrefix === 'string' && !uriPrefix.includes('<script>')) {
         uriPrefix += value;
         return '<a href="' + uriPrefix + '">' + value + '</a>';
@@ -5697,18 +5700,20 @@ const lowercaseFormatter = (row, cell, value, columnDef, dataContext) => {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const multipleFormatter = (row, cell, value, columnDef, dataContext) => {
+const multipleFormatter = (row, cell, value, columnDef, dataContext, grid) => {
     const /** @type {?} */ params = columnDef.params || {};
     if (!params.formatters || !Array.isArray(params.formatters)) {
         throw new Error(`The multiple formatter requires the "formatters" to be provided as a column params.
     For example: this.columnDefinitions = [{ id: title, field: title, formatter: Formatters.multiple, params: { formatters: [Formatters.lowercase, Formatters.uppercase] }`);
     }
     const /** @type {?} */ formatters = params.formatters;
-    let /** @type {?} */ formattedValue = '';
+    // loop through all Formatters, the value of 1st formatter will be used by 2nd formatter and so on.
+    // they are piped and executed in sequences
+    let /** @type {?} */ currentValue = value;
     for (const /** @type {?} */ formatter of formatters) {
-        formattedValue = formatter(row, cell, value, columnDef, dataContext);
+        currentValue = formatter(row, cell, currentValue, columnDef, dataContext, grid);
     }
-    return formattedValue;
+    return currentValue;
 };
 
 /**
@@ -5872,7 +5877,7 @@ const Formatters = {
     /** Takes an hyperlink cell value and transforms it into a real hyperlink, given that the value starts with 1 of these (http|ftp|https). The structure will be "<a href="hyperlink">hyperlink</a>" */
     hyperlink: hyperlinkFormatter,
     /** Takes an hyperlink URI prefix (passed in column definition "params.uriPrefix") and adds the cell value. The structure will be "<a href="uriPrefix">value</a>"  */
-    hyperlinkUri: hyperlinkUriPrefixFormatter,
+    hyperlinkUriPrefix: hyperlinkUriPrefixFormatter,
     /** Displays a Font-Awesome edit icon (fa-info-circle) */
     infoIcon: infoIconFormatter,
     /** Takes a value and displays it all lowercase */

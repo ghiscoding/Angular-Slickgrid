@@ -36,7 +36,7 @@ export { dateUsFormatter as ɵbc } from './src/app/modules/angular-slickgrid/for
 export { deleteIconFormatter as ɵbf } from './src/app/modules/angular-slickgrid/formatters/deleteIconFormatter';
 export { editIconFormatter as ɵbg } from './src/app/modules/angular-slickgrid/formatters/editIconFormatter';
 export { hyperlinkFormatter as ɵbh } from './src/app/modules/angular-slickgrid/formatters/hyperlinkFormatter';
-export { hyperlinkUriPrefixFormatter as ɵbi } from './src/app/modules/angular-slickgrid/formatters/hyperlinkUri.formatter';
+export { hyperlinkUriPrefixFormatter as ɵbi } from './src/app/modules/angular-slickgrid/formatters/hyperlinkUriPrefixFormatter';
 export { infoIconFormatter as ɵbj } from './src/app/modules/angular-slickgrid/formatters/infoIconFormatter';
 export { lowercaseFormatter as ɵbk } from './src/app/modules/angular-slickgrid/formatters/lowercaseFormatter';
 export { multipleFormatter as ɵbl } from './src/app/modules/angular-slickgrid/formatters/multipleFormatter';
