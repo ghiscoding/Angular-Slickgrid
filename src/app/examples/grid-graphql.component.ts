@@ -1,3 +1,4 @@
+import { Formatters } from './../modules/angular-slickgrid/formatters/index';
 import { Component, Injectable, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption, OperatorType, SearchTerm, SortDirection, GridStateService } from './../modules/angular-slickgrid';
@@ -60,7 +61,7 @@ export class GridGraphqlComponent implements OnInit {
         }
       },
       { id: 'billing.address.street', name: 'Billing Address Street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', filterable: true, sortable: true },
-      { id: 'billing.address.zip', name: 'Billing Address Zip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', filterable: true, sortable: true, type: FieldType.number },
+      { id: 'billing.address.zip', name: 'Billing Address Zip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', filterable: true, sortable: true, type: FieldType.number, formatter: Formatters.multiple, params: { formatters: [Formatters.complexObject, Formatters.translate] } },
     ];
 
     this.gridOptions = {

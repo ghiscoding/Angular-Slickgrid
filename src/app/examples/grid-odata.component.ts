@@ -36,10 +36,10 @@ export class GridOdataComponent implements OnInit {
   processing = true;
   status = { text: 'processing...', class: 'alert alert-danger' };
 
-  constructor(private http: HttpClient, private gridStateService: GridStateService, private odataService: GridOdataService, private filter: FilterService, private sorter: SortService) {
+  constructor(private http: HttpClient, private gridStateService: GridStateService, private odataService: GridOdataService, private filterService: FilterService, private sorterService: SortService) {
     this.gridStateService.onGridStateChanged.subscribe((data) => console.log(data));
-    // this.filter.onFilterChanged.subscribe((data) => console.log(data));
-    // this.sorter.onSortChanged.subscribe((data) => console.log(data));
+    this.filterService.onFilterChanged.subscribe((data) => console.log(data));
+    this.sorterService.onSortChanged.subscribe((data) => console.log(data));
   }
 
   ngOnInit(): void {
