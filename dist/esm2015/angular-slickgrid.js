@@ -3139,12 +3139,12 @@ class GraphqlService {
             if (!args || !args.grid) {
                 throw new Error('Something went wrong when trying create the GraphQL Backend Service, it seems that "args" is not populated correctly');
             }
-            // loop through all columns to inspect filters & set the query
-            this.updateFilters(args.columnFilters, false);
             // reset Pagination, then build the GraphQL query which we will use in the WebAPI callback
             // wait a minimum user typing inactivity before processing any query
             clearTimeout(timer);
             timer = setTimeout(() => {
+                // loop through all columns to inspect filters & set the query
+                this.updateFilters(args.columnFilters, false);
                 this.resetPaginationOptions();
                 resolve(this.buildQuery());
             }, debounceTypingDelay);
@@ -3744,12 +3744,12 @@ class GridOdataService {
             debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE$1;
         }
         const /** @type {?} */ promise = new Promise((resolve, reject) => {
-            // loop through all columns to inspect filters & set the query
-            this.updateFilters(args.columnFilters);
             // reset Pagination, then build the OData query which we will use in the WebAPI callback
             // wait a minimum user typing inactivity before processing any query
             clearTimeout(timer$1);
             timer$1 = setTimeout(() => {
+                // loop through all columns to inspect filters & set the query
+                this.updateFilters(args.columnFilters);
                 this.resetPaginationOptions();
                 resolve(this.odataService.buildQuery());
             }, debounceTypingDelay);

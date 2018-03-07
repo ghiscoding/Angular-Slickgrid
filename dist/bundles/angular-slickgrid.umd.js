@@ -2282,9 +2282,9 @@ var GraphqlService = /** @class */ (function () {
             if (!args || !args.grid) {
                 throw new Error('Something went wrong when trying create the GraphQL Backend Service, it seems that "args" is not populated correctly');
             }
-            _this.updateFilters(args.columnFilters, false);
             clearTimeout(timer);
             timer = setTimeout(function () {
+                _this.updateFilters(args.columnFilters, false);
                 _this.resetPaginationOptions();
                 resolve(_this.buildQuery());
             }, debounceTypingDelay);
@@ -2716,9 +2716,9 @@ var GridOdataService = /** @class */ (function () {
             debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE$1;
         }
         var promise = new Promise(function (resolve, reject) {
-            _this.updateFilters(args.columnFilters);
             clearTimeout(timer$1);
             timer$1 = setTimeout(function () {
+                _this.updateFilters(args.columnFilters);
                 _this.resetPaginationOptions();
                 resolve(_this.odataService.buildQuery());
             }, debounceTypingDelay);
