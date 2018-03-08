@@ -82,6 +82,9 @@ export class FilterService {
     // call the service to get a query back
     const query = await backendApi.service.onFilterChanged(event, args);
 
+    // emit an onFilterChanged event
+    self.emitFilterChanged('remote');
+
     // the process could be an Observable (like HttpClient) or a Promise
     // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
     const observableOrPromise = backendApi.process(query);
