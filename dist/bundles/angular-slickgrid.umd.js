@@ -1329,6 +1329,7 @@ var FilterService = /** @class */ (function () {
                         return [4 /*yield*/, backendApi.service.onFilterChanged(event, args)];
                     case 1:
                         query = _a.sent();
+                        self.emitFilterChanged('remote');
                         observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 2:
@@ -1485,7 +1486,9 @@ var FilterService = /** @class */ (function () {
                 for (var _a = __values(Object.keys(this._columnFilters)), _b = _a.next(); !_b.done; _b = _a.next()) {
                     var colId = _b.value;
                     var columnFilter = this._columnFilters[colId];
+                    var columnDef = columnFilter.columnDef;
                     var filter = ({ columnId: colId || '' });
+                    filter.headerName = (columnDef) ? columnDef.headerKey || columnDef.name : '';
                     if (columnFilter && columnFilter.searchTerms) {
                         filter.searchTerms = columnFilter.searchTerms;
                     }
@@ -2443,6 +2446,7 @@ var GraphqlService = /** @class */ (function () {
                             var column = sortColumns_1_1.value;
                             if (column && column.sortCol) {
                                 currentSorters.push({
+                                    headerName: column.sortCol.headerKey || column.sortCol.name,
                                     columnId: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '',
                                     direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
                                 });
@@ -2484,7 +2488,9 @@ var GraphqlService = /** @class */ (function () {
     GraphqlService.prototype.castFilterToColumnFilter = function (columnFilters) {
         var filtersArray = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(function (key) { return columnFilters[key]; }) : columnFilters;
         return filtersArray.map(function (filter) {
-            var tmpFilter = { columnId: filter.columnId || '' };
+            var columnDef = filter.columnDef;
+            var header = (columnDef) ? (columnDef.headerKey || columnDef.name || '') : '';
+            var tmpFilter = { columnId: filter.columnId || '', headerName: header };
             if (filter.operator) {
                 tmpFilter.operator = filter.operator;
             }
@@ -2915,6 +2921,7 @@ var GridOdataService = /** @class */ (function () {
                                 }
                                 sorterArray.push({
                                     columnId: fieldName,
+                                    headerName: column.sortCol.headerKey || column.sortCol.name,
                                     direction: column.sortAsc ? 'asc' : 'desc'
                                 });
                             }
@@ -2943,7 +2950,9 @@ var GridOdataService = /** @class */ (function () {
     GridOdataService.prototype.castFilterToColumnFilter = function (columnFilters) {
         var filtersArray = (((typeof columnFilters === 'object') ? Object.keys(columnFilters).map(function (key) { return columnFilters[key]; }) : columnFilters));
         return filtersArray.map(function (filter) {
-            var tmpFilter = { columnId: filter.columnId || '' };
+            var columnDef = filter.columnDef;
+            var header = (columnDef) ? (columnDef.headerKey || columnDef.name || '') : '';
+            var tmpFilter = { columnId: filter.columnId || '', headerName: header };
             if (filter.operator) {
                 tmpFilter.operator = filter.operator;
             }
@@ -3449,6 +3458,7 @@ var SortService = /** @class */ (function () {
                     if (sortColumn.sortCol) {
                         _this._currentLocalSorters.push({
                             columnId: sortColumn.sortCol.id,
+                            headerName: sortColumn.sortCol.headerKey || sortColumn.sortCol.name || '',
                             direction: sortColumn.sortAsc ? SortDirection.ASC : SortDirection.DESC
                         });
                     }
@@ -3484,6 +3494,7 @@ var SortService = /** @class */ (function () {
                     });
                     _this._currentLocalSorters.push({
                         columnId: columnDef.id + '',
+                        headerName: columnDef.headerKey || columnDef.name || '',
                         direction: (columnPreset.direction.toUpperCase())
                     });
                 }

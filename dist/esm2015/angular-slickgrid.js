@@ -1903,6 +1903,8 @@ class FilterService {
             }
             // call the service to get a query back
             const /** @type {?} */ query = yield backendApi.service.onFilterChanged(event, args);
+            // emit an onFilterChanged event
+            self.emitFilterChanged('remote');
             // the process could be an Observable (like HttpClient) or a Promise
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
             const /** @type {?} */ observableOrPromise = backendApi.process(query);
@@ -2092,7 +2094,9 @@ class FilterService {
         if (this._columnFilters) {
             for (const /** @type {?} */ colId of Object.keys(this._columnFilters)) {
                 const /** @type {?} */ columnFilter = this._columnFilters[colId];
+                const /** @type {?} */ columnDef = columnFilter.columnDef;
                 const /** @type {?} */ filter = /** @type {?} */ ({ columnId: colId || '' });
+                filter.headerName = (columnDef) ? columnDef.headerKey || columnDef.name : '';
                 if (columnFilter && columnFilter.searchTerms) {
                     filter.searchTerms = columnFilter.searchTerms;
                 }
@@ -3316,6 +3320,7 @@ class GraphqlService {
                     for (const /** @type {?} */ column of sortColumns) {
                         if (column && column.sortCol) {
                             currentSorters.push({
+                                headerName: column.sortCol.headerKey || column.sortCol.name,
                                 columnId: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '',
                                 direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
                             });
@@ -3377,7 +3382,9 @@ class GraphqlService {
         // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
         const /** @type {?} */ filtersArray = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters;
         return filtersArray.map((filter) => {
-            const /** @type {?} */ tmpFilter = { columnId: filter.columnId || '' };
+            const /** @type {?} */ columnDef = filter.columnDef;
+            const /** @type {?} */ header = (columnDef) ? (columnDef.headerKey || columnDef.name || '') : '';
+            const /** @type {?} */ tmpFilter = { columnId: filter.columnId || '', headerName: header };
             if (filter.operator) {
                 tmpFilter.operator = filter.operator;
             }
@@ -3967,6 +3974,7 @@ class GridOdataService {
                             }
                             sorterArray.push({
                                 columnId: fieldName,
+                                headerName: column.sortCol.headerKey || column.sortCol.name,
                                 direction: column.sortAsc ? 'asc' : 'desc'
                             });
                         }
@@ -3995,7 +4003,9 @@ class GridOdataService {
         // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
         const /** @type {?} */ filtersArray = /** @type {?} */ (((typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters));
         return filtersArray.map((filter) => {
-            const /** @type {?} */ tmpFilter = { columnId: filter.columnId || '' };
+            const /** @type {?} */ columnDef = filter.columnDef;
+            const /** @type {?} */ header = (columnDef) ? (columnDef.headerKey || columnDef.name || '') : '';
+            const /** @type {?} */ tmpFilter = { columnId: filter.columnId || '', headerName: header };
             if (filter.operator) {
                 tmpFilter.operator = filter.operator;
             }
@@ -4729,6 +4739,7 @@ class SortService {
                     if (sortColumn.sortCol) {
                         this._currentLocalSorters.push({
                             columnId: sortColumn.sortCol.id,
+                            headerName: sortColumn.sortCol.headerKey || sortColumn.sortCol.name || '',
                             direction: sortColumn.sortAsc ? SortDirection.ASC : SortDirection.DESC
                         });
                     }
@@ -4776,6 +4787,7 @@ class SortService {
                     // keep current sorters
                     this._currentLocalSorters.push({
                         columnId: columnDef.id + '',
+                        headerName: columnDef.headerKey || columnDef.name || '',
                         direction: /** @type {?} */ (columnPreset.direction.toUpperCase())
                     });
                 }
