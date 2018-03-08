@@ -248,7 +248,6 @@ export class GraphqlService implements BackendService {
         throw new Error('Something went wrong when trying create the GraphQL Backend Service, it seems that "args" is not populated correctly');
       }
 
-
       // reset Pagination, then build the GraphQL query which we will use in the WebAPI callback
       // wait a minimum user typing inactivity before processing any query
       clearTimeout(timer);

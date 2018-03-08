@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './utilities';
 import { FilterConditions } from './../filter-conditions';
@@ -17,6 +17,7 @@ import {
   SlickEvent,
   OperatorString
 } from './../models/index';
+import { Subject } from 'rxjs/Subject';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -31,7 +32,8 @@ export class FilterService {
   private _grid: any;
   private _gridOptions: GridOption;
   private _onFilterChangedOptions: any;
-  onFilterChanged = new EventEmitter<CurrentFilter[]>();
+  private _isFirstQuery = true;
+  onFilterChanged = new Subject<CurrentFilter[]>();
 
   constructor(private translate: TranslateService) { }
 
@@ -48,8 +50,12 @@ export class FilterService {
   attachBackendOnFilter(grid: any, options: GridOption) {
     this._filters = [];
     this._subscriber = new Slick.Event();
-    this._subscriber.subscribe(this.attachBackendOnFilterSubscribe);
-    this.emitFilterChanged('remote');
+
+    // subscribe to the SlickGrid event and call the backend execution
+    // we also need to add our filter service (with .bind) to the callback function (which is outside of this service)
+    // the callback doesn't have access to this service, so we need to bind it
+    const self = this;
+    this._subscriber.subscribe(this.attachBackendOnFilterSubscribe.bind(this, self));
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
     this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: Event, args: any) => {
@@ -57,7 +63,7 @@ export class FilterService {
     });
   }
 
-  async attachBackendOnFilterSubscribe(event: Event, args: any) {
+  async attachBackendOnFilterSubscribe(self: FilterService, event: Event, args: any) {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
     }
@@ -75,6 +81,13 @@ export class FilterService {
 
     // call the service to get a query back
     const query = await backendApi.service.onFilterChanged(event, args);
+
+    // emit an onFilterChanged event except when it's the 1st query
+    // we don't want to trigger a Grid State changed on the initial query
+    if (!self._isFirstQuery) {
+      self.emitFilterChanged('remote');
+    }
+    self._isFirstQuery = false;
 
     // the process could be an Observable (like HttpClient) or a Promise
     // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
@@ -111,14 +124,13 @@ export class FilterService {
       if (columnId != null) {
         dataView.refresh();
       }
+      this.emitFilterChanged('local');
     });
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
     this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: Event, args: any) => {
       this.addFilterTemplateToHeaderRow(args);
     });
-
-    this.emitFilterChanged('local');
   }
 
   /** Clear the search filters (below the column titles) */
@@ -228,6 +240,7 @@ export class FilterService {
         return false;
       }
     }
+
     return true;
   }
 
@@ -400,19 +413,15 @@ export class FilterService {
    * @param sender
    */
   emitFilterChanged(sender: 'local' | 'remote') {
-    if (this._subscriber && typeof this._subscriber.subscribe === 'function') {
-      this._subscriber.subscribe(() => {
-        if (sender === 'remote') {
-          let currentFilters: CurrentFilter[] = [];
-          const backendService = this._gridOptions.backendServiceApi.service;
-          if (backendService && backendService.getCurrentFilters) {
-            currentFilters = backendService.getCurrentFilters() as CurrentFilter[];
-          }
-          this.onFilterChanged.emit(currentFilters);
-        } else if (sender === 'local') {
-          this.onFilterChanged.emit(this.getCurrentLocalFilters());
-        }
-      });
+    if (sender === 'remote') {
+      let currentFilters: CurrentFilter[] = [];
+      const backendService = this._gridOptions.backendServiceApi.service;
+      if (backendService && backendService.getCurrentFilters) {
+        currentFilters = backendService.getCurrentFilters() as CurrentFilter[];
+      }
+      this.onFilterChanged.next(currentFilters);
+    } else if (sender === 'local') {
+      this.onFilterChanged.next(this.getCurrentLocalFilters());
     }
   }
 

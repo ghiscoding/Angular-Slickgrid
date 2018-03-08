@@ -1,5 +1,6 @@
+import { Subscription } from 'rxjs/Subscription';
 import { Formatters } from './../modules/angular-slickgrid/formatters/index';
-import { Component, Injectable, Input, OnInit, Output } from '@angular/core';
+import { Component, Injectable, Input, OnInit, Output, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Column, FieldType, FilterType, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption, OperatorType, SearchTerm, SortDirection, GridStateService } from './../modules/angular-slickgrid';
 
@@ -11,7 +12,7 @@ const GRAPHQL_QUERY_DATASET_NAME = 'users';
   providers: [GraphqlService]
 })
 @Injectable()
-export class GridGraphqlComponent implements OnInit {
+export class GridGraphqlComponent implements OnInit, OnDestroy {
   title = 'Example 6: Grid connected to Backend Server with GraphQL';
   subTitle = `
     Sorting/Paging connected to a Backend GraphQL Service (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/GraphQL" target="_blank">Wiki link</a>).
@@ -36,22 +37,36 @@ export class GridGraphqlComponent implements OnInit {
   status = { text: 'processing...', class: 'alert alert-danger' };
   isWithCursor = false;
   selectedLanguage: string;
+  gridStateSub: Subscription;
 
   constructor(private graphqlService: GraphqlService, private gridStateService: GridStateService, private translate: TranslateService) {
     this.selectedLanguage = this.translate.getDefaultLang();
+    this.gridStateSub = this.gridStateService.onGridStateChanged.subscribe((data) => console.log(data));
+    // this.filterService.onFilterChanged.subscribe((data) => console.log(data));
+  }
+
+  ngOnDestroy() {
+    this.gridStateSub.unsubscribe();
   }
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'name', name: 'Name', field: 'name', headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string },
-      { id: 'gender', name: 'Gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true,
+      { id: 'users', field: 'user.firstName', fields: ['user.middleName', 'user.lastName'], headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string,
+        filter: {
+          type: FilterType.multipleSelect,
+          collection: [{ value: 0, label: 'John Doe'}, { value: 1, label: 'Michael Jr Donald'}, { value: 2, label: 'Jane Doe'}],
+          // searchTerms: [0]
+        }
+      },
+      { id: 'name', field: 'name', headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string },
+      { id: 'gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true,
         filter: {
           type: FilterType.singleSelect,
           collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }],
           searchTerm: 'female'
         }
       },
-      { id: 'company', name: 'Company', field: 'company', headerKey: 'COMPANY',
+      { id: 'company', field: 'company', headerKey: 'COMPANY',
         sortable: true,
         filterable: true,
         filter: {
@@ -60,8 +75,8 @@ export class GridGraphqlComponent implements OnInit {
           searchTerms: ['abc']
         }
       },
-      { id: 'billing.address.street', name: 'Billing Address Street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', filterable: true, sortable: true },
-      { id: 'billing.address.zip', name: 'Billing Address Zip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', filterable: true, sortable: true, type: FieldType.number, formatter: Formatters.multiple, params: { formatters: [Formatters.complexObject, Formatters.translate] } },
+      { id: 'billing.address.street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', filterable: true, sortable: true },
+      { id: 'billing.address.zip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', filterable: true, sortable: true, type: FieldType.number, formatter: Formatters.multiple, params: { formatters: [Formatters.complexObject, Formatters.translate] } },
     ];
 
     this.gridOptions = {
@@ -76,10 +91,12 @@ export class GridGraphqlComponent implements OnInit {
         pageSize: defaultPageSize,
         totalItems: 0
       },
+      /*
       presets: {
         // you can also type operator as string, e.g.: operator: 'EQ'
         filters: [
           { columnId: 'gender', searchTerm: 'male', operator: OperatorType.equal },
+      //    { columnId: 'users', searchTerm: 'John Doe', operator: OperatorType.contains },
           { columnId: 'name', searchTerm: 'John Doe', operator: OperatorType.contains },
           { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' }
         ],
@@ -90,6 +107,7 @@ export class GridGraphqlComponent implements OnInit {
         ],
         pagination: { pageNumber: 2, pageSize: 20 }
       },
+      */
       backendServiceApi: {
         service: this.graphqlService,
         options: this.getBackendOptions(this.isWithCursor),

@@ -59,8 +59,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   groupingDefinition: any = {};
   showPagination = false;
 
-  @Output() dataviewChanged = new EventEmitter<any>();
-  @Output() gridChanged = new EventEmitter<any>();
   @Output() onDataviewCreated = new EventEmitter<any>();
   @Output() onGridCreated = new EventEmitter<any>();
   @Output() onGridInitialized = new EventEmitter<any>();
@@ -112,8 +110,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.gridOptions = {};
     this._eventHandler.unsubscribeAll();
     this.controlAndPluginService.dispose();
-    this.gridEventService.dispose();
     this.filterService.dispose();
+    this.gridEventService.dispose();
+    this.gridStateService.dispose();
     this.resizer.dispose();
     this.sortService.dispose();
     this.grid.destroy();
@@ -332,7 +331,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   paginationChanged(pagination: Pagination) {
-    this.gridStateService.onGridStateChanged.emit({
+    this.gridStateService.onGridStateChanged.next({
       change: { newValues: pagination, type: GridStateType.pagination },
       gridState: this.gridStateService.getCurrentGridState()
     });
