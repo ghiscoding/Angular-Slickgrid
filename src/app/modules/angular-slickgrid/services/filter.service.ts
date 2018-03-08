@@ -282,6 +282,7 @@ export class FilterService {
       for (const colId of Object.keys(this._columnFilters)) {
         const columnFilter = this._columnFilters[colId];
         const filter = { columnId: colId || '' } as CurrentFilter;
+        filter.headerName = (columnFilter && columnFilter.columnDef && columnFilter.columnDef.name) ? columnFilter.columnDef.name : '';
         if (columnFilter && columnFilter.searchTerms) {
           filter.searchTerms = columnFilter.searchTerms;
         } else {
