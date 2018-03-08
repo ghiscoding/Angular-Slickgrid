@@ -1329,10 +1329,6 @@ var FilterService = /** @class */ (function () {
                         return [4 /*yield*/, backendApi.service.onFilterChanged(event, args)];
                     case 1:
                         query = _a.sent();
-                        if (!self._isFirstQuery) {
-                            self.emitFilterChanged('remote');
-                        }
-                        self._isFirstQuery = false;
                         observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 2:
