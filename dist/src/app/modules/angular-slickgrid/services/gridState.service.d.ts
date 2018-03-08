@@ -1,6 +1,6 @@
-import { EventEmitter } from '@angular/core';
 import { CurrentFilter, CurrentPagination, CurrentSorter, GridState, GridStateChange } from './../models/index';
 import { FilterService, SortService } from './../services/index';
+import { Subject } from 'rxjs/Subject';
 export declare class GridStateService {
     private _grid;
     private _gridOptions;
@@ -9,7 +9,7 @@ export declare class GridStateService {
     private _filterSubcription;
     private _sorterSubcription;
     private sortService;
-    onGridStateChanged: EventEmitter<GridStateChange>;
+    onGridStateChanged: Subject<GridStateChange>;
     /**
      * Initialize the Export Service
      * @param grid

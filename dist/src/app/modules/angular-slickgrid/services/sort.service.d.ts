@@ -1,19 +1,19 @@
-import { EventEmitter } from '@angular/core';
 import { Column, GridOption, SortChanged, CurrentSorter } from './../models/index';
+import { Subject } from 'rxjs/Subject';
 export declare class SortService {
     private _currentLocalSorters;
     private _eventHandler;
     private _grid;
     private _gridOptions;
     private _subscriber;
-    onSortChanged: EventEmitter<CurrentSorter[]>;
+    onSortChanged: Subject<CurrentSorter[]>;
     /**
      * Attach a backend sort (single/multi) hook to the grid
      * @param grid SlickGrid Grid object
      * @param gridOptions Grid Options object
      */
     attachBackendOnSort(grid: any, gridOptions: GridOption): void;
-    attachBackendOnSortSubscribe(event: any, args: any): Promise<void>;
+    attachBackendOnSortSubscribe(self: SortService, event: Event, args: any): Promise<void>;
     /**
      * Attach a local sort (single/multi) hook to the grid
      * @param grid SlickGrid Grid object

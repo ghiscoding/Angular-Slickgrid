@@ -41,6 +41,12 @@ export interface Column {
     exportCsvForceToKeepAsString?: boolean;
     /** Field property name to use from the dataset that is used to display the column data.  */
     field: string;
+    /**
+     * Only used by Backend Services since the query is built using the column definitions, this is a way to pass extra properties to the backend query.
+     * It can help in getting more fields for a Formatter without adding a new column definition every time that we don't want to display.
+     * For example: { id: 'Users', field: 'user.firstName', fields: ['user.lastName', 'user.middleName'], formatter: fullNameFormatter }
+     */
+    fields?: string[];
     /** Filter class to use when filtering this column */
     filter?: ColumnFilter;
     /** is the column filterable? Goes with grid option "enableFiltering: true". */

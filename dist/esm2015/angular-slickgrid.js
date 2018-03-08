@@ -3,10 +3,11 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
-import { Injectable, EventEmitter, Component, Input, Output, Inject, NgModule } from '@angular/core';
+import { Injectable, Component, EventEmitter, Input, Output, Inject, NgModule } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { TextEncoder } from 'text-encoding-utf-8';
 import { __awaiter } from 'tslib';
+import { Subject } from 'rxjs/Subject';
 import 'slickgrid/lib/jquery-ui-1.11.3';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
@@ -1848,7 +1849,8 @@ class FilterService {
         this._eventHandler = new Slick.EventHandler();
         this._filters = [];
         this._columnFilters = {};
-        this.onFilterChanged = new EventEmitter();
+        this._isFirstQuery = true;
+        this.onFilterChanged = new Subject();
     }
     /**
      * @param {?} grid
@@ -1869,19 +1871,23 @@ class FilterService {
     attachBackendOnFilter(grid, options) {
         this._filters = [];
         this._subscriber = new Slick.Event();
-        this._subscriber.subscribe(this.attachBackendOnFilterSubscribe);
-        this.emitFilterChanged('remote');
+        // subscribe to the SlickGrid event and call the backend execution
+        // we also need to add our filter service (with .bind) to the callback function (which is outside of this service)
+        // the callback doesn't have access to this service, so we need to bind it
+        const /** @type {?} */ self = this;
+        this._subscriber.subscribe(this.attachBackendOnFilterSubscribe.bind(this, self));
         // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
         this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e, args) => {
             this.addFilterTemplateToHeaderRow(args);
         });
     }
     /**
+     * @param {?} self
      * @param {?} event
      * @param {?} args
      * @return {?}
      */
-    attachBackendOnFilterSubscribe(event, args) {
+    attachBackendOnFilterSubscribe(self, event, args) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!args || !args.grid) {
                 throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
@@ -1897,6 +1903,12 @@ class FilterService {
             }
             // call the service to get a query back
             const /** @type {?} */ query = yield backendApi.service.onFilterChanged(event, args);
+            // emit an onFilterChanged event except when it's the 1st query
+            // we don't want to trigger a Grid State changed on the initial query
+            if (!self._isFirstQuery) {
+                self.emitFilterChanged('remote');
+            }
+            self._isFirstQuery = false;
             // the process could be an Observable (like HttpClient) or a Promise
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
             const /** @type {?} */ observableOrPromise = backendApi.process(query);
@@ -1929,12 +1941,12 @@ class FilterService {
             if (columnId != null) {
                 dataView.refresh();
             }
+            this.emitFilterChanged('local');
         });
         // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
         this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e, args) => {
             this.addFilterTemplateToHeaderRow(args);
         });
-        this.emitFilterChanged('local');
     }
     /**
      * Clear the search filters (below the column titles)
@@ -2215,20 +2227,16 @@ class FilterService {
      * @return {?}
      */
     emitFilterChanged(sender) {
-        if (this._subscriber && typeof this._subscriber.subscribe === 'function') {
-            this._subscriber.subscribe(() => {
-                if (sender === 'remote') {
-                    let /** @type {?} */ currentFilters = [];
-                    const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
-                    if (backendService && backendService.getCurrentFilters) {
-                        currentFilters = /** @type {?} */ (backendService.getCurrentFilters());
-                    }
-                    this.onFilterChanged.emit(currentFilters);
-                }
-                else if (sender === 'local') {
-                    this.onFilterChanged.emit(this.getCurrentLocalFilters());
-                }
-            });
+        if (sender === 'remote') {
+            let /** @type {?} */ currentFilters = [];
+            const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
+            if (backendService && backendService.getCurrentFilters) {
+                currentFilters = /** @type {?} */ (backendService.getCurrentFilters());
+            }
+            this.onFilterChanged.next(currentFilters);
+        }
+        else if (sender === 'local') {
+            this.onFilterChanged.next(this.getCurrentLocalFilters());
         }
     }
     /**
@@ -2971,17 +2979,24 @@ class GraphqlService {
         const /** @type {?} */ pageInfoQb = new GraphqlQueryBuilder('pageInfo');
         const /** @type {?} */ dataQb = (this.options.isWithCursor) ? new GraphqlQueryBuilder('edges') : new GraphqlQueryBuilder('nodes');
         // get all the columnds Ids for the filters to work
-        let /** @type {?} */ columnIds;
-        if (columnDefinitions) {
-            columnIds = Array.isArray(columnDefinitions) ? columnDefinitions.map((column) => column.field) : [];
+        let /** @type {?} */ columnIds = [];
+        if (columnDefinitions && Array.isArray(columnDefinitions)) {
+            for (const /** @type {?} */ column of columnDefinitions) {
+                columnIds.push(column.field);
+                // if extra "fields" are passed, also push them to columnIds
+                if (column.fields) {
+                    columnIds.push(...column.fields);
+                }
+            }
+            // columnIds = columnDefinitions.map((column) => column.field);
         }
         else {
             columnIds = this.options.columnIds || [];
         }
         // Slickgrid also requires the "id" field to be part of DataView
-        // push it to the GraphQL query if it wasn't already part of the list
+        // add it to the GraphQL query if it wasn't already part of the list
         if (columnIds.indexOf('id') === -1) {
-            columnIds.push('id');
+            columnIds.unshift('id');
         }
         const /** @type {?} */ filters = this.buildFilterQuery(columnIds);
         if (this.options.isWithCursor) {
@@ -4306,7 +4321,7 @@ class GridExtraUtils {
  */
 class GridStateService {
     constructor() {
-        this.onGridStateChanged = new EventEmitter();
+        this.onGridStateChanged = new Subject();
     }
     /**
      * Initialize the Export Service
@@ -4322,10 +4337,10 @@ class GridStateService {
         this._gridOptions = (grid && grid.getOptions) ? grid.getOptions() : {};
         // Subscribe to Event Emitter of Filter & Sort changed, go back to page 1 when that happen
         this._filterSubcription = this.filterService.onFilterChanged.subscribe((currentFilters) => {
-            this.onGridStateChanged.emit({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: this.getCurrentGridState() });
+            this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: this.getCurrentGridState() });
         });
         this._sorterSubcription = this.sortService.onSortChanged.subscribe((currentSorters) => {
-            this.onGridStateChanged.emit({ change: { newValues: currentSorters, type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
+            this.onGridStateChanged.next({ change: { newValues: currentSorters, type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
         });
     }
     /**
@@ -4334,7 +4349,6 @@ class GridStateService {
     dispose() {
         this._filterSubcription.unsubscribe();
         this._sorterSubcription.unsubscribe();
-        this.onGridStateChanged.unsubscribe();
     }
     /**
      * Get the current grid state (filters/sorters/pagination)
@@ -4645,7 +4659,7 @@ class SortService {
     constructor() {
         this._currentLocalSorters = [];
         this._eventHandler = new Slick.EventHandler();
-        this.onSortChanged = new EventEmitter();
+        this.onSortChanged = new Subject();
     }
     /**
      * Attach a backend sort (single/multi) hook to the grid
@@ -4657,15 +4671,19 @@ class SortService {
         this._grid = grid;
         this._gridOptions = gridOptions;
         this._subscriber = grid.onSort;
-        this.emitSortChanged('remote');
-        this._subscriber.subscribe(this.attachBackendOnSortSubscribe);
+        // subscribe to the SlickGrid event and call the backend execution
+        // we also need to add our filter service (with .bind) to the callback function (which is outside of this service)
+        // the callback doesn't have access to this service, so we need to bind it
+        const /** @type {?} */ self = this;
+        this._subscriber.subscribe(this.attachBackendOnSortSubscribe.bind(this, self));
     }
     /**
+     * @param {?} self
      * @param {?} event
      * @param {?} args
      * @return {?}
      */
-    attachBackendOnSortSubscribe(event, args) {
+    attachBackendOnSortSubscribe(self, event, args) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!args || !args.grid) {
                 throw new Error('Something went wrong when trying to attach the "attachBackendOnSortSubscribe(event, args)" function, it seems that "args" is not populated correctly');
@@ -4679,6 +4697,7 @@ class SortService {
                 backendApi.preProcess();
             }
             const /** @type {?} */ query = backendApi.service.onSortChanged(event, args);
+            self.emitSortChanged('remote');
             // the process could be an Observable (like HttpClient) or a Promise
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
             const /** @type {?} */ observableOrPromise = backendApi.process(query);
@@ -4705,7 +4724,6 @@ class SortService {
         this._grid = grid;
         this._gridOptions = gridOptions;
         this._subscriber = grid.onSort;
-        this.emitSortChanged('local');
         this._subscriber.subscribe((e, args) => {
             // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
             // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
@@ -4723,6 +4741,7 @@ class SortService {
                 });
             }
             this.onLocalSortChanged(grid, gridOptions, dataView, sortColumns);
+            this.emitSortChanged('local');
         });
         this._eventHandler.subscribe(dataView.onRowCountChanged, (e, args) => {
             // load any presets if there are any
@@ -4839,20 +4858,16 @@ class SortService {
      * @return {?}
      */
     emitSortChanged(sender) {
-        if (this._subscriber && typeof this._subscriber.subscribe === 'function') {
-            this._subscriber.subscribe(() => {
-                if (sender === 'remote') {
-                    let /** @type {?} */ currentSorters = [];
-                    const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
-                    if (backendService && backendService.getCurrentSorters) {
-                        currentSorters = /** @type {?} */ (backendService.getCurrentSorters());
-                    }
-                    this.onSortChanged.emit(currentSorters);
-                }
-                else if (sender === 'local') {
-                    this.onSortChanged.emit(this.getCurrentLocalSorters());
-                }
-            });
+        if (sender === 'remote') {
+            let /** @type {?} */ currentSorters = [];
+            const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
+            if (backendService && backendService.getCurrentSorters) {
+                currentSorters = /** @type {?} */ (backendService.getCurrentSorters());
+            }
+            this.onSortChanged.next(currentSorters);
+        }
+        else if (sender === 'local') {
+            this.onSortChanged.next(this.getCurrentLocalSorters());
         }
     }
 }
@@ -6311,8 +6326,6 @@ class AngularSlickgridComponent {
         this._eventHandler = new Slick.EventHandler();
         this.groupingDefinition = {};
         this.showPagination = false;
-        this.dataviewChanged = new EventEmitter();
-        this.gridChanged = new EventEmitter();
         this.onDataviewCreated = new EventEmitter();
         this.onGridCreated = new EventEmitter();
         this.onGridInitialized = new EventEmitter();
@@ -6360,8 +6373,9 @@ class AngularSlickgridComponent {
         this.gridOptions = {};
         this._eventHandler.unsubscribeAll();
         this.controlAndPluginService.dispose();
-        this.gridEventService.dispose();
         this.filterService.dispose();
+        this.gridEventService.dispose();
+        this.gridStateService.dispose();
         this.resizer.dispose();
         this.sortService.dispose();
         this.grid.destroy();
@@ -6576,7 +6590,7 @@ class AngularSlickgridComponent {
      * @return {?}
      */
     paginationChanged(pagination) {
-        this.gridStateService.onGridStateChanged.emit({
+        this.gridStateService.onGridStateChanged.next({
             change: { newValues: pagination, type: GridStateType.pagination },
             gridState: this.gridStateService.getCurrentGridState()
         });
@@ -6668,8 +6682,6 @@ AngularSlickgridComponent.ctorParameters = () => [
     { type: undefined, decorators: [{ type: Inject, args: ['config',] },] },
 ];
 AngularSlickgridComponent.propDecorators = {
-    "dataviewChanged": [{ type: Output },],
-    "gridChanged": [{ type: Output },],
     "onDataviewCreated": [{ type: Output },],
     "onGridCreated": [{ type: Output },],
     "onGridInitialized": [{ type: Output },],

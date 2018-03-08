@@ -1,6 +1,6 @@
-import { EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Column, ColumnFilters, GridOption, OperatorType, CurrentFilter, OperatorString } from './../models/index';
+import { Subject } from 'rxjs/Subject';
 export declare class FilterService {
     private translate;
     private _eventHandler;
@@ -11,7 +11,8 @@ export declare class FilterService {
     private _grid;
     private _gridOptions;
     private _onFilterChangedOptions;
-    onFilterChanged: EventEmitter<CurrentFilter[]>;
+    private _isFirstQuery;
+    onFilterChanged: Subject<CurrentFilter[]>;
     constructor(translate: TranslateService);
     init(grid: any, gridOptions: GridOption, columnDefinitions: Column[]): void;
     /**
@@ -20,7 +21,7 @@ export declare class FilterService {
      * @param gridOptions Grid Options object
      */
     attachBackendOnFilter(grid: any, options: GridOption): void;
-    attachBackendOnFilterSubscribe(event: Event, args: any): Promise<void>;
+    attachBackendOnFilterSubscribe(self: FilterService, event: Event, args: any): Promise<void>;
     /**
      * Attach a local filter hook to the grid
      * @param grid SlickGrid Grid object

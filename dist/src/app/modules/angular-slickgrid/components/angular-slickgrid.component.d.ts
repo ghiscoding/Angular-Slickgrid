@@ -53,8 +53,6 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridWidthString: string;
     groupingDefinition: any;
     showPagination: boolean;
-    dataviewChanged: EventEmitter<any>;
-    gridChanged: EventEmitter<any>;
     onDataviewCreated: EventEmitter<any>;
     onGridCreated: EventEmitter<any>;
     onGridInitialized: EventEmitter<any>;

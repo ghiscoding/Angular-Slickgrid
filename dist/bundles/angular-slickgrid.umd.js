@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('moment-mini'), require('@angular/core'), require('@ngx-translate/core'), require('text-encoding-utf-8'), require('slickgrid/lib/jquery-ui-1.11.3'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.dataview'), require('slickgrid/slick.grid'), require('slickgrid/controls/slick.columnpicker'), require('slickgrid/controls/slick.gridmenu'), require('slickgrid/controls/slick.pager'), require('slickgrid/plugins/slick.autotooltips'), require('slickgrid/plugins/slick.cellcopymanager'), require('slickgrid/plugins/slick.cellexternalcopymanager'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('slickgrid/plugins/slick.checkboxselectcolumn'), require('slickgrid/plugins/slick.headerbuttons'), require('slickgrid/plugins/slick.headermenu'), require('slickgrid/plugins/slick.rowmovemanager'), require('slickgrid/plugins/slick.rowselectionmodel'), require('@angular/common')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'moment-mini', '@angular/core', '@ngx-translate/core', 'text-encoding-utf-8', 'slickgrid/lib/jquery-ui-1.11.3', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.dataview', 'slickgrid/slick.grid', 'slickgrid/controls/slick.columnpicker', 'slickgrid/controls/slick.gridmenu', 'slickgrid/controls/slick.pager', 'slickgrid/plugins/slick.autotooltips', 'slickgrid/plugins/slick.cellcopymanager', 'slickgrid/plugins/slick.cellexternalcopymanager', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'slickgrid/plugins/slick.checkboxselectcolumn', 'slickgrid/plugins/slick.headerbuttons', 'slickgrid/plugins/slick.headermenu', 'slickgrid/plugins/slick.rowmovemanager', 'slickgrid/plugins/slick.rowselectionmodel', '@angular/common'], factory) :
-	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.moment,global.ng.core,global['ngx-translate-core'],global.textEncodingUtf8,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,global.ng.common));
-}(this, (function (exports,Observable,first,take,toPromise,moment_,core,core$1,textEncodingUtf8,jqueryUi1_11_3,jquery_event_drag2_3_0,slick_core,slick_dataview,slick_grid,slick_columnpicker,slick_gridmenu,slick_pager,slick_autotooltips,slick_cellcopymanager,slick_cellexternalcopymanager,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,slick_checkboxselectcolumn,slick_headerbuttons,slick_headermenu,slick_rowmovemanager,slick_rowselectionmodel,common) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('moment-mini'), require('@angular/core'), require('@ngx-translate/core'), require('text-encoding-utf-8'), require('rxjs/Subject'), require('slickgrid/lib/jquery-ui-1.11.3'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.dataview'), require('slickgrid/slick.grid'), require('slickgrid/controls/slick.columnpicker'), require('slickgrid/controls/slick.gridmenu'), require('slickgrid/controls/slick.pager'), require('slickgrid/plugins/slick.autotooltips'), require('slickgrid/plugins/slick.cellcopymanager'), require('slickgrid/plugins/slick.cellexternalcopymanager'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('slickgrid/plugins/slick.checkboxselectcolumn'), require('slickgrid/plugins/slick.headerbuttons'), require('slickgrid/plugins/slick.headermenu'), require('slickgrid/plugins/slick.rowmovemanager'), require('slickgrid/plugins/slick.rowselectionmodel'), require('@angular/common')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'moment-mini', '@angular/core', '@ngx-translate/core', 'text-encoding-utf-8', 'rxjs/Subject', 'slickgrid/lib/jquery-ui-1.11.3', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.dataview', 'slickgrid/slick.grid', 'slickgrid/controls/slick.columnpicker', 'slickgrid/controls/slick.gridmenu', 'slickgrid/controls/slick.pager', 'slickgrid/plugins/slick.autotooltips', 'slickgrid/plugins/slick.cellcopymanager', 'slickgrid/plugins/slick.cellexternalcopymanager', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'slickgrid/plugins/slick.checkboxselectcolumn', 'slickgrid/plugins/slick.headerbuttons', 'slickgrid/plugins/slick.headermenu', 'slickgrid/plugins/slick.rowmovemanager', 'slickgrid/plugins/slick.rowselectionmodel', '@angular/common'], factory) :
+	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.moment,global.ng.core,global['ngx-translate-core'],global.textEncodingUtf8,global.Rx,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,global.ng.common));
+}(this, (function (exports,Observable,first,take,toPromise,moment_,core,core$1,textEncodingUtf8,Subject,jqueryUi1_11_3,jquery_event_drag2_3_0,slick_core,slick_dataview,slick_grid,slick_columnpicker,slick_gridmenu,slick_pager,slick_autotooltips,slick_cellcopymanager,slick_cellexternalcopymanager,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,slick_checkboxselectcolumn,slick_headerbuttons,slick_headermenu,slick_rowmovemanager,slick_rowselectionmodel,common) { 'use strict';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -68,6 +68,27 @@ function __values(o) {
             return { value: o && o[i++], done: !o };
         }
     };
+}
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+function __spread() {
+    for (var ar = [], i = 0; i < arguments.length; i++)
+        ar = ar.concat(__read(arguments[i]));
+    return ar;
 }
 
 var CaseType = {
@@ -1271,7 +1292,8 @@ var FilterService = /** @class */ (function () {
         this._eventHandler = new Slick.EventHandler();
         this._filters = [];
         this._columnFilters = {};
-        this.onFilterChanged = new core.EventEmitter();
+        this._isFirstQuery = true;
+        this.onFilterChanged = new Subject.Subject();
     }
     FilterService.prototype.init = function (grid, gridOptions, columnDefinitions) {
         this._grid = grid;
@@ -1281,13 +1303,13 @@ var FilterService = /** @class */ (function () {
         var _this = this;
         this._filters = [];
         this._subscriber = new Slick.Event();
-        this._subscriber.subscribe(this.attachBackendOnFilterSubscribe);
-        this.emitFilterChanged('remote');
+        var self = this;
+        this._subscriber.subscribe(this.attachBackendOnFilterSubscribe.bind(this, self));
         this._eventHandler.subscribe(grid.onHeaderRowCellRendered, function (e, args) {
             _this.addFilterTemplateToHeaderRow(args);
         });
     };
-    FilterService.prototype.attachBackendOnFilterSubscribe = function (event, args) {
+    FilterService.prototype.attachBackendOnFilterSubscribe = function (self, event, args) {
         return __awaiter(this, void 0, void 0, function () {
             var gridOptions, backendApi, query, observableOrPromise, processResult;
             return __generator(this, function (_a) {
@@ -1307,6 +1329,10 @@ var FilterService = /** @class */ (function () {
                         return [4 /*yield*/, backendApi.service.onFilterChanged(event, args)];
                     case 1:
                         query = _a.sent();
+                        if (!self._isFirstQuery) {
+                            self.emitFilterChanged('remote');
+                        }
+                        self._isFirstQuery = false;
                         observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 2:
@@ -1334,11 +1360,11 @@ var FilterService = /** @class */ (function () {
             if (columnId != null) {
                 dataView.refresh();
             }
+            _this.emitFilterChanged('local');
         });
         this._eventHandler.subscribe(grid.onHeaderRowCellRendered, function (e, args) {
             _this.addFilterTemplateToHeaderRow(args);
         });
-        this.emitFilterChanged('local');
     };
     FilterService.prototype.clearFilters = function () {
         this._filters.forEach(function (filter, index) {
@@ -1577,21 +1603,16 @@ var FilterService = /** @class */ (function () {
         }
     };
     FilterService.prototype.emitFilterChanged = function (sender) {
-        var _this = this;
-        if (this._subscriber && typeof this._subscriber.subscribe === 'function') {
-            this._subscriber.subscribe(function () {
-                if (sender === 'remote') {
-                    var currentFilters = [];
-                    var backendService = _this._gridOptions.backendServiceApi.service;
-                    if (backendService && backendService.getCurrentFilters) {
-                        currentFilters = (backendService.getCurrentFilters());
-                    }
-                    _this.onFilterChanged.emit(currentFilters);
-                }
-                else if (sender === 'local') {
-                    _this.onFilterChanged.emit(_this.getCurrentLocalFilters());
-                }
-            });
+        if (sender === 'remote') {
+            var currentFilters = [];
+            var backendService = this._gridOptions.backendServiceApi.service;
+            if (backendService && backendService.getCurrentFilters) {
+                currentFilters = (backendService.getCurrentFilters());
+            }
+            this.onFilterChanged.next(currentFilters);
+        }
+        else if (sender === 'local') {
+            this.onFilterChanged.next(this.getCurrentLocalFilters());
         }
     };
     FilterService.prototype.populateColumnFilterSearchTerms = function (gridOptions, columnDefinitions) {
@@ -2174,15 +2195,30 @@ var GraphqlService = /** @class */ (function () {
         var datasetQb = new GraphqlQueryBuilder(this.options.datasetName);
         var pageInfoQb = new GraphqlQueryBuilder('pageInfo');
         var dataQb = (this.options.isWithCursor) ? new GraphqlQueryBuilder('edges') : new GraphqlQueryBuilder('nodes');
-        var columnIds;
-        if (columnDefinitions) {
-            columnIds = Array.isArray(columnDefinitions) ? columnDefinitions.map(function (column) { return column.field; }) : [];
+        var columnIds = [];
+        if (columnDefinitions && Array.isArray(columnDefinitions)) {
+            try {
+                for (var columnDefinitions_1 = __values(columnDefinitions), columnDefinitions_1_1 = columnDefinitions_1.next(); !columnDefinitions_1_1.done; columnDefinitions_1_1 = columnDefinitions_1.next()) {
+                    var column = columnDefinitions_1_1.value;
+                    columnIds.push(column.field);
+                    if (column.fields) {
+                        columnIds.push.apply(columnIds, __spread(column.fields));
+                    }
+                }
+            }
+            catch (e_6_1) { e_6 = { error: e_6_1 }; }
+            finally {
+                try {
+                    if (columnDefinitions_1_1 && !columnDefinitions_1_1.done && (_a = columnDefinitions_1.return)) _a.call(columnDefinitions_1);
+                }
+                finally { if (e_6) throw e_6.error; }
+            }
         }
         else {
             columnIds = this.options.columnIds || [];
         }
         if (columnIds.indexOf('id') === -1) {
-            columnIds.push('id');
+            columnIds.unshift('id');
         }
         var filters = this.buildFilterQuery(columnIds);
         if (this.options.isWithCursor) {
@@ -2211,6 +2247,7 @@ var GraphqlService = /** @class */ (function () {
         queryQb.find(datasetQb);
         var enumSearchProperties = ['direction:', 'field:', 'operator:'];
         return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.options.keepArgumentFieldDoubleQuotes || false);
+        var e_6, _a;
     };
     GraphqlService.prototype.buildFilterQuery = function (inputArray) {
         var set = function (o, a) {
@@ -2420,19 +2457,19 @@ var GraphqlService = /** @class */ (function () {
                             }
                         }
                     }
-                    catch (e_6_1) { e_6 = { error: e_6_1 }; }
+                    catch (e_7_1) { e_7 = { error: e_7_1 }; }
                     finally {
                         try {
                             if (sortColumns_1_1 && !sortColumns_1_1.done && (_a = sortColumns_1.return)) _a.call(sortColumns_1);
                         }
-                        finally { if (e_6) throw e_6.error; }
+                        finally { if (e_7) throw e_7.error; }
                     }
                 }
             }
         }
         this._currentSorters = currentSorters;
         this.updateOptions({ sortingOptions: graphqlSorters });
-        var e_6, _a;
+        var e_7, _a;
     };
     GraphqlService.prototype.trimDoubleQuotesOnEnumField = function (inputStr, enumSearchWords, keepArgumentFieldDoubleQuotes) {
         var patternWordInQuotes = "s?((field:s*)?\".*?\")";
@@ -2642,14 +2679,14 @@ var OdataService = /** @class */ (function () {
                 }
             }
         }
-        catch (e_7_1) { e_7 = { error: e_7_1 }; }
+        catch (e_8_1) { e_8 = { error: e_8_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_7) throw e_7.error; }
+            finally { if (e_8) throw e_8.error; }
         }
-        var e_7, _c;
+        var e_8, _c;
     };
     return OdataService;
 }());
@@ -2887,12 +2924,12 @@ var GridOdataService = /** @class */ (function () {
                             }
                         }
                     }
-                    catch (e_8_1) { e_8 = { error: e_8_1 }; }
+                    catch (e_9_1) { e_9 = { error: e_9_1 }; }
                     finally {
                         try {
                             if (sortColumns_2_1 && !sortColumns_2_1.done && (_a = sortColumns_2.return)) _a.call(sortColumns_2);
                         }
-                        finally { if (e_8) throw e_8.error; }
+                        finally { if (e_9) throw e_9.error; }
                     }
                     sortByArray = sorterArray;
                 }
@@ -2905,7 +2942,7 @@ var GridOdataService = /** @class */ (function () {
         });
         this._currentSorters = (sortByArray);
         return this.odataService.buildQuery();
-        var e_8, _a;
+        var e_9, _a;
     };
     GridOdataService.prototype.castFilterToColumnFilter = function (columnFilters) {
         var filtersArray = (((typeof columnFilters === 'object') ? Object.keys(columnFilters).map(function (key) { return columnFilters[key]; }) : columnFilters));
@@ -3131,7 +3168,7 @@ var GridExtraUtils = /** @class */ (function () {
 }());
 var GridStateService = /** @class */ (function () {
     function GridStateService() {
-        this.onGridStateChanged = new core.EventEmitter();
+        this.onGridStateChanged = new Subject.Subject();
     }
     GridStateService.prototype.init = function (grid, filterService, sortService) {
         var _this = this;
@@ -3140,16 +3177,15 @@ var GridStateService = /** @class */ (function () {
         this.sortService = sortService;
         this._gridOptions = (grid && grid.getOptions) ? grid.getOptions() : {};
         this._filterSubcription = this.filterService.onFilterChanged.subscribe(function (currentFilters) {
-            _this.onGridStateChanged.emit({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: _this.getCurrentGridState() });
+            _this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: _this.getCurrentGridState() });
         });
         this._sorterSubcription = this.sortService.onSortChanged.subscribe(function (currentSorters) {
-            _this.onGridStateChanged.emit({ change: { newValues: currentSorters, type: GridStateType.sorter }, gridState: _this.getCurrentGridState() });
+            _this.onGridStateChanged.next({ change: { newValues: currentSorters, type: GridStateType.sorter }, gridState: _this.getCurrentGridState() });
         });
     };
     GridStateService.prototype.dispose = function () {
         this._filterSubcription.unsubscribe();
         this._sorterSubcription.unsubscribe();
-        this.onGridStateChanged.unsubscribe();
     };
     GridStateService.prototype.getCurrentGridState = function () {
         var gridState = {
@@ -3361,16 +3397,16 @@ var SortService = /** @class */ (function () {
     function SortService() {
         this._currentLocalSorters = [];
         this._eventHandler = new Slick.EventHandler();
-        this.onSortChanged = new core.EventEmitter();
+        this.onSortChanged = new Subject.Subject();
     }
     SortService.prototype.attachBackendOnSort = function (grid, gridOptions) {
         this._grid = grid;
         this._gridOptions = gridOptions;
         this._subscriber = grid.onSort;
-        this.emitSortChanged('remote');
-        this._subscriber.subscribe(this.attachBackendOnSortSubscribe);
+        var self = this;
+        this._subscriber.subscribe(this.attachBackendOnSortSubscribe.bind(this, self));
     };
-    SortService.prototype.attachBackendOnSortSubscribe = function (event, args) {
+    SortService.prototype.attachBackendOnSortSubscribe = function (self, event, args) {
         return __awaiter(this, void 0, void 0, function () {
             var gridOptions, backendApi, query, observableOrPromise, processResult;
             return __generator(this, function (_a) {
@@ -3388,6 +3424,7 @@ var SortService = /** @class */ (function () {
                             backendApi.preProcess();
                         }
                         query = backendApi.service.onSortChanged(event, args);
+                        self.emitSortChanged('remote');
                         observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 1:
@@ -3408,7 +3445,6 @@ var SortService = /** @class */ (function () {
         this._grid = grid;
         this._gridOptions = gridOptions;
         this._subscriber = grid.onSort;
-        this.emitSortChanged('local');
         this._subscriber.subscribe(function (e, args) {
             var sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
             _this._currentLocalSorters = [];
@@ -3423,6 +3459,7 @@ var SortService = /** @class */ (function () {
                 });
             }
             _this.onLocalSortChanged(grid, gridOptions, dataView, sortColumns);
+            _this.emitSortChanged('local');
         });
         this._eventHandler.subscribe(dataView.onRowCountChanged, function (e, args) {
             if (args.current > 0) {
@@ -3509,21 +3546,16 @@ var SortService = /** @class */ (function () {
         this._eventHandler.unsubscribeAll();
     };
     SortService.prototype.emitSortChanged = function (sender) {
-        var _this = this;
-        if (this._subscriber && typeof this._subscriber.subscribe === 'function') {
-            this._subscriber.subscribe(function () {
-                if (sender === 'remote') {
-                    var currentSorters = [];
-                    var backendService = _this._gridOptions.backendServiceApi.service;
-                    if (backendService && backendService.getCurrentSorters) {
-                        currentSorters = (backendService.getCurrentSorters());
-                    }
-                    _this.onSortChanged.emit(currentSorters);
-                }
-                else if (sender === 'local') {
-                    _this.onSortChanged.emit(_this.getCurrentLocalSorters());
-                }
-            });
+        if (sender === 'remote') {
+            var currentSorters = [];
+            var backendService = this._gridOptions.backendServiceApi.service;
+            if (backendService && backendService.getCurrentSorters) {
+                currentSorters = (backendService.getCurrentSorters());
+            }
+            this.onSortChanged.next(currentSorters);
+        }
+        else if (sender === 'local') {
+            this.onSortChanged.next(this.getCurrentLocalSorters());
         }
     };
     return SortService;
@@ -4026,15 +4058,15 @@ var multipleFormatter = function (row, cell, value, columnDef, dataContext, grid
             currentValue = formatter(row, cell, currentValue, columnDef, dataContext, grid);
         }
     }
-    catch (e_9_1) { e_9 = { error: e_9_1 }; }
+    catch (e_10_1) { e_10 = { error: e_10_1 }; }
     finally {
         try {
             if (formatters_1_1 && !formatters_1_1.done && (_a = formatters_1.return)) _a.call(formatters_1);
         }
-        finally { if (e_9) throw e_9.error; }
+        finally { if (e_10) throw e_10.error; }
     }
     return currentValue;
-    var e_9, _a;
+    var e_10, _a;
 };
 var percentCompleteFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {
@@ -4408,8 +4440,6 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._eventHandler = new Slick.EventHandler();
         this.groupingDefinition = {};
         this.showPagination = false;
-        this.dataviewChanged = new core.EventEmitter();
-        this.gridChanged = new core.EventEmitter();
         this.onDataviewCreated = new core.EventEmitter();
         this.onGridCreated = new core.EventEmitter();
         this.onGridInitialized = new core.EventEmitter();
@@ -4445,8 +4475,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.gridOptions = {};
         this._eventHandler.unsubscribeAll();
         this.controlAndPluginService.dispose();
-        this.gridEventService.dispose();
         this.filterService.dispose();
+        this.gridEventService.dispose();
+        this.gridStateService.dispose();
         this.resizer.dispose();
         this.sortService.dispose();
         this.grid.destroy();
@@ -4614,7 +4645,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         return $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
     };
     AngularSlickgridComponent.prototype.paginationChanged = function (pagination) {
-        this.gridStateService.onGridStateChanged.emit({
+        this.gridStateService.onGridStateChanged.next({
             change: { newValues: pagination, type: GridStateType.pagination },
             gridState: this.gridStateService.getCurrentGridState()
         });
@@ -4675,8 +4706,6 @@ AngularSlickgridComponent.ctorParameters = function () { return [
     { type: undefined, decorators: [{ type: core.Inject, args: ['config',] },] },
 ]; };
 AngularSlickgridComponent.propDecorators = {
-    "dataviewChanged": [{ type: core.Output },],
-    "gridChanged": [{ type: core.Output },],
     "onDataviewCreated": [{ type: core.Output },],
     "onGridCreated": [{ type: core.Output },],
     "onGridInitialized": [{ type: core.Output },],
