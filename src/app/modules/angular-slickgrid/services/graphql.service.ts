@@ -456,7 +456,7 @@ export class GraphqlService implements BackendService {
           for (const column of sortColumns) {
             if (column && column.sortCol) {
               currentSorters.push({
-                headerName: column.sortCol.name,
+                headerName: column.sortCol.headerKey || column.sortCol.name,
                 columnId: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '',
                 direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
               });
@@ -525,8 +525,9 @@ export class GraphqlService implements BackendService {
     const filtersArray: ColumnFilter[] = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters;
 
     return filtersArray.map((filter) => {
-      const name = (filter && filter.columnDef && filter.columnDef.name) ? filter.columnDef.name : '';
-      const tmpFilter: CurrentFilter = { columnId: filter.columnId || '', headerName: name };
+      const columnDef = filter.columnDef;
+      const header = (columnDef) ? (columnDef.headerKey || columnDef.name || '') : '';
+      const tmpFilter: CurrentFilter = { columnId: filter.columnId || '', headerName: header };
       if (filter.operator) {
         tmpFilter.operator = filter.operator;
       }

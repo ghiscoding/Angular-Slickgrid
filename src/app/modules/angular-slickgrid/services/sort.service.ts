@@ -86,7 +86,7 @@ export class SortService {
           if (sortColumn.sortCol) {
             this._currentLocalSorters.push({
               columnId: sortColumn.sortCol.id,
-              headerName: sortColumn.sortCol.name,
+              headerName: sortColumn.sortCol.headerKey || sortColumn.sortCol.name || '',
               direction: sortColumn.sortAsc ? SortDirection.ASC : SortDirection.DESC
             });
           }
@@ -135,7 +135,7 @@ export class SortService {
           // keep current sorters
           this._currentLocalSorters.push({
             columnId: columnDef.id + '',
-            headerName: columnDef.name || '',
+            headerName: columnDef.headerKey || columnDef.name || '',
             direction: columnPreset.direction.toUpperCase() as SortDirectionString
           });
         }
