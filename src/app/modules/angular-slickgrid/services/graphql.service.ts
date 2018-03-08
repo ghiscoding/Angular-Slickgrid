@@ -70,17 +70,25 @@ export class GraphqlService implements BackendService {
     const dataQb = (this.options.isWithCursor) ? new QueryBuilder('edges') : new QueryBuilder('nodes');
 
     // get all the columnds Ids for the filters to work
-    let columnIds: string[];
-    if (columnDefinitions) {
-      columnIds = Array.isArray(columnDefinitions) ? columnDefinitions.map((column) => column.field) : [];
+    let columnIds: string[] = [];
+    if (columnDefinitions && Array.isArray(columnDefinitions)) {
+      for (const column of columnDefinitions) {
+        columnIds.push(column.field);
+
+        // if extra "fields" are passed, also push them to columnIds
+        if (column.fields) {
+          columnIds.push(...column.fields);
+        }
+      }
+      // columnIds = columnDefinitions.map((column) => column.field);
     } else {
       columnIds = this.options.columnIds || [];
     }
 
     // Slickgrid also requires the "id" field to be part of DataView
-    // push it to the GraphQL query if it wasn't already part of the list
+    // add it to the GraphQL query if it wasn't already part of the list
     if (columnIds.indexOf('id') === -1) {
-      columnIds.push('id');
+      columnIds.unshift('id');
     }
 
     const filters = this.buildFilterQuery(columnIds);
