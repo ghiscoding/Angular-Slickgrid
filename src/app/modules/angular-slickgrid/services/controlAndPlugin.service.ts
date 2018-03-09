@@ -390,7 +390,7 @@ export class ControlAndPluginService {
     };
   }
 
-  private refreshBackendDataset(gridOptions) {
+  refreshBackendDataset(gridOptions: GridOption) {
     let query;
     const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
     if (!backendApi || !backendApi.service || !backendApi.process) {
