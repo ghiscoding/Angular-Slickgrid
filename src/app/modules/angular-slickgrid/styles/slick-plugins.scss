@@ -268,3 +268,37 @@ label {
     }
   }
 }
+
+.search-filter .operator.input-group-addon {
+  margin: 0;
+  padding: 0;
+  min-width: 25px;
+  border: none;
+
+  select.form-control {
+    cursor: pointer;
+    -moz-appearance: none;
+    -webkit-appearance:none;
+  }
+  select.form-control::-ms-expand {
+    display: none;
+  }
+  select.form-control {
+    .empty {
+      color: #c0c0c0;
+    }
+  }
+
+  .form-control {
+    border-radius: .4rem 0 0 .4rem;
+    border-right: none;
+    padding-left: 2px !important;
+    padding-right: 0 !important;
+    font-size: 13px;
+    color: $primary-color;
+    background-color: #ebeff1;
+  }
+}
+.search-filter .operator-char3.input-group-addon {
+  min-width: 30px;
+}

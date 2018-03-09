@@ -1,3 +1,4 @@
+import { CompoundInputFilter } from './compoundInputFilter';
 import { Column, Filter } from './../models/index';
 import { InputFilter } from './inputFilter';
 import { InputNoPlaceholderFilter } from './inputNoPlaceholderFilter';
@@ -19,5 +20,7 @@ export const Filters = {
   singleSelect: SingleSelectFilter,
 
   /** Select filter, which uses native DOM element select */
-  select: SelectFilter
+  select: SelectFilter,
+
+  compoundInput: CompoundInputFilter
 };

@@ -5,9 +5,11 @@ import { FilterConditions } from './../filter-conditions';
 import { Filters } from './../filters';
 import {
   Column,
+  ColumnFilter,
   ColumnFilters,
   Filter,
   FilterArguments,
+  FilterCallbackArg,
   FieldType,
   FilterType,
   GridOption,
@@ -289,41 +291,52 @@ export class FilterService {
         } else {
           filter.searchTerm = (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined;
         }
+        if (columnFilter.operator) {
+          filter.operator = columnFilter.operator;
+        }
         currentFilters.push(filter);
       }
     }
     return currentFilters;
   }
 
-  callbackSearchEvent(e: Event | undefined, args: { columnDef: Column, operator?: OperatorType | OperatorString, searchTerms?: string[] | number[] }) {
-    const targetValue = (e && e.target) ? (e.target as HTMLInputElement).value : undefined;
-    const searchTerms = (args && args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : [];
-    const columnId = (args && args.columnDef) ? args.columnDef.id || '' : '';
+  callbackSearchEvent(e: Event | undefined, args: FilterCallbackArg) {
+    if (args) {
+      const searchTerm = args.searchTerm ? args.searchTerm : ((e && e.target) ? (e.target as HTMLInputElement).value : undefined);
+      const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : [];
+      const columnDef = args.columnDef || null;
+      const columnId = columnDef ? (columnDef.id || '') : '';
+      const operator = args.operator || undefined;
 
-    if (!targetValue && searchTerms.length === 0) {
-      // delete the property from the columnFilters when it becomes empty
-      // without doing this, it would leave an incorrect state of the previous column filters when filtering on another column
-      delete this._columnFilters[columnId];
-    } else {
-      const colId = '' + columnId as string;
-      this._columnFilters[colId] = {
-        columnId: colId,
+      if (!searchTerm && searchTerms.length === 0) {
+        // delete the property from the columnFilters when it becomes empty
+        // without doing this, it would leave an incorrect state of the previous column filters when filtering on another column
+        delete this._columnFilters[columnId];
+      } else {
+        const colId = '' + columnId as string;
+        const colFilter: ColumnFilter = {
+          columnId: colId,
+          columnDef,
+          searchTerm,
+          searchTerms,
+        };
+        if (operator) {
+          colFilter.operator = operator;
+        }
+        this._columnFilters[colId] = colFilter;
+      }
+
+      this.triggerEvent(this._subscriber, {
+        columnId,
         columnDef: args.columnDef || null,
-        operator: args.operator || undefined,
-        searchTerms: args.searchTerms || undefined,
-        searchTerm: ((e && e.target) ? (e.target as HTMLInputElement).value : undefined),
-      };
+        columnFilters: this._columnFilters,
+        operator,
+        searchTerm,
+        searchTerms,
+        serviceOptions: this._onFilterChangedOptions,
+        grid: this._grid
+      }, e);
     }
-
-    this.triggerEvent(this._subscriber, {
-      columnId,
-      columnDef: args.columnDef || null,
-      columnFilters: this._columnFilters,
-      searchTerms: args.searchTerms || undefined,
-      searchTerm: ((e && e.target) ? (e.target as HTMLInputElement).value : undefined),
-      serviceOptions: this._onFilterChangedOptions,
-      grid: this._grid
-    }, e);
   }
 
   addFilterTemplateToHeaderRow(args: { column: Column; grid: any; node: any }) {
@@ -333,20 +346,24 @@ export class FilterService {
     if (columnDef && columnId !== 'selector' && columnDef.filterable) {
       let searchTerms: SearchTerm[] | undefined;
       let searchTerm: SearchTerm | undefined;
+      let operator: OperatorString | OperatorType;
 
       if (this._columnFilters[columnDef.id]) {
         searchTerm = this._columnFilters[columnDef.id].searchTerm || undefined;
         searchTerms = this._columnFilters[columnDef.id].searchTerms || undefined;
+        operator = this._columnFilters[columnDef.id].operator || undefined;
       } else if (columnDef.filter) {
         // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
         // because of that we need to first get searchTerm(s) from the columnFilters (that is what the user last entered)
         searchTerms = columnDef.filter.searchTerms || undefined;
         searchTerm = columnDef.filter.searchTerm || undefined;
+        operator = columnDef.filter.operator || undefined;
         this.updateColumnFilters(searchTerm, searchTerms, columnDef);
       }
 
       const filterArguments: FilterArguments = {
         grid: this._grid,
+        operator,
         searchTerm,
         searchTerms,
         columnDef,
@@ -378,6 +395,9 @@ export class FilterService {
           break;
         case FilterType.inputNoPlaceholder:
           filter = new Filters.inputNoPlaceholder();
+          break;
+        case FilterType.compoundInput:
+          filter = new Filters.compoundInput();
           break;
         case FilterType.input:
         default:
@@ -440,11 +460,12 @@ export class FilterService {
         });
         if (columnPreset && columnPreset.searchTerm) {
           columnDef.filter = columnDef.filter || {};
+          columnDef.filter.operator = columnPreset.operator;
           columnDef.filter.searchTerm = columnPreset.searchTerm;
         }
         if (columnPreset && columnPreset.searchTerms) {
           columnDef.filter = columnDef.filter || {};
-          columnDef.filter.operator = columnDef.filter.operator || OperatorType.in;
+          columnDef.filter.operator = columnPreset.operator || columnDef.filter.operator || OperatorType.in;
           columnDef.filter.searchTerms = columnPreset.searchTerms;
         }
       });

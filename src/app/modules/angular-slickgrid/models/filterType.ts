@@ -16,4 +16,6 @@ export enum FilterType {
 
   /** Input Filter type, but without a magnifying glass as placeholder */
   inputNoPlaceholder,
+
+  compoundInput,
 }
