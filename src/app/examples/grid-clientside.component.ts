@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs/Subscription';
 import { CustomInputFilter } from './custom-inputFilter';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Column, FieldType, FilterType, Formatters, GridOption, GridStateService, OperatorType } from './../modules/angular-slickgrid';
+import { Column, FieldType, FilterType, Formatters, GridOption, GridStateChange, GridStateService, OperatorType } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 
 function randomBetween(min, max) {
@@ -12,7 +12,7 @@ const NB_ITEMS = 500;
 @Component({
   templateUrl: './grid-clientside.component.html'
 })
-export class GridClientSideComponent implements OnInit, OnDestroy {
+export class GridClientSideComponent implements OnInit {
   title = 'Example 4: Client Side Sort/Filter';
   subTitle = `
     Sort/Filter on client side only using SlickGrid DataView (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Sorting" target="_blank">Wiki link</a>)
@@ -36,14 +36,8 @@ export class GridClientSideComponent implements OnInit, OnDestroy {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
-  gridStateSub: Subscription;
 
   constructor(private gridStateService: GridStateService, private translate: TranslateService) {
-    this.gridStateSub = this.gridStateService.onGridStateChanged.subscribe((data) => console.log(data));
-  }
-
-  ngOnDestroy() {
-    this.gridStateSub.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -118,8 +112,8 @@ export class GridClientSideComponent implements OnInit, OnDestroy {
         filters: [
           { columnId: 'duration', searchTerms: [2, 22, 44] },
           // { columnId: 'complete', searchTerm: '5', operator: '>' },
-          { columnId: 'usDateShort', operator: '<', searchTerm: '4/20/21' },
-          { columnId: 'effort-driven', searchTerm: true }
+          { columnId: 'usDateShort', operator: '<', searchTerm: '4/20/25' },
+          // { columnId: 'effort-driven', searchTerm: true }
         ],
         sorters: [
           { columnId: 'duration', direction: 'DESC' },
@@ -156,8 +150,13 @@ export class GridClientSideComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** Dispatched event of a Grid State Changed event */
+  gridStateChanged(gridState: GridStateChange) {
+    console.log('Client sample, Grid State changed:: ', gridState);
+  }
+
   /** Save current Filters, Sorters in LocaleStorage or DB */
   saveCurrentGridState(grid) {
-    console.log('Client current grid state', this.gridStateService.getCurrentGridState());
+    console.log('Client sample, last Grid State:: ', this.gridStateService.getCurrentGridState());
   }
 }
