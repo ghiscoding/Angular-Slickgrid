@@ -283,7 +283,7 @@ export class FilterService {
         const columnFilter = this._columnFilters[colId];
         const columnDef = columnFilter.columnDef;
         const filter = { columnId: colId || '' } as CurrentFilter;
-        filter.headerName = (columnDef) ? columnDef.headerKey || columnDef.name : '';
+
         if (columnFilter && columnFilter.searchTerms) {
           filter.searchTerms = columnFilter.searchTerms;
         } else {

@@ -342,7 +342,6 @@ export class GridOdataService implements BackendService {
 
               sorterArray.push({
                 columnId: fieldName,
-                headerName: column.sortCol.headerKey || column.sortCol.name,
                 direction: column.sortAsc ? 'asc' : 'desc'
               });
             }
@@ -380,7 +379,7 @@ export class GridOdataService implements BackendService {
     return filtersArray.map((filter) => {
       const columnDef = filter.columnDef;
       const header = (columnDef) ? (columnDef.headerKey || columnDef.name || '') : '';
-      const tmpFilter: CurrentFilter = { columnId: filter.columnId || '', headerName: header };
+      const tmpFilter: CurrentFilter = { columnId: filter.columnId || '' };
       if (filter.operator) {
         tmpFilter.operator = filter.operator;
       }
