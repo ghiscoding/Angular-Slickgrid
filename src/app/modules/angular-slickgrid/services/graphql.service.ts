@@ -358,7 +358,7 @@ export class GraphqlService implements BackendService {
         const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
         let operator = columnFilter.operator || ((matches) ? matches[1] : '');
         searchValue = (!!matches) ? matches[2] : '';
-        const lastValueChar = (!!matches) ? matches[3] : '';
+        const lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
 
         // no need to query if search value is empty
         if (fieldName && searchValue === '' && searchTerms.length === 0) {
@@ -371,8 +371,8 @@ export class GraphqlService implements BackendService {
         } else if (typeof searchValue === 'string') {
           // escaping the search value
           searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
-          if (operator === '*' || lastValueChar === '*') {
-            operator = (operator === '*') ? 'endsWith' : 'startsWith';
+          if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*') {
+            operator = (operator === '*' || operator === '*z') ? 'endsWith' : 'startsWith';
           }
         }
 

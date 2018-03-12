@@ -22,6 +22,7 @@ export const GlobalGridOptions: GridOption = {
     hideSyncResizeButton: true
   },
   datasetIdPropertyName: 'id',
+  defaultFilterPlaceholder: '&#128269;',
   defaultFilterType: FilterType.input,
   editable: false,
   enableAutoResize: true,
