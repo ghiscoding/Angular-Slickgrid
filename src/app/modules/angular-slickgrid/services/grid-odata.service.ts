@@ -202,7 +202,7 @@ export class GridOdataService implements BackendService {
         const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
         const operator = columnFilter.operator || ((matches) ? matches[1] : '');
         let searchValue = (!!matches) ? matches[2] : '';
-        const lastValueChar = (!!matches) ? matches[3] : '';
+        const lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
         const bypassOdataQuery = columnFilter.bypassBackendQuery || false;
 
         // no need to query if search value is empty
@@ -248,9 +248,9 @@ export class GridOdataService implements BackendService {
               searchBy = tmpSearchTerms.join(' and ');
               searchBy = `(${searchBy})`;
             }
-          } else if (operator === '*' || lastValueChar !== '') {
+          } else if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar !== '') {
             // first/last character is a '*' will be a startsWith or endsWith
-            searchBy = operator === '*'
+            searchBy = (operator === '*' || operator === '*z')
               ? `endswith(${fieldName}, '${searchValue}')`
               : `startswith(${fieldName}, '${searchValue}')`;
           } else if (fieldType === FieldType.date) {

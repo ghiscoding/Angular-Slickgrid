@@ -164,7 +164,7 @@ export function mapFlatpickrDateFormatWithFieldType(fieldType: FieldType): strin
       map = 'm/d/Y';
       break;
     case FieldType.dateUsShort:
-      map = 'M/D/YY';
+      map = 'm/d/y';
       break;
     case FieldType.dateTimeUs:
       map = 'm/d/Y H:i:S';
@@ -173,13 +173,13 @@ export function mapFlatpickrDateFormatWithFieldType(fieldType: FieldType): strin
       map = 'm/d/Y h:i:S K'; // there is no lowercase in Flatpickr :(
       break;
     case FieldType.dateTimeUsAM_PM:
-      map = 'M/D/YY h:i:s K';
+      map = 'm/d/Y h:i:s K';
       break;
     case FieldType.dateTimeUsShort:
-      map = 'M/D/YY H:i:s';
+      map = 'm/d/y H:i:s';
       break;
     case FieldType.dateTimeUsShortAmPm:
-      map = 'M/D/YY h:i:s K'; // there is no lowercase in Flatpickr :(
+      map = 'm/d/y h:i:s K'; // there is no lowercase in Flatpickr :(
       break;
     case FieldType.dateUtc:
       map = 'Z';
