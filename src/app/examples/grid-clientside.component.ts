@@ -2,6 +2,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { CustomInputFilter } from './custom-inputFilter';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Column, FieldType, FilterType, Formatters, GridOption, GridStateService, OperatorType } from './../modules/angular-slickgrid';
+import { TranslateService } from '@ngx-translate/core';
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -37,7 +38,7 @@ export class GridClientSideComponent implements OnInit, OnDestroy {
   dataset: any[];
   gridStateSub: Subscription;
 
-  constructor(private gridStateService: GridStateService) {
+  constructor(private gridStateService: GridStateService, private translate: TranslateService) {
     this.gridStateSub = this.gridStateService.onGridStateChanged.subscribe((data) => console.log(data));
   }
 
@@ -77,22 +78,16 @@ export class GridClientSideComponent implements OnInit, OnDestroy {
         }
       },
       { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 70, type: FieldType.number, sortable: true,
-        filterable: true,
-        filter: {
-          type: FilterType.compoundInput
-        }
+        filterable: true, filter: { type: FilterType.compoundInput }
       },
-      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, filterable: true, sortable: true, type: FieldType.date, minWidth: 60, exportWithFormatter: true },
-      { id: 'usDateShort', name: 'US Date Short', field: 'usDateShort', sortable: true, type: FieldType.dateUsShort, minWidth: 55,
-        filterable: true,
-        /*
-        filter: {
-          type: FilterType.compoundInput
-        }
-        */
+      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true,
+        type: FieldType.date, filterable: true, filter: { type: FilterType.compoundDate }
       },
-      { id: 'utcDate', name: 'UTC Date', field: 'utcDate', formatter: Formatters.dateTimeIsoAmPm, filterable: true, sortable: true, minWidth: 115, type: FieldType.dateUtc, filterSearchType: FieldType.dateTimeIso },
-      { id: 'utcDate2', name: 'UTC Date (filterSearchType: dateUS)', field: 'utcDate', filterable: true, sortable: true, minWidth: 115, type: FieldType.dateUtc, filterSearchType: FieldType.dateUs },
+      { id: 'usDateShort', name: 'US Date Short', field: 'usDateShort', sortable: true, minWidth: 70, width: 70,
+        type: FieldType.dateUsShort, filterable: true, filter: { type: FilterType.compoundDate }
+      },
+      { id: 'utcDate', name: 'UTC Date', field: 'utcDate', formatter: Formatters.dateTimeIsoAmPm, sortable: true, minWidth: 115,
+        type: FieldType.dateUtc, outputType: FieldType.dateTimeIsoAmPm, filterable: true, filter: { type: FilterType.compoundDate } },
       { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', minWidth: 85, maxWidth: 85, formatter: Formatters.checkmark,
         type: FieldType.boolean,
         sortable: true,
@@ -114,12 +109,16 @@ export class GridClientSideComponent implements OnInit, OnDestroy {
         sidePadding: 15
       },
       enableFiltering: true,
+      params: {
+        i18n: this.translate
+      },
 
       // use columnDef searchTerms OR use presets as shown below
       presets: {
         filters: [
           { columnId: 'duration', searchTerms: [2, 22, 44] },
-          { columnId: 'complete', searchTerm: '5', operator: '>' },
+          // { columnId: 'complete', searchTerm: '5', operator: '>' },
+          { columnId: 'usDateShort', operator: '<', searchTerm: '4/20/21' },
           { columnId: 'effort-driven', searchTerm: true }
         ],
         sorters: [

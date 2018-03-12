@@ -2,7 +2,7 @@ import { SortService } from './../modules/angular-slickgrid/services/sort.servic
 import { FilterService } from './../modules/angular-slickgrid/services/filter.service';
 import { Component, OnInit, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Column, FieldType, FilterType, GridOdataService, GridOption, GridStateService, OperatorType } from './../modules/angular-slickgrid';
+import { Column, FieldType, FilterType, GridOdataService, GridOption, OperatorType } from './../modules/angular-slickgrid';
 
 const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
@@ -36,20 +36,20 @@ export class GridOdataComponent implements OnInit {
   processing = true;
   status = { text: 'processing...', class: 'alert alert-danger' };
 
-  constructor(private http: HttpClient, private gridStateService: GridStateService, private odataService: GridOdataService, private filterService: FilterService, private sorterService: SortService) {
-    this.gridStateService.onGridStateChanged.subscribe((data) => console.log(data));
-    this.filterService.onFilterChanged.subscribe((data) => console.log(data));
-    this.sorterService.onSortChanged.subscribe((data) => console.log(data));
-  }
+  constructor(private http: HttpClient, private odataService: GridOdataService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'name', name: 'Name', field: 'name', filterable: true, sortable: true, type: FieldType.string },
+      { id: 'name', name: 'Name', field: 'name', sortable: true, type: FieldType.string,
+        filterable: true,
+        filter: {
+          type: FilterType.compoundInput
+        }
+      },
       { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
         filter: {
           type: FilterType.singleSelect,
-          collection: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ],
-          searchTerm: 'female'
+          collection: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
         }
       },
       { id: 'company', name: 'Company', field: 'company' }
@@ -69,12 +69,6 @@ export class GridOdataComponent implements OnInit {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
         pageSize: defaultPageSize,
         totalItems: 0
-      },
-      presets: {
-        // you can also type operator as string, e.g.: operator: 'EQ'
-        filters: [{ columnId: 'gender', searchTerm: 'male', operator:  OperatorType.equal }],
-        sorters: [{ columnId: 'name', direction: 'desc' }],
-        pagination: { pageNumber: 2, pageSize: 20 }
       },
       backendServiceApi: {
         service: this.odataService,
@@ -96,21 +90,20 @@ export class GridOdataComponent implements OnInit {
   }
 
   getCustomerCallback(data) {
+    // totalItems property needs to be filled for pagination to work correctly
+    // however we need to force Angular to do a dirty check, doing a clone object will do just that
+    this.gridOptions.pagination.totalItems = data['totalRecordCount'];
+    this.gridOptions = Object.assign({}, this.gridOptions);
+
+    // once pagination totalItems is filled, we can update the dataset
     this.dataset = data['items'];
     this.odataQuery = data['query'];
-
-    // totalItems property needs to be filled for pagination to work correctly
-    this.gridOptions.pagination.totalItems = data['totalRecordCount'];
   }
 
   getCustomerApiCall(query) {
     // in your case, you will call your WebAPI function (wich needs to return a Promise)
     // for the demo purpose, we will call a mock WebAPI function
     return this.getCustomerDataApiMock(query);
-  }
-
-  saveCurrentGridState(grid) {
-    console.log('OData current grid state', this.gridStateService.getCurrentGridState());
   }
 
   /** This function is only here to mock a WebAPI call (since we are using a JSON file for the demo)
@@ -137,7 +130,7 @@ export class GridOdataComponent implements OnInit {
           orderBy = param.substring('$orderby='.length);
         }
         if (param.includes('$filter=')) {
-          const filterBy = param.substring('$filter='.length);
+          const filterBy = param.substring('$filter='.length).replace('%20', ' ');
           if (filterBy.includes('substringof')) {
             const filterMatch = filterBy.match(/substringof\('(.*?)',([a-zA-Z ]*)/);
             const fieldName = filterMatch[2].trim();
@@ -205,7 +198,7 @@ export class GridOdataComponent implements OnInit {
                 const filterType = columnFilters[columnId].type;
                 const searchTerm = columnFilters[columnId].term;
                 switch (filterType) {
-                  case 'equal': return column[columnId] === searchTerm;
+                  case 'equal': return column[columnId].toLowerCase() === searchTerm;
                   case 'ends': return column[columnId].toLowerCase().endsWith(searchTerm);
                   case 'starts': return column[columnId].toLowerCase().startsWith(searchTerm);
                   case 'substring': return column[columnId].toLowerCase().includes(searchTerm);

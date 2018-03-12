@@ -27,7 +27,7 @@ declare var Slick: any;
 @Injectable()
 export class FilterService {
   private _eventHandler = new Slick.EventHandler();
-  private _subscriber: SlickEvent;
+  private _slickSubscriber: SlickEvent;
   private _filters: any[] = [];
   private _columnFilters: ColumnFilters = {};
   private _dataView: any;
@@ -51,13 +51,10 @@ export class FilterService {
    */
   attachBackendOnFilter(grid: any, options: GridOption) {
     this._filters = [];
-    this._subscriber = new Slick.Event();
+    this._slickSubscriber = new Slick.Event();
 
     // subscribe to the SlickGrid event and call the backend execution
-    // we also need to add our filter service (with .bind) to the callback function (which is outside of this service)
-    // the callback doesn't have access to this service, so we need to bind it
-    const self = this;
-    this._subscriber.subscribe(this.attachBackendOnFilterSubscribe.bind(this, self));
+    this._slickSubscriber.subscribe(this.attachBackendOnFilterSubscribe.bind(this));
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
     this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: Event, args: any) => {
@@ -65,7 +62,7 @@ export class FilterService {
     });
   }
 
-  async attachBackendOnFilterSubscribe(self: FilterService, event: Event, args: any) {
+  async attachBackendOnFilterSubscribe(event: Event, args: any) {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
     }
@@ -85,7 +82,7 @@ export class FilterService {
     const query = await backendApi.service.onFilterChanged(event, args);
 
     // emit an onFilterChanged event
-    self.emitFilterChanged('remote');
+    this.emitFilterChanged('remote');
 
     // the process could be an Observable (like HttpClient) or a Promise
     // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
@@ -112,12 +109,12 @@ export class FilterService {
   attachLocalOnFilter(grid: any, options: GridOption, dataView: any) {
     this._filters = [];
     this._dataView = dataView;
-    this._subscriber = new Slick.Event();
+    this._slickSubscriber = new Slick.Event();
 
     dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
     dataView.setFilter(this.customLocalFilter.bind(this, dataView));
 
-    this._subscriber.subscribe((e: any, args: any) => {
+    this._slickSubscriber.subscribe((e: any, args: any) => {
       const columnId = args.columnId;
       if (columnId != null) {
         dataView.refresh();
@@ -179,7 +176,7 @@ export class FilterService {
       const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
       let operator = columnFilter.operator || ((matches) ? matches[1] : '');
       const searchTerm = (!!matches) ? matches[2] : '';
-      const lastValueChar = (!!matches) ? matches[3] : '';
+      const lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
 
       // when using a Filter that is not a custom type, we want to make sure that we have a default operator type
       // for example a multiple-select should always be using IN, while a single select will use an EQ
@@ -249,8 +246,8 @@ export class FilterService {
     this._eventHandler.unsubscribeAll();
 
     // unsubscribe local event
-    if (this._subscriber && typeof this._subscriber.unsubscribe === 'function') {
-      this._subscriber.unsubscribe();
+    if (this._slickSubscriber && typeof this._slickSubscriber.unsubscribe === 'function') {
+      this._slickSubscriber.unsubscribe();
     }
   }
 
@@ -326,7 +323,7 @@ export class FilterService {
         this._columnFilters[colId] = colFilter;
       }
 
-      this.triggerEvent(this._subscriber, {
+      this.triggerEvent(this._slickSubscriber, {
         columnId,
         columnDef: args.columnDef || null,
         columnFilters: this._columnFilters,
@@ -393,11 +390,11 @@ export class FilterService {
         case FilterType.singleSelect:
           filter = new Filters.singleSelect(this.translate);
           break;
-        case FilterType.inputNoPlaceholder:
-          filter = new Filters.inputNoPlaceholder();
+        case FilterType.compoundDate:
+          filter = new Filters.compoundDate(this.translate);
           break;
         case FilterType.compoundInput:
-          filter = new Filters.compoundInput();
+          filter = new Filters.compoundInput(this.translate);
           break;
         case FilterType.input:
         default:
@@ -431,7 +428,7 @@ export class FilterService {
    * @param sender
    */
   emitFilterChanged(sender: 'local' | 'remote') {
-    if (sender === 'remote') {
+    if (sender === 'remote' && this._gridOptions && this._gridOptions.backendServiceApi) {
       let currentFilters: CurrentFilter[] = [];
       const backendService = this._gridOptions.backendServiceApi.service;
       if (backendService && backendService.getCurrentFilters) {

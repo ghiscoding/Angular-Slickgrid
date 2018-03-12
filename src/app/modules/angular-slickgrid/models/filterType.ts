@@ -17,5 +17,9 @@ export enum FilterType {
   /** Input Filter type, but without a magnifying glass as placeholder */
   inputNoPlaceholder,
 
+  /** Compound Date Filter (compound of Operator + Date picker) */
+  compoundDate,
+
+  /** Compound Input Filter (compound of Operator + Input) */
   compoundInput,
 }

@@ -11,7 +11,7 @@ export class SortService {
   private _eventHandler: any = new Slick.EventHandler();
   private _grid: any;
   private _gridOptions: GridOption;
-  private _subscriber: SlickEvent;
+  private _slickSubscriber: SlickEvent;
   onSortChanged = new Subject<CurrentSorter[]>();
 
   /**
@@ -22,16 +22,13 @@ export class SortService {
   attachBackendOnSort(grid: any, gridOptions: GridOption) {
     this._grid = grid;
     this._gridOptions = gridOptions;
-    this._subscriber = grid.onSort;
+    this._slickSubscriber = grid.onSort;
 
     // subscribe to the SlickGrid event and call the backend execution
-    // we also need to add our filter service (with .bind) to the callback function (which is outside of this service)
-    // the callback doesn't have access to this service, so we need to bind it
-    const self = this;
-    this._subscriber.subscribe(this.attachBackendOnSortSubscribe.bind(this, self));
+    this._slickSubscriber.subscribe(this.attachBackendOnSortSubscribe.bind(this));
   }
 
-  async attachBackendOnSortSubscribe(self: SortService, event: Event, args: any) {
+  async attachBackendOnSortSubscribe(event: Event, args: any) {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to attach the "attachBackendOnSortSubscribe(event, args)" function, it seems that "args" is not populated correctly');
     }
@@ -45,7 +42,7 @@ export class SortService {
       backendApi.preProcess();
     }
     const query = backendApi.service.onSortChanged(event, args);
-    self.emitSortChanged('remote');
+    this.emitSortChanged('remote');
 
     // the process could be an Observable (like HttpClient) or a Promise
     // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
@@ -72,9 +69,9 @@ export class SortService {
   attachLocalOnSort(grid: any, gridOptions: GridOption, dataView: any, columnDefinitions: Column[]) {
     this._grid = grid;
     this._gridOptions = gridOptions;
-    this._subscriber = grid.onSort;
+    this._slickSubscriber = grid.onSort;
 
-    this._subscriber.subscribe((e: any, args: any) => {
+    this._slickSubscriber.subscribe((e: any, args: any) => {
       // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
       // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
       const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({sortAsc: args.sortAsc, sortCol: args.sortCol});
@@ -194,8 +191,8 @@ export class SortService {
 
   dispose() {
     // unsubscribe local event
-    if (this._subscriber && typeof this._subscriber.unsubscribe === 'function') {
-      this._subscriber.unsubscribe();
+    if (this._slickSubscriber && typeof this._slickSubscriber.unsubscribe === 'function') {
+      this._slickSubscriber.unsubscribe();
     }
 
     // unsubscribe all SlickGrid events
@@ -208,7 +205,7 @@ export class SortService {
    * @param sender
    */
   emitSortChanged(sender: 'local' | 'remote') {
-    if (sender === 'remote') {
+    if (sender === 'remote' && this._gridOptions && this._gridOptions.backendServiceApi) {
       let currentSorters: CurrentSorter[] = [];
       const backendService = this._gridOptions.backendServiceApi.service;
       if (backendService && backendService.getCurrentSorters) {
