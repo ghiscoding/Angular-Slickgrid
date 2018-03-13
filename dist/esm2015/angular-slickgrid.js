@@ -625,7 +625,6 @@ function mapOperatorByFilterType(filterType) {
             map = OperatorType.equal;
             break;
         default:
-            map = OperatorType.contains;
             break;
     }
     return map;
@@ -1464,9 +1463,7 @@ class CompoundDateFilter {
     onTriggerEvent(e) {
         const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
         (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-        if (selectedOperator !== undefined) {
-            this.callback(e, { columnDef: this.columnDef, searchTerm: this._currentValue, operator: selectedOperator });
-        }
+        this.callback(e, { columnDef: this.columnDef, searchTerm: this._currentValue, operator: selectedOperator || '=' });
     }
     /**
      * @return {?}
@@ -1660,9 +1657,7 @@ class CompoundInputFilter {
         const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
         const /** @type {?} */ value = this.$filterInputElm.val();
         (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-        if (selectedOperator !== undefined) {
-            this.callback(e, { columnDef: this.columnDef, searchTerm: value, operator: selectedOperator });
-        }
+        this.callback(e, { columnDef: this.columnDef, searchTerm: value, operator: selectedOperator || '' });
     }
 }
 CompoundInputFilter.decorators = [
@@ -2485,11 +2480,11 @@ class FilterService {
     callbackSearchEvent(e, args) {
         if (args) {
             const /** @type {?} */ searchTerm = args.searchTerm ? args.searchTerm : ((e && e.target) ? (/** @type {?} */ (e.target)).value : undefined);
-            const /** @type {?} */ searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : [];
+            const /** @type {?} */ searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : undefined;
             const /** @type {?} */ columnDef = args.columnDef || null;
             const /** @type {?} */ columnId = columnDef ? (columnDef.id || '') : '';
             const /** @type {?} */ operator = args.operator || undefined;
-            if (!searchTerm && searchTerms.length === 0) {
+            if (!searchTerm && (!searchTerms || (Array.isArray(searchTerms) && searchTerms.length === 0))) {
                 // delete the property from the columnFilters when it becomes empty
                 // without doing this, it would leave an incorrect state of the previous column filters when filtering on another column
                 delete this._columnFilters[columnId];
@@ -3629,10 +3624,11 @@ class GraphqlService {
                     }
                 }
                 // if we didn't find an Operator but we have a Filter Type, we should use default Operator
+                // multipleSelect is "IN", while singleSelect is "EQ", else don't map any operator
                 if (!operator && columnDef.filter) {
                     operator = mapOperatorByFilterType(columnDef.filter.type || '');
                 }
-                // if we still don't have an operator then go with the mapping
+                // if we still don't have an operator find the proper Operator to use by it's field type
                 if (!operator) {
                     operator = mapOperatorByFieldType(columnDef.type || FieldType.string);
                 }

@@ -497,7 +497,6 @@ function mapOperatorByFilterType(filterType) {
             map = OperatorType.equal;
             break;
         default:
-            map = OperatorType.contains;
             break;
     }
     return map;
@@ -1050,9 +1049,7 @@ var CompoundDateFilter = /** @class */ (function () {
     CompoundDateFilter.prototype.onTriggerEvent = function (e) {
         var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
         (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-        if (selectedOperator !== undefined) {
-            this.callback(e, { columnDef: this.columnDef, searchTerm: this._currentValue, operator: selectedOperator });
-        }
+        this.callback(e, { columnDef: this.columnDef, searchTerm: this._currentValue, operator: selectedOperator || '=' });
     };
     CompoundDateFilter.prototype.hide = function () {
         if (this.flatInstance && typeof this.flatInstance.close === 'function') {
@@ -1182,9 +1179,7 @@ var CompoundInputFilter = /** @class */ (function () {
         var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
         var value = this.$filterInputElm.val();
         (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-        if (selectedOperator !== undefined) {
-            this.callback(e, { columnDef: this.columnDef, searchTerm: value, operator: selectedOperator });
-        }
+        this.callback(e, { columnDef: this.columnDef, searchTerm: value, operator: selectedOperator || '' });
     };
     return CompoundInputFilter;
 }());
@@ -1769,11 +1764,11 @@ var FilterService = /** @class */ (function () {
     FilterService.prototype.callbackSearchEvent = function (e, args) {
         if (args) {
             var searchTerm = args.searchTerm ? args.searchTerm : ((e && e.target) ? ((e.target)).value : undefined);
-            var searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : [];
+            var searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : undefined;
             var columnDef = args.columnDef || null;
             var columnId = columnDef ? (columnDef.id || '') : '';
             var operator = args.operator || undefined;
-            if (!searchTerm && searchTerms.length === 0) {
+            if (!searchTerm && (!searchTerms || (Array.isArray(searchTerms) && searchTerms.length === 0))) {
                 delete this._columnFilters[columnId];
             }
             else {
