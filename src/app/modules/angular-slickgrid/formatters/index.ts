@@ -7,6 +7,7 @@ import { checkmarkFormatter } from './checkmarkFormatter';
 import { collectionFormatter } from './collectionFormatter';
 import { complexObjectFormatter } from './complexObjectFormatter';
 import { dateIsoFormatter } from './dateIsoFormatter';
+import { dateTimeIsoFormatter } from './dateTimeIsoFormatter';
 import { dateTimeIsoAmPmFormatter } from './dateTimeIsoAmPmFormatter';
 import { dateTimeUsAmPmFormatter } from './dateTimeUsAmPmFormatter';
 import { dateTimeUsFormatter } from './dateTimeUsFormatter';
@@ -62,7 +63,7 @@ export const Formatters = {
   dateIso: dateIsoFormatter,
 
   /** Takes a Date object and displays it as an ISO Date+Time format */
-  dateTimeIso: dateIsoFormatter,
+  dateTimeIso: dateTimeIsoFormatter,
 
   /** Takes a Date object and displays it as an ISO Date+Time+(am/pm) format */
   dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
