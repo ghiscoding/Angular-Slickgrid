@@ -300,12 +300,12 @@ export class FilterService {
   callbackSearchEvent(e: Event | undefined, args: FilterCallbackArg) {
     if (args) {
       const searchTerm = args.searchTerm ? args.searchTerm : ((e && e.target) ? (e.target as HTMLInputElement).value : undefined);
-      const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : [];
+      const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : undefined;
       const columnDef = args.columnDef || null;
       const columnId = columnDef ? (columnDef.id || '') : '';
       const operator = args.operator || undefined;
 
-      if (!searchTerm && searchTerms.length === 0) {
+      if (!searchTerm && (!searchTerms || (Array.isArray(searchTerms) && searchTerms.length === 0))) {
         // delete the property from the columnFilters when it becomes empty
         // without doing this, it would leave an incorrect state of the previous column filters when filtering on another column
         delete this._columnFilters[columnId];
