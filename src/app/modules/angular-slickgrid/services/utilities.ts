@@ -42,6 +42,40 @@ export function htmlEntityEncode(input: any): string {
 }
 
 /**
+ * Compares two arrays to determine if all the items are equal
+ * @param a first array
+ * @param b second array to compare with a
+ * @param [orderMatters=false] flag if the order matters, if not arrays will be sorted
+ * @return boolean true if equal, else false
+ */
+export function arraysEqual(a: any[], b: any[], orderMatters: boolean = false): boolean {
+  if (a === b) {
+    return true;
+  }
+
+  if (a === null || b === null) {
+    return false;
+  }
+
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  if (!orderMatters) {
+    a.sort();
+    b.sort();
+  }
+
+  for (let i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
  * Try casting an input of type Promise | Observable into a Promise type.
  * @param object which could be of type Promise or Observable
  * @param fromServiceName string representing the caller service name and will be used if we throw a casting problem error
@@ -67,6 +101,18 @@ export function castToPromise<T>(input: Promise<T> | Observable<T>, fromServiceN
   }
 
   return promise;
+}
+
+/**
+ * Uses the logic function to find an item in an array or returns the default
+ * value provided (empty object by default)
+ * @param any[] array the array to filter
+ * @param function logic the logic to find the item
+ * @param any [defaultVal={}] the default value to return
+ * @return object the found object or deafult value
+ */
+export function findOrDefault(array: any[], logic: (item: any) => boolean, defaultVal = {}): any {
+  return array.find(logic) || defaultVal;
 }
 
 /**

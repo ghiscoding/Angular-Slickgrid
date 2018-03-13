@@ -1,6 +1,16 @@
 import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
-import { Column, Editors, FieldType, Formatters, GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
+import {
+  Column,
+  Editors,
+  FieldType,
+  Formatters,
+  GridExtraService,
+  GridExtraUtils,
+  GridOption,
+  OnEventArgs,
+  ResizerService
+} from './../modules/angular-slickgrid';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -45,43 +55,98 @@ export class GridEditorComponent implements OnInit, OnDestroy {
   }
 
   prepareGrid() {
-    this.columnDefinitions = [
-      {
-        id: 'edit', field: 'id',
-        formatter: Formatters.editIcon,
-        minWidth: 30,
-        maxWidth: 30,
-        // use onCellClick OR grid.onClick.subscribe which you can see down below
-        onCellClick: (args: OnEventArgs) => {
-          console.log(args);
-          this.alertWarning = `Editing: ${args.dataContext.title}`;
-          this.gridExtraService.highlightRow(args.row, 1500);
-          this.gridExtraService.setSelectedRow(args.row);
-        }
-      },
-      {
-        id: 'delete', field: 'id',
-        formatter: Formatters.deleteIcon,
-        minWidth: 30,
-        maxWidth: 30,
-        // use onCellClick OR grid.onClick.subscribe which you can see down below
-        onCellClick: (args: OnEventArgs) => {
-          console.log(args);
-          this.alertWarning = `Deleting: ${args.dataContext.title}`;
-        }
-      },
-      { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, editor: Editors.longText },
-      { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, editor: Editors.text,
-        onCellChange: (args: OnEventArgs) => {
-          console.log(args);
-          this.alertWarning = 'onCellChange triggered and attached to the column definition';
-        }
-      },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, editor: Editors.integer },
-      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, outputType: FieldType.dateUtc, editor: Editors.date, params: { i18n: this.translate } },
-      { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, outputType: FieldType.dateUtc, editor: Editors.date, params: { i18n: this.translate } },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, editor: Editors.checkbox }
-    ];
+    this.columnDefinitions = [{
+      id: 'edit',
+      field: 'id',
+      formatter: Formatters.editIcon,
+      minWidth: 30,
+      maxWidth: 30,
+      // use onCellClick OR grid.onClick.subscribe which you can see down below
+      onCellClick: (args: OnEventArgs) => {
+        console.log(args);
+        this.alertWarning = `Editing: ${args.dataContext.title}`;
+        this.gridExtraService.highlightRow(args.row, 1500);
+        this.gridExtraService.setSelectedRow(args.row);
+      }
+    }, {
+      id: 'delete',
+      field: 'id',
+      formatter: Formatters.deleteIcon,
+      minWidth: 30,
+      maxWidth: 30,
+      // use onCellClick OR grid.onClick.subscribe which you can see down below
+      /*
+      onCellClick: (args: OnEventArgs) => {
+        console.log(args);
+        this.alertWarning = `Deleting: ${args.dataContext.title}`;
+      }
+      */
+    }, {
+      id: 'title',
+      name: 'Title',
+      field: 'title',
+      sortable: true,
+      type: FieldType.string,
+      editor: Editors.longText,
+      minWidth: 100
+    }, {
+      id: 'duration',
+      name: 'Duration (days)',
+      field: 'duration',
+      sortable: true,
+      type: FieldType.number,
+      editor: Editors.text,
+      minWidth: 100
+    }, {
+      id: 'complete',
+      name: '% Complete',
+      field: 'percentComplete',
+      formatter: Formatters.multiple,
+      type: FieldType.number,
+      editor: Editors.singleSelect,
+      minWidth: 100,
+      params: {
+        formatters: [ Formatters.collection, Formatters.percentCompleteBar ],
+        collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k }))
+      }
+    }, {
+      id: 'start',
+      name: 'Start',
+      field: 'start',
+      formatter: Formatters.dateIso,
+      sortable: true,
+      minWidth: 100,
+      type: FieldType.date,
+      editor: Editors.date
+    }, {
+      id: 'finish',
+      name: 'Finish',
+      field: 'finish',
+      formatter: Formatters.dateIso,
+      sortable: true,
+      minWidth: 100,
+      type: FieldType.date,
+      editor: Editors.date
+    }, {
+      id: 'effort-driven',
+      name: 'Effort Driven',
+      field: 'effortDriven',
+      formatter: Formatters.checkmark,
+      type: FieldType.number,
+      editor: Editors.checkbox,
+      minWidth: 60
+    }, {
+      id: 'prerequisites',
+      name: 'Prerequisites',
+      field: 'prerequisites',
+      sortable: true,
+      type: FieldType.string,
+      editor: Editors.multipleSelect,
+      minWidth: 100,
+      params: {
+        collection: Array.from(Array(10).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` }))
+      }
+    }];
 
     this.gridOptions = {
       asyncEditorLoading: false,
@@ -96,9 +161,16 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       editCommandHandler: (item, column, editCommand) => {
         this._commandQueue.push(editCommand);
         editCommand.execute();
+      },
+      params: {
+        i18n: this.translate
       }
     };
 
+    this.getData();
+  }
+
+  getData() {
     // mock a dataset
     const mockedDataset = [];
     for (let i = 0; i < 1000; i++) {
@@ -115,7 +187,8 @@ export class GridEditorComponent implements OnInit, OnDestroy {
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
-        effortDriven: (i % 5 === 0)
+        effortDriven: (i % 5 === 0),
+        prerequisites: (i % 5 === 0) && i > 0 ? [ `Task ${i}`, `Task ${i - 1}` ] : []
       };
     }
     this.dataset = mockedDataset;

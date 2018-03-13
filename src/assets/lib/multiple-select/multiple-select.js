@@ -446,8 +446,12 @@
             this.$drop[this.animateMethod('show')]();
 
             // fix filter bug: no results show
-            this.$selectAll.parent().show();
-            this.$noResults.hide();
+            if (this.$selectAll) {
+              this.$selectAll.parent().show();
+            }
+            if (this.$noResults) {
+              this.$noResults.hide();
+            }
 
             // Fix #77: 'All selected' when no options
             if (!this.$el.children().length) {

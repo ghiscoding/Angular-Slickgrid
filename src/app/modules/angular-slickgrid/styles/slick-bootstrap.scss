@@ -146,6 +146,10 @@
       &.selected {
         background-color: $row-selected-color;
       }
+      select:not([multiple]).form-control {
+        height: 100%;
+        padding: 0;
+      }
     }
   }
 

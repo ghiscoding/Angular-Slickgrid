@@ -90,7 +90,7 @@ export interface MultipleSelectOption {
   single?: boolean;
 
   /** Define the width property of the dropdown list, support a percentage setting.By default this option is set to undefined. Which is the same as the select input field. */
-  width?: number;
+  width?: number | string;
 
   // --
   // Methods
