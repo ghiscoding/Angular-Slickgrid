@@ -219,9 +219,7 @@ export class CompoundDateFilter implements Filter {
   private onTriggerEvent(e: Event | undefined) {
     const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
     (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-    if (selectedOperator !== undefined) {
-      this.callback(e, { columnDef: this.columnDef, searchTerm: this._currentValue, operator: selectedOperator });
-    }
+    this.callback(e, { columnDef: this.columnDef, searchTerm: this._currentValue, operator: selectedOperator || '=' });
   }
 
   private hide() {

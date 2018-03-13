@@ -75,7 +75,14 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         }
       },
       { id: 'billing.address.street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', filterable: true, sortable: true },
-      { id: 'billing.address.zip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', filterable: true, sortable: true, type: FieldType.number, formatter: Formatters.multiple, params: { formatters: [Formatters.complexObject, Formatters.translate] } },
+      {
+        id: 'billing.address.zip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP',
+        type: FieldType.number,
+        filterable: true, sortable: true,
+        filter: {
+          type: FilterType.compoundInput
+        },
+        formatter: Formatters.multiple, params: { formatters: [Formatters.complexObject, Formatters.translate] } },
     ];
 
     this.gridOptions = {

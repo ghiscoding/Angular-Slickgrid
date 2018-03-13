@@ -377,11 +377,12 @@ export class GraphqlService implements BackendService {
         }
 
         // if we didn't find an Operator but we have a Filter Type, we should use default Operator
+        // multipleSelect is "IN", while singleSelect is "EQ", else don't map any operator
         if (!operator && columnDef.filter) {
           operator = mapOperatorByFilterType(columnDef.filter.type || '');
         }
 
-        // if we still don't have an operator then go with the mapping
+        // if we still don't have an operator find the proper Operator to use by it's field type
         if (!operator) {
           operator = mapOperatorByFieldType(columnDef.type || FieldType.string);
         }

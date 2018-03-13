@@ -355,7 +355,6 @@ export function mapOperatorByFilterType(filterType: FilterType | FormElementType
       map = OperatorType.equal;
       break;
     default:
-      map = OperatorType.contains;
       break;
   }
 
