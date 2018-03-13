@@ -4545,17 +4545,20 @@ var moment$10 = moment_;
 var FORMAT$6 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
 var dateIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$10(value).format(FORMAT$6) : ''; };
 var moment$11 = moment_;
-var FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
-var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$11(value).format(FORMAT$7) : ''; };
+var FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
+var dateTimeIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$11(value).format(FORMAT$7) : ''; };
 var moment$12 = moment_;
-var FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
-var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$12(value).format(FORMAT$8) : ''; };
+var FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
+var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$12(value).format(FORMAT$8) : ''; };
 var moment$13 = moment_;
-var FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
-var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$13(value).format(FORMAT$9) : ''; };
+var FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
+var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$13(value).format(FORMAT$9) : ''; };
 var moment$14 = moment_;
-var FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$14(value).format(FORMAT$10) : ''; };
+var FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
+var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$14(value).format(FORMAT$10) : ''; };
+var moment$15 = moment_;
+var FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
+var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$15(value).format(FORMAT$11) : ''; };
 var deleteIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-trash pointer delete-icon\" aria-hidden=\"true\"></i>"; };
 var editIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-pencil pointer edit-icon\" aria-hidden=\"true\"></i>"; };
 var hyperlinkFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -4691,7 +4694,7 @@ var Formatters = {
     complexObject: complexObjectFormatter,
     collection: collectionFormatter,
     dateIso: dateIsoFormatter,
-    dateTimeIso: dateIsoFormatter,
+    dateTimeIso: dateTimeIsoFormatter,
     dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
     dateUs: dateUsFormatter,
     dateTimeUs: dateTimeUsFormatter,
@@ -5388,31 +5391,32 @@ exports.ɵbb = checkmarkFormatter;
 exports.ɵbd = collectionFormatter;
 exports.ɵbc = complexObjectFormatter;
 exports.ɵbe = dateIsoFormatter;
-exports.ɵbf = dateTimeIsoAmPmFormatter;
-exports.ɵbi = dateTimeUsAmPmFormatter;
-exports.ɵbh = dateTimeUsFormatter;
-exports.ɵbg = dateUsFormatter;
-exports.ɵbj = deleteIconFormatter;
-exports.ɵbk = editIconFormatter;
-exports.ɵbl = hyperlinkFormatter;
-exports.ɵbm = hyperlinkUriPrefixFormatter;
-exports.ɵbn = infoIconFormatter;
-exports.ɵbo = lowercaseFormatter;
-exports.ɵbp = multipleFormatter;
-exports.ɵbr = percentCompleteBarFormatter;
-exports.ɵbq = percentCompleteFormatter;
-exports.ɵbs = progressBarFormatter;
-exports.ɵbu = translateBooleanFormatter;
-exports.ɵbt = translateFormatter;
-exports.ɵbv = uppercaseFormatter;
-exports.ɵbw = yesNoFormatter;
-exports.ɵcd = SharedService;
-exports.ɵby = dateIsoSorter;
-exports.ɵbx = dateSorter;
-exports.ɵca = dateUsShortSorter;
-exports.ɵbz = dateUsSorter;
-exports.ɵcb = numericSorter;
-exports.ɵcc = stringSorter;
+exports.ɵbg = dateTimeIsoAmPmFormatter;
+exports.ɵbf = dateTimeIsoFormatter;
+exports.ɵbj = dateTimeUsAmPmFormatter;
+exports.ɵbi = dateTimeUsFormatter;
+exports.ɵbh = dateUsFormatter;
+exports.ɵbk = deleteIconFormatter;
+exports.ɵbl = editIconFormatter;
+exports.ɵbm = hyperlinkFormatter;
+exports.ɵbn = hyperlinkUriPrefixFormatter;
+exports.ɵbo = infoIconFormatter;
+exports.ɵbp = lowercaseFormatter;
+exports.ɵbq = multipleFormatter;
+exports.ɵbs = percentCompleteBarFormatter;
+exports.ɵbr = percentCompleteFormatter;
+exports.ɵbt = progressBarFormatter;
+exports.ɵbv = translateBooleanFormatter;
+exports.ɵbu = translateFormatter;
+exports.ɵbw = uppercaseFormatter;
+exports.ɵbx = yesNoFormatter;
+exports.ɵce = SharedService;
+exports.ɵbz = dateIsoSorter;
+exports.ɵby = dateSorter;
+exports.ɵcb = dateUsShortSorter;
+exports.ɵca = dateUsSorter;
+exports.ɵcc = numericSorter;
+exports.ɵcd = stringSorter;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

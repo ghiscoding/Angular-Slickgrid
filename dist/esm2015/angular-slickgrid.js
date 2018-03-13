@@ -6375,32 +6375,40 @@ const dateIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? m
  * @suppress {checkTypes} checked by tsc
  */
 const moment$11 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
-const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$11(value).format(FORMAT$7) : '';
+const FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
+const dateTimeIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$11(value).format(FORMAT$7) : '';
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
 const moment$12 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
-const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$12(value).format(FORMAT$8) : '';
+const FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
+const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$12(value).format(FORMAT$8) : '';
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
 const moment$13 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
-const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$13(value).format(FORMAT$9) : '';
+const FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
+const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$13(value).format(FORMAT$9) : '';
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
 const moment$14 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-const dateUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$14(value).format(FORMAT$10) : '';
+const FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
+const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$14(value).format(FORMAT$10) : '';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$15 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
+const dateUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$15(value).format(FORMAT$11) : '';
 
 /**
  * @fileoverview added by tsickle
@@ -6638,7 +6646,7 @@ const Formatters = {
     /** Takes a Date object and displays it as an ISO Date format */
     dateIso: dateIsoFormatter,
     /** Takes a Date object and displays it as an ISO Date+Time format */
-    dateTimeIso: dateIsoFormatter,
+    dateTimeIso: dateTimeIsoFormatter,
     /** Takes a Date object and displays it as an ISO Date+Time+(am/pm) format */
     dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
     /** Takes a Date object and displays it as an US Date format */
@@ -7536,5 +7544,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, MultipleSelectEditor as ɵf, SingleSelectEditor as ɵg, TextEditor as ɵh, booleanFilterCondition as ɵj, collectionSearchFilterCondition as ɵk, dateFilterCondition as ɵl, dateIsoFilterCondition as ɵm, dateUsFilterCondition as ɵo, dateUsShortFilterCondition as ɵp, dateUtcFilterCondition as ɵn, executeMappedCondition as ɵi, testFilterCondition as ɵs, numberFilterCondition as ɵq, stringFilterCondition as ɵr, CompoundDateFilter as ɵx, CompoundInputFilter as ɵy, InputFilter as ɵt, MultipleSelectFilter as ɵu, SelectFilter as ɵw, SingleSelectFilter as ɵv, arrayToCsvFormatter as ɵz, checkboxFormatter as ɵba, checkmarkFormatter as ɵbb, collectionFormatter as ɵbd, complexObjectFormatter as ɵbc, dateIsoFormatter as ɵbe, dateTimeIsoAmPmFormatter as ɵbf, dateTimeUsAmPmFormatter as ɵbi, dateTimeUsFormatter as ɵbh, dateUsFormatter as ɵbg, deleteIconFormatter as ɵbj, editIconFormatter as ɵbk, hyperlinkFormatter as ɵbl, hyperlinkUriPrefixFormatter as ɵbm, infoIconFormatter as ɵbn, lowercaseFormatter as ɵbo, multipleFormatter as ɵbp, percentCompleteBarFormatter as ɵbr, percentCompleteFormatter as ɵbq, progressBarFormatter as ɵbs, translateBooleanFormatter as ɵbu, translateFormatter as ɵbt, uppercaseFormatter as ɵbv, yesNoFormatter as ɵbw, SharedService as ɵcd, dateIsoSorter as ɵby, dateSorter as ɵbx, dateUsShortSorter as ɵca, dateUsSorter as ɵbz, numericSorter as ɵcb, stringSorter as ɵcc };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, MultipleSelectEditor as ɵf, SingleSelectEditor as ɵg, TextEditor as ɵh, booleanFilterCondition as ɵj, collectionSearchFilterCondition as ɵk, dateFilterCondition as ɵl, dateIsoFilterCondition as ɵm, dateUsFilterCondition as ɵo, dateUsShortFilterCondition as ɵp, dateUtcFilterCondition as ɵn, executeMappedCondition as ɵi, testFilterCondition as ɵs, numberFilterCondition as ɵq, stringFilterCondition as ɵr, CompoundDateFilter as ɵx, CompoundInputFilter as ɵy, InputFilter as ɵt, MultipleSelectFilter as ɵu, SelectFilter as ɵw, SingleSelectFilter as ɵv, arrayToCsvFormatter as ɵz, checkboxFormatter as ɵba, checkmarkFormatter as ɵbb, collectionFormatter as ɵbd, complexObjectFormatter as ɵbc, dateIsoFormatter as ɵbe, dateTimeIsoAmPmFormatter as ɵbg, dateTimeIsoFormatter as ɵbf, dateTimeUsAmPmFormatter as ɵbj, dateTimeUsFormatter as ɵbi, dateUsFormatter as ɵbh, deleteIconFormatter as ɵbk, editIconFormatter as ɵbl, hyperlinkFormatter as ɵbm, hyperlinkUriPrefixFormatter as ɵbn, infoIconFormatter as ɵbo, lowercaseFormatter as ɵbp, multipleFormatter as ɵbq, percentCompleteBarFormatter as ɵbs, percentCompleteFormatter as ɵbr, progressBarFormatter as ɵbt, translateBooleanFormatter as ɵbv, translateFormatter as ɵbu, uppercaseFormatter as ɵbw, yesNoFormatter as ɵbx, SharedService as ɵce, dateIsoSorter as ɵbz, dateSorter as ɵby, dateUsShortSorter as ɵcb, dateUsSorter as ɵca, numericSorter as ɵcc, stringSorter as ɵcd };
 //# sourceMappingURL=angular-slickgrid.js.map

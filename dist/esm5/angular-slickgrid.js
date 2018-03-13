@@ -4483,17 +4483,20 @@ var moment$10 = moment_;
 var FORMAT$6 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
 var dateIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$10(value).format(FORMAT$6) : ''; };
 var moment$11 = moment_;
-var FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
-var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$11(value).format(FORMAT$7) : ''; };
+var FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
+var dateTimeIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$11(value).format(FORMAT$7) : ''; };
 var moment$12 = moment_;
-var FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
-var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$12(value).format(FORMAT$8) : ''; };
+var FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
+var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$12(value).format(FORMAT$8) : ''; };
 var moment$13 = moment_;
-var FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
-var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$13(value).format(FORMAT$9) : ''; };
+var FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
+var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$13(value).format(FORMAT$9) : ''; };
 var moment$14 = moment_;
-var FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$14(value).format(FORMAT$10) : ''; };
+var FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
+var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$14(value).format(FORMAT$10) : ''; };
+var moment$15 = moment_;
+var FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
+var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$15(value).format(FORMAT$11) : ''; };
 var deleteIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-trash pointer delete-icon\" aria-hidden=\"true\"></i>"; };
 var editIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-pencil pointer edit-icon\" aria-hidden=\"true\"></i>"; };
 var hyperlinkFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -4629,7 +4632,7 @@ var Formatters = {
     complexObject: complexObjectFormatter,
     collection: collectionFormatter,
     dateIso: dateIsoFormatter,
-    dateTimeIso: dateIsoFormatter,
+    dateTimeIso: dateTimeIsoFormatter,
     dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
     dateUs: dateUsFormatter,
     dateTimeUs: dateTimeUsFormatter,
@@ -5251,5 +5254,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, MultipleSelectEditor as ɵf, SingleSelectEditor as ɵg, TextEditor as ɵh, booleanFilterCondition as ɵj, collectionSearchFilterCondition as ɵk, dateFilterCondition as ɵl, dateIsoFilterCondition as ɵm, dateUsFilterCondition as ɵo, dateUsShortFilterCondition as ɵp, dateUtcFilterCondition as ɵn, executeMappedCondition as ɵi, testFilterCondition as ɵs, numberFilterCondition as ɵq, stringFilterCondition as ɵr, CompoundDateFilter as ɵx, CompoundInputFilter as ɵy, InputFilter as ɵt, MultipleSelectFilter as ɵu, SelectFilter as ɵw, SingleSelectFilter as ɵv, arrayToCsvFormatter as ɵz, checkboxFormatter as ɵba, checkmarkFormatter as ɵbb, collectionFormatter as ɵbd, complexObjectFormatter as ɵbc, dateIsoFormatter as ɵbe, dateTimeIsoAmPmFormatter as ɵbf, dateTimeUsAmPmFormatter as ɵbi, dateTimeUsFormatter as ɵbh, dateUsFormatter as ɵbg, deleteIconFormatter as ɵbj, editIconFormatter as ɵbk, hyperlinkFormatter as ɵbl, hyperlinkUriPrefixFormatter as ɵbm, infoIconFormatter as ɵbn, lowercaseFormatter as ɵbo, multipleFormatter as ɵbp, percentCompleteBarFormatter as ɵbr, percentCompleteFormatter as ɵbq, progressBarFormatter as ɵbs, translateBooleanFormatter as ɵbu, translateFormatter as ɵbt, uppercaseFormatter as ɵbv, yesNoFormatter as ɵbw, SharedService as ɵcd, dateIsoSorter as ɵby, dateSorter as ɵbx, dateUsShortSorter as ɵca, dateUsSorter as ɵbz, numericSorter as ɵcb, stringSorter as ɵcc };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, MultipleSelectEditor as ɵf, SingleSelectEditor as ɵg, TextEditor as ɵh, booleanFilterCondition as ɵj, collectionSearchFilterCondition as ɵk, dateFilterCondition as ɵl, dateIsoFilterCondition as ɵm, dateUsFilterCondition as ɵo, dateUsShortFilterCondition as ɵp, dateUtcFilterCondition as ɵn, executeMappedCondition as ɵi, testFilterCondition as ɵs, numberFilterCondition as ɵq, stringFilterCondition as ɵr, CompoundDateFilter as ɵx, CompoundInputFilter as ɵy, InputFilter as ɵt, MultipleSelectFilter as ɵu, SelectFilter as ɵw, SingleSelectFilter as ɵv, arrayToCsvFormatter as ɵz, checkboxFormatter as ɵba, checkmarkFormatter as ɵbb, collectionFormatter as ɵbd, complexObjectFormatter as ɵbc, dateIsoFormatter as ɵbe, dateTimeIsoAmPmFormatter as ɵbg, dateTimeIsoFormatter as ɵbf, dateTimeUsAmPmFormatter as ɵbj, dateTimeUsFormatter as ɵbi, dateUsFormatter as ɵbh, deleteIconFormatter as ɵbk, editIconFormatter as ɵbl, hyperlinkFormatter as ɵbm, hyperlinkUriPrefixFormatter as ɵbn, infoIconFormatter as ɵbo, lowercaseFormatter as ɵbp, multipleFormatter as ɵbq, percentCompleteBarFormatter as ɵbs, percentCompleteFormatter as ɵbr, progressBarFormatter as ɵbt, translateBooleanFormatter as ɵbv, translateFormatter as ɵbu, uppercaseFormatter as ɵbw, yesNoFormatter as ɵbx, SharedService as ɵce, dateIsoSorter as ɵbz, dateSorter as ɵby, dateUsShortSorter as ɵcb, dateUsSorter as ɵca, numericSorter as ɵcc, stringSorter as ɵcd };
 //# sourceMappingURL=angular-slickgrid.js.map
