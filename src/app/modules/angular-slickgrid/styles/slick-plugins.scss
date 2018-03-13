@@ -186,6 +186,11 @@ label {
 // ----------------------------------------------
 // Multi-Select Filter
 // ----------------------------------------------
+.search-filter {
+  :focus {
+    outline-color: $focus-color;
+  }
+}
 .ms-choice {
   border: $multiselect-input-filter-border;
   span {
