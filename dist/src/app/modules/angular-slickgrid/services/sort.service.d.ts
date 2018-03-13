@@ -5,7 +5,7 @@ export declare class SortService {
     private _eventHandler;
     private _grid;
     private _gridOptions;
-    private _subscriber;
+    private _slickSubscriber;
     onSortChanged: Subject<CurrentSorter[]>;
     /**
      * Attach a backend sort (single/multi) hook to the grid
@@ -13,7 +13,7 @@ export declare class SortService {
      * @param gridOptions Grid Options object
      */
     attachBackendOnSort(grid: any, gridOptions: GridOption): void;
-    attachBackendOnSortSubscribe(self: SortService, event: Event, args: any): Promise<void>;
+    attachBackendOnSortSubscribe(event: Event, args: any): Promise<void>;
     /**
      * Attach a local sort (single/multi) hook to the grid
      * @param grid SlickGrid Grid object

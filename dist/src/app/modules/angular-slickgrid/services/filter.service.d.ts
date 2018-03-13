@@ -1,10 +1,10 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Column, ColumnFilters, GridOption, OperatorType, CurrentFilter, OperatorString } from './../models/index';
+import { Column, ColumnFilters, FilterCallbackArg, GridOption, CurrentFilter } from './../models/index';
 import { Subject } from 'rxjs/Subject';
 export declare class FilterService {
     private translate;
     private _eventHandler;
-    private _subscriber;
+    private _slickSubscriber;
     private _filters;
     private _columnFilters;
     private _dataView;
@@ -21,7 +21,7 @@ export declare class FilterService {
      * @param gridOptions Grid Options object
      */
     attachBackendOnFilter(grid: any, options: GridOption): void;
-    attachBackendOnFilterSubscribe(self: FilterService, event: Event, args: any): Promise<void>;
+    attachBackendOnFilterSubscribe(event: Event, args: any): Promise<void>;
     /**
      * Attach a local filter hook to the grid
      * @param grid SlickGrid Grid object
@@ -39,11 +39,7 @@ export declare class FilterService {
     disposeColumnFilters(): void;
     getColumnFilters(): ColumnFilters;
     getCurrentLocalFilters(): CurrentFilter[];
-    callbackSearchEvent(e: Event | undefined, args: {
-        columnDef: Column;
-        operator?: OperatorType | OperatorString;
-        searchTerms?: string[] | number[];
-    }): void;
+    callbackSearchEvent(e: Event | undefined, args: FilterCallbackArg): void;
     addFilterTemplateToHeaderRow(args: {
         column: Column;
         grid: any;

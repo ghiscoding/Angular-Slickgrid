@@ -5,6 +5,7 @@ export declare const Formatters: {
     checkbox: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     checkmark: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     complexObject: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    collection: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateIso: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateTimeIso: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateTimeIsoAmPm: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;

@@ -21,7 +21,7 @@ import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Column, GridOption } from './../models/index';
+import { Column, GridOption, GridStateChange } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
@@ -46,7 +46,8 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private _dataset;
     private _dataView;
     private _eventHandler;
-    private _translateSubscription;
+    private _translateSubscriber;
+    private _gridStateSubscriber;
     grid: any;
     gridPaginationOptions: GridOption;
     gridHeightString: string;
@@ -59,6 +60,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     onBeforeGridCreate: EventEmitter<boolean>;
     onBeforeGridDestroy: EventEmitter<any>;
     onAfterGridDestroyed: EventEmitter<boolean>;
+    onGridStateServiceChanged: EventEmitter<GridStateChange>;
     gridId: string;
     columnDefinitions: Column[];
     gridOptions: GridOption;

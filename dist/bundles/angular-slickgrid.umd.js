@@ -171,6 +171,8 @@ var FilterType = {
     singleSelect: 3,
     custom: 4,
     inputNoPlaceholder: 5,
+    compoundDate: 6,
+    compoundInput: 7,
 };
 FilterType[FilterType.input] = "input";
 FilterType[FilterType.select] = "select";
@@ -178,6 +180,8 @@ FilterType[FilterType.multipleSelect] = "multipleSelect";
 FilterType[FilterType.singleSelect] = "singleSelect";
 FilterType[FilterType.custom] = "custom";
 FilterType[FilterType.inputNoPlaceholder] = "inputNoPlaceholder";
+FilterType[FilterType.compoundDate] = "compoundDate";
+FilterType[FilterType.compoundInput] = "compoundInput";
 var FormElementType = {
     input: 0,
     select: 1,
@@ -268,6 +272,28 @@ function htmlEntityEncode(input) {
     }
     return buf.join('');
 }
+function arraysEqual(a, b, orderMatters) {
+    if (orderMatters === void 0) { orderMatters = false; }
+    if (a === b) {
+        return true;
+    }
+    if (a === null || b === null) {
+        return false;
+    }
+    if (a.length !== b.length) {
+        return false;
+    }
+    if (!orderMatters) {
+        a.sort();
+        b.sort();
+    }
+    for (var i = 0; i < a.length; ++i) {
+        if (a[i] !== b[i]) {
+            return false;
+        }
+    }
+    return true;
+}
 function castToPromise(input, fromServiceName) {
     if (fromServiceName === void 0) { fromServiceName = ''; }
     var promise = input;
@@ -284,6 +310,10 @@ function castToPromise(input, fromServiceName) {
         }
     }
     return promise;
+}
+function findOrDefault(array, logic, defaultVal) {
+    if (defaultVal === void 0) { defaultVal = {}; }
+    return array.find(logic) || defaultVal;
 }
 function mapMomentDateFormatWithFieldType(fieldType) {
     var map;
@@ -347,7 +377,7 @@ function mapFlatpickrDateFormatWithFieldType(fieldType) {
             map = 'm/d/Y';
             break;
         case FieldType.dateUsShort:
-            map = 'M/D/YY';
+            map = 'm/d/y';
             break;
         case FieldType.dateTimeUs:
             map = 'm/d/Y H:i:S';
@@ -356,13 +386,13 @@ function mapFlatpickrDateFormatWithFieldType(fieldType) {
             map = 'm/d/Y h:i:S K';
             break;
         case FieldType.dateTimeUsAM_PM:
-            map = 'M/D/YY h:i:s K';
+            map = 'm/d/Y h:i:s K';
             break;
         case FieldType.dateTimeUsShort:
-            map = 'M/D/YY H:i:s';
+            map = 'm/d/y H:i:s';
             break;
         case FieldType.dateTimeUsShortAmPm:
-            map = 'M/D/YY h:i:s K';
+            map = 'm/d/y h:i:s K';
             break;
         case FieldType.dateUtc:
             map = 'Z';
@@ -813,10 +843,7 @@ var dateUsShortFilterCondition = function (options) {
 };
 var moment$5 = moment_;
 var dateUtcFilterCondition = function (options) {
-    if (!options.filterSearchType) {
-        throw new Error('Date UTC filter is a special case and requires a filterSearchType to be provided in the column option, for example: { filterable: true, type: FieldType.dateUtc, filterSearchType: FieldType.dateIso }');
-    }
-    var searchDateFormat = mapMomentDateFormatWithFieldType(options.filterSearchType);
+    var searchDateFormat = mapMomentDateFormatWithFieldType(options.filterSearchType || options.fieldType);
     if (!moment$5(options.cellValue, moment$5.ISO_8601).isValid() || !moment$5(options.searchTerm, searchDateFormat, true).isValid()) {
         return true;
     }
@@ -887,6 +914,286 @@ var FilterConditions = {
     stringFilter: stringFilterCondition,
     testFilter: testFilterCondition
 };
+require('flatpickr');
+var CompoundDateFilter = /** @class */ (function () {
+    function CompoundDateFilter(translate) {
+        this.translate = translate;
+    }
+    CompoundDateFilter.prototype.init = function (args) {
+        var _this = this;
+        this.grid = args.grid;
+        this.callback = args.callback;
+        this.columnDef = args.columnDef;
+        this.operator = args.operator;
+        this.searchTerm = args.searchTerm;
+        if (this.grid && typeof this.grid.getOptions === 'function') {
+            this.gridOptions = this.grid.getOptions();
+        }
+        this.$filterElm = this.createDomElement();
+        this.$filterInputElm.keyup(function (e) {
+            _this.onTriggerEvent(e);
+        });
+        this.$selectOperatorElm.change(function (e) {
+            _this.onTriggerEvent(e);
+        });
+    };
+    CompoundDateFilter.prototype.clear = function (triggerFilterKeyup) {
+        if (triggerFilterKeyup === void 0) { triggerFilterKeyup = true; }
+        if (this.$filterElm) {
+            this.$filterElm.val('');
+            if (triggerFilterKeyup) {
+                this.$filterElm.trigger('keyup');
+            }
+        }
+    };
+    CompoundDateFilter.prototype.destroy = function () {
+        if (this.$filterElm) {
+            this.$filterElm.off('keyup').remove();
+        }
+    };
+    CompoundDateFilter.prototype.setValues = function (values) {
+        if (values) {
+            this.flatInstance.setDate(values);
+        }
+    };
+    CompoundDateFilter.prototype.buildDatePickerInput = function (searchTerm) {
+        var _this = this;
+        var inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
+        var outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateUtc);
+        var currentLocale = this.getCurrentLocale(this.columnDef, this.gridOptions) || '';
+        if (currentLocale.length > 2) {
+            currentLocale = currentLocale.substring(0, 2);
+        }
+        var pickerOptions = {
+            defaultDate: searchTerm || '',
+            altInput: true,
+            altFormat: outputFormat,
+            dateFormat: inputFormat,
+            wrap: true,
+            closeOnSelect: true,
+            locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
+            onChange: function (selectedDates, dateStr, instance) {
+                _this._currentValue = dateStr;
+                _this.onTriggerEvent(undefined);
+            },
+        };
+        if (outputFormat === 'Z' || outputFormat.includes('h')) {
+            pickerOptions.enableTime = true;
+        }
+        var placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
+        var $filterInputElm = $("<div class=flatpickr><input type=\"text\" class=\"form-control\" data-input placeholder=\"" + placeholder + "\"></div>");
+        this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : null;
+        return $filterInputElm;
+    };
+    CompoundDateFilter.prototype.buildSelectOperatorHtmlString = function () {
+        var optionValues = this.getOptionValues();
+        var optionValueString = '';
+        optionValues.forEach(function (option) {
+            optionValueString += "<option value=\"" + option.operator + "\" title=\"" + option.description + "\">" + option.operator + "</option>";
+        });
+        return "<select class=\"form-control\">" + optionValueString + "</select>";
+    };
+    CompoundDateFilter.prototype.getOptionValues = function () {
+        return [
+            { operator: '', description: '' },
+            { operator: '=', description: '' },
+            { operator: '<', description: '' },
+            { operator: '<=', description: '' },
+            { operator: '>', description: '' },
+            { operator: '>=', description: '' },
+            { operator: '<>', description: '' }
+        ];
+    };
+    CompoundDateFilter.prototype.createDomElement = function () {
+        var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        $($headerElm).empty();
+        var searchTerm = ((this.searchTerm || ''));
+        if (searchTerm) {
+            this._currentValue = searchTerm;
+        }
+        this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
+        this.$filterInputElm = this.buildDatePickerInput(searchTerm);
+        var $filterContainerElm = $("<div class=\"form-group search-filter\"></div>");
+        var $containerInputGroup = $("<div class=\"input-group flatpickr\"></div>");
+        var $operatorInputGroupAddon = $("<div class=\"input-group-addon operator\"></div>");
+        $operatorInputGroupAddon.append(this.$selectOperatorElm);
+        $containerInputGroup.append($operatorInputGroupAddon);
+        $containerInputGroup.append(this.$filterInputElm);
+        $filterContainerElm.append($containerInputGroup);
+        $filterContainerElm.attr('id', "filter-" + this.columnDef.id);
+        this.$filterInputElm.data('columnId', this.columnDef.id);
+        if (this.operator) {
+            this.$selectOperatorElm.val(this.operator);
+        }
+        if (this.searchTerm) {
+            $filterContainerElm.addClass('filled');
+        }
+        if ($filterContainerElm && typeof $filterContainerElm.appendTo === 'function') {
+            $filterContainerElm.appendTo($headerElm);
+        }
+        return $filterContainerElm;
+    };
+    CompoundDateFilter.prototype.getCurrentLocale = function (columnDef, gridOptions) {
+        var params = gridOptions.params || columnDef.params || {};
+        if (params.i18n && params.i18n instanceof core$1.TranslateService) {
+            return params.i18n.currentLang;
+        }
+        return 'en';
+    };
+    CompoundDateFilter.prototype.loadFlatpickrLocale = function (locale) {
+        if (locale !== 'en') {
+            var localeDefault = require("flatpickr/dist/l10n/" + locale + ".js").default;
+            return (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
+        }
+        return 'en';
+    };
+    CompoundDateFilter.prototype.onTriggerEvent = function (e) {
+        var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
+        (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
+        if (selectedOperator !== undefined) {
+            this.callback(e, { columnDef: this.columnDef, searchTerm: this._currentValue, operator: selectedOperator });
+        }
+    };
+    CompoundDateFilter.prototype.hide = function () {
+        if (this.flatInstance && typeof this.flatInstance.close === 'function') {
+            this.flatInstance.close();
+        }
+    };
+    CompoundDateFilter.prototype.show = function () {
+        if (this.flatInstance && typeof this.flatInstance.open === 'function') {
+            this.flatInstance.open();
+        }
+    };
+    return CompoundDateFilter;
+}());
+CompoundDateFilter.decorators = [
+    { type: core.Injectable },
+];
+CompoundDateFilter.ctorParameters = function () { return [
+    { type: core$1.TranslateService, },
+]; };
+var CompoundInputFilter = /** @class */ (function () {
+    function CompoundInputFilter(translate) {
+        this.translate = translate;
+    }
+    CompoundInputFilter.prototype.init = function (args) {
+        var _this = this;
+        this.grid = args.grid;
+        this.callback = args.callback;
+        this.columnDef = args.columnDef;
+        this.operator = args.operator;
+        this.searchTerm = args.searchTerm;
+        if (this.grid && typeof this.grid.getOptions === 'function') {
+            this.gridOptions = this.grid.getOptions();
+        }
+        this.$filterElm = this.createDomElement();
+        this.$filterInputElm.keyup(function (e) {
+            _this.onTriggerEvent(e);
+        });
+        this.$selectOperatorElm.change(function (e) {
+            _this.onTriggerEvent(e);
+        });
+    };
+    CompoundInputFilter.prototype.clear = function (triggerFilterKeyup) {
+        if (triggerFilterKeyup === void 0) { triggerFilterKeyup = true; }
+        if (this.$filterElm) {
+            this.$filterElm.val('');
+            if (triggerFilterKeyup) {
+                this.$filterElm.trigger('keyup');
+            }
+        }
+    };
+    CompoundInputFilter.prototype.destroy = function () {
+        if (this.$filterElm) {
+            this.$filterElm.off('keyup').remove();
+        }
+    };
+    CompoundInputFilter.prototype.setValues = function (values) {
+        if (values) {
+            this.$filterElm.val(values);
+        }
+    };
+    CompoundInputFilter.prototype.buildInputHtmlString = function () {
+        var placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
+        return "<input class=\"form-control\" type=\"text\" placeholder=\"" + placeholder + "\" />";
+    };
+    CompoundInputFilter.prototype.buildSelectOperatorHtmlString = function () {
+        var optionValues = this.getOptionValues();
+        var optionValueString = '';
+        optionValues.forEach(function (option) {
+            optionValueString += "<option value=\"" + option.operator + "\" title=\"" + option.description + "\">" + option.operator + "</option>";
+        });
+        return "<select class=\"form-control\">" + optionValueString + "</select>";
+    };
+    CompoundInputFilter.prototype.getOptionValues = function () {
+        var type = (this.columnDef.type && this.columnDef.type) ? this.columnDef.type : FieldType.string;
+        var optionValues = [];
+        switch (type) {
+            case FieldType.string:
+                optionValues = [
+                    { operator: '', description: this.translate.instant('CONTAINS') },
+                    { operator: '=', description: this.translate.instant('EQUALS') },
+                    { operator: 'a*', description: this.translate.instant('STARTS_WITH') },
+                    { operator: '*z', description: this.translate.instant('ENDS_WITH') },
+                ];
+                break;
+            default:
+                optionValues = [
+                    { operator: '', description: this.translate.instant('CONTAINS') },
+                    { operator: '=', description: '' },
+                    { operator: '<', description: '' },
+                    { operator: '<=', description: '' },
+                    { operator: '>', description: '' },
+                    { operator: '>=', description: '' },
+                    { operator: '<>', description: '' }
+                ];
+                break;
+        }
+        return optionValues;
+    };
+    CompoundInputFilter.prototype.createDomElement = function () {
+        var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        $($headerElm).empty();
+        this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
+        this.$filterInputElm = $(this.buildInputHtmlString());
+        var $filterContainerElm = $("<div class=\"form-group search-filter\"></div>");
+        var $containerInputGroup = $("<div class=\"input-group\"></div>");
+        var $operatorInputGroupAddon = $("<div class=\"input-group-addon operator\"></div>");
+        $operatorInputGroupAddon.append(this.$selectOperatorElm);
+        $containerInputGroup.append($operatorInputGroupAddon);
+        $containerInputGroup.append(this.$filterInputElm);
+        $filterContainerElm.append($containerInputGroup);
+        $filterContainerElm.attr('id', "filter-" + this.columnDef.id);
+        var searchTerm = (typeof this.searchTerm === 'boolean') ? "" + this.searchTerm : this.searchTerm;
+        this.$filterInputElm.val(searchTerm);
+        this.$filterInputElm.data('columnId', this.columnDef.id);
+        if (this.operator) {
+            this.$selectOperatorElm.val(this.operator);
+        }
+        if (this.searchTerm) {
+            $filterContainerElm.addClass('filled');
+        }
+        if ($filterContainerElm && typeof $filterContainerElm.appendTo === 'function') {
+            $filterContainerElm.appendTo($headerElm);
+        }
+        return $filterContainerElm;
+    };
+    CompoundInputFilter.prototype.onTriggerEvent = function (e) {
+        var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
+        var value = this.$filterInputElm.val();
+        (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
+        if (selectedOperator !== undefined) {
+            this.callback(e, { columnDef: this.columnDef, searchTerm: value, operator: selectedOperator });
+        }
+    };
+    return CompoundInputFilter;
+}());
+CompoundInputFilter.decorators = [
+    { type: core.Injectable },
+];
+CompoundInputFilter.ctorParameters = function () { return [
+    { type: core$1.TranslateService, },
+]; };
 var InputFilter = /** @class */ (function () {
     function InputFilter() {
     }
@@ -896,6 +1203,9 @@ var InputFilter = /** @class */ (function () {
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.searchTerm = args.searchTerm;
+        if (this.grid && typeof this.grid.getOptions === 'function') {
+            this.gridOptions = this.grid.getOptions();
+        }
         var filterTemplate = this.buildTemplateHtmlString();
         this.$filterElm = this.createDomElement(filterTemplate);
         this.$filterElm.keyup(function (e) {
@@ -923,7 +1233,8 @@ var InputFilter = /** @class */ (function () {
         }
     };
     InputFilter.prototype.buildTemplateHtmlString = function () {
-        return "<input type=\"text\" class=\"form-control search-filter\" style=\"font-family: Segoe UI Symbol;\" placeholder=\"&#128269;\">";
+        var placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
+        return "<input type=\"text\" class=\"form-control search-filter\" placeholder=\"" + placeholder + "\">";
     };
     InputFilter.prototype.createDomElement = function (filterTemplate) {
         var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
@@ -942,62 +1253,6 @@ var InputFilter = /** @class */ (function () {
         return $filterElm;
     };
     return InputFilter;
-}());
-var InputNoPlaceholderFilter = /** @class */ (function () {
-    function InputNoPlaceholderFilter() {
-    }
-    InputNoPlaceholderFilter.prototype.init = function (args) {
-        var _this = this;
-        this.grid = args.grid;
-        this.callback = args.callback;
-        this.columnDef = args.columnDef;
-        this.searchTerm = args.searchTerm;
-        var filterTemplate = this.buildTemplateHtmlString();
-        this.$filterElm = this.createDomElement(filterTemplate);
-        this.$filterElm.keyup(function (e) {
-            (e && e.target && e.target.value) ? _this.$filterElm.addClass('filled') : _this.$filterElm.removeClass('filled');
-            _this.callback(e, { columnDef: _this.columnDef });
-        });
-    };
-    InputNoPlaceholderFilter.prototype.clear = function (triggerFilterKeyup) {
-        if (triggerFilterKeyup === void 0) { triggerFilterKeyup = true; }
-        if (this.$filterElm) {
-            this.$filterElm.val('');
-            if (triggerFilterKeyup) {
-                this.$filterElm.trigger('keyup');
-            }
-        }
-    };
-    InputNoPlaceholderFilter.prototype.destroy = function () {
-        if (this.$filterElm) {
-            this.$filterElm.off('keyup').remove();
-        }
-    };
-    InputNoPlaceholderFilter.prototype.setValues = function (values) {
-        if (values) {
-            this.$filterElm.val(values);
-        }
-    };
-    InputNoPlaceholderFilter.prototype.buildTemplateHtmlString = function () {
-        return "<input type=\"text\" class=\"form-control search-filter\">";
-    };
-    InputNoPlaceholderFilter.prototype.createDomElement = function (filterTemplate) {
-        var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
-        $($headerElm).empty();
-        var $filterElm = $(filterTemplate);
-        var searchTerm = (typeof this.searchTerm === 'boolean') ? "" + this.searchTerm : this.searchTerm;
-        $filterElm.val(searchTerm);
-        $filterElm.attr('id', "filter-" + this.columnDef.id);
-        $filterElm.data('columnId', this.columnDef.id);
-        if (this.searchTerm) {
-            $filterElm.addClass('filled');
-        }
-        if ($filterElm && typeof $filterElm.appendTo === 'function') {
-            $filterElm.appendTo($headerElm);
-        }
-        return $filterElm;
-    };
-    return InputNoPlaceholderFilter;
 }());
 var MultipleSelectFilter = /** @class */ (function () {
     function MultipleSelectFilter(translate) {
@@ -1281,10 +1536,11 @@ SingleSelectFilter.ctorParameters = function () { return [
 ]; };
 var Filters = {
     input: InputFilter,
-    inputNoPlaceholder: InputNoPlaceholderFilter,
     multipleSelect: MultipleSelectFilter,
     singleSelect: SingleSelectFilter,
-    select: SelectFilter
+    select: SelectFilter,
+    compoundDate: CompoundDateFilter,
+    compoundInput: CompoundInputFilter,
 };
 var FilterService = /** @class */ (function () {
     function FilterService(translate) {
@@ -1302,14 +1558,13 @@ var FilterService = /** @class */ (function () {
     FilterService.prototype.attachBackendOnFilter = function (grid, options) {
         var _this = this;
         this._filters = [];
-        this._subscriber = new Slick.Event();
-        var self = this;
-        this._subscriber.subscribe(this.attachBackendOnFilterSubscribe.bind(this, self));
+        this._slickSubscriber = new Slick.Event();
+        this._slickSubscriber.subscribe(this.attachBackendOnFilterSubscribe.bind(this));
         this._eventHandler.subscribe(grid.onHeaderRowCellRendered, function (e, args) {
             _this.addFilterTemplateToHeaderRow(args);
         });
     };
-    FilterService.prototype.attachBackendOnFilterSubscribe = function (self, event, args) {
+    FilterService.prototype.attachBackendOnFilterSubscribe = function (event, args) {
         return __awaiter(this, void 0, void 0, function () {
             var gridOptions, backendApi, query, observableOrPromise, processResult;
             return __generator(this, function (_a) {
@@ -1329,7 +1584,7 @@ var FilterService = /** @class */ (function () {
                         return [4 /*yield*/, backendApi.service.onFilterChanged(event, args)];
                     case 1:
                         query = _a.sent();
-                        self.emitFilterChanged('remote');
+                        this.emitFilterChanged('remote');
                         observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 2:
@@ -1349,10 +1604,10 @@ var FilterService = /** @class */ (function () {
         var _this = this;
         this._filters = [];
         this._dataView = dataView;
-        this._subscriber = new Slick.Event();
+        this._slickSubscriber = new Slick.Event();
         dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
         dataView.setFilter(this.customLocalFilter.bind(this, dataView));
-        this._subscriber.subscribe(function (e, args) {
+        this._slickSubscriber.subscribe(function (e, args) {
             var columnId = args.columnId;
             if (columnId != null) {
                 dataView.refresh();
@@ -1402,7 +1657,7 @@ var FilterService = /** @class */ (function () {
                 var matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/);
                 var operator = columnFilter.operator || ((matches) ? matches[1] : '');
                 var searchTerm = (!!matches) ? matches[2] : '';
-                var lastValueChar = (!!matches) ? matches[3] : '';
+                var lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
                 var filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
                 if (!operator && filterType !== FilterType.custom) {
                     switch (filterType) {
@@ -1460,8 +1715,8 @@ var FilterService = /** @class */ (function () {
     FilterService.prototype.dispose = function () {
         this.disposeColumnFilters();
         this._eventHandler.unsubscribeAll();
-        if (this._subscriber && typeof this._subscriber.unsubscribe === 'function') {
-            this._subscriber.unsubscribe();
+        if (this._slickSubscriber && typeof this._slickSubscriber.unsubscribe === 'function') {
+            this._slickSubscriber.unsubscribe();
         }
     };
     FilterService.prototype.disposeColumnFilters = function () {
@@ -1488,12 +1743,14 @@ var FilterService = /** @class */ (function () {
                     var columnFilter = this._columnFilters[colId];
                     var columnDef = columnFilter.columnDef;
                     var filter = ({ columnId: colId || '' });
-                    filter.headerName = (columnDef) ? columnDef.headerKey || columnDef.name : '';
                     if (columnFilter && columnFilter.searchTerms) {
                         filter.searchTerms = columnFilter.searchTerms;
                     }
                     else {
                         filter.searchTerm = (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined;
+                    }
+                    if (columnFilter.operator) {
+                        filter.operator = columnFilter.operator;
                     }
                     currentFilters.push(filter);
                 }
@@ -1510,31 +1767,39 @@ var FilterService = /** @class */ (function () {
         var e_2, _c;
     };
     FilterService.prototype.callbackSearchEvent = function (e, args) {
-        var targetValue = (e && e.target) ? ((e.target)).value : undefined;
-        var searchTerms = (args && args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : [];
-        var columnId = (args && args.columnDef) ? args.columnDef.id || '' : '';
-        if (!targetValue && searchTerms.length === 0) {
-            delete this._columnFilters[columnId];
-        }
-        else {
-            var colId = ('' + columnId);
-            this._columnFilters[colId] = {
-                columnId: colId,
+        if (args) {
+            var searchTerm = args.searchTerm ? args.searchTerm : ((e && e.target) ? ((e.target)).value : undefined);
+            var searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : [];
+            var columnDef = args.columnDef || null;
+            var columnId = columnDef ? (columnDef.id || '') : '';
+            var operator = args.operator || undefined;
+            if (!searchTerm && searchTerms.length === 0) {
+                delete this._columnFilters[columnId];
+            }
+            else {
+                var colId = ('' + columnId);
+                var colFilter = {
+                    columnId: colId,
+                    columnDef: columnDef,
+                    searchTerm: searchTerm,
+                    searchTerms: searchTerms,
+                };
+                if (operator) {
+                    colFilter.operator = operator;
+                }
+                this._columnFilters[colId] = colFilter;
+            }
+            this.triggerEvent(this._slickSubscriber, {
+                columnId: columnId,
                 columnDef: args.columnDef || null,
-                operator: args.operator || undefined,
-                searchTerms: args.searchTerms || undefined,
-                searchTerm: ((e && e.target) ? ((e.target)).value : undefined),
-            };
+                columnFilters: this._columnFilters,
+                operator: operator,
+                searchTerm: searchTerm,
+                searchTerms: searchTerms,
+                serviceOptions: this._onFilterChangedOptions,
+                grid: this._grid
+            }, e);
         }
-        this.triggerEvent(this._subscriber, {
-            columnId: columnId,
-            columnDef: args.columnDef || null,
-            columnFilters: this._columnFilters,
-            searchTerms: args.searchTerms || undefined,
-            searchTerm: ((e && e.target) ? ((e.target)).value : undefined),
-            serviceOptions: this._onFilterChangedOptions,
-            grid: this._grid
-        }, e);
     };
     FilterService.prototype.addFilterTemplateToHeaderRow = function (args) {
         var columnDef = args.column;
@@ -1542,17 +1807,21 @@ var FilterService = /** @class */ (function () {
         if (columnDef && columnId !== 'selector' && columnDef.filterable) {
             var searchTerms = void 0;
             var searchTerm = void 0;
+            var operator = void 0;
             if (this._columnFilters[columnDef.id]) {
                 searchTerm = this._columnFilters[columnDef.id].searchTerm || undefined;
                 searchTerms = this._columnFilters[columnDef.id].searchTerms || undefined;
+                operator = this._columnFilters[columnDef.id].operator || undefined;
             }
             else if (columnDef.filter) {
                 searchTerms = columnDef.filter.searchTerms || undefined;
                 searchTerm = columnDef.filter.searchTerm || undefined;
+                operator = columnDef.filter.operator || undefined;
                 this.updateColumnFilters(searchTerm, searchTerms, columnDef);
             }
             var filterArguments = {
                 grid: this._grid,
+                operator: operator,
                 searchTerm: searchTerm,
                 searchTerms: searchTerms,
                 columnDef: columnDef,
@@ -1578,8 +1847,11 @@ var FilterService = /** @class */ (function () {
                 case FilterType.singleSelect:
                     filter_1 = new Filters.singleSelect(this.translate);
                     break;
-                case FilterType.inputNoPlaceholder:
-                    filter_1 = new Filters.inputNoPlaceholder();
+                case FilterType.compoundDate:
+                    filter_1 = new Filters.compoundDate(this.translate);
+                    break;
+                case FilterType.compoundInput:
+                    filter_1 = new Filters.compoundInput(this.translate);
                     break;
                 case FilterType.input:
                 default:
@@ -1602,7 +1874,7 @@ var FilterService = /** @class */ (function () {
         }
     };
     FilterService.prototype.emitFilterChanged = function (sender) {
-        if (sender === 'remote') {
+        if (sender === 'remote' && this._gridOptions && this._gridOptions.backendServiceApi) {
             var currentFilters = [];
             var backendService = this._gridOptions.backendServiceApi.service;
             if (backendService && backendService.getCurrentFilters) {
@@ -1623,11 +1895,12 @@ var FilterService = /** @class */ (function () {
                 });
                 if (columnPreset && columnPreset.searchTerm) {
                     columnDef.filter = columnDef.filter || {};
+                    columnDef.filter.operator = columnPreset.operator;
                     columnDef.filter.searchTerm = columnPreset.searchTerm;
                 }
                 if (columnPreset && columnPreset.searchTerms) {
                     columnDef.filter = columnDef.filter || {};
-                    columnDef.filter.operator = columnDef.filter.operator || OperatorType.in;
+                    columnDef.filter.operator = columnPreset.operator || columnDef.filter.operator || OperatorType.in;
                     columnDef.filter.searchTerms = columnPreset.searchTerms;
                 }
             });
@@ -2369,7 +2642,7 @@ var GraphqlService = /** @class */ (function () {
                 var matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/);
                 var operator = columnFilter_1.operator || ((matches) ? matches[1] : '');
                 searchValue = (!!matches) ? matches[2] : '';
-                var lastValueChar = (!!matches) ? matches[3] : '';
+                var lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
                 if (fieldName && searchValue === '' && searchTerms.length === 0) {
                     return "continue";
                 }
@@ -2378,8 +2651,8 @@ var GraphqlService = /** @class */ (function () {
                 }
                 else if (typeof searchValue === 'string') {
                     searchValue = searchValue.replace("'", "''");
-                    if (operator === '*' || lastValueChar === '*') {
-                        operator = (operator === '*') ? 'endsWith' : 'startsWith';
+                    if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*') {
+                        operator = (operator === '*' || operator === '*z') ? 'endsWith' : 'startsWith';
                     }
                 }
                 if (!operator && columnDef.filter) {
@@ -2446,7 +2719,6 @@ var GraphqlService = /** @class */ (function () {
                             var column = sortColumns_1_1.value;
                             if (column && column.sortCol) {
                                 currentSorters.push({
-                                    headerName: column.sortCol.headerKey || column.sortCol.name,
                                     columnId: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '',
                                     direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
                                 });
@@ -2490,7 +2762,7 @@ var GraphqlService = /** @class */ (function () {
         return filtersArray.map(function (filter) {
             var columnDef = filter.columnDef;
             var header = (columnDef) ? (columnDef.headerKey || columnDef.name || '') : '';
-            var tmpFilter = { columnId: filter.columnId || '', headerName: header };
+            var tmpFilter = { columnId: filter.columnId || '' };
             if (filter.operator) {
                 tmpFilter.operator = filter.operator;
             }
@@ -2807,7 +3079,7 @@ var GridOdataService = /** @class */ (function () {
                 var matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/);
                 var operator = columnFilter_2.operator || ((matches) ? matches[1] : '');
                 var searchValue = (!!matches) ? matches[2] : '';
-                var lastValueChar = (!!matches) ? matches[3] : '';
+                var lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
                 var bypassOdataQuery = columnFilter_2.bypassBackendQuery || false;
                 if (fieldName && searchValue === '') {
                     this_2.removeColumnFilter(fieldName);
@@ -2842,8 +3114,8 @@ var GridOdataService = /** @class */ (function () {
                             searchBy = "(" + searchBy + ")";
                         }
                     }
-                    else if (operator === '*' || lastValueChar !== '') {
-                        searchBy = operator === '*'
+                    else if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar !== '') {
+                        searchBy = (operator === '*' || operator === '*z')
                             ? "endswith(" + fieldName + ", '" + searchValue + "')"
                             : "startswith(" + fieldName + ", '" + searchValue + "')";
                     }
@@ -2921,7 +3193,6 @@ var GridOdataService = /** @class */ (function () {
                                 }
                                 sorterArray.push({
                                     columnId: fieldName,
-                                    headerName: column.sortCol.headerKey || column.sortCol.name,
                                     direction: column.sortAsc ? 'asc' : 'desc'
                                 });
                             }
@@ -2952,7 +3223,7 @@ var GridOdataService = /** @class */ (function () {
         return filtersArray.map(function (filter) {
             var columnDef = filter.columnDef;
             var header = (columnDef) ? (columnDef.headerKey || columnDef.name || '') : '';
-            var tmpFilter = { columnId: filter.columnId || '', headerName: header };
+            var tmpFilter = { columnId: filter.columnId || '' };
             if (filter.operator) {
                 tmpFilter.operator = filter.operator;
             }
@@ -3407,11 +3678,10 @@ var SortService = /** @class */ (function () {
     SortService.prototype.attachBackendOnSort = function (grid, gridOptions) {
         this._grid = grid;
         this._gridOptions = gridOptions;
-        this._subscriber = grid.onSort;
-        var self = this;
-        this._subscriber.subscribe(this.attachBackendOnSortSubscribe.bind(this, self));
+        this._slickSubscriber = grid.onSort;
+        this._slickSubscriber.subscribe(this.attachBackendOnSortSubscribe.bind(this));
     };
-    SortService.prototype.attachBackendOnSortSubscribe = function (self, event, args) {
+    SortService.prototype.attachBackendOnSortSubscribe = function (event, args) {
         return __awaiter(this, void 0, void 0, function () {
             var gridOptions, backendApi, query, observableOrPromise, processResult;
             return __generator(this, function (_a) {
@@ -3429,7 +3699,7 @@ var SortService = /** @class */ (function () {
                             backendApi.preProcess();
                         }
                         query = backendApi.service.onSortChanged(event, args);
-                        self.emitSortChanged('remote');
+                        this.emitSortChanged('remote');
                         observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 1:
@@ -3449,8 +3719,8 @@ var SortService = /** @class */ (function () {
         var _this = this;
         this._grid = grid;
         this._gridOptions = gridOptions;
-        this._subscriber = grid.onSort;
-        this._subscriber.subscribe(function (e, args) {
+        this._slickSubscriber = grid.onSort;
+        this._slickSubscriber.subscribe(function (e, args) {
             var sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
             _this._currentLocalSorters = [];
             if (Array.isArray(sortColumns)) {
@@ -3458,7 +3728,6 @@ var SortService = /** @class */ (function () {
                     if (sortColumn.sortCol) {
                         _this._currentLocalSorters.push({
                             columnId: sortColumn.sortCol.id,
-                            headerName: sortColumn.sortCol.headerKey || sortColumn.sortCol.name || '',
                             direction: sortColumn.sortAsc ? SortDirection.ASC : SortDirection.DESC
                         });
                     }
@@ -3494,7 +3763,6 @@ var SortService = /** @class */ (function () {
                     });
                     _this._currentLocalSorters.push({
                         columnId: columnDef.id + '',
-                        headerName: columnDef.headerKey || columnDef.name || '',
                         direction: (columnPreset.direction.toUpperCase())
                     });
                 }
@@ -3547,13 +3815,13 @@ var SortService = /** @class */ (function () {
         grid.render();
     };
     SortService.prototype.dispose = function () {
-        if (this._subscriber && typeof this._subscriber.unsubscribe === 'function') {
-            this._subscriber.unsubscribe();
+        if (this._slickSubscriber && typeof this._slickSubscriber.unsubscribe === 'function') {
+            this._slickSubscriber.unsubscribe();
         }
         this._eventHandler.unsubscribeAll();
     };
     SortService.prototype.emitSortChanged = function (sender) {
-        if (sender === 'remote') {
+        if (sender === 'remote' && this._gridOptions && this._gridOptions.backendServiceApi) {
             var currentSorters = [];
             var backendService = this._gridOptions.backendServiceApi.service;
             if (backendService && backendService.getCurrentSorters) {
@@ -3631,6 +3899,9 @@ var DateEditor = /** @class */ (function () {
         var inputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
         var outputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.outputType || FieldType.dateUtc);
         var currentLocale = this.getCurrentLocale(this.args.column, gridOptions);
+        if (currentLocale.length > 2) {
+            currentLocale = currentLocale.substring(0, 2);
+        }
         var pickerOptions = {
             defaultDate: this.defaultDate,
             altInput: true,
@@ -3648,7 +3919,7 @@ var DateEditor = /** @class */ (function () {
         this.show();
     };
     DateEditor.prototype.getCurrentLocale = function (columnDef, gridOptions) {
-        var params = columnDef.params || {};
+        var params = gridOptions.params || columnDef.params || {};
         if (params.i18n && params.i18n instanceof core$1.TranslateService) {
             return params.i18n.currentLang;
         }
@@ -3928,6 +4199,252 @@ var LongTextEditor = /** @class */ (function () {
     };
     return LongTextEditor;
 }());
+var MultipleSelectEditor = /** @class */ (function () {
+    function MultipleSelectEditor(args) {
+        this.args = args;
+        this.collection = [];
+        var gridOptions = (this.args.grid.getOptions());
+        var params = gridOptions.params || this.args.column.params || {};
+        this._translate = params.i18n;
+        this.defaultOptions = {
+            container: 'body',
+            filter: false,
+            maxHeight: 200,
+            addTitle: true,
+            okButton: true,
+            selectAllDelimiter: ['', ''],
+            width: 150,
+            offsetLeft: 20
+        };
+        if (this._translate) {
+            this.defaultOptions.countSelected = this._translate.instant('X_OF_Y_SELECTED');
+            this.defaultOptions.allSelected = this._translate.instant('ALL_SELECTED');
+            this.defaultOptions.selectAllText = this._translate.instant('SELECT_ALL');
+        }
+        this.init();
+    }
+    Object.defineProperty(MultipleSelectEditor.prototype, "currentValues", {
+        get: function () {
+            var _this = this;
+            return this.collection
+                .filter(function (c) { return _this.$editorElm.val().indexOf(c[_this.valueName].toString()) !== -1; })
+                .map(function (c) { return c[_this.valueName]; });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    MultipleSelectEditor.prototype.init = function () {
+        if (!this.args) {
+            throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
+        }
+        this.columnDef = this.args.column;
+        var editorTemplate = this.buildTemplateHtmlString();
+        this.createDomElement(editorTemplate);
+    };
+    MultipleSelectEditor.prototype.applyValue = function (item, state) {
+        item[this.args.column.field] = state;
+    };
+    MultipleSelectEditor.prototype.destroy = function () {
+        this.$editorElm.remove();
+    };
+    MultipleSelectEditor.prototype.loadValue = function (item) {
+        var _this = this;
+        this.defaultValue = item[this.columnDef.field].map(function (i) { return i.toString(); });
+        this.$editorElm.find('option').each(function (i, $e) {
+            if (_this.defaultValue.indexOf($e.value) !== -1) {
+                $e.selected = true;
+            }
+            else {
+                $e.selected = false;
+            }
+        });
+        this.refresh();
+    };
+    MultipleSelectEditor.prototype.serializeValue = function () {
+        return this.currentValues;
+    };
+    MultipleSelectEditor.prototype.focus = function () {
+        this.$editorElm.focus();
+    };
+    MultipleSelectEditor.prototype.isValueChanged = function () {
+        return !arraysEqual(this.$editorElm.val(), this.defaultValue);
+    };
+    MultipleSelectEditor.prototype.validate = function () {
+        if (this.args.column.validator) {
+            var validationResults = this.args.column.validator(this.currentValues, this.args);
+            if (!validationResults.valid) {
+                return validationResults;
+            }
+        }
+        return {
+            valid: true,
+            msg: null
+        };
+    };
+    MultipleSelectEditor.prototype.buildTemplateHtmlString = function () {
+        var _this = this;
+        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
+            throw new Error("[Aurelia-SlickGrid] You need to pass a \"collection\" on the params property in the column definition for the MultipleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }");
+        }
+        this.collection = this.columnDef.params.collection || [];
+        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
+        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
+        var isEnabledTranslate = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
+        var options = '';
+        this.collection.forEach(function (option) {
+            if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
+                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])");
+            }
+            var labelKey = ((option.labelKey || option[_this.labelName]));
+            var textLabel = ((option.labelKey || isEnabledTranslate) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
+            options += "<option value=\"" + option[_this.valueName] + "\">" + textLabel + "</option>";
+        });
+        return "<select class=\"ms-filter search-filter\" multiple=\"multiple\">" + options + "</select>";
+    };
+    MultipleSelectEditor.prototype.createDomElement = function (editorTemplate) {
+        var _this = this;
+        this.$editorElm = $(editorTemplate);
+        if (this.$editorElm && typeof this.$editorElm.appendTo === 'function') {
+            this.$editorElm.appendTo(this.args.container);
+        }
+        if (typeof this.$editorElm.multipleSelect !== 'function') {
+            this.$editorElm.addClass('form-control');
+        }
+        else {
+            var elementOptions = (this.columnDef.params) ? this.columnDef.params.elementOptions : {};
+            var options = Object.assign({}, this.defaultOptions, elementOptions);
+            this.$editorElm = this.$editorElm.multipleSelect(options);
+            setTimeout(function () { return _this.$editorElm.multipleSelect('open'); });
+        }
+    };
+    MultipleSelectEditor.prototype.refresh = function () {
+        if (typeof this.$editorElm.multipleSelect === 'function') {
+            this.$editorElm.multipleSelect('refresh');
+        }
+    };
+    return MultipleSelectEditor;
+}());
+var SingleSelectEditor = /** @class */ (function () {
+    function SingleSelectEditor(args) {
+        this.args = args;
+        this.collection = [];
+        var gridOptions = (this.args.grid.getOptions());
+        var params = gridOptions.params || this.args.column.params || {};
+        this._translate = params.i18n;
+        this.defaultOptions = {
+            container: 'body',
+            filter: false,
+            maxHeight: 200,
+            width: 150,
+            offsetLeft: 20,
+            single: true
+        };
+        this.init();
+    }
+    Object.defineProperty(SingleSelectEditor.prototype, "currentValue", {
+        get: function () {
+            var _this = this;
+            return findOrDefault(this.collection, function (c) { return c[_this.valueName].toString() === _this.$editorElm.val(); })[this.valueName];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SingleSelectEditor.prototype.init = function () {
+        if (!this.args) {
+            throw new Error('[Aurelia-SlickGrid] An editor must always have an "init()" with valid arguments.');
+        }
+        this.columnDef = this.args.column;
+        var editorTemplate = this.buildTemplateHtmlString();
+        this.createDomElement(editorTemplate);
+    };
+    SingleSelectEditor.prototype.applyValue = function (item, state) {
+        item[this.args.column.field] = state;
+    };
+    SingleSelectEditor.prototype.destroy = function () {
+        this.$editorElm.remove();
+    };
+    SingleSelectEditor.prototype.loadValue = function (item) {
+        var _this = this;
+        this.defaultValue = item[this.columnDef.field].toString();
+        this.$editorElm.find('option').each(function (i, $e) {
+            if (_this.defaultValue.indexOf($e.value) !== -1) {
+                $e.selected = true;
+            }
+            else {
+                $e.selected = false;
+            }
+        });
+        this.refresh();
+    };
+    SingleSelectEditor.prototype.serializeValue = function () {
+        return this.currentValue;
+    };
+    SingleSelectEditor.prototype.focus = function () {
+        this.$editorElm.focus();
+    };
+    SingleSelectEditor.prototype.isValueChanged = function () {
+        return this.$editorElm.val() !== this.defaultValue;
+    };
+    SingleSelectEditor.prototype.validate = function () {
+        if (this.args.column.validator) {
+            var validationResults = this.args.column.validator(this.currentValue, this.args);
+            if (!validationResults.valid) {
+                return validationResults;
+            }
+        }
+        return {
+            valid: true,
+            msg: null
+        };
+    };
+    SingleSelectEditor.prototype.buildTemplateHtmlString = function () {
+        var _this = this;
+        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
+            throw new Error('[Aurelia-SlickGrid] You need to pass a "collection" on the params property in the column definition for ' +
+                'the SingleSelect Editor to work correctly. Also each option should include ' +
+                'a value/label pair (or value/labelKey when using Locale). For example: { params: { ' +
+                '{ collection: [{ value: true, label: \'True\' }, { value: false, label: \'False\'}] } } }');
+        }
+        this.collection = this.columnDef.params.collection || [];
+        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
+        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
+        var isEnabledTranslate = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
+        var options = '';
+        this.collection.forEach(function (option) {
+            if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
+                throw new Error('A collection with value/label (or value/labelKey when using ' +
+                    'Locale) is required to populate the Select list, for example: { params: { ' +
+                    '{ collection: [ { value: \'1\', label: \'One\' } ] } } }');
+            }
+            var labelKey = ((option.labelKey || option[_this.labelName]));
+            var textLabel = ((option.labelKey || isEnabledTranslate) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
+            options += "<option value=\"" + option[_this.valueName] + "\">" + textLabel + "</option>";
+        });
+        return "<select class=\"ms-filter search-filter\">" + options + "</select>";
+    };
+    SingleSelectEditor.prototype.createDomElement = function (editorTemplate) {
+        var _this = this;
+        this.$editorElm = $(editorTemplate);
+        if (this.$editorElm && typeof this.$editorElm.appendTo === 'function') {
+            this.$editorElm.appendTo(this.args.container);
+        }
+        if (typeof this.$editorElm.multipleSelect !== 'function') {
+            this.$editorElm.addClass('form-control');
+        }
+        else {
+            var elementOptions = (this.columnDef.params) ? this.columnDef.params.elementOptions : {};
+            var options = Object.assign({}, this.defaultOptions, elementOptions);
+            this.$editorElm = this.$editorElm.multipleSelect(options);
+            setTimeout(function () { return _this.$editorElm.multipleSelect('open'); });
+        }
+    };
+    SingleSelectEditor.prototype.refresh = function () {
+        if (typeof this.$editorElm.multipleSelect === 'function') {
+            this.$editorElm.multipleSelect('refresh');
+        }
+    };
+    return SingleSelectEditor;
+}());
 var TextEditor = /** @class */ (function () {
     function TextEditor(args) {
         this.args = args;
@@ -3991,16 +4508,32 @@ var Editors = {
     float: FloatEditor,
     integer: IntegerEditor,
     longText: LongTextEditor,
+    multipleSelect: MultipleSelectEditor,
+    singleSelect: SingleSelectEditor,
     text: TextEditor
 };
 var arrayToCsvFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value && Array.isArray(value)) {
-        return value.join(', ');
+        var values = value.join(', ');
+        return "<span title=\"" + values + "\">" + values + "</span>";
     }
     return '';
 };
 var checkboxFormatter = function (row, cell, value, columnDef, dataContext) { return value ? '&#x2611;' : ''; };
 var checkmarkFormatter = function (row, cell, value, columnDef, dataContext) { return value ? "<i class=\"fa fa-check checkmark-icon\" aria-hidden=\"true\"></i>" : ''; };
+var collectionFormatter = function (row, cell, value, columnDef, dataContext) {
+    if (!value || !columnDef || !columnDef.params || !columnDef.params.collection
+        || !columnDef.params.collection.length) {
+        return '';
+    }
+    var params = columnDef.params, collection = columnDef.params.collection;
+    var labelName = (params.customStructure) ? params.customStructure.label : 'label';
+    var valueName = (params.customStructure) ? params.customStructure.value : 'value';
+    if (Array.isArray(value)) {
+        return arrayToCsvFormatter(row, cell, value.map(function (v) { return findOrDefault(collection, function (c) { return c[valueName] === v; })[labelName]; }), columnDef, dataContext);
+    }
+    return findOrDefault(collection, function (c) { return c[valueName] === value; })[labelName] || '';
+};
 var complexObjectFormatter = function (row, cell, value, columnDef, dataContext) {
     if (!columnDef) {
         return '';
@@ -4156,6 +4689,7 @@ var Formatters = {
     checkbox: checkboxFormatter,
     checkmark: checkmarkFormatter,
     complexObject: complexObjectFormatter,
+    collection: collectionFormatter,
     dateIso: dateIsoFormatter,
     dateTimeIso: dateIsoFormatter,
     dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
@@ -4384,6 +4918,7 @@ var GlobalGridOptions = {
         hideSyncResizeButton: true
     },
     datasetIdPropertyName: 'id',
+    defaultFilterPlaceholder: '&#128269;',
     defaultFilterType: FilterType.input,
     editable: false,
     enableAutoResize: true,
@@ -4453,6 +4988,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.onBeforeGridCreate = new core.EventEmitter();
         this.onBeforeGridDestroy = new core.EventEmitter();
         this.onAfterGridDestroyed = new core.EventEmitter();
+        this.onGridStateServiceChanged = new core.EventEmitter();
         this.gridHeight = 100;
         this.gridWidth = 600;
     }
@@ -4488,8 +5024,11 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.resizer.dispose();
         this.sortService.dispose();
         this.grid.destroy();
-        if (this._translateSubscription) {
-            this._translateSubscription.unsubscribe();
+        if (this._translateSubscriber) {
+            this._translateSubscriber.unsubscribe();
+        }
+        if (this._gridStateSubscriber) {
+            this._gridStateSubscriber.unsubscribe();
         }
     };
     AngularSlickgridComponent.prototype.ngAfterViewInit = function () {
@@ -4540,7 +5079,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
     };
     AngularSlickgridComponent.prototype.attachDifferentHooks = function (grid, gridOptions, dataView) {
         var _this = this;
-        this._translateSubscription = this.translate.onLangChange.subscribe(function (event) {
+        this._translateSubscriber = this.translate.onLangChange.subscribe(function (event) {
             if (gridOptions.enableTranslate) {
                 _this.controlAndPluginService.translateHeaders();
                 _this.controlAndPluginService.translateColumnPicker();
@@ -4566,6 +5105,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 backendApi.service.init(backendApi.options, gridOptions.pagination, this.grid);
             }
         }
+        this._gridStateSubscriber = this.gridStateService.onGridStateChanged.subscribe(function (gridStateChange) {
+            _this.onGridStateServiceChanged.emit(gridStateChange);
+        });
         this.gridEventService.attachOnCellChange(grid, this.gridOptions, dataView);
         this.gridEventService.attachOnClick(grid, this.gridOptions, dataView);
         this._eventHandler.subscribe(dataView.onRowCountChanged, function (e, args) {
@@ -4719,6 +5261,7 @@ AngularSlickgridComponent.propDecorators = {
     "onBeforeGridCreate": [{ type: core.Output },],
     "onBeforeGridDestroy": [{ type: core.Output },],
     "onAfterGridDestroyed": [{ type: core.Output },],
+    "onGridStateServiceChanged": [{ type: core.Output },],
     "gridId": [{ type: core.Input },],
     "columnDefinitions": [{ type: core.Input },],
     "gridOptions": [{ type: core.Input },],
@@ -4798,7 +5341,9 @@ exports.SortService = SortService;
 exports.addWhiteSpaces = addWhiteSpaces;
 exports.htmlEntityDecode = htmlEntityDecode;
 exports.htmlEntityEncode = htmlEntityEncode;
+exports.arraysEqual = arraysEqual;
 exports.castToPromise = castToPromise;
+exports.findOrDefault = findOrDefault;
 exports.mapMomentDateFormatWithFieldType = mapMomentDateFormatWithFieldType;
 exports.mapFlatpickrDateFormatWithFieldType = mapFlatpickrDateFormatWithFieldType;
 exports.mapOperatorType = mapOperatorType;
@@ -4817,53 +5362,57 @@ exports.ɵb = DateEditor;
 exports.ɵc = FloatEditor;
 exports.ɵd = IntegerEditor;
 exports.ɵe = LongTextEditor;
-exports.ɵf = TextEditor;
-exports.ɵh = booleanFilterCondition;
-exports.ɵi = collectionSearchFilterCondition;
-exports.ɵj = dateFilterCondition;
-exports.ɵk = dateIsoFilterCondition;
-exports.ɵm = dateUsFilterCondition;
-exports.ɵn = dateUsShortFilterCondition;
-exports.ɵl = dateUtcFilterCondition;
-exports.ɵg = executeMappedCondition;
-exports.ɵq = testFilterCondition;
-exports.ɵo = numberFilterCondition;
-exports.ɵp = stringFilterCondition;
-exports.ɵr = InputFilter;
-exports.ɵs = InputNoPlaceholderFilter;
-exports.ɵt = MultipleSelectFilter;
-exports.ɵv = SelectFilter;
-exports.ɵu = SingleSelectFilter;
-exports.ɵw = arrayToCsvFormatter;
-exports.ɵx = checkboxFormatter;
-exports.ɵy = checkmarkFormatter;
-exports.ɵz = complexObjectFormatter;
-exports.ɵba = dateIsoFormatter;
-exports.ɵbb = dateTimeIsoAmPmFormatter;
-exports.ɵbe = dateTimeUsAmPmFormatter;
-exports.ɵbd = dateTimeUsFormatter;
-exports.ɵbc = dateUsFormatter;
-exports.ɵbf = deleteIconFormatter;
-exports.ɵbg = editIconFormatter;
-exports.ɵbh = hyperlinkFormatter;
-exports.ɵbi = hyperlinkUriPrefixFormatter;
-exports.ɵbj = infoIconFormatter;
-exports.ɵbk = lowercaseFormatter;
-exports.ɵbl = multipleFormatter;
-exports.ɵbn = percentCompleteBarFormatter;
-exports.ɵbm = percentCompleteFormatter;
-exports.ɵbo = progressBarFormatter;
-exports.ɵbq = translateBooleanFormatter;
-exports.ɵbp = translateFormatter;
-exports.ɵbr = uppercaseFormatter;
-exports.ɵbs = yesNoFormatter;
-exports.ɵbz = SharedService;
-exports.ɵbu = dateIsoSorter;
-exports.ɵbt = dateSorter;
-exports.ɵbw = dateUsShortSorter;
-exports.ɵbv = dateUsSorter;
-exports.ɵbx = numericSorter;
-exports.ɵby = stringSorter;
+exports.ɵf = MultipleSelectEditor;
+exports.ɵg = SingleSelectEditor;
+exports.ɵh = TextEditor;
+exports.ɵj = booleanFilterCondition;
+exports.ɵk = collectionSearchFilterCondition;
+exports.ɵl = dateFilterCondition;
+exports.ɵm = dateIsoFilterCondition;
+exports.ɵo = dateUsFilterCondition;
+exports.ɵp = dateUsShortFilterCondition;
+exports.ɵn = dateUtcFilterCondition;
+exports.ɵi = executeMappedCondition;
+exports.ɵs = testFilterCondition;
+exports.ɵq = numberFilterCondition;
+exports.ɵr = stringFilterCondition;
+exports.ɵx = CompoundDateFilter;
+exports.ɵy = CompoundInputFilter;
+exports.ɵt = InputFilter;
+exports.ɵu = MultipleSelectFilter;
+exports.ɵw = SelectFilter;
+exports.ɵv = SingleSelectFilter;
+exports.ɵz = arrayToCsvFormatter;
+exports.ɵba = checkboxFormatter;
+exports.ɵbb = checkmarkFormatter;
+exports.ɵbd = collectionFormatter;
+exports.ɵbc = complexObjectFormatter;
+exports.ɵbe = dateIsoFormatter;
+exports.ɵbf = dateTimeIsoAmPmFormatter;
+exports.ɵbi = dateTimeUsAmPmFormatter;
+exports.ɵbh = dateTimeUsFormatter;
+exports.ɵbg = dateUsFormatter;
+exports.ɵbj = deleteIconFormatter;
+exports.ɵbk = editIconFormatter;
+exports.ɵbl = hyperlinkFormatter;
+exports.ɵbm = hyperlinkUriPrefixFormatter;
+exports.ɵbn = infoIconFormatter;
+exports.ɵbo = lowercaseFormatter;
+exports.ɵbp = multipleFormatter;
+exports.ɵbr = percentCompleteBarFormatter;
+exports.ɵbq = percentCompleteFormatter;
+exports.ɵbs = progressBarFormatter;
+exports.ɵbu = translateBooleanFormatter;
+exports.ɵbt = translateFormatter;
+exports.ɵbv = uppercaseFormatter;
+exports.ɵbw = yesNoFormatter;
+exports.ɵcd = SharedService;
+exports.ɵby = dateIsoSorter;
+exports.ɵbx = dateSorter;
+exports.ɵca = dateUsShortSorter;
+exports.ɵbz = dateUsSorter;
+exports.ɵcb = numericSorter;
+exports.ɵcc = stringSorter;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -1,7 +1,8 @@
-import { Column, Filter, FilterArguments, FilterCallback, SearchTerm } from './../models/index';
+import { Column, Filter, FilterArguments, FilterCallback, GridOption, SearchTerm } from './../models/index';
 export declare class InputFilter implements Filter {
     private $filterElm;
     grid: any;
+    gridOptions: GridOption;
     searchTerm: SearchTerm;
     columnDef: Column;
     callback: FilterCallback;

@@ -1,9 +1,8 @@
-import { OperatorString } from './operatorString';
-import { Column } from './column.interface';
+import { Column, OperatorString, SearchTerm } from './../models/index';
 export interface FilterCallbackArg {
     columnDef: Column;
     operator?: OperatorString;
-    searchTerm?: string | number | boolean;
-    searchTerms?: number[] | string[] | boolean[];
+    searchTerm?: SearchTerm;
+    searchTerms?: SearchTerm[];
 }
 export declare type FilterCallback = (e: Event | undefined, args: FilterCallbackArg) => void;

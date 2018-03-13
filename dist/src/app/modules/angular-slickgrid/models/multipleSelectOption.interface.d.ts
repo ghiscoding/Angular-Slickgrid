@@ -60,7 +60,7 @@ export interface MultipleSelectOption {
     /** Whether or not Multiple Select allows you to select only one option.By default this option is set to false. */
     single?: boolean;
     /** Define the width property of the dropdown list, support a percentage setting.By default this option is set to undefined. Which is the same as the select input field. */
-    width?: number;
+    width?: number | string;
     /** Blur the multiple select. */
     blur?: () => void;
     /** Enables Select. */

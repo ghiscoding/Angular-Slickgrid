@@ -27,6 +27,8 @@ export interface GridOption {
     columnPicker?: ColumnPicker;
     /** Unique property name on the dataset used by Slick.Data.DataView */
     datasetIdPropertyName?: string;
+    /** Default placeholder to use in Filters that support placeholder (input, flatpickr) */
+    defaultFilterPlaceholder?: string;
     /** The default filter type to use when none is specified */
     defaultFilterType?: FilterType;
     /** Defaults to false, when enabled will give the possibility to edit cell values with inline editors. */

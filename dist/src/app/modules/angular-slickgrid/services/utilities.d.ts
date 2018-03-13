@@ -19,11 +19,28 @@ export declare function htmlEntityDecode(input: string): string;
  */
 export declare function htmlEntityEncode(input: any): string;
 /**
+ * Compares two arrays to determine if all the items are equal
+ * @param a first array
+ * @param b second array to compare with a
+ * @param [orderMatters=false] flag if the order matters, if not arrays will be sorted
+ * @return boolean true if equal, else false
+ */
+export declare function arraysEqual(a: any[], b: any[], orderMatters?: boolean): boolean;
+/**
  * Try casting an input of type Promise | Observable into a Promise type.
  * @param object which could be of type Promise or Observable
  * @param fromServiceName string representing the caller service name and will be used if we throw a casting problem error
  */
 export declare function castToPromise<T>(input: Promise<T> | Observable<T>, fromServiceName?: string): Promise<T>;
+/**
+ * Uses the logic function to find an item in an array or returns the default
+ * value provided (empty object by default)
+ * @param any[] array the array to filter
+ * @param function logic the logic to find the item
+ * @param any [defaultVal={}] the default value to return
+ * @return object the found object or deafult value
+ */
+export declare function findOrDefault(array: any[], logic: (item: any) => boolean, defaultVal?: {}): any;
 /**
  * From a Date FieldType, return it's equivalent moment.js format
  * refer to moment.js for the format standard used: https://momentjs.com/docs/#/parsing/string-format/
