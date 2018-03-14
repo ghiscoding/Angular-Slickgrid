@@ -50,6 +50,7 @@ const eventPrefix = 'sg';
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
   private _dataset: any[];
+  private _columnDefinitions: Column[];
   private _dataView: any;
   private _eventHandler: any = new Slick.EventHandler();
   private _translateSubscriber: Subscription;
@@ -60,6 +61,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   gridWidthString: string;
   groupingDefinition: any = {};
   showPagination = false;
+  isGridInitialized = false;
 
   @Output() onDataviewCreated = new EventEmitter<any>();
   @Output() onGridCreated = new EventEmitter<any>();
@@ -69,10 +71,20 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   @Output() onAfterGridDestroyed = new EventEmitter<boolean>();
   @Output() onGridStateServiceChanged = new EventEmitter<GridStateChange>();
   @Input() gridId: string;
-  @Input() columnDefinitions: Column[];
   @Input() gridOptions: GridOption;
   @Input() gridHeight = 100;
   @Input() gridWidth = 600;
+
+  @Input()
+  set columnDefinitions(columnDefinitions: Column[]) {
+    this._columnDefinitions = columnDefinitions;
+    if (this.isGridInitialized) {
+      this.updateColumnDefinitionsList(columnDefinitions);
+    }
+  }
+  get columnDefinitions(): Column[] {
+    return this._columnDefinitions;
+  }
   @Input()
   set dataset(dataset: any[]) {
     this._dataset = dataset;
@@ -128,16 +140,21 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   ngAfterViewInit() {
+    this.initialization();
+    this.isGridInitialized = true;
+  }
+
+  initialization() {
     // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
     this._dataset = this._dataset || [];
     this.gridOptions = this.mergeGridOptions(this.gridOptions);
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
 
     this._dataView = new Slick.Data.DataView();
-    this.controlAndPluginService.createPluginBeforeGridCreation(this.columnDefinitions, this.gridOptions);
-    this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this.gridOptions);
+    this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+    this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
 
-    this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this.gridOptions, this._dataView);
+    this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
     this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
 
     // emit the Grid & DataView object to make them available in parent component
@@ -150,13 +167,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this._dataView.endUpdate();
 
     // pass all necessary options to the shared service
-    this.sharedService.init(this.grid, this._dataView, this.gridOptions, this.columnDefinitions);
+    this.sharedService.init(this.grid, this._dataView, this.gridOptions, this._columnDefinitions);
 
     // attach resize ONLY after the dataView is ready
     this.attachResizeHook(this.grid, this.gridOptions);
 
     // attach grid extra service
-    this.gridExtraService.init(this.grid, this.columnDefinitions, this.gridOptions, this._dataView);
+    this.gridExtraService.init(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
 
     // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
     if (this.gridOptions.enableTranslate) {
@@ -214,16 +231,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // attach external sorting (backend) when available or default onSort (dataView)
     if (gridOptions.enableSorting) {
-      (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView, this.columnDefinitions);
+      (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView, this._columnDefinitions);
     }
 
     // attach external filter (backend) when available or default onFilter (dataView)
     if (gridOptions.enableFiltering) {
-      this.filterService.init(grid, gridOptions, this.columnDefinitions);
+      this.filterService.init(grid, gridOptions, this._columnDefinitions);
 
       // if user entered some "presets", we need to reflect them all in the DOM
       if (gridOptions.presets && gridOptions.presets.filters) {
-        this.filterService.populateColumnFilterSearchTerms(gridOptions, this.columnDefinitions);
+        this.filterService.populateColumnFilterSearchTerms(gridOptions, this._columnDefinitions);
       }
       (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, gridOptions) : this.filterService.attachLocalOnFilter(grid, gridOptions, this._dataView);
     }
@@ -385,6 +402,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         this.resizer.resizeGrid(10);
         // this.grid.autosizeColumns();
       }
+    }
+  }
+
+  updateColumnDefinitionsList(dynamicColumns) {
+    this.grid.setColumns(dynamicColumns);
+    if (this.gridOptions.enableTranslate) {
+      this.controlAndPluginService.translateHeaders();
     }
   }
 
