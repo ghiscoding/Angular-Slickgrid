@@ -28,9 +28,9 @@
       ],
       "scripts": [
         "../node_modules/jquery/dist/jquery.js",
-        "../node_modules/bootstrap/dist/js/bootstrap.js",
-        "../node_modules/slickgrid/lib/jquery-ui-1.11.3.js",
+        "../node_modules/jquery-ui-dist/jquery-ui.min.js",
         "../node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js",
+        "../node_modules/bootstrap/dist/js/bootstrap.js",
         "assets/lib/multiple-select/multiple-select.js"
       ],
       "environmentSource": "environments/environment.ts",
