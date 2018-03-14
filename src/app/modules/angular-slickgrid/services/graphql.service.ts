@@ -440,6 +440,10 @@ export class GraphqlService implements BackendService {
 
       // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
       const tmpSorterArray = currentSorters.map((sorter) => {
+        graphqlSorters.push({
+          field: sorter.columnId + '',
+          direction: sorter.direction
+        });
         return {
           columnId: sorter.columnId,
           sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
