@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "0.13.2",
+  "version": "0.13.3",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -44,6 +44,7 @@
     "flatpickr": "^4.0.6",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
+    "jquery-ui-dist": "^1.12.1",
     "lodash": "^4.17.4",
     "moment-mini": "^2.19.4",
     "rimraf": "^2.6.2",
