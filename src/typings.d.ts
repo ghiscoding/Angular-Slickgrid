@@ -6,4 +6,5 @@ interface NodeModule {
 }
 interface JQuery {
   slickgrid: (options: any) => any;
+  tooltip: (options: any) => any;
 }

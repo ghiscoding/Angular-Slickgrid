@@ -1,6 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Column, Filter, FilterArguments, FilterCallback, MultipleSelectOption, SearchTerm, SelectOption } from './../models/index';
-import $ from 'jquery';
 import { Injectable } from '@angular/core';
 
 // using external non-typed js libraries

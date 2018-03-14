@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { Editor } from './../models/index';
 
 // using external non-typed js libraries

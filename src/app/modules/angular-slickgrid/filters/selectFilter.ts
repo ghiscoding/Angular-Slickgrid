@@ -1,6 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Column, Filter, FilterArguments, FilterCallback, SearchTerm } from './../models/index';
-import $ from 'jquery';
 
 // using external non-typed js libraries
 declare var $: any;

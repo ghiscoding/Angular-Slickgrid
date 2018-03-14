@@ -1,5 +1,4 @@
 import { Column, Filter, FilterArguments, FilterCallback, SearchTerm } from './../modules/angular-slickgrid';
-import $ from 'jquery';
 
 // using external non-typed js libraries
 declare var $: any;

@@ -36,7 +36,6 @@ import { ResizerService } from './../services/resizer.service';
 import { SharedService } from '../services/shared.service';
 import { SortService } from './../services/sort.service';
 import { Subscription } from 'rxjs/Subscription';
-import $ from 'jquery';
 
 // using external non-typed js libraries
 declare var Slick: any;

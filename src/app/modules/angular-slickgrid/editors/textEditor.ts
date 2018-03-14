@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { Editor, KeyCode } from './../models/index';
 
 // using external non-typed js libraries

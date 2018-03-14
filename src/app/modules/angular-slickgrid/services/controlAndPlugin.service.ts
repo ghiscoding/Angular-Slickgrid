@@ -14,7 +14,6 @@ import {
   HeaderMenuOnBeforeMenuShowArgs,
   FileType
 } from './../models/index';
-import $ from 'jquery';
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './../services/utilities';
 

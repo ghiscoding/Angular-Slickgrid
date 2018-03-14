@@ -1,5 +1,4 @@
 import { Column, Filter, FilterArguments, FilterCallback, GridOption, SearchTerm } from './../models/index';
-import $ from 'jquery';
 
 // using external non-typed js libraries
 declare var $: any;

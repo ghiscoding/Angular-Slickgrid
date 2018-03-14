@@ -7,7 +7,6 @@ import {
   SelectOption
 } from './../models/index';
 import { findOrDefault } from '../services/index';
-import $ from 'jquery';
 
 // using external non-typed js libraries
 declare var $: any;

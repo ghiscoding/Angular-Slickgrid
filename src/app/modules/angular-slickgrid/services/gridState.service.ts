@@ -10,7 +10,9 @@ import {
 import { FilterService, SortService } from './../services/index';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
-import $ from 'jquery';
+
+// using external non-typed js libraries
+declare var $: any;
 
 export class GridStateService {
   private _grid: any;

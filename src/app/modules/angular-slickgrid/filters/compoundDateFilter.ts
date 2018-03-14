@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { mapFlatpickrDateFormatWithFieldType } from '../services/utilities';
 import { Column, Filter, FilterArguments, FilterCallback, FieldType, GridOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
-import $ from 'jquery';
 
 // importing Flatpickr works better with a 'require'
 declare function require(name: string);

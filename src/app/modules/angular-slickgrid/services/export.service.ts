@@ -14,7 +14,6 @@ import {
   HeaderMenuOnCommandArgs,
   HeaderMenuOnBeforeMenuShowArgs
 } from './../models/index';
-import $ from 'jquery';
 import { TranslateService } from '@ngx-translate/core';
 import { addWhiteSpaces, htmlEntityDecode } from './../services/utilities';
 import { TextEncoder } from 'text-encoding-utf-8';
