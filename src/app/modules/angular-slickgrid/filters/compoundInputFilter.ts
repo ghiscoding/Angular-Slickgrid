@@ -52,8 +52,9 @@ export class CompoundInputFilter implements Filter {
    * Clear the filter value
    */
   clear(triggerFilterKeyup = true) {
-    if (this.$filterElm) {
-      this.$filterElm.val('');
+    if (this.$filterElm && this.$selectOperatorElm) {
+      this.$selectOperatorElm.val(0);
+      this.$filterInputElm.val('');
       if (triggerFilterKeyup) {
         this.$filterElm.trigger('keyup');
       }
