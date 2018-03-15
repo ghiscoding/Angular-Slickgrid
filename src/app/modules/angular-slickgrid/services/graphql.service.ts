@@ -219,6 +219,13 @@ export class GraphqlService implements BackendService {
       paginationOptions = (this.options.paginationOptions || this.getInitPaginationOptions()) as GraphqlPaginationOption;
       paginationOptions.offset = 0;
     }
+
+    // save current pagination as Page 1 and page size as "first" set size
+    this._currentPagination = {
+      pageNumber: 1,
+      pageSize: paginationOptions.first
+    };
+
     this.updateOptions({ paginationOptions });
   }
 

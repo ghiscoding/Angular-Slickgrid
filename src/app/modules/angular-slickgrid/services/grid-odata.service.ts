@@ -54,9 +54,18 @@ export class GridOdataService implements BackendService {
   init(options: OdataOption, pagination?: Pagination, grid?: any): void {
     this._grid = grid;
     const mergedOptions = { ...this.defaultOptions, ...options };
-    this.odataService.options = { ...mergedOptions, top: mergedOptions.top || (pagination ? pagination.pageSize : null) || this.defaultOptions.top };
+    if (pagination && pagination.pageSize) {
+      mergedOptions.top = pagination.pageSize;
+    }
+    this.odataService.options = { ...mergedOptions, top: mergedOptions.top || this.defaultOptions.top };
     this.options = this.odataService.options;
     this.pagination = pagination;
+
+    // save current pagination as Page 1 and page size as "top"
+    this._currentPagination = {
+      pageNumber: 1,
+      pageSize: this.odataService.options.top || this.defaultOptions.top
+    };
 
     if (grid && grid.getColumns && grid.getOptions) {
       this._columnDefinitions = grid.getColumns() || options.columnDefinitions;
