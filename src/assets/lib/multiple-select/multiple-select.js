@@ -421,10 +421,6 @@
                     instance: that
                 });
 
-                if (that.options.single && that.options.isOpen && !that.options.keepOpen) {
-                    that.close();
-                }
-
                 if (that.options.single) {
                     var clickedVal = $(this).val();
                     that.$selectItems.filter(function() {
@@ -433,6 +429,10 @@
                         $(this).prop('checked', false);
                     });
                     that.update();
+                }
+
+                if (that.options.single && that.options.isOpen && !that.options.keepOpen) {
+                  that.close();
                 }
             });
         },

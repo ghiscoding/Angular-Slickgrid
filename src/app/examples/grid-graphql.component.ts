@@ -41,7 +41,6 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   constructor(private graphqlService: GraphqlService, private gridStateService: GridStateService, private translate: TranslateService) {
     this.selectedLanguage = this.translate.getDefaultLang();
     this.gridStateSub = this.gridStateService.onGridStateChanged.subscribe((data) => console.log(data));
-    // this.filterService.onFilterChanged.subscribe((data) => console.log(data));
   }
 
   ngOnDestroy() {
@@ -50,19 +49,11 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'users', field: 'user.firstName', fields: ['user.middleName', 'user.lastName'], headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string,
-        filter: {
-          type: FilterType.multipleSelect,
-          collection: [{ value: 0, label: 'John Doe'}, { value: 1, label: 'Michael Jr Donald'}, { value: 2, label: 'Jane Doe'}],
-          // searchTerms: [0]
-        }
-      },
       { id: 'name', field: 'name', headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string },
       { id: 'gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true,
         filter: {
           type: FilterType.singleSelect,
-          collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }],
-          searchTerm: 'female'
+          collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }]
         }
       },
       { id: 'company', field: 'company', headerKey: 'COMPANY',
@@ -70,8 +61,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         filterable: true,
         filter: {
           type: FilterType.multipleSelect,
-          collection: [{ value: 'acme', label: 'Acme'}, { value: 'abc', label: 'Company ABC'}, { value: 'xyz', label: 'Company XYZ'}],
-          searchTerms: ['abc']
+          collection: [{ value: 'acme', label: 'Acme'}, { value: 'abc', label: 'Company ABC'}, { value: 'xyz', label: 'Company XYZ'}]
         }
       },
       { id: 'billing.address.street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', filterable: true, sortable: true },
@@ -97,12 +87,11 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         pageSize: defaultPageSize,
         totalItems: 0
       },
-      /*
+
       presets: {
         // you can also type operator as string, e.g.: operator: 'EQ'
         filters: [
           { columnId: 'gender', searchTerm: 'male', operator: OperatorType.equal },
-      //    { columnId: 'users', searchTerm: 'John Doe', operator: OperatorType.contains },
           { columnId: 'name', searchTerm: 'John Doe', operator: OperatorType.contains },
           { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' }
         ],
@@ -113,7 +102,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         ],
         pagination: { pageNumber: 2, pageSize: 20 }
       },
-      */
+
       backendServiceApi: {
         service: this.graphqlService,
         options: this.getBackendOptions(this.isWithCursor),
