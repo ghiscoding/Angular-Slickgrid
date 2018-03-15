@@ -876,11 +876,9 @@ var CompoundDateFilter = /** @class */ (function () {
     };
     CompoundDateFilter.prototype.clear = function (triggerFilterKeyup) {
         if (triggerFilterKeyup === void 0) { triggerFilterKeyup = true; }
-        if (this.$filterElm) {
-            this.$filterElm.val('');
-            if (triggerFilterKeyup) {
-                this.$filterElm.trigger('keyup');
-            }
+        if (this.flatInstance && this.$selectOperatorElm) {
+            this.$selectOperatorElm.val(0);
+            this.flatInstance.clear();
         }
     };
     CompoundDateFilter.prototype.destroy = function () {
@@ -1031,8 +1029,9 @@ var CompoundInputFilter = /** @class */ (function () {
     };
     CompoundInputFilter.prototype.clear = function (triggerFilterKeyup) {
         if (triggerFilterKeyup === void 0) { triggerFilterKeyup = true; }
-        if (this.$filterElm) {
-            this.$filterElm.val('');
+        if (this.$filterElm && this.$selectOperatorElm) {
+            this.$selectOperatorElm.val(0);
+            this.$filterInputElm.val('');
             if (triggerFilterKeyup) {
                 this.$filterElm.trigger('keyup');
             }
@@ -1378,31 +1377,37 @@ var SelectFilter = /** @class */ (function () {
 }());
 var SingleSelectFilter = /** @class */ (function () {
     function SingleSelectFilter(translate) {
+        var _this = this;
         this.translate = translate;
+        this.isFilled = false;
         this.defaultOptions = {
             container: 'body',
             filter: false,
             maxHeight: 200,
-            single: true
+            single: true,
+            onClose: function () {
+                var selectedItems = _this.$filterElm.multipleSelect('getSelects');
+                var selectedItem = '';
+                if (Array.isArray(selectedItems) && selectedItems.length > 0) {
+                    selectedItem = selectedItems[0];
+                    _this.isFilled = true;
+                    _this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
+                }
+                else {
+                    _this.isFilled = false;
+                    _this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
+                }
+                _this.callback(undefined, { columnDef: _this.columnDef, operator: 'EQ', searchTerm: selectedItem });
+            }
         };
     }
     SingleSelectFilter.prototype.init = function (args) {
-        var _this = this;
         this.grid = args.grid;
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.searchTerm = args.searchTerm;
         var filterTemplate = this.buildTemplateHtmlString();
         this.createDomElement(filterTemplate);
-        this.$filterElm.change(function (e) {
-            if (e && e.target && e.target.value) {
-                _this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
-            }
-            else {
-                _this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
-            }
-            _this.callback(e, { columnDef: _this.columnDef, operator: 'EQ' });
-        });
     };
     SingleSelectFilter.prototype.clear = function (triggerFilterChange) {
         if (triggerFilterChange === void 0) { triggerFilterChange = true; }
@@ -1441,6 +1446,9 @@ var SingleSelectFilter = /** @class */ (function () {
             var selected = (option[valueName] === _this.searchTerm) ? 'selected' : '';
             var textLabel = ((option.labelKey || _this.columnDef.filter.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
             options += "<option value=\"" + option[valueName] + "\" " + selected + ">" + textLabel + "</option>";
+            if (selected) {
+                _this.isFilled = true;
+            }
         });
         return "<select class=\"ms-filter search-filter\">" + options + "</select>";
     };
@@ -2504,6 +2512,10 @@ var GraphqlService = /** @class */ (function () {
             paginationOptions = ((this.options.paginationOptions || this.getInitPaginationOptions()));
             paginationOptions.offset = 0;
         }
+        this._currentPagination = {
+            pageNumber: 1,
+            pageSize: paginationOptions.first
+        };
         this.updateOptions({ paginationOptions: paginationOptions });
     };
     GraphqlService.prototype.updateOptions = function (serviceOptions) {
@@ -2633,6 +2645,10 @@ var GraphqlService = /** @class */ (function () {
             currentSorters = presetSorters;
             currentSorters.forEach(function (sorter) { return sorter.direction = (sorter.direction.toUpperCase()); });
             var tmpSorterArray = currentSorters.map(function (sorter) {
+                graphqlSorters.push({
+                    field: sorter.columnId + '',
+                    direction: sorter.direction
+                });
                 return {
                     columnId: sorter.columnId,
                     sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
@@ -2916,9 +2932,16 @@ var GridOdataService = /** @class */ (function () {
     GridOdataService.prototype.init = function (options, pagination, grid) {
         this._grid = grid;
         var mergedOptions = Object.assign({}, this.defaultOptions, options);
-        this.odataService.options = Object.assign({}, mergedOptions, { top: mergedOptions.top || (pagination ? pagination.pageSize : null) || this.defaultOptions.top });
+        if (pagination && pagination.pageSize) {
+            mergedOptions.top = pagination.pageSize;
+        }
+        this.odataService.options = Object.assign({}, mergedOptions, { top: mergedOptions.top || this.defaultOptions.top });
         this.options = this.odataService.options;
         this.pagination = pagination;
+        this._currentPagination = {
+            pageNumber: 1,
+            pageSize: this.odataService.options.top || this.defaultOptions.top
+        };
         if (grid && grid.getColumns && grid.getOptions) {
             this._columnDefinitions = grid.getColumns() || options["columnDefinitions"];
             this._columnDefinitions = this._columnDefinitions.filter(function (column) { return !column.excludeFromQuery; });
@@ -3103,6 +3126,10 @@ var GridOdataService = /** @class */ (function () {
             sortByArray = presetSorters;
             sortByArray.forEach(function (sorter) { return sorter.direction = (sorter.direction.toLowerCase()); });
             var tmpSorterArray = sortByArray.map(function (sorter) {
+                sorterArray.push({
+                    columnId: sorter.columnId + '',
+                    direction: sorter.direction
+                });
                 return {
                     columnId: sorter.columnId,
                     sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
@@ -4918,6 +4945,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._eventHandler = new Slick.EventHandler();
         this.groupingDefinition = {};
         this.showPagination = false;
+        this.isGridInitialized = false;
         this.onDataviewCreated = new EventEmitter();
         this.onGridCreated = new EventEmitter();
         this.onGridInitialized = new EventEmitter();
@@ -4928,6 +4956,19 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.gridHeight = 100;
         this.gridWidth = 600;
     }
+    Object.defineProperty(AngularSlickgridComponent.prototype, "columnDefinitions", {
+        get: function () {
+            return this._columnDefinitions;
+        },
+        set: function (columnDefinitions) {
+            this._columnDefinitions = columnDefinitions;
+            if (this.isGridInitialized) {
+                this.updateColumnDefinitionsList(columnDefinitions);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(AngularSlickgridComponent.prototype, "dataset", {
         get: function () {
             return this._dataView.getItems();
@@ -4968,13 +5009,17 @@ var AngularSlickgridComponent = /** @class */ (function () {
         }
     };
     AngularSlickgridComponent.prototype.ngAfterViewInit = function () {
+        this.initialization();
+        this.isGridInitialized = true;
+    };
+    AngularSlickgridComponent.prototype.initialization = function () {
         this._dataset = this._dataset || [];
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
         this._dataView = new Slick.Data.DataView();
-        this.controlAndPluginService.createPluginBeforeGridCreation(this.columnDefinitions, this.gridOptions);
-        this.grid = new Slick.Grid("#" + this.gridId, this._dataView, this.columnDefinitions, this.gridOptions);
-        this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this.gridOptions, this._dataView);
+        this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+        this.grid = new Slick.Grid("#" + this.gridId, this._dataView, this._columnDefinitions, this.gridOptions);
+        this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
         this.onGridCreated.emit(this.grid);
         this.onDataviewCreated.emit(this._dataView);
@@ -4982,9 +5027,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataView.beginUpdate();
         this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
         this._dataView.endUpdate();
-        this.sharedService.init(this.grid, this._dataView, this.gridOptions, this.columnDefinitions);
+        this.sharedService.init(this.grid, this._dataView, this.gridOptions, this._columnDefinitions);
         this.attachResizeHook(this.grid, this.gridOptions);
-        this.gridExtraService.init(this.grid, this.columnDefinitions, this.gridOptions, this._dataView);
+        this.gridExtraService.init(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
         if (this.gridOptions.enableTranslate) {
             this.controlAndPluginService.translateHeaders();
         }
@@ -5023,12 +5068,12 @@ var AngularSlickgridComponent = /** @class */ (function () {
             }
         });
         if (gridOptions.enableSorting) {
-            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView, this.columnDefinitions);
+            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView, this._columnDefinitions);
         }
         if (gridOptions.enableFiltering) {
-            this.filterService.init(grid, gridOptions, this.columnDefinitions);
+            this.filterService.init(grid, gridOptions, this._columnDefinitions);
             if (gridOptions.presets && gridOptions.presets.filters) {
-                this.filterService.populateColumnFilterSearchTerms(gridOptions, this.columnDefinitions);
+                this.filterService.populateColumnFilterSearchTerms(gridOptions, this._columnDefinitions);
             }
             (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, gridOptions) : this.filterService.attachLocalOnFilter(grid, gridOptions, this._dataView);
         }
@@ -5159,6 +5204,12 @@ var AngularSlickgridComponent = /** @class */ (function () {
             }
         }
     };
+    AngularSlickgridComponent.prototype.updateColumnDefinitionsList = function (dynamicColumns) {
+        this.grid.setColumns(dynamicColumns);
+        if (this.gridOptions.enableTranslate) {
+            this.controlAndPluginService.translateHeaders();
+        }
+    };
     AngularSlickgridComponent.prototype.showHeaderRow = function (isShowing) {
         this.grid.setHeaderRowVisibility(isShowing);
         return isShowing;
@@ -5199,10 +5250,10 @@ AngularSlickgridComponent.propDecorators = {
     "onAfterGridDestroyed": [{ type: Output },],
     "onGridStateServiceChanged": [{ type: Output },],
     "gridId": [{ type: Input },],
-    "columnDefinitions": [{ type: Input },],
     "gridOptions": [{ type: Input },],
     "gridHeight": [{ type: Input },],
     "gridWidth": [{ type: Input },],
+    "columnDefinitions": [{ type: Input },],
     "dataset": [{ type: Input },],
 };
 var AngularSlickgridModule = /** @class */ (function () {

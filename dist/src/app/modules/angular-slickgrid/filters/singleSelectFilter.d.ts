@@ -8,6 +8,7 @@ export declare class SingleSelectFilter implements Filter {
     columnDef: Column;
     callback: FilterCallback;
     defaultOptions: MultipleSelectOption;
+    isFilled: boolean;
     constructor(translate: TranslateService);
     /**
      * Initialize the Filter

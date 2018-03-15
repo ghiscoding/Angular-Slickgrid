@@ -44,6 +44,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private translate;
     private forRootConfig;
     private _dataset;
+    private _columnDefinitions;
     private _dataView;
     private _eventHandler;
     private _translateSubscriber;
@@ -54,6 +55,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridWidthString: string;
     groupingDefinition: any;
     showPagination: boolean;
+    isGridInitialized: boolean;
     onDataviewCreated: EventEmitter<any>;
     onGridCreated: EventEmitter<any>;
     onGridInitialized: EventEmitter<any>;
@@ -62,16 +64,17 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     onAfterGridDestroyed: EventEmitter<boolean>;
     onGridStateServiceChanged: EventEmitter<GridStateChange>;
     gridId: string;
-    columnDefinitions: Column[];
     gridOptions: GridOption;
     gridHeight: number;
     gridWidth: number;
+    columnDefinitions: Column[];
     dataset: any[];
     constructor(controlAndPluginService: ControlAndPluginService, exportService: ExportService, filterService: FilterService, gridExtraService: GridExtraService, gridEventService: GridEventService, gridStateService: GridStateService, resizer: ResizerService, sharedService: SharedService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
     ngOnInit(): void;
     ngOnDestroy(): void;
     destroy(): void;
     ngAfterViewInit(): void;
+    initialization(): void;
     /**
      * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
      * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
@@ -87,6 +90,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
      * @param dataset
      */
     refreshGridData(dataset: any[], totalCount?: number): void;
+    updateColumnDefinitionsList(dynamicColumns: any): void;
     /** Toggle the filter row displayed on first row
      * @param isShowing
      */

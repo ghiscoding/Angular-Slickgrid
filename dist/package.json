@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "0.13.3",
+  "version": "0.13.4",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -11,7 +11,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --port 4300 --open",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",

@@ -1301,11 +1301,9 @@ class CompoundDateFilter {
      * @return {?}
      */
     clear(triggerFilterKeyup = true) {
-        if (this.$filterElm) {
-            this.$filterElm.val('');
-            if (triggerFilterKeyup) {
-                this.$filterElm.trigger('keyup');
-            }
+        if (this.flatInstance && this.$selectOperatorElm) {
+            this.$selectOperatorElm.val(0);
+            this.flatInstance.clear();
         }
     }
     /**
@@ -1533,8 +1531,9 @@ class CompoundInputFilter {
      * @return {?}
      */
     clear(triggerFilterKeyup = true) {
-        if (this.$filterElm) {
-            this.$filterElm.val('');
+        if (this.$filterElm && this.$selectOperatorElm) {
+            this.$selectOperatorElm.val(0);
+            this.$filterInputElm.val('');
             if (triggerFilterKeyup) {
                 this.$filterElm.trigger('keyup');
             }
@@ -2056,13 +2055,28 @@ class SingleSelectFilter {
      */
     constructor(translate) {
         this.translate = translate;
+        this.isFilled = false;
         // default options used by this Filter, user can overwrite any of these by passing "otions"
         this.defaultOptions = {
             container: 'body',
             filter: false,
             // input search term on top of the select option list
             maxHeight: 200,
-            single: true
+            single: true,
+            onClose: () => {
+                const /** @type {?} */ selectedItems = this.$filterElm.multipleSelect('getSelects');
+                let /** @type {?} */ selectedItem = '';
+                if (Array.isArray(selectedItems) && selectedItems.length > 0) {
+                    selectedItem = selectedItems[0];
+                    this.isFilled = true;
+                    this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
+                }
+                else {
+                    this.isFilled = false;
+                    this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
+                }
+                this.callback(undefined, { columnDef: this.columnDef, operator: 'EQ', searchTerm: selectedItem });
+            }
         };
     }
     /**
@@ -2079,17 +2093,6 @@ class SingleSelectFilter {
         const /** @type {?} */ filterTemplate = this.buildTemplateHtmlString();
         // step 2, create the DOM Element of the filter & pre-load search term
         this.createDomElement(filterTemplate);
-        // step 3, subscribe to the change event and run the callback when that happens
-        // also add/remove "filled" class for styling purposes
-        this.$filterElm.change((e) => {
-            if (e && e.target && e.target.value) {
-                this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
-            }
-            else {
-                this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
-            }
-            this.callback(e, { columnDef: this.columnDef, operator: 'EQ' });
-        });
     }
     /**
      * Clear the filter values
@@ -2147,6 +2150,10 @@ class SingleSelectFilter {
             const /** @type {?} */ textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
             // html text of each select option
             options += `<option value="${option[valueName]}" ${selected}>${textLabel}</option>`;
+            // if there's a search term, we will add the "filled" class for styling purposes
+            if (selected) {
+                this.isFilled = true;
+            }
         });
         return `<select class="ms-filter search-filter">${options}</select>`;
     }
@@ -3503,6 +3510,11 @@ class GraphqlService {
             paginationOptions = /** @type {?} */ ((this.options.paginationOptions || this.getInitPaginationOptions()));
             paginationOptions.offset = 0;
         }
+        // save current pagination as Page 1 and page size as "first" set size
+        this._currentPagination = {
+            pageNumber: 1,
+            pageSize: paginationOptions.first
+        };
         this.updateOptions({ paginationOptions });
     }
     /**
@@ -3682,6 +3694,10 @@ class GraphqlService {
             currentSorters.forEach((sorter) => sorter.direction = /** @type {?} */ (sorter.direction.toUpperCase()));
             // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
             const /** @type {?} */ tmpSorterArray = currentSorters.map((sorter) => {
+                graphqlSorters.push({
+                    field: sorter.columnId + '',
+                    direction: sorter.direction
+                });
                 return {
                     columnId: sorter.columnId,
                     sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
@@ -4062,9 +4078,17 @@ class GridOdataService {
     init(options, pagination, grid) {
         this._grid = grid;
         const /** @type {?} */ mergedOptions = Object.assign({}, this.defaultOptions, options);
-        this.odataService.options = Object.assign({}, mergedOptions, { top: mergedOptions.top || (pagination ? pagination.pageSize : null) || this.defaultOptions.top });
+        if (pagination && pagination.pageSize) {
+            mergedOptions.top = pagination.pageSize;
+        }
+        this.odataService.options = Object.assign({}, mergedOptions, { top: mergedOptions.top || this.defaultOptions.top });
         this.options = this.odataService.options;
         this.pagination = pagination;
+        // save current pagination as Page 1 and page size as "top"
+        this._currentPagination = {
+            pageNumber: 1,
+            pageSize: this.odataService.options.top || this.defaultOptions.top
+        };
         if (grid && grid.getColumns && grid.getOptions) {
             this._columnDefinitions = grid.getColumns() || options["columnDefinitions"];
             this._columnDefinitions = this._columnDefinitions.filter((column) => !column.excludeFromQuery);
@@ -4332,6 +4356,10 @@ class GridOdataService {
             sortByArray.forEach((sorter) => sorter.direction = /** @type {?} */ (sorter.direction.toLowerCase()));
             // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
             const /** @type {?} */ tmpSorterArray = sortByArray.map((sorter) => {
+                sorterArray.push({
+                    columnId: sorter.columnId + '',
+                    direction: sorter.direction
+                });
                 return {
                     columnId: sorter.columnId,
                     sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
@@ -7093,6 +7121,7 @@ class AngularSlickgridComponent {
         this._eventHandler = new Slick.EventHandler();
         this.groupingDefinition = {};
         this.showPagination = false;
+        this.isGridInitialized = false;
         this.onDataviewCreated = new EventEmitter();
         this.onGridCreated = new EventEmitter();
         this.onGridInitialized = new EventEmitter();
@@ -7102,6 +7131,22 @@ class AngularSlickgridComponent {
         this.onGridStateServiceChanged = new EventEmitter();
         this.gridHeight = 100;
         this.gridWidth = 600;
+    }
+    /**
+     * @param {?} columnDefinitions
+     * @return {?}
+     */
+    set columnDefinitions(columnDefinitions) {
+        this._columnDefinitions = columnDefinitions;
+        if (this.isGridInitialized) {
+            this.updateColumnDefinitionsList(columnDefinitions);
+        }
+    }
+    /**
+     * @return {?}
+     */
+    get columnDefinitions() {
+        return this._columnDefinitions;
     }
     /**
      * @param {?} dataset
@@ -7158,14 +7203,21 @@ class AngularSlickgridComponent {
      * @return {?}
      */
     ngAfterViewInit() {
+        this.initialization();
+        this.isGridInitialized = true;
+    }
+    /**
+     * @return {?}
+     */
+    initialization() {
         // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
         this._dataset = this._dataset || [];
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
         this._dataView = new Slick.Data.DataView();
-        this.controlAndPluginService.createPluginBeforeGridCreation(this.columnDefinitions, this.gridOptions);
-        this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this.columnDefinitions, this.gridOptions);
-        this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this.columnDefinitions, this.gridOptions, this._dataView);
+        this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+        this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
+        this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
         // emit the Grid & DataView object to make them available in parent component
         this.onGridCreated.emit(this.grid);
@@ -7175,11 +7227,11 @@ class AngularSlickgridComponent {
         this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
         this._dataView.endUpdate();
         // pass all necessary options to the shared service
-        this.sharedService.init(this.grid, this._dataView, this.gridOptions, this.columnDefinitions);
+        this.sharedService.init(this.grid, this._dataView, this.gridOptions, this._columnDefinitions);
         // attach resize ONLY after the dataView is ready
         this.attachResizeHook(this.grid, this.gridOptions);
         // attach grid extra service
-        this.gridExtraService.init(this.grid, this.columnDefinitions, this.gridOptions, this._dataView);
+        this.gridExtraService.init(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
         // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
         if (this.gridOptions.enableTranslate) {
             this.controlAndPluginService.translateHeaders();
@@ -7236,14 +7288,14 @@ class AngularSlickgridComponent {
         });
         // attach external sorting (backend) when available or default onSort (dataView)
         if (gridOptions.enableSorting) {
-            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView, this.columnDefinitions);
+            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView, this._columnDefinitions);
         }
         // attach external filter (backend) when available or default onFilter (dataView)
         if (gridOptions.enableFiltering) {
-            this.filterService.init(grid, gridOptions, this.columnDefinitions);
+            this.filterService.init(grid, gridOptions, this._columnDefinitions);
             // if user entered some "presets", we need to reflect them all in the DOM
             if (gridOptions.presets && gridOptions.presets.filters) {
-                this.filterService.populateColumnFilterSearchTerms(gridOptions, this.columnDefinitions);
+                this.filterService.populateColumnFilterSearchTerms(gridOptions, this._columnDefinitions);
             }
             (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid, gridOptions) : this.filterService.attachLocalOnFilter(grid, gridOptions, this._dataView);
         }
@@ -7408,6 +7460,16 @@ class AngularSlickgridComponent {
         }
     }
     /**
+     * @param {?} dynamicColumns
+     * @return {?}
+     */
+    updateColumnDefinitionsList(dynamicColumns) {
+        this.grid.setColumns(dynamicColumns);
+        if (this.gridOptions.enableTranslate) {
+            this.controlAndPluginService.translateHeaders();
+        }
+    }
+    /**
      * Toggle the filter row displayed on first row
      * @param {?} isShowing
      * @return {?}
@@ -7465,10 +7527,10 @@ AngularSlickgridComponent.propDecorators = {
     "onAfterGridDestroyed": [{ type: Output },],
     "onGridStateServiceChanged": [{ type: Output },],
     "gridId": [{ type: Input },],
-    "columnDefinitions": [{ type: Input },],
     "gridOptions": [{ type: Input },],
     "gridHeight": [{ type: Input },],
     "gridWidth": [{ type: Input },],
+    "columnDefinitions": [{ type: Input },],
     "dataset": [{ type: Input },],
 };
 
