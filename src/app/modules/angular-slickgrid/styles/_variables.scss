@@ -57,7 +57,7 @@ $header-input-padding:                  0 6px !default;                       //
 $header-row-background-color:           #ffffff !default;
 $header-row-count:                      2 !default;                           // how many rows to display on the header
 $header-row-filter-padding:             4px !default;
-$header-column-height:                  (16px * $header-row-count) !default;  // header is calculated by rows to show
+$header-column-height:                  (17px * $header-row-count) !default;  // header is calculated by rows to show
 $header-border-top:                     0 none !default;                      // header, column titles, that is without the Filters
 $header-border-right:                   0 none !default;
 $header-border-bottom:                  0 none !default;
