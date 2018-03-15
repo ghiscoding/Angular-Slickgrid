@@ -321,6 +321,10 @@ export class GridOdataService implements BackendService {
 
       // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
       const tmpSorterArray = sortByArray.map((sorter) => {
+        sorterArray.push({
+          columnId: sorter.columnId + '',
+          direction: sorter.direction
+        });
         return {
           columnId: sorter.columnId,
           sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
