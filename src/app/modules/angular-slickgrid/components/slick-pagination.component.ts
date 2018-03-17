@@ -12,7 +12,6 @@ import { Subscription } from 'rxjs/Subscription';
 @Injectable()
 export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   private _filterSubcription: Subscription;
-  private _sorterSubcription: Subscription;
   private _gridPaginationOptions: GridOption;
   private _isFirstRender = true;
   @Output() onPaginationChanged = new EventEmitter<Pagination>();
@@ -54,9 +53,6 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
 
     // Subscribe to Event Emitter of Filter & Sort changed, go back to page 1 when that happen
     this._filterSubcription = this.filterService.onFilterChanged.subscribe((data) => {
-      this.refreshPagination(true);
-    });
-    this._sorterSubcription = this.sortService.onSortChanged.subscribe((data) => {
       this.refreshPagination(true);
     });
   }
@@ -105,9 +101,6 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     if (this._filterSubcription) {
       this._filterSubcription.unsubscribe();
     }
-    if (this._sorterSubcription) {
-      this._sorterSubcription.unsubscribe();
-    }
   }
 
   onChangeItemPerPage(event: any) {
@@ -139,8 +132,10 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
           this.pageNumber = 1;
         }
 
-        // also reset the "offset" of backend service
-        backendApi.service.resetPaginationOptions();
+        // when page number is set to 1 then also reset the "offset" of backend service
+        if (this.pageNumber === 1) {
+          backendApi.service.resetPaginationOptions();
+        }
       }
 
       // calculate and refresh the multiple properties of the pagination UI
