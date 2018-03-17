@@ -1,18 +1,16 @@
 import { Column, Formatter } from './../models/index';
-import { TranslateService } from '@ngx-translate/core';
 
-/** Takes a cell value and translates it (i18n). Requires an instance of the Translate Service:: `params: { i18n: this.translate } */
+/** Takes a cell value and translates it with the "ngx-translate" service */
 export const translateFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
   const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
   const columnParams = columnDef.params || {};
   const gridParams = gridOptions.params || {};
-
-  if ((!columnParams.i18n || !(columnParams.i18n instanceof TranslateService)) && (!gridParams.i18n || !(gridParams.i18n instanceof TranslateService))) {
-    throw new Error(`The translate formatter requires the ngx-translate "TranslateService" to be provided as a Column Definition params or a Grid Option params.
-    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translateService }}`);
-  }
-
   const translate = gridParams.i18n || columnParams.i18n;
+
+  if (!translate || typeof translate.instant !== 'function') {
+    throw new Error(`The translate formatter requires the "ngx-translate" Service to be provided as a Grid Options or Column Definition "params".
+    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translate }}`);
+  }
 
   // make sure the value is a string (for example a boolean value would throw an error)
   if (value !== undefined && typeof value !== 'string') {
