@@ -178,6 +178,16 @@ export class FilterService {
       const searchTerm = (!!matches) ? matches[2] : '';
       const lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
 
+      if (searchTerms && searchTerms.length > 0) {
+        fieldSearchValue = searchTerms.join(',');
+      } else if (typeof fieldSearchValue === 'string') {
+        // escaping the search value
+        fieldSearchValue = fieldSearchValue.replace(`'`, `''`); // escape single quotes by doubling them
+        if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*') {
+          operator = (operator === '*' || operator === '*z') ? OperatorType.endsWith : OperatorType.startsWith;
+        }
+      }
+
       // when using a Filter that is not a custom type, we want to make sure that we have a default operator type
       // for example a multiple-select should always be using IN, while a single select will use an EQ
       const filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;

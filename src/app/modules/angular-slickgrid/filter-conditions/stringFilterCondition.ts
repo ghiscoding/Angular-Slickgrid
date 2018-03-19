@@ -1,4 +1,4 @@
-import { FilterCondition, FilterConditionOption } from '../models/index';
+import { FilterCondition, FilterConditionOption, OperatorType } from '../models/index';
 import { testFilterCondition } from './filterUtilities';
 
 export const stringFilterCondition: FilterCondition = (options: FilterConditionOption) => {
@@ -9,9 +9,9 @@ export const stringFilterCondition: FilterCondition = (options: FilterConditionO
   const cellValue = options.cellValue.toLowerCase();
   const searchTerm = (typeof options.searchTerm === 'string') ? options.searchTerm.toLowerCase() : options.searchTerm;
 
-  if (options.operator === '*') {
+  if (options.operator === '*' || options.operator === OperatorType.endsWith) {
     return cellValue.endsWith(searchTerm);
-  } else if (options.operator === '' && options.cellValueLastChar === '*') {
+  } else if ((options.operator === '' && options.cellValueLastChar === '*') || options.operator === OperatorType.startsWith) {
     return cellValue.startsWith(searchTerm);
   } else if (options.operator === '') {
     return cellValue.includes(searchTerm);

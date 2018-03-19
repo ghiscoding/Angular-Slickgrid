@@ -48,7 +48,9 @@ export class GridClientSideComponent implements OnInit {
     }
 
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'title', filterable: true, sortable: true, type: FieldType.string, minWidth: 45 },
+      { id: 'title', name: 'Title', field: 'title', sortable: true, minWidth: 55,
+        type: FieldType.string, filterable: true, filter: { type: FilterType.compoundInput }
+      },
       { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80,
         type: FieldType.string,
         filter: {
