@@ -61,5 +61,5 @@ export declare class FilterService {
      */
     populateColumnFilterSearchTerms(gridOptions: GridOption, columnDefinitions: Column[]): Column[];
     private updateColumnFilters(searchTerm, searchTerms, columnDef);
-    private triggerEvent(evt, args, e);
+    private triggerEvent(slickEvent, args, e);
 }

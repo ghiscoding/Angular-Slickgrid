@@ -1344,7 +1344,14 @@ class CompoundDateFilter {
             locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
             onChange: (selectedDates, dateStr, instance) => {
                 this._currentValue = dateStr;
-                this.onTriggerEvent(undefined);
+                // when using the time picker, we can simulate a keyup event to avoid multiple backend request
+                // since backend request are only executed after user start typing, changing the time should be treated the same way
+                if (pickerOptions.enableTime) {
+                    this.onTriggerEvent(new CustomEvent('keyup'));
+                }
+                else {
+                    this.onTriggerEvent(undefined);
+                }
             },
         };
         // add the time picker when format is UTC (Z) or has the 'h' (meaning hours)
@@ -2690,14 +2697,20 @@ class FilterService {
         }
     }
     /**
-     * @param {?} evt
+     * @param {?} slickEvent
      * @param {?} args
      * @param {?} e
      * @return {?}
      */
-    triggerEvent(evt, args, e) {
-        e = e || new Slick.EventData();
-        return evt.notify(args, e, args.grid);
+    triggerEvent(slickEvent, args, e) {
+        slickEvent = slickEvent || new Slick.Event();
+        // event might have been created as a CustomEvent (e.g. CompoundDateFilter), without being a valid Slick.EventData.
+        // if so we will create a new Slick.EventData and merge it with that CustomEvent to avoid having SlickGrid errors
+        let /** @type {?} */ event = e;
+        if (e && typeof e.isPropagationStopped !== 'function') {
+            event = $.extend({}, new Slick.EventData(), e);
+        }
+        slickEvent.notify(args, event, args.grid);
     }
 }
 FilterService.decorators = [

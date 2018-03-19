@@ -970,7 +970,12 @@ var CompoundDateFilter = /** @class */ (function () {
             locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
             onChange: function (selectedDates, dateStr, instance) {
                 _this._currentValue = dateStr;
-                _this.onTriggerEvent(undefined);
+                if (pickerOptions.enableTime) {
+                    _this.onTriggerEvent(new CustomEvent('keyup'));
+                }
+                else {
+                    _this.onTriggerEvent(undefined);
+                }
             },
         };
         if (outputFormat && (outputFormat === 'Z' || outputFormat.toLowerCase().includes('h'))) {
@@ -1939,9 +1944,13 @@ var FilterService = /** @class */ (function () {
             };
         }
     };
-    FilterService.prototype.triggerEvent = function (evt, args, e) {
-        e = e || new Slick.EventData();
-        return evt.notify(args, e, args.grid);
+    FilterService.prototype.triggerEvent = function (slickEvent, args, e) {
+        slickEvent = slickEvent || new Slick.Event();
+        var event = e;
+        if (e && typeof e.isPropagationStopped !== 'function') {
+            event = $.extend({}, new Slick.EventData(), e);
+        }
+        slickEvent.notify(args, event, args.grid);
     };
     return FilterService;
 }());
