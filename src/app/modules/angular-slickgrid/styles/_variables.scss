@@ -75,7 +75,7 @@ $icon-font-size:                        14px !default;
 $icon-sort-asc:                         "\f0d8" !default;
 $icon-sort-desc:                        "\f0d7" !default;
 $icon-sort-color:                       rgb(76, 128, 190) !default;
-$icon-sort-position-right:              10px;
+$icon-sort-position-right:              10px !default;
 $icon-sort-position-top:                ((15px * $header-row-count) - 15px) !default;
 $table-background:                      transparent !default;
 $container-border:                      0px solid $border-color !default;

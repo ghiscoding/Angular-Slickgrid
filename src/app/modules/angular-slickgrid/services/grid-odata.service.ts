@@ -148,7 +148,7 @@ export class GridOdataService implements BackendService {
    * PAGINATION
    */
   onPaginationChanged(event: Event, args: PaginationChangedArgs) {
-    const pageSize = +args.pageSize || DEFAULT_PAGE_SIZE;
+    const pageSize = +(args.pageSize || DEFAULT_PAGE_SIZE);
     this.updatePagination(args.newPage, pageSize);
 
     // build the OData query which we will use in the WebAPI callback
