@@ -973,7 +973,7 @@ var CompoundDateFilter = /** @class */ (function () {
                 _this.onTriggerEvent(undefined);
             },
         };
-        if (outputFormat === 'Z' || outputFormat.includes('h')) {
+        if (outputFormat && (outputFormat === 'Z' || outputFormat.toLowerCase().includes('h'))) {
             pickerOptions.enableTime = true;
         }
         var placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
