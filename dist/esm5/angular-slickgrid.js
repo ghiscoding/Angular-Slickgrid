@@ -108,16 +108,14 @@ var FilterType = {
     multipleSelect: 2,
     singleSelect: 3,
     custom: 4,
-    inputNoPlaceholder: 5,
-    compoundDate: 6,
-    compoundInput: 7,
+    compoundDate: 5,
+    compoundInput: 6,
 };
 FilterType[FilterType.input] = "input";
 FilterType[FilterType.select] = "select";
 FilterType[FilterType.multipleSelect] = "multipleSelect";
 FilterType[FilterType.singleSelect] = "singleSelect";
 FilterType[FilterType.custom] = "custom";
-FilterType[FilterType.inputNoPlaceholder] = "inputNoPlaceholder";
 FilterType[FilterType.compoundDate] = "compoundDate";
 FilterType[FilterType.compoundInput] = "compoundInput";
 var FormElementType = {
@@ -801,10 +799,10 @@ var stringFilterCondition = function (options) {
     options.cellValue = (options.cellValue === undefined || options.cellValue === null) ? '' : options.cellValue.toString();
     var cellValue = options.cellValue.toLowerCase();
     var searchTerm = (typeof options.searchTerm === 'string') ? options.searchTerm.toLowerCase() : options.searchTerm;
-    if (options.operator === '*') {
+    if (options.operator === '*' || options.operator === OperatorType.endsWith) {
         return cellValue.endsWith(searchTerm);
     }
-    else if (options.operator === '' && options.cellValueLastChar === '*') {
+    else if ((options.operator === '' && options.cellValueLastChar === '*') || options.operator === OperatorType.startsWith) {
         return cellValue.startsWith(searchTerm);
     }
     else if (options.operator === '') {
@@ -884,6 +882,7 @@ var CompoundDateFilter = /** @class */ (function () {
     CompoundDateFilter.prototype.destroy = function () {
         if (this.$filterElm) {
             this.$filterElm.off('keyup').remove();
+            this.$selectOperatorElm.off('change').remove();
         }
     };
     CompoundDateFilter.prototype.setValues = function (values) {
@@ -930,13 +929,13 @@ var CompoundDateFilter = /** @class */ (function () {
     };
     CompoundDateFilter.prototype.getOptionValues = function () {
         return [
-            { operator: '', description: '' },
-            { operator: '=', description: '' },
-            { operator: '<', description: '' },
-            { operator: '<=', description: '' },
-            { operator: '>', description: '' },
-            { operator: '>=', description: '' },
-            { operator: '<>', description: '' }
+            { operator: (''), description: '' },
+            { operator: ('='), description: '' },
+            { operator: ('<'), description: '' },
+            { operator: ('<='), description: '' },
+            { operator: ('>'), description: '' },
+            { operator: ('>='), description: '' },
+            { operator: ('<>'), description: '' }
         ];
     };
     CompoundDateFilter.prototype.createDomElement = function () {
@@ -1040,6 +1039,7 @@ var CompoundInputFilter = /** @class */ (function () {
     CompoundInputFilter.prototype.destroy = function () {
         if (this.$filterElm) {
             this.$filterElm.off('keyup').remove();
+            this.$selectOperatorElm.off('change').remove();
         }
     };
     CompoundInputFilter.prototype.setValues = function (values) {
@@ -1065,21 +1065,21 @@ var CompoundInputFilter = /** @class */ (function () {
         switch (type) {
             case FieldType.string:
                 optionValues = [
-                    { operator: '', description: this.translate.instant('CONTAINS') },
-                    { operator: '=', description: this.translate.instant('EQUALS') },
-                    { operator: 'a*', description: this.translate.instant('STARTS_WITH') },
-                    { operator: '*z', description: this.translate.instant('ENDS_WITH') },
+                    { operator: (''), description: this.translate.instant('CONTAINS') },
+                    { operator: ('='), description: this.translate.instant('EQUALS') },
+                    { operator: ('a*'), description: this.translate.instant('STARTS_WITH') },
+                    { operator: ('*z'), description: this.translate.instant('ENDS_WITH') },
                 ];
                 break;
             default:
                 optionValues = [
-                    { operator: '', description: this.translate.instant('CONTAINS') },
-                    { operator: '=', description: '' },
-                    { operator: '<', description: '' },
-                    { operator: '<=', description: '' },
-                    { operator: '>', description: '' },
-                    { operator: '>=', description: '' },
-                    { operator: '<>', description: '' }
+                    { operator: (''), description: this.translate.instant('CONTAINS') },
+                    { operator: ('='), description: '' },
+                    { operator: ('<'), description: '' },
+                    { operator: ('<='), description: '' },
+                    { operator: ('>'), description: '' },
+                    { operator: ('>='), description: '' },
+                    { operator: ('<>'), description: '' }
                 ];
                 break;
         }
@@ -1599,6 +1599,15 @@ var FilterService = /** @class */ (function () {
                 var operator = columnFilter.operator || ((matches) ? matches[1] : '');
                 var searchTerm = (!!matches) ? matches[2] : '';
                 var lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
+                if (searchTerms && searchTerms.length > 0) {
+                    fieldSearchValue = searchTerms.join(',');
+                }
+                else if (typeof fieldSearchValue === 'string') {
+                    fieldSearchValue = fieldSearchValue.replace("'", "''");
+                    if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*') {
+                        operator = (operator === '*' || operator === '*z') ? OperatorType.endsWith : OperatorType.startsWith;
+                    }
+                }
                 var filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
                 if (!operator && filterType !== FilterType.custom) {
                     switch (filterType) {
@@ -2546,7 +2555,7 @@ var GraphqlService = /** @class */ (function () {
         return promise;
     };
     GraphqlService.prototype.onPaginationChanged = function (event, args) {
-        var pageSize = +args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE);
+        var pageSize = +(args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE));
         this.updatePagination(args.newPage, pageSize);
         return this.buildQuery();
     };
@@ -2993,7 +3002,7 @@ var GridOdataService = /** @class */ (function () {
         return promise;
     };
     GridOdataService.prototype.onPaginationChanged = function (event, args) {
-        var pageSize = +args.pageSize || DEFAULT_PAGE_SIZE$1;
+        var pageSize = +(args.pageSize || DEFAULT_PAGE_SIZE$1);
         this.updatePagination(args.newPage, pageSize);
         return this.odataService.buildQuery();
     };
@@ -4618,10 +4627,10 @@ var translateFormatter = function (row, cell, value, columnDef, dataContext, gri
     var gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
     var columnParams = columnDef.params || {};
     var gridParams = gridOptions.params || {};
-    if ((!columnParams.i18n || !(columnParams.i18n instanceof TranslateService)) && (!gridParams.i18n || !(gridParams.i18n instanceof TranslateService))) {
-        throw new Error("The translate formatter requires the ngx-translate \"TranslateService\" to be provided as a Column Definition params or a Grid Option params.\n    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translateService }}");
-    }
     var translate = gridParams.i18n || columnParams.i18n;
+    if (!translate || typeof translate.instant !== 'function') {
+        throw new Error("The translate formatter requires the \"ngx-translate\" Service to be provided as a Grid Options or Column Definition \"params\".\n    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translate }}");
+    }
     if (value !== undefined && typeof value !== 'string') {
         value = value + '';
     }
@@ -4631,10 +4640,10 @@ var translateBooleanFormatter = function (row, cell, value, columnDef, dataConte
     var gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
     var columnParams = columnDef.params || {};
     var gridParams = gridOptions.params || {};
-    if ((!columnParams.i18n || !(columnParams.i18n instanceof TranslateService)) && (!gridParams.i18n || !(gridParams.i18n instanceof TranslateService))) {
-        throw new Error("The translate formatter requires the ngx-translate \"TranslateService\" to be provided as a Column Definition params or a Grid Option params.\n    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translateService }}");
-    }
     var translate = gridParams.i18n || columnParams.i18n;
+    if (!translate || typeof translate.instant !== 'function') {
+        throw new Error("The translate formatter requires the \"ngx-translate\" Service to be provided as a Grid Options or Column Definition \"params\".\n    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translate }}");
+    }
     if (value !== undefined && typeof value !== 'string') {
         value = value + '';
     }
@@ -4714,9 +4723,6 @@ var SlickPaginationComponent = /** @class */ (function () {
         this._filterSubcription = this.filterService.onFilterChanged.subscribe(function (data) {
             _this.refreshPagination(true);
         });
-        this._sorterSubcription = this.sortService.onSortChanged.subscribe(function (data) {
-            _this.refreshPagination(true);
-        });
     };
     SlickPaginationComponent.prototype.ceil = function (number) {
         return Math.ceil(number);
@@ -4756,9 +4762,6 @@ var SlickPaginationComponent = /** @class */ (function () {
         if (this._filterSubcription) {
             this._filterSubcription.unsubscribe();
         }
-        if (this._sorterSubcription) {
-            this._sorterSubcription.unsubscribe();
-        }
     };
     SlickPaginationComponent.prototype.onChangeItemPerPage = function (event) {
         var itemsPerPage = +event.target.value;
@@ -4785,7 +4788,9 @@ var SlickPaginationComponent = /** @class */ (function () {
                 else {
                     this.pageNumber = 1;
                 }
-                backendApi.service.resetPaginationOptions();
+                if (this.pageNumber === 1) {
+                    backendApi.service.resetPaginationOptions();
+                }
             }
             this.paginationPageSizes = this._gridPaginationOptions.pagination.pageSizes;
             this.totalItems = this._gridPaginationOptions.pagination.totalItems;

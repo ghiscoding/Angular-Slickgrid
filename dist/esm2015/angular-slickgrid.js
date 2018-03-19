@@ -158,19 +158,16 @@ const FilterType = {
     singleSelect: 3,
     /** Custom Filter type */
     custom: 4,
-    /** Input Filter type, but without a magnifying glass as placeholder */
-    inputNoPlaceholder: 5,
     /** Compound Date Filter (compound of Operator + Date picker) */
-    compoundDate: 6,
+    compoundDate: 5,
     /** Compound Input Filter (compound of Operator + Input) */
-    compoundInput: 7,
+    compoundInput: 6,
 };
 FilterType[FilterType.input] = "input";
 FilterType[FilterType.select] = "select";
 FilterType[FilterType.multipleSelect] = "multipleSelect";
 FilterType[FilterType.singleSelect] = "singleSelect";
 FilterType[FilterType.custom] = "custom";
-FilterType[FilterType.inputNoPlaceholder] = "inputNoPlaceholder";
 FilterType[FilterType.compoundDate] = "compoundDate";
 FilterType[FilterType.compoundInput] = "compoundInput";
 
@@ -1194,10 +1191,10 @@ const stringFilterCondition = (options) => {
     // make both the cell value and search value lower for case insensitive comparison
     const /** @type {?} */ cellValue = options.cellValue.toLowerCase();
     const /** @type {?} */ searchTerm = (typeof options.searchTerm === 'string') ? options.searchTerm.toLowerCase() : options.searchTerm;
-    if (options.operator === '*') {
+    if (options.operator === '*' || options.operator === OperatorType.endsWith) {
         return cellValue.endsWith(searchTerm);
     }
-    else if (options.operator === '' && options.cellValueLastChar === '*') {
+    else if ((options.operator === '' && options.cellValueLastChar === '*') || options.operator === OperatorType.startsWith) {
         return cellValue.startsWith(searchTerm);
     }
     else if (options.operator === '') {
@@ -1313,6 +1310,7 @@ class CompoundDateFilter {
     destroy() {
         if (this.$filterElm) {
             this.$filterElm.off('keyup').remove();
+            this.$selectOperatorElm.off('change').remove();
         }
     }
     /**
@@ -1374,13 +1372,13 @@ class CompoundDateFilter {
      */
     getOptionValues() {
         return [
-            { operator: '', description: '' },
-            { operator: '=', description: '' },
-            { operator: '<', description: '' },
-            { operator: '<=', description: '' },
-            { operator: '>', description: '' },
-            { operator: '>=', description: '' },
-            { operator: '<>', description: '' }
+            { operator: /** @type {?} */ (''), description: '' },
+            { operator: /** @type {?} */ ('='), description: '' },
+            { operator: /** @type {?} */ ('<'), description: '' },
+            { operator: /** @type {?} */ ('<='), description: '' },
+            { operator: /** @type {?} */ ('>'), description: '' },
+            { operator: /** @type {?} */ ('>='), description: '' },
+            { operator: /** @type {?} */ ('<>'), description: '' }
         ];
     }
     /**
@@ -1546,6 +1544,7 @@ class CompoundInputFilter {
     destroy() {
         if (this.$filterElm) {
             this.$filterElm.off('keyup').remove();
+            this.$selectOperatorElm.off('change').remove();
         }
     }
     /**
@@ -1585,21 +1584,21 @@ class CompoundInputFilter {
         switch (type) {
             case FieldType.string:
                 optionValues = [
-                    { operator: '', description: this.translate.instant('CONTAINS') },
-                    { operator: '=', description: this.translate.instant('EQUALS') },
-                    { operator: 'a*', description: this.translate.instant('STARTS_WITH') },
-                    { operator: '*z', description: this.translate.instant('ENDS_WITH') },
+                    { operator: /** @type {?} */ (''), description: this.translate.instant('CONTAINS') },
+                    { operator: /** @type {?} */ ('='), description: this.translate.instant('EQUALS') },
+                    { operator: /** @type {?} */ ('a*'), description: this.translate.instant('STARTS_WITH') },
+                    { operator: /** @type {?} */ ('*z'), description: this.translate.instant('ENDS_WITH') },
                 ];
                 break;
             default:
                 optionValues = [
-                    { operator: '', description: this.translate.instant('CONTAINS') },
-                    { operator: '=', description: '' },
-                    { operator: '<', description: '' },
-                    { operator: '<=', description: '' },
-                    { operator: '>', description: '' },
-                    { operator: '>=', description: '' },
-                    { operator: '<>', description: '' }
+                    { operator: /** @type {?} */ (''), description: this.translate.instant('CONTAINS') },
+                    { operator: /** @type {?} */ ('='), description: '' },
+                    { operator: /** @type {?} */ ('<'), description: '' },
+                    { operator: /** @type {?} */ ('<='), description: '' },
+                    { operator: /** @type {?} */ ('>'), description: '' },
+                    { operator: /** @type {?} */ ('>='), description: '' },
+                    { operator: /** @type {?} */ ('<>'), description: '' }
                 ];
                 break;
         }
@@ -2365,6 +2364,16 @@ class FilterService {
             let /** @type {?} */ operator = columnFilter.operator || ((matches) ? matches[1] : '');
             const /** @type {?} */ searchTerm = (!!matches) ? matches[2] : '';
             const /** @type {?} */ lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
+            if (searchTerms && searchTerms.length > 0) {
+                fieldSearchValue = searchTerms.join(',');
+            }
+            else if (typeof fieldSearchValue === 'string') {
+                // escaping the search value
+                fieldSearchValue = fieldSearchValue.replace(`'`, `''`); // escape single quotes by doubling them
+                if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*') {
+                    operator = (operator === '*' || operator === '*z') ? OperatorType.endsWith : OperatorType.startsWith;
+                }
+            }
             // when using a Filter that is not a custom type, we want to make sure that we have a default operator type
             // for example a multiple-select should always be using IN, while a single select will use an EQ
             const /** @type {?} */ filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
@@ -3562,7 +3571,7 @@ class GraphqlService {
      * @return {?}
      */
     onPaginationChanged(event, args) {
-        const /** @type {?} */ pageSize = +args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE);
+        const /** @type {?} */ pageSize = +(args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE));
         this.updatePagination(args.newPage, pageSize);
         // build the GraphQL query which we will use in the WebAPI callback
         return this.buildQuery();
@@ -4182,7 +4191,7 @@ class GridOdataService {
      * @return {?}
      */
     onPaginationChanged(event, args) {
-        const /** @type {?} */ pageSize = +args.pageSize || DEFAULT_PAGE_SIZE$1;
+        const /** @type {?} */ pageSize = +(args.pageSize || DEFAULT_PAGE_SIZE$1);
         this.updatePagination(args.newPage, pageSize);
         // build the OData query which we will use in the WebAPI callback
         return this.odataService.buildQuery();
@@ -6584,17 +6593,17 @@ const progressBarFormatter = (row, cell, value, columnDef, dataContext) => {
  * @suppress {checkTypes} checked by tsc
  */
 /**
- * Takes a cell value and translates it (i18n). Requires an instance of the Translate Service:: `params: { i18n: this.translate }
+ * Takes a cell value and translates it with the "ngx-translate" service
  */
 const translateFormatter = (row, cell, value, columnDef, dataContext, grid) => {
     const /** @type {?} */ gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
     const /** @type {?} */ columnParams = columnDef.params || {};
     const /** @type {?} */ gridParams = gridOptions.params || {};
-    if ((!columnParams.i18n || !(columnParams.i18n instanceof TranslateService)) && (!gridParams.i18n || !(gridParams.i18n instanceof TranslateService))) {
-        throw new Error(`The translate formatter requires the ngx-translate "TranslateService" to be provided as a Column Definition params or a Grid Option params.
-    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translateService }}`);
-    }
     const /** @type {?} */ translate = gridParams.i18n || columnParams.i18n;
+    if (!translate || typeof translate.instant !== 'function') {
+        throw new Error(`The translate formatter requires the "ngx-translate" Service to be provided as a Grid Options or Column Definition "params".
+    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translate }}`);
+    }
     // make sure the value is a string (for example a boolean value would throw an error)
     if (value !== undefined && typeof value !== 'string') {
         value = value + '';
@@ -6607,17 +6616,17 @@ const translateFormatter = (row, cell, value, columnDef, dataContext, grid) => {
  * @suppress {checkTypes} checked by tsc
  */
 /**
- * Takes a boolean value, cast it to upperCase string and finally translates (i18n) it
+ * Takes a boolean value, cast it to upperCase string and finally translates it with the "ngx-translate" service
  */
 const translateBooleanFormatter = (row, cell, value, columnDef, dataContext, grid) => {
     const /** @type {?} */ gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
     const /** @type {?} */ columnParams = columnDef.params || {};
     const /** @type {?} */ gridParams = gridOptions.params || {};
-    if ((!columnParams.i18n || !(columnParams.i18n instanceof TranslateService)) && (!gridParams.i18n || !(gridParams.i18n instanceof TranslateService))) {
-        throw new Error(`The translate formatter requires the ngx-translate "TranslateService" to be provided as a Column Definition params or a Grid Option params.
-    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translateService }}`);
-    }
     const /** @type {?} */ translate = gridParams.i18n || columnParams.i18n;
+    if (!translate || typeof translate.instant !== 'function') {
+        throw new Error(`The translate formatter requires the "ngx-translate" Service to be provided as a Grid Options or Column Definition "params".
+    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translate }}`);
+    }
     // make sure the value is a string (for example a boolean value would throw an error)
     if (value !== undefined && typeof value !== 'string') {
         value = value + '';
@@ -6770,9 +6779,6 @@ class SlickPaginationComponent {
         this._filterSubcription = this.filterService.onFilterChanged.subscribe((data) => {
             this.refreshPagination(true);
         });
-        this._sorterSubcription = this.sortService.onSortChanged.subscribe((data) => {
-            this.refreshPagination(true);
-        });
     }
     /**
      * @param {?} number
@@ -6839,9 +6845,6 @@ class SlickPaginationComponent {
         if (this._filterSubcription) {
             this._filterSubcription.unsubscribe();
         }
-        if (this._sorterSubcription) {
-            this._sorterSubcription.unsubscribe();
-        }
     }
     /**
      * @param {?} event
@@ -6877,8 +6880,10 @@ class SlickPaginationComponent {
                 else {
                     this.pageNumber = 1;
                 }
-                // also reset the "offset" of backend service
-                backendApi.service.resetPaginationOptions();
+                // when page number is set to 1 then also reset the "offset" of backend service
+                if (this.pageNumber === 1) {
+                    backendApi.service.resetPaginationOptions();
+                }
             }
             // calculate and refresh the multiple properties of the pagination UI
             this.paginationPageSizes = this._gridPaginationOptions.pagination.pageSizes;

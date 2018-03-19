@@ -6,7 +6,6 @@ export declare class SlickPaginationComponent implements AfterViewInit, OnDestro
     private filterService;
     private sortService;
     private _filterSubcription;
-    private _sorterSubcription;
     private _gridPaginationOptions;
     private _isFirstRender;
     onPaginationChanged: EventEmitter<Pagination>;
