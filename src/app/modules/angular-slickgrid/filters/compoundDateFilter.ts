@@ -69,6 +69,7 @@ export class CompoundDateFilter implements Filter {
   destroy() {
     if (this.$filterElm) {
       this.$filterElm.off('keyup').remove();
+      this.$selectOperatorElm.off('change').remove();
     }
   }
 
@@ -130,13 +131,13 @@ export class CompoundDateFilter implements Filter {
 
   private getOptionValues(): {operator: OperatorString, description: string }[] {
     return [
-      { operator: '', description: '' },
-      { operator: '=', description: '' },
-      { operator: '<', description: '' },
-      { operator: '<=', description: '' },
-      { operator: '>', description: '' },
-      { operator: '>=', description: '' },
-      { operator: '<>', description: '' }
+      { operator: '' as OperatorString, description: '' },
+      { operator: '=' as OperatorString, description: '' },
+      { operator: '<' as OperatorString, description: '' },
+      { operator: '<=' as OperatorString, description: '' },
+      { operator: '>' as OperatorString, description: '' },
+      { operator: '>=' as OperatorString, description: '' },
+      { operator: '<>' as OperatorString, description: '' }
     ];
   }
 
