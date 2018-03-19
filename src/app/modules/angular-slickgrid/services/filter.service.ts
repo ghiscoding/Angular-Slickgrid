@@ -23,6 +23,7 @@ import { Subject } from 'rxjs/Subject';
 
 // using external non-typed js libraries
 declare var Slick: any;
+declare var $: any;
 
 @Injectable()
 export class FilterService {
@@ -502,8 +503,15 @@ export class FilterService {
     }
   }
 
-  private triggerEvent(evt: any, args: any, e: any) {
-    e = e || new Slick.EventData();
-    return evt.notify(args, e, args.grid);
+  private triggerEvent(slickEvent: any, args: any, e: any) {
+    slickEvent = slickEvent || new Slick.Event();
+
+    // event might have been created as a CustomEvent (e.g. CompoundDateFilter), without being a valid Slick.EventData.
+    // if so we will create a new Slick.EventData and merge it with that CustomEvent to avoid having SlickGrid errors
+    let event = e;
+    if (e && typeof e.isPropagationStopped !== 'function') {
+      event = $.extend({}, new Slick.EventData(), e);
+    }
+    slickEvent.notify(args, event, args.grid);
   }
 }
