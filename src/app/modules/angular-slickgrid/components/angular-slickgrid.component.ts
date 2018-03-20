@@ -1,6 +1,6 @@
 import { Pagination } from './../models/pagination.interface';
 // import 3rd party vendor libs
-import 'slickgrid/lib/jquery-ui-1.11.3';
+import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
 import 'slickgrid/slick.dataview';
