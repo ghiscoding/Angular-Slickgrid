@@ -102,7 +102,7 @@ export class CompoundDateFilter implements Filter {
       wrap: true,
       closeOnSelect: true,
       locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
-      onChange: (selectedDates, dateStr, instance) => {
+      onChange: (selectedDates: any[] | any, dateStr: string, instance: any) => {
         this._currentValue = dateStr;
 
         // when using the time picker, we can simulate a keyup event to avoid multiple backend request

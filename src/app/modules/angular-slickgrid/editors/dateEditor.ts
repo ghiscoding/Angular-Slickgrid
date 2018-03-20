@@ -38,7 +38,7 @@ export class DateEditor implements Editor {
       dateFormat: outputFormat,
       closeOnSelect: false,
       locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
-      onChange: (selectedDates, dateStr, instance) => {
+      onChange: (selectedDates: any[] | any, dateStr: string, instance: any) => {
         this.save();
       },
     };
