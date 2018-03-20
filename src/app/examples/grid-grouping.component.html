@@ -1,0 +1,45 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div class="container">
+    <h2>{{title}}</h2>
+    <div class="subtitle" [innerHTML]="subTitle"></div>
+    <div class="row col-sm-12">
+        <button class="btn btn-default btn-xs" (click)="loadData(500)">
+            500 rows
+        </button>
+        <button class="btn btn-default btn-xs" (click)="loadData(50000)">
+            50k rows
+        </button>
+        <button class="btn btn-default btn-xs" (click)="clearGrouping()">
+            Clear grouping
+        </button>
+        <button class="btn btn-default btn-xs" (click)="collapseAllGroups()">
+            Collapse all groups
+        </button>
+        <button class="btn btn-default btn-xs" (click)="expandAllGroups()">
+            Expand all groups
+        </button>
+    </div>
+    <hr/>
+    <div class="row col-sm-12">
+        <button class="btn btn-default btn-xs" (click)="groupByDuration()">
+            Group by duration &amp; sort groups by value
+        </button>
+        <button class="btn btn-default btn-xs" (click)="groupByDurationOrderByCount(false)">
+            Group by duration &amp; sort groups by count
+        </button>
+    </div>
+    <div class="row col-sm-12">
+        <button class="btn btn-default btn-xs" (click)="groupByDurationOrderByCount(true)">
+            Group by duration &amp; sort groups by count, aggregate collapsed
+        </button>
+        <button class="btn btn-default btn-xs" (click)="groupByDurationEffortDriven()">
+            Group by duration then effort-driven
+        </button>
+        <button class="btn btn-default btn-xs" (click)="groupByDurationEffortDrivenPercent()">
+            Group by duration then effort-driven then percent.
+        </button>
+    </div>
+    <angular-slickgrid gridId="grid2" (onDataviewCreated)="dataviewReady($event)" (onGridCreated)="gridReady($event)" [columnDefinitions]="columnDefinitions"
+        [gridOptions]="gridOptions" [dataset]="dataset">
+    </angular-slickgrid>
+</div>

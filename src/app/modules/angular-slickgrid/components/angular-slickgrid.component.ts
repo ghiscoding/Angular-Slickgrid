@@ -6,6 +6,7 @@ import 'slickgrid/slick.core';
 import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
+import 'slickgrid/slick.groupitemmetadataprovider.js';
 import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.gridmenu';
 import 'slickgrid/controls/slick.pager';
@@ -60,6 +61,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   gridHeightString: string;
   gridWidthString: string;
   groupingDefinition: any = {};
+  groupItemMetadataProvider: any;
   showPagination = false;
   isGridInitialized = false;
 
@@ -150,11 +152,23 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.gridOptions = this.mergeGridOptions(this.gridOptions);
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
 
-    this._dataView = new Slick.Data.DataView();
+    if (this.gridOptions.enableGrouping) {
+      this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
+      this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
+      this._dataView = new Slick.Data.DataView({
+        groupItemMetadataProvider: this.groupItemMetadataProvider,
+        inlineFilters: true
+      });
+    } else {
+      this._dataView = new Slick.Data.DataView();
+    }
     this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
 
-    this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
+    // pass all necessary options to the shared service
+    this.sharedService.init(this.grid, this._dataView, this.gridOptions, this._columnDefinitions);
+
+    this.controlAndPluginService.attachDifferentControlOrPlugins();
     this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
 
     // emit the Grid & DataView object to make them available in parent component
@@ -165,9 +179,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this._dataView.beginUpdate();
     this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
     this._dataView.endUpdate();
-
-    // pass all necessary options to the shared service
-    this.sharedService.init(this.grid, this._dataView, this.gridOptions, this._columnDefinitions);
 
     // attach resize ONLY after the dataView is ready
     this.attachResizeHook(this.grid, this.gridOptions);

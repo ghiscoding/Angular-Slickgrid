@@ -91,6 +91,9 @@ export interface GridOption {
   /** Do we want to enable the Export to File? (if Yes, it will show up in the Grid Menu) */
   enableExport?: boolean;
 
+  /** Defaults to false, do we want to enable the Grouping & Aggregator? */
+  enableGrouping?: boolean;
+
   /** Defaults to false, which leads to all Formatters of the grid being evaluated on export. You can also override a column by changing the propery on the column itself */
   exportWithFormatter?: boolean;
 
