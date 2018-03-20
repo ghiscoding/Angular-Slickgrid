@@ -16,6 +16,7 @@ import {
 } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './../services/utilities';
+import { SharedService } from './shared.service';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -38,7 +39,7 @@ export class ControlAndPluginService {
   gridMenuControl: any;
   rowSelectionPlugin: any;
 
-  constructor(private exportService: ExportService, private filterService: FilterService, private translate: TranslateService) { }
+  constructor(private exportService: ExportService, private filterService: FilterService, private sharedService: SharedService, private translate: TranslateService) { }
 
   /**
    * Attach/Create different Controls or Plugins after the Grid is created
@@ -47,72 +48,78 @@ export class ControlAndPluginService {
    * @param options
    * @param dataView
    */
-  attachDifferentControlOrPlugins(grid: any, columnDefinitions: Column[], options: GridOption, dataView: any) {
-    this._grid = grid;
-    this._gridOptions = options;
-    this._dataView = dataView;
-    this._columnDefinitions = columnDefinitions;
-    this.visibleColumns = columnDefinitions;
+  attachDifferentControlOrPlugins() {
+    this._grid = this.sharedService.grid;
+    this._gridOptions = this.sharedService.gridOptions;
+    this._dataView = this.sharedService.dataView;
+    this._columnDefinitions = this.sharedService.columnDefinitions;
+    this.visibleColumns = this.sharedService.columnDefinitions;
 
-    if (options.enableColumnPicker) {
-      this.columnPickerControl = this.createColumnPicker(grid, columnDefinitions, options);
+    if (this._gridOptions.enableColumnPicker) {
+      this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions, this._gridOptions);
     }
-    if (options.enableGridMenu) {
-      this.gridMenuControl = this.createGridMenu(grid, columnDefinitions, options);
+    if (this._gridOptions.enableGridMenu) {
+      this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions, this._gridOptions);
     }
-    if (options.enableAutoTooltip) {
-      this.autoTooltipPlugin = new Slick.AutoTooltips(options.autoTooltipOptions || {});
-      grid.registerPlugin(this.autoTooltipPlugin);
+    if (this._gridOptions.enableAutoTooltip) {
+      this.autoTooltipPlugin = new Slick.AutoTooltips(this._gridOptions.autoTooltipOptions || {});
+      this._grid.registerPlugin(this.autoTooltipPlugin);
     }
 
-    if (options.enableCheckboxSelector) {
+    // register the group item metadata provider to add expand/collapse group handlers
+    if (this._gridOptions.enableGrouping) {
+      const groupItemMetaProvider = this.sharedService.groupItemMetadataProvider || {};
+      this._grid.registerPlugin(groupItemMetaProvider);
+    }
+
+    if (this._gridOptions.enableCheckboxSelector) {
       // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
       // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
-      grid.registerPlugin(this.checkboxSelectorPlugin);
+      this._grid.registerPlugin(this.checkboxSelectorPlugin);
 
       // this also requires the Row Selection Model to be registered as well
       if (!this.rowSelectionPlugin) {
-        this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-        grid.setSelectionModel(this.rowSelectionPlugin);
+        this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
+        this._grid.setSelectionModel(this.rowSelectionPlugin);
       }
     }
-    if (options.enableRowSelection) {
-      this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-      grid.setSelectionModel(this.rowSelectionPlugin);
+    if (this._gridOptions.enableRowSelection) {
+      this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
+      this._grid.setSelectionModel(this.rowSelectionPlugin);
     }
-    if (options.enableHeaderButton) {
-      this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(options.headerButton || {});
-      grid.registerPlugin(this.headerButtonsPlugin);
+    if (this._gridOptions.enableHeaderButton) {
+      this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(this._gridOptions.headerButton || {});
+      this._grid.registerPlugin(this.headerButtonsPlugin);
       this.headerButtonsPlugin.onCommand.subscribe((e: Event, args: HeaderButtonOnCommandArgs) => {
-        if (options.headerButton && typeof options.headerButton.onCommand === 'function') {
-          options.headerButton.onCommand(e, args);
+        if (this._gridOptions.headerButton && typeof this._gridOptions.headerButton.onCommand === 'function') {
+          this._gridOptions.headerButton.onCommand(e, args);
         }
       });
     }
-    if (options.enableHeaderMenu) {
-      const headerMenuOptions = options.headerMenu || {};
+    if (this._gridOptions.enableHeaderMenu) {
+      const headerMenuOptions = this._gridOptions.headerMenu || {};
       headerMenuOptions.minWidth = headerMenuOptions.minWidth || 140;
       headerMenuOptions.autoAlignOffset = headerMenuOptions.autoAlignOffset || 12;
       this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(headerMenuOptions);
-      grid.registerPlugin(this.headerMenuPlugin);
+      this._grid.registerPlugin(this.headerMenuPlugin);
       this.headerMenuPlugin.onCommand.subscribe((e: Event, args: HeaderMenuOnCommandArgs) => {
-        if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
-          options.headerMenu.onCommand(e, args);
+        if (this._gridOptions.headerMenu && typeof this._gridOptions.headerMenu.onCommand === 'function') {
+          this._gridOptions.headerMenu.onCommand(e, args);
         }
       });
       this.headerMenuPlugin.onCommand.subscribe((e: Event, args: HeaderMenuOnBeforeMenuShowArgs) => {
-        if (options.headerMenu && typeof options.headerMenu.onBeforeMenuShow === 'function') {
-          options.headerMenu.onBeforeMenuShow(e, args);
+        if (this._gridOptions.headerMenu && typeof this._gridOptions.headerMenu.onBeforeMenuShow === 'function') {
+          this._gridOptions.headerMenu.onBeforeMenuShow(e, args);
         }
       });
     }
-    if (options.registerPlugins !== undefined) {
-      if (Array.isArray(options.registerPlugins)) {
-        options.registerPlugins.forEach((plugin) => {
-          grid.registerPlugin(plugin);
+    if (this._gridOptions.registerPlugins !== undefined) {
+      if (Array.isArray(this._gridOptions.registerPlugins)) {
+        this._gridOptions.registerPlugins.forEach((plugin) => {
+          this._grid.registerPlugin(plugin);
         });
       } else {
-        grid.registerPlugin(options.registerPlugins);
+        this._grid.registerPlugin(this._gridOptions.registerPlugins);
       }
     }
   }

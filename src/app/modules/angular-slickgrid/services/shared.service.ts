@@ -5,6 +5,7 @@ export class SharedService {
   grid: any;
   gridOptions: GridOption;
   columnDefinitions: Column[];
+  groupItemMetadataProvider: any;
 
   init(grid: any, dataView: any, gridOptions: GridOption, columnDefinitions: Column[]) {
     this.grid = grid;
