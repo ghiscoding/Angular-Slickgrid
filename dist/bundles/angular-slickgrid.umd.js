@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('moment-mini'), require('@angular/core'), require('@ngx-translate/core'), require('text-encoding-utf-8'), require('rxjs/Subject'), require('slickgrid/lib/jquery-ui-1.11.3'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.dataview'), require('slickgrid/slick.grid'), require('slickgrid/controls/slick.columnpicker'), require('slickgrid/controls/slick.gridmenu'), require('slickgrid/controls/slick.pager'), require('slickgrid/plugins/slick.autotooltips'), require('slickgrid/plugins/slick.cellcopymanager'), require('slickgrid/plugins/slick.cellexternalcopymanager'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('slickgrid/plugins/slick.checkboxselectcolumn'), require('slickgrid/plugins/slick.headerbuttons'), require('slickgrid/plugins/slick.headermenu'), require('slickgrid/plugins/slick.rowmovemanager'), require('slickgrid/plugins/slick.rowselectionmodel'), require('@angular/common')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'moment-mini', '@angular/core', '@ngx-translate/core', 'text-encoding-utf-8', 'rxjs/Subject', 'slickgrid/lib/jquery-ui-1.11.3', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.dataview', 'slickgrid/slick.grid', 'slickgrid/controls/slick.columnpicker', 'slickgrid/controls/slick.gridmenu', 'slickgrid/controls/slick.pager', 'slickgrid/plugins/slick.autotooltips', 'slickgrid/plugins/slick.cellcopymanager', 'slickgrid/plugins/slick.cellexternalcopymanager', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'slickgrid/plugins/slick.checkboxselectcolumn', 'slickgrid/plugins/slick.headerbuttons', 'slickgrid/plugins/slick.headermenu', 'slickgrid/plugins/slick.rowmovemanager', 'slickgrid/plugins/slick.rowselectionmodel', '@angular/common'], factory) :
-	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.moment,global.ng.core,global['ngx-translate-core'],global.textEncodingUtf8,global.Rx,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,global.ng.common));
-}(this, (function (exports,Observable,first,take,toPromise,moment_,core,core$1,textEncodingUtf8,Subject,jqueryUi1_11_3,jquery_event_drag2_3_0,slick_core,slick_dataview,slick_grid,slick_columnpicker,slick_gridmenu,slick_pager,slick_autotooltips,slick_cellcopymanager,slick_cellexternalcopymanager,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,slick_checkboxselectcolumn,slick_headerbuttons,slick_headermenu,slick_rowmovemanager,slick_rowselectionmodel,common) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('moment-mini'), require('@angular/core'), require('@ngx-translate/core'), require('text-encoding-utf-8'), require('rxjs/Subject'), require('jquery-ui-dist/jquery-ui'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.dataview'), require('slickgrid/slick.grid'), require('slickgrid/slick.groupitemmetadataprovider.js'), require('slickgrid/controls/slick.columnpicker'), require('slickgrid/controls/slick.gridmenu'), require('slickgrid/controls/slick.pager'), require('slickgrid/plugins/slick.autotooltips'), require('slickgrid/plugins/slick.cellcopymanager'), require('slickgrid/plugins/slick.cellexternalcopymanager'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('slickgrid/plugins/slick.checkboxselectcolumn'), require('slickgrid/plugins/slick.headerbuttons'), require('slickgrid/plugins/slick.headermenu'), require('slickgrid/plugins/slick.rowmovemanager'), require('slickgrid/plugins/slick.rowselectionmodel'), require('@angular/common')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'moment-mini', '@angular/core', '@ngx-translate/core', 'text-encoding-utf-8', 'rxjs/Subject', 'jquery-ui-dist/jquery-ui', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.dataview', 'slickgrid/slick.grid', 'slickgrid/slick.groupitemmetadataprovider.js', 'slickgrid/controls/slick.columnpicker', 'slickgrid/controls/slick.gridmenu', 'slickgrid/controls/slick.pager', 'slickgrid/plugins/slick.autotooltips', 'slickgrid/plugins/slick.cellcopymanager', 'slickgrid/plugins/slick.cellexternalcopymanager', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'slickgrid/plugins/slick.checkboxselectcolumn', 'slickgrid/plugins/slick.headerbuttons', 'slickgrid/plugins/slick.headermenu', 'slickgrid/plugins/slick.rowmovemanager', 'slickgrid/plugins/slick.rowselectionmodel', '@angular/common'], factory) :
+	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.moment,global.ng.core,global['ngx-translate-core'],global.textEncodingUtf8,global.Rx,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,global.ng.common));
+}(this, (function (exports,Observable,first,take,toPromise,moment_,core,core$1,textEncodingUtf8,Subject,jqueryUi,jquery_event_drag2_3_0,slick_core,slick_dataview,slick_grid,slick_groupitemmetadataprovider_js,slick_columnpicker,slick_gridmenu,slick_pager,slick_autotooltips,slick_cellcopymanager,slick_cellexternalcopymanager,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,slick_checkboxselectcolumn,slick_headerbuttons,slick_headermenu,slick_rowmovemanager,slick_rowselectionmodel,common) { 'use strict';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -1960,73 +1960,90 @@ FilterService.decorators = [
 FilterService.ctorParameters = function () { return [
     { type: core$1.TranslateService, },
 ]; };
+var SharedService = /** @class */ (function () {
+    function SharedService() {
+    }
+    SharedService.prototype.init = function (grid, dataView, gridOptions, columnDefinitions) {
+        this.grid = grid;
+        this.dataView = dataView;
+        this.gridOptions = gridOptions;
+        this.columnDefinitions = columnDefinitions;
+    };
+    return SharedService;
+}());
 var ControlAndPluginService = /** @class */ (function () {
-    function ControlAndPluginService(exportService, filterService, translate) {
+    function ControlAndPluginService(exportService, filterService, sharedService, translate) {
         this.exportService = exportService;
         this.filterService = filterService;
+        this.sharedService = sharedService;
         this.translate = translate;
     }
-    ControlAndPluginService.prototype.attachDifferentControlOrPlugins = function (grid, columnDefinitions, options, dataView) {
-        this._grid = grid;
-        this._gridOptions = options;
-        this._dataView = dataView;
-        this._columnDefinitions = columnDefinitions;
-        this.visibleColumns = columnDefinitions;
-        if (options.enableColumnPicker) {
-            this.columnPickerControl = this.createColumnPicker(grid, columnDefinitions, options);
+    ControlAndPluginService.prototype.attachDifferentControlOrPlugins = function () {
+        var _this = this;
+        this._grid = this.sharedService.grid;
+        this._gridOptions = this.sharedService.gridOptions;
+        this._dataView = this.sharedService.dataView;
+        this._columnDefinitions = this.sharedService.columnDefinitions;
+        this.visibleColumns = this.sharedService.columnDefinitions;
+        if (this._gridOptions.enableColumnPicker) {
+            this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions, this._gridOptions);
         }
-        if (options.enableGridMenu) {
-            this.gridMenuControl = this.createGridMenu(grid, columnDefinitions, options);
+        if (this._gridOptions.enableGridMenu) {
+            this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions, this._gridOptions);
         }
-        if (options.enableAutoTooltip) {
-            this.autoTooltipPlugin = new Slick.AutoTooltips(options.autoTooltipOptions || {});
-            grid.registerPlugin(this.autoTooltipPlugin);
+        if (this._gridOptions.enableAutoTooltip) {
+            this.autoTooltipPlugin = new Slick.AutoTooltips(this._gridOptions.autoTooltipOptions || {});
+            this._grid.registerPlugin(this.autoTooltipPlugin);
         }
-        if (options.enableCheckboxSelector) {
-            grid.registerPlugin(this.checkboxSelectorPlugin);
+        if (this._gridOptions.enableGrouping) {
+            var groupItemMetaProvider = this.sharedService.groupItemMetadataProvider || {};
+            this._grid.registerPlugin(groupItemMetaProvider);
+        }
+        if (this._gridOptions.enableCheckboxSelector) {
+            this._grid.registerPlugin(this.checkboxSelectorPlugin);
             if (!this.rowSelectionPlugin) {
-                this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-                grid.setSelectionModel(this.rowSelectionPlugin);
+                this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
+                this._grid.setSelectionModel(this.rowSelectionPlugin);
             }
         }
-        if (options.enableRowSelection) {
-            this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-            grid.setSelectionModel(this.rowSelectionPlugin);
+        if (this._gridOptions.enableRowSelection) {
+            this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
+            this._grid.setSelectionModel(this.rowSelectionPlugin);
         }
-        if (options.enableHeaderButton) {
-            this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(options.headerButton || {});
-            grid.registerPlugin(this.headerButtonsPlugin);
+        if (this._gridOptions.enableHeaderButton) {
+            this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(this._gridOptions.headerButton || {});
+            this._grid.registerPlugin(this.headerButtonsPlugin);
             this.headerButtonsPlugin.onCommand.subscribe(function (e, args) {
-                if (options.headerButton && typeof options.headerButton.onCommand === 'function') {
-                    options.headerButton.onCommand(e, args);
+                if (_this._gridOptions.headerButton && typeof _this._gridOptions.headerButton.onCommand === 'function') {
+                    _this._gridOptions.headerButton.onCommand(e, args);
                 }
             });
         }
-        if (options.enableHeaderMenu) {
-            var headerMenuOptions = options.headerMenu || {};
+        if (this._gridOptions.enableHeaderMenu) {
+            var headerMenuOptions = this._gridOptions.headerMenu || {};
             headerMenuOptions.minWidth = headerMenuOptions.minWidth || 140;
             headerMenuOptions.autoAlignOffset = headerMenuOptions.autoAlignOffset || 12;
             this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(headerMenuOptions);
-            grid.registerPlugin(this.headerMenuPlugin);
+            this._grid.registerPlugin(this.headerMenuPlugin);
             this.headerMenuPlugin.onCommand.subscribe(function (e, args) {
-                if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
-                    options.headerMenu.onCommand(e, args);
+                if (_this._gridOptions.headerMenu && typeof _this._gridOptions.headerMenu.onCommand === 'function') {
+                    _this._gridOptions.headerMenu.onCommand(e, args);
                 }
             });
             this.headerMenuPlugin.onCommand.subscribe(function (e, args) {
-                if (options.headerMenu && typeof options.headerMenu.onBeforeMenuShow === 'function') {
-                    options.headerMenu.onBeforeMenuShow(e, args);
+                if (_this._gridOptions.headerMenu && typeof _this._gridOptions.headerMenu.onBeforeMenuShow === 'function') {
+                    _this._gridOptions.headerMenu.onBeforeMenuShow(e, args);
                 }
             });
         }
-        if (options.registerPlugins !== undefined) {
-            if (Array.isArray(options.registerPlugins)) {
-                options.registerPlugins.forEach(function (plugin) {
-                    grid.registerPlugin(plugin);
+        if (this._gridOptions.registerPlugins !== undefined) {
+            if (Array.isArray(this._gridOptions.registerPlugins)) {
+                this._gridOptions.registerPlugins.forEach(function (plugin) {
+                    _this._grid.registerPlugin(plugin);
                 });
             }
             else {
-                grid.registerPlugin(options.registerPlugins);
+                this._grid.registerPlugin(this._gridOptions.registerPlugins);
             }
         }
     };
@@ -2332,6 +2349,7 @@ ControlAndPluginService.decorators = [
 ControlAndPluginService.ctorParameters = function () { return [
     { type: ExportService, },
     { type: FilterService, },
+    { type: SharedService, },
     { type: core$1.TranslateService, },
 ]; };
 var GraphqlQueryBuilder = /** @class */ (function () {
@@ -4994,17 +5012,6 @@ var GlobalGridOptions = {
     showHeaderRow: false,
     topPanelHeight: 35
 };
-var SharedService = /** @class */ (function () {
-    function SharedService() {
-    }
-    SharedService.prototype.init = function (grid, dataView, gridOptions, columnDefinitions) {
-        this.grid = grid;
-        this.dataView = dataView;
-        this.gridOptions = gridOptions;
-        this.columnDefinitions = columnDefinitions;
-    };
-    return SharedService;
-}());
 var AngularSlickgridComponent = /** @class */ (function () {
     function AngularSlickgridComponent(controlAndPluginService, exportService, filterService, gridExtraService, gridEventService, gridStateService, resizer, sharedService, sortService, translate, forRootConfig) {
         this.controlAndPluginService = controlAndPluginService;
@@ -5092,10 +5099,21 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataset = this._dataset || [];
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
-        this._dataView = new Slick.Data.DataView();
+        if (this.gridOptions.enableGrouping) {
+            this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
+            this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
+            this._dataView = new Slick.Data.DataView({
+                groupItemMetadataProvider: this.groupItemMetadataProvider,
+                inlineFilters: true
+            });
+        }
+        else {
+            this._dataView = new Slick.Data.DataView();
+        }
         this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
         this.grid = new Slick.Grid("#" + this.gridId, this._dataView, this._columnDefinitions, this.gridOptions);
-        this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
+        this.sharedService.init(this.grid, this._dataView, this.gridOptions, this._columnDefinitions);
+        this.controlAndPluginService.attachDifferentControlOrPlugins();
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
         this.onGridCreated.emit(this.grid);
         this.onDataviewCreated.emit(this._dataView);
@@ -5103,7 +5121,6 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataView.beginUpdate();
         this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
         this._dataView.endUpdate();
-        this.sharedService.init(this.grid, this._dataView, this.gridOptions, this._columnDefinitions);
         this.attachResizeHook(this.grid, this.gridOptions);
         this.gridExtraService.init(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
         if (this.gridOptions.enableTranslate) {
@@ -5420,63 +5437,63 @@ exports.FilterConditions = FilterConditions;
 exports.Filters = Filters;
 exports.Formatters = Formatters;
 exports.Sorters = Sorters;
-exports.ɵa = CheckboxEditor;
-exports.ɵb = DateEditor;
-exports.ɵc = FloatEditor;
-exports.ɵd = IntegerEditor;
-exports.ɵe = LongTextEditor;
-exports.ɵf = MultipleSelectEditor;
-exports.ɵg = SingleSelectEditor;
-exports.ɵh = TextEditor;
-exports.ɵj = booleanFilterCondition;
-exports.ɵk = collectionSearchFilterCondition;
-exports.ɵl = dateFilterCondition;
-exports.ɵm = dateIsoFilterCondition;
-exports.ɵo = dateUsFilterCondition;
-exports.ɵp = dateUsShortFilterCondition;
-exports.ɵn = dateUtcFilterCondition;
-exports.ɵi = executeMappedCondition;
-exports.ɵs = testFilterCondition;
-exports.ɵq = numberFilterCondition;
-exports.ɵr = stringFilterCondition;
-exports.ɵx = CompoundDateFilter;
-exports.ɵy = CompoundInputFilter;
-exports.ɵt = InputFilter;
-exports.ɵu = MultipleSelectFilter;
-exports.ɵw = SelectFilter;
-exports.ɵv = SingleSelectFilter;
-exports.ɵz = arrayToCsvFormatter;
-exports.ɵba = checkboxFormatter;
-exports.ɵbb = checkmarkFormatter;
-exports.ɵbd = collectionFormatter;
-exports.ɵbc = complexObjectFormatter;
-exports.ɵbe = dateIsoFormatter;
-exports.ɵbg = dateTimeIsoAmPmFormatter;
-exports.ɵbf = dateTimeIsoFormatter;
-exports.ɵbj = dateTimeUsAmPmFormatter;
-exports.ɵbi = dateTimeUsFormatter;
-exports.ɵbh = dateUsFormatter;
-exports.ɵbk = deleteIconFormatter;
-exports.ɵbl = editIconFormatter;
-exports.ɵbm = hyperlinkFormatter;
-exports.ɵbn = hyperlinkUriPrefixFormatter;
-exports.ɵbo = infoIconFormatter;
-exports.ɵbp = lowercaseFormatter;
-exports.ɵbq = multipleFormatter;
-exports.ɵbs = percentCompleteBarFormatter;
-exports.ɵbr = percentCompleteFormatter;
-exports.ɵbt = progressBarFormatter;
-exports.ɵbv = translateBooleanFormatter;
-exports.ɵbu = translateFormatter;
-exports.ɵbw = uppercaseFormatter;
-exports.ɵbx = yesNoFormatter;
-exports.ɵce = SharedService;
-exports.ɵbz = dateIsoSorter;
-exports.ɵby = dateSorter;
-exports.ɵcb = dateUsShortSorter;
-exports.ɵca = dateUsSorter;
-exports.ɵcc = numericSorter;
-exports.ɵcd = stringSorter;
+exports.ɵb = CheckboxEditor;
+exports.ɵc = DateEditor;
+exports.ɵd = FloatEditor;
+exports.ɵe = IntegerEditor;
+exports.ɵf = LongTextEditor;
+exports.ɵg = MultipleSelectEditor;
+exports.ɵh = SingleSelectEditor;
+exports.ɵi = TextEditor;
+exports.ɵk = booleanFilterCondition;
+exports.ɵl = collectionSearchFilterCondition;
+exports.ɵm = dateFilterCondition;
+exports.ɵn = dateIsoFilterCondition;
+exports.ɵp = dateUsFilterCondition;
+exports.ɵq = dateUsShortFilterCondition;
+exports.ɵo = dateUtcFilterCondition;
+exports.ɵj = executeMappedCondition;
+exports.ɵt = testFilterCondition;
+exports.ɵr = numberFilterCondition;
+exports.ɵs = stringFilterCondition;
+exports.ɵy = CompoundDateFilter;
+exports.ɵz = CompoundInputFilter;
+exports.ɵu = InputFilter;
+exports.ɵv = MultipleSelectFilter;
+exports.ɵx = SelectFilter;
+exports.ɵw = SingleSelectFilter;
+exports.ɵba = arrayToCsvFormatter;
+exports.ɵbb = checkboxFormatter;
+exports.ɵbc = checkmarkFormatter;
+exports.ɵbe = collectionFormatter;
+exports.ɵbd = complexObjectFormatter;
+exports.ɵbf = dateIsoFormatter;
+exports.ɵbh = dateTimeIsoAmPmFormatter;
+exports.ɵbg = dateTimeIsoFormatter;
+exports.ɵbk = dateTimeUsAmPmFormatter;
+exports.ɵbj = dateTimeUsFormatter;
+exports.ɵbi = dateUsFormatter;
+exports.ɵbl = deleteIconFormatter;
+exports.ɵbm = editIconFormatter;
+exports.ɵbn = hyperlinkFormatter;
+exports.ɵbo = hyperlinkUriPrefixFormatter;
+exports.ɵbp = infoIconFormatter;
+exports.ɵbq = lowercaseFormatter;
+exports.ɵbr = multipleFormatter;
+exports.ɵbt = percentCompleteBarFormatter;
+exports.ɵbs = percentCompleteFormatter;
+exports.ɵbu = progressBarFormatter;
+exports.ɵbw = translateBooleanFormatter;
+exports.ɵbv = translateFormatter;
+exports.ɵbx = uppercaseFormatter;
+exports.ɵby = yesNoFormatter;
+exports.ɵa = SharedService;
+exports.ɵca = dateIsoSorter;
+exports.ɵbz = dateSorter;
+exports.ɵcc = dateUsShortSorter;
+exports.ɵcb = dateUsSorter;
+exports.ɵcd = numericSorter;
+exports.ɵce = stringSorter;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

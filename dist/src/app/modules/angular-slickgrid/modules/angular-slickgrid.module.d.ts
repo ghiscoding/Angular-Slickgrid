@@ -14,7 +14,7 @@ import { SortService } from './../services/sort.service';
 export declare class AngularSlickgridModule {
     static forRoot(config?: GridOption): {
         ngModule: typeof AngularSlickgridModule;
-        providers: (typeof ExportService | typeof FilterService | typeof ControlAndPluginService | typeof GraphqlService | typeof OdataService | typeof GridOdataService | typeof GridEventService | typeof GridExtraService | typeof GridStateService | typeof ResizerService | typeof SortService | typeof SharedService | {
+        providers: (typeof ExportService | typeof FilterService | typeof SharedService | typeof ControlAndPluginService | typeof GraphqlService | typeof OdataService | typeof GridOdataService | typeof GridEventService | typeof GridExtraService | typeof GridStateService | typeof ResizerService | typeof SortService | {
             provide: string;
             useValue: GridOption;
         })[];

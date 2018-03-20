@@ -2,6 +2,7 @@ import { ColumnFilter } from './columnFilter.interface';
 import { Editor } from './editor.interface';
 import { FieldType } from './fieldType';
 import { Formatter } from './formatter.interface';
+import { GroupFormatter } from './groupFormatter.interface';
 import { HeaderButtonItem } from './headerButtonItem.interface';
 import { HeaderMenuItem } from './headerMenuItem.interface';
 import { OnEventArgs } from './onEventArgs.interface';
@@ -55,8 +56,10 @@ export interface Column {
     filterSearchType?: FieldType;
     /** are we allowed to focus on the column? */
     focusable?: boolean;
-    /** Custom Sorter function that can be provided to the column */
+    /** Formatter function that can be used to change and format certain column(s) in the grid */
     formatter?: Formatter;
+    /** Group Totals Formatter function that can be used to add grouping totals in the grid */
+    groupTotalsFormatter?: GroupFormatter;
     /** Options that can be provide to the Header Menu Plugin */
     header?: {
         /** list of Buttons to show in the header */

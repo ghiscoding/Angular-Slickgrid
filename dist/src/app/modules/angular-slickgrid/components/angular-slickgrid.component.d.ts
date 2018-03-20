@@ -1,10 +1,11 @@
 import { Pagination } from './../models/pagination.interface';
-import 'slickgrid/lib/jquery-ui-1.11.3';
+import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
 import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
+import 'slickgrid/slick.groupitemmetadataprovider.js';
 import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.gridmenu';
 import 'slickgrid/controls/slick.pager';
@@ -54,6 +55,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridHeightString: string;
     gridWidthString: string;
     groupingDefinition: any;
+    groupItemMetadataProvider: any;
     showPagination: boolean;
     isGridInitialized: boolean;
     onDataviewCreated: EventEmitter<any>;

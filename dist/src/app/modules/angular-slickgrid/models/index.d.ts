@@ -35,6 +35,7 @@ export * from './graphqlPaginationOption.interface';
 export * from './graphqlResult.interface';
 export * from './graphqlServiceOption.interface';
 export * from './graphqlSortingOption.interface';
+export * from './groupFormatter.interface';
 export * from './customGridMenu.interface';
 export * from './gridMenu.interface';
 export * from './gridOption.interface';

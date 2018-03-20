@@ -8,11 +8,12 @@ import { Injectable, Component, EventEmitter, Input, Output, Inject, NgModule } 
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { TextEncoder } from 'text-encoding-utf-8';
 import { Subject } from 'rxjs/Subject';
-import 'slickgrid/lib/jquery-ui-1.11.3';
+import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
 import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.grid';
+import 'slickgrid/slick.groupitemmetadataprovider.js';
 import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.gridmenu';
 import 'slickgrid/controls/slick.pager';
@@ -1898,73 +1899,90 @@ FilterService.decorators = [
 FilterService.ctorParameters = function () { return [
     { type: TranslateService, },
 ]; };
+var SharedService = /** @class */ (function () {
+    function SharedService() {
+    }
+    SharedService.prototype.init = function (grid, dataView, gridOptions, columnDefinitions) {
+        this.grid = grid;
+        this.dataView = dataView;
+        this.gridOptions = gridOptions;
+        this.columnDefinitions = columnDefinitions;
+    };
+    return SharedService;
+}());
 var ControlAndPluginService = /** @class */ (function () {
-    function ControlAndPluginService(exportService, filterService, translate) {
+    function ControlAndPluginService(exportService, filterService, sharedService, translate) {
         this.exportService = exportService;
         this.filterService = filterService;
+        this.sharedService = sharedService;
         this.translate = translate;
     }
-    ControlAndPluginService.prototype.attachDifferentControlOrPlugins = function (grid, columnDefinitions, options, dataView) {
-        this._grid = grid;
-        this._gridOptions = options;
-        this._dataView = dataView;
-        this._columnDefinitions = columnDefinitions;
-        this.visibleColumns = columnDefinitions;
-        if (options.enableColumnPicker) {
-            this.columnPickerControl = this.createColumnPicker(grid, columnDefinitions, options);
+    ControlAndPluginService.prototype.attachDifferentControlOrPlugins = function () {
+        var _this = this;
+        this._grid = this.sharedService.grid;
+        this._gridOptions = this.sharedService.gridOptions;
+        this._dataView = this.sharedService.dataView;
+        this._columnDefinitions = this.sharedService.columnDefinitions;
+        this.visibleColumns = this.sharedService.columnDefinitions;
+        if (this._gridOptions.enableColumnPicker) {
+            this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions, this._gridOptions);
         }
-        if (options.enableGridMenu) {
-            this.gridMenuControl = this.createGridMenu(grid, columnDefinitions, options);
+        if (this._gridOptions.enableGridMenu) {
+            this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions, this._gridOptions);
         }
-        if (options.enableAutoTooltip) {
-            this.autoTooltipPlugin = new Slick.AutoTooltips(options.autoTooltipOptions || {});
-            grid.registerPlugin(this.autoTooltipPlugin);
+        if (this._gridOptions.enableAutoTooltip) {
+            this.autoTooltipPlugin = new Slick.AutoTooltips(this._gridOptions.autoTooltipOptions || {});
+            this._grid.registerPlugin(this.autoTooltipPlugin);
         }
-        if (options.enableCheckboxSelector) {
-            grid.registerPlugin(this.checkboxSelectorPlugin);
+        if (this._gridOptions.enableGrouping) {
+            var groupItemMetaProvider = this.sharedService.groupItemMetadataProvider || {};
+            this._grid.registerPlugin(groupItemMetaProvider);
+        }
+        if (this._gridOptions.enableCheckboxSelector) {
+            this._grid.registerPlugin(this.checkboxSelectorPlugin);
             if (!this.rowSelectionPlugin) {
-                this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-                grid.setSelectionModel(this.rowSelectionPlugin);
+                this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
+                this._grid.setSelectionModel(this.rowSelectionPlugin);
             }
         }
-        if (options.enableRowSelection) {
-            this.rowSelectionPlugin = new Slick.RowSelectionModel(options.rowSelectionOptions || {});
-            grid.setSelectionModel(this.rowSelectionPlugin);
+        if (this._gridOptions.enableRowSelection) {
+            this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
+            this._grid.setSelectionModel(this.rowSelectionPlugin);
         }
-        if (options.enableHeaderButton) {
-            this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(options.headerButton || {});
-            grid.registerPlugin(this.headerButtonsPlugin);
+        if (this._gridOptions.enableHeaderButton) {
+            this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(this._gridOptions.headerButton || {});
+            this._grid.registerPlugin(this.headerButtonsPlugin);
             this.headerButtonsPlugin.onCommand.subscribe(function (e, args) {
-                if (options.headerButton && typeof options.headerButton.onCommand === 'function') {
-                    options.headerButton.onCommand(e, args);
+                if (_this._gridOptions.headerButton && typeof _this._gridOptions.headerButton.onCommand === 'function') {
+                    _this._gridOptions.headerButton.onCommand(e, args);
                 }
             });
         }
-        if (options.enableHeaderMenu) {
-            var headerMenuOptions = options.headerMenu || {};
+        if (this._gridOptions.enableHeaderMenu) {
+            var headerMenuOptions = this._gridOptions.headerMenu || {};
             headerMenuOptions.minWidth = headerMenuOptions.minWidth || 140;
             headerMenuOptions.autoAlignOffset = headerMenuOptions.autoAlignOffset || 12;
             this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(headerMenuOptions);
-            grid.registerPlugin(this.headerMenuPlugin);
+            this._grid.registerPlugin(this.headerMenuPlugin);
             this.headerMenuPlugin.onCommand.subscribe(function (e, args) {
-                if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
-                    options.headerMenu.onCommand(e, args);
+                if (_this._gridOptions.headerMenu && typeof _this._gridOptions.headerMenu.onCommand === 'function') {
+                    _this._gridOptions.headerMenu.onCommand(e, args);
                 }
             });
             this.headerMenuPlugin.onCommand.subscribe(function (e, args) {
-                if (options.headerMenu && typeof options.headerMenu.onBeforeMenuShow === 'function') {
-                    options.headerMenu.onBeforeMenuShow(e, args);
+                if (_this._gridOptions.headerMenu && typeof _this._gridOptions.headerMenu.onBeforeMenuShow === 'function') {
+                    _this._gridOptions.headerMenu.onBeforeMenuShow(e, args);
                 }
             });
         }
-        if (options.registerPlugins !== undefined) {
-            if (Array.isArray(options.registerPlugins)) {
-                options.registerPlugins.forEach(function (plugin) {
-                    grid.registerPlugin(plugin);
+        if (this._gridOptions.registerPlugins !== undefined) {
+            if (Array.isArray(this._gridOptions.registerPlugins)) {
+                this._gridOptions.registerPlugins.forEach(function (plugin) {
+                    _this._grid.registerPlugin(plugin);
                 });
             }
             else {
-                grid.registerPlugin(options.registerPlugins);
+                this._grid.registerPlugin(this._gridOptions.registerPlugins);
             }
         }
     };
@@ -2270,6 +2288,7 @@ ControlAndPluginService.decorators = [
 ControlAndPluginService.ctorParameters = function () { return [
     { type: ExportService, },
     { type: FilterService, },
+    { type: SharedService, },
     { type: TranslateService, },
 ]; };
 var GraphqlQueryBuilder = /** @class */ (function () {
@@ -4932,17 +4951,6 @@ var GlobalGridOptions = {
     showHeaderRow: false,
     topPanelHeight: 35
 };
-var SharedService = /** @class */ (function () {
-    function SharedService() {
-    }
-    SharedService.prototype.init = function (grid, dataView, gridOptions, columnDefinitions) {
-        this.grid = grid;
-        this.dataView = dataView;
-        this.gridOptions = gridOptions;
-        this.columnDefinitions = columnDefinitions;
-    };
-    return SharedService;
-}());
 var AngularSlickgridComponent = /** @class */ (function () {
     function AngularSlickgridComponent(controlAndPluginService, exportService, filterService, gridExtraService, gridEventService, gridStateService, resizer, sharedService, sortService, translate, forRootConfig) {
         this.controlAndPluginService = controlAndPluginService;
@@ -5030,10 +5038,21 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataset = this._dataset || [];
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
-        this._dataView = new Slick.Data.DataView();
+        if (this.gridOptions.enableGrouping) {
+            this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
+            this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
+            this._dataView = new Slick.Data.DataView({
+                groupItemMetadataProvider: this.groupItemMetadataProvider,
+                inlineFilters: true
+            });
+        }
+        else {
+            this._dataView = new Slick.Data.DataView();
+        }
         this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
         this.grid = new Slick.Grid("#" + this.gridId, this._dataView, this._columnDefinitions, this.gridOptions);
-        this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
+        this.sharedService.init(this.grid, this._dataView, this.gridOptions, this._columnDefinitions);
+        this.controlAndPluginService.attachDifferentControlOrPlugins();
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
         this.onGridCreated.emit(this.grid);
         this.onDataviewCreated.emit(this._dataView);
@@ -5041,7 +5060,6 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataView.beginUpdate();
         this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
         this._dataView.endUpdate();
-        this.sharedService.init(this.grid, this._dataView, this.gridOptions, this._columnDefinitions);
         this.attachResizeHook(this.grid, this.gridOptions);
         this.gridExtraService.init(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
         if (this.gridOptions.enableTranslate) {
@@ -5314,5 +5332,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵa, DateEditor as ɵb, FloatEditor as ɵc, IntegerEditor as ɵd, LongTextEditor as ɵe, MultipleSelectEditor as ɵf, SingleSelectEditor as ɵg, TextEditor as ɵh, booleanFilterCondition as ɵj, collectionSearchFilterCondition as ɵk, dateFilterCondition as ɵl, dateIsoFilterCondition as ɵm, dateUsFilterCondition as ɵo, dateUsShortFilterCondition as ɵp, dateUtcFilterCondition as ɵn, executeMappedCondition as ɵi, testFilterCondition as ɵs, numberFilterCondition as ɵq, stringFilterCondition as ɵr, CompoundDateFilter as ɵx, CompoundInputFilter as ɵy, InputFilter as ɵt, MultipleSelectFilter as ɵu, SelectFilter as ɵw, SingleSelectFilter as ɵv, arrayToCsvFormatter as ɵz, checkboxFormatter as ɵba, checkmarkFormatter as ɵbb, collectionFormatter as ɵbd, complexObjectFormatter as ɵbc, dateIsoFormatter as ɵbe, dateTimeIsoAmPmFormatter as ɵbg, dateTimeIsoFormatter as ɵbf, dateTimeUsAmPmFormatter as ɵbj, dateTimeUsFormatter as ɵbi, dateUsFormatter as ɵbh, deleteIconFormatter as ɵbk, editIconFormatter as ɵbl, hyperlinkFormatter as ɵbm, hyperlinkUriPrefixFormatter as ɵbn, infoIconFormatter as ɵbo, lowercaseFormatter as ɵbp, multipleFormatter as ɵbq, percentCompleteBarFormatter as ɵbs, percentCompleteFormatter as ɵbr, progressBarFormatter as ɵbt, translateBooleanFormatter as ɵbv, translateFormatter as ɵbu, uppercaseFormatter as ɵbw, yesNoFormatter as ɵbx, SharedService as ɵce, dateIsoSorter as ɵbz, dateSorter as ɵby, dateUsShortSorter as ɵcb, dateUsSorter as ɵca, numericSorter as ɵcc, stringSorter as ɵcd };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵb, DateEditor as ɵc, FloatEditor as ɵd, IntegerEditor as ɵe, LongTextEditor as ɵf, MultipleSelectEditor as ɵg, SingleSelectEditor as ɵh, TextEditor as ɵi, booleanFilterCondition as ɵk, collectionSearchFilterCondition as ɵl, dateFilterCondition as ɵm, dateIsoFilterCondition as ɵn, dateUsFilterCondition as ɵp, dateUsShortFilterCondition as ɵq, dateUtcFilterCondition as ɵo, executeMappedCondition as ɵj, testFilterCondition as ɵt, numberFilterCondition as ɵr, stringFilterCondition as ɵs, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, InputFilter as ɵu, MultipleSelectFilter as ɵv, SelectFilter as ɵx, SingleSelectFilter as ɵw, arrayToCsvFormatter as ɵba, checkboxFormatter as ɵbb, checkmarkFormatter as ɵbc, collectionFormatter as ɵbe, complexObjectFormatter as ɵbd, dateIsoFormatter as ɵbf, dateTimeIsoAmPmFormatter as ɵbh, dateTimeIsoFormatter as ɵbg, dateTimeUsAmPmFormatter as ɵbk, dateTimeUsFormatter as ɵbj, dateUsFormatter as ɵbi, deleteIconFormatter as ɵbl, editIconFormatter as ɵbm, hyperlinkFormatter as ɵbn, hyperlinkUriPrefixFormatter as ɵbo, infoIconFormatter as ɵbp, lowercaseFormatter as ɵbq, multipleFormatter as ɵbr, percentCompleteBarFormatter as ɵbt, percentCompleteFormatter as ɵbs, progressBarFormatter as ɵbu, translateBooleanFormatter as ɵbw, translateFormatter as ɵbv, uppercaseFormatter as ɵbx, yesNoFormatter as ɵby, SharedService as ɵa, dateIsoSorter as ɵca, dateSorter as ɵbz, dateUsShortSorter as ɵcc, dateUsSorter as ɵcb, numericSorter as ɵcd, stringSorter as ɵce };
 //# sourceMappingURL=angular-slickgrid.js.map

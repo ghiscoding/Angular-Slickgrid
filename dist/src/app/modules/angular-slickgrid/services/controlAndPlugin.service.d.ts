@@ -2,9 +2,11 @@ import { ExportService } from './export.service';
 import { FilterService } from './filter.service';
 import { Column, GridOption } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
+import { SharedService } from './shared.service';
 export declare class ControlAndPluginService {
     private exportService;
     private filterService;
+    private sharedService;
     private translate;
     private _dataView;
     private _grid;
@@ -18,7 +20,7 @@ export declare class ControlAndPluginService {
     headerMenuPlugin: any;
     gridMenuControl: any;
     rowSelectionPlugin: any;
-    constructor(exportService: ExportService, filterService: FilterService, translate: TranslateService);
+    constructor(exportService: ExportService, filterService: FilterService, sharedService: SharedService, translate: TranslateService);
     /**
      * Attach/Create different Controls or Plugins after the Grid is created
      * @param grid
@@ -26,7 +28,7 @@ export declare class ControlAndPluginService {
      * @param options
      * @param dataView
      */
-    attachDifferentControlOrPlugins(grid: any, columnDefinitions: Column[], options: GridOption, dataView: any): void;
+    attachDifferentControlOrPlugins(): void;
     createColumnPicker(grid: any, columnDefinitions: Column[], options: GridOption): void;
     /**
      * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)

@@ -138,11 +138,17 @@
      margin-right: 5px;
 
      &.expanded:before {
-       content: "\f196";
+       content: $icon-group-expanded;
+       font-family: $icon-font-family;
+       font-size: $icon-group-font-size;
+       cursor: pointer;
      }
 
      &.collapsed:before {
-       content: "\f147";
+       content: $icon-group-collapsed;
+       font-family: $icon-font-family;
+       font-size: $icon-group-font-size;
+       cursor: pointer;
      }
    }
 
