@@ -219,11 +219,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (backendApi && backendApi.service && backendApi.service instanceof GraphqlService) {
         backendApi.internalPostProcess = (processResult: any) => {
           const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
-          if (!processResult || !processResult.data || !processResult.data[datasetName]) {
-            throw new Error(`Your GraphQL result is invalid and/or does not follow the required result structure. Please check the result and/or review structure to use in Angular-Slickgrid Wiki in the GraphQL section.`);
+          if (processResult && processResult.data && processResult.data[datasetName]) {
+            this._dataset = processResult.data[datasetName].nodes;
+            this.refreshGridData(this._dataset, processResult.data[datasetName].totalCount);
+          } else {
+            this._dataset = [];
           }
-          this._dataset = processResult.data[datasetName].nodes;
-          this.refreshGridData(this._dataset, processResult.data[datasetName].totalCount);
         };
       }
     }
