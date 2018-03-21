@@ -1,4 +1,3 @@
-import { Pagination } from './../models/pagination.interface';
 // import 3rd party vendor libs
 import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
@@ -25,7 +24,7 @@ import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Outp
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
-import { BackendServiceOption, Column, GridOption, GridStateChange, GridStateType } from './../models/index';
+import { BackendServiceOption, Column, GridOption, GridStateChange, GridStateType, Pagination } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
