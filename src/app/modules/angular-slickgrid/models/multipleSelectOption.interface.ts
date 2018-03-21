@@ -124,7 +124,7 @@ export interface MultipleSelectOption {
   setSelects?: (value: string | string[]) => void;
 
   /** The item styler function, return style string to custom the item style such as background: red. The function take one parameter: value. */
-  styler?: () => void;
+  styler?: (value: string) => void;
 
   /** Returns HTML label attribute of a DOM element */
   labelTemplate?: (elm: any) => any;
@@ -155,11 +155,18 @@ export interface MultipleSelectOption {
   onBlur?: () => void;
 
   /** Fires when a an optgroup label is clicked on. */
-  onOptgroupClick?: () => void;
+  onOptgroupClick?: (view: MultipleSelectView) => void;
 
   /** Fires when a checkbox is checked or unchecked. */
-  onClick?: () => void;
+  onClick?: (view: MultipleSelectView) => void;
 
   /** Fires when a checkbox filter is changed. */
   onFilter?: () => void;
+}
+
+export interface MultipleSelectView {
+  label: string;
+  value: any;
+  checked: boolean;
+  instance: any;
 }
