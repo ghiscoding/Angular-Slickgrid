@@ -1,33 +1,23 @@
 {
   "version": "2.0.0",
-"tasks": [
+  "tasks": [
     {
-        "label": "Build Library",
-        "command": "yarn",
-        "type": "shell",
-        "args": [
-            "run",
-            "build-lib"
-        ],
-        "problemMatcher": []
+      "label": "Build Library",
+      "type": "shell",
+      "command": "yarn run build-lib",
+      "problemMatcher": []
     },
     {
-        "label": "Publish Library to NPM",
-        "command": "npm",
-        "type": "shell",
-        "args": [
-            "publish dist"
-        ],
-        "problemMatcher": []
+      "label": "Publish Library to NPM",
+      "type": "shell",
+      "command": "npm publish dist",
+      "problemMatcher": []
     },
     {
-        "label": "Start Library Development",
-        "command": "yarn",
-        "type": "shell",
-        "args": [
-            "start"
-        ],
-        "problemMatcher": []
+      "label": "Start Library Development",
+      "type": "shell",
+      "command": "yarn start",
+      "problemMatcher": []
     }
-]
+  ]
 }
