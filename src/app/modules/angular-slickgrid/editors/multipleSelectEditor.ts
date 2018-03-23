@@ -1,5 +1,4 @@
 import { TranslateService } from '@ngx-translate/core';
-import { arraysEqual } from '../services/index';
 import {
   Editor,
   Column,
@@ -7,6 +6,8 @@ import {
   MultipleSelectOption,
   SelectOption
 } from './../models/index';
+import { arraysEqual, CollectionService } from '../services/index';
+
 
 // using external non-typed js libraries
 declare var $: any;
@@ -36,12 +37,18 @@ export class MultipleSelectEditor implements Editor {
   /** The property name for labels in the collection */
   labelName: string;
 
+  /** Grid options */
+  gridOptions: GridOption;
+
+  /** Do we translate the label? */
+  enableTranslateLabel: boolean;
+
   /** The i18n aurelia library */
   private _translate: TranslateService;
 
   constructor(private args: any) {
-    const gridOptions = this.args.grid.getOptions() as GridOption;
-    const params = gridOptions.params || this.args.column.params || {};
+    this.gridOptions = this.args.grid.getOptions() as GridOption;
+    const params = this.gridOptions.params || this.args.column.params || {};
     this._translate = params.i18n;
 
     this.defaultOptions = {
@@ -80,7 +87,31 @@ export class MultipleSelectEditor implements Editor {
 
     this.columnDef = this.args.column;
 
-    const editorTemplate = this.buildTemplateHtmlString();
+    if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
+      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" on the params property in the column definition for the MultipleSelect Editor to work correctly.
+      Also each option should include a value/label pair (or value/labelKey when using Locale).
+      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }`);
+    }
+
+    const collectionService = new CollectionService(this._translate);
+    this.enableTranslateLabel = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
+    let newCollection =  this.columnDef.params.collection || [];
+    this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
+    this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
+
+    // user might want to filter certain items of the collection
+    if (this.gridOptions.params && this.columnDef.params.collectionFilterBy) {
+      const filterBy = this.columnDef.params.collectionFilterBy;
+      newCollection = collectionService.filterCollection(newCollection, filterBy);
+    }
+
+    // user might want to sort the collection
+    if (this.gridOptions.params && this.columnDef.params.collectionSortBy) {
+      const sortBy = this.columnDef.params.collectionSortBy;
+      newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
+    }
+
+    const editorTemplate = this.buildTemplateHtmlString(newCollection);
 
     this.createDomElement(editorTemplate);
   }
@@ -134,25 +165,15 @@ export class MultipleSelectEditor implements Editor {
     };
   }
 
-  private buildTemplateHtmlString() {
-    if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
-      throw new Error(`[Aurelia-SlickGrid] You need to pass a "collection" on the params property in the column definition for the MultipleSelect Editor to work correctly.
-      Also each option should include a value/label pair (or value/labelKey when using Locale).
-      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }`);
-    }
-    this.collection = this.columnDef.params.collection || [];
-    this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
-    this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
-    const isEnabledTranslate = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
-
+  private buildTemplateHtmlString(collection: any[]) {
     let options = '';
-    this.collection.forEach((option: SelectOption) => {
+    collection.forEach((option: SelectOption) => {
       if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
         throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
       }
       const labelKey = (option.labelKey || option[this.labelName]) as string;
 
-      const textLabel = ((option.labelKey || isEnabledTranslate) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
+      const textLabel = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
 
       options += `<option value="${option[this.valueName]}">${textLabel}</option>`;
     });

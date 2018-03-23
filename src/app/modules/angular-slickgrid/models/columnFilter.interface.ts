@@ -1,4 +1,6 @@
 import {
+  CollectionFilterBy,
+  CollectionSortBy,
   Column,
   Filter,
   FilterType,
@@ -36,6 +38,12 @@ export interface ColumnFilter {
 
   /** A collection of items/options (commonly used with a Select/Multi-Select Filter) */
   collection?: any[];
+
+  /** We could filter some items from the collection */
+  collectionFilterBy?: CollectionFilterBy;
+
+  /** We could sort the collection by their value, or by translated value when enableTranslateLabel is True */
+  collectionSortBy?: CollectionSortBy;
 
   /** Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250} */
   filterOptions?: MultipleSelectOption | any;

@@ -144,7 +144,15 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       editor: Editors.multipleSelect,
       minWidth: 100,
       params: {
-        collection: Array.from(Array(10).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` }))
+        collection: Array.from(Array(10).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
+        collectionSortBy: {
+          property: 'label',
+          sortDesc: true
+        },
+        collectionFilterBy: {
+          property: 'label',
+          value: 'Task 2'
+        }
       }
     }];
 

@@ -1,6 +1,16 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Column, Filter, FilterArguments, FilterCallback, MultipleSelectOption, SearchTerm, SelectOption } from './../models/index';
 import { Injectable } from '@angular/core';
+import { CollectionService } from './../services/collection.service';
+import {
+  Column,
+  Filter,
+  FilterArguments,
+  FilterCallback,
+  GridOption,
+  MultipleSelectOption,
+  SearchTerm,
+  SelectOption,
+} from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -9,13 +19,17 @@ declare var $: any;
 export class SingleSelectFilter implements Filter {
   $filterElm: any;
   grid: any;
+  gridOptions: GridOption;
   searchTerm: SearchTerm;
   columnDef: Column;
   callback: FilterCallback;
   defaultOptions: MultipleSelectOption;
   isFilled = false;
+  labelName: string;
+  valueName: string;
+  enableTranslateLabel = false;
 
-  constructor(private translate: TranslateService) {
+  constructor(private collectionService: CollectionService, private translate: TranslateService) {
     // default options used by this Filter, user can overwrite any of these by passing "otions"
     this.defaultOptions = {
       container: 'body',
@@ -48,8 +62,31 @@ export class SingleSelectFilter implements Filter {
     this.columnDef = args.columnDef;
     this.searchTerm = args.searchTerm;
 
+    if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
+      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
+    }
+
+    this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
+    this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+    this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
+
+    let newCollection = this.columnDef.filter.collection || [];
+    this.gridOptions = this.grid.getOptions();
+
+    // user might want to filter certain items of the collection
+    if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
+      const filterBy = this.columnDef.filter.collectionFilterBy;
+      newCollection = this.collectionService.filterCollection(newCollection, filterBy);
+    }
+
+    // user might want to sort the collection
+    if (this.gridOptions.params && this.columnDef.filter.collectionSortBy) {
+      const sortBy = this.columnDef.filter.collectionSortBy;
+      newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
+    }
+
     // step 1, create HTML string template
-    const filterTemplate = this.buildTemplateHtmlString();
+    const filterTemplate = this.buildTemplateHtmlString(newCollection || []);
 
     // step 2, create the DOM Element of the filter & pre-load search term
     this.createDomElement(filterTemplate);
@@ -96,26 +133,19 @@ export class SingleSelectFilter implements Filter {
   /**
    * Create the HTML template as a string
    */
-  private buildTemplateHtmlString() {
-    if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the SingleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.singleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
-    }
-    const optionCollection = this.columnDef.filter.collection || [];
-    const labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
-    const valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
-
+  private buildTemplateHtmlString(optionCollection: any[]) {
     let options = '';
     optionCollection.forEach((option: SelectOption) => {
-      if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
+      if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
         throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.singleSelect, collection: [ { value: '1', label: 'One' } ]')`);
       }
 
-      const labelKey = (option.labelKey || option[labelName]) as string;
-      const selected = (option[valueName] === this.searchTerm) ? 'selected' : '';
+      const labelKey = (option.labelKey || option[this.labelName]) as string;
+      const selected = (option[this.valueName] === this.searchTerm) ? 'selected' : '';
       const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
 
       // html text of each select option
-      options += `<option value="${option[valueName]}" ${selected}>${textLabel}</option>`;
+      options += `<option value="${option[this.valueName]}" ${selected}>${textLabel}</option>`;
 
       // if there's a search term, we will add the "filled" class for styling purposes
       if (selected) {

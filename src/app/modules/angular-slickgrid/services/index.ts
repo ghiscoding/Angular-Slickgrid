@@ -1,3 +1,4 @@
+export * from './collection.service';
 export * from './controlAndPlugin.service';
 export * from './export.service';
 export * from './filter.service';

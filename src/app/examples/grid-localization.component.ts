@@ -59,6 +59,7 @@ export class GridLocalizationComponent implements OnInit {
         filter: {
           collection: [ { value: '', label: '' }, { value: true, labelKey: 'TRUE' }, { value: false, labelKey: 'FALSE' } ],
           type: FilterType.singleSelect,
+          enableTranslateLabel: true,
           filterOptions: {
             autoDropWidth: true
           }
@@ -70,6 +71,10 @@ export class GridLocalizationComponent implements OnInit {
         filterable: true,
         filter: {
           collection: [ { value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' } ],
+          collectionSortBy: {
+            property: 'labelKey' // will sort by translated value since "enableTranslateLabel" is true
+          },
+          enableTranslateLabel: true,
           type: FilterType.singleSelect,
           filterOptions: {
             autoDropWidth: true

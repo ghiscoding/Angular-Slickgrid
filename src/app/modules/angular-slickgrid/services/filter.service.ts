@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { CollectionService } from './collection.service';
 import { castToPromise } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { Filters } from './../filters';
@@ -38,7 +39,7 @@ export class FilterService {
   private _isFirstQuery = true;
   onFilterChanged = new Subject<CurrentFilter[]>();
 
-  constructor(private translate: TranslateService) { }
+  constructor(private collectionService: CollectionService, private translate: TranslateService) { }
 
   init(grid: any, gridOptions: GridOption, columnDefinitions: Column[]): void {
     this._grid = grid;
@@ -396,10 +397,10 @@ export class FilterService {
           filter = new Filters.select(this.translate);
           break;
         case FilterType.multipleSelect:
-          filter = new Filters.multipleSelect(this.translate);
+          filter = new Filters.multipleSelect(this.collectionService, this.translate);
           break;
         case FilterType.singleSelect:
-          filter = new Filters.singleSelect(this.translate);
+          filter = new Filters.singleSelect(this.collectionService, this.translate);
           break;
         case FilterType.compoundDate:
           filter = new Filters.compoundDate(this.translate);
