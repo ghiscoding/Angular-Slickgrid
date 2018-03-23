@@ -137,19 +137,18 @@
      height: 9px;
      margin-right: $icon-group-margin-right;
      color: $icon-group-color;
+     cursor: pointer;
 
      &.expanded:before {
        content: $icon-group-expanded;
        font-family: $icon-font-family;
        font-size: $icon-group-font-size;
-       cursor: pointer;
      }
 
      &.collapsed:before {
        content: $icon-group-collapsed;
        font-family: $icon-font-family;
        font-size: $icon-group-font-size;
-       cursor: pointer;
      }
    }
 
