@@ -1,7 +1,9 @@
 import { TranslateService } from '@ngx-translate/core';
+import { CollectionService } from './collection.service';
 import { Column, ColumnFilters, FilterCallbackArg, GridOption, CurrentFilter } from './../models/index';
 import { Subject } from 'rxjs/Subject';
 export declare class FilterService {
+    private collectionService;
     private translate;
     private _eventHandler;
     private _slickSubscriber;
@@ -13,7 +15,7 @@ export declare class FilterService {
     private _onFilterChangedOptions;
     private _isFirstQuery;
     onFilterChanged: Subject<CurrentFilter[]>;
-    constructor(translate: TranslateService);
+    constructor(collectionService: CollectionService, translate: TranslateService);
     init(grid: any, gridOptions: GridOption, columnDefinitions: Column[]): void;
     /**
      * Attach a backend filter hook to the grid

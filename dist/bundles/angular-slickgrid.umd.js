@@ -521,6 +521,148 @@ function toCamelCase(str) {
 function toKebabCase(str) {
     return toCamelCase(str).replace(/([A-Z])/g, '-$1').toLowerCase();
 }
+var moment$1 = moment_;
+var FORMAT = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
+var dateUsShortSorter = function (value1, value2, sortDirection) {
+    if (!moment$1(value1, FORMAT, true).isValid() || !moment$1(value2, FORMAT, true).isValid()) {
+        return 0;
+    }
+    var date1 = moment$1(value1, FORMAT, true);
+    var date2 = moment$1(value2, FORMAT, true);
+    var diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+var moment$2 = moment_;
+var dateSorter = function (value1, value2, sortDirection) {
+    if (!moment$2(value1, moment$2.ISO_8601).isValid() || !moment$2(value2, moment$2.ISO_8601, true).isValid()) {
+        return 0;
+    }
+    var date1 = moment$2(value1);
+    var date2 = moment$2(value2);
+    var diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+var moment$3 = moment_;
+var FORMAT$1 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
+var dateIsoSorter = function (value1, value2, sortDirection) {
+    if (!moment$3(value1, FORMAT$1, true).isValid() || !moment$3(value2, FORMAT$1, true).isValid()) {
+        return 0;
+    }
+    var date1 = moment$3(value1, FORMAT$1, true);
+    var date2 = moment$3(value2, FORMAT$1, true);
+    var diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+var moment$4 = moment_;
+var FORMAT$2 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
+var dateUsSorter = function (value1, value2, sortDirection) {
+    if (!moment$4(value1, FORMAT$2, true).isValid() || !moment$4(value2, FORMAT$2, true).isValid()) {
+        return 0;
+    }
+    var date1 = moment$4(value1, FORMAT$2, true);
+    var date2 = moment$4(value2, FORMAT$2, true);
+    var diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+var numericSorter = function (value1, value2, sortDirection) {
+    var x = (isNaN(value1) || value1 === '' || value1 === null) ? -99e+10 : parseFloat(value1);
+    var y = (isNaN(value2) || value2 === '' || value2 === null) ? -99e+10 : parseFloat(value2);
+    return sortDirection * (x === y ? 0 : (x > y ? 1 : -1));
+};
+var stringSorter = function (value1, value2, sortDirection) {
+    var position;
+    if (value1 === null) {
+        position = -1;
+    }
+    else if (value2 === null) {
+        position = 1;
+    }
+    else if (value1 === value2) {
+        position = 0;
+    }
+    else if (sortDirection) {
+        position = value1 < value2 ? -1 : 1;
+    }
+    else if (!sortDirection) {
+        position = value1 < value2 ? 1 : -1;
+    }
+    return sortDirection * position;
+};
+var Sorters = {
+    date: dateSorter,
+    dateIso: dateIsoSorter,
+    dateUs: dateUsSorter,
+    dateUsShort: dateUsShortSorter,
+    numeric: numericSorter,
+    string: stringSorter
+};
+function sortByFieldType(value1, value2, fieldType, sortDirection) {
+    var sortResult = 0;
+    switch (fieldType) {
+        case FieldType.number:
+            sortResult = Sorters.numeric(value1, value2, sortDirection);
+            break;
+        case FieldType.date:
+            sortResult = Sorters.date(value1, value2, sortDirection);
+            break;
+        case FieldType.dateIso:
+            sortResult = Sorters.dateIso(value1, value2, sortDirection);
+            break;
+        case FieldType.dateUs:
+            sortResult = Sorters.dateUs(value1, value2, sortDirection);
+            break;
+        case FieldType.dateUsShort:
+            sortResult = Sorters.dateUsShort(value1, value2, sortDirection);
+            break;
+        default:
+            sortResult = Sorters.string(value1, value2, sortDirection);
+            break;
+    }
+    return sortResult;
+}
+var CollectionService = /** @class */ (function () {
+    function CollectionService(translate) {
+        this.translate = translate;
+    }
+    CollectionService.prototype.filterCollection = function (collection, filterBy) {
+        var filteredCollection;
+        if (filterBy) {
+            var property_1 = filterBy.property || '';
+            var operator = filterBy.operator || OperatorType.equal;
+            var value_1 = filterBy.value || '';
+            if (operator === OperatorType.equal) {
+                filteredCollection = collection.filter(function (item) { return item[property_1] !== value_1; });
+            }
+            else {
+                filteredCollection = collection.filter(function (item) { return item[property_1] === value_1; });
+            }
+        }
+        return filteredCollection;
+    };
+    CollectionService.prototype.sortCollection = function (collection, sortBy, enableTranslateLabel) {
+        var _this = this;
+        var sortedCollection;
+        if (sortBy) {
+            var property_2 = sortBy.property || '';
+            var sortDirection_1 = sortBy.hasOwnProperty('sortDesc') ? (sortBy.sortDesc ? -1 : 1) : 1;
+            var fieldType_1 = sortBy.fieldType || FieldType.string;
+            sortedCollection = collection.sort(function (dataRow1, dataRow2) {
+                var value1 = (enableTranslateLabel) ? _this.translate.instant(dataRow1[property_2] || ' ') : dataRow1[property_2];
+                var value2 = (enableTranslateLabel) ? _this.translate.instant(dataRow2[property_2] || ' ') : dataRow2[property_2];
+                var result = sortByFieldType(value1, value2, fieldType_1, sortDirection_1);
+                return result;
+            });
+        }
+        return sortedCollection;
+    };
+    return CollectionService;
+}());
+CollectionService.decorators = [
+    { type: core.Injectable },
+];
+CollectionService.ctorParameters = function () { return [
+    { type: core$1.TranslateService, },
+]; };
 var ExportService = /** @class */ (function () {
     function ExportService(translate) {
         this.translate = translate;
@@ -797,55 +939,55 @@ var testFilterCondition = function (operator, value1, value2) {
     }
     return true;
 };
-var moment$1 = moment_;
+var moment$5 = moment_;
 var dateFilterCondition = function (options) {
     var filterSearchType = options.filterSearchType || FieldType.dateIso;
     var searchDateFormat = mapMomentDateFormatWithFieldType(filterSearchType);
-    if (!moment$1(options.cellValue, moment$1.ISO_8601).isValid() || !moment$1(options.searchTerm, searchDateFormat, true).isValid()) {
-        return true;
-    }
-    var dateCell = moment$1(options.cellValue);
-    var dateSearch = moment$1(options.searchTerm);
-    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
-};
-var moment$2 = moment_;
-var FORMAT = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-var dateIsoFilterCondition = function (options) {
-    if (!moment$2(options.cellValue, FORMAT, true).isValid() || !moment$2(options.searchTerm, FORMAT, true).isValid()) {
-        return true;
-    }
-    var dateCell = moment$2(options.cellValue, FORMAT, true);
-    var dateSearch = moment$2(options.searchTerm, FORMAT, true);
-    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
-};
-var moment$3 = moment_;
-var FORMAT$1 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-var dateUsFilterCondition = function (options) {
-    if (!moment$3(options.cellValue, FORMAT$1, true).isValid() || !moment$3(options.searchTerm, FORMAT$1, true).isValid()) {
-        return true;
-    }
-    var dateCell = moment$3(options.cellValue, FORMAT$1, true);
-    var dateSearch = moment$3(options.searchTerm, FORMAT$1, true);
-    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
-};
-var moment$4 = moment_;
-var FORMAT$2 = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
-var dateUsShortFilterCondition = function (options) {
-    if (!moment$4(options.cellValue, FORMAT$2, true).isValid() || !moment$4(options.searchTerm, FORMAT$2, true).isValid()) {
-        return true;
-    }
-    var dateCell = moment$4(options.cellValue, FORMAT$2, true);
-    var dateSearch = moment$4(options.searchTerm, FORMAT$2, true);
-    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
-};
-var moment$5 = moment_;
-var dateUtcFilterCondition = function (options) {
-    var searchDateFormat = mapMomentDateFormatWithFieldType(options.filterSearchType || options.fieldType);
     if (!moment$5(options.cellValue, moment$5.ISO_8601).isValid() || !moment$5(options.searchTerm, searchDateFormat, true).isValid()) {
         return true;
     }
-    var dateCell = moment$5(options.cellValue, moment$5.ISO_8601, true);
-    var dateSearch = moment$5(options.searchTerm, searchDateFormat, true);
+    var dateCell = moment$5(options.cellValue);
+    var dateSearch = moment$5(options.searchTerm);
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+var moment$6 = moment_;
+var FORMAT$3 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
+var dateIsoFilterCondition = function (options) {
+    if (!moment$6(options.cellValue, FORMAT$3, true).isValid() || !moment$6(options.searchTerm, FORMAT$3, true).isValid()) {
+        return true;
+    }
+    var dateCell = moment$6(options.cellValue, FORMAT$3, true);
+    var dateSearch = moment$6(options.searchTerm, FORMAT$3, true);
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+var moment$7 = moment_;
+var FORMAT$4 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
+var dateUsFilterCondition = function (options) {
+    if (!moment$7(options.cellValue, FORMAT$4, true).isValid() || !moment$7(options.searchTerm, FORMAT$4, true).isValid()) {
+        return true;
+    }
+    var dateCell = moment$7(options.cellValue, FORMAT$4, true);
+    var dateSearch = moment$7(options.searchTerm, FORMAT$4, true);
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+var moment$8 = moment_;
+var FORMAT$5 = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
+var dateUsShortFilterCondition = function (options) {
+    if (!moment$8(options.cellValue, FORMAT$5, true).isValid() || !moment$8(options.searchTerm, FORMAT$5, true).isValid()) {
+        return true;
+    }
+    var dateCell = moment$8(options.cellValue, FORMAT$5, true);
+    var dateSearch = moment$8(options.searchTerm, FORMAT$5, true);
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+var moment$9 = moment_;
+var dateUtcFilterCondition = function (options) {
+    var searchDateFormat = mapMomentDateFormatWithFieldType(options.filterSearchType || options.fieldType);
+    if (!moment$9(options.cellValue, moment$9.ISO_8601).isValid() || !moment$9(options.searchTerm, searchDateFormat, true).isValid()) {
+        return true;
+    }
+    var dateCell = moment$9(options.cellValue, moment$9.ISO_8601, true);
+    var dateSearch = moment$9(options.searchTerm, searchDateFormat, true);
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
 var collectionSearchFilterCondition = function (options) {
@@ -1254,10 +1396,12 @@ var InputFilter = /** @class */ (function () {
     return InputFilter;
 }());
 var MultipleSelectFilter = /** @class */ (function () {
-    function MultipleSelectFilter(translate) {
+    function MultipleSelectFilter(collectionService, translate) {
         var _this = this;
+        this.collectionService = collectionService;
         this.translate = translate;
         this.isFilled = false;
+        this.enableTranslateLabel = false;
         this.defaultOptions = {
             container: 'body',
             filter: false,
@@ -1287,7 +1431,23 @@ var MultipleSelectFilter = /** @class */ (function () {
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.searchTerms = args.searchTerms || [];
-        var filterTemplate = this.buildTemplateHtmlString();
+        if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
+        }
+        this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
+        this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+        this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
+        var newCollection = this.columnDef.filter.collection || [];
+        this.gridOptions = this.grid.getOptions();
+        if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
+            var filterBy = this.columnDef.filter.collectionFilterBy;
+            newCollection = this.collectionService.filterCollection(newCollection, filterBy);
+        }
+        if (this.gridOptions.params && this.columnDef.filter.collectionSortBy) {
+            var sortBy = this.columnDef.filter.collectionSortBy;
+            newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
+        }
+        var filterTemplate = this.buildTemplateHtmlString(newCollection);
         this.createDomElement(filterTemplate);
     };
     MultipleSelectFilter.prototype.clear = function (triggerFilterChange) {
@@ -1310,23 +1470,17 @@ var MultipleSelectFilter = /** @class */ (function () {
             this.$filterElm.multipleSelect('setSelects', values);
         }
     };
-    MultipleSelectFilter.prototype.buildTemplateHtmlString = function () {
+    MultipleSelectFilter.prototype.buildTemplateHtmlString = function (optionCollection) {
         var _this = this;
-        if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
-        }
-        var optionCollection = this.columnDef.filter.collection || [];
-        var labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
-        var valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         var options = '';
         optionCollection.forEach(function (option) {
-            if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
+            if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.multipleSelect, collection: [ { value: '1', label: 'One' } ]')");
             }
-            var labelKey = ((option.labelKey || option[labelName]));
-            var selected = (_this.findValueInSearchTerms(option[valueName]) >= 0) ? 'selected' : '';
-            var textLabel = ((option.labelKey || _this.columnDef.filter.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
-            options += "<option value=\"" + option[valueName] + "\" " + selected + ">" + textLabel + "</option>";
+            var labelKey = ((option.labelKey || option[_this.labelName]));
+            var selected = (_this.findValueInSearchTerms(option[_this.valueName]) >= 0) ? 'selected' : '';
+            var textLabel = ((option.labelKey || _this.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
+            options += "<option value=\"" + option[_this.valueName] + "\" " + selected + ">" + textLabel + "</option>";
             if (selected) {
                 _this.isFilled = true;
             }
@@ -1367,6 +1521,7 @@ MultipleSelectFilter.decorators = [
     { type: core.Injectable },
 ];
 MultipleSelectFilter.ctorParameters = function () { return [
+    { type: CollectionService, },
     { type: core$1.TranslateService, },
 ]; };
 var SelectFilter = /** @class */ (function () {
@@ -1443,10 +1598,12 @@ var SelectFilter = /** @class */ (function () {
     return SelectFilter;
 }());
 var SingleSelectFilter = /** @class */ (function () {
-    function SingleSelectFilter(translate) {
+    function SingleSelectFilter(collectionService, translate) {
         var _this = this;
+        this.collectionService = collectionService;
         this.translate = translate;
         this.isFilled = false;
+        this.enableTranslateLabel = false;
         this.defaultOptions = {
             container: 'body',
             filter: false,
@@ -1473,7 +1630,23 @@ var SingleSelectFilter = /** @class */ (function () {
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.searchTerm = args.searchTerm;
-        var filterTemplate = this.buildTemplateHtmlString();
+        if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
+        }
+        this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
+        this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+        this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
+        var newCollection = this.columnDef.filter.collection || [];
+        this.gridOptions = this.grid.getOptions();
+        if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
+            var filterBy = this.columnDef.filter.collectionFilterBy;
+            newCollection = this.collectionService.filterCollection(newCollection, filterBy);
+        }
+        if (this.gridOptions.params && this.columnDef.filter.collectionSortBy) {
+            var sortBy = this.columnDef.filter.collectionSortBy;
+            newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
+        }
+        var filterTemplate = this.buildTemplateHtmlString(newCollection || []);
         this.createDomElement(filterTemplate);
     };
     SingleSelectFilter.prototype.clear = function (triggerFilterChange) {
@@ -1496,23 +1669,17 @@ var SingleSelectFilter = /** @class */ (function () {
             this.$filterElm.multipleSelect('setSelects', values);
         }
     };
-    SingleSelectFilter.prototype.buildTemplateHtmlString = function () {
+    SingleSelectFilter.prototype.buildTemplateHtmlString = function (optionCollection) {
         var _this = this;
-        if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the SingleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.singleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
-        }
-        var optionCollection = this.columnDef.filter.collection || [];
-        var labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
-        var valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         var options = '';
         optionCollection.forEach(function (option) {
-            if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
+            if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.singleSelect, collection: [ { value: '1', label: 'One' } ]')");
             }
-            var labelKey = ((option.labelKey || option[labelName]));
-            var selected = (option[valueName] === _this.searchTerm) ? 'selected' : '';
+            var labelKey = ((option.labelKey || option[_this.labelName]));
+            var selected = (option[_this.valueName] === _this.searchTerm) ? 'selected' : '';
             var textLabel = ((option.labelKey || _this.columnDef.filter.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
-            options += "<option value=\"" + option[valueName] + "\" " + selected + ">" + textLabel + "</option>";
+            options += "<option value=\"" + option[_this.valueName] + "\" " + selected + ">" + textLabel + "</option>";
             if (selected) {
                 _this.isFilled = true;
             }
@@ -1540,6 +1707,7 @@ SingleSelectFilter.decorators = [
     { type: core.Injectable },
 ];
 SingleSelectFilter.ctorParameters = function () { return [
+    { type: CollectionService, },
     { type: core$1.TranslateService, },
 ]; };
 var Filters = {
@@ -1551,7 +1719,8 @@ var Filters = {
     compoundInput: CompoundInputFilter,
 };
 var FilterService = /** @class */ (function () {
-    function FilterService(translate) {
+    function FilterService(collectionService, translate) {
+        this.collectionService = collectionService;
         this.translate = translate;
         this._eventHandler = new Slick.EventHandler();
         this._filters = [];
@@ -1859,10 +2028,10 @@ var FilterService = /** @class */ (function () {
                     filter_1 = new Filters.select(this.translate);
                     break;
                 case FilterType.multipleSelect:
-                    filter_1 = new Filters.multipleSelect(this.translate);
+                    filter_1 = new Filters.multipleSelect(this.collectionService, this.translate);
                     break;
                 case FilterType.singleSelect:
-                    filter_1 = new Filters.singleSelect(this.translate);
+                    filter_1 = new Filters.singleSelect(this.collectionService, this.translate);
                     break;
                 case FilterType.compoundDate:
                     filter_1 = new Filters.compoundDate(this.translate);
@@ -1958,6 +2127,7 @@ FilterService.decorators = [
     { type: core.Injectable },
 ];
 FilterService.ctorParameters = function () { return [
+    { type: CollectionService, },
     { type: core$1.TranslateService, },
 ]; };
 var SharedService = /** @class */ (function () {
@@ -3652,81 +3822,6 @@ var ResizerService = /** @class */ (function () {
     };
     return ResizerService;
 }());
-var moment$6 = moment_;
-var FORMAT$3 = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
-var dateUsShortSorter = function (value1, value2, sortDirection) {
-    if (!moment$6(value1, FORMAT$3, true).isValid() || !moment$6(value2, FORMAT$3, true).isValid()) {
-        return 0;
-    }
-    var date1 = moment$6(value1, FORMAT$3, true);
-    var date2 = moment$6(value2, FORMAT$3, true);
-    var diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-var moment$7 = moment_;
-var dateSorter = function (value1, value2, sortDirection) {
-    if (!moment$7(value1, moment$7.ISO_8601).isValid() || !moment$7(value2, moment$7.ISO_8601, true).isValid()) {
-        return 0;
-    }
-    var date1 = moment$7(value1);
-    var date2 = moment$7(value2);
-    var diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-var moment$8 = moment_;
-var FORMAT$4 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-var dateIsoSorter = function (value1, value2, sortDirection) {
-    if (!moment$8(value1, FORMAT$4, true).isValid() || !moment$8(value2, FORMAT$4, true).isValid()) {
-        return 0;
-    }
-    var date1 = moment$8(value1, FORMAT$4, true);
-    var date2 = moment$8(value2, FORMAT$4, true);
-    var diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-var moment$9 = moment_;
-var FORMAT$5 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-var dateUsSorter = function (value1, value2, sortDirection) {
-    if (!moment$9(value1, FORMAT$5, true).isValid() || !moment$9(value2, FORMAT$5, true).isValid()) {
-        return 0;
-    }
-    var date1 = moment$9(value1, FORMAT$5, true);
-    var date2 = moment$9(value2, FORMAT$5, true);
-    var diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-var numericSorter = function (value1, value2, sortDirection) {
-    var x = (isNaN(value1) || value1 === '' || value1 === null) ? -99e+10 : parseFloat(value1);
-    var y = (isNaN(value2) || value2 === '' || value2 === null) ? -99e+10 : parseFloat(value2);
-    return sortDirection * (x === y ? 0 : (x > y ? 1 : -1));
-};
-var stringSorter = function (value1, value2, sortDirection) {
-    var position;
-    if (value1 === null) {
-        position = -1;
-    }
-    else if (value2 === null) {
-        position = 1;
-    }
-    else if (value1 === value2) {
-        position = 0;
-    }
-    else if (sortDirection) {
-        position = value1 < value2 ? -1 : 1;
-    }
-    else if (!sortDirection) {
-        position = value1 < value2 ? 1 : -1;
-    }
-    return sortDirection * position;
-};
-var Sorters = {
-    date: dateSorter,
-    dateIso: dateIsoSorter,
-    dateUs: dateUsSorter,
-    dateUsShort: dateUsShortSorter,
-    numeric: numericSorter,
-    string: stringSorter
-};
 var SortService = /** @class */ (function () {
     function SortService() {
         this._currentLocalSorters = [];
@@ -3838,33 +3933,10 @@ var SortService = /** @class */ (function () {
                 if (columnSortObj && columnSortObj.sortCol) {
                     var sortDirection = columnSortObj.sortAsc ? 1 : -1;
                     var sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
-                    var fieldType = columnSortObj.sortCol.type || 'string';
+                    var fieldType = columnSortObj.sortCol.type || FieldType.string;
                     var value1 = dataRow1[sortField];
                     var value2 = dataRow2[sortField];
-                    var result = 0;
-                    switch (fieldType) {
-                        case FieldType.number:
-                            result = Sorters.numeric(value1, value2, sortDirection);
-                            break;
-                        case FieldType.date:
-                            result = Sorters.date(value1, value2, sortDirection);
-                            break;
-                        case FieldType.dateIso:
-                            result = Sorters.dateIso(value1, value2, sortDirection);
-                            break;
-                        case FieldType.dateUs:
-                            result = Sorters.dateUs(value1, value2, sortDirection);
-                            break;
-                        case FieldType.dateUsShort:
-                            result = Sorters.dateUsShort(value1, value2, sortDirection);
-                            break;
-                        default:
-                            result = Sorters.string(value1, value2, sortDirection);
-                            break;
-                    }
-                    if (result !== 0) {
-                        return result;
-                    }
+                    return sortByFieldType(value1, value2, fieldType, sortDirection);
                 }
             }
             return 0;
@@ -4261,8 +4333,8 @@ var MultipleSelectEditor = /** @class */ (function () {
     function MultipleSelectEditor(args) {
         this.args = args;
         this.collection = [];
-        var gridOptions = (this.args.grid.getOptions());
-        var params = gridOptions.params || this.args.column.params || {};
+        this.gridOptions = (this.args.grid.getOptions());
+        var params = this.gridOptions.params || this.args.column.params || {};
         this._translate = params.i18n;
         this.defaultOptions = {
             container: 'body',
@@ -4296,7 +4368,23 @@ var MultipleSelectEditor = /** @class */ (function () {
             throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
         this.columnDef = this.args.column;
-        var editorTemplate = this.buildTemplateHtmlString();
+        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" on the params property in the column definition for the MultipleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }");
+        }
+        var collectionService = new CollectionService(this._translate);
+        this.enableTranslateLabel = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
+        var newCollection = this.columnDef.params.collection || [];
+        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
+        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
+        if (this.gridOptions.params && this.columnDef.params.collectionFilterBy) {
+            var filterBy = this.columnDef.params.collectionFilterBy;
+            newCollection = collectionService.filterCollection(newCollection, filterBy);
+        }
+        if (this.gridOptions.params && this.columnDef.params.collectionSortBy) {
+            var sortBy = this.columnDef.params.collectionSortBy;
+            newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
+        }
+        var editorTemplate = this.buildTemplateHtmlString(newCollection);
         this.createDomElement(editorTemplate);
     };
     MultipleSelectEditor.prototype.applyValue = function (item, state) {
@@ -4339,22 +4427,15 @@ var MultipleSelectEditor = /** @class */ (function () {
             msg: null
         };
     };
-    MultipleSelectEditor.prototype.buildTemplateHtmlString = function () {
+    MultipleSelectEditor.prototype.buildTemplateHtmlString = function (collection) {
         var _this = this;
-        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
-            throw new Error("[Aurelia-SlickGrid] You need to pass a \"collection\" on the params property in the column definition for the MultipleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }");
-        }
-        this.collection = this.columnDef.params.collection || [];
-        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
-        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
-        var isEnabledTranslate = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
         var options = '';
-        this.collection.forEach(function (option) {
+        collection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])");
             }
             var labelKey = ((option.labelKey || option[_this.labelName]));
-            var textLabel = ((option.labelKey || isEnabledTranslate) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
+            var textLabel = ((option.labelKey || _this.enableTranslateLabel) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
             options += "<option value=\"" + option[_this.valueName] + "\">" + textLabel + "</option>";
         });
         return "<select class=\"ms-filter search-filter\" multiple=\"multiple\">" + options + "</select>";
@@ -4386,8 +4467,8 @@ var SingleSelectEditor = /** @class */ (function () {
     function SingleSelectEditor(args) {
         this.args = args;
         this.collection = [];
-        var gridOptions = (this.args.grid.getOptions());
-        var params = gridOptions.params || this.args.column.params || {};
+        this.gridOptions = (this.args.grid.getOptions());
+        var params = this.gridOptions.params || this.args.column.params || {};
         this._translate = params.i18n;
         this.defaultOptions = {
             container: 'body',
@@ -4409,10 +4490,26 @@ var SingleSelectEditor = /** @class */ (function () {
     });
     SingleSelectEditor.prototype.init = function () {
         if (!this.args) {
-            throw new Error('[Aurelia-SlickGrid] An editor must always have an "init()" with valid arguments.');
+            throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
         this.columnDef = this.args.column;
-        var editorTemplate = this.buildTemplateHtmlString();
+        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" on the params property in the column definition for the MultipleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }");
+        }
+        var collectionService = new CollectionService(this._translate);
+        this.enableTranslateLabel = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
+        var newCollection = this.columnDef.params.collection || [];
+        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
+        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
+        if (this.gridOptions.params && this.columnDef.params.collectionFilterBy) {
+            var filterBy = this.columnDef.params.collectionFilterBy;
+            newCollection = collectionService.filterCollection(newCollection, filterBy);
+        }
+        if (this.gridOptions.params && this.columnDef.params.collectionSortBy) {
+            var sortBy = this.columnDef.params.collectionSortBy;
+            newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
+        }
+        var editorTemplate = this.buildTemplateHtmlString(newCollection);
         this.createDomElement(editorTemplate);
     };
     SingleSelectEditor.prototype.applyValue = function (item, state) {
@@ -4455,27 +4552,17 @@ var SingleSelectEditor = /** @class */ (function () {
             msg: null
         };
     };
-    SingleSelectEditor.prototype.buildTemplateHtmlString = function () {
+    SingleSelectEditor.prototype.buildTemplateHtmlString = function (collection) {
         var _this = this;
-        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
-            throw new Error('[Aurelia-SlickGrid] You need to pass a "collection" on the params property in the column definition for ' +
-                'the SingleSelect Editor to work correctly. Also each option should include ' +
-                'a value/label pair (or value/labelKey when using Locale). For example: { params: { ' +
-                '{ collection: [{ value: true, label: \'True\' }, { value: false, label: \'False\'}] } } }');
-        }
-        this.collection = this.columnDef.params.collection || [];
-        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
-        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
-        var isEnabledTranslate = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
         var options = '';
-        this.collection.forEach(function (option) {
+        collection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error('A collection with value/label (or value/labelKey when using ' +
                     'Locale) is required to populate the Select list, for example: { params: { ' +
                     '{ collection: [ { value: \'1\', label: \'One\' } ] } } }');
             }
             var labelKey = ((option.labelKey || option[_this.labelName]));
-            var textLabel = ((option.labelKey || isEnabledTranslate) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
+            var textLabel = ((option.labelKey || _this.enableTranslateLabel) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
             options += "<option value=\"" + option[_this.valueName] + "\">" + textLabel + "</option>";
         });
         return "<select class=\"ms-filter search-filter\">" + options + "</select>";
@@ -5142,11 +5229,13 @@ var AngularSlickgridComponent = /** @class */ (function () {
             if (backendApi_1 && backendApi_1.service && backendApi_1.service instanceof GraphqlService) {
                 backendApi_1.internalPostProcess = function (processResult) {
                     var datasetName = (backendApi_1 && backendApi_1.service && typeof backendApi_1.service.getDatasetName === 'function') ? backendApi_1.service.getDatasetName() : '';
-                    if (!processResult || !processResult.data || !processResult.data[datasetName]) {
-                        throw new Error("Your GraphQL result is invalid and/or does not follow the required result structure. Please check the result and/or review structure to use in Angular-Slickgrid Wiki in the GraphQL section.");
+                    if (processResult && processResult.data && processResult.data[datasetName]) {
+                        _this._dataset = processResult.data[datasetName].nodes;
+                        _this.refreshGridData(_this._dataset, processResult.data[datasetName].totalCount);
                     }
-                    _this._dataset = processResult.data[datasetName].nodes;
-                    _this.refreshGridData(_this._dataset, processResult.data[datasetName].totalCount);
+                    else {
+                        _this._dataset = [];
+                    }
                 };
             }
         }
@@ -5358,6 +5447,7 @@ var AngularSlickgridModule = /** @class */ (function () {
             ngModule: AngularSlickgridModule,
             providers: [
                 { provide: 'config', useValue: config },
+                CollectionService,
                 ControlAndPluginService,
                 ExportService,
                 FilterService,
@@ -5406,6 +5496,7 @@ exports.GridStateType = GridStateType;
 exports.KeyCode = KeyCode;
 exports.OperatorType = OperatorType;
 exports.SortDirection = SortDirection;
+exports.CollectionService = CollectionService;
 exports.ControlAndPluginService = ControlAndPluginService;
 exports.ExportService = ExportService;
 exports.FilterService = FilterService;

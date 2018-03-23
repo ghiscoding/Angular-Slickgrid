@@ -672,6 +672,215 @@ function toKebabCase(str) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+const moment$1 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
+const dateUsShortSorter = (value1, value2, sortDirection) => {
+    if (!moment$1(value1, FORMAT, true).isValid() || !moment$1(value2, FORMAT, true).isValid()) {
+        return 0;
+    }
+    const /** @type {?} */ date1 = moment$1(value1, FORMAT, true);
+    const /** @type {?} */ date2 = moment$1(value2, FORMAT, true);
+    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$2 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const dateSorter = (value1, value2, sortDirection) => {
+    if (!moment$2(value1, moment$2.ISO_8601).isValid() || !moment$2(value2, moment$2.ISO_8601, true).isValid()) {
+        return 0;
+    }
+    const /** @type {?} */ date1 = moment$2(value1);
+    const /** @type {?} */ date2 = moment$2(value2);
+    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$3 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT$1 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
+const dateIsoSorter = (value1, value2, sortDirection) => {
+    if (!moment$3(value1, FORMAT$1, true).isValid() || !moment$3(value2, FORMAT$1, true).isValid()) {
+        return 0;
+    }
+    const /** @type {?} */ date1 = moment$3(value1, FORMAT$1, true);
+    const /** @type {?} */ date2 = moment$3(value2, FORMAT$1, true);
+    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$4 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT$2 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
+const dateUsSorter = (value1, value2, sortDirection) => {
+    if (!moment$4(value1, FORMAT$2, true).isValid() || !moment$4(value2, FORMAT$2, true).isValid()) {
+        return 0;
+    }
+    const /** @type {?} */ date1 = moment$4(value1, FORMAT$2, true);
+    const /** @type {?} */ date2 = moment$4(value2, FORMAT$2, true);
+    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const numericSorter = (value1, value2, sortDirection) => {
+    const /** @type {?} */ x = (isNaN(value1) || value1 === '' || value1 === null) ? -99e+10 : parseFloat(value1);
+    const /** @type {?} */ y = (isNaN(value2) || value2 === '' || value2 === null) ? -99e+10 : parseFloat(value2);
+    return sortDirection * (x === y ? 0 : (x > y ? 1 : -1));
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const stringSorter = (value1, value2, sortDirection) => {
+    let /** @type {?} */ position;
+    if (value1 === null) {
+        position = -1;
+    }
+    else if (value2 === null) {
+        position = 1;
+    }
+    else if (value1 === value2) {
+        position = 0;
+    }
+    else if (sortDirection) {
+        position = value1 < value2 ? -1 : 1;
+    }
+    else if (!sortDirection) {
+        position = value1 < value2 ? 1 : -1;
+    }
+    return sortDirection * position;
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const Sorters = {
+    date: dateSorter,
+    dateIso: dateIsoSorter,
+    dateUs: dateUsSorter,
+    dateUsShort: dateUsShortSorter,
+    numeric: numericSorter,
+    string: stringSorter
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @param {?} value1
+ * @param {?} value2
+ * @param {?} fieldType
+ * @param {?} sortDirection
+ * @return {?}
+ */
+function sortByFieldType(value1, value2, fieldType, sortDirection) {
+    let /** @type {?} */ sortResult = 0;
+    switch (fieldType) {
+        case FieldType.number:
+            sortResult = Sorters.numeric(value1, value2, sortDirection);
+            break;
+        case FieldType.date:
+            sortResult = Sorters.date(value1, value2, sortDirection);
+            break;
+        case FieldType.dateIso:
+            sortResult = Sorters.dateIso(value1, value2, sortDirection);
+            break;
+        case FieldType.dateUs:
+            sortResult = Sorters.dateUs(value1, value2, sortDirection);
+            break;
+        case FieldType.dateUsShort:
+            sortResult = Sorters.dateUsShort(value1, value2, sortDirection);
+            break;
+        default:
+            sortResult = Sorters.string(value1, value2, sortDirection);
+            break;
+    }
+    return sortResult;
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class CollectionService {
+    /**
+     * @param {?} translate
+     */
+    constructor(translate) {
+        this.translate = translate;
+    }
+    /**
+     * Filter items from a collection
+     * @param {?} collection
+     * @param {?} filterBy
+     * @return {?}
+     */
+    filterCollection(collection, filterBy) {
+        let /** @type {?} */ filteredCollection;
+        if (filterBy) {
+            const /** @type {?} */ property = filterBy.property || '';
+            const /** @type {?} */ operator = filterBy.operator || OperatorType.equal;
+            const /** @type {?} */ value = filterBy.value || '';
+            if (operator === OperatorType.equal) {
+                filteredCollection = collection.filter((item) => item[property] !== value);
+            }
+            else {
+                filteredCollection = collection.filter((item) => item[property] === value);
+            }
+        }
+        return filteredCollection;
+    }
+    /**
+     * Sort items in a collection
+     * @param {?} collection
+     * @param {?} sortBy
+     * @param {?=} enableTranslateLabel
+     * @return {?}
+     */
+    sortCollection(collection, sortBy, enableTranslateLabel) {
+        let /** @type {?} */ sortedCollection;
+        if (sortBy) {
+            const /** @type {?} */ property = sortBy.property || '';
+            const /** @type {?} */ sortDirection = sortBy.hasOwnProperty('sortDesc') ? (sortBy.sortDesc ? -1 : 1) : 1;
+            const /** @type {?} */ fieldType = sortBy.fieldType || FieldType.string;
+            sortedCollection = collection.sort((dataRow1, dataRow2) => {
+                const /** @type {?} */ value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[property] || ' ') : dataRow1[property];
+                const /** @type {?} */ value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[property] || ' ') : dataRow2[property];
+                const /** @type {?} */ result = sortByFieldType(value1, value2, fieldType, sortDirection);
+                return result;
+            });
+        }
+        return sortedCollection;
+    }
+}
+CollectionService.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+CollectionService.ctorParameters = () => [
+    { type: TranslateService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 /**
  * @record
  */
@@ -1085,79 +1294,79 @@ const testFilterCondition = (operator, value1, value2) => {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const moment$1 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment$5 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const dateFilterCondition = (options) => {
     const /** @type {?} */ filterSearchType = options.filterSearchType || FieldType.dateIso;
     const /** @type {?} */ searchDateFormat = mapMomentDateFormatWithFieldType(filterSearchType);
-    if (!moment$1(options.cellValue, moment$1.ISO_8601).isValid() || !moment$1(options.searchTerm, searchDateFormat, true).isValid()) {
-        return true;
-    }
-    const /** @type {?} */ dateCell = moment$1(options.cellValue);
-    const /** @type {?} */ dateSearch = moment$1(options.searchTerm);
-    // run the filter condition with date in Unix Timestamp format
-    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const moment$2 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-const dateIsoFilterCondition = (options) => {
-    if (!moment$2(options.cellValue, FORMAT, true).isValid() || !moment$2(options.searchTerm, FORMAT, true).isValid()) {
-        return true;
-    }
-    const /** @type {?} */ dateCell = moment$2(options.cellValue, FORMAT, true);
-    const /** @type {?} */ dateSearch = moment$2(options.searchTerm, FORMAT, true);
-    // run the filter condition with date in Unix Timestamp format
-    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const moment$3 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$1 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-const dateUsFilterCondition = (options) => {
-    if (!moment$3(options.cellValue, FORMAT$1, true).isValid() || !moment$3(options.searchTerm, FORMAT$1, true).isValid()) {
-        return true;
-    }
-    const /** @type {?} */ dateCell = moment$3(options.cellValue, FORMAT$1, true);
-    const /** @type {?} */ dateSearch = moment$3(options.searchTerm, FORMAT$1, true);
-    // run the filter condition with date in Unix Timestamp format
-    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const moment$4 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$2 = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
-const dateUsShortFilterCondition = (options) => {
-    if (!moment$4(options.cellValue, FORMAT$2, true).isValid() || !moment$4(options.searchTerm, FORMAT$2, true).isValid()) {
-        return true;
-    }
-    const /** @type {?} */ dateCell = moment$4(options.cellValue, FORMAT$2, true);
-    const /** @type {?} */ dateSearch = moment$4(options.searchTerm, FORMAT$2, true);
-    // run the filter condition with date in Unix Timestamp format
-    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const moment$5 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const dateUtcFilterCondition = (options) => {
-    const /** @type {?} */ searchDateFormat = mapMomentDateFormatWithFieldType(options.filterSearchType || options.fieldType);
     if (!moment$5(options.cellValue, moment$5.ISO_8601).isValid() || !moment$5(options.searchTerm, searchDateFormat, true).isValid()) {
         return true;
     }
-    const /** @type {?} */ dateCell = moment$5(options.cellValue, moment$5.ISO_8601, true);
-    const /** @type {?} */ dateSearch = moment$5(options.searchTerm, searchDateFormat, true);
+    const /** @type {?} */ dateCell = moment$5(options.cellValue);
+    const /** @type {?} */ dateSearch = moment$5(options.searchTerm);
+    // run the filter condition with date in Unix Timestamp format
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$6 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT$3 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
+const dateIsoFilterCondition = (options) => {
+    if (!moment$6(options.cellValue, FORMAT$3, true).isValid() || !moment$6(options.searchTerm, FORMAT$3, true).isValid()) {
+        return true;
+    }
+    const /** @type {?} */ dateCell = moment$6(options.cellValue, FORMAT$3, true);
+    const /** @type {?} */ dateSearch = moment$6(options.searchTerm, FORMAT$3, true);
+    // run the filter condition with date in Unix Timestamp format
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$7 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT$4 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
+const dateUsFilterCondition = (options) => {
+    if (!moment$7(options.cellValue, FORMAT$4, true).isValid() || !moment$7(options.searchTerm, FORMAT$4, true).isValid()) {
+        return true;
+    }
+    const /** @type {?} */ dateCell = moment$7(options.cellValue, FORMAT$4, true);
+    const /** @type {?} */ dateSearch = moment$7(options.searchTerm, FORMAT$4, true);
+    // run the filter condition with date in Unix Timestamp format
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$8 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT$5 = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
+const dateUsShortFilterCondition = (options) => {
+    if (!moment$8(options.cellValue, FORMAT$5, true).isValid() || !moment$8(options.searchTerm, FORMAT$5, true).isValid()) {
+        return true;
+    }
+    const /** @type {?} */ dateCell = moment$8(options.cellValue, FORMAT$5, true);
+    const /** @type {?} */ dateSearch = moment$8(options.searchTerm, FORMAT$5, true);
+    // run the filter condition with date in Unix Timestamp format
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$9 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const dateUtcFilterCondition = (options) => {
+    const /** @type {?} */ searchDateFormat = mapMomentDateFormatWithFieldType(options.filterSearchType || options.fieldType);
+    if (!moment$9(options.cellValue, moment$9.ISO_8601).isValid() || !moment$9(options.searchTerm, searchDateFormat, true).isValid()) {
+        return true;
+    }
+    const /** @type {?} */ dateCell = moment$9(options.cellValue, moment$9.ISO_8601, true);
+    const /** @type {?} */ dateSearch = moment$9(options.searchTerm, searchDateFormat, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
@@ -1777,11 +1986,14 @@ class InputFilter {
 class MultipleSelectFilter {
     /**
      * Initialize the Filter
+     * @param {?} collectionService
      * @param {?} translate
      */
-    constructor(translate) {
+    constructor(collectionService, translate) {
+        this.collectionService = collectionService;
         this.translate = translate;
         this.isFilled = false;
+        this.enableTranslateLabel = false;
         // default options used by this Filter, user can overwrite any of these by passing "otions"
         this.defaultOptions = {
             container: 'body',
@@ -1822,8 +2034,26 @@ class MultipleSelectFilter {
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.searchTerms = args.searchTerms || [];
+        if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
+            throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
+        }
+        this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
+        this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+        this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
+        let /** @type {?} */ newCollection = this.columnDef.filter.collection || [];
+        this.gridOptions = this.grid.getOptions();
+        // user might want to filter certain items of the collection
+        if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
+            const /** @type {?} */ filterBy = this.columnDef.filter.collectionFilterBy;
+            newCollection = this.collectionService.filterCollection(newCollection, filterBy);
+        }
+        // user might want to sort the collection
+        if (this.gridOptions.params && this.columnDef.filter.collectionSortBy) {
+            const /** @type {?} */ sortBy = this.columnDef.filter.collectionSortBy;
+            newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
+        }
         // step 1, create HTML string template
-        const /** @type {?} */ filterTemplate = this.buildTemplateHtmlString();
+        const /** @type {?} */ filterTemplate = this.buildTemplateHtmlString(newCollection);
         // step 2, create the DOM Element of the filter & pre-load search terms
         // also subscribe to the onClose event
         this.createDomElement(filterTemplate);
@@ -1865,25 +2095,20 @@ class MultipleSelectFilter {
     }
     /**
      * Create the HTML template as a string
+     * @param {?} optionCollection
      * @return {?}
      */
-    buildTemplateHtmlString() {
-        if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-            throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
-        }
-        const /** @type {?} */ optionCollection = this.columnDef.filter.collection || [];
-        const /** @type {?} */ labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
-        const /** @type {?} */ valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
+    buildTemplateHtmlString(optionCollection) {
         let /** @type {?} */ options = '';
         optionCollection.forEach((option) => {
-            if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
+            if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
             }
-            const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[labelName]));
-            const /** @type {?} */ selected = (this.findValueInSearchTerms(option[valueName]) >= 0) ? 'selected' : '';
-            const /** @type {?} */ textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+            const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
+            const /** @type {?} */ selected = (this.findValueInSearchTerms(option[this.valueName]) >= 0) ? 'selected' : '';
+            const /** @type {?} */ textLabel = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
             // html text of each select option
-            options += `<option value="${option[valueName]}" ${selected}>${textLabel}</option>`;
+            options += `<option value="${option[this.valueName]}" ${selected}>${textLabel}</option>`;
             // if there's a search term, we will add the "filled" class for styling purposes
             if (selected) {
                 this.isFilled = true;
@@ -1939,6 +2164,7 @@ MultipleSelectFilter.decorators = [
 ];
 /** @nocollapse */
 MultipleSelectFilter.ctorParameters = () => [
+    { type: CollectionService, },
     { type: TranslateService, },
 ];
 
@@ -2058,11 +2284,14 @@ class SelectFilter {
  */
 class SingleSelectFilter {
     /**
+     * @param {?} collectionService
      * @param {?} translate
      */
-    constructor(translate) {
+    constructor(collectionService, translate) {
+        this.collectionService = collectionService;
         this.translate = translate;
         this.isFilled = false;
+        this.enableTranslateLabel = false;
         // default options used by this Filter, user can overwrite any of these by passing "otions"
         this.defaultOptions = {
             container: 'body',
@@ -2096,8 +2325,26 @@ class SingleSelectFilter {
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.searchTerm = args.searchTerm;
+        if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
+            throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
+        }
+        this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
+        this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+        this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
+        let /** @type {?} */ newCollection = this.columnDef.filter.collection || [];
+        this.gridOptions = this.grid.getOptions();
+        // user might want to filter certain items of the collection
+        if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
+            const /** @type {?} */ filterBy = this.columnDef.filter.collectionFilterBy;
+            newCollection = this.collectionService.filterCollection(newCollection, filterBy);
+        }
+        // user might want to sort the collection
+        if (this.gridOptions.params && this.columnDef.filter.collectionSortBy) {
+            const /** @type {?} */ sortBy = this.columnDef.filter.collectionSortBy;
+            newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
+        }
         // step 1, create HTML string template
-        const /** @type {?} */ filterTemplate = this.buildTemplateHtmlString();
+        const /** @type {?} */ filterTemplate = this.buildTemplateHtmlString(newCollection || []);
         // step 2, create the DOM Element of the filter & pre-load search term
         this.createDomElement(filterTemplate);
     }
@@ -2138,25 +2385,20 @@ class SingleSelectFilter {
     }
     /**
      * Create the HTML template as a string
+     * @param {?} optionCollection
      * @return {?}
      */
-    buildTemplateHtmlString() {
-        if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-            throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the SingleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.singleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
-        }
-        const /** @type {?} */ optionCollection = this.columnDef.filter.collection || [];
-        const /** @type {?} */ labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
-        const /** @type {?} */ valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
+    buildTemplateHtmlString(optionCollection) {
         let /** @type {?} */ options = '';
         optionCollection.forEach((option) => {
-            if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
+            if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.singleSelect, collection: [ { value: '1', label: 'One' } ]')`);
             }
-            const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[labelName]));
-            const /** @type {?} */ selected = (option[valueName] === this.searchTerm) ? 'selected' : '';
+            const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
+            const /** @type {?} */ selected = (option[this.valueName] === this.searchTerm) ? 'selected' : '';
             const /** @type {?} */ textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
             // html text of each select option
-            options += `<option value="${option[valueName]}" ${selected}>${textLabel}</option>`;
+            options += `<option value="${option[this.valueName]}" ${selected}>${textLabel}</option>`;
             // if there's a search term, we will add the "filled" class for styling purposes
             if (selected) {
                 this.isFilled = true;
@@ -2194,6 +2436,7 @@ SingleSelectFilter.decorators = [
 ];
 /** @nocollapse */
 SingleSelectFilter.ctorParameters = () => [
+    { type: CollectionService, },
     { type: TranslateService, },
 ];
 
@@ -2222,9 +2465,11 @@ const Filters = {
  */
 class FilterService {
     /**
+     * @param {?} collectionService
      * @param {?} translate
      */
-    constructor(translate) {
+    constructor(collectionService, translate) {
+        this.collectionService = collectionService;
         this.translate = translate;
         this._eventHandler = new Slick.EventHandler();
         this._filters = [];
@@ -2587,10 +2832,10 @@ class FilterService {
                     filter = new Filters.select(this.translate);
                     break;
                 case FilterType.multipleSelect:
-                    filter = new Filters.multipleSelect(this.translate);
+                    filter = new Filters.multipleSelect(this.collectionService, this.translate);
                     break;
                 case FilterType.singleSelect:
-                    filter = new Filters.singleSelect(this.translate);
+                    filter = new Filters.singleSelect(this.collectionService, this.translate);
                     break;
                 case FilterType.compoundDate:
                     filter = new Filters.compoundDate(this.translate);
@@ -2719,6 +2964,7 @@ FilterService.decorators = [
 ];
 /** @nocollapse */
 FilterService.ctorParameters = () => [
+    { type: CollectionService, },
     { type: TranslateService, },
 ];
 
@@ -5003,116 +5249,6 @@ class ResizerService {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const moment$6 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$3 = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
-const dateUsShortSorter = (value1, value2, sortDirection) => {
-    if (!moment$6(value1, FORMAT$3, true).isValid() || !moment$6(value2, FORMAT$3, true).isValid()) {
-        return 0;
-    }
-    const /** @type {?} */ date1 = moment$6(value1, FORMAT$3, true);
-    const /** @type {?} */ date2 = moment$6(value2, FORMAT$3, true);
-    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const moment$7 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const dateSorter = (value1, value2, sortDirection) => {
-    if (!moment$7(value1, moment$7.ISO_8601).isValid() || !moment$7(value2, moment$7.ISO_8601, true).isValid()) {
-        return 0;
-    }
-    const /** @type {?} */ date1 = moment$7(value1);
-    const /** @type {?} */ date2 = moment$7(value2);
-    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const moment$8 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$4 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-const dateIsoSorter = (value1, value2, sortDirection) => {
-    if (!moment$8(value1, FORMAT$4, true).isValid() || !moment$8(value2, FORMAT$4, true).isValid()) {
-        return 0;
-    }
-    const /** @type {?} */ date1 = moment$8(value1, FORMAT$4, true);
-    const /** @type {?} */ date2 = moment$8(value2, FORMAT$4, true);
-    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const moment$9 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$5 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-const dateUsSorter = (value1, value2, sortDirection) => {
-    if (!moment$9(value1, FORMAT$5, true).isValid() || !moment$9(value2, FORMAT$5, true).isValid()) {
-        return 0;
-    }
-    const /** @type {?} */ date1 = moment$9(value1, FORMAT$5, true);
-    const /** @type {?} */ date2 = moment$9(value2, FORMAT$5, true);
-    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const numericSorter = (value1, value2, sortDirection) => {
-    const /** @type {?} */ x = (isNaN(value1) || value1 === '' || value1 === null) ? -99e+10 : parseFloat(value1);
-    const /** @type {?} */ y = (isNaN(value2) || value2 === '' || value2 === null) ? -99e+10 : parseFloat(value2);
-    return sortDirection * (x === y ? 0 : (x > y ? 1 : -1));
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const stringSorter = (value1, value2, sortDirection) => {
-    let /** @type {?} */ position;
-    if (value1 === null) {
-        position = -1;
-    }
-    else if (value2 === null) {
-        position = 1;
-    }
-    else if (value1 === value2) {
-        position = 0;
-    }
-    else if (sortDirection) {
-        position = value1 < value2 ? -1 : 1;
-    }
-    else if (!sortDirection) {
-        position = value1 < value2 ? 1 : -1;
-    }
-    return sortDirection * position;
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const Sorters = {
-    date: dateSorter,
-    dateIso: dateIsoSorter,
-    dateUs: dateUsSorter,
-    dateUsShort: dateUsShortSorter,
-    numeric: numericSorter,
-    string: stringSorter
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
 class SortService {
     constructor() {
         this._currentLocalSorters = [];
@@ -5260,33 +5396,10 @@ class SortService {
                 if (columnSortObj && columnSortObj.sortCol) {
                     const /** @type {?} */ sortDirection = columnSortObj.sortAsc ? 1 : -1;
                     const /** @type {?} */ sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
-                    const /** @type {?} */ fieldType = columnSortObj.sortCol.type || 'string';
+                    const /** @type {?} */ fieldType = columnSortObj.sortCol.type || FieldType.string;
                     const /** @type {?} */ value1 = dataRow1[sortField];
                     const /** @type {?} */ value2 = dataRow2[sortField];
-                    let /** @type {?} */ result = 0;
-                    switch (fieldType) {
-                        case FieldType.number:
-                            result = Sorters.numeric(value1, value2, sortDirection);
-                            break;
-                        case FieldType.date:
-                            result = Sorters.date(value1, value2, sortDirection);
-                            break;
-                        case FieldType.dateIso:
-                            result = Sorters.dateIso(value1, value2, sortDirection);
-                            break;
-                        case FieldType.dateUs:
-                            result = Sorters.dateUs(value1, value2, sortDirection);
-                            break;
-                        case FieldType.dateUsShort:
-                            result = Sorters.dateUsShort(value1, value2, sortDirection);
-                            break;
-                        default:
-                            result = Sorters.string(value1, value2, sortDirection);
-                            break;
-                    }
-                    if (result !== 0) {
-                        return result;
-                    }
+                    return sortByFieldType(value1, value2, fieldType, sortDirection);
                 }
             }
             return 0;
@@ -5936,8 +6049,8 @@ class MultipleSelectEditor {
          * The options label/value object to use in the select list
          */
         this.collection = [];
-        const /** @type {?} */ gridOptions = /** @type {?} */ (this.args.grid.getOptions());
-        const /** @type {?} */ params = gridOptions.params || this.args.column.params || {};
+        this.gridOptions = /** @type {?} */ (this.args.grid.getOptions());
+        const /** @type {?} */ params = this.gridOptions.params || this.args.column.params || {};
         this._translate = params.i18n;
         this.defaultOptions = {
             container: 'body',
@@ -5973,7 +6086,27 @@ class MultipleSelectEditor {
             throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
         this.columnDef = this.args.column;
-        const /** @type {?} */ editorTemplate = this.buildTemplateHtmlString();
+        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
+            throw new Error(`[Angular-SlickGrid] You need to pass a "collection" on the params property in the column definition for the MultipleSelect Editor to work correctly.
+      Also each option should include a value/label pair (or value/labelKey when using Locale).
+      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }`);
+        }
+        const /** @type {?} */ collectionService = new CollectionService(this._translate);
+        this.enableTranslateLabel = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
+        let /** @type {?} */ newCollection = this.columnDef.params.collection || [];
+        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
+        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
+        // user might want to filter certain items of the collection
+        if (this.gridOptions.params && this.columnDef.params.collectionFilterBy) {
+            const /** @type {?} */ filterBy = this.columnDef.params.collectionFilterBy;
+            newCollection = collectionService.filterCollection(newCollection, filterBy);
+        }
+        // user might want to sort the collection
+        if (this.gridOptions.params && this.columnDef.params.collectionSortBy) {
+            const /** @type {?} */ sortBy = this.columnDef.params.collectionSortBy;
+            newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
+        }
+        const /** @type {?} */ editorTemplate = this.buildTemplateHtmlString(newCollection);
         this.createDomElement(editorTemplate);
     }
     /**
@@ -6041,25 +6174,17 @@ class MultipleSelectEditor {
         };
     }
     /**
+     * @param {?} collection
      * @return {?}
      */
-    buildTemplateHtmlString() {
-        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
-            throw new Error(`[Aurelia-SlickGrid] You need to pass a "collection" on the params property in the column definition for the MultipleSelect Editor to work correctly.
-      Also each option should include a value/label pair (or value/labelKey when using Locale).
-      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }`);
-        }
-        this.collection = this.columnDef.params.collection || [];
-        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
-        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
-        const /** @type {?} */ isEnabledTranslate = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
+    buildTemplateHtmlString(collection) {
         let /** @type {?} */ options = '';
-        this.collection.forEach((option) => {
+        collection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
             }
             const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
-            const /** @type {?} */ textLabel = ((option.labelKey || isEnabledTranslate) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
+            const /** @type {?} */ textLabel = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
             options += `<option value="${option[this.valueName]}">${textLabel}</option>`;
         });
         return `<select class="ms-filter search-filter" multiple="multiple">${options}</select>`;
@@ -6111,8 +6236,8 @@ class SingleSelectEditor {
          * The options label/value object to use in the select list
          */
         this.collection = [];
-        const /** @type {?} */ gridOptions = /** @type {?} */ (this.args.grid.getOptions());
-        const /** @type {?} */ params = gridOptions.params || this.args.column.params || {};
+        this.gridOptions = /** @type {?} */ (this.args.grid.getOptions());
+        const /** @type {?} */ params = this.gridOptions.params || this.args.column.params || {};
         this._translate = params.i18n;
         this.defaultOptions = {
             container: 'body',
@@ -6136,10 +6261,30 @@ class SingleSelectEditor {
      */
     init() {
         if (!this.args) {
-            throw new Error('[Aurelia-SlickGrid] An editor must always have an "init()" with valid arguments.');
+            throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
         this.columnDef = this.args.column;
-        const /** @type {?} */ editorTemplate = this.buildTemplateHtmlString();
+        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
+            throw new Error(`[Angular-SlickGrid] You need to pass a "collection" on the params property in the column definition for the MultipleSelect Editor to work correctly.
+      Also each option should include a value/label pair (or value/labelKey when using Locale).
+      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }`);
+        }
+        const /** @type {?} */ collectionService = new CollectionService(this._translate);
+        this.enableTranslateLabel = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
+        let /** @type {?} */ newCollection = this.columnDef.params.collection || [];
+        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
+        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
+        // user might want to filter certain items of the collection
+        if (this.gridOptions.params && this.columnDef.params.collectionFilterBy) {
+            const /** @type {?} */ filterBy = this.columnDef.params.collectionFilterBy;
+            newCollection = collectionService.filterCollection(newCollection, filterBy);
+        }
+        // user might want to sort the collection
+        if (this.gridOptions.params && this.columnDef.params.collectionSortBy) {
+            const /** @type {?} */ sortBy = this.columnDef.params.collectionSortBy;
+            newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
+        }
+        const /** @type {?} */ editorTemplate = this.buildTemplateHtmlString(newCollection);
         this.createDomElement(editorTemplate);
     }
     /**
@@ -6207,28 +6352,19 @@ class SingleSelectEditor {
         };
     }
     /**
+     * @param {?} collection
      * @return {?}
      */
-    buildTemplateHtmlString() {
-        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
-            throw new Error('[Aurelia-SlickGrid] You need to pass a "collection" on the params property in the column definition for ' +
-                'the SingleSelect Editor to work correctly. Also each option should include ' +
-                'a value/label pair (or value/labelKey when using Locale). For example: { params: { ' +
-                '{ collection: [{ value: true, label: \'True\' }, { value: false, label: \'False\'}] } } }');
-        }
-        this.collection = this.columnDef.params.collection || [];
-        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
-        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
-        const /** @type {?} */ isEnabledTranslate = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
+    buildTemplateHtmlString(collection) {
         let /** @type {?} */ options = '';
-        this.collection.forEach((option) => {
+        collection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error('A collection with value/label (or value/labelKey when using ' +
                     'Locale) is required to populate the Select list, for example: { params: { ' +
                     '{ collection: [ { value: \'1\', label: \'One\' } ] } } }');
             }
             const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
-            const /** @type {?} */ textLabel = ((option.labelKey || isEnabledTranslate) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
+            const /** @type {?} */ textLabel = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
             options += `<option value="${option[this.valueName]}">${textLabel}</option>`;
         });
         return `<select class="ms-filter search-filter">${options}</select>`;
@@ -7295,11 +7431,13 @@ class AngularSlickgridComponent {
             if (backendApi && backendApi.service && backendApi.service instanceof GraphqlService) {
                 backendApi.internalPostProcess = (processResult) => {
                     const /** @type {?} */ datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
-                    if (!processResult || !processResult.data || !processResult.data[datasetName]) {
-                        throw new Error(`Your GraphQL result is invalid and/or does not follow the required result structure. Please check the result and/or review structure to use in Angular-Slickgrid Wiki in the GraphQL section.`);
+                    if (processResult && processResult.data && processResult.data[datasetName]) {
+                        this._dataset = processResult.data[datasetName].nodes;
+                        this.refreshGridData(this._dataset, processResult.data[datasetName].totalCount);
                     }
-                    this._dataset = processResult.data[datasetName].nodes;
-                    this.refreshGridData(this._dataset, processResult.data[datasetName].totalCount);
+                    else {
+                        this._dataset = [];
+                    }
                 };
             }
         }
@@ -7581,6 +7719,7 @@ class AngularSlickgridModule {
             ngModule: AngularSlickgridModule,
             providers: [
                 { provide: 'config', useValue: config },
+                CollectionService,
                 ControlAndPluginService,
                 ExportService,
                 FilterService,
@@ -7635,5 +7774,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵb, DateEditor as ɵc, FloatEditor as ɵd, IntegerEditor as ɵe, LongTextEditor as ɵf, MultipleSelectEditor as ɵg, SingleSelectEditor as ɵh, TextEditor as ɵi, booleanFilterCondition as ɵk, collectionSearchFilterCondition as ɵl, dateFilterCondition as ɵm, dateIsoFilterCondition as ɵn, dateUsFilterCondition as ɵp, dateUsShortFilterCondition as ɵq, dateUtcFilterCondition as ɵo, executeMappedCondition as ɵj, testFilterCondition as ɵt, numberFilterCondition as ɵr, stringFilterCondition as ɵs, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, InputFilter as ɵu, MultipleSelectFilter as ɵv, SelectFilter as ɵx, SingleSelectFilter as ɵw, arrayToCsvFormatter as ɵba, checkboxFormatter as ɵbb, checkmarkFormatter as ɵbc, collectionFormatter as ɵbe, complexObjectFormatter as ɵbd, dateIsoFormatter as ɵbf, dateTimeIsoAmPmFormatter as ɵbh, dateTimeIsoFormatter as ɵbg, dateTimeUsAmPmFormatter as ɵbk, dateTimeUsFormatter as ɵbj, dateUsFormatter as ɵbi, deleteIconFormatter as ɵbl, editIconFormatter as ɵbm, hyperlinkFormatter as ɵbn, hyperlinkUriPrefixFormatter as ɵbo, infoIconFormatter as ɵbp, lowercaseFormatter as ɵbq, multipleFormatter as ɵbr, percentCompleteBarFormatter as ɵbt, percentCompleteFormatter as ɵbs, progressBarFormatter as ɵbu, translateBooleanFormatter as ɵbw, translateFormatter as ɵbv, uppercaseFormatter as ɵbx, yesNoFormatter as ɵby, SharedService as ɵa, dateIsoSorter as ɵca, dateSorter as ɵbz, dateUsShortSorter as ɵcc, dateUsSorter as ɵcb, numericSorter as ɵcd, stringSorter as ɵce };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵb, DateEditor as ɵc, FloatEditor as ɵd, IntegerEditor as ɵe, LongTextEditor as ɵf, MultipleSelectEditor as ɵg, SingleSelectEditor as ɵh, TextEditor as ɵi, booleanFilterCondition as ɵk, collectionSearchFilterCondition as ɵl, dateFilterCondition as ɵm, dateIsoFilterCondition as ɵn, dateUsFilterCondition as ɵp, dateUsShortFilterCondition as ɵq, dateUtcFilterCondition as ɵo, executeMappedCondition as ɵj, testFilterCondition as ɵt, numberFilterCondition as ɵr, stringFilterCondition as ɵs, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, InputFilter as ɵu, MultipleSelectFilter as ɵv, SelectFilter as ɵx, SingleSelectFilter as ɵw, arrayToCsvFormatter as ɵba, checkboxFormatter as ɵbb, checkmarkFormatter as ɵbc, collectionFormatter as ɵbe, complexObjectFormatter as ɵbd, dateIsoFormatter as ɵbf, dateTimeIsoAmPmFormatter as ɵbh, dateTimeIsoFormatter as ɵbg, dateTimeUsAmPmFormatter as ɵbk, dateTimeUsFormatter as ɵbj, dateUsFormatter as ɵbi, deleteIconFormatter as ɵbl, editIconFormatter as ɵbm, hyperlinkFormatter as ɵbn, hyperlinkUriPrefixFormatter as ɵbo, infoIconFormatter as ɵbp, lowercaseFormatter as ɵbq, multipleFormatter as ɵbr, percentCompleteBarFormatter as ɵbt, percentCompleteFormatter as ɵbs, progressBarFormatter as ɵbu, translateBooleanFormatter as ɵbw, translateFormatter as ɵbv, uppercaseFormatter as ɵbx, yesNoFormatter as ɵby, SharedService as ɵa, dateIsoSorter as ɵca, dateSorter as ɵbz, dateUsShortSorter as ɵcc, dateUsSorter as ɵcb, numericSorter as ɵcd, stringSorter as ɵce };
 //# sourceMappingURL=angular-slickgrid.js.map

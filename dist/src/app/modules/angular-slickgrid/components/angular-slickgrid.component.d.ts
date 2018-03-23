@@ -1,4 +1,3 @@
-import { Pagination } from './../models/pagination.interface';
 import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
@@ -22,7 +21,7 @@ import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Column, GridOption, GridStateChange } from './../models/index';
+import { Column, GridOption, GridStateChange, Pagination } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';

@@ -6,6 +6,8 @@ export * from './backendServiceOption.interface';
 export * from './caseType';
 export * from './cellArgs.interface';
 export * from './checkboxSelector.interface';
+export * from './collectionFilterBy.interface';
+export * from './collectionSortBy.interface';
 export * from './column.interface';
 export * from './columnFilter.interface';
 export * from './columnFilters.interface';

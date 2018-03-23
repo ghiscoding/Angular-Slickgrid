@@ -1,4 +1,4 @@
-import { Column, Filter, FilterType, FormElementType, MultipleSelectOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
+import { CollectionFilterBy, CollectionSortBy, Column, Filter, FilterType, FormElementType, MultipleSelectOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
 export interface ColumnFilter {
     /** Do we want to bypass the Backend Query? Commonly used with an OData Backend Service, if we want to filter without calling the regular OData query. */
     bypassBackendQuery?: boolean;
@@ -18,6 +18,10 @@ export interface ColumnFilter {
     type?: FilterType | FormElementType;
     /** A collection of items/options (commonly used with a Select/Multi-Select Filter) */
     collection?: any[];
+    /** We could filter some items from the collection */
+    collectionFilterBy?: CollectionFilterBy;
+    /** We could sort the collection by their value, or by translated value when enableTranslateLabel is True */
+    collectionSortBy?: CollectionSortBy;
     /** Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250} */
     filterOptions?: MultipleSelectOption | any;
     /** DEPRECATED, please use "collection" instead which is more generic and not specific to a Select Filter. Refer to the Select Filter Wiki page for more info: https://github.com/ghiscoding/Angular-Slickgrid/wiki/Select-Filter  */

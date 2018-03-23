@@ -1,4 +1,4 @@
-import { Editor, Column, SelectOption } from './../models/index';
+import { Editor, Column, GridOption, SelectOption } from './../models/index';
 /**
  * Slickgrid editor class for single select lists
  */
@@ -18,6 +18,10 @@ export declare class SingleSelectEditor implements Editor {
     valueName: string;
     /** The property name for labels in the collection */
     labelName: string;
+    /** Grid options */
+    gridOptions: GridOption;
+    /** Do we translate the label? */
+    enableTranslateLabel: boolean;
     /** The i18n aurelia library */
     private _translate;
     constructor(args: any);
@@ -33,7 +37,7 @@ export declare class SingleSelectEditor implements Editor {
     focus(): void;
     isValueChanged(): boolean;
     validate(): any;
-    private buildTemplateHtmlString();
+    private buildTemplateHtmlString(collection);
     private createDomElement(editorTemplate);
     private refresh();
 }
