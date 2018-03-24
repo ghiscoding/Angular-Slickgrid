@@ -4,10 +4,6 @@ import { Column, FieldType, Formatter, Formatters, GridOption, Editors } from '.
 // using external non-typed js libraries
 declare var Slick: any;
 
-// create my custom Formatter with the Formatter type
-const myCustomCheckmarkFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) =>
-  value ? `<i class="fa fa-fire" aria-hidden="true"></i>` : '<i class="fa fa-snowflake-o" aria-hidden="true"></i>';
-
 @Component({
   templateUrl: './grid-grouping.component.html'
 })
@@ -103,6 +99,7 @@ export class GridGroupingComponent implements OnInit {
     }
     return '';
   }
+
   sumTotalsFormatter(totals, columnDef) {
     const val = totals.sum && totals.sum[columnDef.field];
     if (val != null) {
@@ -110,16 +107,12 @@ export class GridGroupingComponent implements OnInit {
     }
     return '';
   }
-  myFilter(item, args) {
-    return item['percentComplete'] >= args.percentComplete;
-  }
-  percentCompleteSort(a, b) {
-    return a['percentComplete'] - b['percentComplete'];
-  }
+
   comparer(a: any, b: any) {
     const x = a[this.sortcol], y = b[this.sortcol];
     return (x === y ? 0 : (x > y ? 1 : -1));
   }
+
   groupByDuration() {
     this.dataviewObj.setGrouping({
       getter: 'duration',
@@ -134,6 +127,7 @@ export class GridGroupingComponent implements OnInit {
       lazyTotalsCalculation: true
     });
   }
+
   groupByDurationOrderByCount(aggregateCollapsed) {
     this.dataviewObj.setGrouping({
       getter: 'duration',
@@ -151,6 +145,7 @@ export class GridGroupingComponent implements OnInit {
       lazyTotalsCalculation: true
     });
   }
+
   groupByDurationEffortDriven() {
     this.dataviewObj.setGrouping([
       {
@@ -179,6 +174,7 @@ export class GridGroupingComponent implements OnInit {
       }
     ]);
   }
+
   groupByDurationEffortDrivenPercent() {
     this.dataviewObj.setGrouping([
       {

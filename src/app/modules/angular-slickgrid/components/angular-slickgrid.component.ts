@@ -5,7 +5,7 @@ import 'slickgrid/slick.core';
 import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
-import 'slickgrid/slick.groupitemmetadataprovider.js';
+import 'slickgrid/slick.groupitemmetadataprovider';
 import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.gridmenu';
 import 'slickgrid/controls/slick.pager';
