@@ -154,7 +154,10 @@ export class SortService {
           const fieldType = columnSortObj.sortCol.type || FieldType.string;
           const value1 = dataRow1[sortField];
           const value2 = dataRow2[sortField];
-          return sortByFieldType(value1, value2, fieldType, sortDirection);
+          const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+          if (sortResult !== 0) {
+            return sortResult;
+          }
         }
       }
       return 0;
