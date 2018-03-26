@@ -14,6 +14,9 @@ export interface ExportOption {
   /** file type format, typically csv or txt (this will provide the extension) */
   format?: FileType;
 
+  /** The column header title (at A0 in Excel) of the Group by. If nothing is provided it will use "Group By" (which is a translated value of GROUP_BY i18n) */
+  groupingColumnHeaderTitle?: string;
+
   /** The default text to display in 1st column of the File Export, which will identify that the current row is a Grouping Aggregator */
   groupingAggregatorRowText?: string;
 

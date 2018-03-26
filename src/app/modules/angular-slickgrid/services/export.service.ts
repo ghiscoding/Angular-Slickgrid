@@ -33,19 +33,11 @@ export class ExportService {
   private _dataView: any;
   private _grid: any;
   private _exportQuoteWrapper: string;
-  private _existingSlickAggregators: string[] = [];
   private _columnHeaders: ExportColumnHeader[];
   private _groupedHeaders: ExportColumnHeader[];
   private _gridOptions: GridOption;
-  private _groupingDefinition: any;
   private _hasGroupedItems = false;
   private _exportOptions: ExportOption;
-  defaultExportOptions: ExportOption = {
-    delimiter: DelimiterType.comma,
-    filename: 'export',
-    format: FileType.csv,
-    useUtf8WithBom: true
-  };
 
   constructor(private translate: TranslateService) { }
 
@@ -71,7 +63,7 @@ export class ExportService {
    * Example: exportToFile({ format: FileType.csv, delimiter: DelimiterType.comma })
    */
   exportToFile(options: ExportOption) {
-    this._exportOptions = $.extend(true, {}, this.defaultExportOptions, options);
+    this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
 
     // get the CSV output from the grid data
     const dataOutput = this.getDataOutput();
@@ -93,9 +85,7 @@ export class ExportService {
     const columns = this._grid.getColumns() || [];
     const delimiter = this._exportOptions.delimiter || '';
     const format = this._exportOptions.format || '';
-
-    // find all the Aggregators that exist inside SlickGrid
-    this._existingSlickAggregators = this.getAllSlickGridAggregators() || [];
+    const groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle || this.translate.instant('GROUP_BY');
 
     // a CSV needs double quotes wrapper, the other types do not need any wrapper
     this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
@@ -104,20 +94,21 @@ export class ExportService {
     let outputDataString = '';
 
     // get grouped column titles and if found, we will add a "Group by" column at the first column index
-    this._groupedHeaders = this.getGroupedColumnTitles(columns) || [];
-    if (this._groupedHeaders && Array.isArray(this._groupedHeaders)) {
-      this._hasGroupedItems = (this._groupedHeaders.length > 0);
-      outputDataString += this._groupedHeaders
-        .map((header) => `${this.translate.instant('GROUP_BY')} [${header.title}]`)
-        .join(delimiter);
+    const grouping = this._dataView.getGrouping();
+    if (grouping && Array.isArray(grouping) && grouping.length > 0) {
+      this._hasGroupedItems = true;
+      outputDataString += `${groupByColumnHeader}` + delimiter;
+    } else {
+      this._hasGroupedItems = false;
     }
 
     // get all column headers
     this._columnHeaders = this.getColumnHeaders(columns) || [];
-    if (this._columnHeaders && Array.isArray(this._columnHeaders)) {
+    if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
       // add the header row + add a new line at the end of the row
-      const outputHeaderTitles = this._columnHeaders
-        .map((header) => this._exportQuoteWrapper + header.title + this._exportQuoteWrapper);
+      const outputHeaderTitles = this._columnHeaders.map((header) => {
+        return this._exportQuoteWrapper + header.title + this._exportQuoteWrapper;
+      });
       outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
     }
 
@@ -145,33 +136,16 @@ export class ExportService {
           outputDataString += this.readRegularRowData(columns, rowNumber, itemObj);
         } else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
           // get the group row
-          outputDataString += this.readGroupedTitleRow(itemObj);
+          outputDataString += this.readGroupedTitleRow(itemObj) + this._exportOptions.delimiter;
         } else if (itemObj.__groupTotals) {
           // else if the row is a Group By and we have agreggators, then a property of '__groupTotals' would exist under that object
-          outputDataString += this.readGroupedTotalRow(itemObj);
+          outputDataString += this.readGroupedTotalRow(columns, itemObj) + this._exportOptions.delimiter;
         }
         outputDataString += lineCarriageReturn;
       }
     }
 
     return outputDataString;
-  }
-
-  /**
-   * Get all the Slick Aggregators that are defined in SlickGrid
-   */
-  getAllSlickGridAggregators(): string[] {
-    let slickAggregatorCount = 0;
-    const existingSlickAggregators = [];
-
-    for (const key in Slick.Data.Aggregators) {
-      if (Slick.Data.Aggregators.hasOwnProperty(key)) {
-        slickAggregatorCount++;
-        existingSlickAggregators.push(key.toLowerCase());
-      }
-    }
-
-    return existingSlickAggregators;
   }
 
   /**
@@ -228,7 +202,7 @@ export class ExportService {
       }
 
       // does the user want to evaluate current column Formatter?
-      const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._gridOptions.exportWithFormatter;
+      const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this._exportOptions.exportWithFormatter || this._gridOptions.exportWithFormatter);
 
       // did the user provide a Custom Formatter for the export
       const exportCustomFormatter: Formatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
@@ -264,7 +238,7 @@ export class ExportService {
    * @param itemObj
    */
   readGroupedTitleRow(itemObj: any) {
-    let groupName = itemObj.value;
+    let groupName = this.sanitizeHtmlToText(itemObj.title);
     const exportQuoteWrapper = this._exportQuoteWrapper || '';
     const delimiter = this._exportOptions.delimiter;
     const format = this._exportOptions.format;
@@ -288,35 +262,22 @@ export class ExportService {
    * For example if we grouped by "salesRep" and we have a Sum Aggregator on "sales", then the returned output would be:: ["Sum 123$"]
    * @param itemObj
    */
-  readGroupedTotalRow(itemObj: any) {
+  readGroupedTotalRow(columns: Column[], itemObj: any) {
     let exportExponentialWrapper = '';
     const delimiter = this._exportOptions.delimiter;
     const format = this._exportOptions.format;
+    const groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
     const exportQuoteWrapper = this._exportQuoteWrapper || '';
-    const existingSlickAggregators = this._existingSlickAggregators || [];
-    const columnCount = this._grid.getColumns().length;
-    let output = `${exportQuoteWrapper}..${exportQuoteWrapper}${delimiter}`;
+    let output = `${exportQuoteWrapper}${groupingAggregatorRowText}${exportQuoteWrapper}${delimiter}`;
 
-    for (let j = 0; j < columnCount; j++) {
-      const fieldId = this._grid.getColumns()[j].id;
+    columns.forEach((columnDef) => {
       let itemData = '';
 
-      // cycle through all possible SlickGrid Aggregators and get their values
-      for (let k = 0; k < existingSlickAggregators.length; k++) {
-        if (itemObj[existingSlickAggregators[k]] !== undefined) {
-          if (fieldId in itemObj[existingSlickAggregators[k]]) {
-            const aggregatorName = existingSlickAggregators[k];
-            const val = itemObj[existingSlickAggregators[k]][fieldId];
-            if (aggregatorName.toLowerCase() === 'avg') {
-              itemData = aggregatorName + ': ' + Math.round(val);
-            } else if (aggregatorName.toLowerCase() === 'min' || aggregatorName.toLowerCase() === 'max' || aggregatorName.toLowerCase() === 'sum') {
-              itemData = aggregatorName + ': ' + Math.round(parseFloat(val) * 1000000) / 1000000;
-            } else {
-              itemData = val;
-            }
-          }
-        }
+      // if there's a groupTotalsFormatter, we will re-run it to get the exact same output as what is shown in UI
+      if (columnDef.groupTotalsFormatter) {
+        itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
       }
+
       if (format === FileType.csv) {
         // when CSV we also need to escape double quotes twice, so a double quote " becomes 2x double quotes ""
         // and if we have a text of (number)E(number),
@@ -325,50 +286,20 @@ export class ExportService {
         exportExponentialWrapper = (itemData.match(/^\s*\d+E\d+\s*$/i)) ? '=' : '';
       }
       output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
-    }
+    });
 
     return output;
   }
 
   /**
-   * Get all grouped column titles, translate them when required.
-   * For example if the grid is grouped by salesRep and then customerName, we will return their title, something like:: ['Sales Rep', 'Customer Name']
-   * @param columns of the grid
+   * Sanitize, return only the text without HTML tags
+   * @input htmlString
+   * @return text
    */
-  getGroupedColumnTitles(columns: Column[]): ExportColumnHeader[] {
-    if (!columns || !Array.isArray(columns) || columns.length === 0) {
-      return null;
-    }
-
-    let groupItemId = '';
-    const groupedHeaders = [];
-
-    let hasGroupedItems = false;
-    if ($.isEmptyObject(this._groupingDefinition)) {
-      hasGroupedItems = false;
-    } else {
-      hasGroupedItems = true;
-      groupItemId = $(`#${this._groupingDefinition.dropdownOptionsIds[0]}`).val();
-    }
-
-    // If we are Grouping, then pull the name of the grouped item and display it as 1st column
-    columns.forEach((columnDef) => {
-      // the column might be a complex object and have a '.' (ex.: person.name)
-      // if so we want just the object (ex.: person.name => we want 'person')
-      if (groupItemId.indexOf('.') >= 0) {
-        groupItemId = groupItemId.split('.')[0];
-      }
-
-      if (hasGroupedItems && columnDef.id === groupItemId) {
-        const fieldName = (columnDef.headerKey) ? this.translate.instant(columnDef.headerKey) : columnDef.name;
-        groupedHeaders.push({
-          key: columnDef.field || columnDef.id,
-          title: fieldName
-        });
-      }
-    });
-
-    return groupedHeaders;
+  sanitizeHtmlToText(htmlString: string) {
+    const temp = document.createElement('div');
+    temp.innerHTML = htmlString;
+    return temp.textContent || temp.innerText;
   }
 
   /**
