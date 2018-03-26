@@ -13,7 +13,7 @@ import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
 import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.grid';
-import 'slickgrid/slick.groupitemmetadataprovider.js';
+import 'slickgrid/slick.groupitemmetadataprovider';
 import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.gridmenu';
 import 'slickgrid/controls/slick.pager';
@@ -606,14 +606,7 @@ var ExportService = /** @class */ (function () {
     function ExportService(translate) {
         this.translate = translate;
         this._lineCarriageReturn = '\n';
-        this._existingSlickAggregators = [];
         this._hasGroupedItems = false;
-        this.defaultExportOptions = {
-            delimiter: DelimiterType.comma,
-            filename: 'export',
-            format: FileType.csv,
-            useUtf8WithBom: true
-        };
     }
     ExportService.prototype.init = function (grid, gridOptions, dataView) {
         this._grid = grid;
@@ -621,7 +614,7 @@ var ExportService = /** @class */ (function () {
         this._dataView = dataView;
     };
     ExportService.prototype.exportToFile = function (options) {
-        this._exportOptions = $.extend(true, {}, this.defaultExportOptions, options);
+        this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
         var dataOutput = this.getDataOutput();
         this.startDownloadFile({
             filename: this._exportOptions.filename + "." + this._exportOptions.format,
@@ -635,20 +628,22 @@ var ExportService = /** @class */ (function () {
         var columns = this._grid.getColumns() || [];
         var delimiter = this._exportOptions.delimiter || '';
         var format = this._exportOptions.format || '';
-        this._existingSlickAggregators = this.getAllSlickGridAggregators() || [];
+        var groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle || this.translate.instant('GROUP_BY');
         this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
         var outputDataString = '';
-        this._groupedHeaders = this.getGroupedColumnTitles(columns) || [];
-        if (this._groupedHeaders && Array.isArray(this._groupedHeaders)) {
-            this._hasGroupedItems = (this._groupedHeaders.length > 0);
-            outputDataString += this._groupedHeaders
-                .map(function (header) { return _this.translate.instant('GROUP_BY') + " [" + header.title + "]"; })
-                .join(delimiter);
+        var grouping = this._dataView.getGrouping();
+        if (grouping && Array.isArray(grouping) && grouping.length > 0) {
+            this._hasGroupedItems = true;
+            outputDataString += "" + groupByColumnHeader + delimiter;
+        }
+        else {
+            this._hasGroupedItems = false;
         }
         this._columnHeaders = this.getColumnHeaders(columns) || [];
-        if (this._columnHeaders && Array.isArray(this._columnHeaders)) {
-            var outputHeaderTitles = this._columnHeaders
-                .map(function (header) { return _this._exportQuoteWrapper + header.title + _this._exportQuoteWrapper; });
+        if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
+            var outputHeaderTitles = this._columnHeaders.map(function (header) {
+                return _this._exportQuoteWrapper + header.title + _this._exportQuoteWrapper;
+            });
             outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
         }
         outputDataString += this.getAllGridRowData(columns, this._lineCarriageReturn);
@@ -664,24 +659,15 @@ var ExportService = /** @class */ (function () {
                     outputDataString += this.readRegularRowData(columns, rowNumber, itemObj);
                 }
                 else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
-                    outputDataString += this.readGroupedTitleRow(itemObj);
+                    outputDataString += this.readGroupedTitleRow(itemObj) + this._exportOptions.delimiter;
                 }
                 else if (itemObj.__groupTotals) {
-                    outputDataString += this.readGroupedTotalRow(itemObj);
+                    outputDataString += this.readGroupedTotalRow(columns, itemObj) + this._exportOptions.delimiter;
                 }
                 outputDataString += lineCarriageReturn;
             }
         }
         return outputDataString;
-    };
-    ExportService.prototype.getAllSlickGridAggregators = function () {
-        var existingSlickAggregators = [];
-        for (var key in Slick.Data.Aggregators) {
-            if (Slick.Data.Aggregators.hasOwnProperty(key)) {
-                existingSlickAggregators.push(key.toLowerCase());
-            }
-        }
-        return existingSlickAggregators;
     };
     ExportService.prototype.getColumnHeaders = function (columns) {
         var _this = this;
@@ -716,7 +702,7 @@ var ExportService = /** @class */ (function () {
             if (this._hasGroupedItems && idx === 0) {
                 rowOutputString += "\"\"" + delimiter;
             }
-            var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._gridOptions.exportWithFormatter;
+            var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this._exportOptions.exportWithFormatter || this._gridOptions.exportWithFormatter);
             var exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
             var itemData = '';
             if (exportCustomFormatter) {
@@ -738,7 +724,7 @@ var ExportService = /** @class */ (function () {
         return rowOutputString;
     };
     ExportService.prototype.readGroupedTitleRow = function (itemObj) {
-        var groupName = itemObj.value;
+        var groupName = this.sanitizeHtmlToText(itemObj.title);
         var exportQuoteWrapper = this._exportQuoteWrapper || '';
         var delimiter = this._exportOptions.delimiter;
         var format = this._exportOptions.format;
@@ -748,70 +734,30 @@ var ExportService = /** @class */ (function () {
         }
         return exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper + delimiter;
     };
-    ExportService.prototype.readGroupedTotalRow = function (itemObj) {
+    ExportService.prototype.readGroupedTotalRow = function (columns, itemObj) {
         var exportExponentialWrapper = '';
         var delimiter = this._exportOptions.delimiter;
         var format = this._exportOptions.format;
+        var groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
         var exportQuoteWrapper = this._exportQuoteWrapper || '';
-        var existingSlickAggregators = this._existingSlickAggregators || [];
-        var columnCount = this._grid.getColumns().length;
-        var output = exportQuoteWrapper + ".." + exportQuoteWrapper + delimiter;
-        for (var j = 0; j < columnCount; j++) {
-            var fieldId = this._grid.getColumns()[j].id;
+        var output = "" + exportQuoteWrapper + groupingAggregatorRowText + exportQuoteWrapper + delimiter;
+        columns.forEach(function (columnDef) {
             var itemData = '';
-            for (var k = 0; k < existingSlickAggregators.length; k++) {
-                if (itemObj[existingSlickAggregators[k]] !== undefined) {
-                    if (fieldId in itemObj[existingSlickAggregators[k]]) {
-                        var aggregatorName = existingSlickAggregators[k];
-                        var val = itemObj[existingSlickAggregators[k]][fieldId];
-                        if (aggregatorName.toLowerCase() === 'avg') {
-                            itemData = aggregatorName + ': ' + Math.round(val);
-                        }
-                        else if (aggregatorName.toLowerCase() === 'min' || aggregatorName.toLowerCase() === 'max' || aggregatorName.toLowerCase() === 'sum') {
-                            itemData = aggregatorName + ': ' + Math.round(parseFloat(val) * 1000000) / 1000000;
-                        }
-                        else {
-                            itemData = val;
-                        }
-                    }
-                }
+            if (columnDef.groupTotalsFormatter) {
+                itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
             }
             if (format === FileType.csv) {
                 itemData = itemData.toString().replace(/"/gi, "\"\"");
                 exportExponentialWrapper = (itemData.match(/^\s*\d+E\d+\s*$/i)) ? '=' : '';
             }
             output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
-        }
+        });
         return output;
     };
-    ExportService.prototype.getGroupedColumnTitles = function (columns) {
-        var _this = this;
-        if (!columns || !Array.isArray(columns) || columns.length === 0) {
-            return null;
-        }
-        var groupItemId = '';
-        var groupedHeaders = [];
-        var hasGroupedItems = false;
-        if ($.isEmptyObject(this._groupingDefinition)) {
-            hasGroupedItems = false;
-        }
-        else {
-            hasGroupedItems = true;
-            groupItemId = $("#" + this._groupingDefinition.dropdownOptionsIds[0]).val();
-        }
-        columns.forEach(function (columnDef) {
-            if (groupItemId.indexOf('.') >= 0) {
-                groupItemId = groupItemId.split('.')[0];
-            }
-            if (hasGroupedItems && columnDef.id === groupItemId) {
-                var fieldName = (columnDef.headerKey) ? _this.translate.instant(columnDef.headerKey) : columnDef.name;
-                groupedHeaders.push({
-                    key: columnDef.field || columnDef.id,
-                    title: fieldName
-                });
-            }
-        });
-        return groupedHeaders;
+    ExportService.prototype.sanitizeHtmlToText = function (htmlString) {
+        var temp = document.createElement('div');
+        temp.innerHTML = htmlString;
+        return temp.textContent || temp.innerText;
     };
     ExportService.prototype.startDownloadFile = function (options) {
         if (navigator.appName === 'Microsoft Internet Explorer') {
@@ -2771,9 +2717,7 @@ var GraphqlService = /** @class */ (function () {
                 var columnFilter_1 = columnFilters[columnId];
                 var columnDef = void 0;
                 if (isUpdatedByPreset && Array.isArray(this_1._columnDefinitions)) {
-                    columnDef = this_1._columnDefinitions.find(function (column) {
-                        return column.id === columnFilter_1.columnId;
-                    });
+                    columnDef = this_1._columnDefinitions.find(function (column) { return column.id === columnFilter_1.columnId; });
                 }
                 else {
                     columnDef = columnFilter_1.columnDef;
@@ -2846,14 +2790,16 @@ var GraphqlService = /** @class */ (function () {
         this.updateOptions({ paginationOptions: paginationOptions });
     };
     GraphqlService.prototype.updateSorters = function (sortColumns, presetSorters) {
+        var _this = this;
         var currentSorters = [];
         var graphqlSorters = [];
         if (!sortColumns && presetSorters) {
             currentSorters = presetSorters;
             currentSorters.forEach(function (sorter) { return sorter.direction = (sorter.direction.toUpperCase()); });
             var tmpSorterArray = currentSorters.map(function (sorter) {
+                var columnDef = _this._columnDefinitions.find(function (column) { return column.id === sorter.columnId; });
                 graphqlSorters.push({
-                    field: sorter.columnId + '',
+                    field: (columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '',
                     direction: sorter.direction
                 });
                 return {
@@ -2866,7 +2812,7 @@ var GraphqlService = /** @class */ (function () {
         else if (sortColumns && !presetSorters) {
             if (sortColumns && sortColumns.length === 0) {
                 graphqlSorters = new Array(this.defaultOrderBy);
-                currentSorters = new Array({ columnId: this.defaultOrderBy.direction, direction: this.defaultOrderBy.direction });
+                currentSorters = new Array({ columnId: this.defaultOrderBy.field, direction: this.defaultOrderBy.direction });
             }
             else {
                 if (sortColumns) {
@@ -2875,7 +2821,7 @@ var GraphqlService = /** @class */ (function () {
                             var column = sortColumns_1_1.value;
                             if (column && column.sortCol) {
                                 currentSorters.push({
-                                    columnId: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '',
+                                    columnId: column.sortCol.id + '',
                                     direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
                                 });
                                 graphqlSorters.push({
@@ -3355,11 +3301,13 @@ var GridOdataService = /** @class */ (function () {
                             var column = sortColumns_2_1.value;
                             if (column.sortCol) {
                                 var fieldName = (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '';
+                                var columnFieldName = (column.sortCol.field || column.sortCol.id) + '';
                                 if (this.odataService.options.caseType === CaseType.pascalCase) {
                                     fieldName = String.titleCase(fieldName);
+                                    columnFieldName = String.titleCase(columnFieldName);
                                 }
                                 sorterArray.push({
-                                    columnId: fieldName,
+                                    columnId: columnFieldName,
                                     direction: column.sortAsc ? 'asc' : 'desc'
                                 });
                             }
@@ -3875,7 +3823,10 @@ var SortService = /** @class */ (function () {
                     var fieldType = columnSortObj.sortCol.type || FieldType.string;
                     var value1 = dataRow1[sortField];
                     var value2 = dataRow2[sortField];
-                    return sortByFieldType(value1, value2, fieldType, sortDirection);
+                    var sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+                    if (sortResult !== 0) {
+                        return sortResult;
+                    }
                 }
             }
             return 0;
@@ -3904,6 +3855,106 @@ var SortService = /** @class */ (function () {
     };
     return SortService;
 }());
+var AvgAggregator = /** @class */ (function () {
+    function AvgAggregator(field) {
+        this._field = field;
+    }
+    AvgAggregator.prototype.init = function () {
+        this._count = 0;
+        this._nonNullCount = 0;
+        this._sum = 0;
+    };
+    AvgAggregator.prototype.accumulate = function (item) {
+        var val = item[this._field];
+        this._count++;
+        if (val != null && val !== '' && !isNaN(val)) {
+            this._nonNullCount++;
+            this._sum += parseFloat(val);
+        }
+    };
+    AvgAggregator.prototype.storeResult = function (groupTotals) {
+        if (!groupTotals.avg) {
+            groupTotals.avg = {};
+        }
+        if (this._nonNullCount !== 0) {
+            groupTotals.avg[this._field] = this._sum / this._nonNullCount;
+        }
+    };
+    return AvgAggregator;
+}());
+var MinAggregator = /** @class */ (function () {
+    function MinAggregator(field) {
+        this._field = field;
+    }
+    MinAggregator.prototype.init = function () {
+        this._min = null;
+    };
+    MinAggregator.prototype.accumulate = function (item) {
+        var val = item[this._field];
+        if (val != null && val !== '' && !isNaN(val)) {
+            if (this._min == null || val < this._min) {
+                this._min = val;
+            }
+        }
+    };
+    MinAggregator.prototype.storeResult = function (groupTotals) {
+        if (!groupTotals.min) {
+            groupTotals.min = {};
+        }
+        groupTotals.min[this._field] = this._min;
+    };
+    return MinAggregator;
+}());
+var MaxAggregator = /** @class */ (function () {
+    function MaxAggregator(field) {
+        this._field = field;
+    }
+    MaxAggregator.prototype.init = function () {
+        this._max = null;
+    };
+    MaxAggregator.prototype.accumulate = function (item) {
+        var val = item[this._field];
+        if (val != null && val !== '' && !isNaN(val)) {
+            if (this._max == null || val > this._max) {
+                this._max = val;
+            }
+        }
+    };
+    MaxAggregator.prototype.storeResult = function (groupTotals) {
+        if (!groupTotals.max) {
+            groupTotals.max = {};
+        }
+        groupTotals.max[this._field] = this._max;
+    };
+    return MaxAggregator;
+}());
+var SumAggregator = /** @class */ (function () {
+    function SumAggregator(field) {
+        this._field = field;
+    }
+    SumAggregator.prototype.init = function () {
+        this._sum = null;
+    };
+    SumAggregator.prototype.accumulate = function (item) {
+        var val = item[this._field];
+        if (val != null && val !== '' && !isNaN(val)) {
+            this._sum += parseFloat(val);
+        }
+    };
+    SumAggregator.prototype.storeResult = function (groupTotals) {
+        if (!groupTotals.sum) {
+            groupTotals.sum = {};
+        }
+        groupTotals.sum[this._field] = this._sum;
+    };
+    return SumAggregator;
+}());
+var Aggregators = {
+    avg: AvgAggregator,
+    min: MinAggregator,
+    max: MaxAggregator,
+    sum: SumAggregator
+};
 var CheckboxEditor = /** @class */ (function () {
     function CheckboxEditor(args) {
         this.args = args;
@@ -5014,6 +5065,14 @@ var GlobalGridOptions = {
     enableSorting: true,
     enableTextSelectionOnCells: true,
     explicitInitialization: true,
+    exportOptions: {
+        delimiter: DelimiterType.comma,
+        exportWithFormatter: false,
+        filename: 'export',
+        format: FileType.csv,
+        groupingAggregatorRowText: '',
+        useUtf8WithBom: true
+    },
     exportWithFormatter: false,
     forceFitColumns: false,
     gridMenu: {
@@ -5422,5 +5481,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵb, DateEditor as ɵc, FloatEditor as ɵd, IntegerEditor as ɵe, LongTextEditor as ɵf, MultipleSelectEditor as ɵg, SingleSelectEditor as ɵh, TextEditor as ɵi, booleanFilterCondition as ɵk, collectionSearchFilterCondition as ɵl, dateFilterCondition as ɵm, dateIsoFilterCondition as ɵn, dateUsFilterCondition as ɵp, dateUsShortFilterCondition as ɵq, dateUtcFilterCondition as ɵo, executeMappedCondition as ɵj, testFilterCondition as ɵt, numberFilterCondition as ɵr, stringFilterCondition as ɵs, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, InputFilter as ɵu, MultipleSelectFilter as ɵv, SelectFilter as ɵx, SingleSelectFilter as ɵw, arrayToCsvFormatter as ɵba, checkboxFormatter as ɵbb, checkmarkFormatter as ɵbc, collectionFormatter as ɵbe, complexObjectFormatter as ɵbd, dateIsoFormatter as ɵbf, dateTimeIsoAmPmFormatter as ɵbh, dateTimeIsoFormatter as ɵbg, dateTimeUsAmPmFormatter as ɵbk, dateTimeUsFormatter as ɵbj, dateUsFormatter as ɵbi, deleteIconFormatter as ɵbl, editIconFormatter as ɵbm, hyperlinkFormatter as ɵbn, hyperlinkUriPrefixFormatter as ɵbo, infoIconFormatter as ɵbp, lowercaseFormatter as ɵbq, multipleFormatter as ɵbr, percentCompleteBarFormatter as ɵbt, percentCompleteFormatter as ɵbs, progressBarFormatter as ɵbu, translateBooleanFormatter as ɵbw, translateFormatter as ɵbv, uppercaseFormatter as ɵbx, yesNoFormatter as ɵby, SharedService as ɵa, dateIsoSorter as ɵca, dateSorter as ɵbz, dateUsShortSorter as ɵcc, dateUsSorter as ɵcb, numericSorter as ɵcd, stringSorter as ɵce };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, Sorters, AvgAggregator as ɵb, MaxAggregator as ɵd, MinAggregator as ɵc, SumAggregator as ɵe, CheckboxEditor as ɵf, DateEditor as ɵg, FloatEditor as ɵh, IntegerEditor as ɵi, LongTextEditor as ɵj, MultipleSelectEditor as ɵk, SingleSelectEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵbc, CompoundInputFilter as ɵbd, InputFilter as ɵy, MultipleSelectFilter as ɵz, SelectFilter as ɵbb, SingleSelectFilter as ɵba, arrayToCsvFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, editIconFormatter as ɵbq, hyperlinkFormatter as ɵbr, hyperlinkUriPrefixFormatter as ɵbs, infoIconFormatter as ɵbt, lowercaseFormatter as ɵbu, multipleFormatter as ɵbv, percentCompleteBarFormatter as ɵbx, percentCompleteFormatter as ɵbw, progressBarFormatter as ɵby, translateBooleanFormatter as ɵca, translateFormatter as ɵbz, uppercaseFormatter as ɵcb, yesNoFormatter as ɵcc, SharedService as ɵa, dateIsoSorter as ɵce, dateSorter as ɵcd, dateUsShortSorter as ɵcg, dateUsSorter as ɵcf, numericSorter as ɵch, stringSorter as ɵci };
 //# sourceMappingURL=angular-slickgrid.js.map

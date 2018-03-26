@@ -13,7 +13,7 @@ import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
 import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.grid';
-import 'slickgrid/slick.groupitemmetadataprovider.js';
+import 'slickgrid/slick.groupitemmetadataprovider';
 import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.gridmenu';
 import 'slickgrid/controls/slick.pager';
@@ -892,14 +892,7 @@ class ExportService {
     constructor(translate) {
         this.translate = translate;
         this._lineCarriageReturn = '\n';
-        this._existingSlickAggregators = [];
         this._hasGroupedItems = false;
-        this.defaultExportOptions = {
-            delimiter: DelimiterType.comma,
-            filename: 'export',
-            format: FileType.csv,
-            useUtf8WithBom: true
-        };
     }
     /**
      * Initialize the Export Service
@@ -925,7 +918,7 @@ class ExportService {
      * @return {?}
      */
     exportToFile(options) {
-        this._exportOptions = $.extend(true, {}, this.defaultExportOptions, options);
+        this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
         // get the CSV output from the grid data
         const /** @type {?} */ dataOutput = this.getDataOutput();
         // trigger a download file
@@ -943,26 +936,27 @@ class ExportService {
         const /** @type {?} */ columns = this._grid.getColumns() || [];
         const /** @type {?} */ delimiter = this._exportOptions.delimiter || '';
         const /** @type {?} */ format = this._exportOptions.format || '';
-        // find all the Aggregators that exist inside SlickGrid
-        this._existingSlickAggregators = this.getAllSlickGridAggregators() || [];
+        const /** @type {?} */ groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle || this.translate.instant('GROUP_BY');
         // a CSV needs double quotes wrapper, the other types do not need any wrapper
         this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
         // data variable which will hold all the fields data of a row
         let /** @type {?} */ outputDataString = '';
         // get grouped column titles and if found, we will add a "Group by" column at the first column index
-        this._groupedHeaders = this.getGroupedColumnTitles(columns) || [];
-        if (this._groupedHeaders && Array.isArray(this._groupedHeaders)) {
-            this._hasGroupedItems = (this._groupedHeaders.length > 0);
-            outputDataString += this._groupedHeaders
-                .map((header) => `${this.translate.instant('GROUP_BY')} [${header.title}]`)
-                .join(delimiter);
+        const /** @type {?} */ grouping = this._dataView.getGrouping();
+        if (grouping && Array.isArray(grouping) && grouping.length > 0) {
+            this._hasGroupedItems = true;
+            outputDataString += `${groupByColumnHeader}` + delimiter;
+        }
+        else {
+            this._hasGroupedItems = false;
         }
         // get all column headers
         this._columnHeaders = this.getColumnHeaders(columns) || [];
-        if (this._columnHeaders && Array.isArray(this._columnHeaders)) {
+        if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
             // add the header row + add a new line at the end of the row
-            const /** @type {?} */ outputHeaderTitles = this._columnHeaders
-                .map((header) => this._exportQuoteWrapper + header.title + this._exportQuoteWrapper);
+            const /** @type {?} */ outputHeaderTitles = this._columnHeaders.map((header) => {
+                return this._exportQuoteWrapper + header.title + this._exportQuoteWrapper;
+            });
             outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
         }
         // Populate the rest of the Grid Data
@@ -989,29 +983,16 @@ class ExportService {
                 }
                 else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
                     // get the group row
-                    outputDataString += this.readGroupedTitleRow(itemObj);
+                    outputDataString += this.readGroupedTitleRow(itemObj) + this._exportOptions.delimiter;
                 }
                 else if (itemObj.__groupTotals) {
                     // else if the row is a Group By and we have agreggators, then a property of '__groupTotals' would exist under that object
-                    outputDataString += this.readGroupedTotalRow(itemObj);
+                    outputDataString += this.readGroupedTotalRow(columns, itemObj) + this._exportOptions.delimiter;
                 }
                 outputDataString += lineCarriageReturn;
             }
         }
         return outputDataString;
-    }
-    /**
-     * Get all the Slick Aggregators that are defined in SlickGrid
-     * @return {?}
-     */
-    getAllSlickGridAggregators() {
-        const /** @type {?} */ existingSlickAggregators = [];
-        for (const /** @type {?} */ key in Slick.Data.Aggregators) {
-            if (Slick.Data.Aggregators.hasOwnProperty(key)) {
-                existingSlickAggregators.push(key.toLowerCase());
-            }
-        }
-        return existingSlickAggregators;
     }
     /**
      * Get all header titles and their keys, translate the title when required.
@@ -1062,7 +1043,7 @@ class ExportService {
                 rowOutputString += `""` + delimiter;
             }
             // does the user want to evaluate current column Formatter?
-            const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._gridOptions.exportWithFormatter;
+            const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this._exportOptions.exportWithFormatter || this._gridOptions.exportWithFormatter);
             // did the user provide a Custom Formatter for the export
             const /** @type {?} */ exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
             let /** @type {?} */ itemData = '';
@@ -1093,7 +1074,7 @@ class ExportService {
      * @return {?}
      */
     readGroupedTitleRow(itemObj) {
-        let /** @type {?} */ groupName = itemObj.value;
+        let /** @type {?} */ groupName = this.sanitizeHtmlToText(itemObj.title);
         const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
         const /** @type {?} */ delimiter = this._exportOptions.delimiter;
         const /** @type {?} */ format = this._exportOptions.format;
@@ -1110,37 +1091,22 @@ class ExportService {
     /**
      * Get the grouped totals, these are set by Slick Aggregators.
      * For example if we grouped by "salesRep" and we have a Sum Aggregator on "sales", then the returned output would be:: ["Sum 123$"]
+     * @param {?} columns
      * @param {?} itemObj
      * @return {?}
      */
-    readGroupedTotalRow(itemObj) {
+    readGroupedTotalRow(columns, itemObj) {
         let /** @type {?} */ exportExponentialWrapper = '';
         const /** @type {?} */ delimiter = this._exportOptions.delimiter;
         const /** @type {?} */ format = this._exportOptions.format;
+        const /** @type {?} */ groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
         const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
-        const /** @type {?} */ existingSlickAggregators = this._existingSlickAggregators || [];
-        const /** @type {?} */ columnCount = this._grid.getColumns().length;
-        let /** @type {?} */ output = `${exportQuoteWrapper}..${exportQuoteWrapper}${delimiter}`;
-        for (let /** @type {?} */ j = 0; j < columnCount; j++) {
-            const /** @type {?} */ fieldId = this._grid.getColumns()[j].id;
+        let /** @type {?} */ output = `${exportQuoteWrapper}${groupingAggregatorRowText}${exportQuoteWrapper}${delimiter}`;
+        columns.forEach((columnDef) => {
             let /** @type {?} */ itemData = '';
-            // cycle through all possible SlickGrid Aggregators and get their values
-            for (let /** @type {?} */ k = 0; k < existingSlickAggregators.length; k++) {
-                if (itemObj[existingSlickAggregators[k]] !== undefined) {
-                    if (fieldId in itemObj[existingSlickAggregators[k]]) {
-                        const /** @type {?} */ aggregatorName = existingSlickAggregators[k];
-                        const /** @type {?} */ val = itemObj[existingSlickAggregators[k]][fieldId];
-                        if (aggregatorName.toLowerCase() === 'avg') {
-                            itemData = aggregatorName + ': ' + Math.round(val);
-                        }
-                        else if (aggregatorName.toLowerCase() === 'min' || aggregatorName.toLowerCase() === 'max' || aggregatorName.toLowerCase() === 'sum') {
-                            itemData = aggregatorName + ': ' + Math.round(parseFloat(val) * 1000000) / 1000000;
-                        }
-                        else {
-                            itemData = val;
-                        }
-                    }
-                }
+            // if there's a groupTotalsFormatter, we will re-run it to get the exact same output as what is shown in UI
+            if (columnDef.groupTotalsFormatter) {
+                itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
             }
             if (format === FileType.csv) {
                 // when CSV we also need to escape double quotes twice, so a double quote " becomes 2x double quotes ""
@@ -1150,45 +1116,19 @@ class ExportService {
                 exportExponentialWrapper = (itemData.match(/^\s*\d+E\d+\s*$/i)) ? '=' : '';
             }
             output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
-        }
+        });
         return output;
     }
     /**
-     * Get all grouped column titles, translate them when required.
-     * For example if the grid is grouped by salesRep and then customerName, we will return their title, something like:: ['Sales Rep', 'Customer Name']
-     * @param {?} columns of the grid
-     * @return {?}
+     * Sanitize, return only the text without HTML tags
+     * \@input htmlString
+     * @param {?} htmlString
+     * @return {?} text
      */
-    getGroupedColumnTitles(columns) {
-        if (!columns || !Array.isArray(columns) || columns.length === 0) {
-            return null;
-        }
-        let /** @type {?} */ groupItemId = '';
-        const /** @type {?} */ groupedHeaders = [];
-        let /** @type {?} */ hasGroupedItems = false;
-        if ($.isEmptyObject(this._groupingDefinition)) {
-            hasGroupedItems = false;
-        }
-        else {
-            hasGroupedItems = true;
-            groupItemId = $(`#${this._groupingDefinition.dropdownOptionsIds[0]}`).val();
-        }
-        // If we are Grouping, then pull the name of the grouped item and display it as 1st column
-        columns.forEach((columnDef) => {
-            // the column might be a complex object and have a '.' (ex.: person.name)
-            // if so we want just the object (ex.: person.name => we want 'person')
-            if (groupItemId.indexOf('.') >= 0) {
-                groupItemId = groupItemId.split('.')[0];
-            }
-            if (hasGroupedItems && columnDef.id === groupItemId) {
-                const /** @type {?} */ fieldName = (columnDef.headerKey) ? this.translate.instant(columnDef.headerKey) : columnDef.name;
-                groupedHeaders.push({
-                    key: columnDef.field || columnDef.id,
-                    title: fieldName
-                });
-            }
-        });
-        return groupedHeaders;
+    sanitizeHtmlToText(htmlString) {
+        const /** @type {?} */ temp = document.createElement('div');
+        temp.innerHTML = htmlString;
+        return temp.textContent || temp.innerText;
     }
     /**
      * Triggers download file with file format.
@@ -3889,9 +3829,7 @@ class GraphqlService {
                 // if user defined some "presets", then we need to find the filters from the column definitions instead
                 let /** @type {?} */ columnDef;
                 if (isUpdatedByPreset && Array.isArray(this._columnDefinitions)) {
-                    columnDef = this._columnDefinitions.find((column) => {
-                        return column.id === columnFilter.columnId;
-                    });
+                    columnDef = this._columnDefinitions.find((column) => column.id === columnFilter.columnId);
                 }
                 else {
                     columnDef = columnFilter.columnDef;
@@ -3987,8 +3925,9 @@ class GraphqlService {
             currentSorters.forEach((sorter) => sorter.direction = /** @type {?} */ (sorter.direction.toUpperCase()));
             // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
             const /** @type {?} */ tmpSorterArray = currentSorters.map((sorter) => {
+                const /** @type {?} */ columnDef = this._columnDefinitions.find((column) => column.id === sorter.columnId);
                 graphqlSorters.push({
-                    field: sorter.columnId + '',
+                    field: (columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '',
                     direction: sorter.direction
                 });
                 return {
@@ -4003,14 +3942,14 @@ class GraphqlService {
             // orderBy:[{field: lastName, direction: ASC}, {field: firstName, direction: DESC}]
             if (sortColumns && sortColumns.length === 0) {
                 graphqlSorters = new Array(this.defaultOrderBy); // when empty, use the default sort
-                currentSorters = new Array({ columnId: this.defaultOrderBy.direction, direction: this.defaultOrderBy.direction });
+                currentSorters = new Array({ columnId: this.defaultOrderBy.field, direction: this.defaultOrderBy.direction });
             }
             else {
                 if (sortColumns) {
                     for (const /** @type {?} */ column of sortColumns) {
                         if (column && column.sortCol) {
                             currentSorters.push({
-                                columnId: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '',
+                                columnId: column.sortCol.id + '',
                                 direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
                             });
                             graphqlSorters.push({
@@ -4670,11 +4609,13 @@ class GridOdataService {
                     for (const /** @type {?} */ column of sortColumns) {
                         if (column.sortCol) {
                             let /** @type {?} */ fieldName = (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '';
+                            let /** @type {?} */ columnFieldName = (column.sortCol.field || column.sortCol.id) + '';
                             if (this.odataService.options.caseType === CaseType.pascalCase) {
                                 fieldName = String.titleCase(fieldName);
+                                columnFieldName = String.titleCase(columnFieldName);
                             }
                             sorterArray.push({
-                                columnId: fieldName,
+                                columnId: columnFieldName,
                                 direction: column.sortAsc ? 'asc' : 'desc'
                             });
                         }
@@ -5399,7 +5340,10 @@ class SortService {
                     const /** @type {?} */ fieldType = columnSortObj.sortCol.type || FieldType.string;
                     const /** @type {?} */ value1 = dataRow1[sortField];
                     const /** @type {?} */ value2 = dataRow2[sortField];
-                    return sortByFieldType(value1, value2, fieldType, sortDirection);
+                    const /** @type {?} */ sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+                    if (sortResult !== 0) {
+                        return sortResult;
+                    }
                 }
             }
             return 0;
@@ -5443,6 +5387,186 @@ class SortService {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class AvgAggregator {
+    /**
+     * @param {?} field
+     */
+    constructor(field) {
+        this._field = field;
+    }
+    /**
+     * @return {?}
+     */
+    init() {
+        this._count = 0;
+        this._nonNullCount = 0;
+        this._sum = 0;
+    }
+    /**
+     * @param {?} item
+     * @return {?}
+     */
+    accumulate(item) {
+        const /** @type {?} */ val = item[this._field];
+        this._count++;
+        if (val != null && val !== '' && !isNaN(val)) {
+            this._nonNullCount++;
+            this._sum += parseFloat(val);
+        }
+    }
+    /**
+     * @param {?} groupTotals
+     * @return {?}
+     */
+    storeResult(groupTotals) {
+        if (!groupTotals.avg) {
+            groupTotals.avg = {};
+        }
+        if (this._nonNullCount !== 0) {
+            groupTotals.avg[this._field] = this._sum / this._nonNullCount;
+        }
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class MinAggregator {
+    /**
+     * @param {?} field
+     */
+    constructor(field) {
+        this._field = field;
+    }
+    /**
+     * @return {?}
+     */
+    init() {
+        this._min = null;
+    }
+    /**
+     * @param {?} item
+     * @return {?}
+     */
+    accumulate(item) {
+        const /** @type {?} */ val = item[this._field];
+        if (val != null && val !== '' && !isNaN(val)) {
+            if (this._min == null || val < this._min) {
+                this._min = val;
+            }
+        }
+    }
+    /**
+     * @param {?} groupTotals
+     * @return {?}
+     */
+    storeResult(groupTotals) {
+        if (!groupTotals.min) {
+            groupTotals.min = {};
+        }
+        groupTotals.min[this._field] = this._min;
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class MaxAggregator {
+    /**
+     * @param {?} field
+     */
+    constructor(field) {
+        this._field = field;
+    }
+    /**
+     * @return {?}
+     */
+    init() {
+        this._max = null;
+    }
+    /**
+     * @param {?} item
+     * @return {?}
+     */
+    accumulate(item) {
+        const /** @type {?} */ val = item[this._field];
+        if (val != null && val !== '' && !isNaN(val)) {
+            if (this._max == null || val > this._max) {
+                this._max = val;
+            }
+        }
+    }
+    /**
+     * @param {?} groupTotals
+     * @return {?}
+     */
+    storeResult(groupTotals) {
+        if (!groupTotals.max) {
+            groupTotals.max = {};
+        }
+        groupTotals.max[this._field] = this._max;
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class SumAggregator {
+    /**
+     * @param {?} field
+     */
+    constructor(field) {
+        this._field = field;
+    }
+    /**
+     * @return {?}
+     */
+    init() {
+        this._sum = null;
+    }
+    /**
+     * @param {?} item
+     * @return {?}
+     */
+    accumulate(item) {
+        const /** @type {?} */ val = item[this._field];
+        if (val != null && val !== '' && !isNaN(val)) {
+            this._sum += parseFloat(val);
+        }
+    }
+    /**
+     * @param {?} groupTotals
+     * @return {?}
+     */
+    storeResult(groupTotals) {
+        if (!groupTotals.sum) {
+            groupTotals.sum = {};
+        }
+        groupTotals.sum[this._field] = this._sum;
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * Provides a list of different Aggregators for the Group Formatter
+ */
+const Aggregators = {
+    avg: AvgAggregator,
+    min: MinAggregator,
+    max: MaxAggregator,
+    sum: SumAggregator
+};
 
 /**
  * @fileoverview added by tsickle
@@ -7222,6 +7346,14 @@ const GlobalGridOptions = {
     enableSorting: true,
     enableTextSelectionOnCells: true,
     explicitInitialization: true,
+    exportOptions: {
+        delimiter: DelimiterType.comma,
+        exportWithFormatter: false,
+        filename: 'export',
+        format: FileType.csv,
+        groupingAggregatorRowText: '',
+        useUtf8WithBom: true
+    },
     exportWithFormatter: false,
     forceFitColumns: false,
     gridMenu: {
@@ -7774,5 +7906,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Editors, FilterConditions, Filters, Formatters, Sorters, CheckboxEditor as ɵb, DateEditor as ɵc, FloatEditor as ɵd, IntegerEditor as ɵe, LongTextEditor as ɵf, MultipleSelectEditor as ɵg, SingleSelectEditor as ɵh, TextEditor as ɵi, booleanFilterCondition as ɵk, collectionSearchFilterCondition as ɵl, dateFilterCondition as ɵm, dateIsoFilterCondition as ɵn, dateUsFilterCondition as ɵp, dateUsShortFilterCondition as ɵq, dateUtcFilterCondition as ɵo, executeMappedCondition as ɵj, testFilterCondition as ɵt, numberFilterCondition as ɵr, stringFilterCondition as ɵs, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, InputFilter as ɵu, MultipleSelectFilter as ɵv, SelectFilter as ɵx, SingleSelectFilter as ɵw, arrayToCsvFormatter as ɵba, checkboxFormatter as ɵbb, checkmarkFormatter as ɵbc, collectionFormatter as ɵbe, complexObjectFormatter as ɵbd, dateIsoFormatter as ɵbf, dateTimeIsoAmPmFormatter as ɵbh, dateTimeIsoFormatter as ɵbg, dateTimeUsAmPmFormatter as ɵbk, dateTimeUsFormatter as ɵbj, dateUsFormatter as ɵbi, deleteIconFormatter as ɵbl, editIconFormatter as ɵbm, hyperlinkFormatter as ɵbn, hyperlinkUriPrefixFormatter as ɵbo, infoIconFormatter as ɵbp, lowercaseFormatter as ɵbq, multipleFormatter as ɵbr, percentCompleteBarFormatter as ɵbt, percentCompleteFormatter as ɵbs, progressBarFormatter as ɵbu, translateBooleanFormatter as ɵbw, translateFormatter as ɵbv, uppercaseFormatter as ɵbx, yesNoFormatter as ɵby, SharedService as ɵa, dateIsoSorter as ɵca, dateSorter as ɵbz, dateUsShortSorter as ɵcc, dateUsSorter as ɵcb, numericSorter as ɵcd, stringSorter as ɵce };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, Sorters, AvgAggregator as ɵb, MaxAggregator as ɵd, MinAggregator as ɵc, SumAggregator as ɵe, CheckboxEditor as ɵf, DateEditor as ɵg, FloatEditor as ɵh, IntegerEditor as ɵi, LongTextEditor as ɵj, MultipleSelectEditor as ɵk, SingleSelectEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵbc, CompoundInputFilter as ɵbd, InputFilter as ɵy, MultipleSelectFilter as ɵz, SelectFilter as ɵbb, SingleSelectFilter as ɵba, arrayToCsvFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, editIconFormatter as ɵbq, hyperlinkFormatter as ɵbr, hyperlinkUriPrefixFormatter as ɵbs, infoIconFormatter as ɵbt, lowercaseFormatter as ɵbu, multipleFormatter as ɵbv, percentCompleteBarFormatter as ɵbx, percentCompleteFormatter as ɵbw, progressBarFormatter as ɵby, translateBooleanFormatter as ɵca, translateFormatter as ɵbz, uppercaseFormatter as ɵcb, yesNoFormatter as ɵcc, SharedService as ɵa, dateIsoSorter as ɵce, dateSorter as ɵcd, dateUsShortSorter as ɵcg, dateUsSorter as ɵcf, numericSorter as ɵch, stringSorter as ɵci };
 //# sourceMappingURL=angular-slickgrid.js.map

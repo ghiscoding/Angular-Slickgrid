@@ -3,7 +3,7 @@
   "dest": "dist",
   "workingDirectory": ".ng_build",
   "lib": {
-    "entryFile": "public_api.ts",
+    "entryFile": "src/public_api.ts",
     "umdModuleIds": {
       "@ngx-translate/core": "ngx-translate-core",
       "@ngx-translate/core/index": "ngx-translate-core",
