@@ -133,25 +133,18 @@
    }
 
    .slick-group-toggle {
-     width: 9px;
-     height: 9px;
-     margin-right: $icon-group-margin-right;
-     color: $icon-group-color;
-     cursor: pointer;
-     font-weight: $icon-group-font-weight;
+    width: 9px;
+    height: 9px;
+    margin-right: 5px;
+  }
 
-     &.expanded:before {
-       content: $icon-group-expanded;
-       font-family: $icon-font-family;
-       font-size: $icon-group-font-size;
-     }
+  .slick-group-toggle.expanded {
+    background: none;
+  }
 
-     &.collapsed:before {
-       content: $icon-group-collapsed;
-       font-family: $icon-font-family;
-       font-size: $icon-group-font-size;
-     }
-   }
+  .slick-group-toggle.collapsed {
+    background: none;
+  }
 
    .slick-group-totals {
      color: gray;
