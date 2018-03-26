@@ -138,6 +138,7 @@
      margin-right: $icon-group-margin-right;
      color: $icon-group-color;
      cursor: pointer;
+     font-weight: $icon-group-font-weight;
 
      &.expanded:before {
        content: $icon-group-expanded;

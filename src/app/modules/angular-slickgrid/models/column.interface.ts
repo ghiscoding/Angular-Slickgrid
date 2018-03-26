@@ -2,7 +2,7 @@ import { ColumnFilter } from './columnFilter.interface';
 import { Editor } from './editor.interface';
 import { FieldType } from './fieldType';
 import { Formatter } from './formatter.interface';
-import { GroupFormatter } from './groupFormatter.interface';
+import { GroupTotalsFormatter } from './groupTotalsFormatter.interface';
 import { HeaderButtonItem } from './headerButtonItem.interface';
 import { HeaderMenuItem } from './headerMenuItem.interface';
 import { OnEventArgs } from './onEventArgs.interface';
@@ -78,7 +78,7 @@ export interface Column {
   formatter?: Formatter;
 
   /** Group Totals Formatter function that can be used to add grouping totals in the grid */
-  groupTotalsFormatter?: GroupFormatter;
+  groupTotalsFormatter?: GroupTotalsFormatter;
 
   /** Options that can be provide to the Header Menu Plugin */
   header?: {

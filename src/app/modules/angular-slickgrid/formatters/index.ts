@@ -1,6 +1,4 @@
 import { Column } from './../models/index';
-// import { Group, GroupTotals } from '../core'
-// import { Item } from '../dataview'
 import { arrayToCsvFormatter } from './arrayToCsvFormatter';
 import { checkboxFormatter } from './checkboxFormatter';
 import { checkmarkFormatter } from './checkmarkFormatter';
@@ -26,15 +24,6 @@ import { translateFormatter } from './translateFormatter';
 import { translateBooleanFormatter } from './translateBooleanFormatter';
 import { uppercaseFormatter } from './uppercaseFormatter';
 import { yesNoFormatter } from './yesNoFormatter';
-
-/*
-export interface GroupFormatter {
-  (row: number, cell: number, value: any, columnDef: Column, dataContext: Group): string
-}
-export interface GroupTotalsFormatter {
-  (row: number, cell: number, value: any, columnDef: Column, dataContext: GroupTotals): string
-}
-*/
 
 /** Provides a list of different Formatters that will change the cell value displayed in the UI */
 export const Formatters = {

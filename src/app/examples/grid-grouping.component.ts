@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Column, FieldType, Formatter, Formatters, GridOption, Editors } from './../modules/angular-slickgrid';
-
-// using external non-typed js libraries
-declare var Slick: any;
+import { Aggregators, Column, FieldType, Formatter, Formatters, GridOption, Editors } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-grouping.component.html'
@@ -21,10 +18,6 @@ export class GridGroupingComponent implements OnInit {
   dataset: any[];
   gridObj: any;
   dataviewObj: any;
-  sortcol = 'title';
-  sortdir = 1;
-  percentCompleteThreshold = 0;
-  prevPercentCompleteThreshold = 0;
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -108,11 +101,6 @@ export class GridGroupingComponent implements OnInit {
     return '';
   }
 
-  comparer(a: any, b: any) {
-    const x = a[this.sortcol], y = b[this.sortcol];
-    return (x === y ? 0 : (x > y ? 1 : -1));
-  }
-
   groupByDuration() {
     this.dataviewObj.setGrouping({
       getter: 'duration',
@@ -120,8 +108,8 @@ export class GridGroupingComponent implements OnInit {
         return `Duration:  ${g.value} <span style="color:green">(${g.count} items)</span>`;
       },
       aggregators: [
-        new Slick.Data.Aggregators.Avg('percentComplete'),
-        new Slick.Data.Aggregators.Sum('cost')
+        new Aggregators.avg('percentComplete'),
+        new Aggregators.sum('cost')
       ],
       aggregateCollapsed: false,
       lazyTotalsCalculation: true
@@ -138,8 +126,8 @@ export class GridGroupingComponent implements OnInit {
         return a.count - b.count;
       },
       aggregators: [
-        new Slick.Data.Aggregators.Avg('percentComplete'),
-        new Slick.Data.Aggregators.Sum('cost')
+        new Aggregators.avg('percentComplete'),
+        new Aggregators.sum('cost')
       ],
       aggregateCollapsed,
       lazyTotalsCalculation: true
@@ -154,8 +142,8 @@ export class GridGroupingComponent implements OnInit {
           return `Duration:  ${g.value}  <span style="color:green">(${g.count} items)</span>`;
         },
         aggregators: [
-          new Slick.Data.Aggregators.Sum('duration'),
-          new Slick.Data.Aggregators.Sum('cost')
+          new Aggregators.sum('duration'),
+          new Aggregators.sum('cost')
         ],
         aggregateCollapsed: true,
         lazyTotalsCalculation: true
@@ -166,8 +154,8 @@ export class GridGroupingComponent implements OnInit {
           return `Effort-Driven:  ${(g.value ? 'True' : 'False')} <span style="color:green">(${g.count} items)</span>`;
         },
         aggregators: [
-          new Slick.Data.Aggregators.Avg('percentComplete'),
-          new Slick.Data.Aggregators.Sum('cost')
+          new Aggregators.avg('percentComplete'),
+          new Aggregators.sum('cost')
         ],
         collapsed: true,
         lazyTotalsCalculation: true
@@ -183,8 +171,8 @@ export class GridGroupingComponent implements OnInit {
           return `Duration:  ${g.value}  <span style="color:green">(${g.count} items)</span>`;
         },
         aggregators: [
-          new Slick.Data.Aggregators.Sum('duration'),
-          new Slick.Data.Aggregators.Sum('cost')
+          new Aggregators.sum('duration'),
+          new Aggregators.sum('cost')
         ],
         aggregateCollapsed: true,
         lazyTotalsCalculation: true
@@ -195,8 +183,8 @@ export class GridGroupingComponent implements OnInit {
           return `Effort-Driven:  ${(g.value ? 'True' : 'False')}  <span style="color:green">(${g.count} items)</span>`;
         },
         aggregators: [
-          new Slick.Data.Aggregators.Sum('duration'),
-          new Slick.Data.Aggregators.Sum('cost')
+          new Aggregators.sum('duration'),
+          new Aggregators.sum('cost')
         ],
         lazyTotalsCalculation: true
       },
@@ -206,7 +194,7 @@ export class GridGroupingComponent implements OnInit {
           return `% Complete:  ${g.value}  <span style="color:green">(${g.count} items)</span>`;
         },
         aggregators: [
-          new Slick.Data.Aggregators.Avg('percentComplete')
+          new Aggregators.avg('percentComplete')
         ],
         aggregateCollapsed: true,
         collapsed: true,

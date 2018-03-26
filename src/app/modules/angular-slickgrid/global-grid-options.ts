@@ -35,6 +35,14 @@ export const GlobalGridOptions: GridOption = {
   enableSorting: true,
   enableTextSelectionOnCells: true,
   explicitInitialization: true,
+  exportOptions: {
+    delimiter: DelimiterType.comma,
+    exportWithFormatter: false,
+    filename: 'export',
+    format: FileType.csv,
+    groupingAggregatorRowText: '',
+    useUtf8WithBom: true
+  },
   exportWithFormatter: false,
   forceFitColumns: false,
   gridMenu: {

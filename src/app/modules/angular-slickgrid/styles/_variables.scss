@@ -72,10 +72,11 @@ $header-scroll-width-to-remove:         16px !default;                        //
 /* icon font is using Font-Awesome by default but could be changed to any other icon package like Glyphicons, ... */
 $icon-font-family:                      "FontAwesome" !default;               // or Glyphicons Halflings */
 $icon-font-size:                        14px !default;
-$icon-group-color:                      lighten($primary-color, 10%) !default;
-$icon-group-expanded:                   "\f146" !default;
-$icon-group-collapsed:                  "\f0fe" !default;
+$icon-group-color:                      $primary-color !default;
+$icon-group-expanded:                   "\f107" !default;
+$icon-group-collapsed:                  "\f105" !default;
 $icon-group-font-size:                  ($icon-font-size + 2px) !default;
+$icon-group-font-weight:                bold !default;
 $icon-group-margin-right:               10px !default;
 $icon-sort-asc:                         "\f0d8" !default;
 $icon-sort-desc:                        "\f0d7" !default;
