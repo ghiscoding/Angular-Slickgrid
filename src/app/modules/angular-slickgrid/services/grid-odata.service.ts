@@ -349,12 +349,14 @@ export class GridOdataService implements BackendService {
           for (const column of sortColumns) {
             if (column.sortCol) {
               let fieldName = (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '';
+              let columnFieldName = (column.sortCol.field || column.sortCol.id) + '';
               if (this.odataService.options.caseType === CaseType.pascalCase) {
                 fieldName = String.titleCase(fieldName);
+                columnFieldName = String.titleCase(columnFieldName);
               }
 
               sorterArray.push({
-                columnId: fieldName,
+                columnId: columnFieldName,
                 direction: column.sortAsc ? 'asc' : 'desc'
               });
             }

@@ -462,13 +462,13 @@ export class GraphqlService implements BackendService {
       // orderBy:[{field: lastName, direction: ASC}, {field: firstName, direction: DESC}]
       if (sortColumns && sortColumns.length === 0) {
         graphqlSorters = new Array(this.defaultOrderBy); // when empty, use the default sort
-        currentSorters = new Array({ columnId: this.defaultOrderBy.direction, direction: this.defaultOrderBy.direction });
+        currentSorters = new Array({ columnId: this.defaultOrderBy.field, direction: this.defaultOrderBy.direction });
       } else {
         if (sortColumns) {
           for (const column of sortColumns) {
             if (column && column.sortCol) {
               currentSorters.push({
-                columnId: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '',
+                columnId: (column.sortCol.field || column.sortCol.id) + '',
                 direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
               });
 
