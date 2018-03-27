@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "0.14.3",
+  "version": "0.14.4",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -23,7 +23,7 @@
     "copy-demo:dist": "cross-env copyfiles --up 1 dist/**/*.* ../Angular-Slickgrid-demo/node_modules/angular-slickgrid",
     "del-demo:dist": "cross-env rimraf ../Angular-Slickgrid-demo/node_modules/angular-slickgrid",
     "pack-lib": "npm pack ./dist",
-    "packagr": "ng-packagr -p ng-package.json",
+    "packagr": "ng-packagr -p package.json",
     "sass-build-task:scss-compile": "node-sass --source-map true src/app/modules/angular-slickgrid/styles/ -o dist/styles/css",
     "sass-build-task:autoprefixer": "postcss dist/styles/css/*.css --use autoprefixer -d dist/styles/css",
     "sass:build": "npm-run-all -p sass-build-task:*",
@@ -35,6 +35,7 @@
     "type": "git",
     "url": "http://github.com/ghiscoding/angular-slickgrid"
   },
+  "main": "bundles/angular-slickgrid.umd.js",
   "private": false,
   "dependencies": {
     "@ngx-translate/core": "^9.1.1",
@@ -104,7 +105,6 @@
     "yargs": "^9.0.1",
     "zone.js": "^0.8.17"
   },
-  "main": "bundles/angular-slickgrid.umd.js",
   "module": "esm5/angular-slickgrid.js",
   "es2015": "esm2015/angular-slickgrid.js",
   "typings": "angular-slickgrid.d.ts",

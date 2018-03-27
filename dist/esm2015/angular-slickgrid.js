@@ -5,9 +5,9 @@ import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
 import { Injectable, Component, EventEmitter, Input, Output, Inject, NgModule } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { Subject } from 'rxjs/Subject';
 import { TextEncoder } from 'text-encoding-utf-8';
 import { __awaiter } from 'tslib';
-import { Subject } from 'rxjs/Subject';
 import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
@@ -278,6 +278,20 @@ const SortDirection = {
     desc: 'desc',
     DESC: 'DESC',
 };
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/** @enum {number} */
+const SortDirectionNumber = {
+    asc: 1,
+    desc: -1,
+    neutral: 0,
+};
+SortDirectionNumber[SortDirectionNumber.asc] = "asc";
+SortDirectionNumber[SortDirectionNumber.desc] = "desc";
+SortDirectionNumber[SortDirectionNumber.neutral] = "neutral";
 
 /**
  * @fileoverview added by tsickle
@@ -893,6 +907,8 @@ class ExportService {
         this.translate = translate;
         this._lineCarriageReturn = '\n';
         this._hasGroupedItems = false;
+        this.onGridBeforeExportToFile = new Subject();
+        this.onGridAfterExportToFile = new Subject();
     }
     /**
      * Initialize the Export Service
@@ -918,16 +934,22 @@ class ExportService {
      * @return {?}
      */
     exportToFile(options) {
+        this.onGridBeforeExportToFile.next(true);
         this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
         // get the CSV output from the grid data
         const /** @type {?} */ dataOutput = this.getDataOutput();
         // trigger a download file
-        this.startDownloadFile({
-            filename: `${this._exportOptions.filename}.${this._exportOptions.format}`,
-            csvContent: dataOutput,
-            format: this._exportOptions.format,
-            useUtf8WithBom: this._exportOptions.useUtf8WithBom
-        });
+        // wrap it into a setTimeout so that the EventAggregator has enough time to start a pre-process like showing a spinner
+        setTimeout(() => {
+            const /** @type {?} */ downloadOptions = {
+                filename: `${this._exportOptions.filename}.${this._exportOptions.format}`,
+                csvContent: dataOutput,
+                format: this._exportOptions.format,
+                useUtf8WithBom: this._exportOptions.useUtf8WithBom
+            };
+            this.startDownloadFile(downloadOptions);
+            this.onGridAfterExportToFile.next({ options: downloadOptions });
+        }, 0);
     }
     /**
      * @return {?}
@@ -5335,13 +5357,13 @@ class SortService {
             for (let /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
                 const /** @type {?} */ columnSortObj = sortColumns[i];
                 if (columnSortObj && columnSortObj.sortCol) {
-                    const /** @type {?} */ sortDirection = columnSortObj.sortAsc ? 1 : -1;
+                    const /** @type {?} */ sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
                     const /** @type {?} */ sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
                     const /** @type {?} */ fieldType = columnSortObj.sortCol.type || FieldType.string;
                     const /** @type {?} */ value1 = dataRow1[sortField];
                     const /** @type {?} */ value2 = dataRow2[sortField];
                     const /** @type {?} */ sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
-                    if (sortResult !== 0) {
+                    if (sortResult !== SortDirectionNumber.neutral) {
                         return sortResult;
                     }
                 }
@@ -7906,5 +7928,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, Sorters, AvgAggregator as ɵb, MaxAggregator as ɵd, MinAggregator as ɵc, SumAggregator as ɵe, CheckboxEditor as ɵf, DateEditor as ɵg, FloatEditor as ɵh, IntegerEditor as ɵi, LongTextEditor as ɵj, MultipleSelectEditor as ɵk, SingleSelectEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵbc, CompoundInputFilter as ɵbd, InputFilter as ɵy, MultipleSelectFilter as ɵz, SelectFilter as ɵbb, SingleSelectFilter as ɵba, arrayToCsvFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, editIconFormatter as ɵbq, hyperlinkFormatter as ɵbr, hyperlinkUriPrefixFormatter as ɵbs, infoIconFormatter as ɵbt, lowercaseFormatter as ɵbu, multipleFormatter as ɵbv, percentCompleteBarFormatter as ɵbx, percentCompleteFormatter as ɵbw, progressBarFormatter as ɵby, translateBooleanFormatter as ɵca, translateFormatter as ɵbz, uppercaseFormatter as ɵcb, yesNoFormatter as ɵcc, SharedService as ɵa, dateIsoSorter as ɵce, dateSorter as ɵcd, dateUsShortSorter as ɵcg, dateUsSorter as ɵcf, numericSorter as ɵch, stringSorter as ɵci };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, Sorters, AvgAggregator as ɵb, MaxAggregator as ɵd, MinAggregator as ɵc, SumAggregator as ɵe, CheckboxEditor as ɵf, DateEditor as ɵg, FloatEditor as ɵh, IntegerEditor as ɵi, LongTextEditor as ɵj, MultipleSelectEditor as ɵk, SingleSelectEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵbc, CompoundInputFilter as ɵbd, InputFilter as ɵy, MultipleSelectFilter as ɵz, SelectFilter as ɵbb, SingleSelectFilter as ɵba, arrayToCsvFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, editIconFormatter as ɵbq, hyperlinkFormatter as ɵbr, hyperlinkUriPrefixFormatter as ɵbs, infoIconFormatter as ɵbt, lowercaseFormatter as ɵbu, multipleFormatter as ɵbv, percentCompleteBarFormatter as ɵbx, percentCompleteFormatter as ɵbw, progressBarFormatter as ɵby, translateBooleanFormatter as ɵca, translateFormatter as ɵbz, uppercaseFormatter as ɵcb, yesNoFormatter as ɵcc, SharedService as ɵa, dateIsoSorter as ɵce, dateSorter as ɵcd, dateUsShortSorter as ɵcg, dateUsSorter as ɵcf, numericSorter as ɵch, stringSorter as ɵci };
 //# sourceMappingURL=angular-slickgrid.js.map

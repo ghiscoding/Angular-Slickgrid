@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('moment-mini'), require('@angular/core'), require('@ngx-translate/core'), require('text-encoding-utf-8'), require('rxjs/Subject'), require('jquery-ui-dist/jquery-ui'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.dataview'), require('slickgrid/slick.grid'), require('slickgrid/slick.groupitemmetadataprovider'), require('slickgrid/controls/slick.columnpicker'), require('slickgrid/controls/slick.gridmenu'), require('slickgrid/controls/slick.pager'), require('slickgrid/plugins/slick.autotooltips'), require('slickgrid/plugins/slick.cellcopymanager'), require('slickgrid/plugins/slick.cellexternalcopymanager'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('slickgrid/plugins/slick.checkboxselectcolumn'), require('slickgrid/plugins/slick.headerbuttons'), require('slickgrid/plugins/slick.headermenu'), require('slickgrid/plugins/slick.rowmovemanager'), require('slickgrid/plugins/slick.rowselectionmodel'), require('@angular/common')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'moment-mini', '@angular/core', '@ngx-translate/core', 'text-encoding-utf-8', 'rxjs/Subject', 'jquery-ui-dist/jquery-ui', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.dataview', 'slickgrid/slick.grid', 'slickgrid/slick.groupitemmetadataprovider', 'slickgrid/controls/slick.columnpicker', 'slickgrid/controls/slick.gridmenu', 'slickgrid/controls/slick.pager', 'slickgrid/plugins/slick.autotooltips', 'slickgrid/plugins/slick.cellcopymanager', 'slickgrid/plugins/slick.cellexternalcopymanager', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'slickgrid/plugins/slick.checkboxselectcolumn', 'slickgrid/plugins/slick.headerbuttons', 'slickgrid/plugins/slick.headermenu', 'slickgrid/plugins/slick.rowmovemanager', 'slickgrid/plugins/slick.rowselectionmodel', '@angular/common'], factory) :
-	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.moment,global.ng.core,global['ngx-translate-core'],global.textEncodingUtf8,global.Rx,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,global.ng.common));
-}(this, (function (exports,Observable,first,take,toPromise,moment_,core,core$1,textEncodingUtf8,Subject,jqueryUi,jquery_event_drag2_3_0,slick_core,slick_dataview,slick_grid,slick_groupitemmetadataprovider,slick_columnpicker,slick_gridmenu,slick_pager,slick_autotooltips,slick_cellcopymanager,slick_cellexternalcopymanager,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,slick_checkboxselectcolumn,slick_headerbuttons,slick_headermenu,slick_rowmovemanager,slick_rowselectionmodel,common) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('moment-mini'), require('@angular/core'), require('@ngx-translate/core'), require('rxjs/Subject'), require('text-encoding-utf-8'), require('jquery-ui-dist/jquery-ui'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.dataview'), require('slickgrid/slick.grid'), require('slickgrid/slick.groupitemmetadataprovider'), require('slickgrid/controls/slick.columnpicker'), require('slickgrid/controls/slick.gridmenu'), require('slickgrid/controls/slick.pager'), require('slickgrid/plugins/slick.autotooltips'), require('slickgrid/plugins/slick.cellcopymanager'), require('slickgrid/plugins/slick.cellexternalcopymanager'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('slickgrid/plugins/slick.checkboxselectcolumn'), require('slickgrid/plugins/slick.headerbuttons'), require('slickgrid/plugins/slick.headermenu'), require('slickgrid/plugins/slick.rowmovemanager'), require('slickgrid/plugins/slick.rowselectionmodel'), require('@angular/common')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'moment-mini', '@angular/core', '@ngx-translate/core', 'rxjs/Subject', 'text-encoding-utf-8', 'jquery-ui-dist/jquery-ui', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.dataview', 'slickgrid/slick.grid', 'slickgrid/slick.groupitemmetadataprovider', 'slickgrid/controls/slick.columnpicker', 'slickgrid/controls/slick.gridmenu', 'slickgrid/controls/slick.pager', 'slickgrid/plugins/slick.autotooltips', 'slickgrid/plugins/slick.cellcopymanager', 'slickgrid/plugins/slick.cellexternalcopymanager', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'slickgrid/plugins/slick.checkboxselectcolumn', 'slickgrid/plugins/slick.headerbuttons', 'slickgrid/plugins/slick.headermenu', 'slickgrid/plugins/slick.rowmovemanager', 'slickgrid/plugins/slick.rowselectionmodel', '@angular/common'], factory) :
+	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.moment,global.ng.core,global['ngx-translate-core'],global.Rx,global.textEncodingUtf8,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,global.ng.common));
+}(this, (function (exports,Observable,first,take,toPromise,moment_,core,core$1,Subject,textEncodingUtf8,jqueryUi,jquery_event_drag2_3_0,slick_core,slick_dataview,slick_grid,slick_groupitemmetadataprovider,slick_columnpicker,slick_gridmenu,slick_pager,slick_autotooltips,slick_cellcopymanager,slick_cellexternalcopymanager,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,slick_checkboxselectcolumn,slick_headerbuttons,slick_headermenu,slick_rowmovemanager,slick_rowselectionmodel,common) { 'use strict';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -250,6 +250,14 @@ var SortDirection = {
     desc: 'desc',
     DESC: 'DESC',
 };
+var SortDirectionNumber = {
+    asc: 1,
+    desc: -1,
+    neutral: 0,
+};
+SortDirectionNumber[SortDirectionNumber.asc] = "asc";
+SortDirectionNumber[SortDirectionNumber.desc] = "desc";
+SortDirectionNumber[SortDirectionNumber.neutral] = "neutral";
 var moment = moment_;
 function addWhiteSpaces(nbSpaces) {
     var result = '';
@@ -668,6 +676,8 @@ var ExportService = /** @class */ (function () {
         this.translate = translate;
         this._lineCarriageReturn = '\n';
         this._hasGroupedItems = false;
+        this.onGridBeforeExportToFile = new Subject.Subject();
+        this.onGridAfterExportToFile = new Subject.Subject();
     }
     ExportService.prototype.init = function (grid, gridOptions, dataView) {
         this._grid = grid;
@@ -675,14 +685,20 @@ var ExportService = /** @class */ (function () {
         this._dataView = dataView;
     };
     ExportService.prototype.exportToFile = function (options) {
+        var _this = this;
+        this.onGridBeforeExportToFile.next(true);
         this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
         var dataOutput = this.getDataOutput();
-        this.startDownloadFile({
-            filename: this._exportOptions.filename + "." + this._exportOptions.format,
-            csvContent: dataOutput,
-            format: this._exportOptions.format,
-            useUtf8WithBom: this._exportOptions.useUtf8WithBom
-        });
+        setTimeout(function () {
+            var downloadOptions = {
+                filename: _this._exportOptions.filename + "." + _this._exportOptions.format,
+                csvContent: dataOutput,
+                format: _this._exportOptions.format,
+                useUtf8WithBom: _this._exportOptions.useUtf8WithBom
+            };
+            _this.startDownloadFile(downloadOptions);
+            _this.onGridAfterExportToFile.next({ options: downloadOptions });
+        }, 0);
     };
     ExportService.prototype.getDataOutput = function () {
         var _this = this;
@@ -3879,13 +3895,13 @@ var SortService = /** @class */ (function () {
             for (var i = 0, l = sortColumns.length; i < l; i++) {
                 var columnSortObj = sortColumns[i];
                 if (columnSortObj && columnSortObj.sortCol) {
-                    var sortDirection = columnSortObj.sortAsc ? 1 : -1;
+                    var sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
                     var sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
                     var fieldType = columnSortObj.sortCol.type || FieldType.string;
                     var value1 = dataRow1[sortField];
                     var value2 = dataRow2[sortField];
                     var sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
-                    if (sortResult !== 0) {
+                    if (sortResult !== SortDirectionNumber.neutral) {
                         return sortResult;
                     }
                 }
@@ -5555,6 +5571,7 @@ exports.GridStateType = GridStateType;
 exports.KeyCode = KeyCode;
 exports.OperatorType = OperatorType;
 exports.SortDirection = SortDirection;
+exports.SortDirectionNumber = SortDirectionNumber;
 exports.CollectionService = CollectionService;
 exports.ControlAndPluginService = ControlAndPluginService;
 exports.ExportService = ExportService;

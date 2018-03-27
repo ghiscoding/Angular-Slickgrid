@@ -1,5 +1,6 @@
-import { Column, ExportOption, FileType, GridOption } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
+import { Column, ExportOption, FileType, GridOption } from './../models/index';
+import { Subject } from 'rxjs/Subject';
 export interface ExportColumnHeader {
     key: string;
     title: string;
@@ -15,6 +16,10 @@ export declare class ExportService {
     private _gridOptions;
     private _hasGroupedItems;
     private _exportOptions;
+    onGridBeforeExportToFile: Subject<boolean>;
+    onGridAfterExportToFile: Subject<{
+        options: any;
+    }>;
     constructor(translate: TranslateService);
     /**
      * Initialize the Export Service
