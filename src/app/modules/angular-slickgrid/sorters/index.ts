@@ -1,3 +1,4 @@
+import { SortDirectionNumber } from './../models/sortDirectionNumber.enum';
 import { dateUsShortSorter } from './dateUsShortSorter';
 import { dateSorter } from './dateSorter';
 import { dateIsoSorter } from './dateIsoSorter';
