@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { Aggregators, Column, FieldType, Formatter, Formatters, GridOption, Sorters  } from './../modules/angular-slickgrid';
+import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
+import { Aggregators, Column, ExportService, FieldType, Formatter, Formatters, GridOption, Sorters  } from './../modules/angular-slickgrid';
+import { Subscription } from 'rxjs/Subscription';
 
+@Injectable()
 @Component({
   templateUrl: './grid-grouping.component.html'
 })
-export class GridGroupingComponent implements OnInit {
+export class GridGroupingComponent implements OnInit, OnDestroy {
   title = 'Example 14: Grouping';
   subTitle = `
   <ul>
@@ -18,6 +20,20 @@ export class GridGroupingComponent implements OnInit {
   dataset: any[];
   gridObj: any;
   dataviewObj: any;
+  processing = false;
+  exportBeforeSub: Subscription;
+  exportAfterSub: Subscription;
+
+  constructor(private exportService: ExportService) {
+    // display a spinner while downloading
+    this.exportBeforeSub = this.exportService.onGridBeforeExportToFile.subscribe(() => this.processing = true);
+    this.exportAfterSub = this.exportService.onGridAfterExportToFile.subscribe(() => this.processing = false);
+  }
+
+  ngOnDestroy() {
+    this.exportBeforeSub.unsubscribe();
+    this.exportAfterSub.unsubscribe();
+  }
 
   ngOnInit(): void {
     this.columnDefinitions = [

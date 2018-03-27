@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   CellArgs,
   CustomGridMenu,
@@ -14,8 +15,8 @@ import {
   HeaderMenuOnCommandArgs,
   HeaderMenuOnBeforeMenuShowArgs
 } from './../models/index';
-import { TranslateService } from '@ngx-translate/core';
 import { addWhiteSpaces, htmlEntityDecode } from './../services/utilities';
+import { Subject } from 'rxjs/Subject';
 import { TextEncoder } from 'text-encoding-utf-8';
 
 // using external non-typed js libraries
@@ -38,6 +39,8 @@ export class ExportService {
   private _gridOptions: GridOption;
   private _hasGroupedItems = false;
   private _exportOptions: ExportOption;
+  onGridBeforeExportToFile = new Subject<boolean>();
+  onGridAfterExportToFile = new Subject<{ options: any }>();
 
   constructor(private translate: TranslateService) { }
 
@@ -63,18 +66,24 @@ export class ExportService {
    * Example: exportToFile({ format: FileType.csv, delimiter: DelimiterType.comma })
    */
   exportToFile(options: ExportOption) {
+    this.onGridBeforeExportToFile.next(true);
     this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
 
     // get the CSV output from the grid data
     const dataOutput = this.getDataOutput();
 
     // trigger a download file
-    this.startDownloadFile({
-      filename: `${this._exportOptions.filename}.${this._exportOptions.format}`,
-      csvContent: dataOutput,
-      format: this._exportOptions.format,
-      useUtf8WithBom: this._exportOptions.useUtf8WithBom
-    });
+    // wrap it into a setTimeout so that the EventAggregator has enough time to start a pre-process like showing a spinner
+    setTimeout(() => {
+      const downloadOptions = {
+        filename: `${this._exportOptions.filename}.${this._exportOptions.format}`,
+        csvContent: dataOutput,
+        format: this._exportOptions.format,
+        useUtf8WithBom: this._exportOptions.useUtf8WithBom
+      };
+      this.startDownloadFile(downloadOptions);
+      this.onGridAfterExportToFile.next({ options: downloadOptions });
+    }, 0);
   }
 
   // -----------------------

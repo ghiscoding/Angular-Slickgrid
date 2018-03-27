@@ -38,7 +38,11 @@
         <button class="btn btn-default btn-xs" (click)="groupByDurationEffortDrivenPercent()">
             Group by duration then effort-driven then percent.
         </button>
+        <span [hidden]="!processing">
+            <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
+        </span>
     </div>
+
     <angular-slickgrid gridId="grid2" (onDataviewCreated)="dataviewReady($event)" (onGridCreated)="gridReady($event)" [columnDefinitions]="columnDefinitions"
         [gridOptions]="gridOptions" [dataset]="dataset">
     </angular-slickgrid>
