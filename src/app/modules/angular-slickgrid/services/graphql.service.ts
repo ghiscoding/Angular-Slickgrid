@@ -446,10 +446,12 @@ export class GraphqlService implements BackendService {
       // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
       const tmpSorterArray = currentSorters.map((sorter) => {
         const columnDef = this._columnDefinitions.find((column: Column) => column.id === sorter.columnId);
-        graphqlSorters.push({
-          field: (columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '',
-          direction: sorter.direction
-        });
+        if (columnDef) {
+          graphqlSorters.push({
+            field: (columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '',
+            direction: sorter.direction
+          });
+        }
         return {
           columnId: sorter.columnId,
           sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
