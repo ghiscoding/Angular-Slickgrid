@@ -1,5 +1,5 @@
 import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
-import { Aggregators, Column, ExportService, FieldType, Formatter, Formatters, GridOption, Sorters  } from './../modules/angular-slickgrid';
+import { Aggregators, Column, ExportService, FieldType, Formatter, Formatters, GridOption, SortDirectionNumber, Sorters  } from './../modules/angular-slickgrid';
 import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
@@ -127,9 +127,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
         new Aggregators.avg('percentComplete'),
         new Aggregators.sum('cost')
       ],
-      comparer: (a, b) => {
-        return Sorters.numeric(a.value, b.value, 1);
-      },
+      comparer: (a, b) => Sorters.numeric(a.value, b.value, SortDirectionNumber.asc),
       aggregateCollapsed: false,
       lazyTotalsCalculation: true
     });

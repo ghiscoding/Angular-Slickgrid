@@ -1,3 +1,4 @@
+import { SortDirectionNumber } from './../models/sortDirectionNumber.enum';
 import { castToPromise } from './utilities';
 import { Column, FieldType, GridOption, SlickEvent, SortChanged, SortDirection, CurrentSorter, CellArgs, SortDirectionString } from './../models/index';
 import { sortByFieldType } from '../sorters/sorterUtilities';
@@ -149,13 +150,13 @@ export class SortService {
       for (let i = 0, l = sortColumns.length; i < l; i++) {
         const columnSortObj = sortColumns[i];
         if (columnSortObj && columnSortObj.sortCol) {
-          const sortDirection = columnSortObj.sortAsc ? 1 : -1;
+          const sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
           const sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
           const fieldType = columnSortObj.sortCol.type || FieldType.string;
           const value1 = dataRow1[sortField];
           const value2 = dataRow2[sortField];
           const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
-          if (sortResult !== 0) {
+          if (sortResult !== SortDirectionNumber.neutral) {
             return sortResult;
           }
         }
