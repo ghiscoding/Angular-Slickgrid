@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, FieldType, FilterType, FilterService, Formatters, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, FilterType, FilterService, Formatters, GridOption, SortService } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-menu.component.html'
@@ -27,7 +27,7 @@ export class GridMenuComponent implements OnInit {
   dataviewObj: any;
   visibleColumns: Column[];
 
-  constructor(private filterService: FilterService) {}
+  constructor(private filterService: FilterService, private sortService: SortService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -89,18 +89,25 @@ export class GridMenuComponent implements OnInit {
             positionOrder: 0
           },
           {
+            iconCssClass: 'fa fa-unsorted text-danger',
+            title: 'Clear All Sorting',
+            disabled: false,
+            command: 'clear-sorting',
+            positionOrder: 1
+          },
+          {
             iconCssClass: 'fa fa-random',
             title: 'Toggle Filter Row',
             disabled: false,
             command: 'toggle-filter',
-            positionOrder: 1
+            positionOrder: 2
           },
           {
             iconCssClass: 'fa fa-random',
             title: 'Toggle Top Panel',
             disabled: false,
             command: 'toggle-toppanel',
-            positionOrder: 2
+            positionOrder: 3
           },
           {
             iconCssClass: 'fa fa-question-circle',
@@ -123,6 +130,9 @@ export class GridMenuComponent implements OnInit {
             this.gridObj.setTopPanelVisibility(!this.gridObj.getOptions().showTopPanel);
           } else if (args.command === 'clear-filter') {
             this.filterService.clearFilters();
+            this.dataviewObj.refresh();
+          } else if (args.command === 'clear-sorting') {
+            this.sortService.clearSorting();
             this.dataviewObj.refresh();
           } else {
             alert('Command: ' + args.command);

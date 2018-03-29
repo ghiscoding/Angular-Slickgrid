@@ -1,11 +1,9 @@
-import { DelimiterType } from './../models/delimiterType.enum';
-import { ExportService } from './export.service';
 import { Injectable } from '@angular/core';
-import { FilterService } from './filter.service';
 import {
   CellArgs,
   CustomGridMenu,
   Column,
+  DelimiterType,
   GraphqlResult,
   GridMenu,
   GridOption,
@@ -16,7 +14,10 @@ import {
 } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './../services/utilities';
+import { FilterService } from './filter.service';
+import { ExportService } from './export.service';
 import { SharedService } from './shared.service';
+import { SortService } from './sort.service';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -39,7 +40,13 @@ export class ControlAndPluginService {
   gridMenuControl: any;
   rowSelectionPlugin: any;
 
-  constructor(private exportService: ExportService, private filterService: FilterService, private sharedService: SharedService, private translate: TranslateService) { }
+  constructor(
+    private exportService: ExportService,
+    private filterService: FilterService,
+    private sharedService: SharedService,
+    private sortService: SortService,
+    private translate: TranslateService
+  ) { }
 
   /**
    * Attach/Create different Controls or Plugins after the Grid is created
@@ -262,6 +269,7 @@ export class ControlAndPluginService {
           }
         );
       }
+
       // show grid menu: toggle filter row
       if (options && options.gridMenu && options.gridMenu.showToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'toggle-filter').length === 0) {
         options.gridMenu.customItems.push(
@@ -270,7 +278,7 @@ export class ControlAndPluginService {
             title: options.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
             disabled: false,
             command: 'toggle-filter',
-            positionOrder: 51
+            positionOrder: 52
           }
         );
       }
@@ -287,7 +295,21 @@ export class ControlAndPluginService {
           }
         );
       }
+    }
 
+    if (options.enableSorting) {
+      // show grid menu: clear all sorting
+      if (options && options.gridMenu && options.gridMenu.showClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-sorting').length === 0) {
+        options.gridMenu.customItems.push(
+          {
+            iconCssClass: 'fa fa-unsorted text-danger',
+            title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
+            disabled: false,
+            command: 'clear-sorting',
+            positionOrder: 51
+          }
+        );
+      }
     }
 
     // show grid menu: export to file
@@ -298,7 +320,7 @@ export class ControlAndPluginService {
           title: options.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
           disabled: false,
           command: 'export-csv',
-          positionOrder: 52
+          positionOrder: 53
         }
       );
     }
@@ -310,7 +332,7 @@ export class ControlAndPluginService {
           title: options.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
           disabled: false,
           command: 'export-text-delimited',
-          positionOrder: 53
+          positionOrder: 54
         }
       );
     }
@@ -322,6 +344,10 @@ export class ControlAndPluginService {
           switch (args.command) {
             case 'clear-filter':
               this.filterService.clearFilters();
+              this._dataView.refresh();
+              break;
+            case 'clear-sorting':
+              this.sortService.clearSorting();
               this._dataView.refresh();
               break;
             case 'export-csv':
@@ -345,10 +371,6 @@ export class ControlAndPluginService {
               break;
             case 'toggle-toppanel':
               grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
-              break;
-            case 'clear-filter':
-              this.filterService.clearFilters();
-              this._dataView.refresh();
               break;
             case 'refresh-dataset':
               this.refreshBackendDataset(options);
