@@ -66,7 +66,6 @@ export class GraphqlService implements BackendService {
 
     const queryQb = new QueryBuilder('query');
     const datasetQb = new QueryBuilder(this.options.datasetName);
-    const pageInfoQb = new QueryBuilder('pageInfo');
     const dataQb = (this.options.isWithCursor) ? new QueryBuilder('edges') : new QueryBuilder('nodes');
 
     // get all the columnds Ids for the filters to work
@@ -95,15 +94,15 @@ export class GraphqlService implements BackendService {
 
     if (this.options.isWithCursor) {
       // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
+      const pageInfoQb = new QueryBuilder('pageInfo');
       pageInfoQb.find('hasNextPage', 'endCursor');
       dataQb.find(['cursor', { node: filters }]);
+      datasetQb.find(['totalCount', pageInfoQb, dataQb]);
     } else {
-      // ...pageInfo { hasNextPage }, nodes { _filters_ }
-      pageInfoQb.find('hasNextPage');
+      // ...nodes { _filters_ }
       dataQb.find(filters);
+      datasetQb.find(['totalCount', dataQb]);
     }
-
-    datasetQb.find(['totalCount', pageInfoQb, dataQb]);
 
     // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
     const datasetFilters: GraphqlDatasetFilter = {
@@ -290,9 +289,6 @@ export class GraphqlService implements BackendService {
    * Without cursor, the query can have 3 arguments (first, last, offset), for example:
    *   users (first:20, offset: 10) {
    *     totalCount
-   *     pageInfo {
-   *       hasNextPage
-   *     }
    *     nodes {
    *       name
    *       gender
