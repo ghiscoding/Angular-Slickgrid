@@ -31,6 +31,24 @@ export interface GridMenu {
   /** Defaults to True, show/hide 1 of the last 2 checkbox at the end of the picker list */
   hideSyncResizeButton?: boolean;
 
+  /** icon for the "Clear All Filters" command */
+  iconClearAllFiltersCommand?: string;
+
+  /** icon for the "Clear All Sorting" command */
+  iconClearAllSortingCommand?: string;
+
+  /** icon for the "Export to CSV" command */
+  iconExportCsvCommand?: string;
+
+  /** icon for the "Export to Text Delimited" command */
+  iconExportTextDelimitedCommand?: string;
+
+  /** icon for the "Refresh Dataset" command */
+  iconRefreshDatasetCommand?: string;
+
+  /** icon for the "Toggle Filter Row" command */
+  iconToggleFilterCommand?: string;
+
   /** Defaults to False, which will resize the Header Row and remove the width of the Grid Menu icon from it's total width. */
   resizeOnShowHeaderRow?: boolean;
 
