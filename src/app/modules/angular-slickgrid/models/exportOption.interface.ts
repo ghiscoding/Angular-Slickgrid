@@ -20,6 +20,9 @@ export interface ExportOption {
   /** The default text to display in 1st column of the File Export, which will identify that the current row is a Grouping Aggregator */
   groupingAggregatorRowText?: string;
 
+  /** Defaults to false, which leads to Sanitizing all data (striping out any HTML tags) when being evaluated on export. */
+  sanitizeDataExport?: boolean;
+
   /**
    * If you want to use UTF-8 and unicode, in most case it's better to use it with BOM.
    * This will basically add a special string  at the beginning of the file "ï»¿" which will tell the application that it is UTF-8 format.

@@ -226,6 +226,11 @@ export class ExportService {
         itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
       }
 
+      // does the user want to sanitize the output data (remove HTML tags)?
+      if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
+        itemData = this.sanitizeHtmlToText(itemData);
+      }
+
       // when CSV we also need to escape double quotes twice, so " becomes ""
       if (format === FileType.csv) {
         itemData = itemData.toString().replace(/"/gi, `""`);
