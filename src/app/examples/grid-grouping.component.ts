@@ -1,5 +1,5 @@
 import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
-import { Aggregators, Column, ExportService, FieldType, Formatter, Formatters, GridOption, SortDirectionNumber, Sorters  } from './../modules/angular-slickgrid';
+import { Aggregators, Column, ExportService, FieldType, Formatter, Formatters, GridOption, GroupTotalFormatters, SortDirectionNumber, Sorters  } from './../modules/angular-slickgrid';
 import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
@@ -37,21 +37,77 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'sel', name: '#', field: 'num', width: 40, maxWidth: 70, resizable: true, selectable: false, focusable: false },
-      { id: 'title', name: 'Title', field: 'title', width: 70, minWidth: 50, cssClass: 'cell-title', sortable: true },
-      { id: 'duration', name: 'Duration', field: 'duration', width: 70, sortable: true, type: FieldType.number, groupTotalsFormatter: this.sumTotalsFormatter },
-      { id: '%', name: '% Complete', field: 'percentComplete', width: 80, formatter: Formatters.percentCompleteBar, sortable: true, groupTotalsFormatter: this.avgTotalsFormatter },
-      { id: 'start', name: 'Start', field: 'start', minWidth: 60, sortable: true, formatter: Formatters.dateIso, exportWithFormatter: true },
-      { id: 'finish', name: 'Finish', field: 'finish', minWidth: 60, sortable: true, formatter: Formatters.dateIso, exportWithFormatter: true },
-      { id: 'cost', name: 'Cost', field: 'cost', width: 90, sortable: true, groupTotalsFormatter: this.sumTotalsFormatter },
-      { id: 'effort-driven', name: 'Effort Driven', width: 80, minWidth: 20, maxWidth: 80, cssClass: 'cell-effort-driven', field: 'effortDriven', formatter: Formatters.checkmark, sortable: true }
+      {
+        id: 'sel', name: '#', field: 'num', width: 40,
+        maxWidth: 70,
+        resizable: true,
+        selectable: false,
+        focusable: false
+      },
+      {
+        id: 'title', name: 'Title', field: 'title',
+        width: 50,
+        minWidth: 50,
+        cssClass: 'cell-title',
+        sortable: true
+      },
+      {
+        id: 'duration', name: 'Duration', field: 'duration',
+        minWidth: 50, width: 60,
+        sortable: true,
+        type: FieldType.number,
+        groupTotalsFormatter: GroupTotalFormatters.sumTotals,
+        params: { groupFormatterPrefix: 'Total: ' }
+      },
+      {
+        id: '%', name: '% Complete', field: 'percentComplete',
+        minWidth: 70, width: 90,
+        formatter: Formatters.percentCompleteBar,
+        sortable: true,
+        groupTotalsFormatter: GroupTotalFormatters.avgTotalsPercentage,
+        params: { groupFormatterPrefix: '<i>Avg</i>: ' }
+      },
+      {
+        id: 'start', name: 'Start', field: 'start',
+        minWidth: 60,
+        sortable: true,
+        formatter: Formatters.dateIso,
+        exportWithFormatter: true
+      },
+      {
+        id: 'finish', name: 'Finish', field: 'finish',
+        minWidth: 60,
+        sortable: true,
+        formatter: Formatters.dateIso,
+        exportWithFormatter: true
+      },
+      {
+        id: 'cost', name: 'Cost', field: 'cost',
+        minWidth: 70,
+        width: 100,
+        sortable: true,
+        formatter: Formatters.dollar,
+        groupTotalsFormatter: GroupTotalFormatters.sumTotals,
+        params: { groupFormatterPrefix: '<b>Total</b>: $' /*, groupFormatterSuffix: ' USD'*/ }
+      },
+      {
+        id: 'effort-driven', name: 'Effort Driven',
+        minWidth: 20, width: 80, maxWidth: 80,
+        cssClass: 'cell-effort-driven',
+        field: 'effortDriven',
+        formatter: Formatters.checkmark, sortable: true
+      }
     ];
+
     this.gridOptions = {
       autoResize: {
         containerId: 'demo-container',
         sidePadding: 15
       },
-      enableGrouping: true
+      enableGrouping: true,
+      exportOptions: {
+        sanitizeDataExport: true
+      }
     };
 
     this.loadData(500);
@@ -99,22 +155,6 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
 
   expandAllGroups() {
     this.dataviewObj.expandAllGroups();
-  }
-
-  avgTotalsFormatter(totals, columnDef) {
-    const val = totals.avg && totals.avg[columnDef.field];
-    if (val != null) {
-      return `Avg: ${Math.round(val)}%`;
-    }
-    return '';
-  }
-
-  sumTotalsFormatter(totals, columnDef) {
-    const val = totals.sum && totals.sum[columnDef.field];
-    if (val != null) {
-      return `Total: ${((Math.round(parseFloat(val) * 100) / 100))}`;
-    }
-    return '';
   }
 
   groupByDuration() {

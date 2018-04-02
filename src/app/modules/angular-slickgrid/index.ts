@@ -7,6 +7,7 @@ export * from './editors/index';
 export * from './filter-conditions/index';
 export * from './filters/index';
 export * from './formatters/index';
+export * from './grouping-formatters/index';
 export * from './sorters/index';
 
 // components & module

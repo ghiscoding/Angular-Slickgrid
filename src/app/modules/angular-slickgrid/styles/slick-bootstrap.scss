@@ -69,7 +69,6 @@
           &.selected {
             background-color: inherit !important;
           }
-
         }
         &.odd {
           background: $row-highlight-background-color;
@@ -106,7 +105,13 @@
         }
         background: inherit;
       }
-
+      &.slick-group-totals {
+        color: $group-totals-formatter-color;
+        background: $group-totals-formatter-bgcolor;
+        .slick-cell {
+          font-size: $group-totals-formatter-font-size;
+        }
+      }
     }
     .slick-cell, .slick-headerrow-column {
       border-top: $cell-border-top;

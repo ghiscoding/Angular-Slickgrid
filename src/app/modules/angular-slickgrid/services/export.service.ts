@@ -292,6 +292,11 @@ export class ExportService {
         itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
       }
 
+      // does the user want to sanitize the output data (remove HTML tags)?
+      if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
+        itemData = this.sanitizeHtmlToText(itemData);
+      }
+
       if (format === FileType.csv) {
         // when CSV we also need to escape double quotes twice, so a double quote " becomes 2x double quotes ""
         // and if we have a text of (number)E(number),

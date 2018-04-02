@@ -116,6 +116,30 @@ export function findOrDefault(array: any[], logic: (item: any) => boolean, defau
 }
 
 /**
+  * Take a number (or a string) and display it as a formatted decimal string with defined minimum and maximum decimals
+  * @param input
+  * @param minDecimal
+  * @param maxDecimal
+  */
+export function decimalFormatted(input: number | string, minDecimal?: number, maxDecimal?: number) {
+  if (isNaN(+input)) {
+    return input;
+  }
+
+  const minDec = (minDecimal === undefined) ? 2 : minDecimal;
+  const maxDec = (maxDecimal === undefined) ? 2 : maxDecimal;
+  let amount = String(Math.round(+input * Math.pow(10, maxDec)) / Math.pow(10, maxDec));
+
+  if (amount.indexOf('.') < 0) {
+    amount += '.';
+  }
+  while ((amount.length - amount.indexOf('.')) <= minDec) {
+    amount += '0';
+  }
+  return amount;
+}
+
+/**
  * From a Date FieldType, return it's equivalent moment.js format
  * refer to moment.js for the format standard used: https://momentjs.com/docs/#/parsing/string-format/
  * @param fieldType

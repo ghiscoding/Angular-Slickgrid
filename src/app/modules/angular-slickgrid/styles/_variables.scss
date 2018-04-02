@@ -93,6 +93,11 @@ $gray-dark:              			          #333 !default;
 $text-color:             			          $gray-dark !default;
 $navbar-default-link-hover-color:	      $gray-dark !default;
 
+/* Grouping Totals Formatter */
+$group-totals-formatter-color:          gray !default;
+$group-totals-formatter-bgcolor:        #fff !default;
+$group-totals-formatter-font-size:      14px !default;
+
 /* Column picker */
 $column-picker-background-color:        #f8f8f8 !default;
 $column-picker-border:                  1px solid #b8b8b8 !default;
