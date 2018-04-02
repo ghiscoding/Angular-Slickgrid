@@ -69,7 +69,6 @@
           &.selected {
             background-color: inherit !important;
           }
-
         }
         &.odd {
           background: $row-highlight-background-color;
@@ -106,7 +105,13 @@
         }
         background: inherit;
       }
-
+      &.slick-group-totals {
+        color: $group-totals-formatter-color;
+        background: $group-totals-formatter-bgcolor;
+        .slick-cell {
+          font-size: $group-totals-formatter-font-size;
+        }
+      }
     }
     .slick-cell, .slick-headerrow-column {
       border-top: $cell-border-top;
@@ -152,12 +157,12 @@
         padding: 0;
       }
       .slick-group-toggle {
-        width: 9px;
-        height: 9px;
-        margin-right: $icon-group-margin-right;
         color: $icon-group-color;
-        cursor: pointer;
         font-weight: $icon-group-font-weight;
+        width: $icon-group-width;
+        height: $icon-group-height;
+        margin-right: $icon-group-margin-right;
+        cursor: pointer;
 
         &.expanded:before {
           content: $icon-group-expanded;

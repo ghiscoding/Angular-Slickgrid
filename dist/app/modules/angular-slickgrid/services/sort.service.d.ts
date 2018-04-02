@@ -3,24 +3,27 @@ import { Subject } from 'rxjs/Subject';
 export declare class SortService {
     private _currentLocalSorters;
     private _eventHandler;
+    private _dataView;
     private _grid;
     private _gridOptions;
     private _slickSubscriber;
+    private _isBackendGrid;
     onSortChanged: Subject<CurrentSorter[]>;
     /**
      * Attach a backend sort (single/multi) hook to the grid
      * @param grid SlickGrid Grid object
      * @param gridOptions Grid Options object
      */
-    attachBackendOnSort(grid: any, gridOptions: GridOption): void;
-    attachBackendOnSortSubscribe(event: Event, args: any): Promise<void>;
+    attachBackendOnSort(grid: any, dataView: any): void;
+    onBackendSortChanged(event: Event, args: any): Promise<void>;
     /**
      * Attach a local sort (single/multi) hook to the grid
      * @param grid SlickGrid Grid object
      * @param gridOptions Grid Options object
      * @param dataView
      */
-    attachLocalOnSort(grid: any, gridOptions: GridOption, dataView: any, columnDefinitions: Column[]): void;
+    attachLocalOnSort(grid: any, dataView: any): void;
+    clearSorting(): void;
     getCurrentLocalSorters(): CurrentSorter[];
     /**
      * load any presets if there are any

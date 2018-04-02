@@ -2,6 +2,7 @@ import { Column } from './../models/index';
 /** Provides a list of different Formatters that will change the cell value displayed in the UI */
 export declare const Formatters: {
     arrayToCsv: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    bold: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     checkbox: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     checkmark: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     complexObject: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
@@ -13,6 +14,9 @@ export declare const Formatters: {
     dateTimeUs: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateTimeUsAmPm: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     deleteIcon: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    dollar: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    dollarColored: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    dollarColoredBold: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     editIcon: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     hyperlink: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     hyperlinkUriPrefix: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;

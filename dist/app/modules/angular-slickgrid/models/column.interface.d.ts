@@ -110,10 +110,12 @@ export interface Column {
     resizable?: boolean;
     /** Do we want to re-render the grid on a grid resize */
     rerenderOnResize?: boolean;
-    /** do we show hidden column? */
-    showHidden?: boolean;
+    /** Defaults to false, which leads to Sanitizing all data (striping out any HTML tags) when being evaluated on export. */
+    sanitizeDataExport?: boolean;
     /** Is the column selectable? Goes with grid option "enableCellNavigation: true". */
     selectable?: boolean;
+    /** do we show hidden column? */
+    showHidden?: boolean;
     /** Is the column sortable? Goes with grid option "enableSorting: true". */
     sortable?: boolean;
     /** Custom Sorter function that can be provided to the column */

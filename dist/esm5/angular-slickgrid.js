@@ -260,6 +260,21 @@ function findOrDefault(array, logic, defaultVal) {
     if (defaultVal === void 0) { defaultVal = {}; }
     return array.find(logic) || defaultVal;
 }
+function decimalFormatted(input, minDecimal, maxDecimal) {
+    if (isNaN(+input)) {
+        return input;
+    }
+    var minDec = (minDecimal === undefined) ? 2 : minDecimal;
+    var maxDec = (maxDecimal === undefined) ? 2 : maxDecimal;
+    var amount = String(Math.round(+input * Math.pow(10, maxDec)) / Math.pow(10, maxDec));
+    if (amount.indexOf('.') < 0) {
+        amount += '.';
+    }
+    while ((amount.length - amount.indexOf('.')) <= minDec) {
+        amount += '0';
+    }
+    return amount;
+}
 function mapMomentDateFormatWithFieldType(fieldType) {
     var map;
     switch (fieldType) {
@@ -608,210 +623,6 @@ CollectionService.decorators = [
     { type: Injectable },
 ];
 CollectionService.ctorParameters = function () { return [
-    { type: TranslateService, },
-]; };
-var ExportService = /** @class */ (function () {
-    function ExportService(translate) {
-        this.translate = translate;
-        this._lineCarriageReturn = '\n';
-        this._hasGroupedItems = false;
-        this.onGridBeforeExportToFile = new Subject();
-        this.onGridAfterExportToFile = new Subject();
-    }
-    ExportService.prototype.init = function (grid, gridOptions, dataView) {
-        this._grid = grid;
-        this._gridOptions = gridOptions;
-        this._dataView = dataView;
-    };
-    ExportService.prototype.exportToFile = function (options) {
-        var _this = this;
-        this.onGridBeforeExportToFile.next(true);
-        this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
-        var dataOutput = this.getDataOutput();
-        setTimeout(function () {
-            var downloadOptions = {
-                filename: _this._exportOptions.filename + "." + _this._exportOptions.format,
-                csvContent: dataOutput,
-                format: _this._exportOptions.format,
-                useUtf8WithBom: _this._exportOptions.useUtf8WithBom
-            };
-            _this.startDownloadFile(downloadOptions);
-            _this.onGridAfterExportToFile.next({ options: downloadOptions });
-        }, 0);
-    };
-    ExportService.prototype.getDataOutput = function () {
-        var _this = this;
-        var columns = this._grid.getColumns() || [];
-        var delimiter = this._exportOptions.delimiter || '';
-        var format = this._exportOptions.format || '';
-        var groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle || this.translate.instant('GROUP_BY');
-        this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
-        var outputDataString = '';
-        var grouping = this._dataView.getGrouping();
-        if (grouping && Array.isArray(grouping) && grouping.length > 0) {
-            this._hasGroupedItems = true;
-            outputDataString += "" + groupByColumnHeader + delimiter;
-        }
-        else {
-            this._hasGroupedItems = false;
-        }
-        this._columnHeaders = this.getColumnHeaders(columns) || [];
-        if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
-            var outputHeaderTitles = this._columnHeaders.map(function (header) {
-                return _this._exportQuoteWrapper + header.title + _this._exportQuoteWrapper;
-            });
-            outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
-        }
-        outputDataString += this.getAllGridRowData(columns, this._lineCarriageReturn);
-        return outputDataString;
-    };
-    ExportService.prototype.getAllGridRowData = function (columns, lineCarriageReturn) {
-        var outputDataString = '';
-        var lineCount = this._dataView.getLength();
-        for (var rowNumber = 0; rowNumber < lineCount; rowNumber++) {
-            var itemObj = this._dataView.getItem(rowNumber);
-            if (itemObj != null) {
-                if (itemObj.id != null) {
-                    outputDataString += this.readRegularRowData(columns, rowNumber, itemObj);
-                }
-                else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
-                    outputDataString += this.readGroupedTitleRow(itemObj) + this._exportOptions.delimiter;
-                }
-                else if (itemObj.__groupTotals) {
-                    outputDataString += this.readGroupedTotalRow(columns, itemObj) + this._exportOptions.delimiter;
-                }
-                outputDataString += lineCarriageReturn;
-            }
-        }
-        return outputDataString;
-    };
-    ExportService.prototype.getColumnHeaders = function (columns) {
-        var _this = this;
-        if (!columns || !Array.isArray(columns) || columns.length === 0) {
-            return null;
-        }
-        var columnHeaders = [];
-        columns.forEach(function (columnDef) {
-            var fieldName = (columnDef.headerKey) ? _this.translate.instant(columnDef.headerKey) : columnDef.name;
-            var skippedField = columnDef.excludeFromExport || false;
-            if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
-                columnHeaders.push({
-                    key: columnDef.field || columnDef.id,
-                    title: fieldName
-                });
-            }
-        });
-        return columnHeaders;
-    };
-    ExportService.prototype.readRegularRowData = function (columns, row, itemObj) {
-        var idx = 0;
-        var rowOutputString = '';
-        var delimiter = this._exportOptions.delimiter;
-        var format = this._exportOptions.format;
-        var exportQuoteWrapper = this._exportQuoteWrapper || '';
-        for (var col = 0, ln = columns.length; col < ln; col++) {
-            var columnDef = columns[col];
-            var fieldId = columnDef.field || columnDef.id || '';
-            if (columnDef.excludeFromExport) {
-                continue;
-            }
-            if (this._hasGroupedItems && idx === 0) {
-                rowOutputString += "\"\"" + delimiter;
-            }
-            var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this._exportOptions.exportWithFormatter || this._gridOptions.exportWithFormatter);
-            var exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
-            var itemData = '';
-            if (exportCustomFormatter) {
-                itemData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
-            }
-            else if (isEvaluatingFormatter && !!columnDef.formatter) {
-                itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
-            }
-            else {
-                itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
-            }
-            if (format === FileType.csv) {
-                itemData = itemData.toString().replace(/"/gi, "\"\"");
-            }
-            var keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
-            rowOutputString += keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
-            idx++;
-        }
-        return rowOutputString;
-    };
-    ExportService.prototype.readGroupedTitleRow = function (itemObj) {
-        var groupName = this.sanitizeHtmlToText(itemObj.title);
-        var exportQuoteWrapper = this._exportQuoteWrapper || '';
-        var delimiter = this._exportOptions.delimiter;
-        var format = this._exportOptions.format;
-        groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
-        if (format === FileType.csv) {
-            groupName = groupName.toString().replace(/"/gi, "\"\"");
-        }
-        return exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper + delimiter;
-    };
-    ExportService.prototype.readGroupedTotalRow = function (columns, itemObj) {
-        var exportExponentialWrapper = '';
-        var delimiter = this._exportOptions.delimiter;
-        var format = this._exportOptions.format;
-        var groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
-        var exportQuoteWrapper = this._exportQuoteWrapper || '';
-        var output = "" + exportQuoteWrapper + groupingAggregatorRowText + exportQuoteWrapper + delimiter;
-        columns.forEach(function (columnDef) {
-            var itemData = '';
-            if (columnDef.groupTotalsFormatter) {
-                itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
-            }
-            if (format === FileType.csv) {
-                itemData = itemData.toString().replace(/"/gi, "\"\"");
-                exportExponentialWrapper = (itemData.match(/^\s*\d+E\d+\s*$/i)) ? '=' : '';
-            }
-            output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
-        });
-        return output;
-    };
-    ExportService.prototype.sanitizeHtmlToText = function (htmlString) {
-        var temp = document.createElement('div');
-        temp.innerHTML = htmlString;
-        return temp.textContent || temp.innerText;
-    };
-    ExportService.prototype.startDownloadFile = function (options) {
-        if (navigator.appName === 'Microsoft Internet Explorer') {
-            throw new Error('Microsoft Internet Explorer 6 to 10 do not support javascript export to CSV. Please upgrade your browser.');
-        }
-        var mimeType = (options.format === FileType.csv) ? 'text/csv' : 'text/plain';
-        var csvContent = htmlEntityDecode(options.csvContent);
-        var outputData;
-        if (options.format === FileType.csv) {
-            outputData = new TextEncoder('utf-8').encode(csvContent);
-        }
-        else {
-            outputData = csvContent;
-        }
-        var blob = new Blob([options.useUtf8WithBom ? '\uFEFF' : '', outputData], {
-            type: mimeType + ";charset=utf-8;"
-        });
-        if (typeof navigator.msSaveOrOpenBlob === 'function') {
-            navigator.msSaveOrOpenBlob(blob, options.filename);
-        }
-        else {
-            var link = document.createElement('a');
-            var csvUrl = URL.createObjectURL(blob);
-            link.textContent = 'download';
-            link.href = csvUrl;
-            link.setAttribute('download', options.filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    };
-    return ExportService;
-}());
-ExportService.decorators = [
-    { type: Injectable },
-];
-ExportService.ctorParameters = function () { return [
     { type: TranslateService, },
 ]; };
 function parseBoolean(str) {
@@ -2031,6 +1842,217 @@ FilterService.ctorParameters = function () { return [
     { type: CollectionService, },
     { type: TranslateService, },
 ]; };
+var ExportService = /** @class */ (function () {
+    function ExportService(translate) {
+        this.translate = translate;
+        this._lineCarriageReturn = '\n';
+        this._hasGroupedItems = false;
+        this.onGridBeforeExportToFile = new Subject();
+        this.onGridAfterExportToFile = new Subject();
+    }
+    ExportService.prototype.init = function (grid, gridOptions, dataView) {
+        this._grid = grid;
+        this._gridOptions = gridOptions;
+        this._dataView = dataView;
+    };
+    ExportService.prototype.exportToFile = function (options) {
+        var _this = this;
+        this.onGridBeforeExportToFile.next(true);
+        this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
+        var dataOutput = this.getDataOutput();
+        setTimeout(function () {
+            var downloadOptions = {
+                filename: _this._exportOptions.filename + "." + _this._exportOptions.format,
+                csvContent: dataOutput,
+                format: _this._exportOptions.format,
+                useUtf8WithBom: _this._exportOptions.useUtf8WithBom
+            };
+            _this.startDownloadFile(downloadOptions);
+            _this.onGridAfterExportToFile.next({ options: downloadOptions });
+        }, 0);
+    };
+    ExportService.prototype.getDataOutput = function () {
+        var _this = this;
+        var columns = this._grid.getColumns() || [];
+        var delimiter = this._exportOptions.delimiter || '';
+        var format = this._exportOptions.format || '';
+        var groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle || this.translate.instant('GROUP_BY');
+        this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
+        var outputDataString = '';
+        var grouping = this._dataView.getGrouping();
+        if (grouping && Array.isArray(grouping) && grouping.length > 0) {
+            this._hasGroupedItems = true;
+            outputDataString += "" + groupByColumnHeader + delimiter;
+        }
+        else {
+            this._hasGroupedItems = false;
+        }
+        this._columnHeaders = this.getColumnHeaders(columns) || [];
+        if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
+            var outputHeaderTitles = this._columnHeaders.map(function (header) {
+                return _this._exportQuoteWrapper + header.title + _this._exportQuoteWrapper;
+            });
+            outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
+        }
+        outputDataString += this.getAllGridRowData(columns, this._lineCarriageReturn);
+        return outputDataString;
+    };
+    ExportService.prototype.getAllGridRowData = function (columns, lineCarriageReturn) {
+        var outputDataString = '';
+        var lineCount = this._dataView.getLength();
+        for (var rowNumber = 0; rowNumber < lineCount; rowNumber++) {
+            var itemObj = this._dataView.getItem(rowNumber);
+            if (itemObj != null) {
+                if (itemObj.id != null) {
+                    outputDataString += this.readRegularRowData(columns, rowNumber, itemObj);
+                }
+                else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
+                    outputDataString += this.readGroupedTitleRow(itemObj) + this._exportOptions.delimiter;
+                }
+                else if (itemObj.__groupTotals) {
+                    outputDataString += this.readGroupedTotalRow(columns, itemObj) + this._exportOptions.delimiter;
+                }
+                outputDataString += lineCarriageReturn;
+            }
+        }
+        return outputDataString;
+    };
+    ExportService.prototype.getColumnHeaders = function (columns) {
+        var _this = this;
+        if (!columns || !Array.isArray(columns) || columns.length === 0) {
+            return null;
+        }
+        var columnHeaders = [];
+        columns.forEach(function (columnDef) {
+            var fieldName = (columnDef.headerKey) ? _this.translate.instant(columnDef.headerKey) : columnDef.name;
+            var skippedField = columnDef.excludeFromExport || false;
+            if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
+                columnHeaders.push({
+                    key: columnDef.field || columnDef.id,
+                    title: fieldName
+                });
+            }
+        });
+        return columnHeaders;
+    };
+    ExportService.prototype.readRegularRowData = function (columns, row, itemObj) {
+        var idx = 0;
+        var rowOutputString = '';
+        var delimiter = this._exportOptions.delimiter;
+        var format = this._exportOptions.format;
+        var exportQuoteWrapper = this._exportQuoteWrapper || '';
+        for (var col = 0, ln = columns.length; col < ln; col++) {
+            var columnDef = columns[col];
+            var fieldId = columnDef.field || columnDef.id || '';
+            if (columnDef.excludeFromExport) {
+                continue;
+            }
+            if (this._hasGroupedItems && idx === 0) {
+                rowOutputString += "\"\"" + delimiter;
+            }
+            var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this._exportOptions.exportWithFormatter || this._gridOptions.exportWithFormatter);
+            var exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
+            var itemData = '';
+            if (exportCustomFormatter) {
+                itemData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+            }
+            else if (isEvaluatingFormatter && !!columnDef.formatter) {
+                itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+            }
+            else {
+                itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
+            }
+            if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
+                itemData = this.sanitizeHtmlToText(itemData);
+            }
+            if (format === FileType.csv) {
+                itemData = itemData.toString().replace(/"/gi, "\"\"");
+            }
+            var keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
+            rowOutputString += keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
+            idx++;
+        }
+        return rowOutputString;
+    };
+    ExportService.prototype.readGroupedTitleRow = function (itemObj) {
+        var groupName = this.sanitizeHtmlToText(itemObj.title);
+        var exportQuoteWrapper = this._exportQuoteWrapper || '';
+        var delimiter = this._exportOptions.delimiter;
+        var format = this._exportOptions.format;
+        groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
+        if (format === FileType.csv) {
+            groupName = groupName.toString().replace(/"/gi, "\"\"");
+        }
+        return exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper + delimiter;
+    };
+    ExportService.prototype.readGroupedTotalRow = function (columns, itemObj) {
+        var _this = this;
+        var exportExponentialWrapper = '';
+        var delimiter = this._exportOptions.delimiter;
+        var format = this._exportOptions.format;
+        var groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
+        var exportQuoteWrapper = this._exportQuoteWrapper || '';
+        var output = "" + exportQuoteWrapper + groupingAggregatorRowText + exportQuoteWrapper + delimiter;
+        columns.forEach(function (columnDef) {
+            var itemData = '';
+            if (columnDef.groupTotalsFormatter) {
+                itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
+            }
+            if (columnDef.sanitizeDataExport || _this._exportOptions.sanitizeDataExport) {
+                itemData = _this.sanitizeHtmlToText(itemData);
+            }
+            if (format === FileType.csv) {
+                itemData = itemData.toString().replace(/"/gi, "\"\"");
+                exportExponentialWrapper = (itemData.match(/^\s*\d+E\d+\s*$/i)) ? '=' : '';
+            }
+            output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
+        });
+        return output;
+    };
+    ExportService.prototype.sanitizeHtmlToText = function (htmlString) {
+        var temp = document.createElement('div');
+        temp.innerHTML = htmlString;
+        return temp.textContent || temp.innerText;
+    };
+    ExportService.prototype.startDownloadFile = function (options) {
+        if (navigator.appName === 'Microsoft Internet Explorer') {
+            throw new Error('Microsoft Internet Explorer 6 to 10 do not support javascript export to CSV. Please upgrade your browser.');
+        }
+        var mimeType = (options.format === FileType.csv) ? 'text/csv' : 'text/plain';
+        var csvContent = htmlEntityDecode(options.csvContent);
+        var outputData;
+        if (options.format === FileType.csv) {
+            outputData = new TextEncoder('utf-8').encode(csvContent);
+        }
+        else {
+            outputData = csvContent;
+        }
+        var blob = new Blob([options.useUtf8WithBom ? '\uFEFF' : '', outputData], {
+            type: mimeType + ";charset=utf-8;"
+        });
+        if (typeof navigator.msSaveOrOpenBlob === 'function') {
+            navigator.msSaveOrOpenBlob(blob, options.filename);
+        }
+        else {
+            var link = document.createElement('a');
+            var csvUrl = URL.createObjectURL(blob);
+            link.textContent = 'download';
+            link.href = csvUrl;
+            link.setAttribute('download', options.filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+    return ExportService;
+}());
+ExportService.decorators = [
+    { type: Injectable },
+];
+ExportService.ctorParameters = function () { return [
+    { type: TranslateService, },
+]; };
 var SharedService = /** @class */ (function () {
     function SharedService() {
     }
@@ -2042,11 +2064,185 @@ var SharedService = /** @class */ (function () {
     };
     return SharedService;
 }());
+var SortService = /** @class */ (function () {
+    function SortService() {
+        this._currentLocalSorters = [];
+        this._eventHandler = new Slick.EventHandler();
+        this._isBackendGrid = false;
+        this.onSortChanged = new Subject();
+    }
+    SortService.prototype.attachBackendOnSort = function (grid, dataView) {
+        this._isBackendGrid = true;
+        this._grid = grid;
+        this._dataView = dataView;
+        if (grid) {
+            this._gridOptions = grid.getOptions();
+        }
+        this._slickSubscriber = grid.onSort;
+        this._slickSubscriber.subscribe(this.onBackendSortChanged.bind(this));
+    };
+    SortService.prototype.onBackendSortChanged = function (event, args) {
+        return __awaiter(this, void 0, void 0, function () {
+            var gridOptions, backendApi, query, observableOrPromise, processResult;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!args || !args.grid) {
+                            throw new Error('Something went wrong when trying to attach the "onBackendSortChanged(event, args)" function, it seems that "args" is not populated correctly');
+                        }
+                        gridOptions = args.grid.getOptions() || {};
+                        backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+                        if (!backendApi || !backendApi.process || !backendApi.service) {
+                            throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
+                        }
+                        if (backendApi.preProcess) {
+                            backendApi.preProcess();
+                        }
+                        query = backendApi.service.onSortChanged(event, args);
+                        this.emitSortChanged('remote');
+                        observableOrPromise = backendApi.process(query);
+                        return [4 /*yield*/, castToPromise(observableOrPromise)];
+                    case 1:
+                        processResult = _a.sent();
+                        if (processResult && backendApi.internalPostProcess) {
+                            backendApi.internalPostProcess(processResult);
+                        }
+                        if (backendApi.postProcess) {
+                            backendApi.postProcess(processResult);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    SortService.prototype.attachLocalOnSort = function (grid, dataView) {
+        var _this = this;
+        this._isBackendGrid = false;
+        this._grid = grid;
+        this._dataView = dataView;
+        var columnDefinitions = [];
+        if (grid) {
+            this._gridOptions = grid.getOptions();
+            columnDefinitions = grid.getColumns();
+        }
+        this._slickSubscriber = grid.onSort;
+        this._slickSubscriber.subscribe(function (e, args) {
+            var sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
+            _this._currentLocalSorters = [];
+            if (Array.isArray(sortColumns)) {
+                sortColumns.forEach(function (sortColumn) {
+                    if (sortColumn.sortCol) {
+                        _this._currentLocalSorters.push({
+                            columnId: sortColumn.sortCol.id,
+                            direction: sortColumn.sortAsc ? SortDirection.ASC : SortDirection.DESC
+                        });
+                    }
+                });
+            }
+            _this.onLocalSortChanged(grid, _this._gridOptions, dataView, sortColumns);
+            _this.emitSortChanged('local');
+        });
+        if (dataView && dataView.onRowCountChanged) {
+            this._eventHandler.subscribe(dataView.onRowCountChanged, function (e, args) {
+                if (args.current > 0) {
+                    _this.loadLocalPresets(grid, _this._gridOptions, dataView, columnDefinitions);
+                }
+            });
+        }
+    };
+    SortService.prototype.clearSorting = function () {
+        if (this._grid && this._gridOptions && this._dataView) {
+            this._grid.setSortColumns([]);
+            if (this._isBackendGrid) {
+                this.onBackendSortChanged(undefined, { grid: this._grid, sortCols: [] });
+            }
+            else {
+                var columnDefinitions = (this._grid.getColumns());
+                if (columnDefinitions && Array.isArray(columnDefinitions)) {
+                    this.onLocalSortChanged(this._grid, this._gridOptions, this._dataView, new Array({ sortAsc: true, sortCol: columnDefinitions[0] }));
+                }
+            }
+        }
+    };
+    SortService.prototype.getCurrentLocalSorters = function () {
+        return this._currentLocalSorters;
+    };
+    SortService.prototype.loadLocalPresets = function (grid, gridOptions, dataView, columnDefinitions) {
+        var _this = this;
+        var sortCols = [];
+        this._currentLocalSorters = [];
+        if (gridOptions && gridOptions.presets && gridOptions.presets.sorters) {
+            var sorters_1 = gridOptions.presets.sorters;
+            columnDefinitions.forEach(function (columnDef) {
+                var columnPreset = sorters_1.find(function (currentSorter) {
+                    return currentSorter.columnId === columnDef.id;
+                });
+                if (columnPreset) {
+                    sortCols.push({
+                        columnId: columnDef.id,
+                        sortAsc: ((columnPreset.direction.toUpperCase() === SortDirection.ASC) ? true : false),
+                        sortCol: columnDef
+                    });
+                    _this._currentLocalSorters.push({
+                        columnId: columnDef.id + '',
+                        direction: (columnPreset.direction.toUpperCase())
+                    });
+                }
+            });
+            if (sortCols.length > 0) {
+                this.onLocalSortChanged(grid, gridOptions, dataView, sortCols);
+                grid.setSortColumns(sortCols);
+            }
+        }
+    };
+    SortService.prototype.onLocalSortChanged = function (grid, gridOptions, dataView, sortColumns) {
+        dataView.sort(function (dataRow1, dataRow2) {
+            for (var i = 0, l = sortColumns.length; i < l; i++) {
+                var columnSortObj = sortColumns[i];
+                if (columnSortObj && columnSortObj.sortCol) {
+                    var sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
+                    var sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
+                    var fieldType = columnSortObj.sortCol.type || FieldType.string;
+                    var value1 = dataRow1[sortField];
+                    var value2 = dataRow2[sortField];
+                    var sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+                    if (sortResult !== SortDirectionNumber.neutral) {
+                        return sortResult;
+                    }
+                }
+            }
+            return 0;
+        });
+        grid.invalidate();
+        grid.render();
+    };
+    SortService.prototype.dispose = function () {
+        if (this._slickSubscriber && typeof this._slickSubscriber.unsubscribe === 'function') {
+            this._slickSubscriber.unsubscribe();
+        }
+        this._eventHandler.unsubscribeAll();
+    };
+    SortService.prototype.emitSortChanged = function (sender) {
+        if (sender === 'remote' && this._gridOptions && this._gridOptions.backendServiceApi) {
+            var currentSorters = [];
+            var backendService = this._gridOptions.backendServiceApi.service;
+            if (backendService && backendService.getCurrentSorters) {
+                currentSorters = (backendService.getCurrentSorters());
+            }
+            this.onSortChanged.next(currentSorters);
+        }
+        else if (sender === 'local') {
+            this.onSortChanged.next(this.getCurrentLocalSorters());
+        }
+    };
+    return SortService;
+}());
 var ControlAndPluginService = /** @class */ (function () {
-    function ControlAndPluginService(exportService, filterService, sharedService, translate) {
+    function ControlAndPluginService(exportService, filterService, sharedService, sortService, translate) {
         this.exportService = exportService;
         this.filterService = filterService;
         this.sharedService = sharedService;
+        this.sortService = sortService;
         this.translate = translate;
     }
     ControlAndPluginService.prototype.attachDifferentControlOrPlugins = function () {
@@ -2221,7 +2417,7 @@ var ControlAndPluginService = /** @class */ (function () {
         if (options.enableFiltering) {
             if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
                 options.gridMenu.customItems.push({
-                    iconCssClass: 'fa fa-filter text-danger',
+                    iconCssClass: options.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
                     title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
                     disabled: false,
                     command: 'clear-filter',
@@ -2230,16 +2426,16 @@ var ControlAndPluginService = /** @class */ (function () {
             }
             if (options && options.gridMenu && options.gridMenu.showToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'toggle-filter'; }).length === 0) {
                 options.gridMenu.customItems.push({
-                    iconCssClass: 'fa fa-random',
+                    iconCssClass: options.gridMenu.iconToggleFilterCommand || 'fa fa-random',
                     title: options.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
                     disabled: false,
                     command: 'toggle-filter',
-                    positionOrder: 51
+                    positionOrder: 52
                 });
             }
             if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'refresh-dataset'; }).length === 0) {
                 options.gridMenu.customItems.push({
-                    iconCssClass: 'fa fa-refresh',
+                    iconCssClass: options.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
                     title: options.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
                     disabled: false,
                     command: 'refresh-dataset',
@@ -2247,22 +2443,33 @@ var ControlAndPluginService = /** @class */ (function () {
                 });
             }
         }
+        if (options.enableSorting) {
+            if (options && options.gridMenu && options.gridMenu.showClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-sorting'; }).length === 0) {
+                options.gridMenu.customItems.push({
+                    iconCssClass: options.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
+                    title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
+                    disabled: false,
+                    command: 'clear-sorting',
+                    positionOrder: 51
+                });
+            }
+        }
         if (options && options.enableExport && options.gridMenu && options.gridMenu.showExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'export-csv'; }).length === 0) {
             options.gridMenu.customItems.push({
-                iconCssClass: 'fa fa-download',
+                iconCssClass: options.gridMenu.iconExportCsvCommand || 'fa fa-download',
                 title: options.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
                 disabled: false,
                 command: 'export-csv',
-                positionOrder: 52
+                positionOrder: 53
             });
         }
         if (options && options.enableExport && options.gridMenu && options.gridMenu.showExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'export-text-delimited'; }).length === 0) {
             options.gridMenu.customItems.push({
-                iconCssClass: 'fa fa-download',
+                iconCssClass: options.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
                 title: options.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
                 disabled: false,
                 command: 'export-text-delimited',
-                positionOrder: 53
+                positionOrder: 54
             });
         }
         if (options.gridMenu && options.gridMenu.customItems.length > 0) {
@@ -2271,6 +2478,10 @@ var ControlAndPluginService = /** @class */ (function () {
                     switch (args.command) {
                         case 'clear-filter':
                             _this.filterService.clearFilters();
+                            _this._dataView.refresh();
+                            break;
+                        case 'clear-sorting':
+                            _this.sortService.clearSorting();
                             _this._dataView.refresh();
                             break;
                         case 'export-csv':
@@ -2294,10 +2505,6 @@ var ControlAndPluginService = /** @class */ (function () {
                             break;
                         case 'toggle-toppanel':
                             grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
-                            break;
-                        case 'clear-filter':
-                            _this.filterService.clearFilters();
-                            _this._dataView.refresh();
                             break;
                         case 'refresh-dataset':
                             _this.refreshBackendDataset(options);
@@ -2421,6 +2628,7 @@ ControlAndPluginService.ctorParameters = function () { return [
     { type: ExportService, },
     { type: FilterService, },
     { type: SharedService, },
+    { type: SortService, },
     { type: TranslateService, },
 ]; };
 var GraphqlQueryBuilder = /** @class */ (function () {
@@ -2575,7 +2783,6 @@ var GraphqlService = /** @class */ (function () {
         columnDefinitions = columnDefinitions.filter(function (column) { return !column.excludeFromQuery; });
         var queryQb = new GraphqlQueryBuilder('query');
         var datasetQb = new GraphqlQueryBuilder(this.options.datasetName);
-        var pageInfoQb = new GraphqlQueryBuilder('pageInfo');
         var dataQb = (this.options.isWithCursor) ? new GraphqlQueryBuilder('edges') : new GraphqlQueryBuilder('nodes');
         var columnIds = [];
         if (columnDefinitions && Array.isArray(columnDefinitions)) {
@@ -2604,14 +2811,15 @@ var GraphqlService = /** @class */ (function () {
         }
         var filters = this.buildFilterQuery(columnIds);
         if (this.options.isWithCursor) {
+            var pageInfoQb = new GraphqlQueryBuilder('pageInfo');
             pageInfoQb.find('hasNextPage', 'endCursor');
             dataQb.find(['cursor', { node: filters }]);
+            datasetQb.find(['totalCount', pageInfoQb, dataQb]);
         }
         else {
-            pageInfoQb.find('hasNextPage');
             dataQb.find(filters);
+            datasetQb.find(['totalCount', dataQb]);
         }
-        datasetQb.find(['totalCount', pageInfoQb, dataQb]);
         var datasetFilters = Object.assign({}, this.options.paginationOptions, { first: ((this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : ((this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null)) || this.defaultPaginationOptions.first });
         if (!this.options.isWithCursor) {
             datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +this.options.paginationOptions['offset'] : 0);
@@ -2814,10 +3022,12 @@ var GraphqlService = /** @class */ (function () {
             currentSorters.forEach(function (sorter) { return sorter.direction = (sorter.direction.toUpperCase()); });
             var tmpSorterArray = currentSorters.map(function (sorter) {
                 var columnDef = _this._columnDefinitions.find(function (column) { return column.id === sorter.columnId; });
-                graphqlSorters.push({
-                    field: (columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '',
-                    direction: sorter.direction
-                });
+                if (columnDef) {
+                    graphqlSorters.push({
+                        field: (columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '',
+                        direction: sorter.direction
+                    });
+                }
                 return {
                     columnId: sorter.columnId,
                     sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
@@ -3725,152 +3935,6 @@ var ResizerService = /** @class */ (function () {
     };
     return ResizerService;
 }());
-var SortService = /** @class */ (function () {
-    function SortService() {
-        this._currentLocalSorters = [];
-        this._eventHandler = new Slick.EventHandler();
-        this.onSortChanged = new Subject();
-    }
-    SortService.prototype.attachBackendOnSort = function (grid, gridOptions) {
-        this._grid = grid;
-        this._gridOptions = gridOptions;
-        this._slickSubscriber = grid.onSort;
-        this._slickSubscriber.subscribe(this.attachBackendOnSortSubscribe.bind(this));
-    };
-    SortService.prototype.attachBackendOnSortSubscribe = function (event, args) {
-        return __awaiter(this, void 0, void 0, function () {
-            var gridOptions, backendApi, query, observableOrPromise, processResult;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!args || !args.grid) {
-                            throw new Error('Something went wrong when trying to attach the "attachBackendOnSortSubscribe(event, args)" function, it seems that "args" is not populated correctly');
-                        }
-                        gridOptions = args.grid.getOptions() || {};
-                        backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
-                        if (!backendApi || !backendApi.process || !backendApi.service) {
-                            throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
-                        }
-                        if (backendApi.preProcess) {
-                            backendApi.preProcess();
-                        }
-                        query = backendApi.service.onSortChanged(event, args);
-                        this.emitSortChanged('remote');
-                        observableOrPromise = backendApi.process(query);
-                        return [4 /*yield*/, castToPromise(observableOrPromise)];
-                    case 1:
-                        processResult = _a.sent();
-                        if (processResult && backendApi.internalPostProcess) {
-                            backendApi.internalPostProcess(processResult);
-                        }
-                        if (backendApi.postProcess) {
-                            backendApi.postProcess(processResult);
-                        }
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    SortService.prototype.attachLocalOnSort = function (grid, gridOptions, dataView, columnDefinitions) {
-        var _this = this;
-        this._grid = grid;
-        this._gridOptions = gridOptions;
-        this._slickSubscriber = grid.onSort;
-        this._slickSubscriber.subscribe(function (e, args) {
-            var sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
-            _this._currentLocalSorters = [];
-            if (Array.isArray(sortColumns)) {
-                sortColumns.forEach(function (sortColumn) {
-                    if (sortColumn.sortCol) {
-                        _this._currentLocalSorters.push({
-                            columnId: sortColumn.sortCol.id,
-                            direction: sortColumn.sortAsc ? SortDirection.ASC : SortDirection.DESC
-                        });
-                    }
-                });
-            }
-            _this.onLocalSortChanged(grid, gridOptions, dataView, sortColumns);
-            _this.emitSortChanged('local');
-        });
-        this._eventHandler.subscribe(dataView.onRowCountChanged, function (e, args) {
-            if (args.current > 0) {
-                _this.loadLocalPresets(grid, gridOptions, dataView, columnDefinitions);
-            }
-        });
-    };
-    SortService.prototype.getCurrentLocalSorters = function () {
-        return this._currentLocalSorters;
-    };
-    SortService.prototype.loadLocalPresets = function (grid, gridOptions, dataView, columnDefinitions) {
-        var _this = this;
-        var sortCols = [];
-        this._currentLocalSorters = [];
-        if (gridOptions && gridOptions.presets && gridOptions.presets.sorters) {
-            var sorters_1 = gridOptions.presets.sorters;
-            columnDefinitions.forEach(function (columnDef) {
-                var columnPreset = sorters_1.find(function (currentSorter) {
-                    return currentSorter.columnId === columnDef.id;
-                });
-                if (columnPreset) {
-                    sortCols.push({
-                        columnId: columnDef.id,
-                        sortAsc: ((columnPreset.direction.toUpperCase() === SortDirection.ASC) ? true : false),
-                        sortCol: columnDef
-                    });
-                    _this._currentLocalSorters.push({
-                        columnId: columnDef.id + '',
-                        direction: (columnPreset.direction.toUpperCase())
-                    });
-                }
-            });
-            if (sortCols.length > 0) {
-                this.onLocalSortChanged(grid, gridOptions, dataView, sortCols);
-                grid.setSortColumns(sortCols);
-            }
-        }
-    };
-    SortService.prototype.onLocalSortChanged = function (grid, gridOptions, dataView, sortColumns) {
-        dataView.sort(function (dataRow1, dataRow2) {
-            for (var i = 0, l = sortColumns.length; i < l; i++) {
-                var columnSortObj = sortColumns[i];
-                if (columnSortObj && columnSortObj.sortCol) {
-                    var sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
-                    var sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
-                    var fieldType = columnSortObj.sortCol.type || FieldType.string;
-                    var value1 = dataRow1[sortField];
-                    var value2 = dataRow2[sortField];
-                    var sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
-                    if (sortResult !== SortDirectionNumber.neutral) {
-                        return sortResult;
-                    }
-                }
-            }
-            return 0;
-        });
-        grid.invalidate();
-        grid.render();
-    };
-    SortService.prototype.dispose = function () {
-        if (this._slickSubscriber && typeof this._slickSubscriber.unsubscribe === 'function') {
-            this._slickSubscriber.unsubscribe();
-        }
-        this._eventHandler.unsubscribeAll();
-    };
-    SortService.prototype.emitSortChanged = function (sender) {
-        if (sender === 'remote' && this._gridOptions && this._gridOptions.backendServiceApi) {
-            var currentSorters = [];
-            var backendService = this._gridOptions.backendServiceApi.service;
-            if (backendService && backendService.getCurrentSorters) {
-                currentSorters = (backendService.getCurrentSorters());
-            }
-            this.onSortChanged.next(currentSorters);
-        }
-        else if (sender === 'local') {
-            this.onSortChanged.next(this.getCurrentLocalSorters());
-        }
-    };
-    return SortService;
-}());
 var AvgAggregator = /** @class */ (function () {
     function AvgAggregator(field) {
         this._field = field;
@@ -4670,6 +4734,17 @@ var arrayToCsvFormatter = function (row, cell, value, columnDef, dataContext) {
     }
     return '';
 };
+var boldFormatter = function (row, cell, value, columnDef, dataContext) {
+    if (!isNaN(+value)) {
+        return '';
+    }
+    else if (value >= 0) {
+        return "<span style=\"font-weight: bold\">" + decimalFormatted(value, 2, 2) + "$</span>";
+    }
+    else {
+        return "<span style=\"font-weight: bold\">" + decimalFormatted(value, 2, 2) + "$</span>";
+    }
+};
 var checkboxFormatter = function (row, cell, value, columnDef, dataContext) { return value ? '&#x2611;' : ''; };
 var checkmarkFormatter = function (row, cell, value, columnDef, dataContext) { return value ? "<i class=\"fa fa-check checkmark-icon\" aria-hidden=\"true\"></i>" : ''; };
 var collectionFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -4711,6 +4786,29 @@ var moment$15 = moment_;
 var FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
 var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$15(value).format(FORMAT$11) : ''; };
 var deleteIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-trash pointer delete-icon\" aria-hidden=\"true\"></i>"; };
+var dollarColoredBoldFormatter = function (row, cell, value, columnDef, dataContext) {
+    if (isNaN(+value)) {
+        return '';
+    }
+    else if (value >= 0) {
+        return "<span style=\"color:green; font-weight: bold;\">$" + decimalFormatted(value, 2, 2) + "</span>";
+    }
+    else {
+        return "<span style=\"color:red; font-weight: bold;\">$" + decimalFormatted(value, 2, 2) + "</span>";
+    }
+};
+var dollarColoredFormatter = function (row, cell, value, columnDef, dataContext) {
+    if (isNaN(+value)) {
+        return '';
+    }
+    else if (value >= 0) {
+        return "<span style=\"color:green;\">$" + decimalFormatted(value, 2, 2) + "</span>";
+    }
+    else {
+        return "<span style=\"color:red;\">$" + decimalFormatted(value, 2, 2) + "</span>";
+    }
+};
+var dollarFormatter = function (row, cell, value, columnDef, dataContext) { return isNaN(+value) ? '' : "$" + decimalFormatted(value, 2, 4); };
 var editIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-pencil pointer edit-icon\" aria-hidden=\"true\"></i>"; };
 var hyperlinkFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value && typeof value === 'string') {
@@ -4840,6 +4938,7 @@ var uppercaseFormatter = function (row, cell, value, columnDef, dataContext) {
 var yesNoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? 'Yes' : 'No'; };
 var Formatters = {
     arrayToCsv: arrayToCsvFormatter,
+    bold: boldFormatter,
     checkbox: checkboxFormatter,
     checkmark: checkmarkFormatter,
     complexObject: complexObjectFormatter,
@@ -4851,6 +4950,9 @@ var Formatters = {
     dateTimeUs: dateTimeUsFormatter,
     dateTimeUsAmPm: dateTimeUsAmPmFormatter,
     deleteIcon: deleteIconFormatter,
+    dollar: dollarFormatter,
+    dollarColored: dollarColoredFormatter,
+    dollarColoredBold: dollarColoredBoldFormatter,
     editIcon: editIconFormatter,
     hyperlink: hyperlinkFormatter,
     hyperlinkUriPrefix: hyperlinkUriPrefixFormatter,
@@ -4864,6 +4966,155 @@ var Formatters = {
     translateBoolean: translateBooleanFormatter,
     uppercase: uppercaseFormatter,
     yesNo: yesNoFormatter
+};
+var avgTotalsPercentageFormatter = function (totals, columnDef, grid) {
+    var field = columnDef.field || '';
+    var val = totals.avg && totals.avg[field];
+    var prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    var suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + Math.round(val) + '%' + suffix;
+    }
+    return '';
+};
+var avgTotalsDollarFormatter = function (totals, columnDef, grid) {
+    var field = columnDef.field || '';
+    var val = totals.avg && totals.avg[field];
+    var prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    var suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + '$' + decimalFormatted(val, 2, 4) + suffix;
+    }
+    return '';
+};
+var avgTotalsFormatter = function (totals, columnDef, grid) {
+    var field = columnDef.field || '';
+    var val = totals.avg && totals.avg[field];
+    var prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    var suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + Math.round(val) + suffix;
+    }
+    return '';
+};
+var minTotalsFormatter = function (totals, columnDef, grid) {
+    var field = columnDef.field || '';
+    var val = totals.min && totals.min[field];
+    var prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    var suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix;
+    }
+    return '';
+};
+var maxTotalsFormatter = function (totals, columnDef, grid) {
+    var field = columnDef.field || '';
+    var val = totals.max && totals.max[field];
+    var prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    var suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix;
+    }
+    return '';
+};
+var sumTotalsColoredFormatter = function (totals, columnDef, grid) {
+    var field = columnDef.field || '';
+    var val = totals.sum && totals.sum[field];
+    var prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    var suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (isNaN(+val)) {
+        return '';
+    }
+    else if (val >= 0) {
+        return "<span style=\"color:green;\">" + (prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix) + "</span>";
+    }
+    else {
+        return "<span style=\"color:red;\">" + (prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix) + "</span>";
+    }
+};
+var sumTotalsDollarColoredBoldFormatter = function (totals, columnDef, grid) {
+    var field = columnDef.field || '';
+    var val = totals.sum && totals.sum[field];
+    var prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    var suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (isNaN(+val)) {
+        return '';
+    }
+    else if (val >= 0) {
+        return "<span style=\"color:green; font-weight: bold;\">" + (prefix + '$' + decimalFormatted(val, 2, 2) + suffix) + "</span>";
+    }
+    else {
+        return "<span style=\"color:red; font-weight: bold;\">" + (prefix + '$' + decimalFormatted(val, 2, 2) + suffix) + "</span>";
+    }
+};
+var sumTotalsDollarColoredFormatter = function (totals, columnDef, grid) {
+    var field = columnDef.field || '';
+    var val = totals.sum && totals.sum[field];
+    var prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    var suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (isNaN(+val)) {
+        return '';
+    }
+    else if (val >= 0) {
+        return "<span style=\"color:green;\">" + (prefix + '$' + decimalFormatted(val, 2, 2) + suffix) + "</span>";
+    }
+    else {
+        return "<span style=\"color:red;\">" + (prefix + '$' + decimalFormatted(val, 2, 2) + suffix) + "</span>";
+    }
+};
+var sumTotalsDollarBoldFormatter = function (totals, columnDef, grid) {
+    var field = columnDef.field || '';
+    var val = totals.sum && totals.sum[field];
+    var prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    var suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return "<span style=\"font-weight: bold;\">" + (prefix + '$' + decimalFormatted(val, 2, 4) + suffix) + "</span>";
+    }
+    return '';
+};
+var sumTotalsDollarFormatter = function (totals, columnDef, grid) {
+    var field = columnDef.field || '';
+    var val = totals.sum && totals.sum[field];
+    var prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    var suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + '$' + decimalFormatted(val, 2, 2) + suffix;
+    }
+    return '';
+};
+var sumTotalsFormatter = function (totals, columnDef, grid) {
+    var field = columnDef.field || '';
+    var val = totals.sum && totals.sum[field];
+    var prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    var suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix;
+    }
+    return '';
+};
+var sumTotalsBoldFormatter = function (totals, columnDef, grid) {
+    var field = columnDef.field || '';
+    var val = totals.sum && totals.sum[field];
+    var prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    var suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return "<span style=\"font-weight: bold;\">" + (prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix);
+    }
+    return '';
+};
+var GroupTotalFormatters = {
+    avgTotals: avgTotalsFormatter,
+    avgTotalsDollar: avgTotalsDollarFormatter,
+    avgTotalsPercentage: avgTotalsPercentageFormatter,
+    maxTotals: maxTotalsFormatter,
+    minTotals: minTotalsFormatter,
+    sumTotals: sumTotalsFormatter,
+    sumTotalsBold: sumTotalsBoldFormatter,
+    sumTotalsColored: sumTotalsColoredFormatter,
+    sumTotalsDollar: sumTotalsDollarFormatter,
+    sumTotalsDollarBold: sumTotalsDollarBoldFormatter,
+    sumTotalsDollarColored: sumTotalsDollarColoredFormatter,
+    sumTotalsDollarColoredBold: sumTotalsDollarColoredBoldFormatter,
 };
 var SlickPaginationComponent = /** @class */ (function () {
     function SlickPaginationComponent(filterService, sortService) {
@@ -5087,6 +5338,7 @@ var GlobalGridOptions = {
         filename: 'export',
         format: FileType.csv,
         groupingAggregatorRowText: '',
+        sanitizeDataExport: false,
         useUtf8WithBom: true
     },
     exportWithFormatter: false,
@@ -5095,9 +5347,16 @@ var GlobalGridOptions = {
         hideForceFitButton: false,
         hideSyncResizeButton: true,
         iconCssClass: 'fa fa-bars',
+        iconClearAllFiltersCommand: 'fa fa-filter text-danger',
+        iconClearAllSortingCommand: 'fa fa-unsorted text-danger',
+        iconExportCsvCommand: 'fa fa-download',
+        iconExportTextDelimitedCommand: 'fa fa-download',
+        iconRefreshDatasetCommand: 'fa fa-refresh',
+        iconToggleFilterCommand: 'fa fa-random',
         menuWidth: 16,
         resizeOnShowHeaderRow: false,
         showClearAllFiltersCommand: true,
+        showClearAllSortingCommand: true,
         showExportCsvCommand: true,
         showRefreshDatasetCommand: true,
         showToggleFilterCommand: true
@@ -5264,7 +5523,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
             }
         });
         if (gridOptions.enableSorting) {
-            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView, this._columnDefinitions);
+            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
         }
         if (gridOptions.enableFiltering) {
             this.filterService.init(grid, gridOptions, this._columnDefinitions);
@@ -5497,5 +5756,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, Sorters, AvgAggregator as ɵb, MaxAggregator as ɵd, MinAggregator as ɵc, SumAggregator as ɵe, CheckboxEditor as ɵf, DateEditor as ɵg, FloatEditor as ɵh, IntegerEditor as ɵi, LongTextEditor as ɵj, MultipleSelectEditor as ɵk, SingleSelectEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵbc, CompoundInputFilter as ɵbd, InputFilter as ɵy, MultipleSelectFilter as ɵz, SelectFilter as ɵbb, SingleSelectFilter as ɵba, arrayToCsvFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, editIconFormatter as ɵbq, hyperlinkFormatter as ɵbr, hyperlinkUriPrefixFormatter as ɵbs, infoIconFormatter as ɵbt, lowercaseFormatter as ɵbu, multipleFormatter as ɵbv, percentCompleteBarFormatter as ɵbx, percentCompleteFormatter as ɵbw, progressBarFormatter as ɵby, translateBooleanFormatter as ɵca, translateFormatter as ɵbz, uppercaseFormatter as ɵcb, yesNoFormatter as ɵcc, SharedService as ɵa, dateIsoSorter as ɵce, dateSorter as ɵcd, dateUsShortSorter as ɵcg, dateUsSorter as ɵcf, numericSorter as ɵch, stringSorter as ɵci };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, dollarColoredBoldFormatter as ɵbs, dollarColoredFormatter as ɵbr, dollarFormatter as ɵbq, editIconFormatter as ɵbt, hyperlinkFormatter as ɵbu, hyperlinkUriPrefixFormatter as ɵbv, infoIconFormatter as ɵbw, lowercaseFormatter as ɵbx, multipleFormatter as ɵby, percentCompleteBarFormatter as ɵca, percentCompleteFormatter as ɵbz, progressBarFormatter as ɵcb, translateBooleanFormatter as ɵcd, translateFormatter as ɵcc, uppercaseFormatter as ɵce, yesNoFormatter as ɵcf, avgTotalsDollarFormatter as ɵch, avgTotalsFormatter as ɵcg, avgTotalsPercentageFormatter as ɵci, maxTotalsFormatter as ɵcj, minTotalsFormatter as ɵck, sumTotalsBoldFormatter as ɵcm, sumTotalsColoredFormatter as ɵcn, sumTotalsDollarBoldFormatter as ɵcp, sumTotalsDollarColoredBoldFormatter as ɵcr, sumTotalsDollarColoredFormatter as ɵcq, sumTotalsDollarFormatter as ɵco, sumTotalsFormatter as ɵcl, dateIsoSorter as ɵct, dateSorter as ɵcs, dateUsShortSorter as ɵcv, dateUsSorter as ɵcu, numericSorter as ɵcw, stringSorter as ɵcx };
 //# sourceMappingURL=angular-slickgrid.js.map

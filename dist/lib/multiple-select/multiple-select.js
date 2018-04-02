@@ -219,8 +219,8 @@
 
             if (this.options.selectAll && !this.options.single) {
               this.$drop.append([
-                    '<div class="ms-select-all">',
-                    '<label>',
+                    '<div class="ms-select-all" style="width: 100%">',
+                    '<label style="width: 100%">',
                     sprintf('<input type="checkbox" %s />', this.selectAllName),
                     sprintf('<span>%s%s%s</span>',
                       this.options.selectAllDelimiter[0],

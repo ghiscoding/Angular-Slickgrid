@@ -1,12 +1,14 @@
-import { ExportService } from './export.service';
-import { FilterService } from './filter.service';
 import { Column, GridOption } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
+import { FilterService } from './filter.service';
+import { ExportService } from './export.service';
 import { SharedService } from './shared.service';
+import { SortService } from './sort.service';
 export declare class ControlAndPluginService {
     private exportService;
     private filterService;
     private sharedService;
+    private sortService;
     private translate;
     private _dataView;
     private _grid;
@@ -20,7 +22,7 @@ export declare class ControlAndPluginService {
     headerMenuPlugin: any;
     gridMenuControl: any;
     rowSelectionPlugin: any;
-    constructor(exportService: ExportService, filterService: FilterService, sharedService: SharedService, translate: TranslateService);
+    constructor(exportService: ExportService, filterService: FilterService, sharedService: SharedService, sortService: SortService, translate: TranslateService);
     /**
      * Attach/Create different Controls or Plugins after the Grid is created
      * @param grid

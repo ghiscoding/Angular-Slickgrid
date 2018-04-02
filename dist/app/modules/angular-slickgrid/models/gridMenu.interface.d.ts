@@ -20,10 +20,24 @@ export interface GridMenu {
     hideForceFitButton?: boolean;
     /** Defaults to True, show/hide 1 of the last 2 checkbox at the end of the picker list */
     hideSyncResizeButton?: boolean;
+    /** icon for the "Clear All Filters" command */
+    iconClearAllFiltersCommand?: string;
+    /** icon for the "Clear All Sorting" command */
+    iconClearAllSortingCommand?: string;
+    /** icon for the "Export to CSV" command */
+    iconExportCsvCommand?: string;
+    /** icon for the "Export to Text Delimited" command */
+    iconExportTextDelimitedCommand?: string;
+    /** icon for the "Refresh Dataset" command */
+    iconRefreshDatasetCommand?: string;
+    /** icon for the "Toggle Filter Row" command */
+    iconToggleFilterCommand?: string;
     /** Defaults to False, which will resize the Header Row and remove the width of the Grid Menu icon from it's total width. */
     resizeOnShowHeaderRow?: boolean;
-    /** Defaults to True, which will show the "Clear All Filter" command in the Grid Menu (Grid Option "enableFiltering: true" has to be enabled) */
+    /** Defaults to True, which will show the "Clear All Filters" command in the Grid Menu (Grid Option "enableFiltering: true" has to be enabled) */
     showClearAllFiltersCommand?: boolean;
+    /** Defaults to True, which will show the "Clear All Sorting" command in the Grid Menu (Grid Option "enableSorting: true" has to be enabled) */
+    showClearAllSortingCommand?: boolean;
     /** Defaults to True, which will show the "Export to CSV" command in the Grid Menu (Grid Option "enableExport: true" has to be enabled) */
     showExportCsvCommand?: boolean;
     /** Defaults to True, which will show the "Export to Text Delimited" command in the Grid Menu (Grid Option "enableExport: true" has to be enabled) */

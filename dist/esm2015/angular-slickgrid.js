@@ -5,9 +5,9 @@ import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
 import { Injectable, Component, EventEmitter, Input, Output, Inject, NgModule } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { __awaiter } from 'tslib';
 import { Subject } from 'rxjs/Subject';
 import { TextEncoder } from 'text-encoding-utf-8';
-import { __awaiter } from 'tslib';
 import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
@@ -403,6 +403,28 @@ function castToPromise(input, fromServiceName = '') {
  */
 function findOrDefault(array, logic, defaultVal = {}) {
     return array.find(logic) || defaultVal;
+}
+/**
+ * Take a number (or a string) and display it as a formatted decimal string with defined minimum and maximum decimals
+ * @param {?} input
+ * @param {?=} minDecimal
+ * @param {?=} maxDecimal
+ * @return {?}
+ */
+function decimalFormatted(input, minDecimal, maxDecimal) {
+    if (isNaN(+input)) {
+        return input;
+    }
+    const /** @type {?} */ minDec = (minDecimal === undefined) ? 2 : minDecimal;
+    const /** @type {?} */ maxDec = (maxDecimal === undefined) ? 2 : maxDecimal;
+    let /** @type {?} */ amount = String(Math.round(+input * Math.pow(10, maxDec)) / Math.pow(10, maxDec));
+    if (amount.indexOf('.') < 0) {
+        amount += '.';
+    }
+    while ((amount.length - amount.indexOf('.')) <= minDec) {
+        amount += '0';
+    }
+    return amount;
 }
 /**
  * From a Date FieldType, return it's equivalent moment.js format
@@ -888,327 +910,6 @@ CollectionService.decorators = [
 ];
 /** @nocollapse */
 CollectionService.ctorParameters = () => [
-    { type: TranslateService, },
-];
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
- * @record
- */
-
-class ExportService {
-    /**
-     * @param {?} translate
-     */
-    constructor(translate) {
-        this.translate = translate;
-        this._lineCarriageReturn = '\n';
-        this._hasGroupedItems = false;
-        this.onGridBeforeExportToFile = new Subject();
-        this.onGridAfterExportToFile = new Subject();
-    }
-    /**
-     * Initialize the Export Service
-     * @param {?} grid
-     * @param {?} gridOptions
-     * @param {?} dataView
-     * @return {?}
-     */
-    init(grid, gridOptions, dataView) {
-        this._grid = grid;
-        this._gridOptions = gridOptions;
-        this._dataView = dataView;
-    }
-    /**
-     * Function to export the Grid result to an Excel CSV format using javascript for it to produce the CSV file.
-     * This is a WYSIWYG export to file output (What You See is What You Get)
-     *
-     * NOTES: The column position needs to match perfectly the JSON Object position because of the way we are pulling the data,
-     * which means that if any column(s) got moved in the UI, it has to be reflected in the JSON array output as well
-     *
-     * Example: exportToFile({ format: FileType.csv, delimiter: DelimiterType.comma })
-     * @param {?} options
-     * @return {?}
-     */
-    exportToFile(options) {
-        this.onGridBeforeExportToFile.next(true);
-        this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
-        // get the CSV output from the grid data
-        const /** @type {?} */ dataOutput = this.getDataOutput();
-        // trigger a download file
-        // wrap it into a setTimeout so that the EventAggregator has enough time to start a pre-process like showing a spinner
-        setTimeout(() => {
-            const /** @type {?} */ downloadOptions = {
-                filename: `${this._exportOptions.filename}.${this._exportOptions.format}`,
-                csvContent: dataOutput,
-                format: this._exportOptions.format,
-                useUtf8WithBom: this._exportOptions.useUtf8WithBom
-            };
-            this.startDownloadFile(downloadOptions);
-            this.onGridAfterExportToFile.next({ options: downloadOptions });
-        }, 0);
-    }
-    /**
-     * @return {?}
-     */
-    getDataOutput() {
-        const /** @type {?} */ columns = this._grid.getColumns() || [];
-        const /** @type {?} */ delimiter = this._exportOptions.delimiter || '';
-        const /** @type {?} */ format = this._exportOptions.format || '';
-        const /** @type {?} */ groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle || this.translate.instant('GROUP_BY');
-        // a CSV needs double quotes wrapper, the other types do not need any wrapper
-        this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
-        // data variable which will hold all the fields data of a row
-        let /** @type {?} */ outputDataString = '';
-        // get grouped column titles and if found, we will add a "Group by" column at the first column index
-        const /** @type {?} */ grouping = this._dataView.getGrouping();
-        if (grouping && Array.isArray(grouping) && grouping.length > 0) {
-            this._hasGroupedItems = true;
-            outputDataString += `${groupByColumnHeader}` + delimiter;
-        }
-        else {
-            this._hasGroupedItems = false;
-        }
-        // get all column headers
-        this._columnHeaders = this.getColumnHeaders(columns) || [];
-        if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
-            // add the header row + add a new line at the end of the row
-            const /** @type {?} */ outputHeaderTitles = this._columnHeaders.map((header) => {
-                return this._exportQuoteWrapper + header.title + this._exportQuoteWrapper;
-            });
-            outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
-        }
-        // Populate the rest of the Grid Data
-        outputDataString += this.getAllGridRowData(columns, this._lineCarriageReturn);
-        return outputDataString;
-    }
-    /**
-     * Get all the grid row data and return that as an output string
-     * @param {?} columns
-     * @param {?} lineCarriageReturn
-     * @return {?}
-     */
-    getAllGridRowData(columns, lineCarriageReturn) {
-        let /** @type {?} */ outputDataString = '';
-        const /** @type {?} */ lineCount = this._dataView.getLength();
-        // loop through all the grid rows of data
-        for (let /** @type {?} */ rowNumber = 0; rowNumber < lineCount; rowNumber++) {
-            const /** @type {?} */ itemObj = this._dataView.getItem(rowNumber);
-            if (itemObj != null) {
-                // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
-                if (itemObj.id != null) {
-                    // get regular row item data
-                    outputDataString += this.readRegularRowData(columns, rowNumber, itemObj);
-                }
-                else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
-                    // get the group row
-                    outputDataString += this.readGroupedTitleRow(itemObj) + this._exportOptions.delimiter;
-                }
-                else if (itemObj.__groupTotals) {
-                    // else if the row is a Group By and we have agreggators, then a property of '__groupTotals' would exist under that object
-                    outputDataString += this.readGroupedTotalRow(columns, itemObj) + this._exportOptions.delimiter;
-                }
-                outputDataString += lineCarriageReturn;
-            }
-        }
-        return outputDataString;
-    }
-    /**
-     * Get all header titles and their keys, translate the title when required.
-     * @param {?} columns of the grid
-     * @return {?}
-     */
-    getColumnHeaders(columns) {
-        if (!columns || !Array.isArray(columns) || columns.length === 0) {
-            return null;
-        }
-        const /** @type {?} */ columnHeaders = [];
-        // Populate the Column Header, pull the name defined
-        columns.forEach((columnDef) => {
-            const /** @type {?} */ fieldName = (columnDef.headerKey) ? this.translate.instant(columnDef.headerKey) : columnDef.name;
-            const /** @type {?} */ skippedField = columnDef.excludeFromExport || false;
-            // if column width is 0 then it's not evaluated since that field is considered hidden should not be part of the export
-            if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
-                columnHeaders.push({
-                    key: columnDef.field || columnDef.id,
-                    title: fieldName
-                });
-            }
-        });
-        return columnHeaders;
-    }
-    /**
-     * Get the data of a regular row (a row without grouping)
-     * @param {?} columns
-     * @param {?} row
-     * @param {?} itemObj
-     * @return {?}
-     */
-    readRegularRowData(columns, row, itemObj) {
-        let /** @type {?} */ idx = 0;
-        let /** @type {?} */ rowOutputString = '';
-        const /** @type {?} */ delimiter = this._exportOptions.delimiter;
-        const /** @type {?} */ format = this._exportOptions.format;
-        const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
-        for (let /** @type {?} */ col = 0, /** @type {?} */ ln = columns.length; col < ln; col++) {
-            const /** @type {?} */ columnDef = columns[col];
-            const /** @type {?} */ fieldId = columnDef.field || columnDef.id || '';
-            // skip excluded column
-            if (columnDef.excludeFromExport) {
-                continue;
-            }
-            // if we are grouping and are on 1st column index, we need to skip this column since it will be used later by the grouping text:: Group by [columnX]
-            if (this._hasGroupedItems && idx === 0) {
-                rowOutputString += `""` + delimiter;
-            }
-            // does the user want to evaluate current column Formatter?
-            const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this._exportOptions.exportWithFormatter || this._gridOptions.exportWithFormatter);
-            // did the user provide a Custom Formatter for the export
-            const /** @type {?} */ exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
-            let /** @type {?} */ itemData = '';
-            if (exportCustomFormatter) {
-                itemData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
-            }
-            else if (isEvaluatingFormatter && !!columnDef.formatter) {
-                itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
-            }
-            else {
-                itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
-            }
-            // when CSV we also need to escape double quotes twice, so " becomes ""
-            if (format === FileType.csv) {
-                itemData = itemData.toString().replace(/"/gi, `""`);
-            }
-            // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
-            // to cancel that effect we can had = in front, ex: ="1E06"
-            const /** @type {?} */ keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
-            rowOutputString += keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
-            idx++;
-        }
-        return rowOutputString;
-    }
-    /**
-     * Get the grouped title(s), for example if we grouped by salesRep, the returned result would be:: 'Sales Rep'
-     * @param {?} itemObj
-     * @return {?}
-     */
-    readGroupedTitleRow(itemObj) {
-        let /** @type {?} */ groupName = this.sanitizeHtmlToText(itemObj.title);
-        const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
-        const /** @type {?} */ delimiter = this._exportOptions.delimiter;
-        const /** @type {?} */ format = this._exportOptions.format;
-        groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
-        if (format === FileType.csv) {
-            // when CSV we also need to escape double quotes twice, so " becomes ""
-            groupName = groupName.toString().replace(/"/gi, `""`);
-        }
-        // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
-        // to cancel that effect we can had = in front, ex: ="1E06"
-        // const keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
-        return /*keepAsStringWrapper +*/ /*keepAsStringWrapper +*/ exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper + delimiter;
-    }
-    /**
-     * Get the grouped totals, these are set by Slick Aggregators.
-     * For example if we grouped by "salesRep" and we have a Sum Aggregator on "sales", then the returned output would be:: ["Sum 123$"]
-     * @param {?} columns
-     * @param {?} itemObj
-     * @return {?}
-     */
-    readGroupedTotalRow(columns, itemObj) {
-        let /** @type {?} */ exportExponentialWrapper = '';
-        const /** @type {?} */ delimiter = this._exportOptions.delimiter;
-        const /** @type {?} */ format = this._exportOptions.format;
-        const /** @type {?} */ groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
-        const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
-        let /** @type {?} */ output = `${exportQuoteWrapper}${groupingAggregatorRowText}${exportQuoteWrapper}${delimiter}`;
-        columns.forEach((columnDef) => {
-            let /** @type {?} */ itemData = '';
-            // if there's a groupTotalsFormatter, we will re-run it to get the exact same output as what is shown in UI
-            if (columnDef.groupTotalsFormatter) {
-                itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
-            }
-            if (format === FileType.csv) {
-                // when CSV we also need to escape double quotes twice, so a double quote " becomes 2x double quotes ""
-                // and if we have a text of (number)E(number),
-                // we don't want excel to transform it into exponential (1.0E06) to cancel that effect we can had = in front, ex: ="1E06"
-                itemData = itemData.toString().replace(/"/gi, `""`);
-                exportExponentialWrapper = (itemData.match(/^\s*\d+E\d+\s*$/i)) ? '=' : '';
-            }
-            output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
-        });
-        return output;
-    }
-    /**
-     * Sanitize, return only the text without HTML tags
-     * \@input htmlString
-     * @param {?} htmlString
-     * @return {?} text
-     */
-    sanitizeHtmlToText(htmlString) {
-        const /** @type {?} */ temp = document.createElement('div');
-        temp.innerHTML = htmlString;
-        return temp.textContent || temp.innerText;
-    }
-    /**
-     * Triggers download file with file format.
-     * IE(6-10) are not supported
-     * All other browsers will use plain javascript on client side to produce a file download.
-     * @param {?} options
-     * @return {?}
-     */
-    startDownloadFile(options) {
-        // IE(6-10) don't support javascript download and our service doesn't support either so throw an error, we have to make a round trip to the Web Server for exporting
-        if (navigator.appName === 'Microsoft Internet Explorer') {
-            throw new Error('Microsoft Internet Explorer 6 to 10 do not support javascript export to CSV. Please upgrade your browser.');
-        }
-        // set the correct MIME type
-        const /** @type {?} */ mimeType = (options.format === FileType.csv) ? 'text/csv' : 'text/plain';
-        // make sure no html entities exist in the data
-        const /** @type {?} */ csvContent = htmlEntityDecode(options.csvContent);
-        // dealing with Excel CSV export and UTF-8 is a little tricky.. We will use Option #2 to cover older Excel versions
-        // Option #1: we need to make Excel knowing that it's dealing with an UTF-8, A correctly formatted UTF8 file can have a Byte Order Mark as its first three octets
-        // reference: http://stackoverflow.com/questions/155097/microsoft-excel-mangles-diacritics-in-csv-files
-        // Option#2: use a 3rd party extension to javascript encode into UTF-16
-        let /** @type {?} */ outputData;
-        if (options.format === FileType.csv) {
-            outputData = new TextEncoder('utf-8').encode(csvContent);
-        }
-        else {
-            outputData = csvContent;
-        }
-        // create a Blob object for the download
-        const /** @type {?} */ blob = new Blob([options.useUtf8WithBom ? '\uFEFF' : '', outputData], {
-            type: `${mimeType};charset=utf-8;`
-        });
-        // when using IE/Edge, then use different download call
-        if (typeof navigator.msSaveOrOpenBlob === 'function') {
-            navigator.msSaveOrOpenBlob(blob, options.filename);
-        }
-        else {
-            // this trick will generate a temp <a /> tag
-            // the code will then trigger a hidden click for it to start downloading
-            const /** @type {?} */ link = document.createElement('a');
-            const /** @type {?} */ csvUrl = URL.createObjectURL(blob);
-            link.textContent = 'download';
-            link.href = csvUrl;
-            link.setAttribute('download', options.filename);
-            // set the visibility to hidden so there is no effect on your web-layout
-            link.style.visibility = 'hidden';
-            // this part will append the anchor tag, trigger a click (for download to start) and finally remove the tag once completed
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    }
-}
-ExportService.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-ExportService.ctorParameters = () => [
     { type: TranslateService, },
 ];
 
@@ -2934,6 +2635,335 @@ FilterService.ctorParameters = () => [
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+/**
+ * @record
+ */
+
+class ExportService {
+    /**
+     * @param {?} translate
+     */
+    constructor(translate) {
+        this.translate = translate;
+        this._lineCarriageReturn = '\n';
+        this._hasGroupedItems = false;
+        this.onGridBeforeExportToFile = new Subject();
+        this.onGridAfterExportToFile = new Subject();
+    }
+    /**
+     * Initialize the Export Service
+     * @param {?} grid
+     * @param {?} gridOptions
+     * @param {?} dataView
+     * @return {?}
+     */
+    init(grid, gridOptions, dataView) {
+        this._grid = grid;
+        this._gridOptions = gridOptions;
+        this._dataView = dataView;
+    }
+    /**
+     * Function to export the Grid result to an Excel CSV format using javascript for it to produce the CSV file.
+     * This is a WYSIWYG export to file output (What You See is What You Get)
+     *
+     * NOTES: The column position needs to match perfectly the JSON Object position because of the way we are pulling the data,
+     * which means that if any column(s) got moved in the UI, it has to be reflected in the JSON array output as well
+     *
+     * Example: exportToFile({ format: FileType.csv, delimiter: DelimiterType.comma })
+     * @param {?} options
+     * @return {?}
+     */
+    exportToFile(options) {
+        this.onGridBeforeExportToFile.next(true);
+        this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
+        // get the CSV output from the grid data
+        const /** @type {?} */ dataOutput = this.getDataOutput();
+        // trigger a download file
+        // wrap it into a setTimeout so that the EventAggregator has enough time to start a pre-process like showing a spinner
+        setTimeout(() => {
+            const /** @type {?} */ downloadOptions = {
+                filename: `${this._exportOptions.filename}.${this._exportOptions.format}`,
+                csvContent: dataOutput,
+                format: this._exportOptions.format,
+                useUtf8WithBom: this._exportOptions.useUtf8WithBom
+            };
+            this.startDownloadFile(downloadOptions);
+            this.onGridAfterExportToFile.next({ options: downloadOptions });
+        }, 0);
+    }
+    /**
+     * @return {?}
+     */
+    getDataOutput() {
+        const /** @type {?} */ columns = this._grid.getColumns() || [];
+        const /** @type {?} */ delimiter = this._exportOptions.delimiter || '';
+        const /** @type {?} */ format = this._exportOptions.format || '';
+        const /** @type {?} */ groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle || this.translate.instant('GROUP_BY');
+        // a CSV needs double quotes wrapper, the other types do not need any wrapper
+        this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
+        // data variable which will hold all the fields data of a row
+        let /** @type {?} */ outputDataString = '';
+        // get grouped column titles and if found, we will add a "Group by" column at the first column index
+        const /** @type {?} */ grouping = this._dataView.getGrouping();
+        if (grouping && Array.isArray(grouping) && grouping.length > 0) {
+            this._hasGroupedItems = true;
+            outputDataString += `${groupByColumnHeader}` + delimiter;
+        }
+        else {
+            this._hasGroupedItems = false;
+        }
+        // get all column headers
+        this._columnHeaders = this.getColumnHeaders(columns) || [];
+        if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
+            // add the header row + add a new line at the end of the row
+            const /** @type {?} */ outputHeaderTitles = this._columnHeaders.map((header) => {
+                return this._exportQuoteWrapper + header.title + this._exportQuoteWrapper;
+            });
+            outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
+        }
+        // Populate the rest of the Grid Data
+        outputDataString += this.getAllGridRowData(columns, this._lineCarriageReturn);
+        return outputDataString;
+    }
+    /**
+     * Get all the grid row data and return that as an output string
+     * @param {?} columns
+     * @param {?} lineCarriageReturn
+     * @return {?}
+     */
+    getAllGridRowData(columns, lineCarriageReturn) {
+        let /** @type {?} */ outputDataString = '';
+        const /** @type {?} */ lineCount = this._dataView.getLength();
+        // loop through all the grid rows of data
+        for (let /** @type {?} */ rowNumber = 0; rowNumber < lineCount; rowNumber++) {
+            const /** @type {?} */ itemObj = this._dataView.getItem(rowNumber);
+            if (itemObj != null) {
+                // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
+                if (itemObj.id != null) {
+                    // get regular row item data
+                    outputDataString += this.readRegularRowData(columns, rowNumber, itemObj);
+                }
+                else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
+                    // get the group row
+                    outputDataString += this.readGroupedTitleRow(itemObj) + this._exportOptions.delimiter;
+                }
+                else if (itemObj.__groupTotals) {
+                    // else if the row is a Group By and we have agreggators, then a property of '__groupTotals' would exist under that object
+                    outputDataString += this.readGroupedTotalRow(columns, itemObj) + this._exportOptions.delimiter;
+                }
+                outputDataString += lineCarriageReturn;
+            }
+        }
+        return outputDataString;
+    }
+    /**
+     * Get all header titles and their keys, translate the title when required.
+     * @param {?} columns of the grid
+     * @return {?}
+     */
+    getColumnHeaders(columns) {
+        if (!columns || !Array.isArray(columns) || columns.length === 0) {
+            return null;
+        }
+        const /** @type {?} */ columnHeaders = [];
+        // Populate the Column Header, pull the name defined
+        columns.forEach((columnDef) => {
+            const /** @type {?} */ fieldName = (columnDef.headerKey) ? this.translate.instant(columnDef.headerKey) : columnDef.name;
+            const /** @type {?} */ skippedField = columnDef.excludeFromExport || false;
+            // if column width is 0 then it's not evaluated since that field is considered hidden should not be part of the export
+            if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
+                columnHeaders.push({
+                    key: columnDef.field || columnDef.id,
+                    title: fieldName
+                });
+            }
+        });
+        return columnHeaders;
+    }
+    /**
+     * Get the data of a regular row (a row without grouping)
+     * @param {?} columns
+     * @param {?} row
+     * @param {?} itemObj
+     * @return {?}
+     */
+    readRegularRowData(columns, row, itemObj) {
+        let /** @type {?} */ idx = 0;
+        let /** @type {?} */ rowOutputString = '';
+        const /** @type {?} */ delimiter = this._exportOptions.delimiter;
+        const /** @type {?} */ format = this._exportOptions.format;
+        const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
+        for (let /** @type {?} */ col = 0, /** @type {?} */ ln = columns.length; col < ln; col++) {
+            const /** @type {?} */ columnDef = columns[col];
+            const /** @type {?} */ fieldId = columnDef.field || columnDef.id || '';
+            // skip excluded column
+            if (columnDef.excludeFromExport) {
+                continue;
+            }
+            // if we are grouping and are on 1st column index, we need to skip this column since it will be used later by the grouping text:: Group by [columnX]
+            if (this._hasGroupedItems && idx === 0) {
+                rowOutputString += `""` + delimiter;
+            }
+            // does the user want to evaluate current column Formatter?
+            const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this._exportOptions.exportWithFormatter || this._gridOptions.exportWithFormatter);
+            // did the user provide a Custom Formatter for the export
+            const /** @type {?} */ exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
+            let /** @type {?} */ itemData = '';
+            if (exportCustomFormatter) {
+                itemData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+            }
+            else if (isEvaluatingFormatter && !!columnDef.formatter) {
+                itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+            }
+            else {
+                itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
+            }
+            // does the user want to sanitize the output data (remove HTML tags)?
+            if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
+                itemData = this.sanitizeHtmlToText(itemData);
+            }
+            // when CSV we also need to escape double quotes twice, so " becomes ""
+            if (format === FileType.csv) {
+                itemData = itemData.toString().replace(/"/gi, `""`);
+            }
+            // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
+            // to cancel that effect we can had = in front, ex: ="1E06"
+            const /** @type {?} */ keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
+            rowOutputString += keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
+            idx++;
+        }
+        return rowOutputString;
+    }
+    /**
+     * Get the grouped title(s), for example if we grouped by salesRep, the returned result would be:: 'Sales Rep'
+     * @param {?} itemObj
+     * @return {?}
+     */
+    readGroupedTitleRow(itemObj) {
+        let /** @type {?} */ groupName = this.sanitizeHtmlToText(itemObj.title);
+        const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
+        const /** @type {?} */ delimiter = this._exportOptions.delimiter;
+        const /** @type {?} */ format = this._exportOptions.format;
+        groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
+        if (format === FileType.csv) {
+            // when CSV we also need to escape double quotes twice, so " becomes ""
+            groupName = groupName.toString().replace(/"/gi, `""`);
+        }
+        // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
+        // to cancel that effect we can had = in front, ex: ="1E06"
+        // const keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
+        return /*keepAsStringWrapper +*/ /*keepAsStringWrapper +*/ exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper + delimiter;
+    }
+    /**
+     * Get the grouped totals, these are set by Slick Aggregators.
+     * For example if we grouped by "salesRep" and we have a Sum Aggregator on "sales", then the returned output would be:: ["Sum 123$"]
+     * @param {?} columns
+     * @param {?} itemObj
+     * @return {?}
+     */
+    readGroupedTotalRow(columns, itemObj) {
+        let /** @type {?} */ exportExponentialWrapper = '';
+        const /** @type {?} */ delimiter = this._exportOptions.delimiter;
+        const /** @type {?} */ format = this._exportOptions.format;
+        const /** @type {?} */ groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
+        const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
+        let /** @type {?} */ output = `${exportQuoteWrapper}${groupingAggregatorRowText}${exportQuoteWrapper}${delimiter}`;
+        columns.forEach((columnDef) => {
+            let /** @type {?} */ itemData = '';
+            // if there's a groupTotalsFormatter, we will re-run it to get the exact same output as what is shown in UI
+            if (columnDef.groupTotalsFormatter) {
+                itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
+            }
+            // does the user want to sanitize the output data (remove HTML tags)?
+            if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
+                itemData = this.sanitizeHtmlToText(itemData);
+            }
+            if (format === FileType.csv) {
+                // when CSV we also need to escape double quotes twice, so a double quote " becomes 2x double quotes ""
+                // and if we have a text of (number)E(number),
+                // we don't want excel to transform it into exponential (1.0E06) to cancel that effect we can had = in front, ex: ="1E06"
+                itemData = itemData.toString().replace(/"/gi, `""`);
+                exportExponentialWrapper = (itemData.match(/^\s*\d+E\d+\s*$/i)) ? '=' : '';
+            }
+            output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
+        });
+        return output;
+    }
+    /**
+     * Sanitize, return only the text without HTML tags
+     * \@input htmlString
+     * @param {?} htmlString
+     * @return {?} text
+     */
+    sanitizeHtmlToText(htmlString) {
+        const /** @type {?} */ temp = document.createElement('div');
+        temp.innerHTML = htmlString;
+        return temp.textContent || temp.innerText;
+    }
+    /**
+     * Triggers download file with file format.
+     * IE(6-10) are not supported
+     * All other browsers will use plain javascript on client side to produce a file download.
+     * @param {?} options
+     * @return {?}
+     */
+    startDownloadFile(options) {
+        // IE(6-10) don't support javascript download and our service doesn't support either so throw an error, we have to make a round trip to the Web Server for exporting
+        if (navigator.appName === 'Microsoft Internet Explorer') {
+            throw new Error('Microsoft Internet Explorer 6 to 10 do not support javascript export to CSV. Please upgrade your browser.');
+        }
+        // set the correct MIME type
+        const /** @type {?} */ mimeType = (options.format === FileType.csv) ? 'text/csv' : 'text/plain';
+        // make sure no html entities exist in the data
+        const /** @type {?} */ csvContent = htmlEntityDecode(options.csvContent);
+        // dealing with Excel CSV export and UTF-8 is a little tricky.. We will use Option #2 to cover older Excel versions
+        // Option #1: we need to make Excel knowing that it's dealing with an UTF-8, A correctly formatted UTF8 file can have a Byte Order Mark as its first three octets
+        // reference: http://stackoverflow.com/questions/155097/microsoft-excel-mangles-diacritics-in-csv-files
+        // Option#2: use a 3rd party extension to javascript encode into UTF-16
+        let /** @type {?} */ outputData;
+        if (options.format === FileType.csv) {
+            outputData = new TextEncoder('utf-8').encode(csvContent);
+        }
+        else {
+            outputData = csvContent;
+        }
+        // create a Blob object for the download
+        const /** @type {?} */ blob = new Blob([options.useUtf8WithBom ? '\uFEFF' : '', outputData], {
+            type: `${mimeType};charset=utf-8;`
+        });
+        // when using IE/Edge, then use different download call
+        if (typeof navigator.msSaveOrOpenBlob === 'function') {
+            navigator.msSaveOrOpenBlob(blob, options.filename);
+        }
+        else {
+            // this trick will generate a temp <a /> tag
+            // the code will then trigger a hidden click for it to start downloading
+            const /** @type {?} */ link = document.createElement('a');
+            const /** @type {?} */ csvUrl = URL.createObjectURL(blob);
+            link.textContent = 'download';
+            link.href = csvUrl;
+            link.setAttribute('download', options.filename);
+            // set the visibility to hidden so there is no effect on your web-layout
+            link.style.visibility = 'hidden';
+            // this part will append the anchor tag, trigger a click (for download to start) and finally remove the tag once completed
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+}
+ExportService.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+ExportService.ctorParameters = () => [
+    { type: TranslateService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 class SharedService {
     /**
      * @param {?} grid
@@ -2954,17 +2984,248 @@ class SharedService {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+class SortService {
+    constructor() {
+        this._currentLocalSorters = [];
+        this._eventHandler = new Slick.EventHandler();
+        this._isBackendGrid = false;
+        this.onSortChanged = new Subject();
+    }
+    /**
+     * Attach a backend sort (single/multi) hook to the grid
+     * @param {?} grid SlickGrid Grid object
+     * @param {?} dataView
+     * @return {?}
+     */
+    attachBackendOnSort(grid, dataView) {
+        this._isBackendGrid = true;
+        this._grid = grid;
+        this._dataView = dataView;
+        if (grid) {
+            this._gridOptions = grid.getOptions();
+        }
+        this._slickSubscriber = grid.onSort;
+        // subscribe to the SlickGrid event and call the backend execution
+        this._slickSubscriber.subscribe(this.onBackendSortChanged.bind(this));
+    }
+    /**
+     * @param {?} event
+     * @param {?} args
+     * @return {?}
+     */
+    onBackendSortChanged(event, args) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!args || !args.grid) {
+                throw new Error('Something went wrong when trying to attach the "onBackendSortChanged(event, args)" function, it seems that "args" is not populated correctly');
+            }
+            const /** @type {?} */ gridOptions = args.grid.getOptions() || {};
+            const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+            if (!backendApi || !backendApi.process || !backendApi.service) {
+                throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
+            }
+            if (backendApi.preProcess) {
+                backendApi.preProcess();
+            }
+            const /** @type {?} */ query = backendApi.service.onSortChanged(event, args);
+            this.emitSortChanged('remote');
+            // the process could be an Observable (like HttpClient) or a Promise
+            // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+            const /** @type {?} */ observableOrPromise = backendApi.process(query);
+            const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+            // from the result, call our internal post process to update the Dataset and Pagination info
+            if (processResult && backendApi.internalPostProcess) {
+                backendApi.internalPostProcess(processResult);
+            }
+            // send the response process to the postProcess callback
+            if (backendApi.postProcess) {
+                backendApi.postProcess(processResult);
+            }
+        });
+    }
+    /**
+     * Attach a local sort (single/multi) hook to the grid
+     * @param {?} grid SlickGrid Grid object
+     * @param {?} dataView
+     * @return {?}
+     */
+    attachLocalOnSort(grid, dataView) {
+        this._isBackendGrid = false;
+        this._grid = grid;
+        this._dataView = dataView;
+        let /** @type {?} */ columnDefinitions = [];
+        if (grid) {
+            this._gridOptions = grid.getOptions();
+            columnDefinitions = grid.getColumns();
+        }
+        this._slickSubscriber = grid.onSort;
+        this._slickSubscriber.subscribe((e, args) => {
+            // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
+            // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
+            const /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
+            // keep current sorters
+            this._currentLocalSorters = []; // reset current local sorters
+            if (Array.isArray(sortColumns)) {
+                sortColumns.forEach((sortColumn) => {
+                    if (sortColumn.sortCol) {
+                        this._currentLocalSorters.push({
+                            columnId: sortColumn.sortCol.id,
+                            direction: sortColumn.sortAsc ? SortDirection.ASC : SortDirection.DESC
+                        });
+                    }
+                });
+            }
+            this.onLocalSortChanged(grid, this._gridOptions, dataView, sortColumns);
+            this.emitSortChanged('local');
+        });
+        if (dataView && dataView.onRowCountChanged) {
+            this._eventHandler.subscribe(dataView.onRowCountChanged, (e, args) => {
+                // load any presets if there are any
+                if (args.current > 0) {
+                    this.loadLocalPresets(grid, this._gridOptions, dataView, columnDefinitions);
+                }
+            });
+        }
+    }
+    /**
+     * @return {?}
+     */
+    clearSorting() {
+        if (this._grid && this._gridOptions && this._dataView) {
+            // remove any sort icons (this setSortColumns function call really does only that)
+            this._grid.setSortColumns([]);
+            // we also need to trigger a sort change
+            // for a backend grid, we will trigger a backend sort changed with an empty sort columns array
+            // however for a local grid, we need to pass a sort column and so we will sort by the 1st column
+            if (this._isBackendGrid) {
+                this.onBackendSortChanged(undefined, { grid: this._grid, sortCols: [] });
+            }
+            else {
+                const /** @type {?} */ columnDefinitions = /** @type {?} */ (this._grid.getColumns());
+                if (columnDefinitions && Array.isArray(columnDefinitions)) {
+                    this.onLocalSortChanged(this._grid, this._gridOptions, this._dataView, new Array({ sortAsc: true, sortCol: columnDefinitions[0] }));
+                }
+            }
+        }
+    }
+    /**
+     * @return {?}
+     */
+    getCurrentLocalSorters() {
+        return this._currentLocalSorters;
+    }
+    /**
+     * load any presets if there are any
+     * @param {?} grid
+     * @param {?} gridOptions
+     * @param {?} dataView
+     * @param {?} columnDefinitions
+     * @return {?}
+     */
+    loadLocalPresets(grid, gridOptions, dataView, columnDefinitions) {
+        const /** @type {?} */ sortCols = [];
+        this._currentLocalSorters = []; // reset current local sorters
+        if (gridOptions && gridOptions.presets && gridOptions.presets.sorters) {
+            const /** @type {?} */ sorters = gridOptions.presets.sorters;
+            columnDefinitions.forEach((columnDef) => {
+                const /** @type {?} */ columnPreset = sorters.find((currentSorter) => {
+                    return currentSorter.columnId === columnDef.id;
+                });
+                if (columnPreset) {
+                    sortCols.push({
+                        columnId: columnDef.id,
+                        sortAsc: ((columnPreset.direction.toUpperCase() === SortDirection.ASC) ? true : false),
+                        sortCol: columnDef
+                    });
+                    // keep current sorters
+                    this._currentLocalSorters.push({
+                        columnId: columnDef.id + '',
+                        direction: /** @type {?} */ (columnPreset.direction.toUpperCase())
+                    });
+                }
+            });
+            if (sortCols.length > 0) {
+                this.onLocalSortChanged(grid, gridOptions, dataView, sortCols);
+                grid.setSortColumns(sortCols);
+            }
+        }
+    }
+    /**
+     * @param {?} grid
+     * @param {?} gridOptions
+     * @param {?} dataView
+     * @param {?} sortColumns
+     * @return {?}
+     */
+    onLocalSortChanged(grid, gridOptions, dataView, sortColumns) {
+        dataView.sort((dataRow1, dataRow2) => {
+            for (let /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
+                const /** @type {?} */ columnSortObj = sortColumns[i];
+                if (columnSortObj && columnSortObj.sortCol) {
+                    const /** @type {?} */ sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
+                    const /** @type {?} */ sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
+                    const /** @type {?} */ fieldType = columnSortObj.sortCol.type || FieldType.string;
+                    const /** @type {?} */ value1 = dataRow1[sortField];
+                    const /** @type {?} */ value2 = dataRow2[sortField];
+                    const /** @type {?} */ sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+                    if (sortResult !== SortDirectionNumber.neutral) {
+                        return sortResult;
+                    }
+                }
+            }
+            return 0;
+        });
+        grid.invalidate();
+        grid.render();
+    }
+    /**
+     * @return {?}
+     */
+    dispose() {
+        // unsubscribe local event
+        if (this._slickSubscriber && typeof this._slickSubscriber.unsubscribe === 'function') {
+            this._slickSubscriber.unsubscribe();
+        }
+        // unsubscribe all SlickGrid events
+        this._eventHandler.unsubscribeAll();
+    }
+    /**
+     * A simple function that is attached to the subscriber and emit a change when the sort is called.
+     * Other services, like Pagination, can then subscribe to it.
+     * @param {?} sender
+     * @return {?}
+     */
+    emitSortChanged(sender) {
+        if (sender === 'remote' && this._gridOptions && this._gridOptions.backendServiceApi) {
+            let /** @type {?} */ currentSorters = [];
+            const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
+            if (backendService && backendService.getCurrentSorters) {
+                currentSorters = /** @type {?} */ (backendService.getCurrentSorters());
+            }
+            this.onSortChanged.next(currentSorters);
+        }
+        else if (sender === 'local') {
+            this.onSortChanged.next(this.getCurrentLocalSorters());
+        }
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 class ControlAndPluginService {
     /**
      * @param {?} exportService
      * @param {?} filterService
      * @param {?} sharedService
+     * @param {?} sortService
      * @param {?} translate
      */
-    constructor(exportService, filterService, sharedService, translate) {
+    constructor(exportService, filterService, sharedService, sortService, translate) {
         this.exportService = exportService;
         this.filterService = filterService;
         this.sharedService = sharedService;
+        this.sortService = sortService;
         this.translate = translate;
     }
     /**
@@ -3183,7 +3444,7 @@ class ControlAndPluginService {
             // show grid menu: clear all filters
             if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'clear-filter').length === 0) {
                 options.gridMenu.customItems.push({
-                    iconCssClass: 'fa fa-filter text-danger',
+                    iconCssClass: options.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
                     title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
                     disabled: false,
                     command: 'clear-filter',
@@ -3193,17 +3454,17 @@ class ControlAndPluginService {
             // show grid menu: toggle filter row
             if (options && options.gridMenu && options.gridMenu.showToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'toggle-filter').length === 0) {
                 options.gridMenu.customItems.push({
-                    iconCssClass: 'fa fa-random',
+                    iconCssClass: options.gridMenu.iconToggleFilterCommand || 'fa fa-random',
                     title: options.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
                     disabled: false,
                     command: 'toggle-filter',
-                    positionOrder: 51
+                    positionOrder: 52
                 });
             }
             // show grid menu: refresh dataset
             if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'refresh-dataset').length === 0) {
                 options.gridMenu.customItems.push({
-                    iconCssClass: 'fa fa-refresh',
+                    iconCssClass: options.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
                     title: options.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
                     disabled: false,
                     command: 'refresh-dataset',
@@ -3211,24 +3472,36 @@ class ControlAndPluginService {
                 });
             }
         }
+        if (options.enableSorting) {
+            // show grid menu: clear all sorting
+            if (options && options.gridMenu && options.gridMenu.showClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'clear-sorting').length === 0) {
+                options.gridMenu.customItems.push({
+                    iconCssClass: options.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
+                    title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
+                    disabled: false,
+                    command: 'clear-sorting',
+                    positionOrder: 51
+                });
+            }
+        }
         // show grid menu: export to file
         if (options && options.enableExport && options.gridMenu && options.gridMenu.showExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'export-csv').length === 0) {
             options.gridMenu.customItems.push({
-                iconCssClass: 'fa fa-download',
+                iconCssClass: options.gridMenu.iconExportCsvCommand || 'fa fa-download',
                 title: options.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
                 disabled: false,
                 command: 'export-csv',
-                positionOrder: 52
+                positionOrder: 53
             });
         }
         // show grid menu: export to text file as tab delimited
         if (options && options.enableExport && options.gridMenu && options.gridMenu.showExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'export-text-delimited').length === 0) {
             options.gridMenu.customItems.push({
-                iconCssClass: 'fa fa-download',
+                iconCssClass: options.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
                 title: options.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
                 disabled: false,
                 command: 'export-text-delimited',
-                positionOrder: 53
+                positionOrder: 54
             });
         }
         // Command callback, what will be executed after command is clicked
@@ -3238,6 +3511,10 @@ class ControlAndPluginService {
                     switch (args.command) {
                         case 'clear-filter':
                             this.filterService.clearFilters();
+                            this._dataView.refresh();
+                            break;
+                        case 'clear-sorting':
+                            this.sortService.clearSorting();
                             this._dataView.refresh();
                             break;
                         case 'export-csv':
@@ -3261,10 +3538,6 @@ class ControlAndPluginService {
                             break;
                         case 'toggle-toppanel':
                             grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
-                            break;
-                        case 'clear-filter':
-                            this.filterService.clearFilters();
-                            this._dataView.refresh();
                             break;
                         case 'refresh-dataset':
                             this.refreshBackendDataset(options);
@@ -3425,6 +3698,7 @@ ControlAndPluginService.ctorParameters = () => [
     { type: ExportService, },
     { type: FilterService, },
     { type: SharedService, },
+    { type: SortService, },
     { type: TranslateService, },
 ];
 
@@ -3616,7 +3890,6 @@ class GraphqlService {
         columnDefinitions = columnDefinitions.filter((column) => !column.excludeFromQuery);
         const /** @type {?} */ queryQb = new GraphqlQueryBuilder('query');
         const /** @type {?} */ datasetQb = new GraphqlQueryBuilder(this.options.datasetName);
-        const /** @type {?} */ pageInfoQb = new GraphqlQueryBuilder('pageInfo');
         const /** @type {?} */ dataQb = (this.options.isWithCursor) ? new GraphqlQueryBuilder('edges') : new GraphqlQueryBuilder('nodes');
         // get all the columnds Ids for the filters to work
         let /** @type {?} */ columnIds = [];
@@ -3641,15 +3914,16 @@ class GraphqlService {
         const /** @type {?} */ filters = this.buildFilterQuery(columnIds);
         if (this.options.isWithCursor) {
             // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
+            const /** @type {?} */ pageInfoQb = new GraphqlQueryBuilder('pageInfo');
             pageInfoQb.find('hasNextPage', 'endCursor');
             dataQb.find(['cursor', { node: filters }]);
+            datasetQb.find(['totalCount', pageInfoQb, dataQb]);
         }
         else {
-            // ...pageInfo { hasNextPage }, nodes { _filters_ }
-            pageInfoQb.find('hasNextPage');
+            // ...nodes { _filters_ }
             dataQb.find(filters);
+            datasetQb.find(['totalCount', dataQb]);
         }
-        datasetQb.find(['totalCount', pageInfoQb, dataQb]);
         // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
         const /** @type {?} */ datasetFilters = Object.assign({}, this.options.paginationOptions, { first: ((this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : ((this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null)) || this.defaultPaginationOptions.first });
         if (!this.options.isWithCursor) {
@@ -3948,10 +4222,12 @@ class GraphqlService {
             // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
             const /** @type {?} */ tmpSorterArray = currentSorters.map((sorter) => {
                 const /** @type {?} */ columnDef = this._columnDefinitions.find((column) => column.id === sorter.columnId);
-                graphqlSorters.push({
-                    field: (columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '',
-                    direction: sorter.direction
-                });
+                if (columnDef) {
+                    graphqlSorters.push({
+                        field: (columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '',
+                        direction: sorter.direction
+                    });
+                }
                 return {
                     columnId: sorter.columnId,
                     sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
@@ -5205,203 +5481,6 @@ class ResizerService {
                 this._grid.autosizeColumns();
             }
         }, delay);
-    }
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-class SortService {
-    constructor() {
-        this._currentLocalSorters = [];
-        this._eventHandler = new Slick.EventHandler();
-        this.onSortChanged = new Subject();
-    }
-    /**
-     * Attach a backend sort (single/multi) hook to the grid
-     * @param {?} grid SlickGrid Grid object
-     * @param {?} gridOptions Grid Options object
-     * @return {?}
-     */
-    attachBackendOnSort(grid, gridOptions) {
-        this._grid = grid;
-        this._gridOptions = gridOptions;
-        this._slickSubscriber = grid.onSort;
-        // subscribe to the SlickGrid event and call the backend execution
-        this._slickSubscriber.subscribe(this.attachBackendOnSortSubscribe.bind(this));
-    }
-    /**
-     * @param {?} event
-     * @param {?} args
-     * @return {?}
-     */
-    attachBackendOnSortSubscribe(event, args) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!args || !args.grid) {
-                throw new Error('Something went wrong when trying to attach the "attachBackendOnSortSubscribe(event, args)" function, it seems that "args" is not populated correctly');
-            }
-            const /** @type {?} */ gridOptions = args.grid.getOptions() || {};
-            const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
-            if (!backendApi || !backendApi.process || !backendApi.service) {
-                throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
-            }
-            if (backendApi.preProcess) {
-                backendApi.preProcess();
-            }
-            const /** @type {?} */ query = backendApi.service.onSortChanged(event, args);
-            this.emitSortChanged('remote');
-            // the process could be an Observable (like HttpClient) or a Promise
-            // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-            const /** @type {?} */ observableOrPromise = backendApi.process(query);
-            const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
-            // from the result, call our internal post process to update the Dataset and Pagination info
-            if (processResult && backendApi.internalPostProcess) {
-                backendApi.internalPostProcess(processResult);
-            }
-            // send the response process to the postProcess callback
-            if (backendApi.postProcess) {
-                backendApi.postProcess(processResult);
-            }
-        });
-    }
-    /**
-     * Attach a local sort (single/multi) hook to the grid
-     * @param {?} grid SlickGrid Grid object
-     * @param {?} gridOptions Grid Options object
-     * @param {?} dataView
-     * @param {?} columnDefinitions
-     * @return {?}
-     */
-    attachLocalOnSort(grid, gridOptions, dataView, columnDefinitions) {
-        this._grid = grid;
-        this._gridOptions = gridOptions;
-        this._slickSubscriber = grid.onSort;
-        this._slickSubscriber.subscribe((e, args) => {
-            // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
-            // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
-            const /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
-            // keep current sorters
-            this._currentLocalSorters = []; // reset current local sorters
-            if (Array.isArray(sortColumns)) {
-                sortColumns.forEach((sortColumn) => {
-                    if (sortColumn.sortCol) {
-                        this._currentLocalSorters.push({
-                            columnId: sortColumn.sortCol.id,
-                            direction: sortColumn.sortAsc ? SortDirection.ASC : SortDirection.DESC
-                        });
-                    }
-                });
-            }
-            this.onLocalSortChanged(grid, gridOptions, dataView, sortColumns);
-            this.emitSortChanged('local');
-        });
-        this._eventHandler.subscribe(dataView.onRowCountChanged, (e, args) => {
-            // load any presets if there are any
-            if (args.current > 0) {
-                this.loadLocalPresets(grid, gridOptions, dataView, columnDefinitions);
-            }
-        });
-    }
-    /**
-     * @return {?}
-     */
-    getCurrentLocalSorters() {
-        return this._currentLocalSorters;
-    }
-    /**
-     * load any presets if there are any
-     * @param {?} grid
-     * @param {?} gridOptions
-     * @param {?} dataView
-     * @param {?} columnDefinitions
-     * @return {?}
-     */
-    loadLocalPresets(grid, gridOptions, dataView, columnDefinitions) {
-        const /** @type {?} */ sortCols = [];
-        this._currentLocalSorters = []; // reset current local sorters
-        if (gridOptions && gridOptions.presets && gridOptions.presets.sorters) {
-            const /** @type {?} */ sorters = gridOptions.presets.sorters;
-            columnDefinitions.forEach((columnDef) => {
-                const /** @type {?} */ columnPreset = sorters.find((currentSorter) => {
-                    return currentSorter.columnId === columnDef.id;
-                });
-                if (columnPreset) {
-                    sortCols.push({
-                        columnId: columnDef.id,
-                        sortAsc: ((columnPreset.direction.toUpperCase() === SortDirection.ASC) ? true : false),
-                        sortCol: columnDef
-                    });
-                    // keep current sorters
-                    this._currentLocalSorters.push({
-                        columnId: columnDef.id + '',
-                        direction: /** @type {?} */ (columnPreset.direction.toUpperCase())
-                    });
-                }
-            });
-            if (sortCols.length > 0) {
-                this.onLocalSortChanged(grid, gridOptions, dataView, sortCols);
-                grid.setSortColumns(sortCols);
-            }
-        }
-    }
-    /**
-     * @param {?} grid
-     * @param {?} gridOptions
-     * @param {?} dataView
-     * @param {?} sortColumns
-     * @return {?}
-     */
-    onLocalSortChanged(grid, gridOptions, dataView, sortColumns) {
-        dataView.sort((dataRow1, dataRow2) => {
-            for (let /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
-                const /** @type {?} */ columnSortObj = sortColumns[i];
-                if (columnSortObj && columnSortObj.sortCol) {
-                    const /** @type {?} */ sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
-                    const /** @type {?} */ sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
-                    const /** @type {?} */ fieldType = columnSortObj.sortCol.type || FieldType.string;
-                    const /** @type {?} */ value1 = dataRow1[sortField];
-                    const /** @type {?} */ value2 = dataRow2[sortField];
-                    const /** @type {?} */ sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
-                    if (sortResult !== SortDirectionNumber.neutral) {
-                        return sortResult;
-                    }
-                }
-            }
-            return 0;
-        });
-        grid.invalidate();
-        grid.render();
-    }
-    /**
-     * @return {?}
-     */
-    dispose() {
-        // unsubscribe local event
-        if (this._slickSubscriber && typeof this._slickSubscriber.unsubscribe === 'function') {
-            this._slickSubscriber.unsubscribe();
-        }
-        // unsubscribe all SlickGrid events
-        this._eventHandler.unsubscribeAll();
-    }
-    /**
-     * A simple function that is attached to the subscriber and emit a change when the sort is called.
-     * Other services, like Pagination, can then subscribe to it.
-     * @param {?} sender
-     * @return {?}
-     */
-    emitSortChanged(sender) {
-        if (sender === 'remote' && this._gridOptions && this._gridOptions.backendServiceApi) {
-            let /** @type {?} */ currentSorters = [];
-            const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
-            if (backendService && backendService.getCurrentSorters) {
-                currentSorters = /** @type {?} */ (backendService.getCurrentSorters());
-            }
-            this.onSortChanged.next(currentSorters);
-        }
-        else if (sender === 'local') {
-            this.onSortChanged.next(this.getCurrentLocalSorters());
-        }
     }
 }
 
@@ -6674,6 +6753,22 @@ const arrayToCsvFormatter = (row, cell, value, columnDef, dataContext) => {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+const boldFormatter = (row, cell, value, columnDef, dataContext) => {
+    if (!isNaN(+value)) {
+        return '';
+    }
+    else if (value >= 0) {
+        return `<span style="font-weight: bold">${decimalFormatted(value, 2, 2)}$</span>`;
+    }
+    else {
+        return `<span style="font-weight: bold">${decimalFormatted(value, 2, 2)}$</span>`;
+    }
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 const checkboxFormatter = (row, cell, value, columnDef, dataContext) => value ? '&#x2611;' : '';
 
 /**
@@ -6768,6 +6863,44 @@ const dateUsFormatter = (row, cell, value, columnDef, dataContext) => value ? mo
  * @suppress {checkTypes} checked by tsc
  */
 const deleteIconFormatter = (row, cell, value, columnDef, dataContext) => `<i class="fa fa-trash pointer delete-icon" aria-hidden="true"></i>`;
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const dollarColoredBoldFormatter = (row, cell, value, columnDef, dataContext) => {
+    if (isNaN(+value)) {
+        return '';
+    }
+    else if (value >= 0) {
+        return `<span style="color:green; font-weight: bold;">$${decimalFormatted(value, 2, 2)}</span>`;
+    }
+    else {
+        return `<span style="color:red; font-weight: bold;">$${decimalFormatted(value, 2, 2)}</span>`;
+    }
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const dollarColoredFormatter = (row, cell, value, columnDef, dataContext) => {
+    if (isNaN(+value)) {
+        return '';
+    }
+    else if (value >= 0) {
+        return `<span style="color:green;">$${decimalFormatted(value, 2, 2)}</span>`;
+    }
+    else {
+        return `<span style="color:red;">$${decimalFormatted(value, 2, 2)}</span>`;
+    }
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const dollarFormatter = (row, cell, value, columnDef, dataContext) => isNaN(+value) ? '' : `$${decimalFormatted(value, 2, 4)}`;
 
 /**
  * @fileoverview added by tsickle
@@ -6982,6 +7115,8 @@ const yesNoFormatter = (row, cell, value, columnDef, dataContext) => value ? 'Ye
 const Formatters = {
     /** Takes an array of string and converts it to a comma delimited string */
     arrayToCsv: arrayToCsvFormatter,
+    /** show value in bold font weight as well */
+    bold: boldFormatter,
     /** When value is filled (true), it will display a checkbox Unicode icon */
     checkbox: checkboxFormatter,
     /** When value is filled (true), it will display a Font-Awesome icon (fa-check) */
@@ -7010,6 +7145,12 @@ const Formatters = {
     dateTimeUsAmPm: dateTimeUsAmPmFormatter,
     /** Displays a Font-Awesome delete icon (fa-trash) */
     deleteIcon: deleteIconFormatter,
+    /** Display the value as 2 decimals formatted with dollar sign '$' at the end of of the value */
+    dollar: dollarFormatter,
+    /** Display the value as 2 decimals formatted with dollar sign '$' at the end of of the value, change color of text to red/green on negative/positive value */
+    dollarColored: dollarColoredFormatter,
+    /** Display the value as 2 decimals formatted with dollar sign '$' at the end of of the value, change color of text to red/green on negative/positive value, show it in bold font weight as well */
+    dollarColoredBold: dollarColoredBoldFormatter,
     /** Displays a Font-Awesome edit icon (fa-pencil) */
     editIcon: editIconFormatter,
     /** Takes an hyperlink cell value and transforms it into a real hyperlink, given that the value starts with 1 of these (http|ftp|https). The structure will be "<a href="hyperlink">hyperlink</a>" */
@@ -7039,6 +7180,271 @@ const Formatters = {
     uppercase: uppercaseFormatter,
     /** Takes a boolean value and display a string 'Yes' or 'No' */
     yesNo: yesNoFormatter
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const avgTotalsPercentageFormatter = (totals, columnDef, grid) => {
+    const /** @type {?} */ field = columnDef.field || '';
+    const /** @type {?} */ val = totals.avg && totals.avg[field];
+    const /** @type {?} */ prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    const /** @type {?} */ suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + Math.round(val) + '%' + suffix;
+    }
+    return '';
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const avgTotalsDollarFormatter = (totals, columnDef, grid) => {
+    const /** @type {?} */ field = columnDef.field || '';
+    const /** @type {?} */ val = totals.avg && totals.avg[field];
+    const /** @type {?} */ prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    const /** @type {?} */ suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + '$' + decimalFormatted(val, 2, 4) + suffix;
+    }
+    return '';
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const avgTotalsFormatter = (totals, columnDef, grid) => {
+    const /** @type {?} */ field = columnDef.field || '';
+    const /** @type {?} */ val = totals.avg && totals.avg[field];
+    const /** @type {?} */ prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    const /** @type {?} */ suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + Math.round(val) + suffix;
+    }
+    return '';
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const minTotalsFormatter = (totals, columnDef, grid) => {
+    const /** @type {?} */ field = columnDef.field || '';
+    const /** @type {?} */ val = totals.min && totals.min[field];
+    const /** @type {?} */ prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    const /** @type {?} */ suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix;
+    }
+    return '';
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const maxTotalsFormatter = (totals, columnDef, grid) => {
+    const /** @type {?} */ field = columnDef.field || '';
+    const /** @type {?} */ val = totals.max && totals.max[field];
+    const /** @type {?} */ prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    const /** @type {?} */ suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix;
+    }
+    return '';
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const sumTotalsColoredFormatter = (totals, columnDef, grid) => {
+    const /** @type {?} */ field = columnDef.field || '';
+    const /** @type {?} */ val = totals.sum && totals.sum[field];
+    const /** @type {?} */ prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    const /** @type {?} */ suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (isNaN(+val)) {
+        return '';
+    }
+    else if (val >= 0) {
+        return `<span style="color:green;">${prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix}</span>`;
+    }
+    else {
+        return `<span style="color:red;">${prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix}</span>`;
+    }
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const sumTotalsDollarColoredBoldFormatter = (totals, columnDef, grid) => {
+    const /** @type {?} */ field = columnDef.field || '';
+    const /** @type {?} */ val = totals.sum && totals.sum[field];
+    const /** @type {?} */ prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    const /** @type {?} */ suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (isNaN(+val)) {
+        return '';
+    }
+    else if (val >= 0) {
+        return `<span style="color:green; font-weight: bold;">${prefix + '$' + decimalFormatted(val, 2, 2) + suffix}</span>`;
+    }
+    else {
+        return `<span style="color:red; font-weight: bold;">${prefix + '$' + decimalFormatted(val, 2, 2) + suffix}</span>`;
+    }
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const sumTotalsDollarColoredFormatter = (totals, columnDef, grid) => {
+    const /** @type {?} */ field = columnDef.field || '';
+    const /** @type {?} */ val = totals.sum && totals.sum[field];
+    const /** @type {?} */ prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    const /** @type {?} */ suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (isNaN(+val)) {
+        return '';
+    }
+    else if (val >= 0) {
+        return `<span style="color:green;">${prefix + '$' + decimalFormatted(val, 2, 2) + suffix}</span>`;
+    }
+    else {
+        return `<span style="color:red;">${prefix + '$' + decimalFormatted(val, 2, 2) + suffix}</span>`;
+    }
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const sumTotalsDollarBoldFormatter = (totals, columnDef, grid) => {
+    const /** @type {?} */ field = columnDef.field || '';
+    const /** @type {?} */ val = totals.sum && totals.sum[field];
+    const /** @type {?} */ prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    const /** @type {?} */ suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return `<span style="font-weight: bold;">${prefix + '$' + decimalFormatted(val, 2, 4) + suffix}</span>`;
+    }
+    return '';
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const sumTotalsDollarFormatter = (totals, columnDef, grid) => {
+    const /** @type {?} */ field = columnDef.field || '';
+    const /** @type {?} */ val = totals.sum && totals.sum[field];
+    const /** @type {?} */ prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    const /** @type {?} */ suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + '$' + decimalFormatted(val, 2, 2) + suffix;
+    }
+    return '';
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const sumTotalsFormatter = (totals, columnDef, grid) => {
+    const /** @type {?} */ field = columnDef.field || '';
+    const /** @type {?} */ val = totals.sum && totals.sum[field];
+    const /** @type {?} */ prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    const /** @type {?} */ suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix;
+    }
+    return '';
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const sumTotalsBoldFormatter = (totals, columnDef, grid) => {
+    const /** @type {?} */ field = columnDef.field || '';
+    const /** @type {?} */ val = totals.sum && totals.sum[field];
+    const /** @type {?} */ prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
+    const /** @type {?} */ suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+    if (val != null) {
+        return `<span style="font-weight: bold;">${prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix}`;
+    }
+    return '';
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * Provides a list of different Formatters that will change the cell value displayed in the UI
+ */
+const GroupTotalFormatters = {
+    /**
+       * Average all the column totals
+       * Extra options available in "params":: "groupFormatterPrefix" and "groupFormatterSuffix", e.g.: params: { groupFormatterPrefix: '<i>Total</i>: ', groupFormatterSuffix: '$' }
+       */
+    avgTotals: avgTotalsFormatter,
+    /**
+       * Average all the column totals and display '$' at the end of the value
+       * Extra options available in "params":: "groupFormatterPrefix" and "groupFormatterSuffix", e.g.: params: { groupFormatterPrefix: '<i>Total</i>: ', groupFormatterSuffix: '$' }
+       */
+    avgTotalsDollar: avgTotalsDollarFormatter,
+    /**
+       * Average all the column totals and display '%' at the end of the value
+       * Extra options available in "params":: "groupFormatterPrefix" and "groupFormatterSuffix", e.g.: params: { groupFormatterPrefix: '<i>Total</i>: ', groupFormatterSuffix: '$' }
+       */
+    avgTotalsPercentage: avgTotalsPercentageFormatter,
+    /**
+       * Show max value of all the column totals
+       * Extra options available in "params":: "groupFormatterPrefix" and "groupFormatterSuffix", e.g.: params: { groupFormatterPrefix: '<i>Total</i>: ', groupFormatterSuffix: '$' }
+       */
+    maxTotals: maxTotalsFormatter,
+    /**
+       * Show min value of all the column totals
+       * Extra options available in "params":: "groupFormatterPrefix" and "groupFormatterSuffix", e.g.: params: { groupFormatterPrefix: '<i>Total</i>: ', groupFormatterSuffix: '$' }
+       */
+    minTotals: minTotalsFormatter,
+    /**
+       * Sums up all the column totals
+       * Extra options available in "params":: "groupFormatterPrefix" and "groupFormatterSuffix", e.g.: params: { groupFormatterPrefix: '<i>Total</i>: ', groupFormatterSuffix: '$' }
+       */
+    sumTotals: sumTotalsFormatter,
+    /**
+       * Sums up all the column totals and display it in bold font weight
+       * Extra options available in "params":: "groupFormatterPrefix" and "groupFormatterSuffix", e.g: params: { groupFormatterPrefix: '<i>Total</i>: ', groupFormatterSuffix: '$' }
+       */
+    sumTotalsBold: sumTotalsBoldFormatter,
+    /**
+       * Sums up all the column totals, change color of text to red/green on negative/positive value
+       * Extra options available in "params":: "groupFormatterPrefix" and "groupFormatterSuffix", e.g: params: { groupFormatterPrefix: '<i>Total</i>: ', groupFormatterSuffix: '$' }
+       */
+    sumTotalsColored: sumTotalsColoredFormatter,
+    /**
+       * Sums up all the column totals and display dollar sign
+       * Extra options available in "params":: "groupFormatterPrefix" and "groupFormatterSuffix", e.g: params: { groupFormatterPrefix: '<i>Total</i>: ', groupFormatterSuffix: '$' }
+       */
+    sumTotalsDollar: sumTotalsDollarFormatter,
+    /**
+       * Sums up all the column totals and display dollar sign and show it in bold font weight
+       * Extra options available in "params":: "groupFormatterPrefix" and "groupFormatterSuffix", e.g: params: { groupFormatterPrefix: '<i>Total</i>: ', groupFormatterSuffix: '$' }
+       */
+    sumTotalsDollarBold: sumTotalsDollarBoldFormatter,
+    /**
+       * Sums up all the column totals, change color of text to red/green on negative/positive value
+       * Extra options available in "params":: "groupFormatterPrefix" and "groupFormatterSuffix", e.g: params: { groupFormatterPrefix: '<i>Total</i>: ', groupFormatterSuffix: '$' }
+       */
+    sumTotalsDollarColored: sumTotalsDollarColoredFormatter,
+    /**
+       * Sums up all the column totals, change color of text to red/green on negative/positive value, show it in bold font weight as well
+       * Extra options available in "params":: "groupFormatterPrefix" and "groupFormatterSuffix", e.g: params: { groupFormatterPrefix: '<i>Total</i>: ', groupFormatterSuffix: '$' }
+       */
+    sumTotalsDollarColoredBold: sumTotalsDollarColoredBoldFormatter,
 };
 
 /**
@@ -7374,6 +7780,7 @@ const GlobalGridOptions = {
         filename: 'export',
         format: FileType.csv,
         groupingAggregatorRowText: '',
+        sanitizeDataExport: false,
         useUtf8WithBom: true
     },
     exportWithFormatter: false,
@@ -7382,9 +7789,16 @@ const GlobalGridOptions = {
         hideForceFitButton: false,
         hideSyncResizeButton: true,
         iconCssClass: 'fa fa-bars',
+        iconClearAllFiltersCommand: 'fa fa-filter text-danger',
+        iconClearAllSortingCommand: 'fa fa-unsorted text-danger',
+        iconExportCsvCommand: 'fa fa-download',
+        iconExportTextDelimitedCommand: 'fa fa-download',
+        iconRefreshDatasetCommand: 'fa fa-refresh',
+        iconToggleFilterCommand: 'fa fa-random',
         menuWidth: 16,
         resizeOnShowHeaderRow: false,
         showClearAllFiltersCommand: true,
+        showClearAllSortingCommand: true,
         showExportCsvCommand: true,
         showRefreshDatasetCommand: true,
         showToggleFilterCommand: true
@@ -7613,7 +8027,7 @@ class AngularSlickgridComponent {
         });
         // attach external sorting (backend) when available or default onSort (dataView)
         if (gridOptions.enableSorting) {
-            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, gridOptions) : this.sortService.attachLocalOnSort(grid, gridOptions, this._dataView, this._columnDefinitions);
+            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
         }
         // attach external filter (backend) when available or default onFilter (dataView)
         if (gridOptions.enableFiltering) {
@@ -7928,5 +8342,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, Sorters, AvgAggregator as ɵb, MaxAggregator as ɵd, MinAggregator as ɵc, SumAggregator as ɵe, CheckboxEditor as ɵf, DateEditor as ɵg, FloatEditor as ɵh, IntegerEditor as ɵi, LongTextEditor as ɵj, MultipleSelectEditor as ɵk, SingleSelectEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵbc, CompoundInputFilter as ɵbd, InputFilter as ɵy, MultipleSelectFilter as ɵz, SelectFilter as ɵbb, SingleSelectFilter as ɵba, arrayToCsvFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, editIconFormatter as ɵbq, hyperlinkFormatter as ɵbr, hyperlinkUriPrefixFormatter as ɵbs, infoIconFormatter as ɵbt, lowercaseFormatter as ɵbu, multipleFormatter as ɵbv, percentCompleteBarFormatter as ɵbx, percentCompleteFormatter as ɵbw, progressBarFormatter as ɵby, translateBooleanFormatter as ɵca, translateFormatter as ɵbz, uppercaseFormatter as ɵcb, yesNoFormatter as ɵcc, SharedService as ɵa, dateIsoSorter as ɵce, dateSorter as ɵcd, dateUsShortSorter as ɵcg, dateUsSorter as ɵcf, numericSorter as ɵch, stringSorter as ɵci };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, dollarColoredBoldFormatter as ɵbs, dollarColoredFormatter as ɵbr, dollarFormatter as ɵbq, editIconFormatter as ɵbt, hyperlinkFormatter as ɵbu, hyperlinkUriPrefixFormatter as ɵbv, infoIconFormatter as ɵbw, lowercaseFormatter as ɵbx, multipleFormatter as ɵby, percentCompleteBarFormatter as ɵca, percentCompleteFormatter as ɵbz, progressBarFormatter as ɵcb, translateBooleanFormatter as ɵcd, translateFormatter as ɵcc, uppercaseFormatter as ɵce, yesNoFormatter as ɵcf, avgTotalsDollarFormatter as ɵch, avgTotalsFormatter as ɵcg, avgTotalsPercentageFormatter as ɵci, maxTotalsFormatter as ɵcj, minTotalsFormatter as ɵck, sumTotalsBoldFormatter as ɵcm, sumTotalsColoredFormatter as ɵcn, sumTotalsDollarBoldFormatter as ɵcp, sumTotalsDollarColoredBoldFormatter as ɵcr, sumTotalsDollarColoredFormatter as ɵcq, sumTotalsDollarFormatter as ɵco, sumTotalsFormatter as ɵcl, dateIsoSorter as ɵct, dateSorter as ɵcs, dateUsShortSorter as ɵcv, dateUsSorter as ɵcu, numericSorter as ɵcw, stringSorter as ɵcx };
 //# sourceMappingURL=angular-slickgrid.js.map
