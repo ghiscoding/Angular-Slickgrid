@@ -10,9 +10,16 @@ const DATAGRID_BOTTOM_PADDING = 20;
 const DATAGRID_PAGINATION_HEIGHT = 35;
 let timer: any;
 
+export interface GridDimension {
+  height: number;
+  width: number;
+  heightWithPagination?: number;
+}
+
 export class ResizerService {
   private _grid: any;
   private _gridOptions: GridOption;
+  private _lastDimensions: GridDimension;
 
   init(grid: any, gridOptions: GridOption): void {
     this._grid = grid;
@@ -90,8 +97,12 @@ export class ResizerService {
     $(window).off('resize.grid');
   }
 
+  getLastResizeDimensions(): GridDimension {
+    return this._lastDimensions;
+  }
+
   /** Resize the datagrid to fit the browser height & width */
-  resizeGrid(delay?: number, newSizes?: { height: number, width: number }): void {
+  resizeGrid(delay?: number, newSizes?: GridDimension): void {
     if (!this._grid || !this._gridOptions) {
       throw new Error(`
       Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined.
@@ -114,6 +125,12 @@ export class ResizerService {
         gridElm.width(newSizes.width);
         gridContainerElm.height(newSizes.height);
         gridContainerElm.width(newSizes.width);
+
+        // keep last resized dimensions
+        this._lastDimensions = newSizes;
+        if ((this._gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
+          this._lastDimensions.heightWithPagination = newSizes.height + DATAGRID_PAGINATION_HEIGHT;
+        }
 
         // resize the slickgrid canvas on all browser except some IE versions
         // exclude all IE below IE11
