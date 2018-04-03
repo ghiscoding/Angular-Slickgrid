@@ -3910,6 +3910,9 @@ var ResizerService = /** @class */ (function () {
     ResizerService.prototype.dispose = function () {
         $(window).off('resize.grid');
     };
+    ResizerService.prototype.getLastResizeDimensions = function () {
+        return this._lastDimensions;
+    };
     ResizerService.prototype.resizeGrid = function (delay, newSizes) {
         var _this = this;
         if (!this._grid || !this._gridOptions) {
@@ -3926,6 +3929,10 @@ var ResizerService = /** @class */ (function () {
                 gridElm.width(newSizes.width);
                 gridContainerElm.height(newSizes.height);
                 gridContainerElm.width(newSizes.width);
+                _this._lastDimensions = newSizes;
+                if ((_this._gridOptions.enablePagination || _this._gridOptions.backendServiceApi)) {
+                    _this._lastDimensions.heightWithPagination = newSizes.height + DATAGRID_PAGINATION_HEIGHT;
+                }
                 if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && _this._grid) {
                     _this._grid.resizeCanvas();
                 }
