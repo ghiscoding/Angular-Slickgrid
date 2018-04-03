@@ -5,8 +5,8 @@ import { SumAggregator } from './sumAggregator';
 
 /** Provides a list of different Aggregators for the Group Formatter */
 export const Aggregators = {
-  avg: AvgAggregator,
-  min: MinAggregator,
-  max: MaxAggregator,
-  sum: SumAggregator
+  Avg: AvgAggregator,
+  Min: MinAggregator,
+  Max: MaxAggregator,
+  Sum: SumAggregator
 };
