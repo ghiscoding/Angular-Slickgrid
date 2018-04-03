@@ -111,8 +111,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   ngOnInit(): void {
     this.onBeforeGridCreate.emit(true);
-    this.gridHeightString = `${this.gridHeight}px`;
-    this.gridWidthString = `${this.gridWidth}px`;
+    if (!this.gridOptions.enableAutoResize && !this.gridOptions.autoResize) {
+      this.gridHeightString = `${this.gridHeight}px`;
+      this.gridWidthString = `${this.gridWidth}px`;
+    }
   }
 
   ngOnDestroy(): void {
@@ -355,8 +357,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (grid && options.autoFitColumnsOnFirstLoad) {
         grid.autosizeColumns();
       }
-    } else {
-      this.resizer.resizeGrid(0, { height: this.gridHeight, width: this.gridWidth });
     }
   }
 

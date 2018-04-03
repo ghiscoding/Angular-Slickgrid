@@ -32,7 +32,8 @@ export class GridFormatterComponent implements OnInit {
       autoResize: {
         containerId: 'demo-container',
         sidePadding: 15
-      }
+      },
+      enableAutoResize: true
     };
 
     // mock a dataset
