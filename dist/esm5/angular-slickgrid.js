@@ -4030,10 +4030,10 @@ var SumAggregator = /** @class */ (function () {
     return SumAggregator;
 }());
 var Aggregators = {
-    avg: AvgAggregator,
-    min: MinAggregator,
-    max: MaxAggregator,
-    sum: SumAggregator
+    Avg: AvgAggregator,
+    Min: MinAggregator,
+    Max: MaxAggregator,
+    Sum: SumAggregator
 };
 var CheckboxEditor = /** @class */ (function () {
     function CheckboxEditor(args) {
@@ -4399,8 +4399,10 @@ var LongTextEditor = /** @class */ (function () {
     };
     return LongTextEditor;
 }());
+var SELECT_ELEMENT_HEIGHT = 26;
 var MultipleSelectEditor = /** @class */ (function () {
     function MultipleSelectEditor(args) {
+        var _this = this;
         this.args = args;
         this.collection = [];
         this.gridOptions = (this.args.grid.getOptions());
@@ -4414,7 +4416,8 @@ var MultipleSelectEditor = /** @class */ (function () {
             okButton: true,
             selectAllDelimiter: ['', ''],
             width: 150,
-            offsetLeft: 20
+            offsetLeft: 20,
+            onOpen: function () { return _this.autoAdjustDropPosition(_this.$editorElm, _this.editorElmOptions); },
         };
         if (this._translate) {
             this.defaultOptions.countSelected = this._translate.instant('X_OF_Y_SELECTED');
@@ -4510,6 +4513,32 @@ var MultipleSelectEditor = /** @class */ (function () {
         });
         return "<select class=\"ms-filter search-filter\" multiple=\"multiple\">" + options + "</select>";
     };
+    MultipleSelectEditor.prototype.autoAdjustDropPosition = function (multipleSelectDomElement, multipleSelectOptions) {
+        var selectElmHeight = SELECT_ELEMENT_HEIGHT;
+        var windowHeight = $(window).innerHeight() || 300;
+        var pageScroll = $('body').scrollTop() || 0;
+        var $msDropContainer = multipleSelectOptions.container ? $(multipleSelectOptions.container) : multipleSelectDomElement;
+        var $msDrop = $msDropContainer.find('.ms-drop');
+        var msDropHeight = $msDrop.height() || 0;
+        var msDropOffsetTop = $msDrop.offset().top;
+        var space = windowHeight - (msDropOffsetTop - pageScroll);
+        if (space < msDropHeight) {
+            if (multipleSelectOptions.container) {
+                var newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
+                if (newOffsetTop > 0) {
+                    $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
+                }
+            }
+            else {
+                $msDrop.addClass('top');
+            }
+            $msDrop.removeClass('bottom');
+        }
+        else {
+            $msDrop.addClass('bottom');
+            $msDrop.removeClass('top');
+        }
+    };
     MultipleSelectEditor.prototype.createDomElement = function (editorTemplate) {
         var _this = this;
         this.$editorElm = $(editorTemplate);
@@ -4521,8 +4550,8 @@ var MultipleSelectEditor = /** @class */ (function () {
         }
         else {
             var elementOptions = (this.columnDef.params) ? this.columnDef.params.elementOptions : {};
-            var options = Object.assign({}, this.defaultOptions, elementOptions);
-            this.$editorElm = this.$editorElm.multipleSelect(options);
+            this.editorElmOptions = Object.assign({}, this.defaultOptions, elementOptions);
+            this.$editorElm = this.$editorElm.multipleSelect(this.editorElmOptions);
             setTimeout(function () { return _this.$editorElm.multipleSelect('open'); });
         }
     };
@@ -4533,8 +4562,10 @@ var MultipleSelectEditor = /** @class */ (function () {
     };
     return MultipleSelectEditor;
 }());
+var SELECT_ELEMENT_HEIGHT$1 = 26;
 var SingleSelectEditor = /** @class */ (function () {
     function SingleSelectEditor(args) {
+        var _this = this;
         this.args = args;
         this.collection = [];
         this.gridOptions = (this.args.grid.getOptions());
@@ -4546,7 +4577,8 @@ var SingleSelectEditor = /** @class */ (function () {
             maxHeight: 200,
             width: 150,
             offsetLeft: 20,
-            single: true
+            single: true,
+            onOpen: function () { return _this.autoAdjustDropPosition(_this.$editorElm, _this.editorElmOptions); },
         };
         this.init();
     }
@@ -4637,6 +4669,32 @@ var SingleSelectEditor = /** @class */ (function () {
         });
         return "<select class=\"ms-filter search-filter\">" + options + "</select>";
     };
+    SingleSelectEditor.prototype.autoAdjustDropPosition = function (multipleSelectDomElement, multipleSelectOptions) {
+        var selectElmHeight = SELECT_ELEMENT_HEIGHT$1;
+        var windowHeight = $(window).innerHeight() || 300;
+        var pageScroll = $('body').scrollTop() || 0;
+        var $msDropContainer = multipleSelectOptions.container ? $(multipleSelectOptions.container) : multipleSelectDomElement;
+        var $msDrop = $msDropContainer.find('.ms-drop');
+        var msDropHeight = $msDrop.height() || 0;
+        var msDropOffsetTop = $msDrop.offset().top;
+        var space = windowHeight - (msDropOffsetTop - pageScroll);
+        if (space < msDropHeight) {
+            if (multipleSelectOptions.container) {
+                var newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
+                if (newOffsetTop > 0) {
+                    $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
+                }
+            }
+            else {
+                $msDrop.addClass('top');
+            }
+            $msDrop.removeClass('bottom');
+        }
+        else {
+            $msDrop.addClass('bottom');
+            $msDrop.removeClass('top');
+        }
+    };
     SingleSelectEditor.prototype.createDomElement = function (editorTemplate) {
         var _this = this;
         this.$editorElm = $(editorTemplate);
@@ -4648,8 +4706,8 @@ var SingleSelectEditor = /** @class */ (function () {
         }
         else {
             var elementOptions = (this.columnDef.params) ? this.columnDef.params.elementOptions : {};
-            var options = Object.assign({}, this.defaultOptions, elementOptions);
-            this.$editorElm = this.$editorElm.multipleSelect(options);
+            this.editorElmOptions = Object.assign({}, this.defaultOptions, elementOptions);
+            this.$editorElm = this.$editorElm.multipleSelect(this.editorElmOptions);
             setTimeout(function () { return _this.$editorElm.multipleSelect('open'); });
         }
     };
@@ -5425,8 +5483,10 @@ var AngularSlickgridComponent = /** @class */ (function () {
     });
     AngularSlickgridComponent.prototype.ngOnInit = function () {
         this.onBeforeGridCreate.emit(true);
-        this.gridHeightString = this.gridHeight + "px";
-        this.gridWidthString = this.gridWidth + "px";
+        if (!this.gridOptions.enableAutoResize && !this.gridOptions.autoResize) {
+            this.gridHeightString = this.gridHeight + "px";
+            this.gridWidthString = this.gridWidth + "px";
+        }
     };
     AngularSlickgridComponent.prototype.ngOnDestroy = function () {
         this.onBeforeGridDestroy.emit(this.grid);
@@ -5617,9 +5677,6 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 grid.autosizeColumns();
             }
         }
-        else {
-            this.resizer.resizeGrid(0, { height: this.gridHeight, width: this.gridWidth });
-        }
     };
     AngularSlickgridComponent.prototype.mergeGridOptions = function (gridOptions) {
         gridOptions.gridId = this.gridId;
@@ -5680,7 +5737,7 @@ AngularSlickgridComponent.decorators = [
     { type: Injectable },
     { type: Component, args: [{
                 selector: 'angular-slickgrid',
-                template: "<div id=\"slickGridContainer-{{gridId}}\" class=\"gridPane\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" [style.height]=\"gridHeightString\" [style.width]=\"gridWidthString\">\n    </div>\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n"
+                template: "<div id=\"slickGridContainer-{{gridId}}\" class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n"
             },] },
 ];
 AngularSlickgridComponent.ctorParameters = function () { return [

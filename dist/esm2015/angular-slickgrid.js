@@ -5663,10 +5663,10 @@ class SumAggregator {
  * Provides a list of different Aggregators for the Group Formatter
  */
 const Aggregators = {
-    avg: AvgAggregator,
-    min: MinAggregator,
-    max: MaxAggregator,
-    sum: SumAggregator
+    Avg: AvgAggregator,
+    Min: MinAggregator,
+    Max: MaxAggregator,
+    Sum: SumAggregator
 };
 
 /**
@@ -6261,6 +6261,8 @@ class LongTextEditor {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+// height in pixel of the multiple-select DOM element
+const SELECT_ELEMENT_HEIGHT = 26;
 /**
  * Slickgrid editor class for multiple select lists
  */
@@ -6285,7 +6287,8 @@ class MultipleSelectEditor {
             okButton: true,
             selectAllDelimiter: ['', ''],
             width: 150,
-            offsetLeft: 20
+            offsetLeft: 20,
+            onOpen: () => this.autoAdjustDropPosition(this.$editorElm, this.editorElmOptions),
         };
         if (this._translate) {
             this.defaultOptions.countSelected = this._translate.instant('X_OF_Y_SELECTED');
@@ -6415,6 +6418,43 @@ class MultipleSelectEditor {
         return `<select class="ms-filter search-filter" multiple="multiple">${options}</select>`;
     }
     /**
+     * Automatically adjust the multiple-select dropup or dropdown by available space
+     * @param {?} multipleSelectDomElement
+     * @param {?} multipleSelectOptions
+     * @return {?}
+     */
+    autoAdjustDropPosition(multipleSelectDomElement, multipleSelectOptions) {
+        // height in pixel of the multiple-select element
+        const /** @type {?} */ selectElmHeight = SELECT_ELEMENT_HEIGHT;
+        const /** @type {?} */ windowHeight = $(window).innerHeight() || 300;
+        const /** @type {?} */ pageScroll = $('body').scrollTop() || 0;
+        const /** @type {?} */ $msDropContainer = multipleSelectOptions.container ? $(multipleSelectOptions.container) : multipleSelectDomElement;
+        const /** @type {?} */ $msDrop = $msDropContainer.find('.ms-drop');
+        const /** @type {?} */ msDropHeight = $msDrop.height() || 0;
+        const /** @type {?} */ msDropOffsetTop = $msDrop.offset().top;
+        const /** @type {?} */ space = windowHeight - (msDropOffsetTop - pageScroll);
+        if (space < msDropHeight) {
+            if (multipleSelectOptions.container) {
+                // when using a container, we need to offset the drop ourself
+                // and also make sure there's space available on top before doing so
+                const /** @type {?} */ newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
+                if (newOffsetTop > 0) {
+                    $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
+                }
+            }
+            else {
+                // without container, we simply need to add the "top" class to the drop
+                $msDrop.addClass('top');
+            }
+            $msDrop.removeClass('bottom');
+        }
+        else {
+            $msDrop.addClass('bottom');
+            $msDrop.removeClass('top');
+        }
+    }
+    /**
+     * Build the template HTML string
      * @param {?} editorTemplate
      * @return {?}
      */
@@ -6429,8 +6469,8 @@ class MultipleSelectEditor {
         }
         else {
             const /** @type {?} */ elementOptions = (this.columnDef.params) ? this.columnDef.params.elementOptions : {};
-            const /** @type {?} */ options = Object.assign({}, this.defaultOptions, elementOptions);
-            this.$editorElm = this.$editorElm.multipleSelect(options);
+            this.editorElmOptions = Object.assign({}, this.defaultOptions, elementOptions);
+            this.$editorElm = this.$editorElm.multipleSelect(this.editorElmOptions);
             setTimeout(() => this.$editorElm.multipleSelect('open'));
         }
     }
@@ -6448,6 +6488,8 @@ class MultipleSelectEditor {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+// height in pixel of the multiple-select DOM element
+const SELECT_ELEMENT_HEIGHT$1 = 26;
 /**
  * Slickgrid editor class for single select lists
  */
@@ -6470,7 +6512,8 @@ class SingleSelectEditor {
             maxHeight: 200,
             width: 150,
             offsetLeft: 20,
-            single: true
+            single: true,
+            onOpen: () => this.autoAdjustDropPosition(this.$editorElm, this.editorElmOptions),
         };
         this.init();
     }
@@ -6595,6 +6638,43 @@ class SingleSelectEditor {
         return `<select class="ms-filter search-filter">${options}</select>`;
     }
     /**
+     * Automatically adjust the multiple-select dropup or dropdown by available space
+     * @param {?} multipleSelectDomElement
+     * @param {?} multipleSelectOptions
+     * @return {?}
+     */
+    autoAdjustDropPosition(multipleSelectDomElement, multipleSelectOptions) {
+        // height in pixel of the multiple-select element
+        const /** @type {?} */ selectElmHeight = SELECT_ELEMENT_HEIGHT$1;
+        const /** @type {?} */ windowHeight = $(window).innerHeight() || 300;
+        const /** @type {?} */ pageScroll = $('body').scrollTop() || 0;
+        const /** @type {?} */ $msDropContainer = multipleSelectOptions.container ? $(multipleSelectOptions.container) : multipleSelectDomElement;
+        const /** @type {?} */ $msDrop = $msDropContainer.find('.ms-drop');
+        const /** @type {?} */ msDropHeight = $msDrop.height() || 0;
+        const /** @type {?} */ msDropOffsetTop = $msDrop.offset().top;
+        const /** @type {?} */ space = windowHeight - (msDropOffsetTop - pageScroll);
+        if (space < msDropHeight) {
+            if (multipleSelectOptions.container) {
+                // when using a container, we need to offset the drop ourself
+                // and also make sure there's space available on top before doing so
+                const /** @type {?} */ newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
+                if (newOffsetTop > 0) {
+                    $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
+                }
+            }
+            else {
+                // without container, we simply need to add the "top" class to the drop
+                $msDrop.addClass('top');
+            }
+            $msDrop.removeClass('bottom');
+        }
+        else {
+            $msDrop.addClass('bottom');
+            $msDrop.removeClass('top');
+        }
+    }
+    /**
+     * Build the template HTML string
      * @param {?} editorTemplate
      * @return {?}
      */
@@ -6609,8 +6689,8 @@ class SingleSelectEditor {
         }
         else {
             const /** @type {?} */ elementOptions = (this.columnDef.params) ? this.columnDef.params.elementOptions : {};
-            const /** @type {?} */ options = Object.assign({}, this.defaultOptions, elementOptions);
-            this.$editorElm = this.$editorElm.multipleSelect(options);
+            this.editorElmOptions = Object.assign({}, this.defaultOptions, elementOptions);
+            this.$editorElm = this.$editorElm.multipleSelect(this.editorElmOptions);
             setTimeout(() => this.$editorElm.multipleSelect('open'));
         }
     }
@@ -7894,8 +7974,10 @@ class AngularSlickgridComponent {
      */
     ngOnInit() {
         this.onBeforeGridCreate.emit(true);
-        this.gridHeightString = `${this.gridHeight}px`;
-        this.gridWidthString = `${this.gridWidth}px`;
+        if (!this.gridOptions.enableAutoResize && !this.gridOptions.autoResize) {
+            this.gridHeightString = `${this.gridHeight}px`;
+            this.gridWidthString = `${this.gridWidth}px`;
+        }
     }
     /**
      * @return {?}
@@ -8134,9 +8216,6 @@ class AngularSlickgridComponent {
                 grid.autosizeColumns();
             }
         }
-        else {
-            this.resizer.resizeGrid(0, { height: this.gridHeight, width: this.gridWidth });
-        }
     }
     /**
      * @param {?} gridOptions
@@ -8231,8 +8310,8 @@ AngularSlickgridComponent.decorators = [
     { type: Injectable },
     { type: Component, args: [{
                 selector: 'angular-slickgrid',
-                template: `<div id="slickGridContainer-{{gridId}}" class="gridPane">
-    <div attr.id='{{gridId}}' class="slickgrid-container" [style.height]="gridHeightString" [style.width]="gridWidthString">
+                template: `<div id="slickGridContainer-{{gridId}}" class="gridPane" [style.width]="gridWidthString">
+    <div attr.id='{{gridId}}' class="slickgrid-container" style="width: 100%" [style.height]="gridHeightString">
     </div>
     <slick-pagination id="slickPagingContainer-{{gridId}}"
         *ngIf="showPagination"

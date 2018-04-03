@@ -6,6 +6,8 @@ export declare class MultipleSelectEditor implements Editor {
     private args;
     /** The JQuery DOM element */
     $editorElm: any;
+    /** Editor Multiple-Select options */
+    editorElmOptions: MultipleSelectOption;
     /** The slick grid column being edited */
     columnDef: Column;
     /** The multiple-select options for a multiple select list */
@@ -38,6 +40,11 @@ export declare class MultipleSelectEditor implements Editor {
     isValueChanged(): boolean;
     validate(): any;
     private buildTemplateHtmlString(collection);
+    /**
+     * Automatically adjust the multiple-select dropup or dropdown by available space
+     */
+    private autoAdjustDropPosition(multipleSelectDomElement, multipleSelectOptions);
+    /** Build the template HTML string */
     private createDomElement(editorTemplate);
     private refresh();
 }
