@@ -8,6 +8,9 @@ import {
 } from './../models/index';
 import { findOrDefault, CollectionService } from '../services/index';
 
+// height in pixel of the multiple-select DOM element
+const SELECT_ELEMENT_HEIGHT = 26;
+
 // using external non-typed js libraries
 declare var $: any;
 
@@ -17,6 +20,9 @@ declare var $: any;
 export class SingleSelectEditor implements Editor {
   /** The JQuery DOM element */
   $editorElm: any;
+
+  /** Editor Multiple-Select options */
+  editorElmOptions: MultipleSelectOption;
 
   /** The slick grid column being edited */
   columnDef: Column;
@@ -56,7 +62,8 @@ export class SingleSelectEditor implements Editor {
       maxHeight: 200,
       width: 150,
       offsetLeft: 20,
-      single: true
+      single: true,
+      onOpen: () => this.autoAdjustDropPosition(this.$editorElm, this.editorElmOptions),
     };
 
     this.init();
@@ -172,6 +179,41 @@ export class SingleSelectEditor implements Editor {
     return `<select class="ms-filter search-filter">${options}</select>`;
   }
 
+    /**
+   * Automatically adjust the multiple-select dropup or dropdown by available space
+   */
+  private autoAdjustDropPosition(multipleSelectDomElement: any, multipleSelectOptions: MultipleSelectOption) {
+    // height in pixel of the multiple-select element
+    const selectElmHeight = SELECT_ELEMENT_HEIGHT;
+
+    const windowHeight = $(window).innerHeight() || 300;
+    const pageScroll = $('body').scrollTop() || 0;
+    const $msDropContainer = multipleSelectOptions.container ? $(multipleSelectOptions.container) : multipleSelectDomElement;
+    const $msDrop = $msDropContainer.find('.ms-drop');
+    const msDropHeight = $msDrop.height() || 0;
+    const msDropOffsetTop = $msDrop.offset().top;
+    const space = windowHeight - (msDropOffsetTop - pageScroll);
+
+    if (space < msDropHeight) {
+      if (multipleSelectOptions.container) {
+        // when using a container, we need to offset the drop ourself
+        // and also make sure there's space available on top before doing so
+        const newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
+        if (newOffsetTop > 0) {
+          $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
+        }
+      } else {
+        // without container, we simply need to add the "top" class to the drop
+        $msDrop.addClass('top');
+      }
+      $msDrop.removeClass('bottom');
+    } else {
+      $msDrop.addClass('bottom');
+      $msDrop.removeClass('top');
+    }
+  }
+
+  /** Build the template HTML string */
   private createDomElement(editorTemplate: string) {
     this.$editorElm = $(editorTemplate);
 
@@ -184,8 +226,8 @@ export class SingleSelectEditor implements Editor {
       this.$editorElm.addClass('form-control');
     } else {
       const elementOptions = (this.columnDef.params) ? this.columnDef.params.elementOptions : {};
-      const options: MultipleSelectOption = { ...this.defaultOptions, ...elementOptions };
-      this.$editorElm = this.$editorElm.multipleSelect(options);
+      this.editorElmOptions = { ...this.defaultOptions, ...elementOptions };
+      this.$editorElm = this.$editorElm.multipleSelect(this.editorElmOptions);
       setTimeout(() => this.$editorElm.multipleSelect('open'));
     }
   }
