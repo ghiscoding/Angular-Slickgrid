@@ -2833,11 +2833,26 @@ var GraphqlService = /** @class */ (function () {
         if (this.options.addLocaleIntoQuery) {
             datasetFilters.locale = this.translate.currentLang || 'en';
         }
+        if (this.options.extraQueryArguments) {
+            try {
+                for (var _b = __values(this.options.extraQueryArguments), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var queryArgument = _c.value;
+                    datasetFilters[queryArgument.field] = queryArgument.value;
+                }
+            }
+            catch (e_7_1) { e_7 = { error: e_7_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_d = _b.return)) _d.call(_b);
+                }
+                finally { if (e_7) throw e_7.error; }
+            }
+        }
         datasetQb.filter(datasetFilters);
         queryQb.find(datasetQb);
         var enumSearchProperties = ['direction:', 'field:', 'operator:'];
         return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.options.keepArgumentFieldDoubleQuotes || false);
-        var e_6, _a;
+        var e_6, _a, e_7, _d;
     };
     GraphqlService.prototype.buildFilterQuery = function (inputArray) {
         var set = function (o, a) {
@@ -3057,19 +3072,19 @@ var GraphqlService = /** @class */ (function () {
                             }
                         }
                     }
-                    catch (e_7_1) { e_7 = { error: e_7_1 }; }
+                    catch (e_8_1) { e_8 = { error: e_8_1 }; }
                     finally {
                         try {
                             if (sortColumns_1_1 && !sortColumns_1_1.done && (_a = sortColumns_1.return)) _a.call(sortColumns_1);
                         }
-                        finally { if (e_7) throw e_7.error; }
+                        finally { if (e_8) throw e_8.error; }
                     }
                 }
             }
         }
         this._currentSorters = currentSorters;
         this.updateOptions({ sortingOptions: graphqlSorters });
-        var e_7, _a;
+        var e_8, _a;
     };
     GraphqlService.prototype.trimDoubleQuotesOnEnumField = function (inputStr, enumSearchWords, keepArgumentFieldDoubleQuotes) {
         var patternWordInQuotes = "s?((field:s*)?\".*?\")";
@@ -3281,14 +3296,14 @@ var OdataService = /** @class */ (function () {
                 }
             }
         }
-        catch (e_8_1) { e_8 = { error: e_8_1 }; }
+        catch (e_9_1) { e_9 = { error: e_9_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_8) throw e_8.error; }
+            finally { if (e_9) throw e_9.error; }
         }
-        var e_8, _c;
+        var e_9, _c;
     };
     return OdataService;
 }());
@@ -3539,12 +3554,12 @@ var GridOdataService = /** @class */ (function () {
                             }
                         }
                     }
-                    catch (e_9_1) { e_9 = { error: e_9_1 }; }
+                    catch (e_10_1) { e_10 = { error: e_10_1 }; }
                     finally {
                         try {
                             if (sortColumns_2_1 && !sortColumns_2_1.done && (_a = sortColumns_2.return)) _a.call(sortColumns_2);
                         }
-                        finally { if (e_9) throw e_9.error; }
+                        finally { if (e_10) throw e_10.error; }
                     }
                     sortByArray = sorterArray;
                 }
@@ -3557,7 +3572,7 @@ var GridOdataService = /** @class */ (function () {
         });
         this._currentSorters = (sortByArray);
         return this.odataService.buildQuery();
-        var e_9, _a;
+        var e_10, _a;
     };
     GridOdataService.prototype.castFilterToColumnFilter = function (columnFilters) {
         var filtersArray = (((typeof columnFilters === 'object') ? Object.keys(columnFilters).map(function (key) { return columnFilters[key]; }) : columnFilters));
@@ -4915,15 +4930,15 @@ var multipleFormatter = function (row, cell, value, columnDef, dataContext, grid
             currentValue = formatter(row, cell, currentValue, columnDef, dataContext, grid);
         }
     }
-    catch (e_10_1) { e_10 = { error: e_10_1 }; }
+    catch (e_11_1) { e_11 = { error: e_11_1 }; }
     finally {
         try {
             if (formatters_1_1 && !formatters_1_1.done && (_a = formatters_1.return)) _a.call(formatters_1);
         }
-        finally { if (e_10) throw e_10.error; }
+        finally { if (e_11) throw e_11.error; }
     }
     return currentValue;
-    var e_10, _a;
+    var e_11, _a;
 };
 var percentCompleteFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {

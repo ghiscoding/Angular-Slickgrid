@@ -78,6 +78,10 @@ Screenshots from the demo app with the `Bootstrap` theme (that is the only avail
 
 ![Slickgrid Server Side](/screenshots/filter_and_sort.png)
 
+### Editors and/or onCellClick
+
+![Editors](/screenshots/editors.png)
+
 ### Slickgrid Example with Server Side (Filter/Sort/Pagination)
 
 ![Slickgrid Server Side](/screenshots/pagination.png)
