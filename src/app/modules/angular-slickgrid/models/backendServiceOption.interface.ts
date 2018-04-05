@@ -1,3 +1,4 @@
+import { QueryArgument } from './queryArgument.interface';
 import { BackendEventChanged } from './backendEventChanged.interface';
 
 export interface BackendServiceOption {
@@ -15,6 +16,13 @@ export interface BackendServiceOption {
 
   /** Execute the process callback command on component init (page load) */
   executeProcessCommandOnInit?: boolean;
+
+  /**
+   * Extra query arguments that be passed in addition to the default query arguments
+   * For example in GraphQL, if we want to pass "userId" and we want the query to look like
+   * users (first: 20, offset: 10, userId: 123) { ... }
+   */
+  extraQueryArguments?: QueryArgument[];
 
   /** Backend Event callbacks that will be used by the Backend Service */
   onBackendEventApi?: BackendEventChanged;

@@ -137,6 +137,10 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       datasetName: GRAPHQL_QUERY_DATASET_NAME,
       isWithCursor: withCursor,
       addLocaleIntoQuery: true,
+      extraQueryArguments: [{
+        field: 'userId',
+        value: 123
+      }],
 
       // when dealing with complex objects, we want to keep our field name with double quotes
       // example with gender: query { users (orderBy:[{field:"gender",direction:ASC}]) {}

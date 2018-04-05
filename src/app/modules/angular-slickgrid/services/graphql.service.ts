@@ -126,6 +126,12 @@ export class GraphqlService implements BackendService {
       // first: 20, ... locale: "en-CA"
       datasetFilters.locale = this.translate.currentLang || 'en';
     }
+    if (this.options.extraQueryArguments) {
+      // first: 20, ... userId: 123
+      for (const queryArgument of this.options.extraQueryArguments) {
+        datasetFilters[queryArgument.field] = queryArgument.value;
+      }
+    }
 
     // query { users(first: 20, orderBy: [], filterBy: [])}
     datasetQb.filter(datasetFilters);
