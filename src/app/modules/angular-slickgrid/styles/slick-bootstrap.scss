@@ -130,11 +130,9 @@
 
       a, a:visited, .ui-widget-content a, .ui-widget-content a:visited {
         color: $link-color;
-        text-decoration: none;
       }
       a:hover, .ui-widget-content a:hover {
         color: $link-color-hover;
-        text-decoration: none;
         border-bottom: none;
       }
       table {
