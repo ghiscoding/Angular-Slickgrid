@@ -11,11 +11,8 @@ const myCustomCheckmarkFormatter: Formatter = (row: number, cell: number, value:
 export class GridColspanComponent implements OnInit {
   title = 'Example 15: Column Span & Header Grouping';
   subTitle = `
-    This example demonstrates how to easily span a column over multiple columns.
+    This example demonstrates how to easily span a row over multiple columns & how to group header titles.
     <ul>
-      <li>However please note that for this to work properly, you need to call the "dataView.getItemMetadata"
-      <b>only</b> after the "dataView" is created for it to render at the correct time (else you will face timing UI issues)
-      </li>
       <li>Note that you can add Sort but remember that it will sort by the data that the row contains, even if the data is visually hidden by colspan it will still sort it</li>
       <li>
         Header Grouping spanning accross multiple columns is working but has some UI issues on window resize.
@@ -46,7 +43,8 @@ export class GridColspanComponent implements OnInit {
       createPreHeaderPanel: true,
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 25,
-      explicitInitialization: true
+      explicitInitialization: true,
+      colspanCallback: this.renderDifferentColspan
     };
 
     this.getData();
@@ -69,37 +67,28 @@ export class GridColspanComponent implements OnInit {
     this.dataset = mockDataset;
   }
 
-  /** Execute after DataView is created and ready */
-  dataviewReady(dataView) {
-    // populate the dataset once the DataView is ready
-    this.getData();
-
-    // render different colspan right after the DataView is filled
-    this.renderDifferentColspan(dataView);
-  }
-
-  /** Call the "getItemMetadata" on the DataView to render different column span */
-  renderDifferentColspan(dataView: any) {
-    dataView.getItemMetadata = (rowNumber: number) => {
-      const item = dataView.getItem(rowNumber);
-
-      if (item.id % 2 === 1) {
-        return {
-          columns: {
-            duration: {
-              colspan: 3
-            }
+  /**
+   * A callback to render different row column span
+   * Your callback will always have the "item" argument which you can use to decide on the colspan
+   * Your return must always be in the form of:: return { columns: {}}
+   */
+  renderDifferentColspan(item: any) {
+    if (item.id % 2 === 1) {
+      return {
+        columns: {
+          duration: {
+            colspan: 3 // "duration" will span over 3 columns
           }
-        };
-      } else {
-        return {
-          columns: {
-            0: {
-              colspan: '*'
-            }
+        }
+      };
+    } else {
+      return {
+        columns: {
+          0: {
+            colspan: '*' // starting at column index 0, we will span accross all column (*)
           }
-        };
-      }
-    };
+        }
+      };
+    }
   }
 }

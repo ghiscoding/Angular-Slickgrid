@@ -296,6 +296,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       grid.invalidateRows(args.rows);
       grid.render();
     });
+
+    // does the user have a colspan callback?
+    if (gridOptions.colspanCallback) {
+      this._dataView.getItemMetadata = (rowNumber: number) => {
+        const item = this._dataView.getItem(rowNumber);
+        return gridOptions.colspanCallback(item);
+      };
+    }
   }
 
   attachBackendCallbackFunctions(gridOptions: GridOption) {

@@ -25,24 +25,26 @@ export class GroupingAndColspanService {
       this._columnDefinitions = grid.getColumns();
     }
 
-    // When dealing with Pre-Header Grouping colspan, we need to re-create the pre-header in multiple occasions
-    // for all these occasions, we have to trigger a re-create
-    if (this._gridOptions.createPreHeaderPanel) {
-      this._eventHandler.subscribe(grid.onSort, (e: Event, args: any) => {
-        this.createPreHeaderRowGroupingTitle();
-      });
-      this._eventHandler.subscribe(grid.onColumnsResized, (e: Event, args: any) => {
-        this.createPreHeaderRowGroupingTitle();
-      });
-      this._eventHandler.subscribe(dataView.onRowCountChanged, (e: Event, args: any) => {
-        this.createPreHeaderRowGroupingTitle();
-      });
+    if (grid && this._gridOptions) {
+      // When dealing with Pre-Header Grouping colspan, we need to re-create the pre-header in multiple occasions
+      // for all these occasions, we have to trigger a re-create
+      if (this._gridOptions.createPreHeaderPanel) {
+        this._eventHandler.subscribe(grid.onSort, (e: Event, args: any) => {
+          this.createPreHeaderRowGroupingTitle();
+        });
+        this._eventHandler.subscribe(grid.onColumnsResized, (e: Event, args: any) => {
+          this.createPreHeaderRowGroupingTitle();
+        });
+        this._eventHandler.subscribe(dataView.onRowCountChanged, (e: Event, args: any) => {
+          this.createPreHeaderRowGroupingTitle();
+        });
 
-      // also not sure why at this point, but it seems that I need to call the 1st create in a delayed execution
-      // probably some kind of timing issues and delaying it until the grid is fully ready does help
-      setTimeout(() => {
-        this.createPreHeaderRowGroupingTitle();
-      }, 50);
+        // also not sure why at this point, but it seems that I need to call the 1st create in a delayed execution
+        // probably some kind of timing issues and delaying it until the grid is fully ready does help
+        setTimeout(() => {
+          this.createPreHeaderRowGroupingTitle();
+        }, 50);
+      }
     }
   }
 

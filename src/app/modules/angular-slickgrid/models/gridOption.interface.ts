@@ -70,6 +70,9 @@ export interface GridOption {
   /** Defaults to false, which leads to create the footer row of the grid */
   createFooterRow?: boolean;
 
+  /** A callback function that will be used to define row spanning accross multiple columns */
+  colspanCallback?: (item: any) => { columns: any };
+
   /** Default to false, which leads to create an extra pre-header panel (on top of column header) for column grouping purposes */
   createPreHeaderPanel?: boolean;
 
