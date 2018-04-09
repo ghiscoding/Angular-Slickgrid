@@ -2,6 +2,7 @@ import { GridAddItemComponent } from './examples/grid-additem.component';
 import { GridMenuComponent } from './examples/grid-menu.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
+import { GridColspanComponent } from './examples/grid-colspan.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridGroupingComponent } from './examples/grid-grouping.component';
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'additem', component: GridAddItemComponent },
   { path: 'basic', component: GridBasicComponent },
+  { path: 'colspan', component: GridColspanComponent },
   { path: 'editor', component: GridEditorComponent },
   { path: 'formatter', component: GridFormatterComponent },
   { path: 'headerbutton', component: GridHeaderButtonComponent },

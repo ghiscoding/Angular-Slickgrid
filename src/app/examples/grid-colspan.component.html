@@ -1,9 +1,12 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<div>
+<div class="container">
+    <h2>{{title}}</h2>
+    <div class="subtitle" [innerHTML]="subTitle"></div>
+
     <angular-slickgrid gridId="grid2"
-                (onDataviewCreated)="dataviewReady($event)" (onGridCreated)="gridReady($event)"
               [columnDefinitions]="columnDefinitions"
               [gridOptions]="gridOptions"
-              [dataset]="dataset">
+              [dataset]="dataset"
+              (onDataviewCreated)="dataviewReady($event)">
     </angular-slickgrid>
   </div>
