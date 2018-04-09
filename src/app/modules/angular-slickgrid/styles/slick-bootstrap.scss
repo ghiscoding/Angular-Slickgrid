@@ -274,6 +274,9 @@
       }
 
       .slick-sort-indicator {
+        background: none;
+        font-family: $icon-font-family;
+        font-size: $icon-font-size;
         position: absolute;
         display: inline-block;
         color: $icon-sort-color;
@@ -283,11 +286,16 @@
         right: $icon-sort-position-right;
         top: $icon-sort-position-top;
       }
-
-      [class*="slick-sort-"] {
-        background: none;
-        font-family: $icon-font-family;
-        font-size: $icon-font-size;
+      .slick-sort-indicator-numbered {
+        font-family: $font-family;
+        font-size: $sort-indicator-number-font-size;
+        position: absolute;
+        display: inline-block;
+        color: $icon-sort-color;
+        width: $sort-indicator-number-width;
+        left: $sort-indicator-number-left;
+        right: $sort-indicator-number-right;
+        top: $sort-indicator-number-top;
       }
       .slick-sort-indicator-asc {
         &:before {

@@ -66,6 +66,9 @@ export const GlobalGridOptions: GridOption = {
   },
   headerRowHeight: 35,
   multiColumnSort: true,
+  numberedMultiColumnSort: true,
+  tristateMultiColumnSort: false,
+  sortColNumberInSeparateSpan: true,
   pagination: {
     pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
     pageSize: 25,

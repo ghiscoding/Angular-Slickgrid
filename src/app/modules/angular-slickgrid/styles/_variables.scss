@@ -80,11 +80,6 @@ $icon-group-font-weight:                bold !default;
 $icon-group-margin-right:               2px !default;
 $icon-group-height:                     20px !default;
 $icon-group-width:                      14px !default;
-$icon-sort-asc:                         "\f0d8" !default;
-$icon-sort-desc:                        "\f0d7" !default;
-$icon-sort-color:                       rgb(76, 128, 190) !default;
-$icon-sort-position-right:              10px !default;
-$icon-sort-position-top:                ((15px * $header-row-count) - 15px) !default;
 $table-background:                      transparent !default;
 $container-border:                      0px solid $border-color !default;
 $link-color:        				            #08c !default;
@@ -92,6 +87,18 @@ $link-color-hover:                      darker($link-color, 15%) !default;
 $gray-dark:              			          #333 !default;
 $text-color:             			          $gray-dark !default;
 $navbar-default-link-hover-color:	      $gray-dark !default;
+
+/* Sorting */
+$icon-sort-asc:                         "\f0d8" !default;
+$icon-sort-desc:                        "\f0d7" !default;
+$icon-sort-color:                       rgb(76, 128, 190) !default;
+$icon-sort-position-right:              10px !default;
+$icon-sort-position-top:                ((15px * $header-row-count) - 15px) !default;
+$sort-indicator-number-font-size:       10px !default;
+$sort-indicator-number-width:           8px !default;
+$sort-indicator-number-left:            auto !default;
+$sort-indicator-number-right:           0px !default;
+$sort-indicator-number-top:             27px !default;
 
 /* Grouping Totals Formatter */
 $group-totals-formatter-color:          gray !default;

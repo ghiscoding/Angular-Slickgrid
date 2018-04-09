@@ -64,7 +64,7 @@
     "lodash": "^4.17.4",
     "moment-mini": "^2.19.4",
     "rimraf": "^2.6.2",
-    "slickgrid": "2.3.15",
+    "slickgrid": "2.3.17",
     "text-encoding-utf-8": "^1.0.2",
     "vinyl-paths": "^2.1.0"
   },
