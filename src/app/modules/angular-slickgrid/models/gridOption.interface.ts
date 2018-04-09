@@ -70,6 +70,9 @@ export interface GridOption {
   /** Defaults to false, which leads to create the footer row of the grid */
   createFooterRow?: boolean;
 
+  /** Default to false, which leads to create an extra pre-header panel (on top of column header) for column grouping purposes */
+  createPreHeaderPanel?: boolean;
+
   /** Data item column value extractor (getter) that can be used by the Excel like copy buffer plugin */
   dataItemColumnValueExtractor?: (item: any, columnDef: Column) => any;
 
@@ -232,6 +235,9 @@ export interface GridOption {
   /** if you want to pass custom paramaters to your Formatter/Editor or anything else */
   params?: any | any[];
 
+  /** Extra pre-header panel height (on top of column header) */
+  preHeaderPanelHeight?: number;
+
   /** Do we want to preserve copied selection on paste? */
   preserveCopiedSelectionOnPaste?: boolean;
 
@@ -261,6 +267,9 @@ export interface GridOption {
 
   /** Do we want to show header row? */
   showHeaderRow?: boolean;
+
+  /** Do we want to show the extra pre-header panel (on top of column header) for column grouping purposes */
+  showPreHeaderPanel?: boolean;
 
   /** Do we want to show top panel row? */
   showTopPanel?: boolean;

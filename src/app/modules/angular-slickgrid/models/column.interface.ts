@@ -15,6 +15,9 @@ export interface Column {
   /** Block event triggering of an insert? */
   cannotTriggerInsert?: boolean;
 
+  /** Column group name for grouping of column headers spanning accross multiple columns */
+  columnGroup?: string;
+
   /** CSS class to add to the column cell */
   cssClass?: string;
 

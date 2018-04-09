@@ -4,9 +4,11 @@
     <div class="subtitle" [innerHTML]="subTitle"></div>
 
     <angular-slickgrid gridId="grid2"
-              [columnDefinitions]="columnDefinitions"
-              [gridOptions]="gridOptions"
-              [dataset]="dataset"
-              (onDataviewCreated)="dataviewReady($event)">
+        [columnDefinitions]="columnDefinitions"
+        [gridOptions]="gridOptions"
+        [dataset]="dataset"
+        gridHeight="500"
+        gridWidth="800"
+        (onDataviewCreated)="dataviewReady($event)">
     </angular-slickgrid>
   </div>

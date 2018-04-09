@@ -1,4 +1,5 @@
 import { GridOption } from './../models/index';
+import { Subject } from 'rxjs/Subject';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -20,10 +21,13 @@ export class ResizerService {
   private _grid: any;
   private _gridOptions: GridOption;
   private _lastDimensions: GridDimension;
+  onGridBeforeResize = new Subject<boolean>();
 
-  init(grid: any, gridOptions: GridOption): void {
+  init(grid: any): void {
     this._grid = grid;
-    this._gridOptions = gridOptions;
+    if (grid) {
+      this._gridOptions = grid.getOptions();
+    }
   }
 
   /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
@@ -42,6 +46,7 @@ export class ResizerService {
     // -- 2nd attach a trigger on the Window DOM element, so that it happens also when resizing after first load
     // -- attach auto-resize to Window object only if it exist
     $(window).on('resize.grid', () => {
+      this.onGridBeforeResize.next(true);
       // for some yet unknown reason, calling the resize twice removes any stuttering/flickering when changing the height and makes it much smoother
       this.resizeGrid();
       this.resizeGrid();

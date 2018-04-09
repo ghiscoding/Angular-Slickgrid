@@ -9,7 +9,7 @@ const myCustomCheckmarkFormatter: Formatter = (row: number, cell: number, value:
   templateUrl: './grid-colspan.component.html'
 })
 export class GridColspanComponent implements OnInit {
-  title = 'Example 15: Column Span';
+  title = 'Example 15: Column Span & Header Grouping';
   subTitle = `
     This example demonstrates how to easily span a column over multiple columns.
     <ul>
@@ -17,6 +17,10 @@ export class GridColspanComponent implements OnInit {
       <b>only</b> after the "dataView" is created for it to render at the correct time (else you will face timing UI issues)
       </li>
       <li>Note that you can add Sort but remember that it will sort by the data that the row contains, even if the data is visually hidden by colspan it will still sort it</li>
+      <li>
+        Header Grouping spanning accross multiple columns is working but has some UI issues on window resize.
+        If anyone can fix it, probably some CSS issues, please let us know.
+      </li>
     </ul>
   `;
 
@@ -26,23 +30,23 @@ export class GridColspanComponent implements OnInit {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'title', sortable: true },
-      { id: 'duration', name: 'Duration', field: 'duration' },
-      { id: '%', name: '% Complete', field: 'percentComplete', selectable: false },
-      { id: 'start', name: 'Start', field: 'start' },
-      { id: 'finish', name: 'Finish', field: 'finish' },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', type: FieldType.boolean }
+      { id: 'title', name: 'Title', field: 'title', sortable: true, columnGroup: 'Common Factor' },
+      { id: 'duration', name: 'Duration', field: 'duration', columnGroup: 'Common Factor' },
+      { id: 'start', name: 'Start', field: 'start', columnGroup: 'Period' },
+      { id: 'finish', name: 'Finish', field: 'finish', columnGroup: 'Period' },
+      { id: '%', name: '% Complete', field: 'percentComplete', selectable: false, columnGroup: 'Analysis' },
+      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', type: FieldType.boolean, columnGroup: 'Analysis' }
     ];
 
     this.gridOptions = {
-      enableAutoResize: true,
-      autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 15
-      },
+      enableAutoResize: false,
       enableCellNavigation: true,
       enableColumnReorder: false,
-      enableSorting: true
+      enableSorting: true,
+      createPreHeaderPanel: true,
+      showPreHeaderPanel: true,
+      preHeaderPanelHeight: 25,
+      explicitInitialization: true
     };
 
     this.getData();

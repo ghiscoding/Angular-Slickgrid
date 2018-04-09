@@ -212,6 +212,12 @@
     }
   }
 
+  .slick-preheader-panel.ui-state-default  {
+    .slick-header-column {
+      border-left: $preheader-border-left !important;
+      font-size: $preheader-font-size !important;
+    }
+  }
 
   /*
   .slick-header-columns:last-child .slick-header-column:last-child {

@@ -46,6 +46,13 @@ $row-selected-color:                    #e2e2c5 !default;
 $row-checkbox-selector-background:      inherit !default;
 $row-checkbox-selector-border:          none !default;
 
+/* Pre-Header - Header Grouping colspan */
+$preheader-border-left:                 1px solid #c0c0c0 !default;
+$preheader-border-right:                none !default;
+$preheader-border-bottom:               none !default;
+$preheader-border-top:                  none !default;
+$preheader-font-size:                   $font-size-base + 2px !default;
+
 /* header */
 $header-padding-top:                    4px !default;
 $header-padding-right:                  4px !default;

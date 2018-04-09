@@ -32,6 +32,7 @@ import { GraphqlService } from './../services/graphql.service';
 import { GridEventService } from './../services/gridEvent.service';
 import { GridExtraService } from './../services/gridExtra.service';
 import { GridStateService } from './../services/gridState.service';
+import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
 import { ResizerService } from './../services/resizer.service';
 import { SharedService } from '../services/shared.service';
 import { SortService } from './../services/sort.service';
@@ -102,6 +103,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private gridExtraService: GridExtraService,
     private gridEventService: GridEventService,
     private gridStateService: GridStateService,
+    private groupingAndColspanService: GroupingAndColspanService,
     private resizer: ResizerService,
     private sharedService: SharedService,
     private sortService: SortService,
@@ -131,6 +133,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.filterService.dispose();
     this.gridEventService.dispose();
     this.gridStateService.dispose();
+    this.groupingAndColspanService.dispose();
     this.resizer.dispose();
     this.sortService.dispose();
     this.grid.destroy();
@@ -183,6 +186,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // attach resize ONLY after the dataView is ready
     this.attachResizeHook(this.grid, this.gridOptions);
+
+    // attach grouping and header grouping colspan service
+    if (this.gridOptions.createPreHeaderPanel) {
+      this.groupingAndColspanService.init(this.grid, this._dataView);
+    }
 
     // attach grid extra service
     this.gridExtraService.init(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
@@ -351,7 +359,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // auto-resize grid on browser resize
-    this.resizer.init(grid, options);
+    this.resizer.init(grid);
     if (options.enableAutoResize) {
       this.resizer.attachAutoResizeDataGrid();
       if (grid && options.autoFitColumnsOnFirstLoad) {
