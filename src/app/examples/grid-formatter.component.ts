@@ -12,6 +12,12 @@ export class GridFormatterComponent implements OnInit {
   title = 'Example 2: Grid with Formatters';
   subTitle = `
     Grid with Custom and/or included Slickgrid Formatters (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Formatters" target="_blank">Wiki docs</a>).
+    <ul>
+      <li>
+        Support Excel Copy Buffer (SlickGrid Copy Manager Plugin), you can use it by simply enabling "enableExcelCopyBuffer" flag.
+        Note that it will only evaluate Formatter when the "exportWithFormatter" flag is enabled (through "ExportOptions" or the column definition)
+      </li>
+    </ul>
   `;
 
   columnDefinitions: Column[];
@@ -33,7 +39,8 @@ export class GridFormatterComponent implements OnInit {
         containerId: 'demo-container',
         sidePadding: 15
       },
-      enableAutoResize: true
+      enableAutoResize: true,
+      enableExcelCopyBuffer: true
     };
 
     // mock a dataset

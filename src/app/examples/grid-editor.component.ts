@@ -27,6 +27,10 @@ export class GridEditorComponent implements OnInit, OnDestroy {
     <li>When using "enableCellNavigation: true", clicking on a cell will automatically make it active &amp; selected.</li>
     <ul><li>If you don't want this behavior, then you should disable "enableCellNavigation"</li></ul>
     <li>Inline Editors requires "enableCellNavigation: true" (not sure why though)</li>
+    <li>
+        Support Excel Copy Buffer (SlickGrid Copy Manager Plugin), you can use it by simply enabling "enableExcelCopyBuffer" flag.
+        Note that it will only evaluate Formatter when the "exportWithFormatter" flag is enabled (through "ExportOptions" or the column definition)
+    </li>
   </ul>
   `;
 
