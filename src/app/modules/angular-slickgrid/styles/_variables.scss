@@ -124,6 +124,10 @@ $column-picker-label-margin:            4px !default;
 $column-picker-label-font-weight:       normal !default;
 $column-picker-link-background-color:   #ffffff !default;
 
+/* Excel copy plugin */
+$copied-cell-bg-color-transition:       rgba(0, 0, 255, 0.2) !default;
+$copied-cell-transition:                0.5s background !default;
+
 /* Grid Menu - hamburger menu */
 $grid-menu-background-color:            #f8f8f8 !default;
 $grid-menu-border:                      1px solid #b8b8b8 !default;
@@ -132,7 +136,7 @@ $grid-menu-label-margin:                4px !default;
 $grid-menu-label-font-weight:           normal !default;
 $grid-menu-link-background-color:       #ffffff !default;
 $grid-menu-box-shadow:                  2px 2px 2px silver !default;
-$grid-menu-icon-font-size:              14px;
+$grid-menu-icon-font-size:              14px !default;
 
 /* Checkbox Selector / Row Selection */
 $chekbox-selector-color:                $primary-color !default;

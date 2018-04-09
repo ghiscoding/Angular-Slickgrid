@@ -117,6 +117,7 @@ export class MultipleSelectEditor implements Editor {
       newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
     }
 
+    this.collection = newCollection;
     const editorTemplate = this.buildTemplateHtmlString(newCollection);
 
     this.createDomElement(editorTemplate);

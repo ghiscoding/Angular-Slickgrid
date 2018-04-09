@@ -136,6 +136,9 @@ export interface GridOption {
   /** Defaults to true, which permits the user to move an entire column from a position to another. */
   enableColumnReorder?: boolean;
 
+  /** Defaults to true, which leads to use an Excel like copy buffer that gets copied in clipboard and can be pasted back in Excel or any other app */
+  enableExcelCopyBuffer?: boolean;
+
   /** Do we want to enable the Export to File? (if Yes, it will show up in the Grid Menu) */
   enableExport?: boolean;
 

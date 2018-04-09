@@ -69,6 +69,10 @@
           &.selected {
             background-color: inherit !important;
           }
+          &.copied {
+            background: $copied-cell-bg-color-transition;
+            transition: $copied-cell-transition;
+          }
         }
         &.odd {
           background: $row-highlight-background-color;
@@ -79,6 +83,10 @@
           &.selected {
             background-color: inherit !important;
           }
+          &.copied {
+            background: $copied-cell-bg-color-transition;
+            transition: $copied-cell-transition;
+          }
         }
       }
       &.highlighter {
@@ -86,6 +94,10 @@
         transition-property: background;
         transition-duration: 3s;
         transition-timing-function: ease-in;
+      }
+      &.copied {
+        background: $copied-cell-bg-color-transition;
+        transition: $copied-cell-transition;
       }
       &.odd {
         background: $cell-odd-background-color;
@@ -97,11 +109,19 @@
         &.selected {
           background-color: $row-selected-color;
         }
+        &.copied {
+          background: $copied-cell-bg-color-transition;
+          transition: $copied-cell-transition;
+        }
         background: inherit;
       }
       &.odd .slick-cell {
         &.selected {
           background-color: $row-selected-color;
+        }
+        &.copied {
+          background: $copied-cell-bg-color-transition;
+          transition: $copied-cell-transition;
         }
         background: inherit;
       }
@@ -149,6 +169,10 @@
       }
       &.selected {
         background-color: $row-selected-color;
+      }
+      &.copied {
+        background: $copied-cell-bg-color-transition;
+        transition: $copied-cell-transition;
       }
       select:not([multiple]).form-control {
         height: 100%;

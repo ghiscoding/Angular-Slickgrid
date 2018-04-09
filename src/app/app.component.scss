@@ -1,5 +1,5 @@
 .body-content {
-  margin-top: 60px;
+  margin-top: 50px;
 }
 .red {
   color: red;
@@ -9,4 +9,13 @@
 }
 .faded:hover {
     opacity: 0.5;
+}
+.links {
+  background-color: #f9f9f9;
+  border-right: 1px solid #d0d0d0;
+  overflow-y: auto;
+  padding-top: 10px;
+
+  /* the height is 100% minus the 2 navbars */
+  height: calc(100vh - 50px);
 }

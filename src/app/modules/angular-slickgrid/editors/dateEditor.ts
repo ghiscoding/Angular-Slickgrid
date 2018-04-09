@@ -1,6 +1,8 @@
-import { mapFlatpickrDateFormatWithFieldType } from './../services/utilities';
+import { mapFlatpickrDateFormatWithFieldType, mapMomentDateFormatWithFieldType } from './../services/utilities';
 import { Column, Editor, FieldType, GridOption } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
+import * as moment_ from 'moment-mini';
+const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
 declare function require(name: string);
 require('flatpickr');
@@ -22,32 +24,35 @@ export class DateEditor implements Editor {
   }
 
   init(): void {
-    const gridOptions = this.args.grid.getOptions() as GridOption;
-    this.defaultDate = this.args.item[this.args.column.field] || null;
-    const inputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
-    const outputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.outputType || FieldType.dateUtc);
-    let currentLocale = this.getCurrentLocale(this.args.column, gridOptions);
-    if (currentLocale.length > 2) {
-      currentLocale = currentLocale.substring(0, 2);
+    if (this.args && this.args.column) {
+      const columnDef = this.args.column;
+      const gridOptions = this.args.grid.getOptions() as GridOption;
+      this.defaultDate = (this.args.item) ? this.args.item[this.args.column.field] : null;
+      const inputFormat = mapFlatpickrDateFormatWithFieldType(columnDef.type || FieldType.dateIso);
+      const outputFormat = mapFlatpickrDateFormatWithFieldType(columnDef.outputType || FieldType.dateUtc);
+      let currentLocale = this.getCurrentLocale(columnDef, gridOptions);
+      if (currentLocale.length > 2) {
+        currentLocale = currentLocale.substring(0, 2);
+      }
+
+      const pickerOptions: any = {
+        defaultDate: this.defaultDate,
+        altInput: true,
+        altFormat: inputFormat,
+        dateFormat: outputFormat,
+        closeOnSelect: false,
+        locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
+        onChange: (selectedDates: any[] | any, dateStr: string, instance: any) => {
+          this.save();
+        },
+      };
+
+
+      this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text flatpickr" />`);
+      this.$input.appendTo(this.args.container);
+      this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
+      this.show();
     }
-
-    const pickerOptions: any = {
-      defaultDate: this.defaultDate,
-      altInput: true,
-      altFormat: inputFormat,
-      dateFormat: outputFormat,
-      closeOnSelect: false,
-      locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
-      onChange: (selectedDates: any[] | any, dateStr: string, instance: any) => {
-        this.save();
-      },
-    };
-
-
-    this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text flatpickr" />`);
-    this.$input.appendTo(this.args.container);
-    this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
-    this.show();
   }
 
   getCurrentLocale(columnDef: Column, gridOptions: GridOption) {
@@ -99,7 +104,10 @@ export class DateEditor implements Editor {
   }
 
   serializeValue() {
-    return this.$input.val();
+    const outputFormat = mapMomentDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
+    const value = moment(this.defaultDate).format(outputFormat);
+
+    return value;
   }
 
   applyValue(item: any, state: any) {
