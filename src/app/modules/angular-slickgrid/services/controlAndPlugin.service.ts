@@ -373,7 +373,7 @@ export class ControlAndPluginService {
               grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
               break;
             case 'refresh-dataset':
-              this.refreshBackendDataset(options);
+              this.refreshBackendDataset();
               break;
             default:
               alert('Command: ' + args.command);
@@ -418,9 +418,9 @@ export class ControlAndPluginService {
     };
   }
 
-  refreshBackendDataset(gridOptions: GridOption) {
+  refreshBackendDataset() {
     let query;
-    const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+    const backendApi = this._gridOptions.backendServiceApi || this._gridOptions.onBackendEventApi;
     if (!backendApi || !backendApi.service || !backendApi.process) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }
