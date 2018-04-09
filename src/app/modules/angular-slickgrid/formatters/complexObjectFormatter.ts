@@ -6,5 +6,5 @@ export const complexObjectFormatter: Formatter = (row: number, cell: number, val
     return '';
   }
   const complexField = columnDef.field || '';
-  return complexField.split('.').reduce((obj, i) => obj[i], dataContext);
+  return complexField.split('.').reduce((obj, i) => (obj ? obj[i] : ''), dataContext);
 };
