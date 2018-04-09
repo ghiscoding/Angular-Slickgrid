@@ -15,7 +15,7 @@ const NB_ITEMS = 500;
 export class GridClientSideComponent implements OnInit {
   title = 'Example 4: Client Side Sort/Filter';
   subTitle = `
-    Sort/Filter on client side only using SlickGrid DataView (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Sorting" target="_blank">Wiki link</a>)
+    Sort/Filter on client side only using SlickGrid DataView (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Sorting" target="_blank">Wiki docs</a>)
     <br/>
     <ul class="small">
       <li>Support multi-sort (by default), hold "Shift" key and click on the next column to sort.
@@ -104,6 +104,7 @@ export class GridClientSideComponent implements OnInit {
         containerId: 'demo-container',
         sidePadding: 15
       },
+      enableExcelCopyBuffer: true,
       enableFiltering: true,
       params: {
         i18n: this.translate

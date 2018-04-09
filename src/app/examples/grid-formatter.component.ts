@@ -11,7 +11,7 @@ const myCustomCheckmarkFormatter: Formatter = (row: number, cell: number, value:
 export class GridFormatterComponent implements OnInit {
   title = 'Example 2: Grid with Formatters';
   subTitle = `
-    Grid with Custom and/or included Slickgrid Formatters (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Formatters" target="_blank">Wiki link</a>).
+    Grid with Custom and/or included Slickgrid Formatters (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Formatters" target="_blank">Wiki docs</a>).
   `;
 
   columnDefinitions: Column[];

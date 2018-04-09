@@ -9,7 +9,7 @@ import { Column, DelimiterType, FileType, FilterType, Formatter, Formatters, Gri
 @Injectable()
 export class GridLocalizationComponent implements OnInit {
   title = 'Example 12: Localization (i18n)';
-  subTitle = `Support multiple locales with the i18next plugin, following these steps (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Localization" target="_blank">Wiki link</a>)
+  subTitle = `Support multiple locales with the i18next plugin, following these steps (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Localization" target="_blank">Wiki docs</a>)
   <ol class="small">
     <li>You first need to "enableTranslate" in the Grid Options</li>
     <li>In the Column Definitions, you have following options</li>

@@ -14,7 +14,7 @@ export class GridHeaderMenuComponent implements OnInit {
   subTitle = `
     This example demonstrates using the <b>Slick.Plugins.HeaderMenu</b> plugin to easily add menus to colum headers.<br/>
     These menus can be specified directly in the column definition, and are very easy to configure and use.
-    (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/SlickGrid-Controls-&-Plugins" target="_blank">Wiki link</a>)
+    (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/SlickGrid-Controls-&-Plugins" target="_blank">Wiki docs</a>)
     <ul>
       <li>Hover over any column header to see an arrow showing up on the right</li>
       <li>Try Sorting (multi-sort) the 2 columns "Duration" and "% Complete" (the other ones are disabled)</li>

@@ -11,14 +11,18 @@ const myCustomCheckmarkFormatter: Formatter = (row: number, cell: number, value:
 export class GridColspanComponent implements OnInit {
   title = 'Example 15: Column Span & Header Grouping';
   subTitle = `
-    This example demonstrates how to easily span a row over multiple columns & how to group header titles.
-    <ul>
-      <li>Note that you can add Sort but remember that it will sort by the data that the row contains, even if the data is visually hidden by colspan it will still sort it</li>
-      <li>
-        Header Grouping spanning accross multiple columns is working but has some UI issues on window resize.
-        If anyone can fix it, probably some CSS issues, please let us know.
-      </li>
-    </ul>
+  This example demonstrates how to easily span a row over multiple columns & how to group header titles.
+  <ul>
+    <li>
+      Row Colspan - (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Row-Colspan" target="_blank">Wiki docs</a>) |
+      Header Grouping - (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Header-Title-Grouping" target="_blank">Wiki docs</a>)
+    </li>
+    <li>Note that you can add Sort but remember that it will sort by the data that the row contains, even if the data is visually hidden by colspan it will still sort it</li>
+    <li>
+      Header Grouping spanning accross multiple columns is working but has some UI issues on window resize.
+      If anyone can fix it, probably some CSS issues, please let us know.
+    </li>
+  </ul>
   `;
 
   columnDefinitions: Column[];

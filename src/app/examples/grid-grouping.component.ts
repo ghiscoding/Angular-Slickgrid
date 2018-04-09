@@ -9,8 +9,11 @@ import { Subscription } from 'rxjs/Subscription';
 export class GridGroupingComponent implements OnInit, OnDestroy {
   title = 'Example 14: Grouping';
   subTitle = `
+  (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grouping-&-Aggregators" target="_blank">Wiki docs</a>)
   <ul>
-    <li>Fully dynamic and interactive multi-level grouping with filtering and aggregates over 50'000 items</li>
+    <li>
+    Fully dynamic and interactive multi-level grouping with filtering and aggregates over 50'000 items
+    </li>
     <li>Each grouping level can have its own aggregates (over child rows, child groups, or all descendant rows)..</li>
   </ul>
   `;
