@@ -105,6 +105,10 @@ export declare class ControlAndPluginService {
      */
     translateGridMenu(): void;
     /**
+     * Translate the Header Menu titles, we need to loop through all column definition to re-translate them
+     */
+    translateHeaderMenu(): void;
+    /**
      * Translate manually the header titles.
      * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
      * @param locale locale to use
@@ -123,4 +127,9 @@ export declare class ControlAndPluginService {
      * @param grid menu object
      */
     private resetGridMenuTranslations(gridMenu);
+    /**
+     * Reset all the Grid Menu options which have text to translate
+     * @param grid menu object
+     */
+    private resetHeaderMenuTranslations(columnDefinitions);
 }

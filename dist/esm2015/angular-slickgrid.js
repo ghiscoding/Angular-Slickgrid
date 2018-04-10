@@ -3874,6 +3874,16 @@ class ControlAndPluginService {
         this.createGridMenu(this._grid, this.visibleColumns, this._gridOptions);
     }
     /**
+     * Translate the Header Menu titles, we need to loop through all column definition to re-translate them
+     * @return {?}
+     */
+    translateHeaderMenu() {
+        // reset all Grid Menu options that have translation text & then re-create the Grid Menu and also the custom items array
+        if (this._gridOptions && this._gridOptions.headerMenu) {
+            this.resetHeaderMenuTranslations(this.visibleColumns);
+        }
+    }
+    /**
      * Translate manually the header titles.
      * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
      * @param {?=} locale locale to use
@@ -3932,6 +3942,31 @@ class ControlAndPluginService {
         gridMenu.forceFitTitle = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
         gridMenu.syncResizeTitle = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
         return gridMenu;
+    }
+    /**
+     * Reset all the Grid Menu options which have text to translate
+     * @param {?} columnDefinitions
+     * @return {?}
+     */
+    resetHeaderMenuTranslations(columnDefinitions) {
+        columnDefinitions.forEach((columnDef) => {
+            if (columnDef && columnDef.header && columnDef.header && columnDef.header.menu && columnDef.header.menu.items) {
+                const /** @type {?} */ columnHeaderMenuItems = columnDef.header.menu.items || [];
+                columnHeaderMenuItems.forEach((item) => {
+                    switch (item.command) {
+                        case 'sort-asc':
+                            item.title = this.translate.instant('SORT_ASCENDING') || 'Sort Ascending';
+                            break;
+                        case 'sort-desc':
+                            item.title = this.translate.instant('SORT_DESCENDING') || 'Sort Ascending';
+                            break;
+                        case 'hide':
+                            item.title = this.translate.instant('HIDE_COLUMN') || 'Sort Ascending';
+                            break;
+                    }
+                });
+            }
+        });
     }
 }
 ControlAndPluginService.decorators = [
@@ -8485,6 +8520,7 @@ class AngularSlickgridComponent {
                 this.controlAndPluginService.translateHeaders();
                 this.controlAndPluginService.translateColumnPicker();
                 this.controlAndPluginService.translateGridMenu();
+                this.controlAndPluginService.translateHeaderMenu();
             }
         });
         // attach external sorting (backend) when available or default onSort (dataView)

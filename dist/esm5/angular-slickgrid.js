@@ -2746,6 +2746,11 @@ var ControlAndPluginService = /** @class */ (function () {
         }
         this.createGridMenu(this._grid, this.visibleColumns, this._gridOptions);
     };
+    ControlAndPluginService.prototype.translateHeaderMenu = function () {
+        if (this._gridOptions && this._gridOptions.headerMenu) {
+            this.resetHeaderMenuTranslations(this.visibleColumns);
+        }
+    };
     ControlAndPluginService.prototype.translateHeaders = function (locale) {
         if (locale) {
             this.translate.use(locale);
@@ -2797,6 +2802,27 @@ var ControlAndPluginService = /** @class */ (function () {
         gridMenu.forceFitTitle = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
         gridMenu.syncResizeTitle = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
         return gridMenu;
+    };
+    ControlAndPluginService.prototype.resetHeaderMenuTranslations = function (columnDefinitions) {
+        var _this = this;
+        columnDefinitions.forEach(function (columnDef) {
+            if (columnDef && columnDef.header && columnDef.header && columnDef.header.menu && columnDef.header.menu.items) {
+                var columnHeaderMenuItems = columnDef.header.menu.items || [];
+                columnHeaderMenuItems.forEach(function (item) {
+                    switch (item.command) {
+                        case 'sort-asc':
+                            item.title = _this.translate.instant('SORT_ASCENDING') || 'Sort Ascending';
+                            break;
+                        case 'sort-desc':
+                            item.title = _this.translate.instant('SORT_DESCENDING') || 'Sort Ascending';
+                            break;
+                        case 'hide':
+                            item.title = _this.translate.instant('HIDE_COLUMN') || 'Sort Ascending';
+                            break;
+                    }
+                });
+            }
+        });
     };
     return ControlAndPluginService;
 }());
@@ -5874,6 +5900,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 _this.controlAndPluginService.translateHeaders();
                 _this.controlAndPluginService.translateColumnPicker();
                 _this.controlAndPluginService.translateGridMenu();
+                _this.controlAndPluginService.translateHeaderMenu();
             }
         });
         if (gridOptions.enableSorting) {
