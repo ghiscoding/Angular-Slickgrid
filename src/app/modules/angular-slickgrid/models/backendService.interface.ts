@@ -2,6 +2,7 @@ import {
   BackendServiceOption,
   Column,
   ColumnFilters,
+  ColumnSort,
   CurrentFilter,
   CurrentPagination,
   CurrentSorter,
@@ -10,7 +11,6 @@ import {
   Pagination,
   PaginationChangedArgs,
   SortChangedArgs,
-  SortChanged
 } from './../models/index';
 
 export interface BackendService {
@@ -48,7 +48,7 @@ export interface BackendService {
   updatePagination?: (newPage: number, pageSize: number) => void;
 
   /** Update the Sorters options with a set of new options */
-  updateSorters?: (sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]) => void;
+  updateSorters?: (sortColumns?: ColumnSort[], presetSorters?: CurrentSorter[]) => void;
 
   /** Update the backend service options */
   updateOptions: (serviceOptions?: BackendServiceOption) => void;

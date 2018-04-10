@@ -7,6 +7,7 @@ import {
   Column,
   ColumnFilter,
   ColumnFilters,
+  ColumnSort,
   CurrentFilter,
   CurrentPagination,
   CurrentSorter,
@@ -17,7 +18,6 @@ import {
   Pagination,
   PaginationChangedArgs,
   SearchTerm,
-  SortChanged,
   SortChangedArgs,
   SortDirection,
   SortDirectionString
@@ -319,7 +319,7 @@ export class GridOdataService implements BackendService {
    * loop through all columns to inspect sorters & update backend service orderBy
    * @param columnFilters
    */
-  updateSorters(sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]) {
+  updateSorters(sortColumns?: ColumnSort[], presetSorters?: CurrentSorter[]) {
     let sortByArray: any[] = [];
     const sorterArray: CurrentSorter[] = [];
 

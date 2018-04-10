@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, ControlAndPluginService, GridOption } from './../modules/angular-slickgrid';
+import { Column, ColumnSort, ControlAndPluginService, GridOption, SortService } from './../modules/angular-slickgrid';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -14,8 +14,9 @@ export class GridHeaderMenuComponent implements OnInit {
   subTitle = `
     This example demonstrates using the <b>Slick.Plugins.HeaderMenu</b> plugin to easily add menus to colum headers.<br/>
     These menus can be specified directly in the column definition, and are very easy to configure and use.
-    (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/SlickGrid-Controls-&-Plugins" target="_blank">Wiki docs</a>)
+    (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Header-Menu-&-Header-Buttons" target="_blank">Wiki docs</a>)
     <ul>
+      <li>Now enabled by default in the Global Grid Options, it will add the default commands of (hide column, sort asc/desc)</li>
       <li>Hover over any column header to see an arrow showing up on the right</li>
       <li>Try Sorting (multi-sort) the 2 columns "Duration" and "% Complete" (the other ones are disabled)</li>
       <li>Try hiding any columns (you use the "Column Picker" plugin by doing a right+click on the header to show the column back)</li>
@@ -27,9 +28,8 @@ export class GridHeaderMenuComponent implements OnInit {
   dataset: any[];
   gridObj: any;
   dataviewObj: any;
-  visibleColumns: Column[];
 
-  constructor(private controlService: ControlAndPluginService) {}
+  constructor(private controlService: ControlAndPluginService, private sortService: SortService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -40,23 +40,25 @@ export class GridHeaderMenuComponent implements OnInit {
       { id: 'finish', name: 'Finish', field: 'finish' },
       { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven' }
     ];
-    for (let i = 0; i < this.columnDefinitions.length; i++) {
-      this.columnDefinitions[i].header = {
+
+    this.columnDefinitions.forEach((columnDef) => {
+      columnDef.header = {
         menu: {
           items: [
             {
               iconCssClass: 'fa fa-sort-asc',
               title: 'Sort Ascending',
-              disabled: !this.columnDefinitions[i].sortable,
+              disabled: !columnDef.sortable,
               command: 'sort-asc'
             },
             {
               iconCssClass: 'fa fa-sort-desc',
               title: 'Sort Descending',
-              disabled: !this.columnDefinitions[i].sortable,
+              disabled: !columnDef.sortable,
               command: 'sort-desc'
             },
             {
+              iconCssClass: 'fa fa-times',
               title: 'Hide Column',
               command: 'hide'
             },
@@ -68,7 +70,7 @@ export class GridHeaderMenuComponent implements OnInit {
           ]
         }
       };
-    }
+    });
 
     this.gridOptions = {
       enableAutoResize: true,
@@ -86,24 +88,17 @@ export class GridHeaderMenuComponent implements OnInit {
             this.controlService.autoResizeColumns();
           } else if (args.command === 'sort-asc' || args.command === 'sort-desc') {
             // get previously sorted columns
-            // getSortColumns() only returns sortAsc & columnId, we want the entire column definition
-            const oldSortColumns = this.gridObj.getSortColumns();
-            const cols = $.map(oldSortColumns, (col) => {
-              // get the column definition but only keep column which are not equal to our current column
-              if (col.columnId !== args.column.id) {
-                return { sortCol: this.columnDefinitions[this.gridObj.getColumnIndex(col.columnId)], sortAsc: col.sortAsc };
-              }
-              return null;
-            });
+            const cols: ColumnSort[] = this.sortService.getPreviousColumnSorts(args.column.id + '');
+
             // add to the column array, the column sorted by the header menu
-            const isSortedAsc = (args.command === 'sort-asc');
-            cols.push({ sortAsc: isSortedAsc, sortCol: args.column });
+            cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
+            this.sortService.onLocalSortChanged(this.gridObj, this.gridOptions, this.dataviewObj, cols);
+
             // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
-            const newSortColumns = $.map(cols, (col) => {
+            const newSortColumns: ColumnSort[] = cols.map((col) => {
               return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
             });
-            this.gridObj.setSortColumns(newSortColumns);
-            this.executeSort(cols);
+            this.gridObj.setSortColumns(newSortColumns); // add sort icon in UI
           } else {
             alert('Command: ' + args.command);
           }
@@ -136,23 +131,5 @@ export class GridHeaderMenuComponent implements OnInit {
   }
   dataviewReady(dataview) {
     this.dataviewObj = dataview;
-  }
-
-  executeSort(cols) {
-    this.dataviewObj.sort((dataRow1, dataRow2) => {
-      for (let i = 0, l = cols.length; i < l; i++) {
-        const field = cols[i].sortCol.field;
-        const sign = cols[i].sortAsc ? 1 : -1;
-        const value1 = dataRow1[field];
-        const value2 = dataRow2[field];
-        const result = (value1 === value2 ? 0 : (value1 > value2 ? 1 : -1)) * sign;
-        if (result !== 0) {
-          return result;
-        }
-      }
-      return 0;
-    });
-    this.gridObj.invalidate();
-    this.gridObj.render();
   }
 }

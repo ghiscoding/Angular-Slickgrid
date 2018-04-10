@@ -26,8 +26,23 @@ export interface HeaderMenu {
   /** A url to the icon image. */
   iconImage?: string;
 
+  /** icon for the "Hide Column" command */
+  iconColumnHideCommand?: string;
+
+  /** icon for the "Sort Ascending" command */
+  iconSortAscCommand?: string;
+
+  /** icon for the "Sort Descending" command */
+  iconSortDescCommand?: string;
+
   /** Minimum width that the drop menu will have */
   minWidth?: number;
+
+  /** Defaults to True, which will show both Sort (Asc/Desc) commands in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
+  showSortCommands?: boolean;
+
+  /** Defaults to True, which will show both "Hide Column" command in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
+  showColumnHideCommand?: boolean;
 
   /** Menu item text. */
   title?: string;

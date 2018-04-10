@@ -136,6 +136,14 @@ label {
   margin-right: 4px;
   vertical-align: middle;
   width: 16px;
+
+  /* Font Awesome sorting icons are not aligned in middle, let's align them ourselves */
+  &.fa-sort-asc {
+    transform: translateY(3px);
+  }
+  &.fa-sort-desc {
+    transform: translateY(-2px);
+  }
 }
 
 .slick-header-menucontent {

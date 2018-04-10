@@ -31,6 +31,7 @@ export const GlobalGridOptions: GridOption = {
   enableColumnReorder: true,
   enableExport: true,
   enableGridMenu: true,
+  enableHeaderMenu: true,
   enableMouseHoverHighlightRow: true,
   enableSorting: true,
   enableTextSelectionOnCells: true,
@@ -63,6 +64,16 @@ export const GlobalGridOptions: GridOption = {
     showExportCsvCommand: true,
     showRefreshDatasetCommand: true,
     showToggleFilterCommand: true
+  },
+  headerMenu: {
+    autoAlign: true,
+    autoAlignOffset: 12,
+    minWidth: 140,
+    iconSortAscCommand: 'fa fa-sort-asc',
+    iconSortDescCommand: 'fa fa-sort-desc',
+    iconColumnHideCommand: 'fa fa-times',
+    showColumnHideCommand: true,
+    showSortCommands: true
   },
   headerRowHeight: 35,
   multiColumnSort: true,
