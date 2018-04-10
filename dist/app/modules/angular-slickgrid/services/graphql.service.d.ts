@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { BackendService, ColumnFilters, CurrentFilter, CurrentPagination, CurrentSorter, FilterChangedArgs, GraphqlCursorPaginationOption, GraphqlDatasetFilter, GraphqlPaginationOption, GraphqlServiceOption, GraphqlSortingOption, Pagination, PaginationChangedArgs, SortChanged, SortChangedArgs } from './../models/index';
+import { BackendService, ColumnFilters, ColumnSort, CurrentFilter, CurrentPagination, CurrentSorter, FilterChangedArgs, GraphqlCursorPaginationOption, GraphqlDatasetFilter, GraphqlPaginationOption, GraphqlServiceOption, GraphqlSortingOption, Pagination, PaginationChangedArgs, SortChangedArgs } from './../models/index';
 export declare class GraphqlService implements BackendService {
     private translate;
     private _currentFilters;
@@ -64,7 +64,7 @@ export declare class GraphqlService implements BackendService {
      * loop through all columns to inspect sorters & update backend service sortingOptions
      * @param columnFilters
      */
-    updateSorters(sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]): void;
+    updateSorters(sortColumns?: ColumnSort[], presetSorters?: CurrentSorter[]): void;
     /**
      * A function which takes an input string and removes double quotes only
      * on certain fields are identified as GraphQL enums (except fields with dot notation)

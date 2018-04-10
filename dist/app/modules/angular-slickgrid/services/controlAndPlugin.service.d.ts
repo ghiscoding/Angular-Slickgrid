@@ -22,7 +22,10 @@ export declare class ControlAndPluginService {
     headerMenuPlugin: any;
     gridMenuControl: any;
     rowSelectionPlugin: any;
+    undoRedoBuffer: any;
     constructor(exportService: ExportService, filterService: FilterService, sharedService: SharedService, sortService: SortService, translate: TranslateService);
+    /** Auto-resize all the column in the grid to fit the grid width */
+    autoResizeColumns(): void;
     /**
      * Attach/Create different Controls or Plugins after the Grid is created
      * @param grid
@@ -31,6 +34,21 @@ export declare class ControlAndPluginService {
      * @param dataView
      */
     attachDifferentControlOrPlugins(): void;
+    /**
+     * Attach/Create different plugins before the Grid creation.
+     * For example the multi-select have to be added to the column definition before the grid is created to work properly
+     * @param columnDefinitions
+     * @param options
+     */
+    createPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption): void;
+    /** Create the Excel like copy manager */
+    createCellExternalCopyManagerPlugin(grid: any, gridOptions: GridOption): void;
+    /**
+     * Create the Column Picker and expose all the available hooks that user can subscribe (onColumnsChanged)
+     * @param grid
+     * @param columnDefinitions
+     * @param options
+     */
     createColumnPicker(grid: any, columnDefinitions: Column[], options: GridOption): void;
     /**
      * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)
@@ -39,26 +57,41 @@ export declare class ControlAndPluginService {
      * @param options
      */
     createGridMenu(grid: any, columnDefinitions: Column[], options: GridOption): any;
+    /**
+     * Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...)
+     * @param grid
+     * @param columnDefinitions
+     * @param options
+     */
+    createHeaderMenu(grid: any, dataView: any, columnDefinitions: Column[], options: GridOption): any;
+    /** Create an undo redo buffer used by the Excel like copy */
+    createUndoRedoBuffer(): void;
+    /** Hide a column from the grid */
     hideColumn(column: Column): void;
-    removeColumnByIndex(array: any[], index: number): any[];
-    autoResizeColumns(): void;
+    /** Attach an undo shortcut key hook that will redo/undo the copy buffer */
+    hookUndoShortcutKey(): void;
+    /** Dispose of all the controls & plugins */
     dispose(): void;
     /**
      * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
      * @param grid
      * @param options
+     * @return gridMenu
      */
     private addGridMenuCustomCommands(grid, options);
     /**
-     * @return default Grid Menu options
+     * Create Header Menu with Custom Commands if user has enabled Header Menu
+     * @param grid
+     * @param dataView
+     * @param options
+     * @param columnDefinitions
+     * @return header menu
      */
-    private getDefaultGridMenuOptions();
-    refreshBackendDataset(gridOptions: GridOption): void;
-    /**
-     * Reset all the Grid Menu options which have text to translate
-     * @param grid menu object
-     */
-    private resetGridMenuTranslations(gridMenu);
+    private addHeaderMenuCustomCommands(grid, dataView, options, columnDefinitions);
+    /** Refresh the dataset through the Backend Service */
+    refreshBackendDataset(): void;
+    /** Remove a column from the grid by it's index in the grid */
+    removeColumnByIndex(array: any[], index: number): any[];
     /**
      * Translate the Column Picker and it's last 2 checkboxes
      * Note that the only way that seems to work is to destroy and re-create the Column Picker
@@ -78,10 +111,16 @@ export declare class ControlAndPluginService {
      */
     translateHeaders(locale?: string): void;
     /**
-     * Attach/Create different plugins before the Grid creation.
-     * For example the multi-select have to be added to the column definition before the grid is created to work properly
-     * @param columnDefinitions
-     * @param options
+     * @return default Grid Menu options
      */
-    createPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption): void;
+    private getDefaultGridMenuOptions();
+    /**
+     * @return default Header Menu options
+     */
+    private getDefaultHeaderMenuOptions();
+    /**
+     * Reset all the Grid Menu options which have text to translate
+     * @param grid menu object
+     */
+    private resetGridMenuTranslations(gridMenu);
 }

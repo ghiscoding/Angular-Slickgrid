@@ -12,6 +12,8 @@ export interface Column {
     asyncPostRender?: (domCellNode: any, row: number, dataContext: any, columnDef: Column) => void;
     /** Block event triggering of an insert? */
     cannotTriggerInsert?: boolean;
+    /** Column group name for grouping of column headers spanning accross multiple columns */
+    columnGroup?: string;
     /** CSS class to add to the column cell */
     cssClass?: string;
     /** Column span in pixels or `*`, only input the number value */

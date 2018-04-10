@@ -1,4 +1,4 @@
-import { BackendServiceOption, Column, ColumnFilters, CurrentFilter, CurrentPagination, CurrentSorter, FilterChangedArgs, GridOption, Pagination, PaginationChangedArgs, SortChangedArgs, SortChanged } from './../models/index';
+import { BackendServiceOption, Column, ColumnFilters, ColumnSort, CurrentFilter, CurrentPagination, CurrentSorter, FilterChangedArgs, GridOption, Pagination, PaginationChangedArgs, SortChangedArgs } from './../models/index';
 export interface BackendService {
     /** Backend Service options */
     options?: BackendServiceOption;
@@ -23,7 +23,7 @@ export interface BackendService {
     /** Update the Pagination component with it's new page number and size */
     updatePagination?: (newPage: number, pageSize: number) => void;
     /** Update the Sorters options with a set of new options */
-    updateSorters?: (sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]) => void;
+    updateSorters?: (sortColumns?: ColumnSort[], presetSorters?: CurrentSorter[]) => void;
     /** Update the backend service options */
     updateOptions: (serviceOptions?: BackendServiceOption) => void;
     /** Execute when any of the filters changed */

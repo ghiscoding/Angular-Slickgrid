@@ -18,7 +18,6 @@ import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.gridmenu';
 import 'slickgrid/controls/slick.pager';
 import 'slickgrid/plugins/slick.autotooltips';
-import 'slickgrid/plugins/slick.cellcopymanager';
 import 'slickgrid/plugins/slick.cellexternalcopymanager';
 import 'slickgrid/plugins/slick.cellrangedecorator';
 import 'slickgrid/plugins/slick.cellrangeselector';
@@ -2167,6 +2166,18 @@ var SortService = /** @class */ (function () {
     SortService.prototype.getCurrentLocalSorters = function () {
         return this._currentLocalSorters;
     };
+    SortService.prototype.getPreviousColumnSorts = function (columnId) {
+        var _this = this;
+        var oldSortColumns = this._grid.getSortColumns();
+        var columnDefinitions = this._grid.getColumns();
+        var sortedCols = oldSortColumns.reduce(function (cols, col) {
+            if (!columnId || col.columnId !== columnId) {
+                cols.push({ sortCol: columnDefinitions[_this._grid.getColumnIndex(col.columnId)], sortAsc: col.sortAsc });
+            }
+            return cols;
+        }, []);
+        return sortedCols;
+    };
     SortService.prototype.loadLocalPresets = function (grid, gridOptions, dataView, columnDefinitions) {
         var _this = this;
         var sortCols = [];
@@ -2245,6 +2256,9 @@ var ControlAndPluginService = /** @class */ (function () {
         this.sortService = sortService;
         this.translate = translate;
     }
+    ControlAndPluginService.prototype.autoResizeColumns = function () {
+        this._grid.autosizeColumns();
+    };
     ControlAndPluginService.prototype.attachDifferentControlOrPlugins = function () {
         var _this = this;
         this._grid = this.sharedService.grid;
@@ -2287,21 +2301,12 @@ var ControlAndPluginService = /** @class */ (function () {
             });
         }
         if (this._gridOptions.enableHeaderMenu) {
-            var headerMenuOptions = this._gridOptions.headerMenu || {};
-            headerMenuOptions.minWidth = headerMenuOptions.minWidth || 140;
-            headerMenuOptions.autoAlignOffset = headerMenuOptions.autoAlignOffset || 12;
-            this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(headerMenuOptions);
-            this._grid.registerPlugin(this.headerMenuPlugin);
-            this.headerMenuPlugin.onCommand.subscribe(function (e, args) {
-                if (_this._gridOptions.headerMenu && typeof _this._gridOptions.headerMenu.onCommand === 'function') {
-                    _this._gridOptions.headerMenu.onCommand(e, args);
-                }
-            });
-            this.headerMenuPlugin.onCommand.subscribe(function (e, args) {
-                if (_this._gridOptions.headerMenu && typeof _this._gridOptions.headerMenu.onBeforeMenuShow === 'function') {
-                    _this._gridOptions.headerMenu.onBeforeMenuShow(e, args);
-                }
-            });
+            this.headerMenuPlugin = this.createHeaderMenu(this._grid, this._dataView, this._columnDefinitions, this._gridOptions);
+        }
+        if (this._gridOptions.enableExcelCopyBuffer) {
+            this.createUndoRedoBuffer();
+            this.hookUndoShortcutKey();
+            this.createCellExternalCopyManagerPlugin(this._grid, this._gridOptions);
         }
         if (this._gridOptions.registerPlugins !== undefined) {
             if (Array.isArray(this._gridOptions.registerPlugins)) {
@@ -2313,6 +2318,45 @@ var ControlAndPluginService = /** @class */ (function () {
                 this._grid.registerPlugin(this._gridOptions.registerPlugins);
             }
         }
+    };
+    ControlAndPluginService.prototype.createPluginBeforeGridCreation = function (columnDefinitions, options) {
+        if (options.enableCheckboxSelector) {
+            this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
+            var selectionColumn = this.checkboxSelectorPlugin.getColumnDefinition();
+            selectionColumn.excludeFromExport = true;
+            selectionColumn.excludeFromQuery = true;
+            columnDefinitions.unshift(selectionColumn);
+        }
+    };
+    ControlAndPluginService.prototype.createCellExternalCopyManagerPlugin = function (grid, gridOptions) {
+        var _this = this;
+        var newRowIds = 0;
+        var pluginOptions = {
+            clipboardCommandHandler: function (editCommand) {
+                _this.undoRedoBuffer.queueAndExecuteCommand.call(_this.undoRedoBuffer, editCommand);
+            },
+            dataItemColumnValueExtractor: function (item, columnDef) {
+                if (!gridOptions.editable || !columnDef.editor) {
+                    var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : gridOptions.exportOptions.exportWithFormatter;
+                    if (columnDef.formatter && isEvaluatingFormatter) {
+                        return columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, _this._grid);
+                    }
+                }
+                return null;
+            },
+            readOnlyMode: false,
+            includeHeaderWhenCopying: false,
+            newRowCreator: function (count) {
+                for (var i = 0; i < count; i++) {
+                    var item = {
+                        id: 'newRow_' + newRowIds++
+                    };
+                    grid.getData().addItem(item);
+                }
+            }
+        };
+        grid.setSelectionModel(new Slick.CellSelectionModel());
+        grid.registerPlugin(new Slick.CellExternalCopyManager(pluginOptions));
     };
     ControlAndPluginService.prototype.createColumnPicker = function (grid, columnDefinitions, options) {
         var forceFitTitle = options.enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : 'Force fit columns';
@@ -2363,6 +2407,56 @@ var ControlAndPluginService = /** @class */ (function () {
         }
         return gridMenuControl;
     };
+    ControlAndPluginService.prototype.createHeaderMenu = function (grid, dataView, columnDefinitions, options) {
+        options.headerMenu = Object.assign({}, this.getDefaultHeaderMenuOptions(), options.headerMenu);
+        if (options.enableHeaderMenu) {
+            options.headerMenu = this.addHeaderMenuCustomCommands(grid, dataView, options, columnDefinitions);
+        }
+        var headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenu);
+        grid.registerPlugin(headerMenuPlugin);
+        headerMenuPlugin.onCommand.subscribe(function (e, args) {
+            if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
+                options.headerMenu.onCommand(e, args);
+            }
+        });
+        headerMenuPlugin.onCommand.subscribe(function (e, args) {
+            if (options.headerMenu && typeof options.headerMenu.onBeforeMenuShow === 'function') {
+                options.headerMenu.onBeforeMenuShow(e, args);
+            }
+        });
+        return headerMenuPlugin;
+    };
+    ControlAndPluginService.prototype.createUndoRedoBuffer = function () {
+        var commandQueue = [];
+        var commandCtr = 0;
+        this.undoRedoBuffer = {
+            queueAndExecuteCommand: function (editCommand) {
+                commandQueue[commandCtr] = editCommand;
+                commandCtr++;
+                editCommand.execute();
+            },
+            undo: function () {
+                if (commandCtr === 0) {
+                    return;
+                }
+                commandCtr--;
+                var command = commandQueue[commandCtr];
+                if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+                    command.undo();
+                }
+            },
+            redo: function () {
+                if (commandCtr >= commandQueue.length) {
+                    return;
+                }
+                var command = commandQueue[commandCtr];
+                commandCtr++;
+                if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+                    command.execute();
+                }
+            }
+        };
+    };
     ControlAndPluginService.prototype.hideColumn = function (column) {
         if (this._grid && this.visibleColumns) {
             var columnIndex = this._grid.getColumnIndex(column.id);
@@ -2370,13 +2464,18 @@ var ControlAndPluginService = /** @class */ (function () {
             this._grid.setColumns(this.visibleColumns);
         }
     };
-    ControlAndPluginService.prototype.removeColumnByIndex = function (array, index) {
-        return array.filter(function (el, i) {
-            return index !== i;
+    ControlAndPluginService.prototype.hookUndoShortcutKey = function () {
+        var _this = this;
+        $(document).keydown(function (e) {
+            if (e.which === 90 && (e.ctrlKey || e.metaKey)) {
+                if (e.shiftKey) {
+                    _this.undoRedoBuffer.redo();
+                }
+                else {
+                    _this.undoRedoBuffer.undo();
+                }
+            }
         });
-    };
-    ControlAndPluginService.prototype.autoResizeColumns = function () {
-        this._grid.autosizeColumns();
     };
     ControlAndPluginService.prototype.dispose = function () {
         this._grid = null;
@@ -2507,7 +2606,7 @@ var ControlAndPluginService = /** @class */ (function () {
                             grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
                             break;
                         case 'refresh-dataset':
-                            _this.refreshBackendDataset(options);
+                            _this.refreshBackendDataset();
                             break;
                         default:
                             alert('Command: ' + args.command);
@@ -2527,23 +2626,81 @@ var ControlAndPluginService = /** @class */ (function () {
             });
         }
     };
-    ControlAndPluginService.prototype.getDefaultGridMenuOptions = function () {
-        return {
-            columnTitle: this.translate.instant('COLUMNS') || 'Columns',
-            forceFitTitle: this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns',
-            syncResizeTitle: this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize',
-            iconCssClass: 'fa fa-bars',
-            menuWidth: 18,
-            customTitle: undefined,
-            customItems: [],
-            showClearAllFiltersCommand: true,
-            showRefreshDatasetCommand: true,
-            showToggleFilterCommand: true
-        };
+    ControlAndPluginService.prototype.addHeaderMenuCustomCommands = function (grid, dataView, options, columnDefinitions) {
+        var _this = this;
+        var headerMenuOptions = options.headerMenu;
+        if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
+            columnDefinitions.forEach(function (columnDef) {
+                if (columnDef) {
+                    if (!columnDef.header || !columnDef.header.menu) {
+                        columnDef.header = {
+                            menu: {
+                                items: []
+                            }
+                        };
+                    }
+                    var columnHeaderMenuItems = columnDef.header.menu.items || [];
+                    if (options.enableSorting && columnDef.sortable && headerMenuOptions.showSortCommands) {
+                        if (columnHeaderMenuItems.filter(function (item) { return item.command === 'sort-asc'; }).length === 0) {
+                            columnHeaderMenuItems.push({
+                                iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
+                                title: options.enableTranslate ? _this.translate.instant('SORT_ASCENDING') : 'Sort Ascending',
+                                command: 'sort-asc'
+                            });
+                        }
+                        if (columnHeaderMenuItems.filter(function (item) { return item.command === 'sort-desc'; }).length === 0) {
+                            columnHeaderMenuItems.push({
+                                iconCssClass: headerMenuOptions.iconSortDescCommand || 'fa fa-sort-desc',
+                                title: options.enableTranslate ? _this.translate.instant('SORT_DESCENDING') : 'Sort Descending',
+                                command: 'sort-desc'
+                            });
+                        }
+                    }
+                    if (headerMenuOptions.showColumnHideCommand && columnHeaderMenuItems.filter(function (item) { return item.command === 'hide'; }).length === 0) {
+                        columnHeaderMenuItems.push({
+                            iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
+                            title: options.enableTranslate ? _this.translate.instant('HIDE_COLUMN') : 'Hide Column',
+                            command: 'hide'
+                        });
+                    }
+                }
+            });
+            if (headerMenuOptions) {
+                headerMenuOptions.onCommand = function (e, args) {
+                    if (args && args.command) {
+                        switch (args.command) {
+                            case 'hide':
+                                _this.hideColumn(args.column);
+                                _this.autoResizeColumns();
+                                break;
+                            case 'sort-asc':
+                            case 'sort-desc':
+                                var cols = _this.sortService.getPreviousColumnSorts(args.column.id + '');
+                                cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
+                                if (options.backendServiceApi) {
+                                    _this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: grid });
+                                }
+                                else {
+                                    _this.sortService.onLocalSortChanged(grid, options, dataView, cols);
+                                }
+                                var newSortColumns = cols.map(function (col) {
+                                    return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
+                                });
+                                grid.setSortColumns(newSortColumns);
+                                break;
+                            default:
+                                alert('Command: ' + args.command);
+                                break;
+                        }
+                    }
+                };
+            }
+        }
+        return headerMenuOptions;
     };
-    ControlAndPluginService.prototype.refreshBackendDataset = function (gridOptions) {
+    ControlAndPluginService.prototype.refreshBackendDataset = function () {
         var query;
-        var backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+        var backendApi = this._gridOptions.backendServiceApi || this._gridOptions.onBackendEventApi;
         if (!backendApi || !backendApi.service || !backendApi.process) {
             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
         }
@@ -2565,13 +2722,10 @@ var ControlAndPluginService = /** @class */ (function () {
             });
         }
     };
-    ControlAndPluginService.prototype.resetGridMenuTranslations = function (gridMenu) {
-        gridMenu.customItems = [];
-        delete gridMenu.customTitle;
-        gridMenu.columnTitle = this.translate.instant('COLUMNS') || 'Columns';
-        gridMenu.forceFitTitle = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
-        gridMenu.syncResizeTitle = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
-        return gridMenu;
+    ControlAndPluginService.prototype.removeColumnByIndex = function (array, index) {
+        return array.filter(function (el, i) {
+            return index !== i;
+        });
     };
     ControlAndPluginService.prototype.translateColumnPicker = function () {
         if (this.columnPickerControl) {
@@ -2610,14 +2764,35 @@ var ControlAndPluginService = /** @class */ (function () {
         this._grid.setColumns(this._columnDefinitions);
         var e_3, _c;
     };
-    ControlAndPluginService.prototype.createPluginBeforeGridCreation = function (columnDefinitions, options) {
-        if (options.enableCheckboxSelector) {
-            this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
-            var selectionColumn = this.checkboxSelectorPlugin.getColumnDefinition();
-            selectionColumn.excludeFromExport = true;
-            selectionColumn.excludeFromQuery = true;
-            columnDefinitions.unshift(selectionColumn);
-        }
+    ControlAndPluginService.prototype.getDefaultGridMenuOptions = function () {
+        return {
+            columnTitle: this.translate.instant('COLUMNS') || 'Columns',
+            forceFitTitle: this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns',
+            syncResizeTitle: this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize',
+            iconCssClass: 'fa fa-bars',
+            menuWidth: 18,
+            customTitle: undefined,
+            customItems: [],
+            showClearAllFiltersCommand: true,
+            showRefreshDatasetCommand: true,
+            showToggleFilterCommand: true
+        };
+    };
+    ControlAndPluginService.prototype.getDefaultHeaderMenuOptions = function () {
+        return {
+            autoAlignOffset: 12,
+            minWidth: 140,
+            showColumnHideCommand: true,
+            showSortCommands: true
+        };
+    };
+    ControlAndPluginService.prototype.resetGridMenuTranslations = function (gridMenu) {
+        gridMenu.customItems = [];
+        delete gridMenu.customTitle;
+        gridMenu.columnTitle = this.translate.instant('COLUMNS') || 'Columns';
+        gridMenu.forceFitTitle = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
+        gridMenu.syncResizeTitle = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
+        return gridMenu;
     };
     return ControlAndPluginService;
 }());
@@ -3867,6 +4042,68 @@ var GridStateService = /** @class */ (function () {
     };
     return GridStateService;
 }());
+var GroupingAndColspanService = /** @class */ (function () {
+    function GroupingAndColspanService() {
+        this._eventHandler = new Slick.EventHandler();
+    }
+    GroupingAndColspanService.prototype.init = function (grid, dataView) {
+        var _this = this;
+        this._grid = grid;
+        this._dataView = dataView;
+        if (grid) {
+            this._gridOptions = grid.getOptions();
+            this._columnDefinitions = grid.getColumns();
+        }
+        if (grid && this._gridOptions) {
+            if (this._gridOptions.createPreHeaderPanel) {
+                this._eventHandler.subscribe(grid.onSort, function (e, args) {
+                    _this.createPreHeaderRowGroupingTitle();
+                });
+                this._eventHandler.subscribe(grid.onColumnsResized, function (e, args) {
+                    _this.createPreHeaderRowGroupingTitle();
+                });
+                this._eventHandler.subscribe(dataView.onRowCountChanged, function (e, args) {
+                    _this.createPreHeaderRowGroupingTitle();
+                });
+                setTimeout(function () {
+                    _this.createPreHeaderRowGroupingTitle();
+                }, 50);
+            }
+        }
+    };
+    GroupingAndColspanService.prototype.dispose = function () {
+        this._eventHandler.unsubscribeAll();
+    };
+    GroupingAndColspanService.prototype.createPreHeaderRowGroupingTitle = function () {
+        var $preHeaderPanel = $(this._grid.getPreHeaderPanel())
+            .empty()
+            .addClass('slick-header-columns')
+            .css('left', '-1000px')
+            .width(this._grid.getHeadersWidth());
+        $preHeaderPanel.parent().addClass('slick-header');
+        var headerColumnWidthDiff = this._grid.getHeaderColumnWidthDiff();
+        var m;
+        var header;
+        var lastColumnGroup = '';
+        var widthTotal = 0;
+        for (var i = 0; i < this._columnDefinitions.length; i++) {
+            m = this._columnDefinitions[i];
+            if (lastColumnGroup === m.columnGroup && i > 0) {
+                widthTotal += m.width;
+                header.width(widthTotal - headerColumnWidthDiff);
+            }
+            else {
+                widthTotal = m.width;
+                header = $("<div class=\"ui-state-default slick-header-column\" />")
+                    .html("<span class=\"slick-column-name\">" + (m.columnGroup || '') + "</span>")
+                    .width(m.width - headerColumnWidthDiff)
+                    .appendTo($preHeaderPanel);
+            }
+            lastColumnGroup = m.columnGroup;
+        }
+    };
+    return GroupingAndColspanService;
+}());
 var DATAGRID_MIN_HEIGHT = 180;
 var DATAGRID_MIN_WIDTH = 300;
 var DATAGRID_BOTTOM_PADDING = 20;
@@ -3874,10 +4111,13 @@ var DATAGRID_PAGINATION_HEIGHT = 35;
 var timer$2;
 var ResizerService = /** @class */ (function () {
     function ResizerService() {
+        this.onGridBeforeResize = new Subject();
     }
-    ResizerService.prototype.init = function (grid, gridOptions) {
+    ResizerService.prototype.init = function (grid) {
         this._grid = grid;
-        this._gridOptions = gridOptions;
+        if (grid) {
+            this._gridOptions = grid.getOptions();
+        }
     };
     ResizerService.prototype.attachAutoResizeDataGrid = function () {
         var _this = this;
@@ -3887,6 +4127,7 @@ var ResizerService = /** @class */ (function () {
         }
         this.resizeGrid();
         $(window).on('resize.grid', function () {
+            _this.onGridBeforeResize.next(true);
             _this.resizeGrid();
             _this.resizeGrid();
         });
@@ -4108,6 +4349,7 @@ var CheckboxEditor = /** @class */ (function () {
     };
     return CheckboxEditor;
 }());
+var moment$10 = moment_;
 require('flatpickr');
 var DateEditor = /** @class */ (function () {
     function DateEditor(args) {
@@ -4116,29 +4358,32 @@ var DateEditor = /** @class */ (function () {
     }
     DateEditor.prototype.init = function () {
         var _this = this;
-        var gridOptions = (this.args.grid.getOptions());
-        this.defaultDate = this.args.item[this.args.column.field] || null;
-        var inputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
-        var outputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.outputType || FieldType.dateUtc);
-        var currentLocale = this.getCurrentLocale(this.args.column, gridOptions);
-        if (currentLocale.length > 2) {
-            currentLocale = currentLocale.substring(0, 2);
+        if (this.args && this.args.column) {
+            var columnDef = this.args.column;
+            var gridOptions = (this.args.grid.getOptions());
+            this.defaultDate = (this.args.item) ? this.args.item[this.args.column.field] : null;
+            var inputFormat = mapFlatpickrDateFormatWithFieldType(columnDef.type || FieldType.dateIso);
+            var outputFormat = mapFlatpickrDateFormatWithFieldType(columnDef.outputType || FieldType.dateUtc);
+            var currentLocale = this.getCurrentLocale(columnDef, gridOptions);
+            if (currentLocale.length > 2) {
+                currentLocale = currentLocale.substring(0, 2);
+            }
+            var pickerOptions = {
+                defaultDate: this.defaultDate,
+                altInput: true,
+                altFormat: inputFormat,
+                dateFormat: outputFormat,
+                closeOnSelect: false,
+                locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
+                onChange: function (selectedDates, dateStr, instance) {
+                    _this.save();
+                },
+            };
+            this.$input = $("<input type=\"text\" data-defaultDate=\"" + this.defaultDate + "\" class=\"editor-text flatpickr\" />");
+            this.$input.appendTo(this.args.container);
+            this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
+            this.show();
         }
-        var pickerOptions = {
-            defaultDate: this.defaultDate,
-            altInput: true,
-            altFormat: inputFormat,
-            dateFormat: outputFormat,
-            closeOnSelect: false,
-            locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
-            onChange: function (selectedDates, dateStr, instance) {
-                _this.save();
-            },
-        };
-        this.$input = $("<input type=\"text\" data-defaultDate=\"" + this.defaultDate + "\" class=\"editor-text flatpickr\" />");
-        this.$input.appendTo(this.args.container);
-        this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
-        this.show();
     };
     DateEditor.prototype.getCurrentLocale = function (columnDef, gridOptions) {
         var params = gridOptions.params || columnDef.params || {};
@@ -4178,7 +4423,9 @@ var DateEditor = /** @class */ (function () {
         this.defaultDate = item[this.args.column.field];
     };
     DateEditor.prototype.serializeValue = function () {
-        return this.$input.val();
+        var outputFormat = mapMomentDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
+        var value = moment$10(this.defaultDate).format(outputFormat);
+        return value;
     };
     DateEditor.prototype.applyValue = function (item, state) {
         item[this.args.column.field] = state;
@@ -4479,6 +4726,7 @@ var MultipleSelectEditor = /** @class */ (function () {
             var sortBy = this.columnDef.params.collectionSortBy;
             newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
         }
+        this.collection = newCollection;
         var editorTemplate = this.buildTemplateHtmlString(newCollection);
         this.createDomElement(editorTemplate);
     };
@@ -4492,7 +4740,7 @@ var MultipleSelectEditor = /** @class */ (function () {
         var _this = this;
         this.defaultValue = item[this.columnDef.field].map(function (i) { return i.toString(); });
         this.$editorElm.find('option').each(function (i, $e) {
-            if (_this.defaultValue.indexOf($e.value) !== -1) {
+            if (_this.defaultValue === $e.value) {
                 $e.selected = true;
             }
             else {
@@ -4633,6 +4881,7 @@ var SingleSelectEditor = /** @class */ (function () {
             var sortBy = this.columnDef.params.collectionSortBy;
             newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
         }
+        this.collection = newCollection;
         var editorTemplate = this.buildTemplateHtmlString(newCollection);
         this.createDomElement(editorTemplate);
     };
@@ -4646,7 +4895,7 @@ var SingleSelectEditor = /** @class */ (function () {
         var _this = this;
         this.defaultValue = item[this.columnDef.field].toString();
         this.$editorElm.find('option').each(function (i, $e) {
-            if (_this.defaultValue.indexOf($e.value) !== -1) {
+            if (_this.defaultValue === $e.value) {
                 $e.selected = true;
             }
             else {
@@ -4845,26 +5094,26 @@ var complexObjectFormatter = function (row, cell, value, columnDef, dataContext)
         return '';
     }
     var complexField = columnDef.field || '';
-    return complexField.split('.').reduce(function (obj, i) { return obj[i]; }, dataContext);
+    return complexField.split('.').reduce(function (obj, i) { return (obj ? obj[i] : ''); }, dataContext);
 };
-var moment$10 = moment_;
-var FORMAT$6 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-var dateIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$10(value).format(FORMAT$6) : ''; };
 var moment$11 = moment_;
-var FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
-var dateTimeIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$11(value).format(FORMAT$7) : ''; };
+var FORMAT$6 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
+var dateIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$11(value).format(FORMAT$6) : ''; };
 var moment$12 = moment_;
-var FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
-var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$12(value).format(FORMAT$8) : ''; };
+var FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
+var dateTimeIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$12(value).format(FORMAT$7) : ''; };
 var moment$13 = moment_;
-var FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
-var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$13(value).format(FORMAT$9) : ''; };
+var FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
+var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$13(value).format(FORMAT$8) : ''; };
 var moment$14 = moment_;
-var FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
-var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$14(value).format(FORMAT$10) : ''; };
+var FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
+var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$14(value).format(FORMAT$9) : ''; };
 var moment$15 = moment_;
+var FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
+var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$15(value).format(FORMAT$10) : ''; };
+var moment$16 = moment_;
 var FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$15(value).format(FORMAT$11) : ''; };
+var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$16(value).format(FORMAT$11) : ''; };
 var deleteIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-trash pointer delete-icon\" aria-hidden=\"true\"></i>"; };
 var dollarColoredBoldFormatter = function (row, cell, value, columnDef, dataContext) {
     if (isNaN(+value)) {
@@ -5408,6 +5657,7 @@ var GlobalGridOptions = {
     enableColumnReorder: true,
     enableExport: true,
     enableGridMenu: true,
+    enableHeaderMenu: true,
     enableMouseHoverHighlightRow: true,
     enableSorting: true,
     enableTextSelectionOnCells: true,
@@ -5441,8 +5691,21 @@ var GlobalGridOptions = {
         showRefreshDatasetCommand: true,
         showToggleFilterCommand: true
     },
+    headerMenu: {
+        autoAlign: true,
+        autoAlignOffset: 12,
+        minWidth: 140,
+        iconSortAscCommand: 'fa fa-sort-asc',
+        iconSortDescCommand: 'fa fa-sort-desc',
+        iconColumnHideCommand: 'fa fa-times',
+        showColumnHideCommand: true,
+        showSortCommands: true
+    },
     headerRowHeight: 35,
     multiColumnSort: true,
+    numberedMultiColumnSort: true,
+    tristateMultiColumnSort: false,
+    sortColNumberInSeparateSpan: true,
     pagination: {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
         pageSize: 25,
@@ -5453,13 +5716,14 @@ var GlobalGridOptions = {
     topPanelHeight: 35
 };
 var AngularSlickgridComponent = /** @class */ (function () {
-    function AngularSlickgridComponent(controlAndPluginService, exportService, filterService, gridExtraService, gridEventService, gridStateService, resizer, sharedService, sortService, translate, forRootConfig) {
+    function AngularSlickgridComponent(controlAndPluginService, exportService, filterService, gridExtraService, gridEventService, gridStateService, groupingAndColspanService, resizer, sharedService, sortService, translate, forRootConfig) {
         this.controlAndPluginService = controlAndPluginService;
         this.exportService = exportService;
         this.filterService = filterService;
         this.gridExtraService = gridExtraService;
         this.gridEventService = gridEventService;
         this.gridStateService = gridStateService;
+        this.groupingAndColspanService = groupingAndColspanService;
         this.resizer = resizer;
         this.sharedService = sharedService;
         this.sortService = sortService;
@@ -5523,6 +5787,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.filterService.dispose();
         this.gridEventService.dispose();
         this.gridStateService.dispose();
+        this.groupingAndColspanService.dispose();
         this.resizer.dispose();
         this.sortService.dispose();
         this.grid.destroy();
@@ -5564,6 +5829,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
         this._dataView.endUpdate();
         this.attachResizeHook(this.grid, this.gridOptions);
+        if (this.gridOptions.createPreHeaderPanel) {
+            this.groupingAndColspanService.init(this.grid, this._dataView);
+        }
         this.gridExtraService.init(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
         if (this.gridOptions.enableTranslate) {
             this.controlAndPluginService.translateHeaders();
@@ -5636,6 +5904,12 @@ var AngularSlickgridComponent = /** @class */ (function () {
             grid.invalidateRows(args.rows);
             grid.render();
         });
+        if (gridOptions.colspanCallback) {
+            this._dataView.getItemMetadata = function (rowNumber) {
+                var item = _this._dataView.getItem(rowNumber);
+                return gridOptions.colspanCallback(item);
+            };
+        }
     };
     AngularSlickgridComponent.prototype.attachBackendCallbackFunctions = function (gridOptions) {
         var _this = this;
@@ -5692,7 +5966,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         if (grid && options.autoFitColumnsOnFirstLoad) {
             grid.autosizeColumns();
         }
-        this.resizer.init(grid, options);
+        this.resizer.init(grid);
         if (options.enableAutoResize) {
             this.resizer.attachAutoResizeDataGrid();
             if (grid && options.autoFitColumnsOnFirstLoad) {
@@ -5769,6 +6043,7 @@ AngularSlickgridComponent.ctorParameters = function () { return [
     { type: GridExtraService, },
     { type: GridEventService, },
     { type: GridStateService, },
+    { type: GroupingAndColspanService, },
     { type: ResizerService, },
     { type: SharedService, },
     { type: SortService, },
@@ -5808,6 +6083,7 @@ var AngularSlickgridModule = /** @class */ (function () {
                 GridExtraService,
                 GridOdataService,
                 GridStateService,
+                GroupingAndColspanService,
                 OdataService,
                 ResizerService,
                 SharedService,
@@ -5835,5 +6111,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, dollarColoredBoldFormatter as ɵbs, dollarColoredFormatter as ɵbr, dollarFormatter as ɵbq, editIconFormatter as ɵbt, hyperlinkFormatter as ɵbu, hyperlinkUriPrefixFormatter as ɵbv, infoIconFormatter as ɵbw, lowercaseFormatter as ɵbx, multipleFormatter as ɵby, percentCompleteBarFormatter as ɵca, percentCompleteFormatter as ɵbz, progressBarFormatter as ɵcb, translateBooleanFormatter as ɵcd, translateFormatter as ɵcc, uppercaseFormatter as ɵce, yesNoFormatter as ɵcf, avgTotalsDollarFormatter as ɵch, avgTotalsFormatter as ɵcg, avgTotalsPercentageFormatter as ɵci, maxTotalsFormatter as ɵcj, minTotalsFormatter as ɵck, sumTotalsBoldFormatter as ɵcm, sumTotalsColoredFormatter as ɵcn, sumTotalsDollarBoldFormatter as ɵcp, sumTotalsDollarColoredBoldFormatter as ɵcr, sumTotalsDollarColoredFormatter as ɵcq, sumTotalsDollarFormatter as ɵco, sumTotalsFormatter as ɵcl, dateIsoSorter as ɵct, dateSorter as ɵcs, dateUsShortSorter as ɵcv, dateUsSorter as ɵcu, numericSorter as ɵcw, stringSorter as ɵcx };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, dollarColoredBoldFormatter as ɵbs, dollarColoredFormatter as ɵbr, dollarFormatter as ɵbq, editIconFormatter as ɵbt, hyperlinkFormatter as ɵbu, hyperlinkUriPrefixFormatter as ɵbv, infoIconFormatter as ɵbw, lowercaseFormatter as ɵbx, multipleFormatter as ɵby, percentCompleteBarFormatter as ɵca, percentCompleteFormatter as ɵbz, progressBarFormatter as ɵcb, translateBooleanFormatter as ɵcd, translateFormatter as ɵcc, uppercaseFormatter as ɵce, yesNoFormatter as ɵcf, avgTotalsDollarFormatter as ɵch, avgTotalsFormatter as ɵcg, avgTotalsPercentageFormatter as ɵci, maxTotalsFormatter as ɵcj, minTotalsFormatter as ɵck, sumTotalsBoldFormatter as ɵcm, sumTotalsColoredFormatter as ɵcn, sumTotalsDollarBoldFormatter as ɵcp, sumTotalsDollarColoredBoldFormatter as ɵcr, sumTotalsDollarColoredFormatter as ɵcq, sumTotalsDollarFormatter as ɵco, sumTotalsFormatter as ɵcl, dateIsoSorter as ɵct, dateSorter as ɵcs, dateUsShortSorter as ɵcv, dateUsSorter as ɵcu, numericSorter as ɵcw, stringSorter as ɵcx };
 //# sourceMappingURL=angular-slickgrid.js.map

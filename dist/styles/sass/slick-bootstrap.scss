@@ -69,6 +69,10 @@
           &.selected {
             background-color: inherit !important;
           }
+          &.copied {
+            background: $copied-cell-bg-color-transition;
+            transition: $copied-cell-transition;
+          }
         }
         &.odd {
           background: $row-highlight-background-color;
@@ -79,6 +83,10 @@
           &.selected {
             background-color: inherit !important;
           }
+          &.copied {
+            background: $copied-cell-bg-color-transition;
+            transition: $copied-cell-transition;
+          }
         }
       }
       &.highlighter {
@@ -86,6 +94,10 @@
         transition-property: background;
         transition-duration: 3s;
         transition-timing-function: ease-in;
+      }
+      &.copied {
+        background: $copied-cell-bg-color-transition;
+        transition: $copied-cell-transition;
       }
       &.odd {
         background: $cell-odd-background-color;
@@ -97,11 +109,19 @@
         &.selected {
           background-color: $row-selected-color;
         }
+        &.copied {
+          background: $copied-cell-bg-color-transition;
+          transition: $copied-cell-transition;
+        }
         background: inherit;
       }
       &.odd .slick-cell {
         &.selected {
           background-color: $row-selected-color;
+        }
+        &.copied {
+          background: $copied-cell-bg-color-transition;
+          transition: $copied-cell-transition;
         }
         background: inherit;
       }
@@ -130,11 +150,9 @@
 
       a, a:visited, .ui-widget-content a, .ui-widget-content a:visited {
         color: $link-color;
-        text-decoration: none;
       }
       a:hover, .ui-widget-content a:hover {
         color: $link-color-hover;
-        text-decoration: none;
         border-bottom: none;
       }
       table {
@@ -151,6 +169,10 @@
       }
       &.selected {
         background-color: $row-selected-color;
+      }
+      &.copied {
+        background: $copied-cell-bg-color-transition;
+        transition: $copied-cell-transition;
       }
       select:not([multiple]).form-control {
         height: 100%;
@@ -214,6 +236,12 @@
     }
   }
 
+  .slick-preheader-panel.ui-state-default  {
+    .slick-header-column {
+      border-left: $preheader-border-left !important;
+      font-size: $preheader-font-size !important;
+    }
+  }
 
   /*
   .slick-header-columns:last-child .slick-header-column:last-child {
@@ -276,6 +304,9 @@
       }
 
       .slick-sort-indicator {
+        background: none;
+        font-family: $icon-font-family;
+        font-size: $icon-font-size;
         position: absolute;
         display: inline-block;
         color: $icon-sort-color;
@@ -285,11 +316,16 @@
         right: $icon-sort-position-right;
         top: $icon-sort-position-top;
       }
-
-      [class*="slick-sort-"] {
-        background: none;
-        font-family: $icon-font-family;
-        font-size: $icon-font-size;
+      .slick-sort-indicator-numbered {
+        font-family: $font-family;
+        font-size: $sort-indicator-number-font-size;
+        position: absolute;
+        display: inline-block;
+        color: $icon-sort-color;
+        width: $sort-indicator-number-width;
+        left: $sort-indicator-number-left;
+        right: $sort-indicator-number-right;
+        top: $sort-indicator-number-top;
       }
       .slick-sort-indicator-asc {
         &:before {

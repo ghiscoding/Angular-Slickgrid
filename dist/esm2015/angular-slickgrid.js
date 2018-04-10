@@ -18,7 +18,6 @@ import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.gridmenu';
 import 'slickgrid/controls/slick.pager';
 import 'slickgrid/plugins/slick.autotooltips';
-import 'slickgrid/plugins/slick.cellcopymanager';
 import 'slickgrid/plugins/slick.cellexternalcopymanager';
 import 'slickgrid/plugins/slick.cellrangedecorator';
 import 'slickgrid/plugins/slick.cellrangeselector';
@@ -3114,6 +3113,26 @@ class SortService {
         return this._currentLocalSorters;
     }
     /**
+     * Get column sorts,
+     * If a column is passed as an argument, we won't add this column to our output array since it is already in the array
+     * We want to know the sort prior to calling the next sorting command
+     * @param {?=} columnId
+     * @return {?}
+     */
+    getPreviousColumnSorts(columnId) {
+        // getSortColumns() only returns sortAsc & columnId, we want the entire column definition
+        const /** @type {?} */ oldSortColumns = this._grid.getSortColumns();
+        const /** @type {?} */ columnDefinitions = this._grid.getColumns();
+        // get the column definition but only keep column which are not equal to our current column
+        const /** @type {?} */ sortedCols = oldSortColumns.reduce((cols, col) => {
+            if (!columnId || col.columnId !== columnId) {
+                cols.push({ sortCol: columnDefinitions[this._grid.getColumnIndex(col.columnId)], sortAsc: col.sortAsc });
+            }
+            return cols;
+        }, []);
+        return sortedCols;
+    }
+    /**
      * load any presets if there are any
      * @param {?} grid
      * @param {?} gridOptions
@@ -3145,7 +3164,7 @@ class SortService {
             });
             if (sortCols.length > 0) {
                 this.onLocalSortChanged(grid, gridOptions, dataView, sortCols);
-                grid.setSortColumns(sortCols);
+                grid.setSortColumns(sortCols); // add sort icon in UI
             }
         }
     }
@@ -3229,6 +3248,13 @@ class ControlAndPluginService {
         this.translate = translate;
     }
     /**
+     * Auto-resize all the column in the grid to fit the grid width
+     * @return {?}
+     */
+    autoResizeColumns() {
+        this._grid.autosizeColumns();
+    }
+    /**
      * Attach/Create different Controls or Plugins after the Grid is created
      * @return {?}
      */
@@ -3238,21 +3264,26 @@ class ControlAndPluginService {
         this._dataView = this.sharedService.dataView;
         this._columnDefinitions = this.sharedService.columnDefinitions;
         this.visibleColumns = this.sharedService.columnDefinitions;
+        // Column Picker Plugin
         if (this._gridOptions.enableColumnPicker) {
             this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions, this._gridOptions);
         }
+        // Grid Menu Plugin
         if (this._gridOptions.enableGridMenu) {
             this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions, this._gridOptions);
         }
+        // Auto Tooltip Plugin
         if (this._gridOptions.enableAutoTooltip) {
             this.autoTooltipPlugin = new Slick.AutoTooltips(this._gridOptions.autoTooltipOptions || {});
             this._grid.registerPlugin(this.autoTooltipPlugin);
         }
+        // Grouping Plugin
         // register the group item metadata provider to add expand/collapse group handlers
         if (this._gridOptions.enableGrouping) {
             const /** @type {?} */ groupItemMetaProvider = this.sharedService.groupItemMetadataProvider || {};
             this._grid.registerPlugin(groupItemMetaProvider);
         }
+        // Checkbox Selector Plugin
         if (this._gridOptions.enableCheckboxSelector) {
             // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
             // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
@@ -3263,10 +3294,12 @@ class ControlAndPluginService {
                 this._grid.setSelectionModel(this.rowSelectionPlugin);
             }
         }
+        // Row Selection Plugin
         if (this._gridOptions.enableRowSelection) {
             this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
             this._grid.setSelectionModel(this.rowSelectionPlugin);
         }
+        // Header Button Plugin
         if (this._gridOptions.enableHeaderButton) {
             this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(this._gridOptions.headerButton || {});
             this._grid.registerPlugin(this.headerButtonsPlugin);
@@ -3276,23 +3309,17 @@ class ControlAndPluginService {
                 }
             });
         }
+        // Header Menu Plugin
         if (this._gridOptions.enableHeaderMenu) {
-            const /** @type {?} */ headerMenuOptions = this._gridOptions.headerMenu || {};
-            headerMenuOptions.minWidth = headerMenuOptions.minWidth || 140;
-            headerMenuOptions.autoAlignOffset = headerMenuOptions.autoAlignOffset || 12;
-            this.headerMenuPlugin = new Slick.Plugins.HeaderMenu(headerMenuOptions);
-            this._grid.registerPlugin(this.headerMenuPlugin);
-            this.headerMenuPlugin.onCommand.subscribe((e, args) => {
-                if (this._gridOptions.headerMenu && typeof this._gridOptions.headerMenu.onCommand === 'function') {
-                    this._gridOptions.headerMenu.onCommand(e, args);
-                }
-            });
-            this.headerMenuPlugin.onCommand.subscribe((e, args) => {
-                if (this._gridOptions.headerMenu && typeof this._gridOptions.headerMenu.onBeforeMenuShow === 'function') {
-                    this._gridOptions.headerMenu.onBeforeMenuShow(e, args);
-                }
-            });
+            this.headerMenuPlugin = this.createHeaderMenu(this._grid, this._dataView, this._columnDefinitions, this._gridOptions);
         }
+        // Cell External Copy Manager Plugin (Excel Like)
+        if (this._gridOptions.enableExcelCopyBuffer) {
+            this.createUndoRedoBuffer();
+            this.hookUndoShortcutKey();
+            this.createCellExternalCopyManagerPlugin(this._grid, this._gridOptions);
+        }
+        // manually register other plugins
         if (this._gridOptions.registerPlugins !== undefined) {
             if (Array.isArray(this._gridOptions.registerPlugins)) {
                 this._gridOptions.registerPlugins.forEach((plugin) => {
@@ -3305,6 +3332,62 @@ class ControlAndPluginService {
         }
     }
     /**
+     * Attach/Create different plugins before the Grid creation.
+     * For example the multi-select have to be added to the column definition before the grid is created to work properly
+     * @param {?} columnDefinitions
+     * @param {?} options
+     * @return {?}
+     */
+    createPluginBeforeGridCreation(columnDefinitions, options) {
+        if (options.enableCheckboxSelector) {
+            this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
+            const /** @type {?} */ selectionColumn = this.checkboxSelectorPlugin.getColumnDefinition();
+            selectionColumn.excludeFromExport = true;
+            selectionColumn.excludeFromQuery = true;
+            columnDefinitions.unshift(selectionColumn);
+        }
+    }
+    /**
+     * Create the Excel like copy manager
+     * @param {?} grid
+     * @param {?} gridOptions
+     * @return {?}
+     */
+    createCellExternalCopyManagerPlugin(grid, gridOptions) {
+        let /** @type {?} */ newRowIds = 0;
+        const /** @type {?} */ pluginOptions = {
+            clipboardCommandHandler: (editCommand) => {
+                this.undoRedoBuffer.queueAndExecuteCommand.call(this.undoRedoBuffer, editCommand);
+            },
+            dataItemColumnValueExtractor: (item, columnDef) => {
+                // when grid or cell is not editable, we will possibly evaluate the Formatter if it was passed
+                // to decide if we evaluate the Formatter, we will use the same flag from Export which is "exportWithFormatter"
+                if (!gridOptions.editable || !columnDef.editor) {
+                    const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : gridOptions.exportOptions.exportWithFormatter;
+                    if (columnDef.formatter && isEvaluatingFormatter) {
+                        return columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this._grid);
+                    }
+                }
+                // else use the default "dataItemColumnValueExtractor" from the plugin itself
+                // we can do that by setting back the getter with null
+                return null;
+            },
+            readOnlyMode: false,
+            includeHeaderWhenCopying: false,
+            newRowCreator: (count) => {
+                for (let /** @type {?} */ i = 0; i < count; i++) {
+                    const /** @type {?} */ item = {
+                        id: 'newRow_' + newRowIds++
+                    };
+                    grid.getData().addItem(item);
+                }
+            }
+        };
+        grid.setSelectionModel(new Slick.CellSelectionModel());
+        grid.registerPlugin(new Slick.CellExternalCopyManager(pluginOptions));
+    }
+    /**
+     * Create the Column Picker and expose all the available hooks that user can subscribe (onColumnsChanged)
      * @param {?} grid
      * @param {?} columnDefinitions
      * @param {?} options
@@ -3370,6 +3453,69 @@ class ControlAndPluginService {
         return gridMenuControl;
     }
     /**
+     * Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...)
+     * @param {?} grid
+     * @param {?} dataView
+     * @param {?} columnDefinitions
+     * @param {?} options
+     * @return {?}
+     */
+    createHeaderMenu(grid, dataView, columnDefinitions, options) {
+        options.headerMenu = Object.assign({}, this.getDefaultHeaderMenuOptions(), options.headerMenu);
+        if (options.enableHeaderMenu) {
+            options.headerMenu = this.addHeaderMenuCustomCommands(grid, dataView, options, columnDefinitions);
+        }
+        const /** @type {?} */ headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenu);
+        grid.registerPlugin(headerMenuPlugin);
+        headerMenuPlugin.onCommand.subscribe((e, args) => {
+            if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
+                options.headerMenu.onCommand(e, args);
+            }
+        });
+        headerMenuPlugin.onCommand.subscribe((e, args) => {
+            if (options.headerMenu && typeof options.headerMenu.onBeforeMenuShow === 'function') {
+                options.headerMenu.onBeforeMenuShow(e, args);
+            }
+        });
+        return headerMenuPlugin;
+    }
+    /**
+     * Create an undo redo buffer used by the Excel like copy
+     * @return {?}
+     */
+    createUndoRedoBuffer() {
+        const /** @type {?} */ commandQueue = [];
+        let /** @type {?} */ commandCtr = 0;
+        this.undoRedoBuffer = {
+            queueAndExecuteCommand: (editCommand) => {
+                commandQueue[commandCtr] = editCommand;
+                commandCtr++;
+                editCommand.execute();
+            },
+            undo: () => {
+                if (commandCtr === 0) {
+                    return;
+                }
+                commandCtr--;
+                const /** @type {?} */ command = commandQueue[commandCtr];
+                if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+                    command.undo();
+                }
+            },
+            redo: () => {
+                if (commandCtr >= commandQueue.length) {
+                    return;
+                }
+                const /** @type {?} */ command = commandQueue[commandCtr];
+                commandCtr++;
+                if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+                    command.execute();
+                }
+            }
+        };
+    }
+    /**
+     * Hide a column from the grid
      * @param {?} column
      * @return {?}
      */
@@ -3381,22 +3527,25 @@ class ControlAndPluginService {
         }
     }
     /**
-     * @param {?} array
-     * @param {?} index
+     * Attach an undo shortcut key hook that will redo/undo the copy buffer
      * @return {?}
      */
-    removeColumnByIndex(array, index) {
-        return array.filter((el, i) => {
-            return index !== i;
+    hookUndoShortcutKey() {
+        // undo shortcut
+        $(document).keydown((e) => {
+            if (e.which === 90 && (e.ctrlKey || e.metaKey)) {
+                // CTRL + (shift) + Z
+                if (e.shiftKey) {
+                    this.undoRedoBuffer.redo();
+                }
+                else {
+                    this.undoRedoBuffer.undo();
+                }
+            }
         });
     }
     /**
-     * @return {?}
-     */
-    autoResizeColumns() {
-        this._grid.autosizeColumns();
-    }
-    /**
+     * Dispose of all the controls & plugins
      * @return {?}
      */
     dispose() {
@@ -3436,7 +3585,7 @@ class ControlAndPluginService {
      * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
      * @param {?} grid
      * @param {?} options
-     * @return {?}
+     * @return {?} gridMenu
      */
     addGridMenuCustomCommands(grid, options) {
         const /** @type {?} */ backendApi = options.backendServiceApi || options.onBackendEventApi || null;
@@ -3540,7 +3689,7 @@ class ControlAndPluginService {
                             grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
                             break;
                         case 'refresh-dataset':
-                            this.refreshBackendDataset(options);
+                            this.refreshBackendDataset();
                             break;
                         default:
                             alert('Command: ' + args.command);
@@ -3563,29 +3712,97 @@ class ControlAndPluginService {
         }
     }
     /**
-     * @return {?} default Grid Menu options
+     * Create Header Menu with Custom Commands if user has enabled Header Menu
+     * @param {?} grid
+     * @param {?} dataView
+     * @param {?} options
+     * @param {?} columnDefinitions
+     * @return {?} header menu
      */
-    getDefaultGridMenuOptions() {
-        return {
-            columnTitle: this.translate.instant('COLUMNS') || 'Columns',
-            forceFitTitle: this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns',
-            syncResizeTitle: this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize',
-            iconCssClass: 'fa fa-bars',
-            menuWidth: 18,
-            customTitle: undefined,
-            customItems: [],
-            showClearAllFiltersCommand: true,
-            showRefreshDatasetCommand: true,
-            showToggleFilterCommand: true
-        };
+    addHeaderMenuCustomCommands(grid, dataView, options, columnDefinitions) {
+        const /** @type {?} */ headerMenuOptions = options.headerMenu;
+        if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
+            columnDefinitions.forEach((columnDef) => {
+                if (columnDef) {
+                    if (!columnDef.header || !columnDef.header.menu) {
+                        columnDef.header = {
+                            menu: {
+                                items: []
+                            }
+                        };
+                    }
+                    const /** @type {?} */ columnHeaderMenuItems = columnDef.header.menu.items || [];
+                    // Sorting Commands
+                    if (options.enableSorting && columnDef.sortable && headerMenuOptions.showSortCommands) {
+                        if (columnHeaderMenuItems.filter((item) => item.command === 'sort-asc').length === 0) {
+                            columnHeaderMenuItems.push({
+                                iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
+                                title: options.enableTranslate ? this.translate.instant('SORT_ASCENDING') : 'Sort Ascending',
+                                command: 'sort-asc'
+                            });
+                        }
+                        if (columnHeaderMenuItems.filter((item) => item.command === 'sort-desc').length === 0) {
+                            columnHeaderMenuItems.push({
+                                iconCssClass: headerMenuOptions.iconSortDescCommand || 'fa fa-sort-desc',
+                                title: options.enableTranslate ? this.translate.instant('SORT_DESCENDING') : 'Sort Descending',
+                                command: 'sort-desc'
+                            });
+                        }
+                    }
+                    // Hide Column Command
+                    if (headerMenuOptions.showColumnHideCommand && columnHeaderMenuItems.filter((item) => item.command === 'hide').length === 0) {
+                        columnHeaderMenuItems.push({
+                            iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
+                            title: options.enableTranslate ? this.translate.instant('HIDE_COLUMN') : 'Hide Column',
+                            command: 'hide'
+                        });
+                    }
+                }
+            });
+            // Command callback, what will be executed after command is clicked
+            if (headerMenuOptions) {
+                headerMenuOptions.onCommand = (e, args) => {
+                    if (args && args.command) {
+                        switch (args.command) {
+                            case 'hide':
+                                this.hideColumn(args.column);
+                                this.autoResizeColumns();
+                                break;
+                            case 'sort-asc':
+                            case 'sort-desc':
+                                // get previously sorted columns
+                                const /** @type {?} */ cols = this.sortService.getPreviousColumnSorts(args.column.id + '');
+                                // add to the column array, the column sorted by the header menu
+                                cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
+                                if (options.backendServiceApi) {
+                                    this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid });
+                                }
+                                else {
+                                    this.sortService.onLocalSortChanged(grid, options, dataView, cols);
+                                }
+                                // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
+                                const /** @type {?} */ newSortColumns = cols.map((col) => {
+                                    return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
+                                });
+                                grid.setSortColumns(newSortColumns); // add sort icon in UI
+                                break;
+                            default:
+                                alert('Command: ' + args.command);
+                                break;
+                        }
+                    }
+                };
+            }
+        }
+        return headerMenuOptions;
     }
     /**
-     * @param {?} gridOptions
+     * Refresh the dataset through the Backend Service
      * @return {?}
      */
-    refreshBackendDataset(gridOptions) {
+    refreshBackendDataset() {
         let /** @type {?} */ query;
-        const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+        const /** @type {?} */ backendApi = this._gridOptions.backendServiceApi || this._gridOptions.onBackendEventApi;
         if (!backendApi || !backendApi.service || !backendApi.process) {
             throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
         }
@@ -3612,18 +3829,15 @@ class ControlAndPluginService {
         }
     }
     /**
-     * Reset all the Grid Menu options which have text to translate
-     * @param {?} gridMenu
+     * Remove a column from the grid by it's index in the grid
+     * @param {?} array
+     * @param {?} index
      * @return {?}
      */
-    resetGridMenuTranslations(gridMenu) {
-        // we will reset the custom items array since the commands title have to be translated too (no worries, we will re-create it later)
-        gridMenu.customItems = [];
-        delete gridMenu.customTitle;
-        gridMenu.columnTitle = this.translate.instant('COLUMNS') || 'Columns';
-        gridMenu.forceFitTitle = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
-        gridMenu.syncResizeTitle = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
-        return gridMenu;
+    removeColumnByIndex(array, index) {
+        return array.filter((el, i) => {
+            return index !== i;
+        });
     }
     /**
      * Translate the Column Picker and it's last 2 checkboxes
@@ -3674,20 +3888,46 @@ class ControlAndPluginService {
         this._grid.setColumns(this._columnDefinitions);
     }
     /**
-     * Attach/Create different plugins before the Grid creation.
-     * For example the multi-select have to be added to the column definition before the grid is created to work properly
-     * @param {?} columnDefinitions
-     * @param {?} options
+     * @return {?} default Grid Menu options
+     */
+    getDefaultGridMenuOptions() {
+        return {
+            columnTitle: this.translate.instant('COLUMNS') || 'Columns',
+            forceFitTitle: this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns',
+            syncResizeTitle: this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize',
+            iconCssClass: 'fa fa-bars',
+            menuWidth: 18,
+            customTitle: undefined,
+            customItems: [],
+            showClearAllFiltersCommand: true,
+            showRefreshDatasetCommand: true,
+            showToggleFilterCommand: true
+        };
+    }
+    /**
+     * @return {?} default Header Menu options
+     */
+    getDefaultHeaderMenuOptions() {
+        return {
+            autoAlignOffset: 12,
+            minWidth: 140,
+            showColumnHideCommand: true,
+            showSortCommands: true
+        };
+    }
+    /**
+     * Reset all the Grid Menu options which have text to translate
+     * @param {?} gridMenu
      * @return {?}
      */
-    createPluginBeforeGridCreation(columnDefinitions, options) {
-        if (options.enableCheckboxSelector) {
-            this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
-            const /** @type {?} */ selectionColumn = this.checkboxSelectorPlugin.getColumnDefinition();
-            selectionColumn.excludeFromExport = true;
-            selectionColumn.excludeFromQuery = true;
-            columnDefinitions.unshift(selectionColumn);
-        }
+    resetGridMenuTranslations(gridMenu) {
+        // we will reset the custom items array since the commands title have to be translated too (no worries, we will re-create it later)
+        gridMenu.customItems = [];
+        delete gridMenu.customTitle;
+        gridMenu.columnTitle = this.translate.instant('COLUMNS') || 'Columns';
+        gridMenu.forceFitTitle = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
+        gridMenu.syncResizeTitle = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
+        return gridMenu;
     }
 }
 ControlAndPluginService.decorators = [
@@ -5368,6 +5608,87 @@ class GridStateService {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+class GroupingAndColspanService {
+    constructor() {
+        this._eventHandler = new Slick.EventHandler();
+    }
+    /**
+     * @param {?} grid
+     * @param {?} dataView
+     * @return {?}
+     */
+    init(grid, dataView) {
+        this._grid = grid;
+        this._dataView = dataView;
+        if (grid) {
+            this._gridOptions = grid.getOptions();
+            this._columnDefinitions = grid.getColumns();
+        }
+        if (grid && this._gridOptions) {
+            // When dealing with Pre-Header Grouping colspan, we need to re-create the pre-header in multiple occasions
+            // for all these occasions, we have to trigger a re-create
+            if (this._gridOptions.createPreHeaderPanel) {
+                this._eventHandler.subscribe(grid.onSort, (e, args) => {
+                    this.createPreHeaderRowGroupingTitle();
+                });
+                this._eventHandler.subscribe(grid.onColumnsResized, (e, args) => {
+                    this.createPreHeaderRowGroupingTitle();
+                });
+                this._eventHandler.subscribe(dataView.onRowCountChanged, (e, args) => {
+                    this.createPreHeaderRowGroupingTitle();
+                });
+                // also not sure why at this point, but it seems that I need to call the 1st create in a delayed execution
+                // probably some kind of timing issues and delaying it until the grid is fully ready does help
+                setTimeout(() => {
+                    this.createPreHeaderRowGroupingTitle();
+                }, 50);
+            }
+        }
+    }
+    /**
+     * @return {?}
+     */
+    dispose() {
+        // unsubscribe all SlickGrid events
+        this._eventHandler.unsubscribeAll();
+    }
+    /**
+     * @return {?}
+     */
+    createPreHeaderRowGroupingTitle() {
+        const /** @type {?} */ $preHeaderPanel = $(this._grid.getPreHeaderPanel())
+            .empty()
+            .addClass('slick-header-columns')
+            .css('left', '-1000px')
+            .width(this._grid.getHeadersWidth());
+        $preHeaderPanel.parent().addClass('slick-header');
+        const /** @type {?} */ headerColumnWidthDiff = this._grid.getHeaderColumnWidthDiff();
+        let /** @type {?} */ m;
+        let /** @type {?} */ header;
+        let /** @type {?} */ lastColumnGroup = '';
+        let /** @type {?} */ widthTotal = 0;
+        for (let /** @type {?} */ i = 0; i < this._columnDefinitions.length; i++) {
+            m = this._columnDefinitions[i];
+            if (lastColumnGroup === m.columnGroup && i > 0) {
+                widthTotal += m.width;
+                header.width(widthTotal - headerColumnWidthDiff);
+            }
+            else {
+                widthTotal = m.width;
+                header = $(`<div class="ui-state-default slick-header-column" />`)
+                    .html(`<span class="slick-column-name">${m.columnGroup || ''}</span>`)
+                    .width(m.width - headerColumnWidthDiff)
+                    .appendTo($preHeaderPanel);
+            }
+            lastColumnGroup = m.columnGroup;
+        }
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 // global constants, height/width are in pixels
 const DATAGRID_MIN_HEIGHT = 180;
 const DATAGRID_MIN_WIDTH = 300;
@@ -5379,14 +5700,18 @@ let timer$2;
  */
 
 class ResizerService {
+    constructor() {
+        this.onGridBeforeResize = new Subject();
+    }
     /**
      * @param {?} grid
-     * @param {?} gridOptions
      * @return {?}
      */
-    init(grid, gridOptions) {
+    init(grid) {
         this._grid = grid;
-        this._gridOptions = gridOptions;
+        if (grid) {
+            this._gridOptions = grid.getOptions();
+        }
     }
     /**
      * Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
@@ -5404,6 +5729,7 @@ class ResizerService {
         // -- 2nd attach a trigger on the Window DOM element, so that it happens also when resizing after first load
         // -- attach auto-resize to Window object only if it exist
         $(window).on('resize.grid', () => {
+            this.onGridBeforeResize.next(true);
             // for some yet unknown reason, calling the resize twice removes any stuttering/flickering when changing the height and makes it much smoother
             this.resizeGrid();
             this.resizeGrid();
@@ -5788,6 +6114,7 @@ class CheckboxEditor {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+const moment$10 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 require('flatpickr');
 class DateEditor {
     /**
@@ -5801,29 +6128,32 @@ class DateEditor {
      * @return {?}
      */
     init() {
-        const /** @type {?} */ gridOptions = /** @type {?} */ (this.args.grid.getOptions());
-        this.defaultDate = this.args.item[this.args.column.field] || null;
-        const /** @type {?} */ inputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
-        const /** @type {?} */ outputFormat = mapFlatpickrDateFormatWithFieldType(this.args.column.outputType || FieldType.dateUtc);
-        let /** @type {?} */ currentLocale = this.getCurrentLocale(this.args.column, gridOptions);
-        if (currentLocale.length > 2) {
-            currentLocale = currentLocale.substring(0, 2);
+        if (this.args && this.args.column) {
+            const /** @type {?} */ columnDef = this.args.column;
+            const /** @type {?} */ gridOptions = /** @type {?} */ (this.args.grid.getOptions());
+            this.defaultDate = (this.args.item) ? this.args.item[this.args.column.field] : null;
+            const /** @type {?} */ inputFormat = mapFlatpickrDateFormatWithFieldType(columnDef.type || FieldType.dateIso);
+            const /** @type {?} */ outputFormat = mapFlatpickrDateFormatWithFieldType(columnDef.outputType || FieldType.dateUtc);
+            let /** @type {?} */ currentLocale = this.getCurrentLocale(columnDef, gridOptions);
+            if (currentLocale.length > 2) {
+                currentLocale = currentLocale.substring(0, 2);
+            }
+            const /** @type {?} */ pickerOptions = {
+                defaultDate: this.defaultDate,
+                altInput: true,
+                altFormat: inputFormat,
+                dateFormat: outputFormat,
+                closeOnSelect: false,
+                locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
+                onChange: (selectedDates, dateStr, instance) => {
+                    this.save();
+                },
+            };
+            this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text flatpickr" />`);
+            this.$input.appendTo(this.args.container);
+            this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
+            this.show();
         }
-        const /** @type {?} */ pickerOptions = {
-            defaultDate: this.defaultDate,
-            altInput: true,
-            altFormat: inputFormat,
-            dateFormat: outputFormat,
-            closeOnSelect: false,
-            locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
-            onChange: (selectedDates, dateStr, instance) => {
-                this.save();
-            },
-        };
-        this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text flatpickr" />`);
-        this.$input.appendTo(this.args.container);
-        this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
-        this.show();
     }
     /**
      * @param {?} columnDef
@@ -5896,7 +6226,9 @@ class DateEditor {
      * @return {?}
      */
     serializeValue() {
-        return this.$input.val();
+        const /** @type {?} */ outputFormat = mapMomentDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
+        const /** @type {?} */ value = moment$10(this.defaultDate).format(outputFormat);
+        return value;
     }
     /**
      * @param {?} item
@@ -6355,6 +6687,7 @@ class MultipleSelectEditor {
             const /** @type {?} */ sortBy = this.columnDef.params.collectionSortBy;
             newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
         }
+        this.collection = newCollection;
         const /** @type {?} */ editorTemplate = this.buildTemplateHtmlString(newCollection);
         this.createDomElement(editorTemplate);
     }
@@ -6380,7 +6713,7 @@ class MultipleSelectEditor {
         // convert to string because that is how the DOM will return these values
         this.defaultValue = item[this.columnDef.field].map((i) => i.toString());
         this.$editorElm.find('option').each((i, $e) => {
-            if (this.defaultValue.indexOf($e.value) !== -1) {
+            if (this.defaultValue === $e.value) {
                 $e.selected = true;
             }
             else {
@@ -6573,6 +6906,7 @@ class SingleSelectEditor {
             const /** @type {?} */ sortBy = this.columnDef.params.collectionSortBy;
             newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
         }
+        this.collection = newCollection;
         const /** @type {?} */ editorTemplate = this.buildTemplateHtmlString(newCollection);
         this.createDomElement(editorTemplate);
     }
@@ -6598,7 +6932,7 @@ class SingleSelectEditor {
         // convert to string because that is how the DOM will return these values
         this.defaultValue = item[this.columnDef.field].toString();
         this.$editorElm.find('option').each((i, $e) => {
-            if (this.defaultValue.indexOf($e.value) !== -1) {
+            if (this.defaultValue === $e.value) {
                 $e.selected = true;
             }
             else {
@@ -6908,56 +7242,56 @@ const complexObjectFormatter = (row, cell, value, columnDef, dataContext) => {
         return '';
     }
     const /** @type {?} */ complexField = columnDef.field || '';
-    return complexField.split('.').reduce((obj, i) => obj[i], dataContext);
+    return complexField.split('.').reduce((obj, i) => (obj ? obj[i] : ''), dataContext);
 };
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const moment$10 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$6 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-const dateIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$10(value).format(FORMAT$6) : '';
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
 const moment$11 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
-const dateTimeIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$11(value).format(FORMAT$7) : '';
+const FORMAT$6 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
+const dateIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$11(value).format(FORMAT$6) : '';
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
 const moment$12 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
-const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$12(value).format(FORMAT$8) : '';
+const FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
+const dateTimeIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$12(value).format(FORMAT$7) : '';
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
 const moment$13 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
-const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$13(value).format(FORMAT$9) : '';
+const FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
+const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$13(value).format(FORMAT$8) : '';
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
 const moment$14 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
-const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$14(value).format(FORMAT$10) : '';
+const FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
+const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$14(value).format(FORMAT$9) : '';
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
 const moment$15 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
+const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$15(value).format(FORMAT$10) : '';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$16 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-const dateUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$15(value).format(FORMAT$11) : '';
+const dateUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$16(value).format(FORMAT$11) : '';
 
 /**
  * @fileoverview added by tsickle
@@ -7871,6 +8205,7 @@ const GlobalGridOptions = {
     enableColumnReorder: true,
     enableExport: true,
     enableGridMenu: true,
+    enableHeaderMenu: true,
     enableMouseHoverHighlightRow: true,
     enableSorting: true,
     enableTextSelectionOnCells: true,
@@ -7904,8 +8239,21 @@ const GlobalGridOptions = {
         showRefreshDatasetCommand: true,
         showToggleFilterCommand: true
     },
+    headerMenu: {
+        autoAlign: true,
+        autoAlignOffset: 12,
+        minWidth: 140,
+        iconSortAscCommand: 'fa fa-sort-asc',
+        iconSortDescCommand: 'fa fa-sort-desc',
+        iconColumnHideCommand: 'fa fa-times',
+        showColumnHideCommand: true,
+        showSortCommands: true
+    },
     headerRowHeight: 35,
     multiColumnSort: true,
+    numberedMultiColumnSort: true,
+    tristateMultiColumnSort: false,
+    sortColNumberInSeparateSpan: true,
     pagination: {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
         pageSize: 25,
@@ -7928,19 +8276,21 @@ class AngularSlickgridComponent {
      * @param {?} gridExtraService
      * @param {?} gridEventService
      * @param {?} gridStateService
+     * @param {?} groupingAndColspanService
      * @param {?} resizer
      * @param {?} sharedService
      * @param {?} sortService
      * @param {?} translate
      * @param {?} forRootConfig
      */
-    constructor(controlAndPluginService, exportService, filterService, gridExtraService, gridEventService, gridStateService, resizer, sharedService, sortService, translate, forRootConfig) {
+    constructor(controlAndPluginService, exportService, filterService, gridExtraService, gridEventService, gridStateService, groupingAndColspanService, resizer, sharedService, sortService, translate, forRootConfig) {
         this.controlAndPluginService = controlAndPluginService;
         this.exportService = exportService;
         this.filterService = filterService;
         this.gridExtraService = gridExtraService;
         this.gridEventService = gridEventService;
         this.gridStateService = gridStateService;
+        this.groupingAndColspanService = groupingAndColspanService;
         this.resizer = resizer;
         this.sharedService = sharedService;
         this.sortService = sortService;
@@ -8019,6 +8369,7 @@ class AngularSlickgridComponent {
         this.filterService.dispose();
         this.gridEventService.dispose();
         this.gridStateService.dispose();
+        this.groupingAndColspanService.dispose();
         this.resizer.dispose();
         this.sortService.dispose();
         this.grid.destroy();
@@ -8070,6 +8421,10 @@ class AngularSlickgridComponent {
         this._dataView.endUpdate();
         // attach resize ONLY after the dataView is ready
         this.attachResizeHook(this.grid, this.gridOptions);
+        // attach grouping and header grouping colspan service
+        if (this.gridOptions.createPreHeaderPanel) {
+            this.groupingAndColspanService.init(this.grid, this._dataView);
+        }
         // attach grid extra service
         this.gridExtraService.init(this.grid, this._columnDefinitions, this.gridOptions, this._dataView);
         // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
@@ -8166,6 +8521,13 @@ class AngularSlickgridComponent {
             grid.invalidateRows(args.rows);
             grid.render();
         });
+        // does the user have a colspan callback?
+        if (gridOptions.colspanCallback) {
+            this._dataView.getItemMetadata = (rowNumber) => {
+                const /** @type {?} */ item = this._dataView.getItem(rowNumber);
+                return gridOptions.colspanCallback(item);
+            };
+        }
     }
     /**
      * @param {?} gridOptions
@@ -8230,7 +8592,7 @@ class AngularSlickgridComponent {
             grid.autosizeColumns();
         }
         // auto-resize grid on browser resize
-        this.resizer.init(grid, options);
+        this.resizer.init(grid);
         if (options.enableAutoResize) {
             this.resizer.attachAutoResizeDataGrid();
             if (grid && options.autoFitColumnsOnFirstLoad) {
@@ -8351,6 +8713,7 @@ AngularSlickgridComponent.ctorParameters = () => [
     { type: GridExtraService, },
     { type: GridEventService, },
     { type: GridStateService, },
+    { type: GroupingAndColspanService, },
     { type: ResizerService, },
     { type: SharedService, },
     { type: SortService, },
@@ -8396,6 +8759,7 @@ class AngularSlickgridModule {
                 GridExtraService,
                 GridOdataService,
                 GridStateService,
+                GroupingAndColspanService,
                 OdataService,
                 ResizerService,
                 SharedService,
@@ -8442,5 +8806,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, dollarColoredBoldFormatter as ɵbs, dollarColoredFormatter as ɵbr, dollarFormatter as ɵbq, editIconFormatter as ɵbt, hyperlinkFormatter as ɵbu, hyperlinkUriPrefixFormatter as ɵbv, infoIconFormatter as ɵbw, lowercaseFormatter as ɵbx, multipleFormatter as ɵby, percentCompleteBarFormatter as ɵca, percentCompleteFormatter as ɵbz, progressBarFormatter as ɵcb, translateBooleanFormatter as ɵcd, translateFormatter as ɵcc, uppercaseFormatter as ɵce, yesNoFormatter as ɵcf, avgTotalsDollarFormatter as ɵch, avgTotalsFormatter as ɵcg, avgTotalsPercentageFormatter as ɵci, maxTotalsFormatter as ɵcj, minTotalsFormatter as ɵck, sumTotalsBoldFormatter as ɵcm, sumTotalsColoredFormatter as ɵcn, sumTotalsDollarBoldFormatter as ɵcp, sumTotalsDollarColoredBoldFormatter as ɵcr, sumTotalsDollarColoredFormatter as ɵcq, sumTotalsDollarFormatter as ɵco, sumTotalsFormatter as ɵcl, dateIsoSorter as ɵct, dateSorter as ɵcs, dateUsShortSorter as ɵcv, dateUsSorter as ɵcu, numericSorter as ɵcw, stringSorter as ɵcx };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, dollarColoredBoldFormatter as ɵbs, dollarColoredFormatter as ɵbr, dollarFormatter as ɵbq, editIconFormatter as ɵbt, hyperlinkFormatter as ɵbu, hyperlinkUriPrefixFormatter as ɵbv, infoIconFormatter as ɵbw, lowercaseFormatter as ɵbx, multipleFormatter as ɵby, percentCompleteBarFormatter as ɵca, percentCompleteFormatter as ɵbz, progressBarFormatter as ɵcb, translateBooleanFormatter as ɵcd, translateFormatter as ɵcc, uppercaseFormatter as ɵce, yesNoFormatter as ɵcf, avgTotalsDollarFormatter as ɵch, avgTotalsFormatter as ɵcg, avgTotalsPercentageFormatter as ɵci, maxTotalsFormatter as ɵcj, minTotalsFormatter as ɵck, sumTotalsBoldFormatter as ɵcm, sumTotalsColoredFormatter as ɵcn, sumTotalsDollarBoldFormatter as ɵcp, sumTotalsDollarColoredBoldFormatter as ɵcr, sumTotalsDollarColoredFormatter as ɵcq, sumTotalsDollarFormatter as ɵco, sumTotalsFormatter as ɵcl, dateIsoSorter as ɵct, dateSorter as ɵcs, dateUsShortSorter as ɵcv, dateUsSorter as ɵcu, numericSorter as ɵcw, stringSorter as ɵcx };
 //# sourceMappingURL=angular-slickgrid.js.map

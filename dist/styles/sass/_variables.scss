@@ -46,6 +46,13 @@ $row-selected-color:                    #e2e2c5 !default;
 $row-checkbox-selector-background:      inherit !default;
 $row-checkbox-selector-border:          none !default;
 
+/* Pre-Header - Header Grouping colspan */
+$preheader-border-left:                 1px solid #c0c0c0 !default;
+$preheader-border-right:                none !default;
+$preheader-border-bottom:               none !default;
+$preheader-border-top:                  none !default;
+$preheader-font-size:                   $font-size-base + 2px !default;
+
 /* header */
 $header-padding-top:                    4px !default;
 $header-padding-right:                  4px !default;
@@ -80,11 +87,6 @@ $icon-group-font-weight:                bold !default;
 $icon-group-margin-right:               2px !default;
 $icon-group-height:                     20px !default;
 $icon-group-width:                      14px !default;
-$icon-sort-asc:                         "\f0d8" !default;
-$icon-sort-desc:                        "\f0d7" !default;
-$icon-sort-color:                       rgb(76, 128, 190) !default;
-$icon-sort-position-right:              10px !default;
-$icon-sort-position-top:                ((15px * $header-row-count) - 15px) !default;
 $table-background:                      transparent !default;
 $container-border:                      0px solid $border-color !default;
 $link-color:        				            #08c !default;
@@ -92,6 +94,18 @@ $link-color-hover:                      darker($link-color, 15%) !default;
 $gray-dark:              			          #333 !default;
 $text-color:             			          $gray-dark !default;
 $navbar-default-link-hover-color:	      $gray-dark !default;
+
+/* Sorting */
+$icon-sort-asc:                         "\f0d8" !default;
+$icon-sort-desc:                        "\f0d7" !default;
+$icon-sort-color:                       rgb(76, 128, 190) !default;
+$icon-sort-position-right:              10px !default;
+$icon-sort-position-top:                ((15px * $header-row-count) - 15px) !default;
+$sort-indicator-number-font-size:       10px !default;
+$sort-indicator-number-width:           8px !default;
+$sort-indicator-number-left:            auto !default;
+$sort-indicator-number-right:           0px !default;
+$sort-indicator-number-top:             (13px * $header-row-count) !default;
 
 /* Grouping Totals Formatter */
 $group-totals-formatter-color:          gray !default;
@@ -110,6 +124,10 @@ $column-picker-label-margin:            4px !default;
 $column-picker-label-font-weight:       normal !default;
 $column-picker-link-background-color:   #ffffff !default;
 
+/* Excel copy plugin */
+$copied-cell-bg-color-transition:       rgba(0, 0, 255, 0.2) !default;
+$copied-cell-transition:                0.5s background !default;
+
 /* Grid Menu - hamburger menu */
 $grid-menu-background-color:            #f8f8f8 !default;
 $grid-menu-border:                      1px solid #b8b8b8 !default;
@@ -118,7 +136,7 @@ $grid-menu-label-margin:                4px !default;
 $grid-menu-label-font-weight:           normal !default;
 $grid-menu-link-background-color:       #ffffff !default;
 $grid-menu-box-shadow:                  2px 2px 2px silver !default;
-$grid-menu-icon-font-size:              14px;
+$grid-menu-icon-font-size:              14px !default;
 
 /* Checkbox Selector / Row Selection */
 $chekbox-selector-color:                $primary-color !default;

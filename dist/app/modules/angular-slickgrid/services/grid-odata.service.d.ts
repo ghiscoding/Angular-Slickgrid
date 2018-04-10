@@ -1,5 +1,5 @@
 import './global-utilities';
-import { BackendService, ColumnFilters, CurrentFilter, CurrentPagination, CurrentSorter, FilterChangedArgs, OdataOption, Pagination, PaginationChangedArgs, SortChanged, SortChangedArgs } from './../models/index';
+import { BackendService, ColumnFilters, ColumnSort, CurrentFilter, CurrentPagination, CurrentSorter, FilterChangedArgs, OdataOption, Pagination, PaginationChangedArgs, SortChangedArgs } from './../models/index';
 import { OdataService } from './odata.service';
 export declare class GridOdataService implements BackendService {
     private odataService;
@@ -43,7 +43,7 @@ export declare class GridOdataService implements BackendService {
      * loop through all columns to inspect sorters & update backend service orderBy
      * @param columnFilters
      */
-    updateSorters(sortColumns?: SortChanged[], presetSorters?: CurrentSorter[]): string;
+    updateSorters(sortColumns?: ColumnSort[], presetSorters?: CurrentSorter[]): string;
     /**
      * Cast provided filters (could be in multiple format) into an array of ColumnFilter
      * @param columnFilters
