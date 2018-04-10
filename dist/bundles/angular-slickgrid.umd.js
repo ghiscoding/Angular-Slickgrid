@@ -533,6 +533,11 @@ function parseUtcDate(inputDateString, useUtc) {
     }
     return date;
 }
+function sanitizeHtmlToText(htmlString) {
+    var temp = document.createElement('div');
+    temp.innerHTML = htmlString;
+    return temp.textContent || temp.innerText;
+}
 function toCamelCase(str) {
     return str.replace(/(?:^\w|[A-Z]|\b\w|[\s+\-_\/])/g, function (match, offset) {
         if (/[\s+\-_\/]/.test(match)) {
@@ -2024,7 +2029,7 @@ var ExportService = /** @class */ (function () {
                 itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
             }
             if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
-                itemData = this.sanitizeHtmlToText(itemData);
+                itemData = sanitizeHtmlToText(itemData);
             }
             if (format === FileType.csv) {
                 itemData = itemData.toString().replace(/"/gi, "\"\"");
@@ -2036,7 +2041,7 @@ var ExportService = /** @class */ (function () {
         return rowOutputString;
     };
     ExportService.prototype.readGroupedTitleRow = function (itemObj) {
-        var groupName = this.sanitizeHtmlToText(itemObj.title);
+        var groupName = sanitizeHtmlToText(itemObj.title);
         var exportQuoteWrapper = this._exportQuoteWrapper || '';
         var delimiter = this._exportOptions.delimiter;
         var format = this._exportOptions.format;
@@ -2060,7 +2065,7 @@ var ExportService = /** @class */ (function () {
                 itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
             }
             if (columnDef.sanitizeDataExport || _this._exportOptions.sanitizeDataExport) {
-                itemData = _this.sanitizeHtmlToText(itemData);
+                itemData = sanitizeHtmlToText(itemData);
             }
             if (format === FileType.csv) {
                 itemData = itemData.toString().replace(/"/gi, "\"\"");
@@ -2069,11 +2074,6 @@ var ExportService = /** @class */ (function () {
             output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
         });
         return output;
-    };
-    ExportService.prototype.sanitizeHtmlToText = function (htmlString) {
-        var temp = document.createElement('div');
-        temp.innerHTML = htmlString;
-        return temp.textContent || temp.innerText;
     };
     ExportService.prototype.startDownloadFile = function (options) {
         if (navigator.appName === 'Microsoft Internet Explorer') {
@@ -2401,7 +2401,11 @@ var ControlAndPluginService = /** @class */ (function () {
                 if (!gridOptions.editable || !columnDef.editor) {
                     var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : gridOptions.exportOptions.exportWithFormatter;
                     if (columnDef.formatter && isEvaluatingFormatter) {
-                        return columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, _this._grid);
+                        var formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, _this._grid);
+                        if (columnDef.sanitizeDataExport || (gridOptions.exportOptions && gridOptions.exportOptions.sanitizeDataExport)) {
+                            return sanitizeHtmlToText(formattedOutput);
+                        }
+                        return formattedOutput;
                     }
                 }
                 return null;
@@ -6215,6 +6219,7 @@ exports.mapOperatorType = mapOperatorType;
 exports.mapOperatorByFieldType = mapOperatorByFieldType;
 exports.mapOperatorByFilterType = mapOperatorByFilterType;
 exports.parseUtcDate = parseUtcDate;
+exports.sanitizeHtmlToText = sanitizeHtmlToText;
 exports.toCamelCase = toCamelCase;
 exports.toKebabCase = toKebabCase;
 exports.Aggregators = Aggregators;

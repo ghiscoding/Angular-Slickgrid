@@ -471,6 +471,11 @@ function parseUtcDate(inputDateString, useUtc) {
     }
     return date;
 }
+function sanitizeHtmlToText(htmlString) {
+    var temp = document.createElement('div');
+    temp.innerHTML = htmlString;
+    return temp.textContent || temp.innerText;
+}
 function toCamelCase(str) {
     return str.replace(/(?:^\w|[A-Z]|\b\w|[\s+\-_\/])/g, function (match, offset) {
         if (/[\s+\-_\/]/.test(match)) {
@@ -1962,7 +1967,7 @@ var ExportService = /** @class */ (function () {
                 itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
             }
             if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
-                itemData = this.sanitizeHtmlToText(itemData);
+                itemData = sanitizeHtmlToText(itemData);
             }
             if (format === FileType.csv) {
                 itemData = itemData.toString().replace(/"/gi, "\"\"");
@@ -1974,7 +1979,7 @@ var ExportService = /** @class */ (function () {
         return rowOutputString;
     };
     ExportService.prototype.readGroupedTitleRow = function (itemObj) {
-        var groupName = this.sanitizeHtmlToText(itemObj.title);
+        var groupName = sanitizeHtmlToText(itemObj.title);
         var exportQuoteWrapper = this._exportQuoteWrapper || '';
         var delimiter = this._exportOptions.delimiter;
         var format = this._exportOptions.format;
@@ -1998,7 +2003,7 @@ var ExportService = /** @class */ (function () {
                 itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
             }
             if (columnDef.sanitizeDataExport || _this._exportOptions.sanitizeDataExport) {
-                itemData = _this.sanitizeHtmlToText(itemData);
+                itemData = sanitizeHtmlToText(itemData);
             }
             if (format === FileType.csv) {
                 itemData = itemData.toString().replace(/"/gi, "\"\"");
@@ -2007,11 +2012,6 @@ var ExportService = /** @class */ (function () {
             output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
         });
         return output;
-    };
-    ExportService.prototype.sanitizeHtmlToText = function (htmlString) {
-        var temp = document.createElement('div');
-        temp.innerHTML = htmlString;
-        return temp.textContent || temp.innerText;
     };
     ExportService.prototype.startDownloadFile = function (options) {
         if (navigator.appName === 'Microsoft Internet Explorer') {
@@ -2339,7 +2339,11 @@ var ControlAndPluginService = /** @class */ (function () {
                 if (!gridOptions.editable || !columnDef.editor) {
                     var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : gridOptions.exportOptions.exportWithFormatter;
                     if (columnDef.formatter && isEvaluatingFormatter) {
-                        return columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, _this._grid);
+                        var formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, _this._grid);
+                        if (columnDef.sanitizeDataExport || (gridOptions.exportOptions && gridOptions.exportOptions.sanitizeDataExport)) {
+                            return sanitizeHtmlToText(formattedOutput);
+                        }
+                        return formattedOutput;
                     }
                 }
                 return null;
@@ -6111,5 +6115,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, dollarColoredBoldFormatter as ɵbs, dollarColoredFormatter as ɵbr, dollarFormatter as ɵbq, editIconFormatter as ɵbt, hyperlinkFormatter as ɵbu, hyperlinkUriPrefixFormatter as ɵbv, infoIconFormatter as ɵbw, lowercaseFormatter as ɵbx, multipleFormatter as ɵby, percentCompleteBarFormatter as ɵca, percentCompleteFormatter as ɵbz, progressBarFormatter as ɵcb, translateBooleanFormatter as ɵcd, translateFormatter as ɵcc, uppercaseFormatter as ɵce, yesNoFormatter as ɵcf, avgTotalsDollarFormatter as ɵch, avgTotalsFormatter as ɵcg, avgTotalsPercentageFormatter as ɵci, maxTotalsFormatter as ɵcj, minTotalsFormatter as ɵck, sumTotalsBoldFormatter as ɵcm, sumTotalsColoredFormatter as ɵcn, sumTotalsDollarBoldFormatter as ɵcp, sumTotalsDollarColoredBoldFormatter as ɵcr, sumTotalsDollarColoredFormatter as ɵcq, sumTotalsDollarFormatter as ɵco, sumTotalsFormatter as ɵcl, dateIsoSorter as ɵct, dateSorter as ɵcs, dateUsShortSorter as ɵcv, dateUsSorter as ɵcu, numericSorter as ɵcw, stringSorter as ɵcx };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, sanitizeHtmlToText, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, dollarColoredBoldFormatter as ɵbs, dollarColoredFormatter as ɵbr, dollarFormatter as ɵbq, editIconFormatter as ɵbt, hyperlinkFormatter as ɵbu, hyperlinkUriPrefixFormatter as ɵbv, infoIconFormatter as ɵbw, lowercaseFormatter as ɵbx, multipleFormatter as ɵby, percentCompleteBarFormatter as ɵca, percentCompleteFormatter as ɵbz, progressBarFormatter as ɵcb, translateBooleanFormatter as ɵcd, translateFormatter as ɵcc, uppercaseFormatter as ɵce, yesNoFormatter as ɵcf, avgTotalsDollarFormatter as ɵch, avgTotalsFormatter as ɵcg, avgTotalsPercentageFormatter as ɵci, maxTotalsFormatter as ɵcj, minTotalsFormatter as ɵck, sumTotalsBoldFormatter as ɵcm, sumTotalsColoredFormatter as ɵcn, sumTotalsDollarBoldFormatter as ɵcp, sumTotalsDollarColoredBoldFormatter as ɵcr, sumTotalsDollarColoredFormatter as ɵcq, sumTotalsDollarFormatter as ɵco, sumTotalsFormatter as ɵcl, dateIsoSorter as ɵct, dateSorter as ɵcs, dateUsShortSorter as ɵcv, dateUsSorter as ɵcu, numericSorter as ɵcw, stringSorter as ɵcx };
 //# sourceMappingURL=angular-slickgrid.js.map

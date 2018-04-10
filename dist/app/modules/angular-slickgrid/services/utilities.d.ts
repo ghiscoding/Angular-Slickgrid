@@ -88,6 +88,12 @@ export declare function mapOperatorByFilterType(filterType: FilterType | FormEle
  */
 export declare function parseUtcDate(inputDateString: string, useUtc: boolean): string | null;
 /**
+ * Sanitize, return only the text without HTML tags
+ * @input htmlString
+ * @return text
+ */
+export declare function sanitizeHtmlToText(htmlString: string): string;
+/**
  * Converts a string to camel case
  * @param str the string to convert
  * @return the string in camel case

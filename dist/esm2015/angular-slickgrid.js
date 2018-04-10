@@ -681,6 +681,17 @@ function parseUtcDate(inputDateString, useUtc) {
     return date;
 }
 /**
+ * Sanitize, return only the text without HTML tags
+ * \@input htmlString
+ * @param {?} htmlString
+ * @return {?} text
+ */
+function sanitizeHtmlToText(htmlString) {
+    const /** @type {?} */ temp = document.createElement('div');
+    temp.innerHTML = htmlString;
+    return temp.textContent || temp.innerText;
+}
+/**
  * Converts a string to camel case
  * @param {?} str the string to convert
  * @return {?} the string in camel case
@@ -2819,7 +2830,7 @@ class ExportService {
             }
             // does the user want to sanitize the output data (remove HTML tags)?
             if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
-                itemData = this.sanitizeHtmlToText(itemData);
+                itemData = sanitizeHtmlToText(itemData);
             }
             // when CSV we also need to escape double quotes twice, so " becomes ""
             if (format === FileType.csv) {
@@ -2839,7 +2850,7 @@ class ExportService {
      * @return {?}
      */
     readGroupedTitleRow(itemObj) {
-        let /** @type {?} */ groupName = this.sanitizeHtmlToText(itemObj.title);
+        let /** @type {?} */ groupName = sanitizeHtmlToText(itemObj.title);
         const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
         const /** @type {?} */ delimiter = this._exportOptions.delimiter;
         const /** @type {?} */ format = this._exportOptions.format;
@@ -2875,7 +2886,7 @@ class ExportService {
             }
             // does the user want to sanitize the output data (remove HTML tags)?
             if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
-                itemData = this.sanitizeHtmlToText(itemData);
+                itemData = sanitizeHtmlToText(itemData);
             }
             if (format === FileType.csv) {
                 // when CSV we also need to escape double quotes twice, so a double quote " becomes 2x double quotes ""
@@ -2887,17 +2898,6 @@ class ExportService {
             output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
         });
         return output;
-    }
-    /**
-     * Sanitize, return only the text without HTML tags
-     * \@input htmlString
-     * @param {?} htmlString
-     * @return {?} text
-     */
-    sanitizeHtmlToText(htmlString) {
-        const /** @type {?} */ temp = document.createElement('div');
-        temp.innerHTML = htmlString;
-        return temp.textContent || temp.innerText;
     }
     /**
      * Triggers download file with file format.
@@ -3365,7 +3365,11 @@ class ControlAndPluginService {
                 if (!gridOptions.editable || !columnDef.editor) {
                     const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : gridOptions.exportOptions.exportWithFormatter;
                     if (columnDef.formatter && isEvaluatingFormatter) {
-                        return columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this._grid);
+                        const /** @type {?} */ formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this._grid);
+                        if (columnDef.sanitizeDataExport || (gridOptions.exportOptions && gridOptions.exportOptions.sanitizeDataExport)) {
+                            return sanitizeHtmlToText(formattedOutput);
+                        }
+                        return formattedOutput;
                     }
                 }
                 // else use the default "dataItemColumnValueExtractor" from the plugin itself
@@ -8806,5 +8810,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, dollarColoredBoldFormatter as ɵbs, dollarColoredFormatter as ɵbr, dollarFormatter as ɵbq, editIconFormatter as ɵbt, hyperlinkFormatter as ɵbu, hyperlinkUriPrefixFormatter as ɵbv, infoIconFormatter as ɵbw, lowercaseFormatter as ɵbx, multipleFormatter as ɵby, percentCompleteBarFormatter as ɵca, percentCompleteFormatter as ɵbz, progressBarFormatter as ɵcb, translateBooleanFormatter as ɵcd, translateFormatter as ɵcc, uppercaseFormatter as ɵce, yesNoFormatter as ɵcf, avgTotalsDollarFormatter as ɵch, avgTotalsFormatter as ɵcg, avgTotalsPercentageFormatter as ɵci, maxTotalsFormatter as ɵcj, minTotalsFormatter as ɵck, sumTotalsBoldFormatter as ɵcm, sumTotalsColoredFormatter as ɵcn, sumTotalsDollarBoldFormatter as ɵcp, sumTotalsDollarColoredBoldFormatter as ɵcr, sumTotalsDollarColoredFormatter as ɵcq, sumTotalsDollarFormatter as ɵco, sumTotalsFormatter as ɵcl, dateIsoSorter as ɵct, dateSorter as ɵcs, dateUsShortSorter as ɵcv, dateUsSorter as ɵcu, numericSorter as ɵcw, stringSorter as ɵcx };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, sanitizeHtmlToText, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, dollarColoredBoldFormatter as ɵbs, dollarColoredFormatter as ɵbr, dollarFormatter as ɵbq, editIconFormatter as ɵbt, hyperlinkFormatter as ɵbu, hyperlinkUriPrefixFormatter as ɵbv, infoIconFormatter as ɵbw, lowercaseFormatter as ɵbx, multipleFormatter as ɵby, percentCompleteBarFormatter as ɵca, percentCompleteFormatter as ɵbz, progressBarFormatter as ɵcb, translateBooleanFormatter as ɵcd, translateFormatter as ɵcc, uppercaseFormatter as ɵce, yesNoFormatter as ɵcf, avgTotalsDollarFormatter as ɵch, avgTotalsFormatter as ɵcg, avgTotalsPercentageFormatter as ɵci, maxTotalsFormatter as ɵcj, minTotalsFormatter as ɵck, sumTotalsBoldFormatter as ɵcm, sumTotalsColoredFormatter as ɵcn, sumTotalsDollarBoldFormatter as ɵcp, sumTotalsDollarColoredBoldFormatter as ɵcr, sumTotalsDollarColoredFormatter as ɵcq, sumTotalsDollarFormatter as ɵco, sumTotalsFormatter as ɵcl, dateIsoSorter as ɵct, dateSorter as ɵcs, dateUsShortSorter as ɵcv, dateUsSorter as ɵcu, numericSorter as ɵcw, stringSorter as ɵcx };
 //# sourceMappingURL=angular-slickgrid.js.map

@@ -66,12 +66,6 @@ export declare class ExportService {
      */
     readGroupedTotalRow(columns: Column[], itemObj: any): string;
     /**
-     * Sanitize, return only the text without HTML tags
-     * @input htmlString
-     * @return text
-     */
-    sanitizeHtmlToText(htmlString: string): string;
-    /**
      * Triggers download file with file format.
      * IE(6-10) are not supported
      * All other browsers will use plain javascript on client side to produce a file download.
