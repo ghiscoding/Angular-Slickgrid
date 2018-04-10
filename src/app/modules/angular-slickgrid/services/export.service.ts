@@ -15,7 +15,7 @@ import {
   HeaderMenuOnCommandArgs,
   HeaderMenuOnBeforeMenuShowArgs
 } from './../models/index';
-import { addWhiteSpaces, htmlEntityDecode } from './../services/utilities';
+import { addWhiteSpaces, htmlEntityDecode, sanitizeHtmlToText } from './../services/utilities';
 import { Subject } from 'rxjs/Subject';
 import { TextEncoder } from 'text-encoding-utf-8';
 
@@ -228,7 +228,7 @@ export class ExportService {
 
       // does the user want to sanitize the output data (remove HTML tags)?
       if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
-        itemData = this.sanitizeHtmlToText(itemData);
+        itemData = sanitizeHtmlToText(itemData);
       }
 
       // when CSV we also need to escape double quotes twice, so " becomes ""
@@ -252,7 +252,7 @@ export class ExportService {
    * @param itemObj
    */
   readGroupedTitleRow(itemObj: any) {
-    let groupName = this.sanitizeHtmlToText(itemObj.title);
+    let groupName = sanitizeHtmlToText(itemObj.title);
     const exportQuoteWrapper = this._exportQuoteWrapper || '';
     const delimiter = this._exportOptions.delimiter;
     const format = this._exportOptions.format;
@@ -294,7 +294,7 @@ export class ExportService {
 
       // does the user want to sanitize the output data (remove HTML tags)?
       if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
-        itemData = this.sanitizeHtmlToText(itemData);
+        itemData = sanitizeHtmlToText(itemData);
       }
 
       if (format === FileType.csv) {
@@ -308,17 +308,6 @@ export class ExportService {
     });
 
     return output;
-  }
-
-  /**
-   * Sanitize, return only the text without HTML tags
-   * @input htmlString
-   * @return text
-   */
-  sanitizeHtmlToText(htmlString: string) {
-    const temp = document.createElement('div');
-    temp.innerHTML = htmlString;
-    return temp.textContent || temp.innerText;
   }
 
   /**

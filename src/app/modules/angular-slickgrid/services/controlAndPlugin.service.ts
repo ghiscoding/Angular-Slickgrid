@@ -16,7 +16,7 @@ import {
   FileType
 } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
-import { castToPromise } from './../services/utilities';
+import { castToPromise, sanitizeHtmlToText } from './../services/utilities';
 import { FilterService } from './filter.service';
 import { ExportService } from './export.service';
 import { SharedService } from './shared.service';
@@ -177,7 +177,11 @@ export class ControlAndPluginService {
         if (!gridOptions.editable || !columnDef.editor) {
           const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : gridOptions.exportOptions.exportWithFormatter;
           if (columnDef.formatter && isEvaluatingFormatter) {
-            return columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this._grid);
+            const formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this._grid);
+            if (columnDef.sanitizeDataExport || (gridOptions.exportOptions && gridOptions.exportOptions.sanitizeDataExport)) {
+              return sanitizeHtmlToText(formattedOutput);
+            }
+            return formattedOutput;
           }
         }
 

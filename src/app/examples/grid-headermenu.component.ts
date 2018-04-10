@@ -1,9 +1,6 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { Column, ColumnSort, ControlAndPluginService, GridOption, SortService } from './../modules/angular-slickgrid';
 
-// using external non-typed js libraries
-declare var $: any;
-
 @Component({
   templateUrl: './grid-headermenu.component.html',
   providers: [ControlAndPluginService]
