@@ -105,7 +105,7 @@ $sort-indicator-number-font-size:       10px !default;
 $sort-indicator-number-width:           8px !default;
 $sort-indicator-number-left:            auto !default;
 $sort-indicator-number-right:           0px !default;
-$sort-indicator-number-top:             27px !default;
+$sort-indicator-number-top:             (13px * $header-row-count) !default;
 
 /* Grouping Totals Formatter */
 $group-totals-formatter-color:          gray !default;
