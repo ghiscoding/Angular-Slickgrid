@@ -247,6 +247,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         this.controlAndPluginService.translateHeaders();
         this.controlAndPluginService.translateColumnPicker();
         this.controlAndPluginService.translateGridMenu();
+        this.controlAndPluginService.translateHeaderMenu();
       }
     });
 
