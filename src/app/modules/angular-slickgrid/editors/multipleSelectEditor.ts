@@ -136,7 +136,7 @@ export class MultipleSelectEditor implements Editor {
     this.defaultValue = item[this.columnDef.field].map((i: any) => i.toString());
 
     this.$editorElm.find('option').each((i: number, $e: any) => {
-      if (this.defaultValue.indexOf($e.value) !== -1) {
+      if (this.defaultValue === $e.value) {
         $e.selected = true;
       } else {
         $e.selected = false;

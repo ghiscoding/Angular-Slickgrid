@@ -111,7 +111,11 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       minWidth: 100,
       params: {
         formatters: [ Formatters.collection, Formatters.percentCompleteBar ],
-        collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k }))
+        collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k })),
+        collectionSortBy: {
+          property: 'label',
+          sortDesc: true
+        },
       }
     }, {
       id: 'start',
