@@ -1,5 +1,4 @@
-import { DelimiterType } from './delimiterType.enum';
-import { FileType } from './fileType.enum';
+import { DelimiterType, FileType } from './../models/index';
 
 export interface ExportOption {
   /** export delimiter, can be (comma, tab, ... or even custom string). */

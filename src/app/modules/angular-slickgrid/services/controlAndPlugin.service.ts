@@ -5,6 +5,7 @@ import {
   CustomGridMenu,
   Column,
   DelimiterType,
+  FileType,
   GraphqlResult,
   GridMenu,
   GridOption,
@@ -13,7 +14,6 @@ import {
   HeaderMenuItem,
   HeaderMenuOnCommandArgs,
   HeaderMenuOnBeforeMenuShowArgs,
-  FileType
 } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise, sanitizeHtmlToText } from './../services/utilities';
