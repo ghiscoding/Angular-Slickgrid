@@ -43,8 +43,9 @@ export class SwtCommonGridTestComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.logger.info('method [ngAfterViewInit] - START');
+      this.logger.info('method [ngAfterViewInit] - START');
 
+      setTimeout(() => {
         // Init datagrid example:
         this.commonGridPag.processing = true;
 
@@ -65,8 +66,9 @@ export class SwtCommonGridTestComponent implements OnInit, AfterViewInit {
         this.commonGridPag.pageCount = data_sample.pagination_samples.grid.rows.maxpage;
 
         this.commonGridPag.processing = false;
-        this.logger.info('method [ngAfterViewInit] - END');
-     }
+      }, 0);
+      this.logger.info('method [ngAfterViewInit] - END');
+    }
 
     filterChanged(event: FilterChangedArgs) {
         this.commonGridPag.processing = true;
