@@ -39,6 +39,7 @@ export class GridHeaderButtonComponent implements OnInit {
     this.gridOptions = {
       enableAutoResize: true,
       enableHeaderButton: true,
+      enableHeaderMenu: false,
       autoResize: {
         containerId: 'demo-container',
         sidePadding: 15
