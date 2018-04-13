@@ -8,13 +8,13 @@
 @import './variables';
 
 @-webkit-keyframes highlight-fade {
-  0% {background: $row-highlight-background-color;}
-  100% {background: none;}
+  to {background: $row-highlight-background-color;}
+  from {background: none;}
 }
 
 @keyframes highlight-fade {
-  0% {background: $row-highlight-background-color;}
-  100% {background: none;}
+  to {background: $row-highlight-background-color;}
+  from {background: none;}
 }
 
 .slickgrid-container {
@@ -63,7 +63,6 @@
       }
       &.highlight {
         background-color: $row-highlight-background-color;
-        -webkit-animation: highlight-fade $row-highlight-fade-animation;
         animation: highlight-fade $row-highlight-fade-animation;
         .slick-cell {
           &.selected {
@@ -75,9 +74,8 @@
           }
         }
         &.odd {
-          background: $row-highlight-background-color;
-          -webkit-animation: highlight-fade 2s ease-in 1;
-          animation: highlight-fade 2s ease-in 1;
+          background-color: $row-highlight-background-color;
+          animation: highlight-fade $row-highlight-fade-animation;
         }
         &.odd .slick-cell {
           &.selected {

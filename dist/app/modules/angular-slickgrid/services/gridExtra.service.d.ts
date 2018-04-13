@@ -25,6 +25,16 @@ export declare class GridExtraService {
      */
     addItemToDatagrid(item: any): void;
     /**
+     * Delete an existing item from the datagrid (dataView)
+     * @param object item: item object holding all properties of that row
+     */
+    deleteDataGridItem(item: any): void;
+    /**
+     * Delete an existing item from the datagrid (dataView)
+     * @param object item: item object holding all properties of that row
+     */
+    deleteDataGridItemById(id: string | number): void;
+    /**
      * Update an existing item with new properties inside the datagrid
      * @param object item: item object holding all properties of that row
      */

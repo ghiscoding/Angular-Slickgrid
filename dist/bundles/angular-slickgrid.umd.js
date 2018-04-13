@@ -1,6 +1,6 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('moment-mini'), require('@angular/core'), require('@ngx-translate/core'), require('rxjs/Subject'), require('text-encoding-utf-8'), require('jquery-ui-dist/jquery-ui'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.dataview'), require('slickgrid/slick.grid'), require('slickgrid/slick.groupitemmetadataprovider'), require('slickgrid/controls/slick.columnpicker'), require('slickgrid/controls/slick.gridmenu'), require('slickgrid/controls/slick.pager'), require('slickgrid/plugins/slick.autotooltips'), require('slickgrid/plugins/slick.cellexternalcopymanager'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('slickgrid/plugins/slick.checkboxselectcolumn'), require('slickgrid/plugins/slick.headerbuttons'), require('slickgrid/plugins/slick.headermenu'), require('slickgrid/plugins/slick.rowmovemanager'), require('slickgrid/plugins/slick.rowselectionmodel'), require('@angular/common')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'moment-mini', '@angular/core', '@ngx-translate/core', 'rxjs/Subject', 'text-encoding-utf-8', 'jquery-ui-dist/jquery-ui', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.dataview', 'slickgrid/slick.grid', 'slickgrid/slick.groupitemmetadataprovider', 'slickgrid/controls/slick.columnpicker', 'slickgrid/controls/slick.gridmenu', 'slickgrid/controls/slick.pager', 'slickgrid/plugins/slick.autotooltips', 'slickgrid/plugins/slick.cellexternalcopymanager', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'slickgrid/plugins/slick.checkboxselectcolumn', 'slickgrid/plugins/slick.headerbuttons', 'slickgrid/plugins/slick.headermenu', 'slickgrid/plugins/slick.rowmovemanager', 'slickgrid/plugins/slick.rowselectionmodel', '@angular/common'], factory) :
+	typeof define === 'function' && define.amd ? define('angular-slickgrid', ['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'moment-mini', '@angular/core', '@ngx-translate/core', 'rxjs/Subject', 'text-encoding-utf-8', 'jquery-ui-dist/jquery-ui', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.dataview', 'slickgrid/slick.grid', 'slickgrid/slick.groupitemmetadataprovider', 'slickgrid/controls/slick.columnpicker', 'slickgrid/controls/slick.gridmenu', 'slickgrid/controls/slick.pager', 'slickgrid/plugins/slick.autotooltips', 'slickgrid/plugins/slick.cellexternalcopymanager', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'slickgrid/plugins/slick.checkboxselectcolumn', 'slickgrid/plugins/slick.headerbuttons', 'slickgrid/plugins/slick.headermenu', 'slickgrid/plugins/slick.rowmovemanager', 'slickgrid/plugins/slick.rowselectionmodel', '@angular/common'], factory) :
 	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.moment,global.ng.core,global['ngx-translate-core'],global.Rx,global.textEncodingUtf8,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,global.ng.common));
 }(this, (function (exports,Observable,first,take,toPromise,moment_,core,core$1,Subject,textEncodingUtf8,jqueryUi,jquery_event_drag2_3_0,slick_core,slick_dataview,slick_grid,slick_groupitemmetadataprovider,slick_columnpicker,slick_gridmenu,slick_pager,slick_autotooltips,slick_cellexternalcopymanager,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,slick_checkboxselectcolumn,slick_headerbuttons,slick_headermenu,slick_rowmovemanager,slick_rowselectionmodel,common) { 'use strict';
 
@@ -2317,6 +2317,7 @@ var ControlAndPluginService = /** @class */ (function () {
         this.sharedService = sharedService;
         this.sortService = sortService;
         this.translate = translate;
+        this.areVisibleColumnDifferent = false;
     }
     ControlAndPluginService.prototype.autoResizeColumns = function () {
         this._grid.autosizeColumns();
@@ -2440,6 +2441,7 @@ var ControlAndPluginService = /** @class */ (function () {
         }
     };
     ControlAndPluginService.prototype.createGridMenu = function (grid, columnDefinitions, options) {
+        var _this = this;
         options.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), options.gridMenu);
         this.addGridMenuCustomCommands(grid, options);
         var gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
@@ -2450,6 +2452,7 @@ var ControlAndPluginService = /** @class */ (function () {
                 }
             });
             gridMenuControl.onColumnsChanged.subscribe(function (e, args) {
+                _this.areVisibleColumnDifferent = true;
                 if (options.gridMenu && typeof options.gridMenu.onColumnsChanged === 'function') {
                     options.gridMenu.onColumnsChanged(e, args);
                 }
@@ -2465,7 +2468,7 @@ var ControlAndPluginService = /** @class */ (function () {
                 }
                 if (grid && typeof grid.autosizeColumns === 'function') {
                     var gridUid = grid.getUID();
-                    if (gridUid && $("." + gridUid).length > 0) {
+                    if (_this.areVisibleColumnDifferent && gridUid && $("." + gridUid).length > 0) {
                         grid.autosizeColumns();
                     }
                 }
@@ -4036,11 +4039,28 @@ var GridExtraService = /** @class */ (function () {
         this.highlightRow(0, 1500);
         this._dataView.refresh();
     };
+    GridExtraService.prototype.deleteDataGridItem = function (item) {
+        var row = this._dataView.getRowById(item.id);
+        var itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
+        if (row === undefined || itemId === -1) {
+            throw new Error("Could not find the item in the grid or it's associated \"id\"");
+        }
+        this._dataView.deleteItem(itemId);
+        this._dataView.refresh();
+    };
+    GridExtraService.prototype.deleteDataGridItemById = function (id) {
+        var row = this._dataView.getRowById(id);
+        if (row === undefined) {
+            throw new Error("Could not find the item in the grid by it's associated \"id\"");
+        }
+        this._dataView.deleteItem(id);
+        this._dataView.refresh();
+    };
     GridExtraService.prototype.updateDataGridItem = function (item) {
         var row = this._dataView.getRowById(item.id);
         var itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
         if (itemId === -1) {
-            throw new Error("Could not find the item in the item in the grid or it's associated \"id\"");
+            throw new Error("Could not find the item in the grid or it's associated \"id\"");
         }
         var gridIdx = this._dataView.getIdxById(itemId);
         if (gridIdx !== undefined) {

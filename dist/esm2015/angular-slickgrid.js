@@ -3246,6 +3246,7 @@ class ControlAndPluginService {
         this.sharedService = sharedService;
         this.sortService = sortService;
         this.translate = translate;
+        this.areVisibleColumnDifferent = false;
     }
     /**
      * Auto-resize all the column in the grid to fit the grid width
@@ -3431,6 +3432,7 @@ class ControlAndPluginService {
                 }
             });
             gridMenuControl.onColumnsChanged.subscribe((e, args) => {
+                this.areVisibleColumnDifferent = true;
                 if (options.gridMenu && typeof options.gridMenu.onColumnsChanged === 'function') {
                     options.gridMenu.onColumnsChanged(e, args);
                 }
@@ -3448,7 +3450,7 @@ class ControlAndPluginService {
                 if (grid && typeof grid.autosizeColumns === 'function') {
                     // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree)
                     const /** @type {?} */ gridUid = grid.getUID();
-                    if (gridUid && $(`.${gridUid}`).length > 0) {
+                    if (this.areVisibleColumnDifferent && gridUid && $(`.${gridUid}`).length > 0) {
                         grid.autosizeColumns();
                     }
                 }
@@ -5501,6 +5503,35 @@ class GridExtraService {
         this._dataView.refresh();
     }
     /**
+     * Delete an existing item from the datagrid (dataView)
+     * @param {?} item
+     * @return {?}
+     */
+    deleteDataGridItem(item) {
+        const /** @type {?} */ row = this._dataView.getRowById(item.id);
+        const /** @type {?} */ itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
+        if (row === undefined || itemId === -1) {
+            throw new Error(`Could not find the item in the grid or it's associated "id"`);
+        }
+        // delete the item from the dataView
+        this._dataView.deleteItem(itemId);
+        this._dataView.refresh();
+    }
+    /**
+     * Delete an existing item from the datagrid (dataView)
+     * @param {?} id
+     * @return {?}
+     */
+    deleteDataGridItemById(id) {
+        const /** @type {?} */ row = this._dataView.getRowById(id);
+        if (row === undefined) {
+            throw new Error(`Could not find the item in the grid by it's associated "id"`);
+        }
+        // delete the item from the dataView
+        this._dataView.deleteItem(id);
+        this._dataView.refresh();
+    }
+    /**
      * Update an existing item with new properties inside the datagrid
      * @param {?} item
      * @return {?}
@@ -5509,7 +5540,7 @@ class GridExtraService {
         const /** @type {?} */ row = this._dataView.getRowById(item.id);
         const /** @type {?} */ itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
         if (itemId === -1) {
-            throw new Error(`Could not find the item in the item in the grid or it's associated "id"`);
+            throw new Error(`Could not find the item in the grid or it's associated "id"`);
         }
         const /** @type {?} */ gridIdx = this._dataView.getIdxById(itemId);
         if (gridIdx !== undefined) {

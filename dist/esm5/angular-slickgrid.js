@@ -2255,6 +2255,7 @@ var ControlAndPluginService = /** @class */ (function () {
         this.sharedService = sharedService;
         this.sortService = sortService;
         this.translate = translate;
+        this.areVisibleColumnDifferent = false;
     }
     ControlAndPluginService.prototype.autoResizeColumns = function () {
         this._grid.autosizeColumns();
@@ -2378,6 +2379,7 @@ var ControlAndPluginService = /** @class */ (function () {
         }
     };
     ControlAndPluginService.prototype.createGridMenu = function (grid, columnDefinitions, options) {
+        var _this = this;
         options.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), options.gridMenu);
         this.addGridMenuCustomCommands(grid, options);
         var gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
@@ -2388,6 +2390,7 @@ var ControlAndPluginService = /** @class */ (function () {
                 }
             });
             gridMenuControl.onColumnsChanged.subscribe(function (e, args) {
+                _this.areVisibleColumnDifferent = true;
                 if (options.gridMenu && typeof options.gridMenu.onColumnsChanged === 'function') {
                     options.gridMenu.onColumnsChanged(e, args);
                 }
@@ -2403,7 +2406,7 @@ var ControlAndPluginService = /** @class */ (function () {
                 }
                 if (grid && typeof grid.autosizeColumns === 'function') {
                     var gridUid = grid.getUID();
-                    if (gridUid && $("." + gridUid).length > 0) {
+                    if (_this.areVisibleColumnDifferent && gridUid && $("." + gridUid).length > 0) {
                         grid.autosizeColumns();
                     }
                 }
@@ -3974,11 +3977,28 @@ var GridExtraService = /** @class */ (function () {
         this.highlightRow(0, 1500);
         this._dataView.refresh();
     };
+    GridExtraService.prototype.deleteDataGridItem = function (item) {
+        var row = this._dataView.getRowById(item.id);
+        var itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
+        if (row === undefined || itemId === -1) {
+            throw new Error("Could not find the item in the grid or it's associated \"id\"");
+        }
+        this._dataView.deleteItem(itemId);
+        this._dataView.refresh();
+    };
+    GridExtraService.prototype.deleteDataGridItemById = function (id) {
+        var row = this._dataView.getRowById(id);
+        if (row === undefined) {
+            throw new Error("Could not find the item in the grid by it's associated \"id\"");
+        }
+        this._dataView.deleteItem(id);
+        this._dataView.refresh();
+    };
     GridExtraService.prototype.updateDataGridItem = function (item) {
         var row = this._dataView.getRowById(item.id);
         var itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
         if (itemId === -1) {
-            throw new Error("Could not find the item in the item in the grid or it's associated \"id\"");
+            throw new Error("Could not find the item in the grid or it's associated \"id\"");
         }
         var gridIdx = this._dataView.getIdxById(itemId);
         if (gridIdx !== undefined) {

@@ -15,6 +15,7 @@ export declare class ControlAndPluginService {
     private _gridOptions;
     private _columnDefinitions;
     visibleColumns: Column[];
+    areVisibleColumnDifferent: boolean;
     autoTooltipPlugin: any;
     checkboxSelectorPlugin: any;
     columnPickerControl: any;
