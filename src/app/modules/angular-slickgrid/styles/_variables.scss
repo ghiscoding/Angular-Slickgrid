@@ -39,10 +39,10 @@ $cell-odd-active-background-color:      darken($grid-cell-color, 5%) !default;
 $cell-padding:                          5px 7.5834px !default;
 
 /* row */
-$row-highlight-background-color:        rgba(212, 203, 156, 0.774) !default;
-$row-highlight-fade-animation:          2s ease-in 1 !default;
 $row-mouse-hover-color:                 rgb(245, 245, 204) !default;
 $row-selected-color:                    #e2e2c5 !default;
+$row-highlight-background-color:        darken($row-selected-color, 5%) !default;
+$row-highlight-fade-animation:          1.5s ease 1 !default;
 $row-checkbox-selector-background:      inherit !default;
 $row-checkbox-selector-border:          none !default;
 
