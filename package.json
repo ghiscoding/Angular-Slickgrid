@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "0.16.3",
+  "version": "0.16.4",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -39,21 +39,7 @@
   "private": false,
   "ngPackage": {
     "$schema": "./node_modules/ng-packagr/ng-package.schema.json",
-    "whitelistedNonPeerDependencies": [
-      "@ngx-translate/core",
-      "@ngx-translate/http-loader",
-      "bootstrap",
-      "core-js",
-      "flatpickr",
-      "font-awesome",
-      "jquery",
-      "jquery-ui-dist",
-      "lodash",
-      "moment-mini",
-      "slickgrid",
-      "text-encoding-utf-8",
-      "vinyl-paths"
-    ],
+    "whitelistedNonPeerDependencies": ["."],
     "dest": "dist",
     "workingDirectory": ".ng_build",
     "lib": {
@@ -68,8 +54,8 @@
     }
   },
   "dependencies": {
-    "@ngx-translate/core": ">=9.1.1",
-    "@ngx-translate/http-loader": ">=2.0.0",
+    "@ngx-translate/core": "^9.1.1",
+    "@ngx-translate/http-loader": "^2.0.0",
     "bootstrap": "^3.3.7",
     "core-js": "^2.5.1",
     "flatpickr": "^4.0.6",
