@@ -33,6 +33,7 @@ export class ControlAndPluginService {
   private _gridOptions: GridOption;
   private _columnDefinitions: Column[];
   visibleColumns: Column[];
+  areVisibleColumnDifferent = false;
 
   // controls & plugins
   autoTooltipPlugin: any;
@@ -248,6 +249,7 @@ export class ControlAndPluginService {
         }
       });
       gridMenuControl.onColumnsChanged.subscribe((e: Event, args: CellArgs) => {
+        this.areVisibleColumnDifferent = true;
         if (options.gridMenu && typeof options.gridMenu.onColumnsChanged === 'function') {
           options.gridMenu.onColumnsChanged(e, args);
         }
@@ -266,7 +268,7 @@ export class ControlAndPluginService {
         if (grid && typeof grid.autosizeColumns === 'function') {
           // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree)
           const gridUid = grid.getUID();
-          if (gridUid && $(`.${gridUid}`).length > 0) {
+          if (this.areVisibleColumnDifferent && gridUid && $(`.${gridUid}`).length > 0) {
             grid.autosizeColumns();
           }
         }
