@@ -131,7 +131,7 @@ export class GridExtraService {
     const row = this._dataView.getRowById(item.id);
     const itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
 
-    if (itemId === -1) {
+    if (row === undefined || itemId === -1) {
       throw new Error(`Could not find the item in the grid or it's associated "id"`);
     }
 
@@ -147,7 +147,7 @@ export class GridExtraService {
   deleteDataGridItemById(id: string | number) {
     const row = this._dataView.getRowById(id);
 
-    if (!row) {
+    if (row === undefined) {
       throw new Error(`Could not find the item in the grid by it's associated "id"`);
     }
 
