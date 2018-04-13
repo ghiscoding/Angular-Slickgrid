@@ -124,6 +124,39 @@ export class GridExtraService {
   }
 
   /**
+   * Delete an existing item from the datagrid (dataView)
+   * @param object item: item object holding all properties of that row
+   */
+  deleteDataGridItem(item: any) {
+    const row = this._dataView.getRowById(item.id);
+    const itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
+
+    if (itemId === -1) {
+      throw new Error(`Could not find the item in the grid or it's associated "id"`);
+    }
+
+    // delete the item from the dataView
+    this._dataView.deleteItem(itemId);
+    this._dataView.refresh();
+  }
+
+  /**
+   * Delete an existing item from the datagrid (dataView)
+   * @param object item: item object holding all properties of that row
+   */
+  deleteDataGridItemById(id: string | number) {
+    const row = this._dataView.getRowById(id);
+
+    if (!row) {
+      throw new Error(`Could not find the item in the grid by it's associated "id"`);
+    }
+
+    // delete the item from the dataView
+    this._dataView.deleteItem(id);
+    this._dataView.refresh();
+  }
+
+  /**
    * Update an existing item with new properties inside the datagrid
    * @param object item: item object holding all properties of that row
    */
@@ -132,7 +165,7 @@ export class GridExtraService {
     const itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
 
     if (itemId === -1) {
-      throw new Error(`Could not find the item in the item in the grid or it's associated "id"`);
+      throw new Error(`Could not find the item in the grid or it's associated "id"`);
     }
 
     const gridIdx = this._dataView.getIdxById(itemId);

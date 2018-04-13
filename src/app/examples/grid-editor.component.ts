@@ -235,8 +235,7 @@ export class GridEditorComponent implements OnInit, OnDestroy {
         // this.gridExtraService.setSelectedRow(args.row);
       } else if (column.columnDef.id === 'delete') {
         if (confirm('Are you sure?')) {
-          this.dataviewObj.deleteItem(column.dataContext.id);
-          this.dataviewObj.refresh();
+          this.gridExtraService.deleteDataGridItemById(column.dataContext.id);
         }
       }
     });
