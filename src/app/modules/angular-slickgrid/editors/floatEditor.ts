@@ -18,7 +18,7 @@ export class FloatEditor implements Editor {
   }
 
   init(): void {
-    this.$input = $(`<input type="text" class='editor-text' />`)
+    this.$input = $(`<input type="number" class='editor-text' />`)
       .appendTo(this.args.container)
       .on('keydown.nav', (e) => {
         if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
@@ -39,7 +39,8 @@ export class FloatEditor implements Editor {
 
   getDecimalPlaces() {
     // returns the number of fixed decimal places or null
-    let rtn = this.args.column.editorFixedDecimalPlaces;
+    const columnParams = this.args.column.params || {};
+    let rtn = (columnParams && columnParams.hasOwnProperty('decimalPlaces')) ? columnParams.decimalPlaces : undefined;
     if (rtn === undefined) {
       rtn = defaultDecimalPlaces;
     }

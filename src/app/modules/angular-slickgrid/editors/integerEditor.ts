@@ -16,7 +16,7 @@ export class IntegerEditor implements Editor {
   }
 
   init(): void {
-    this.$input = $(`<input type="text" class='editor-text' />`)
+    this.$input = $(`<input type="number" class='editor-text' />`)
       .appendTo(this.args.container)
       .on('keydown.nav', (e) => {
         if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {

@@ -99,7 +99,7 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       field: 'duration',
       sortable: true,
       type: FieldType.number,
-      editor: Editors.text,
+      editor: Editors.integer,
       minWidth: 100
     }, {
       id: 'complete',
