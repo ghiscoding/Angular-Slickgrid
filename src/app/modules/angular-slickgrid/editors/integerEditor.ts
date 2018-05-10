@@ -22,9 +22,11 @@ export class IntegerEditor implements Editor {
         if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
           e.stopImmediatePropagation();
         }
-      })
-      .focus()
-      .select();
+      });
+
+    setTimeout(() => {
+      this.$input.focus().select();
+    }, 50);
   }
 
   destroy() {
