@@ -22,7 +22,7 @@ export class GridEventService {
           row: args.row,
           cell: args.cell,
           dataView,
-          gridDefinition: gridOptions,
+          gridDefinition: grid.getOptions(),
           grid,
           columnDef: column,
           dataContext: args.grid.getDataItem(args.row)
@@ -49,7 +49,7 @@ export class GridEventService {
           row: args.row,
           cell: args.cell,
           dataView,
-          gridDefinition: gridOptions,
+          gridDefinition: grid.getOptions(),
           grid,
           columnDef: column,
           dataContext: args.grid.getDataItem(args.row)
