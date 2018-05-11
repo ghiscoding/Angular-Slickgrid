@@ -81,11 +81,13 @@ export class FloatEditor implements Editor {
   }
 
   isValueChanged() {
-    return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
+    const elmValue = this.$input.val();
+    return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
   }
 
   validate() {
-    if (isNaN(this.$input.val())) {
+    const elmValue = this.$input.val();
+    if (isNaN(elmValue as number)) {
       return {
         valid: false,
         msg: 'Please enter a valid number'
@@ -93,7 +95,7 @@ export class FloatEditor implements Editor {
     }
 
     if (this.args.column.validator) {
-      const validationResults = this.args.column.validator(this.$input.val());
+      const validationResults = this.args.column.validator(elmValue);
       if (!validationResults.valid) {
         return validationResults;
       }
