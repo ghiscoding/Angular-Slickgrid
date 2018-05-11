@@ -3,7 +3,7 @@ import { Editor, KeyCode } from './../models/index';
 // using external non-typed js libraries
 declare var $: any;
 
-const defaultDecimalPlaces = 0;
+const defaultDecimalPlaces = 2;
 
 /*
  * An example of a 'detached' editor.
