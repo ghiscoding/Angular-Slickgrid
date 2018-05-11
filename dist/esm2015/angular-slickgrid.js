@@ -6335,7 +6335,7 @@ class DateEditor {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const defaultDecimalPlaces = 0;
+const defaultDecimalPlaces = 2;
 class FloatEditor {
     /**
      * @param {?} args
@@ -6424,20 +6424,22 @@ class FloatEditor {
      * @return {?}
      */
     isValueChanged() {
-        return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
+        const /** @type {?} */ elmValue = this.$input.val();
+        return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
     }
     /**
      * @return {?}
      */
     validate() {
-        if (isNaN(this.$input.val())) {
+        const /** @type {?} */ elmValue = this.$input.val();
+        if (isNaN(/** @type {?} */ (elmValue))) {
             return {
                 valid: false,
                 msg: 'Please enter a valid number'
             };
         }
         if (this.args.column.validator) {
-            const /** @type {?} */ validationResults = this.args.column.validator(this.$input.val());
+            const /** @type {?} */ validationResults = this.args.column.validator(elmValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -6493,7 +6495,7 @@ class IntegerEditor {
      * @return {?}
      */
     loadValue(item) {
-        this.defaultValue = item[this.args.column.field];
+        this.defaultValue = parseInt(item[this.args.column.field], 10);
         this.$input.val(this.defaultValue);
         this.$input[0].defaultValue = this.defaultValue;
         this.$input.select();
@@ -6516,20 +6518,23 @@ class IntegerEditor {
      * @return {?}
      */
     isValueChanged() {
-        return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
+        const /** @type {?} */ elmValue = this.$input.val();
+        const /** @type {?} */ value = isNaN(elmValue) ? elmValue : parseInt(elmValue, 10);
+        return (!(value === '' && this.defaultValue === null)) && (value !== this.defaultValue);
     }
     /**
      * @return {?}
      */
     validate() {
-        if (isNaN(/** @type {?} */ (this.$input.val()))) {
+        const /** @type {?} */ elmValue = this.$input.val();
+        if (isNaN(/** @type {?} */ (elmValue))) {
             return {
                 valid: false,
                 msg: 'Please enter a valid integer'
             };
         }
         if (this.args.column.validator) {
-            const /** @type {?} */ validationResults = this.args.column.validator(this.$input.val());
+            const /** @type {?} */ validationResults = this.args.column.validator(elmValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
