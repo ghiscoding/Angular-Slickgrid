@@ -153,6 +153,16 @@ $large-editor-textarea-height:          80px !default;
 $large-editor-textarea-width:           250px !default;
 $large-editor-button-text-align:        right !default;
 $large-editor-footer-spacing:           2px !default;
+$text-editor-border:                    initial !default;
+$text-editor-background:                #ffffff !default;
+$text-editor-margin-bottom:             2px !default;
+$text-editor-margin-left:               -2px !default; /* negative number to cancel inside padding */
+$text-editor-margin-right:              2px !default;
+$text-editor-margin-top:                2px !default;
+$text-editor-padding-bottom:            0 !default;
+$text-editor-padding-left:              2px !default;
+$text-editor-padding-right:             0 !default;
+$text-editor-padding-top:               0 !default;
 
 /* Compound Filters */
 $compound-filter-bgcolor:               #e4eacf !default;

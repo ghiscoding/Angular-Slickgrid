@@ -3850,7 +3850,7 @@ var GridEventService = /** @class */ (function () {
                     row: args.row,
                     cell: args.cell,
                     dataView: dataView,
-                    gridDefinition: gridOptions,
+                    gridDefinition: grid.getOptions(),
                     grid: grid,
                     columnDef: column,
                     dataContext: args.grid.getDataItem(args.row)
@@ -3870,7 +3870,7 @@ var GridEventService = /** @class */ (function () {
                     row: args.row,
                     cell: args.cell,
                     dataView: dataView,
-                    gridDefinition: gridOptions,
+                    gridDefinition: grid.getOptions(),
                     grid: grid,
                     columnDef: column,
                     dataContext: args.grid.getDataItem(args.row)
@@ -4504,15 +4504,17 @@ var FloatEditor = /** @class */ (function () {
         this.init();
     }
     FloatEditor.prototype.init = function () {
-        this.$input = $("<input type=\"text\" class='editor-text' />")
+        var _this = this;
+        this.$input = $("<input type=\"number\" class='editor-text' />")
             .appendTo(this.args.container)
             .on('keydown.nav', function (e) {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
                 e.stopImmediatePropagation();
             }
-        })
-            .focus()
-            .select();
+        });
+        setTimeout(function () {
+            _this.$input.focus().select();
+        }, 50);
     };
     FloatEditor.prototype.destroy = function () {
         this.$input.remove();
@@ -4521,7 +4523,8 @@ var FloatEditor = /** @class */ (function () {
         this.$input.focus();
     };
     FloatEditor.prototype.getDecimalPlaces = function () {
-        var rtn = this.args.column.editorFixedDecimalPlaces;
+        var columnParams = this.args.column.params || {};
+        var rtn = (columnParams && columnParams.hasOwnProperty('decimalPlaces')) ? columnParams.decimalPlaces : undefined;
         if (rtn === undefined) {
             rtn = defaultDecimalPlaces;
         }
@@ -4581,15 +4584,17 @@ var IntegerEditor = /** @class */ (function () {
         this.init();
     }
     IntegerEditor.prototype.init = function () {
-        this.$input = $("<input type=\"text\" class='editor-text' />")
+        var _this = this;
+        this.$input = $("<input type=\"number\" class='editor-text' />")
             .appendTo(this.args.container)
             .on('keydown.nav', function (e) {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
                 e.stopImmediatePropagation();
             }
-        })
-            .focus()
-            .select();
+        });
+        setTimeout(function () {
+            _this.$input.focus().select();
+        }, 50);
     };
     IntegerEditor.prototype.destroy = function () {
         this.$input.remove();
@@ -5045,15 +5050,17 @@ var TextEditor = /** @class */ (function () {
         this.init();
     }
     TextEditor.prototype.init = function () {
+        var _this = this;
         this.$input = $("<input type=\"text\" class='editor-text' />")
             .appendTo(this.args.container)
             .on('keydown.nav', function (e) {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
                 e.stopImmediatePropagation();
             }
-        })
-            .focus()
-            .select();
+        });
+        setTimeout(function () {
+            _this.$input.focus().select();
+        }, 50);
     };
     TextEditor.prototype.destroy = function () {
         this.$input.remove();

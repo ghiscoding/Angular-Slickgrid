@@ -5313,7 +5313,7 @@ class GridEventService {
                     row: args.row,
                     cell: args.cell,
                     dataView,
-                    gridDefinition: gridOptions,
+                    gridDefinition: grid.getOptions(),
                     grid,
                     columnDef: column,
                     dataContext: args.grid.getDataItem(args.row)
@@ -5343,7 +5343,7 @@ class GridEventService {
                     row: args.row,
                     cell: args.cell,
                     dataView,
-                    gridDefinition: gridOptions,
+                    gridDefinition: grid.getOptions(),
                     grid,
                     columnDef: column,
                     dataContext: args.grid.getDataItem(args.row)
@@ -6348,15 +6348,16 @@ class FloatEditor {
      * @return {?}
      */
     init() {
-        this.$input = $(`<input type="text" class='editor-text' />`)
+        this.$input = $(`<input type="number" class='editor-text' />`)
             .appendTo(this.args.container)
             .on('keydown.nav', (e) => {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
                 e.stopImmediatePropagation();
             }
-        })
-            .focus()
-            .select();
+        });
+        setTimeout(() => {
+            this.$input.focus().select();
+        }, 50);
     }
     /**
      * @return {?}
@@ -6375,7 +6376,8 @@ class FloatEditor {
      */
     getDecimalPlaces() {
         // returns the number of fixed decimal places or null
-        let /** @type {?} */ rtn = this.args.column.editorFixedDecimalPlaces;
+        const /** @type {?} */ columnParams = this.args.column.params || {};
+        let /** @type {?} */ rtn = (columnParams && columnParams.hasOwnProperty('decimalPlaces')) ? columnParams.decimalPlaces : undefined;
         if (rtn === undefined) {
             rtn = defaultDecimalPlaces;
         }
@@ -6463,15 +6465,16 @@ class IntegerEditor {
      * @return {?}
      */
     init() {
-        this.$input = $(`<input type="text" class='editor-text' />`)
+        this.$input = $(`<input type="number" class='editor-text' />`)
             .appendTo(this.args.container)
             .on('keydown.nav', (e) => {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
                 e.stopImmediatePropagation();
             }
-        })
-            .focus()
-            .select();
+        });
+        setTimeout(() => {
+            this.$input.focus().select();
+        }, 50);
     }
     /**
      * @return {?}
@@ -7151,9 +7154,10 @@ class TextEditor {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
                 e.stopImmediatePropagation();
             }
-        })
-            .focus()
-            .select();
+        });
+        setTimeout(() => {
+            this.$input.focus().select();
+        }, 50);
     }
     /**
      * @return {?}
