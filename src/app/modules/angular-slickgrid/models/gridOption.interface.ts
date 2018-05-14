@@ -19,6 +19,9 @@ export interface GridOption {
   /** CSS class name used on newly added row */
   addNewRowCssClass?: string;
 
+  /** Defaults to true, which leads to always show a vertical scrolling. This is rather important to use when using the Grid Menu (hamburger) */
+  alwaysShowVerticalScroll?: boolean;
+
   /** Defaults to 100, which is the asynchronous editor loading delay */
   asyncEditorLoadDelay?: number;
 
@@ -36,6 +39,9 @@ export interface GridOption {
 
   /** Defaults to true, which leads to automatically adjust the size of each column with the available space. Similar to "Force Fit Column" but only happens on first page/component load. */
   autoFitColumnsOnFirstLoad?: boolean;
+
+  /** Defaults to false, when enabled will automatically adjust grid height. */
+  autoHeight?: boolean;
 
   /** Auto-resize options (bottom padding, minHeight, ...)  */
   autoResize?: AutoResizeOption;
@@ -190,7 +196,7 @@ export interface GridOption {
   /** Do we want to force fit columns in the grid at all time? */
   forceFitColumns?: boolean;
 
-  /** Do we want to force synchronous scrolling? */
+  /** Defaults to false, force synchronous scrolling */
   forceSyncScrolling?: boolean;
 
   /** Formatter classes factory */

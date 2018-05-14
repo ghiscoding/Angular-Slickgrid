@@ -49,14 +49,16 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'name', field: 'name', headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string },
-      { id: 'gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true,
+      { id: 'name', field: 'name', headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string, width: 60 },
+      {
+        id: 'gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true, width: 60,
         filter: {
           type: FilterType.singleSelect,
           collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }]
         }
       },
-      { id: 'company', field: 'company', headerKey: 'COMPANY',
+      {
+        id: 'company', field: 'company', headerKey: 'COMPANY', width: 60,
         sortable: true,
         filterable: true,
         filter: {
@@ -64,9 +66,9 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           collection: [{ value: 'acme', label: 'Acme'}, { value: 'abc', label: 'Company ABC'}, { value: 'xyz', label: 'Company XYZ'}]
         }
       },
-      { id: 'billing.address.street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', filterable: true, sortable: true },
+      { id: 'billing.address.street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', width: 60, filterable: true, sortable: true },
       {
-        id: 'billing.address.zip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP',
+        id: 'billing.address.zip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', width: 60,
         type: FieldType.number,
         filterable: true, sortable: true,
         filter: {
@@ -76,12 +78,16 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     ];
 
     this.gridOptions = {
+      autoHeight: false,
       enableAutoResize: false,
       enableFiltering: true,
       enableCellNavigation: true,
       enableCheckboxSelector: true,
       enableRowSelection: true,
       enableTranslate: true,
+      gridMenu: {
+        resizeOnShowHeaderRow: true,
+      },
       pagination: {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
         pageSize: defaultPageSize,

@@ -99,7 +99,8 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       field: 'duration',
       sortable: true,
       type: FieldType.number,
-      editor: Editors.integer,
+      editor: Editors.float,
+      params: { decimalPlaces: 2 },
       minWidth: 100
     }, {
       id: 'complete',
@@ -175,6 +176,8 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       enableCellNavigation: true,
       enableColumnPicker: true,
       enableExcelCopyBuffer: true,
+      enableCheckboxSelector: true,
+      enableRowSelection: true,
       editCommandHandler: (item, column, editCommand) => {
         this._commandQueue.push(editCommand);
         editCommand.execute();

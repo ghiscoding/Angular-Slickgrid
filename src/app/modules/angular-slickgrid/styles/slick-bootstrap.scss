@@ -241,14 +241,6 @@
     }
   }
 
-  /*
-  .slick-header-columns:last-child .slick-header-column:last-child {
-    width: 210px !important;
-  }
-  .slick-viewport {
-    overflow-y: scroll !important;
-  }
-  */
   .slick-header-columns {
     background: $table-background;
     width: calc(100% - #{$header-scroll-width-to-remove});
