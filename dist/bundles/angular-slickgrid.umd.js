@@ -2350,7 +2350,7 @@ var ControlAndPluginService = /** @class */ (function () {
                 this._grid.setSelectionModel(this.rowSelectionPlugin);
             }
         }
-        if (this._gridOptions.enableRowSelection) {
+        if (!this._gridOptions.enableCheckboxSelector && this._gridOptions.enableRowSelection) {
             this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
             this._grid.setSelectionModel(this.rowSelectionPlugin);
         }
@@ -5754,6 +5754,7 @@ SlickPaginationComponent.propDecorators = {
     "grid": [{ type: core.Input },],
 };
 var GlobalGridOptions = {
+    alwaysShowVerticalScroll: true,
     autoEdit: false,
     asyncEditorLoading: false,
     autoFitColumnsOnFirstLoad: true,
@@ -5808,7 +5809,7 @@ var GlobalGridOptions = {
         iconRefreshDatasetCommand: 'fa fa-refresh',
         iconToggleFilterCommand: 'fa fa-random',
         menuWidth: 16,
-        resizeOnShowHeaderRow: false,
+        resizeOnShowHeaderRow: true,
         showClearAllFiltersCommand: true,
         showClearAllSortingCommand: true,
         showExportCsvCommand: true,

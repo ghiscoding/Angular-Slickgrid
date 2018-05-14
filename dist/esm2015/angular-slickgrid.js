@@ -3296,7 +3296,7 @@ class ControlAndPluginService {
             }
         }
         // Row Selection Plugin
-        if (this._gridOptions.enableRowSelection) {
+        if (!this._gridOptions.enableCheckboxSelector && this._gridOptions.enableRowSelection) {
             this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
             this._grid.setSelectionModel(this.rowSelectionPlugin);
         }
@@ -8257,6 +8257,7 @@ SlickPaginationComponent.propDecorators = {
  * Options that can be passed to the Bootstrap-Datetimepicker directly
  */
 const GlobalGridOptions = {
+    alwaysShowVerticalScroll: true,
     autoEdit: false,
     asyncEditorLoading: false,
     autoFitColumnsOnFirstLoad: true,
@@ -8311,7 +8312,7 @@ const GlobalGridOptions = {
         iconRefreshDatasetCommand: 'fa fa-refresh',
         iconToggleFilterCommand: 'fa fa-random',
         menuWidth: 16,
-        resizeOnShowHeaderRow: false,
+        resizeOnShowHeaderRow: true,
         showClearAllFiltersCommand: true,
         showClearAllSortingCommand: true,
         showExportCsvCommand: true,
