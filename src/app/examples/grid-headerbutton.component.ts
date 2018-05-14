@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Column, GridOption } from './../modules/angular-slickgrid';
 
 // create a custom Formatter to highlight negative values in red
-const columnsWithHighlightingById = {};
+let columnsWithHighlightingById = {};
 const highlightingFormatter = (row, cell, value, columnDef, dataContext) => {
-  if (columnsWithHighlightingById[columnDef.id] && value < 0) {
+  if (columnsWithHighlightingById && columnsWithHighlightingById[columnDef.id] && value < 0) {
     return `<div style="color:red; font-weight:bold;">${value}</div>`;
   } else {
     return value;
@@ -14,7 +14,7 @@ const highlightingFormatter = (row, cell, value, columnDef, dataContext) => {
 @Component({
   templateUrl: './grid-headerbutton.component.html'
 })
-export class GridHeaderButtonComponent implements OnInit {
+export class GridHeaderButtonComponent implements OnInit, OnDestroy {
   title = 'Example 7: Header Button Plugin';
   subTitle = `
     This example demonstrates using the <b>Slick.Plugins.HeaderButtons</b> plugin to easily add buttons to colum headers.
@@ -51,6 +51,9 @@ export class GridHeaderButtonComponent implements OnInit {
           const column = args.column;
           const button = args.button;
           const command = args.command;
+          if (!columnsWithHighlightingById) {
+            columnsWithHighlightingById = {};
+          }
 
           if (command === 'toggle-highlight') {
             if (button.cssClass === 'fa fa-circle red') {
@@ -70,6 +73,10 @@ export class GridHeaderButtonComponent implements OnInit {
     };
 
     this.getData();
+  }
+
+  ngOnDestroy() {
+    columnsWithHighlightingById = null;
   }
 
   getData() {
