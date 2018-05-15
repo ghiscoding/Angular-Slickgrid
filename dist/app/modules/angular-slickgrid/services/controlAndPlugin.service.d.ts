@@ -2,18 +2,14 @@ import { Column, GridOption } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
 import { FilterService } from './filter.service';
 import { ExportService } from './export.service';
-import { SharedService } from './shared.service';
 import { SortService } from './sort.service';
 export declare class ControlAndPluginService {
     private exportService;
     private filterService;
-    private sharedService;
     private sortService;
     private translate;
     private _dataView;
     private _grid;
-    private _gridOptions;
-    private _columnDefinitions;
     visibleColumns: Column[];
     areVisibleColumnDifferent: boolean;
     autoTooltipPlugin: any;
@@ -24,17 +20,20 @@ export declare class ControlAndPluginService {
     gridMenuControl: any;
     rowSelectionPlugin: any;
     undoRedoBuffer: any;
-    constructor(exportService: ExportService, filterService: FilterService, sharedService: SharedService, sortService: SortService, translate: TranslateService);
+    constructor(exportService: ExportService, filterService: FilterService, sortService: SortService, translate: TranslateService);
+    /** Getter for the Grid Options pulled through the Grid Object */
+    private readonly _gridOptions;
+    /** Getter for the Column Definitions pulled through the Grid Object */
+    private readonly _columnDefinitions;
     /** Auto-resize all the column in the grid to fit the grid width */
     autoResizeColumns(): void;
     /**
      * Attach/Create different Controls or Plugins after the Grid is created
      * @param grid
-     * @param columnDefinitions
      * @param options
      * @param dataView
      */
-    attachDifferentControlOrPlugins(): void;
+    attachDifferentControlOrPlugins(grid: any, dataView: any, groupItemMetadataProvider: any): void;
     /**
      * Attach/Create different plugins before the Grid creation.
      * For example the multi-select have to be added to the column definition before the grid is created to work properly
@@ -43,28 +42,28 @@ export declare class ControlAndPluginService {
      */
     createPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption): void;
     /** Create the Excel like copy manager */
-    createCellExternalCopyManagerPlugin(grid: any, gridOptions: GridOption): void;
+    createCellExternalCopyManagerPlugin(grid: any): void;
     /**
      * Create the Column Picker and expose all the available hooks that user can subscribe (onColumnsChanged)
      * @param grid
      * @param columnDefinitions
-     * @param options
+     * @param gridOptions
      */
-    createColumnPicker(grid: any, columnDefinitions: Column[], options: GridOption): void;
+    createColumnPicker(grid: any, columnDefinitions: Column[]): void;
     /**
      * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)
      * @param grid
      * @param columnDefinitions
-     * @param options
+     * @param _gridOptions
      */
-    createGridMenu(grid: any, columnDefinitions: Column[], options: GridOption): any;
+    createGridMenu(grid: any, columnDefinitions: Column[]): any;
     /**
      * Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...)
      * @param grid
      * @param columnDefinitions
      * @param options
      */
-    createHeaderMenu(grid: any, dataView: any, columnDefinitions: Column[], options: GridOption): any;
+    createHeaderMenu(grid: any, dataView: any, columnDefinitions: Column[]): any;
     /** Create an undo redo buffer used by the Excel like copy */
     createUndoRedoBuffer(): void;
     /** Hide a column from the grid */

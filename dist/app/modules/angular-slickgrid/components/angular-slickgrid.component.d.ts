@@ -29,7 +29,6 @@ import { GridExtraService } from './../services/gridExtra.service';
 import { GridStateService } from './../services/gridState.service';
 import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
 import { ResizerService } from './../services/resizer.service';
-import { SharedService } from '../services/shared.service';
 import { SortService } from './../services/sort.service';
 export declare class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
     private controlAndPluginService;
@@ -40,7 +39,6 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private gridStateService;
     private groupingAndColspanService;
     private resizer;
-    private sharedService;
     private sortService;
     private translate;
     private forRootConfig;
@@ -71,7 +69,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridWidth: number;
     columnDefinitions: Column[];
     dataset: any[];
-    constructor(controlAndPluginService: ControlAndPluginService, exportService: ExportService, filterService: FilterService, gridExtraService: GridExtraService, gridEventService: GridEventService, gridStateService: GridStateService, groupingAndColspanService: GroupingAndColspanService, resizer: ResizerService, sharedService: SharedService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
+    constructor(controlAndPluginService: ControlAndPluginService, exportService: ExportService, filterService: FilterService, gridExtraService: GridExtraService, gridEventService: GridEventService, gridStateService: GridStateService, groupingAndColspanService: GroupingAndColspanService, resizer: ResizerService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
     ngOnInit(): void;
     ngOnDestroy(): void;
     destroy(): void;

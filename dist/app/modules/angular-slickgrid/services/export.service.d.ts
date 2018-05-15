@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Column, ExportOption, FileType, GridOption } from './../models/index';
+import { Column, ExportOption, FileType } from './../models/index';
 import { Subject } from 'rxjs/Subject';
 export interface ExportColumnHeader {
     key: string;
@@ -13,7 +13,6 @@ export declare class ExportService {
     private _exportQuoteWrapper;
     private _columnHeaders;
     private _groupedHeaders;
-    private _gridOptions;
     private _hasGroupedItems;
     private _exportOptions;
     onGridBeforeExportToFile: Subject<boolean>;
@@ -21,13 +20,15 @@ export declare class ExportService {
         options: any;
     }>;
     constructor(translate: TranslateService);
+    /** Getter for the Grid Options pulled through the Grid Object */
+    private readonly _gridOptions;
     /**
      * Initialize the Export Service
      * @param grid
      * @param gridOptions
      * @param dataView
      */
-    init(grid: any, gridOptions: GridOption, dataView: any): void;
+    init(grid: any, dataView: any): void;
     /**
      * Function to export the Grid result to an Excel CSV format using javascript for it to produce the CSV file.
      * This is a WYSIWYG export to file output (What You See is What You Get)

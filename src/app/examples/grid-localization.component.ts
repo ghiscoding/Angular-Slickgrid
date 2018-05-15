@@ -72,8 +72,7 @@ export class GridLocalizationComponent implements OnInit {
         filter: {
           collection: [ { value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' } ],
           collectionSortBy: {
-            property: 'labelKey', // will sort by translated value since "enableTranslateLabel" is true
-            sortDesc: true
+            property: 'labelKey' // will sort by translated value since "enableTranslateLabel" is true
           },
           enableTranslateLabel: true,
           type: FilterType.singleSelect,

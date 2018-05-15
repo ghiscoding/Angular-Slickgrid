@@ -1,18 +1,21 @@
-import { Column, ColumnSort, CurrentSorter, GridOption } from './../models/index';
+import { ColumnSort, CurrentSorter } from './../models/index';
 import { Subject } from 'rxjs/Subject';
 export declare class SortService {
     private _currentLocalSorters;
     private _eventHandler;
     private _dataView;
     private _grid;
-    private _gridOptions;
     private _slickSubscriber;
     private _isBackendGrid;
     onSortChanged: Subject<CurrentSorter[]>;
+    /** Getter for the Grid Options pulled through the Grid Object */
+    private readonly _gridOptions;
+    /** Getter for the Column Definitions pulled through the Grid Object */
+    private readonly _columnDefinitions;
     /**
      * Attach a backend sort (single/multi) hook to the grid
      * @param grid SlickGrid Grid object
-     * @param gridOptions Grid Options object
+     * @param dataView SlickGrid DataView object
      */
     attachBackendOnSort(grid: any, dataView: any): void;
     onBackendSortChanged(event: Event, args: any): Promise<void>;
@@ -34,12 +37,10 @@ export declare class SortService {
     /**
      * load any presets if there are any
      * @param grid
-     * @param gridOptions
      * @param dataView
-     * @param columnDefinitions
      */
-    loadLocalPresets(grid: any, gridOptions: GridOption, dataView: any, columnDefinitions: Column[]): void;
-    onLocalSortChanged(grid: any, gridOptions: GridOption, dataView: any, sortColumns: ColumnSort[]): void;
+    loadLocalPresets(grid: any, dataView: any): void;
+    onLocalSortChanged(grid: any, dataView: any, sortColumns: ColumnSort[]): void;
     dispose(): void;
     /**
      * A simple function that is attached to the subscriber and emit a change when the sort is called.

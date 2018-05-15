@@ -1,8 +1,9 @@
 export declare class GridExtraService {
     private _grid;
     private _dataView;
-    private _gridOptions;
-    init(grid: any, columnDefinition: any, gridOptions: any, dataView: any): void;
+    /** Getter for the Grid Options pulled through the Grid Object */
+    private readonly _gridOptions;
+    init(grid: any, dataView: any): void;
     getDataItemByRowNumber(rowNumber: number): any;
     /** Chain the item Metadata with our implementation of Metadata at given row index */
     getItemRowMetadata(previousItemMetadata: any): (rowNumber: number) => {

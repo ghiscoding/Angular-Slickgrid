@@ -3,17 +3,19 @@ import { FilterService, SortService } from './../services/index';
 import { Subject } from 'rxjs/Subject';
 export declare class GridStateService {
     private _grid;
-    private _gridOptions;
     private _preset;
     private filterService;
     private _filterSubcription;
     private _sorterSubcription;
     private sortService;
     onGridStateChanged: Subject<GridStateChange>;
+    /** Getter for the Grid Options pulled through the Grid Object */
+    private readonly _gridOptions;
     /**
      * Initialize the Export Service
      * @param grid
-     * @param gridOptions
+     * @param filterService
+     * @param sortService
      * @param dataView
      */
     init(grid: any, filterService: FilterService, sortService: SortService): void;

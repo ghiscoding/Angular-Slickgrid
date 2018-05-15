@@ -6,13 +6,14 @@ export declare class GraphqlService implements BackendService {
     private _currentPagination;
     private _currentSorters;
     private _columnDefinitions;
-    private _gridOptions;
     private _grid;
     options: GraphqlServiceOption;
     pagination: Pagination | undefined;
     defaultOrderBy: GraphqlSortingOption;
     defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption;
     constructor(translate: TranslateService);
+    /** Getter for the Grid Options pulled through the Grid Object */
+    private readonly _gridOptions;
     /**
      * Build the GraphQL query, since the service include/exclude cursor, the output query will be different.
      * @param serviceOptions GraphqlServiceOption
