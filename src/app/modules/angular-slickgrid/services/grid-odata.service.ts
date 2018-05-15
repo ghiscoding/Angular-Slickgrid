@@ -35,7 +35,6 @@ export class GridOdataService implements BackendService {
   private _currentPagination: CurrentPagination;
   private _currentSorters: CurrentSorter[];
   private _columnDefinitions: Column[];
-  private _gridOptions: GridOption;
   private _grid: any;
   options: OdataOption;
   pagination: Pagination | undefined;
@@ -46,6 +45,10 @@ export class GridOdataService implements BackendService {
   };
 
   constructor(private odataService: OdataService) { }
+
+  private get _gridOptions(): GridOption {
+    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
 
   buildQuery(): string {
     return this.odataService.buildQuery();
@@ -70,8 +73,6 @@ export class GridOdataService implements BackendService {
     if (grid && grid.getColumns && grid.getOptions) {
       this._columnDefinitions = grid.getColumns() || options.columnDefinitions;
       this._columnDefinitions = this._columnDefinitions.filter((column: Column) => !column.excludeFromQuery);
-
-      this._gridOptions = grid.getOptions();
     }
   }
 

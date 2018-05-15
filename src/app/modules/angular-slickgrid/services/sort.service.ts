@@ -23,23 +23,23 @@ export class SortService {
   private _eventHandler: any = new Slick.EventHandler();
   private _dataView: any;
   private _grid: any;
-  private _gridOptions: GridOption;
   private _slickSubscriber: SlickEvent;
   private _isBackendGrid = false;
   onSortChanged = new Subject<CurrentSorter[]>();
 
+  private get _gridOptions(): GridOption {
+    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
+
   /**
    * Attach a backend sort (single/multi) hook to the grid
    * @param grid SlickGrid Grid object
-   * @param gridOptions Grid Options object
+   * @param dataView SlickGrid DataView object
    */
   attachBackendOnSort(grid: any, dataView: any) {
     this._isBackendGrid = true;
     this._grid = grid;
     this._dataView = dataView;
-    if (grid) {
-      this._gridOptions = grid.getOptions();
-    }
     this._slickSubscriber = grid.onSort;
 
     // subscribe to the SlickGrid event and call the backend execution
@@ -91,7 +91,6 @@ export class SortService {
     let columnDefinitions = [];
 
     if (grid) {
-      this._gridOptions = grid.getOptions();
       columnDefinitions = grid.getColumns();
     }
     this._slickSubscriber = grid.onSort;
@@ -114,7 +113,7 @@ export class SortService {
         });
       }
 
-      this.onLocalSortChanged(grid, this._gridOptions, dataView, sortColumns);
+      this.onLocalSortChanged(grid, dataView, sortColumns);
       this.emitSortChanged('local');
     });
 
@@ -141,7 +140,7 @@ export class SortService {
       } else {
         const columnDefinitions = this._grid.getColumns() as Column[];
         if (columnDefinitions && Array.isArray(columnDefinitions)) {
-          this.onLocalSortChanged(this._grid, this._gridOptions, this._dataView, new Array({sortAsc: true, sortCol: columnDefinitions[0] }));
+          this.onLocalSortChanged(this._grid, this._dataView, new Array({sortAsc: true, sortCol: columnDefinitions[0] }));
         }
       }
     }
@@ -204,13 +203,13 @@ export class SortService {
       });
 
       if (sortCols.length > 0) {
-        this.onLocalSortChanged(grid, gridOptions, dataView, sortCols);
+        this.onLocalSortChanged(grid, dataView, sortCols);
         grid.setSortColumns(sortCols); // add sort icon in UI
       }
     }
   }
 
-  onLocalSortChanged(grid: any, gridOptions: GridOption, dataView: any, sortColumns: ColumnSort[]) {
+  onLocalSortChanged(grid: any, dataView: any, sortColumns: ColumnSort[]) {
     dataView.sort((dataRow1: any, dataRow2: any) => {
       for (let i = 0, l = sortColumns.length; i < l; i++) {
         const columnSortObj = sortColumns[i];

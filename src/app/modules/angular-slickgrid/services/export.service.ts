@@ -36,7 +36,6 @@ export class ExportService {
   private _exportQuoteWrapper: string;
   private _columnHeaders: ExportColumnHeader[];
   private _groupedHeaders: ExportColumnHeader[];
-  private _gridOptions: GridOption;
   private _hasGroupedItems = false;
   private _exportOptions: ExportOption;
   onGridBeforeExportToFile = new Subject<boolean>();
@@ -44,15 +43,18 @@ export class ExportService {
 
   constructor(private translate: TranslateService) { }
 
+  private get _gridOptions(): GridOption {
+    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
+
   /**
    * Initialize the Export Service
    * @param grid
    * @param gridOptions
    * @param dataView
    */
-  init(grid: any, gridOptions: GridOption, dataView: any): void {
+  init(grid: any, dataView: any): void {
     this._grid = grid;
-    this._gridOptions = gridOptions;
     this._dataView = dataView;
   }
 

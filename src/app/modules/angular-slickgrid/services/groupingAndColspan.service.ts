@@ -14,14 +14,16 @@ export class GroupingAndColspanService {
   private _eventHandler = new Slick.EventHandler();
   private _dataView: any;
   private _grid: any;
-  private _gridOptions: GridOption;
   private _columnDefinitions: Column[];
+
+  private get _gridOptions(): GridOption {
+    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
 
   init(grid: any, dataView: any) {
     this._grid = grid;
     this._dataView = dataView;
     if (grid) {
-      this._gridOptions = grid.getOptions();
       this._columnDefinitions = grid.getColumns();
     }
 

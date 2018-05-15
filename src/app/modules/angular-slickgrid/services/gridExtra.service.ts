@@ -1,4 +1,4 @@
-import { GridOption } from './../models/index';
+import { Column, GridOption } from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -7,11 +7,17 @@ declare var Slick: any;
 export class GridExtraService {
   private _grid: any;
   private _dataView: any;
-  private _gridOptions: GridOption;
 
-  init(grid, columnDefinition, gridOptions, dataView) {
+  private get _gridOptions(): GridOption {
+    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
+
+  private get _columnDefinition(): Column[] {
+    return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
+  }
+
+  init(grid: any, dataView: any): void {
     this._grid = grid;
-    this._gridOptions = gridOptions;
     this._dataView = dataView;
   }
 
