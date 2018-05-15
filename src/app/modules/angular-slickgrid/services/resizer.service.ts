@@ -1,4 +1,4 @@
-import { GridOption } from './../models/index';
+import { Column, GridOption } from './../models/index';
 import { Subject } from 'rxjs/Subject';
 
 // using external non-typed js libraries
@@ -22,6 +22,7 @@ export class ResizerService {
   private _lastDimensions: GridDimension;
   onGridBeforeResize = new Subject<boolean>();
 
+  /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
   }

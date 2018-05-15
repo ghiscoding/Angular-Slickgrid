@@ -23,6 +23,7 @@ export class GridStateService {
   private sortService: SortService;
   onGridStateChanged = new Subject<GridStateChange>();
 
+  /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
   }

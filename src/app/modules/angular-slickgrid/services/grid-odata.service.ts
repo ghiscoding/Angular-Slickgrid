@@ -46,6 +46,7 @@ export class GridOdataService implements BackendService {
 
   constructor(private odataService: OdataService) { }
 
+  /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
   }

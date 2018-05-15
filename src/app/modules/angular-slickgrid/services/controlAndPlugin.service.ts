@@ -29,8 +29,6 @@ declare var $: any;
 export class ControlAndPluginService {
   private _dataView: any;
   private _grid: any;
-  private _gridOptions: GridOption;
-  private _columnDefinitions: Column[];
   visibleColumns: Column[];
   areVisibleColumnDifferent = false;
 
@@ -51,6 +49,16 @@ export class ControlAndPluginService {
     private translate: TranslateService
   ) {}
 
+  /** Getter for the Grid Options pulled through the Grid Object */
+  private get _gridOptions(): GridOption {
+    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
+
+  /** Getter for the Column Definitions pulled through the Grid Object */
+  private get _columnDefinitions(): Column[] {
+    return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
+  }
+
   /** Auto-resize all the column in the grid to fit the grid width */
   autoResizeColumns() {
     this._grid.autosizeColumns();
@@ -59,15 +67,12 @@ export class ControlAndPluginService {
   /**
    * Attach/Create different Controls or Plugins after the Grid is created
    * @param grid
-   * @param columnDefinitions
    * @param options
    * @param dataView
    */
   attachDifferentControlOrPlugins(grid: any, dataView: any, groupItemMetadataProvider: any) {
     this._grid = grid;
     this._dataView = dataView;
-    this._gridOptions = (grid && grid.getOptions) ? grid.getOptions() : {};
-    this._columnDefinitions = (grid && grid.getColumns) ? grid.getColumns() : [];
     this.visibleColumns = this._columnDefinitions;
 
     // Column Picker Plugin

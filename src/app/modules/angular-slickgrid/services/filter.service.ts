@@ -40,8 +40,14 @@ export class FilterService {
 
   constructor(private collectionService: CollectionService, private translate: TranslateService) { }
 
+  /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
+
+  /** Getter for the Column Definitions pulled through the Grid Object */
+  private get _columnDefinitions(): Column[] {
+    return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
   }
 
   init(grid: any): void {
@@ -69,9 +75,7 @@ export class FilterService {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
     }
-    const gridOptions: GridOption = args.grid.getOptions() || {};
-
-    const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+    const backendApi = this._gridOptions.backendServiceApi || this._gridOptions.onBackendEventApi;
     if (!backendApi || !backendApi.process || !backendApi.service) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }
@@ -460,12 +464,9 @@ export class FilterService {
    * @param grid
    */
   populateColumnFilterSearchTerms(grid: any) {
-    const gridOptions: GridOption = (grid && grid.getOptions) ? grid.getOptions() : {};
-    const columnDefinitions: Column[] = (grid && grid.getColumns) ? grid.getColumns() : [];
-
-    if (gridOptions.presets && gridOptions.presets.filters) {
-      const filters = gridOptions.presets.filters;
-      columnDefinitions.forEach((columnDef: Column) =>  {
+    if (this._gridOptions.presets && this._gridOptions.presets.filters) {
+      const filters = this._gridOptions.presets.filters;
+      this._columnDefinitions.forEach((columnDef: Column) =>  {
         const columnPreset = filters.find((presetFilter: CurrentFilter) => {
           return presetFilter.columnId === columnDef.id;
         });
@@ -481,7 +482,7 @@ export class FilterService {
         }
       });
     }
-    return columnDefinitions;
+    return this._columnDefinitions;
   }
 
   private updateColumnFilters(searchTerm: SearchTerm | undefined, searchTerms: SearchTerm[] | undefined, columnDef: any) {

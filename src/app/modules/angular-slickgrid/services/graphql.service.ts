@@ -50,6 +50,7 @@ export class GraphqlService implements BackendService {
 
   constructor(private translate: TranslateService) {}
 
+  /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
   }

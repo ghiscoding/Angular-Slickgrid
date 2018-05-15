@@ -8,12 +8,9 @@ export class GridExtraService {
   private _grid: any;
   private _dataView: any;
 
+  /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
-  }
-
-  private get _columnDefinition(): Column[] {
-    return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
   }
 
   init(grid: any, dataView: any): void {

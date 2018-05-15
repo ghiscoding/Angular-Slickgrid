@@ -14,18 +14,20 @@ export class GroupingAndColspanService {
   private _eventHandler = new Slick.EventHandler();
   private _dataView: any;
   private _grid: any;
-  private _columnDefinitions: Column[];
 
+  /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
+
+  /** Getter for the Column Definitions pulled through the Grid Object */
+  private get _columnDefinitions(): Column[] {
+    return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
   }
 
   init(grid: any, dataView: any) {
     this._grid = grid;
     this._dataView = dataView;
-    if (grid) {
-      this._columnDefinitions = grid.getColumns();
-    }
 
     if (grid && this._gridOptions) {
       // When dealing with Pre-Header Grouping colspan, we need to re-create the pre-header in multiple occasions
