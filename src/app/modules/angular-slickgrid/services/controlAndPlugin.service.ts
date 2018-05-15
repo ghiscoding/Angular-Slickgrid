@@ -77,12 +77,12 @@ export class ControlAndPluginService {
 
     // Column Picker Plugin
     if (this._gridOptions.enableColumnPicker) {
-      this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions, this._gridOptions);
+      this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions);
     }
 
     // Grid Menu Plugin
     if (this._gridOptions.enableGridMenu) {
-      this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions, this._gridOptions);
+      this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions);
     }
 
     // Auto Tooltip Plugin
@@ -130,14 +130,14 @@ export class ControlAndPluginService {
 
     // Header Menu Plugin
     if (this._gridOptions.enableHeaderMenu) {
-      this.headerMenuPlugin = this.createHeaderMenu(this._grid, this._dataView, this._columnDefinitions, this._gridOptions);
+      this.headerMenuPlugin = this.createHeaderMenu(this._grid, this._dataView, this._columnDefinitions);
     }
 
     // Cell External Copy Manager Plugin (Excel Like)
     if (this._gridOptions.enableExcelCopyBuffer) {
       this.createUndoRedoBuffer();
       this.hookUndoShortcutKey();
-      this.createCellExternalCopyManagerPlugin(this._grid, this._gridOptions);
+      this.createCellExternalCopyManagerPlugin(this._grid);
     }
 
     // manually register other plugins
@@ -169,7 +169,7 @@ export class ControlAndPluginService {
   }
 
   /** Create the Excel like copy manager */
-  createCellExternalCopyManagerPlugin(grid: any, gridOptions: GridOption) {
+  createCellExternalCopyManagerPlugin(grid: any) {
     let newRowIds = 0;
     const pluginOptions = {
       clipboardCommandHandler: (editCommand) => {
@@ -178,11 +178,11 @@ export class ControlAndPluginService {
       dataItemColumnValueExtractor: (item, columnDef) => {
         // when grid or cell is not editable, we will possibly evaluate the Formatter if it was passed
         // to decide if we evaluate the Formatter, we will use the same flag from Export which is "exportWithFormatter"
-        if (!gridOptions.editable || !columnDef.editor) {
-          const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : gridOptions.exportOptions.exportWithFormatter;
+        if (!this._gridOptions.editable || !columnDef.editor) {
+          const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._gridOptions.exportOptions.exportWithFormatter;
           if (columnDef.formatter && isEvaluatingFormatter) {
             const formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this._grid);
-            if (columnDef.sanitizeDataExport || (gridOptions.exportOptions && gridOptions.exportOptions.sanitizeDataExport)) {
+            if (columnDef.sanitizeDataExport || (this._gridOptions.exportOptions && this._gridOptions.exportOptions.sanitizeDataExport)) {
               return sanitizeHtmlToText(formattedOutput);
             }
             return formattedOutput;
@@ -213,22 +213,22 @@ export class ControlAndPluginService {
    * Create the Column Picker and expose all the available hooks that user can subscribe (onColumnsChanged)
    * @param grid
    * @param columnDefinitions
-   * @param options
+   * @param gridOptions
    */
-  createColumnPicker(grid: any, columnDefinitions: Column[], options: GridOption) {
+  createColumnPicker(grid: any, columnDefinitions: Column[]) {
     // localization support for the picker
-    const forceFitTitle = options.enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : 'Force fit columns';
-    const syncResizeTitle = options.enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : 'Synchronous resize';
+    const forceFitTitle = this._gridOptions.enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : 'Force fit columns';
+    const syncResizeTitle = this._gridOptions.enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : 'Synchronous resize';
 
-    options.columnPicker = options.columnPicker || {};
-    options.columnPicker.forceFitTitle = options.columnPicker.forceFitTitle || forceFitTitle;
-    options.columnPicker.syncResizeTitle = options.columnPicker.syncResizeTitle || syncResizeTitle;
+    this._gridOptions.columnPicker = this._gridOptions.columnPicker || {};
+    this._gridOptions.columnPicker.forceFitTitle = this._gridOptions.columnPicker.forceFitTitle || forceFitTitle;
+    this._gridOptions.columnPicker.syncResizeTitle = this._gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
 
-    this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, options);
-    if (grid && options.enableColumnPicker) {
+    this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, this._gridOptions);
+    if (grid && this._gridOptions.enableColumnPicker) {
       this.columnPickerControl.onColumnsChanged.subscribe((e: Event, args: CellArgs) => {
-        if (options.columnPicker && typeof options.columnPicker.onColumnsChanged === 'function') {
-          options.columnPicker.onColumnsChanged(e, args);
+        if (this._gridOptions.columnPicker && typeof this._gridOptions.columnPicker.onColumnsChanged === 'function') {
+          this._gridOptions.columnPicker.onColumnsChanged(e, args);
         }
       });
     }
@@ -238,33 +238,33 @@ export class ControlAndPluginService {
    * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)
    * @param grid
    * @param columnDefinitions
-   * @param options
+   * @param _gridOptions
    */
-  createGridMenu(grid: any, columnDefinitions: Column[], options: GridOption) {
-    options.gridMenu = { ...this.getDefaultGridMenuOptions(), ...options.gridMenu };
-    this.addGridMenuCustomCommands(grid, options);
+  createGridMenu(grid: any, columnDefinitions: Column[]) {
+    this._gridOptions.gridMenu = { ...this.getDefaultGridMenuOptions(), ...this._gridOptions.gridMenu };
+    this.addGridMenuCustomCommands(grid, this._gridOptions);
 
-    const gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, options);
-    if (grid && options.gridMenu) {
+    const gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
+    if (grid && this._gridOptions.gridMenu) {
       gridMenuControl.onBeforeMenuShow.subscribe((e: Event, args: CellArgs) => {
-        if (options.gridMenu && typeof options.gridMenu.onBeforeMenuShow === 'function') {
-          options.gridMenu.onBeforeMenuShow(e, args);
+        if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onBeforeMenuShow === 'function') {
+          this._gridOptions.gridMenu.onBeforeMenuShow(e, args);
         }
       });
       gridMenuControl.onColumnsChanged.subscribe((e: Event, args: CellArgs) => {
         this.areVisibleColumnDifferent = true;
-        if (options.gridMenu && typeof options.gridMenu.onColumnsChanged === 'function') {
-          options.gridMenu.onColumnsChanged(e, args);
+        if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onColumnsChanged === 'function') {
+          this._gridOptions.gridMenu.onColumnsChanged(e, args);
         }
       });
       gridMenuControl.onCommand.subscribe((e: Event, args: CellArgs) => {
-        if (options.gridMenu && typeof options.gridMenu.onCommand === 'function') {
-          options.gridMenu.onCommand(e, args);
+        if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onCommand === 'function') {
+          this._gridOptions.gridMenu.onCommand(e, args);
         }
       });
       gridMenuControl.onMenuClose.subscribe((e: Event, args: CellArgs) => {
-        if (options.gridMenu && typeof options.gridMenu.onMenuClose === 'function') {
-          options.gridMenu.onMenuClose(e, args);
+        if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onMenuClose === 'function') {
+          this._gridOptions.gridMenu.onMenuClose(e, args);
         }
 
         // we also want to resize the columns if the user decided to hide certain column(s)
@@ -286,23 +286,23 @@ export class ControlAndPluginService {
    * @param columnDefinitions
    * @param options
    */
-  createHeaderMenu(grid: any, dataView: any, columnDefinitions: Column[], options: GridOption) {
-    options.headerMenu = { ...this.getDefaultHeaderMenuOptions(), ...options.headerMenu };
-    if (options.enableHeaderMenu) {
-      options.headerMenu = this.addHeaderMenuCustomCommands(grid, dataView, options, columnDefinitions);
+  createHeaderMenu(grid: any, dataView: any, columnDefinitions: Column[]) {
+    this._gridOptions.headerMenu = { ...this.getDefaultHeaderMenuOptions(), ...this._gridOptions.headerMenu };
+    if (this._gridOptions.enableHeaderMenu) {
+      this._gridOptions.headerMenu = this.addHeaderMenuCustomCommands(grid, dataView, this._gridOptions, columnDefinitions);
     }
 
-    const headerMenuPlugin = new Slick.Plugins.HeaderMenu(options.headerMenu);
+    const headerMenuPlugin = new Slick.Plugins.HeaderMenu(this._gridOptions.headerMenu);
 
     grid.registerPlugin(headerMenuPlugin);
     headerMenuPlugin.onCommand.subscribe((e: Event, args: HeaderMenuOnCommandArgs) => {
-      if (options.headerMenu && typeof options.headerMenu.onCommand === 'function') {
-        options.headerMenu.onCommand(e, args);
+      if (this._gridOptions.headerMenu && typeof this._gridOptions.headerMenu.onCommand === 'function') {
+        this._gridOptions.headerMenu.onCommand(e, args);
       }
     });
     headerMenuPlugin.onCommand.subscribe((e: Event, args: HeaderMenuOnBeforeMenuShowArgs) => {
-      if (options.headerMenu && typeof options.headerMenu.onBeforeMenuShow === 'function') {
-        options.headerMenu.onBeforeMenuShow(e, args);
+      if (this._gridOptions.headerMenu && typeof this._gridOptions.headerMenu.onBeforeMenuShow === 'function') {
+        this._gridOptions.headerMenu.onBeforeMenuShow(e, args);
       }
     });
 
@@ -696,7 +696,7 @@ export class ControlAndPluginService {
     }
 
     this._gridOptions.columnPicker = undefined;
-    this.createColumnPicker(this._grid, this.visibleColumns, this._gridOptions);
+    this.createColumnPicker(this._grid, this.visibleColumns);
   }
 
   /**
@@ -712,7 +712,7 @@ export class ControlAndPluginService {
     if (this._gridOptions && this._gridOptions.gridMenu) {
       this._gridOptions.gridMenu = this.resetGridMenuTranslations(this._gridOptions.gridMenu);
     }
-    this.createGridMenu(this._grid, this.visibleColumns, this._gridOptions);
+    this.createGridMenu(this._grid, this.visibleColumns);
   }
 
   /**
