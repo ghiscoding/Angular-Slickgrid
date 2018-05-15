@@ -106,7 +106,7 @@ export class MultipleSelectEditor implements Editor {
     this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
 
     // user might want to filter certain items of the collection
-    if (this.gridOptions.params && this.columnDef.params.collectionFilterBy) {
+    if (this.columnDef.params && this.columnDef.params.collectionSortBy) {
       const filterBy = this.columnDef.params.collectionFilterBy;
       newCollection = collectionService.filterCollection(newCollection, filterBy);
     }
@@ -136,7 +136,7 @@ export class MultipleSelectEditor implements Editor {
     this.defaultValue = item[this.columnDef.field].map((i: any) => i.toString());
 
     this.$editorElm.find('option').each((i: number, $e: any) => {
-      if (this.defaultValue === $e.value) {
+      if (this.defaultValue.indexOf($e.value) !== -1) {
         $e.selected = true;
       } else {
         $e.selected = false;

@@ -88,7 +88,7 @@ export class MultipleSelectFilter implements Filter {
     }
 
     // user might want to sort the collection
-    if (this.gridOptions.params && this.columnDef.filter.collectionSortBy) {
+    if (this.columnDef.filter && this.columnDef.filter.collectionSortBy) {
       const sortBy = this.columnDef.filter.collectionSortBy;
       newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
     }

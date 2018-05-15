@@ -63,6 +63,11 @@ export class GridClientSideComponent implements OnInit {
         filterable: true,
         filter: {
           collection: multiSelectFilterArray,
+          collectionSortBy: {
+            property: 'value',
+            sortDesc: true,
+            fieldType: FieldType.number
+          },
           type: FilterType.multipleSelect,
           searchTerms: [1, 33, 50], // default selection
 

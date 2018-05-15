@@ -39,7 +39,9 @@
   "private": false,
   "ngPackage": {
     "$schema": "./node_modules/ng-packagr/ng-package.schema.json",
-    "whitelistedNonPeerDependencies": ["."],
+    "whitelistedNonPeerDependencies": [
+      "."
+    ],
     "dest": "dist",
     "workingDirectory": ".ng_build",
     "lib": {
