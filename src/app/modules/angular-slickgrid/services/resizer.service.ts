@@ -19,15 +19,15 @@ export interface GridDimension {
 
 export class ResizerService {
   private _grid: any;
-  private _gridOptions: GridOption;
   private _lastDimensions: GridDimension;
   onGridBeforeResize = new Subject<boolean>();
 
+  private get _gridOptions(): GridOption {
+    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
+
   init(grid: any): void {
     this._grid = grid;
-    if (grid) {
-      this._gridOptions = grid.getOptions();
-    }
   }
 
   /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space

@@ -39,7 +39,6 @@ export class GraphqlService implements BackendService {
   private _currentPagination: CurrentPagination;
   private _currentSorters: CurrentSorter[];
   private _columnDefinitions: Column[];
-  private _gridOptions: GridOption;
   private _grid: any;
   options: GraphqlServiceOption;
   pagination: Pagination | undefined;
@@ -50,6 +49,10 @@ export class GraphqlService implements BackendService {
   };
 
   constructor(private translate: TranslateService) {}
+
+  private get _gridOptions(): GridOption {
+    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
 
   /**
    * Build the GraphQL query, since the service include/exclude cursor, the output query will be different.
@@ -175,7 +178,6 @@ export class GraphqlService implements BackendService {
 
     if (grid && grid.getColumns && grid.getOptions) {
       this._columnDefinitions = grid.getColumns();
-      this._gridOptions = grid.getOptions();
     }
   }
 

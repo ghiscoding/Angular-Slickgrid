@@ -19,7 +19,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { castToPromise, sanitizeHtmlToText } from './../services/utilities';
 import { FilterService } from './filter.service';
 import { ExportService } from './export.service';
-import { SharedService } from './shared.service';
 import { SortService } from './sort.service';
 
 // using external non-typed js libraries
@@ -48,7 +47,6 @@ export class ControlAndPluginService {
   constructor(
     private exportService: ExportService,
     private filterService: FilterService,
-    private sharedService: SharedService,
     private sortService: SortService,
     private translate: TranslateService
   ) {}
@@ -65,12 +63,12 @@ export class ControlAndPluginService {
    * @param options
    * @param dataView
    */
-  attachDifferentControlOrPlugins() {
-    this._grid = this.sharedService.grid;
-    this._gridOptions = this.sharedService.gridOptions;
-    this._dataView = this.sharedService.dataView;
-    this._columnDefinitions = this.sharedService.columnDefinitions;
-    this.visibleColumns = this.sharedService.columnDefinitions;
+  attachDifferentControlOrPlugins(grid: any, dataView: any, groupItemMetadataProvider: any) {
+    this._grid = grid;
+    this._dataView = dataView;
+    this._gridOptions = (grid && grid.getOptions) ? grid.getOptions() : {};
+    this._columnDefinitions = (grid && grid.getColumns) ? grid.getColumns() : [];
+    this.visibleColumns = this._columnDefinitions;
 
     // Column Picker Plugin
     if (this._gridOptions.enableColumnPicker) {
@@ -91,7 +89,7 @@ export class ControlAndPluginService {
     // Grouping Plugin
     // register the group item metadata provider to add expand/collapse group handlers
     if (this._gridOptions.enableGrouping) {
-      const groupItemMetaProvider = this.sharedService.groupItemMetadataProvider || {};
+      const groupItemMetaProvider = groupItemMetadataProvider || {};
       this._grid.registerPlugin(groupItemMetaProvider);
     }
 
@@ -617,7 +615,7 @@ export class ControlAndPluginService {
                 if (options.backendServiceApi) {
                   this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid });
                 } else {
-                  this.sortService.onLocalSortChanged(grid, options, dataView, cols);
+                  this.sortService.onLocalSortChanged(grid, dataView, cols);
                 }
 
                 // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI

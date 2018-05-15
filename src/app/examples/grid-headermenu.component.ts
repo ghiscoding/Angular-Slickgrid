@@ -89,7 +89,7 @@ export class GridHeaderMenuComponent implements OnInit {
 
             // add to the column array, the column sorted by the header menu
             cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
-            this.sortService.onLocalSortChanged(this.gridObj, this.gridOptions, this.dataviewObj, cols);
+            this.sortService.onLocalSortChanged(this.gridObj, this.dataviewObj, cols);
 
             // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
             const newSortColumns: ColumnSort[] = cols.map((col) => {

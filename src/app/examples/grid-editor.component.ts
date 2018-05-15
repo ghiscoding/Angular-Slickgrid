@@ -92,7 +92,11 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       sortable: true,
       type: FieldType.string,
       editor: Editors.longText,
-      minWidth: 100
+      minWidth: 100,
+      onCellChange: (args: OnEventArgs) => {
+        console.log(args);
+        this.alertWarning = `Updated Title: ${args.dataContext.title}`;
+      }
     }, {
       id: 'duration',
       name: 'Duration (days)',
