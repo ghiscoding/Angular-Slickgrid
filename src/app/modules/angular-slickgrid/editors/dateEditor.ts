@@ -104,8 +104,9 @@ export class DateEditor implements Editor {
   }
 
   serializeValue() {
+    const inputValue = this.$input.val() || '';
     const outputFormat = mapMomentDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
-    const value = moment(this.defaultDate).format(outputFormat);
+    const value = moment(inputValue).format(outputFormat);
 
     return value;
   }
