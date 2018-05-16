@@ -4292,17 +4292,17 @@ var ResizerService = /** @class */ (function () {
     ResizerService.prototype.init = function (grid) {
         this._grid = grid;
     };
-    ResizerService.prototype.attachAutoResizeDataGrid = function () {
+    ResizerService.prototype.attachAutoResizeDataGrid = function (newSizes) {
         var _this = this;
         var gridDomElm = $("#" + (this._gridOptions && this._gridOptions.gridId ? this._gridOptions.gridId : 'grid1'));
         if (gridDomElm === undefined || gridDomElm.offset() === undefined) {
             return null;
         }
-        this.resizeGrid();
+        this.resizeGrid(0, newSizes);
         $(window).on('resize.grid', function () {
             _this.onGridBeforeResize.next(true);
-            _this.resizeGrid();
-            _this.resizeGrid();
+            _this.resizeGrid(0, newSizes);
+            _this.resizeGrid(0, newSizes);
         });
     };
     ResizerService.prototype.calculateGridNewDimensions = function (gridOptions) {
@@ -4350,17 +4350,22 @@ var ResizerService = /** @class */ (function () {
         delay = delay || 0;
         clearTimeout(timer$2);
         timer$2 = setTimeout(function () {
-            newSizes = newSizes || _this.calculateGridNewDimensions(_this._gridOptions);
+            var availableDimensions = _this.calculateGridNewDimensions(_this._gridOptions);
             var gridElm = $("#" + _this._gridOptions.gridId) || {};
             var gridContainerElm = $("#" + _this._gridOptions.gridContainerId) || {};
-            if (newSizes && gridElm.length > 0) {
-                gridElm.height(newSizes.height);
-                gridElm.width(newSizes.width);
-                gridContainerElm.height(newSizes.height);
-                gridContainerElm.width(newSizes.width);
-                _this._lastDimensions = newSizes;
+            if ((newSizes || availableDimensions) && gridElm.length > 0) {
+                var newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
+                var newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
+                gridElm.height(newHeight);
+                gridElm.width(newWidth);
+                gridContainerElm.height(newHeight);
+                gridContainerElm.width(newWidth);
+                _this._lastDimensions = {
+                    height: newHeight,
+                    width: newWidth
+                };
                 if ((_this._gridOptions.enablePagination || _this._gridOptions.backendServiceApi)) {
-                    _this._lastDimensions.heightWithPagination = newSizes.height + DATAGRID_PAGINATION_HEIGHT;
+                    _this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
                 }
                 if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && _this._grid) {
                     _this._grid.resizeCanvas();
@@ -5937,8 +5942,8 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.onBeforeGridDestroy = new core.EventEmitter();
         this.onAfterGridDestroyed = new core.EventEmitter();
         this.onGridStateServiceChanged = new core.EventEmitter();
-        this.gridHeight = 100;
-        this.gridWidth = 600;
+        this.gridHeight = 0;
+        this.gridWidth = 0;
     }
     Object.defineProperty(AngularSlickgridComponent.prototype, "columnDefinitions", {
         get: function () {
@@ -6164,7 +6169,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         }
         this.resizer.init(grid);
         if (options.enableAutoResize) {
-            this.resizer.attachAutoResizeDataGrid();
+            this.resizer.attachAutoResizeDataGrid({ height: this.gridHeight, width: this.gridWidth });
             if (grid && options.autoFitColumnsOnFirstLoad) {
                 grid.autosizeColumns();
             }
@@ -6204,7 +6209,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 this.gridPaginationOptions = this.mergeGridOptions(this.gridOptions);
             }
             if (this.grid && this.gridOptions.enableAutoResize) {
-                this.resizer.resizeGrid(10);
+                this.resizer.resizeGrid(10, { height: this.gridHeight, width: this.gridWidth });
             }
         }
     };

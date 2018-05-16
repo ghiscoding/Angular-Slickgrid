@@ -5821,23 +5821,24 @@ class ResizerService {
     /**
      * Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
      * Options: we could also provide a % factor to resize on each height/width independently
+     * @param {?=} newSizes
      * @return {?}
      */
-    attachAutoResizeDataGrid() {
+    attachAutoResizeDataGrid(newSizes) {
         // if we can't find the grid to resize, return without attaching anything
         const /** @type {?} */ gridDomElm = $(`#${this._gridOptions && this._gridOptions.gridId ? this._gridOptions.gridId : 'grid1'}`);
         if (gridDomElm === undefined || gridDomElm.offset() === undefined) {
             return null;
         }
         // -- 1st resize the datagrid size at first load (we need this because the .on event is not triggered on first load)
-        this.resizeGrid();
+        this.resizeGrid(0, newSizes);
         // -- 2nd attach a trigger on the Window DOM element, so that it happens also when resizing after first load
         // -- attach auto-resize to Window object only if it exist
         $(window).on('resize.grid', () => {
             this.onGridBeforeResize.next(true);
             // for some yet unknown reason, calling the resize twice removes any stuttering/flickering when changing the height and makes it much smoother
-            this.resizeGrid();
-            this.resizeGrid();
+            this.resizeGrid(0, newSizes);
+            this.resizeGrid(0, newSizes);
         });
     }
     /**
@@ -5908,20 +5909,28 @@ class ResizerService {
         delay = delay || 0;
         clearTimeout(timer$2);
         timer$2 = setTimeout(() => {
-            // calculate new available sizes but with minimum height of 220px
-            newSizes = newSizes || this.calculateGridNewDimensions(this._gridOptions);
+            // calculate the available sizes with minimum height defined as a constant
+            const /** @type {?} */ availableDimensions = this.calculateGridNewDimensions(this._gridOptions);
             const /** @type {?} */ gridElm = $(`#${this._gridOptions.gridId}`) || {};
             const /** @type {?} */ gridContainerElm = $(`#${this._gridOptions.gridContainerId}`) || {};
-            if (newSizes && gridElm.length > 0) {
+            if ((newSizes || availableDimensions) && gridElm.length > 0) {
+                // get the new sizes, if new sizes are passed (not 0), we will use them else use available space
+                // basically if user passes 1 of the dimension, let say he passes just the height,
+                // we will use the height as a fixed height but the width will be resized by it's available space
+                const /** @type {?} */ newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
+                const /** @type {?} */ newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
                 // apply these new height/width to the datagrid
-                gridElm.height(newSizes.height);
-                gridElm.width(newSizes.width);
-                gridContainerElm.height(newSizes.height);
-                gridContainerElm.width(newSizes.width);
+                gridElm.height(newHeight);
+                gridElm.width(newWidth);
+                gridContainerElm.height(newHeight);
+                gridContainerElm.width(newWidth);
                 // keep last resized dimensions
-                this._lastDimensions = newSizes;
+                this._lastDimensions = {
+                    height: newHeight,
+                    width: newWidth
+                };
                 if ((this._gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
-                    this._lastDimensions.heightWithPagination = newSizes.height + DATAGRID_PAGINATION_HEIGHT;
+                    this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
                 }
                 // resize the slickgrid canvas on all browser except some IE versions
                 // exclude all IE below IE11
@@ -8441,8 +8450,8 @@ class AngularSlickgridComponent {
         this.onBeforeGridDestroy = new EventEmitter();
         this.onAfterGridDestroyed = new EventEmitter();
         this.onGridStateServiceChanged = new EventEmitter();
-        this.gridHeight = 100;
-        this.gridWidth = 600;
+        this.gridHeight = 0;
+        this.gridWidth = 0;
     }
     /**
      * @param {?} columnDefinitions
@@ -8726,7 +8735,7 @@ class AngularSlickgridComponent {
         // auto-resize grid on browser resize
         this.resizer.init(grid);
         if (options.enableAutoResize) {
-            this.resizer.attachAutoResizeDataGrid();
+            this.resizer.attachAutoResizeDataGrid({ height: this.gridHeight, width: this.gridWidth });
             if (grid && options.autoFitColumnsOnFirstLoad) {
                 grid.autosizeColumns();
             }
@@ -8787,7 +8796,7 @@ class AngularSlickgridComponent {
             }
             if (this.grid && this.gridOptions.enableAutoResize) {
                 // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
-                this.resizer.resizeGrid(10);
+                this.resizer.resizeGrid(10, { height: this.gridHeight, width: this.gridWidth });
                 // this.grid.autosizeColumns();
             }
         }
