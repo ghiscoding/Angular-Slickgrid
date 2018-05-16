@@ -72,8 +72,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   @Output() onGridStateServiceChanged = new EventEmitter<GridStateChange>();
   @Input() gridId: string;
   @Input() gridOptions: GridOption;
-  @Input() gridHeight = 100;
-  @Input() gridWidth = 600;
+  @Input() gridHeight = 0;
+  @Input() gridWidth = 0;
 
   @Input()
   set columnDefinitions(columnDefinitions: Column[]) {
@@ -364,7 +364,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // auto-resize grid on browser resize
     this.resizer.init(grid);
     if (options.enableAutoResize) {
-      this.resizer.attachAutoResizeDataGrid();
+      this.resizer.attachAutoResizeDataGrid({ height: this.gridHeight, width: this.gridWidth });
       if (grid && options.autoFitColumnsOnFirstLoad) {
         grid.autosizeColumns();
       }
@@ -421,7 +421,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
       if (this.grid &&  this.gridOptions.enableAutoResize) {
         // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
-        this.resizer.resizeGrid(10);
+        this.resizer.resizeGrid(10, { height: this.gridHeight, width: this.gridWidth });
         // this.grid.autosizeColumns();
       }
     }
