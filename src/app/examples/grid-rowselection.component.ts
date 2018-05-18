@@ -58,6 +58,10 @@ export class GridRowSelectionComponent implements OnInit, OnDestroy {
       enableAutoResize: false,
       enableCellNavigation: true,
       enableCheckboxSelector: true,
+      rowSelectionOptions: {
+        // True (Single Selection), False (Multiple Selections)
+        selectActiveRow: true
+      },
       enableRowSelection: true
     };
     this.gridOptions2 = {
