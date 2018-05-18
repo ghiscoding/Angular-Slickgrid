@@ -1,26 +1,30 @@
 import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
-import { Column, FieldType, Formatters, GridExtraService, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, Formatters, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-rowselection.component.html'
 })
 @Injectable()
 export class GridRowSelectionComponent implements OnInit, OnDestroy {
-  title = 'Example 10: Grid with Row Selection';
+  title = 'Example 10: Multiple Grids with Row Selection';
   subTitle = `
     Row selection, single or multi-select (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Row-Selection" target="_blank">Wiki docs</a>).
+    <ul>
+      <li>Single Select, you can click on any cell to make the row active</li>
+      <li>Multiple Selections, you need to specifically click on the checkbox to make a selection</li>
+    </ul>
   `;
 
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset: any[];
-  gridObj: any;
-  dataviewObj: any;
-  isMultiSelect = true;
-  selectedObjects: any[];
-  selectedObject: any;
-
-  constructor(private gridExtraService: GridExtraService) {}
+  columnDefinitions1: Column[];
+  columnDefinitions2: Column[];
+  gridOptions1: GridOption;
+  gridOptions2: GridOption;
+  dataset1: any[];
+  dataset2: any[];
+  gridObj1: any;
+  gridObj2: any;
+  selectedTitles: any[];
+  selectedTitle: any;
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -29,11 +33,12 @@ export class GridRowSelectionComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // unsubscrible any Slick.Event you might have used
     // a reminder again, these are SlickGrid Event, not RxJS events
-    this.gridObj.onSelectedRowsChanged.unsubscribe();
+    this.gridObj1.onSelectedRowsChanged.unsubscribe();
+    this.gridObj2.onSelectedRowsChanged.unsubscribe();
   }
 
   prepareGrid() {
-    this.columnDefinitions = [
+    this.columnDefinitions1 = [
       {id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string},
       {id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number},
       {id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, sortable: true},
@@ -41,18 +46,33 @@ export class GridRowSelectionComponent implements OnInit, OnDestroy {
       {id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, exportWithFormatter: true },
       {id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, sortable: true}
     ];
-    this.gridOptions = {
-      autoResize: {
-        containerId: 'demo-container',
-        sidePadding: 15
+    this.columnDefinitions2 = [
+      {id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string},
+      {id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number},
+      {id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, sortable: true},
+      {id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.dateIso, exportWithFormatter: true },
+      {id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, exportWithFormatter: true },
+      {id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, sortable: true}
+    ];
+    this.gridOptions1 = {
+      enableAutoResize: false,
+      enableCellNavigation: true,
+      enableCheckboxSelector: true,
+      enableRowSelection: true
+    };
+    this.gridOptions2 = {
+      enableAutoResize: false,
+      enableCellNavigation: true,
+      rowSelectionOptions: {
+        // True (Single Selection), False (Multiple Selections)
+        selectActiveRow: false
       },
-      enableAutoResize: true,
-      enableCellNavigation: false,
       enableCheckboxSelector: true,
       enableRowSelection: true
     };
 
-    this.dataset = this.prepareData();
+    this.dataset1 = this.prepareData();
+    this.dataset2 = this.prepareData();
   }
 
   prepareData() {
@@ -78,31 +98,29 @@ export class GridRowSelectionComponent implements OnInit, OnDestroy {
     return mockDataset;
   }
 
-  gridReady(grid) {
-    this.gridObj = grid;
+  gridReady1(grid) {
+    this.gridObj1 = grid;
 
-    grid.onSelectedRowsChanged.subscribe((e, args) => {
+    this.gridObj1.onSelectedRowsChanged.subscribe((e, args) => {
       if (Array.isArray(args.rows)) {
-        this.selectedObjects = args.rows.map(idx => {
+        this.selectedTitle = args.rows.map(idx => {
           const item = grid.getDataItem(idx);
           return item.title || '';
         });
       }
     });
   }
-  dataviewReady(dataview) {
-    this.dataviewObj = dataview;
-  }
 
-  onChooseMultiSelectType(isMultiSelect) {
-    this.isMultiSelect = isMultiSelect;
+  gridReady2(grid) {
+    this.gridObj2 = grid;
 
-    this.gridObj.setOptions({
-      enableCellNavigation: !isMultiSelect,
-      enableCheckboxSelector: isMultiSelect
-    }); // change the grid option dynamically
-    this.gridExtraService.setSelectedRows([]);
-
-    return true;
+    this.gridObj2.onSelectedRowsChanged.subscribe((e, args) => {
+      if (Array.isArray(args.rows)) {
+        this.selectedTitles = args.rows.map(idx => {
+          const item = grid.getDataItem(idx);
+          return item.title || '';
+        });
+      }
+    });
   }
 }

@@ -46,7 +46,18 @@ const eventPrefix = 'sg';
 @Component({
   selector: 'angular-slickgrid',
   templateUrl: './angular-slickgrid.component.html',
-  providers: [ResizerService]
+  providers: [
+    ControlAndPluginService,
+    ExportService,
+    FilterService,
+    GraphqlService,
+    GridEventService,
+    GridExtraService,
+    GridStateService,
+    GroupingAndColspanService,
+    ResizerService,
+    SortService
+  ]
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
   private _dataset: any[];
@@ -396,6 +407,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   refreshGridData(dataset: any[], totalCount?: number) {
     if (dataset && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
       this._dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
+      this._dataView.reSort();
 
       // this.grid.setData(dataset);
       this.grid.invalidate();
