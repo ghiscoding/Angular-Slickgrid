@@ -46,7 +46,18 @@ const eventPrefix = 'sg';
 @Component({
   selector: 'angular-slickgrid',
   templateUrl: './angular-slickgrid.component.html',
-  providers: [ResizerService]
+  providers: [
+    ControlAndPluginService,
+    ExportService,
+    FilterService,
+    GraphqlService,
+    GridEventService,
+    GridExtraService,
+    GridStateService,
+    GroupingAndColspanService,
+    ResizerService,
+    SortService
+  ]
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
   private _dataset: any[];

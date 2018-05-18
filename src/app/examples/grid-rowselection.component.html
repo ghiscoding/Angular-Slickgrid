@@ -6,19 +6,19 @@
     <div class="row">
         <div class="col-sm-8">
           <div class="alert alert-info">
-            <strong>Selected Row:</strong>
+            <strong>(single select) Selected Row:</strong>
             <div [innerHTML]="selectedTitle"></div>
           </div>
         </div>
     </div>
 
     <angular-slickgrid gridId="grid1"
-              (onGridCreated)="gridReady1($event)"
-              [columnDefinitions]="columnDefinitions1"
-              [gridOptions]="gridOptions1"
-              gridHeight="200"
+            (onGridCreated)="gridReady1($event)"
+            [columnDefinitions]="columnDefinitions1"
+            [gridOptions]="gridOptions1"
+            gridHeight="200"
             gridWidth="800"
-              [dataset]="dataset1">
+            [dataset]="dataset1">
     </angular-slickgrid>
 
     <hr>
@@ -26,18 +26,18 @@
     <div class="row">
         <div class="col-sm-8">
           <div class="alert alert-info">
-            <strong>Selected Row(s):</strong>
+            <strong>(multi-select) Selected Row(s):</strong>
             <div [innerHTML]="selectedTitles"></div>
           </div>
         </div>
     </div>
 
     <angular-slickgrid gridId="grid2"
-              (onGridCreated)="gridReady2($event)"
-              [columnDefinitions]="columnDefinitions2"
-              [gridOptions]="gridOptions2"
-              gridHeight="200"
+            (onGridCreated)="gridReady2($event)"
+            [columnDefinitions]="columnDefinitions2"
+            [gridOptions]="gridOptions2"
+            gridHeight="200"
             gridWidth="800"
-              [dataset]="dataset2">
+            [dataset]="dataset2">
     </angular-slickgrid>
   </div>
