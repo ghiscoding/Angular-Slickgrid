@@ -289,6 +289,12 @@ export interface GridOption {
   /** Defaults to true, which leads to render a separate span for the number and styles it with css class <i>slick-sort-indicator-numbered</i> */
   sortColNumberInSeparateSpan?: boolean;
 
+  /**
+   * Defaults to true, which leads to suppress the cell from becoming active when cell as an editor and is clicked.
+   * This flag should be enabled especially when mixing these 2 features (Row Selections & Inline Editors)
+   */
+  suppressActiveCellChangeOnEdit?: boolean;
+
   /** What is the top panel height in pixels (only type the number) */
   topPanelHeight?: number;
 
