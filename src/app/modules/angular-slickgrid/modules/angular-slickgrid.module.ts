@@ -31,7 +31,8 @@ import { SortService } from './../services/sort.service';
   exports: [
     AngularSlickgridComponent,
     SlickPaginationComponent
-  ]
+  ],
+  entryComponents: [AngularSlickgridComponent]
 })
 export class AngularSlickgridModule {
   static forRoot(config: GridOption = {}) {
