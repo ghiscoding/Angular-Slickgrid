@@ -3351,6 +3351,7 @@ class ControlAndPluginService {
             const /** @type {?} */ selectionColumn = this.checkboxSelectorPlugin.getColumnDefinition();
             selectionColumn.excludeFromExport = true;
             selectionColumn.excludeFromQuery = true;
+            selectionColumn.excludeFromHeaderMenu = true;
             columnDefinitions.unshift(selectionColumn);
         }
     }
@@ -3731,7 +3732,7 @@ class ControlAndPluginService {
         const /** @type {?} */ headerMenuOptions = options.headerMenu;
         if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
             columnDefinitions.forEach((columnDef) => {
-                if (columnDef) {
+                if (columnDef && !columnDef.excludeFromHeaderMenu) {
                     if (!columnDef.header || !columnDef.header.menu) {
                         columnDef.header = {
                             menu: {
@@ -3955,20 +3956,22 @@ class ControlAndPluginService {
     resetHeaderMenuTranslations(columnDefinitions) {
         columnDefinitions.forEach((columnDef) => {
             if (columnDef && columnDef.header && columnDef.header && columnDef.header.menu && columnDef.header.menu.items) {
-                const /** @type {?} */ columnHeaderMenuItems = columnDef.header.menu.items || [];
-                columnHeaderMenuItems.forEach((item) => {
-                    switch (item.command) {
-                        case 'sort-asc':
-                            item.title = this.translate.instant('SORT_ASCENDING') || 'Sort Ascending';
-                            break;
-                        case 'sort-desc':
-                            item.title = this.translate.instant('SORT_DESCENDING') || 'Sort Ascending';
-                            break;
-                        case 'hide':
-                            item.title = this.translate.instant('HIDE_COLUMN') || 'Sort Ascending';
-                            break;
-                    }
-                });
+                if (!columnDef.excludeFromHeaderMenu) {
+                    const /** @type {?} */ columnHeaderMenuItems = columnDef.header.menu.items || [];
+                    columnHeaderMenuItems.forEach((item) => {
+                        switch (item.command) {
+                            case 'sort-asc':
+                                item.title = this.translate.instant('SORT_ASCENDING') || 'Sort Ascending';
+                                break;
+                            case 'sort-desc':
+                                item.title = this.translate.instant('SORT_DESCENDING') || 'Sort Ascending';
+                                break;
+                            case 'hide':
+                                item.title = this.translate.instant('HIDE_COLUMN') || 'Sort Ascending';
+                                break;
+                        }
+                    });
+                }
             }
         });
     }
@@ -5812,6 +5815,12 @@ class ResizerService {
         return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
     }
     /**
+     * @return {?}
+     */
+    get _gridUid() {
+        return (this._grid && this._grid.getUID) ? this._grid.getUID() : this._gridOptions.gridId;
+    }
+    /**
      * @param {?} grid
      * @return {?}
      */
@@ -5834,7 +5843,7 @@ class ResizerService {
         this.resizeGrid(0, newSizes);
         // -- 2nd attach a trigger on the Window DOM element, so that it happens also when resizing after first load
         // -- attach auto-resize to Window object only if it exist
-        $(window).on('resize.grid', () => {
+        $(window).on(`resize.grid.${this._gridUid}`, () => {
             this.onGridBeforeResize.next(true);
             // for some yet unknown reason, calling the resize twice removes any stuttering/flickering when changing the height and makes it much smoother
             this.resizeGrid(0, newSizes);
@@ -5885,7 +5894,7 @@ class ResizerService {
      * @return {?}
      */
     dispose() {
-        $(window).off('resize.grid');
+        $(window).off(`resize.grid.${this._gridUid}`);
     }
     /**
      * @return {?}
@@ -8399,6 +8408,7 @@ const GlobalGridOptions = {
     numberedMultiColumnSort: true,
     tristateMultiColumnSort: false,
     sortColNumberInSeparateSpan: true,
+    suppressActiveCellChangeOnEdit: true,
     pagination: {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
         pageSize: 25,
@@ -8773,6 +8783,7 @@ class AngularSlickgridComponent {
     refreshGridData(dataset, totalCount) {
         if (dataset && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
             this._dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
+            this._dataView.reSort();
             // this.grid.setData(dataset);
             this.grid.invalidate();
             this.grid.render();
@@ -8843,7 +8854,7 @@ AngularSlickgridComponent.decorators = [
         [gridPaginationOptions]="gridPaginationOptions">
     </slick-pagination>
 </div>
-`
+`,
             },] },
 ];
 /** @nocollapse */
@@ -8921,7 +8932,8 @@ AngularSlickgridModule.decorators = [
                 exports: [
                     AngularSlickgridComponent,
                     SlickPaginationComponent
-                ]
+                ],
+                entryComponents: [AngularSlickgridComponent]
             },] },
 ];
 /** @nocollapse */

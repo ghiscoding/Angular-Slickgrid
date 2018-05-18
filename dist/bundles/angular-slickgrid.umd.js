@@ -2410,6 +2410,7 @@ var ControlAndPluginService = /** @class */ (function () {
             var selectionColumn = this.checkboxSelectorPlugin.getColumnDefinition();
             selectionColumn.excludeFromExport = true;
             selectionColumn.excludeFromQuery = true;
+            selectionColumn.excludeFromHeaderMenu = true;
             columnDefinitions.unshift(selectionColumn);
         }
     };
@@ -2724,7 +2725,7 @@ var ControlAndPluginService = /** @class */ (function () {
         var headerMenuOptions = options.headerMenu;
         if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
             columnDefinitions.forEach(function (columnDef) {
-                if (columnDef) {
+                if (columnDef && !columnDef.excludeFromHeaderMenu) {
                     if (!columnDef.header || !columnDef.header.menu) {
                         columnDef.header = {
                             menu: {
@@ -2896,20 +2897,22 @@ var ControlAndPluginService = /** @class */ (function () {
         var _this = this;
         columnDefinitions.forEach(function (columnDef) {
             if (columnDef && columnDef.header && columnDef.header && columnDef.header.menu && columnDef.header.menu.items) {
-                var columnHeaderMenuItems = columnDef.header.menu.items || [];
-                columnHeaderMenuItems.forEach(function (item) {
-                    switch (item.command) {
-                        case 'sort-asc':
-                            item.title = _this.translate.instant('SORT_ASCENDING') || 'Sort Ascending';
-                            break;
-                        case 'sort-desc':
-                            item.title = _this.translate.instant('SORT_DESCENDING') || 'Sort Ascending';
-                            break;
-                        case 'hide':
-                            item.title = _this.translate.instant('HIDE_COLUMN') || 'Sort Ascending';
-                            break;
-                    }
-                });
+                if (!columnDef.excludeFromHeaderMenu) {
+                    var columnHeaderMenuItems = columnDef.header.menu.items || [];
+                    columnHeaderMenuItems.forEach(function (item) {
+                        switch (item.command) {
+                            case 'sort-asc':
+                                item.title = _this.translate.instant('SORT_ASCENDING') || 'Sort Ascending';
+                                break;
+                            case 'sort-desc':
+                                item.title = _this.translate.instant('SORT_DESCENDING') || 'Sort Ascending';
+                                break;
+                            case 'hide':
+                                item.title = _this.translate.instant('HIDE_COLUMN') || 'Sort Ascending';
+                                break;
+                        }
+                    });
+                }
             }
         });
     };
@@ -4289,6 +4292,13 @@ var ResizerService = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(ResizerService.prototype, "_gridUid", {
+        get: function () {
+            return (this._grid && this._grid.getUID) ? this._grid.getUID() : this._gridOptions.gridId;
+        },
+        enumerable: true,
+        configurable: true
+    });
     ResizerService.prototype.init = function (grid) {
         this._grid = grid;
     };
@@ -4299,7 +4309,7 @@ var ResizerService = /** @class */ (function () {
             return null;
         }
         this.resizeGrid(0, newSizes);
-        $(window).on('resize.grid', function () {
+        $(window).on("resize.grid." + this._gridUid, function () {
             _this.onGridBeforeResize.next(true);
             _this.resizeGrid(0, newSizes);
             _this.resizeGrid(0, newSizes);
@@ -4337,7 +4347,7 @@ var ResizerService = /** @class */ (function () {
         };
     };
     ResizerService.prototype.dispose = function () {
-        $(window).off('resize.grid');
+        $(window).off("resize.grid." + this._gridUid);
     };
     ResizerService.prototype.getLastResizeDimensions = function () {
         return this._lastDimensions;
@@ -5909,6 +5919,7 @@ var GlobalGridOptions = {
     numberedMultiColumnSort: true,
     tristateMultiColumnSort: false,
     sortColNumberInSeparateSpan: true,
+    suppressActiveCellChangeOnEdit: true,
     pagination: {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
         pageSize: 25,
@@ -6192,6 +6203,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
     AngularSlickgridComponent.prototype.refreshGridData = function (dataset, totalCount) {
         if (dataset && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
             this._dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
+            this._dataView.reSort();
             this.grid.invalidate();
             this.grid.render();
             if (this.gridOptions.enablePagination || this.gridOptions.backendServiceApi) {
@@ -6234,7 +6246,7 @@ AngularSlickgridComponent.decorators = [
     { type: core.Injectable },
     { type: core.Component, args: [{
                 selector: 'angular-slickgrid',
-                template: "<div id=\"slickGridContainer-{{gridId}}\" class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n"
+                template: "<div id=\"slickGridContainer-{{gridId}}\" class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n",
             },] },
 ];
 AngularSlickgridComponent.ctorParameters = function () { return [
@@ -6306,7 +6318,8 @@ AngularSlickgridModule.decorators = [
                 exports: [
                     AngularSlickgridComponent,
                     SlickPaginationComponent
-                ]
+                ],
+                entryComponents: [AngularSlickgridComponent]
             },] },
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };

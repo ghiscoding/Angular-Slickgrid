@@ -11,6 +11,7 @@ export declare class ResizerService {
     onGridBeforeResize: Subject<boolean>;
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly _gridOptions;
+    private readonly _gridUid;
     init(grid: any): void;
     /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
      * Options: we could also provide a % factor to resize on each height/width independently

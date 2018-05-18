@@ -22,10 +22,12 @@ export interface Column {
     defaultSortAsc?: boolean;
     /** Inline editor for the cell value */
     editor?: Editor | any;
-    /** Default to false, do we want this column excluded from the export? */
+    /** Default to false, which leads to exclude the column from the export? */
     excludeFromExport?: boolean;
-    /** Defaults to false, do we want to exclude this field from the query (mostly a backend service query) */
+    /** Defaults to false, which leads to exclude the field from the query (mostly a backend service query) */
     excludeFromQuery?: boolean;
+    /** Defaults to false, which leads to exclude the column from getting a header menu. For example, the checkbox row selection should not have a header menu. */
+    excludeFromHeaderMenu?: boolean;
     /**
      * Export with a Custom Formatter, useful when we want to use a different Formatter for the export.
      * For example, we might have a boolean field with "Formatters.checkmark" but we would like see a translated value for (True/False).
