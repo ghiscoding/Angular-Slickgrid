@@ -62,6 +62,7 @@ export class GridEditorComponent implements OnInit, OnDestroy {
     this.columnDefinitions = [{
       id: 'edit',
       field: 'id',
+      excludeFromHeaderMenu: true,
       formatter: Formatters.editIcon,
       minWidth: 30,
       maxWidth: 30,
@@ -75,6 +76,7 @@ export class GridEditorComponent implements OnInit, OnDestroy {
     }, {
       id: 'delete',
       field: 'id',
+      excludeFromHeaderMenu: true,
       formatter: Formatters.deleteIcon,
       minWidth: 30,
       maxWidth: 30,

@@ -164,6 +164,7 @@ export class ControlAndPluginService {
       const selectionColumn: Column = this.checkboxSelectorPlugin.getColumnDefinition();
       selectionColumn.excludeFromExport = true;
       selectionColumn.excludeFromQuery = true;
+      selectionColumn.excludeFromHeaderMenu = true;
       columnDefinitions.unshift(selectionColumn);
     }
   }
@@ -562,7 +563,7 @@ export class ControlAndPluginService {
 
     if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
       columnDefinitions.forEach((columnDef: Column) => {
-        if (columnDef) {
+        if (columnDef && !columnDef.excludeFromHeaderMenu) {
           if (!columnDef.header || !columnDef.header.menu) {
             columnDef.header = {
               menu: {
@@ -798,21 +799,23 @@ export class ControlAndPluginService {
   private resetHeaderMenuTranslations(columnDefinitions: Column[]) {
     columnDefinitions.forEach((columnDef: Column) => {
       if (columnDef && columnDef.header && columnDef.header && columnDef.header.menu && columnDef.header.menu.items) {
-        const columnHeaderMenuItems: HeaderMenuItem[] = columnDef.header.menu.items || [];
+        if (!columnDef.excludeFromHeaderMenu) {
+          const columnHeaderMenuItems: HeaderMenuItem[] = columnDef.header.menu.items || [];
 
-        columnHeaderMenuItems.forEach((item) => {
-          switch (item.command) {
-            case 'sort-asc':
-              item.title = this.translate.instant('SORT_ASCENDING') || 'Sort Ascending';
-              break;
-            case 'sort-desc':
-              item.title = this.translate.instant('SORT_DESCENDING') || 'Sort Ascending';
-              break;
-            case 'hide':
-              item.title = this.translate.instant('HIDE_COLUMN') || 'Sort Ascending';
-              break;
-          }
-        });
+          columnHeaderMenuItems.forEach((item) => {
+            switch (item.command) {
+              case 'sort-asc':
+                item.title = this.translate.instant('SORT_ASCENDING') || 'Sort Ascending';
+                break;
+              case 'sort-desc':
+                item.title = this.translate.instant('SORT_DESCENDING') || 'Sort Ascending';
+                break;
+              case 'hide':
+                item.title = this.translate.instant('HIDE_COLUMN') || 'Sort Ascending';
+                break;
+            }
+          });
+        }
       }
     });
   }
