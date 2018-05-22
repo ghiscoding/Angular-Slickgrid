@@ -44,6 +44,7 @@
         [columnDefinitions]="columnDefinitions"
         [gridOptions]="gridOptions"
         [dataset]="dataset"
+        (onAngularGridCreated)="angularGridReady($event)"
         (onBeforeGridDestroy)="saveCurrentGridState($event)">
     </angular-slickgrid>
 </div>

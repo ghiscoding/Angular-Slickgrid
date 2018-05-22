@@ -1,11 +1,9 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, ColumnSort, ControlAndPluginService, GridOption, SortService } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, ColumnSort, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
-  templateUrl: './grid-headermenu.component.html',
-  providers: [ControlAndPluginService]
+  templateUrl: './grid-headermenu.component.html'
 })
-@Injectable()
 export class GridHeaderMenuComponent implements OnInit {
   title = 'Example 8: Header Menu Plugin';
   subTitle = `
@@ -20,13 +18,12 @@ export class GridHeaderMenuComponent implements OnInit {
     </ul>
   `;
 
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
   gridObj: any;
   dataviewObj: any;
-
-  constructor(private controlService: ControlAndPluginService, private sortService: SortService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -81,15 +78,15 @@ export class GridHeaderMenuComponent implements OnInit {
       headerMenu: {
         onCommand: (e, args) => {
           if (args.command === 'hide') {
-            this.controlService.hideColumn(args.column);
-            this.controlService.autoResizeColumns();
+            this.angularGrid.pluginService.hideColumn(args.column);
+            this.angularGrid.pluginService.autoResizeColumns();
           } else if (args.command === 'sort-asc' || args.command === 'sort-desc') {
             // get previously sorted columns
-            const cols: ColumnSort[] = this.sortService.getPreviousColumnSorts(args.column.id + '');
+            const cols: ColumnSort[] = this.angularGrid.sortService.getPreviousColumnSorts(args.column.id + '');
 
             // add to the column array, the column sorted by the header menu
             cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
-            this.sortService.onLocalSortChanged(this.gridObj, this.dataviewObj, cols);
+            this.angularGrid.sortService.onLocalSortChanged(this.gridObj, this.dataviewObj, cols);
 
             // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
             const newSortColumns: ColumnSort[] = cols.map((col) => {
@@ -121,6 +118,10 @@ export class GridHeaderMenuComponent implements OnInit {
       };
     }
     this.dataset = mockDataset;
+  }
+
+  angularGridReady(angularGrid: any) {
+    this.angularGrid = angularGrid;
   }
 
   gridReady(grid) {

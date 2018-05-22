@@ -1,7 +1,6 @@
-import { ExportService } from './../modules/angular-slickgrid/services/export.service';
 import { Component, OnInit, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Column, DelimiterType, FileType, FilterType, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, DelimiterType, FileType, FilterType, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-localization.component.html'
@@ -35,13 +34,14 @@ export class GridLocalizationComponent implements OnInit {
     </ol>
   `;
 
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
   selectedLanguage: string;
   duplicateTitleHeaderCount = 1;
 
-  constructor(private exportService: ExportService, private translate: TranslateService) {
+  constructor(private translate: TranslateService) {
     this.selectedLanguage = this.translate.getDefaultLang();
   }
 
@@ -131,6 +131,10 @@ export class GridLocalizationComponent implements OnInit {
     }
   }
 
+  angularGridReady(angularGrid: any) {
+    this.angularGrid = angularGrid;
+  }
+
   dynamicallyAddTitleHeader() {
     const newCol = { id: `title${this.duplicateTitleHeaderCount++}`, field: 'id', headerKey: 'TITLE', formatter: this.taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true } };
     this.columnDefinitions.push(newCol);
@@ -138,7 +142,7 @@ export class GridLocalizationComponent implements OnInit {
   }
 
   exportToFile(type = 'csv') {
-    this.exportService.exportToFile({
+    this.angularGrid.exportService.exportToFile({
       delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
       filename: 'myExport',
       format: (type === 'csv') ? FileType.csv : FileType.txt

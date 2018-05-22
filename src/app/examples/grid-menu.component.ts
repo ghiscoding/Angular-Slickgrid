@@ -1,10 +1,9 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, FieldType, FilterType, FilterService, Formatters, GridOption, SortService } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, FieldType, FilterType, Formatters, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-menu.component.html'
 })
-@Injectable()
 export class GridMenuComponent implements OnInit {
   title = 'Example 9: Grid Menu Control';
   subTitle = `
@@ -20,14 +19,13 @@ export class GridMenuComponent implements OnInit {
     </ul>
   `;
 
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
   gridObj: any;
   dataviewObj: any;
   visibleColumns: Column[];
-
-  constructor(private filterService: FilterService, private sortService: SortService) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -129,10 +127,10 @@ export class GridMenuComponent implements OnInit {
           } else if (args.command === 'toggle-toppanel') {
             this.gridObj.setTopPanelVisibility(!this.gridObj.getOptions().showTopPanel);
           } else if (args.command === 'clear-filter') {
-            this.filterService.clearFilters();
+            this.angularGrid.filterService.clearFilters();
             this.dataviewObj.refresh();
           } else if (args.command === 'clear-sorting') {
-            this.sortService.clearSorting();
+            this.angularGrid.sortService.clearSorting();
             this.dataviewObj.refresh();
           } else {
             alert('Command: ' + args.command);
@@ -145,6 +143,10 @@ export class GridMenuComponent implements OnInit {
     };
 
     this.getData();
+  }
+
+  angularGridReady(angularGrid: any) {
+    this.angularGrid = angularGrid;
   }
 
   getData() {

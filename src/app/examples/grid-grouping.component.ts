@@ -1,5 +1,5 @@
 import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
-import { Aggregators, Column, ExportService, FieldType, Formatter, Formatters, GridOption, GroupTotalFormatters, SortDirectionNumber, Sorters } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Aggregators, Column, FieldType, Formatter, Formatters, GridOption, GroupTotalFormatters, SortDirectionNumber, Sorters } from './../modules/angular-slickgrid';
 import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
@@ -18,6 +18,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
   </ul>
   `;
 
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
@@ -27,11 +28,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
   exportBeforeSub: Subscription;
   exportAfterSub: Subscription;
 
-  constructor(private exportService: ExportService) {
-    // display a spinner while downloading
-    this.exportBeforeSub = this.exportService.onGridBeforeExportToFile.subscribe(() => this.processing = true);
-    this.exportAfterSub = this.exportService.onGridAfterExportToFile.subscribe(() => this.processing = false);
-  }
+  constructor() {}
 
   ngOnDestroy() {
     this.exportBeforeSub.unsubscribe();
@@ -115,6 +112,14 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
     };
 
     this.loadData(500);
+  }
+
+  angularGridReady(angularGrid: any) {
+    this.angularGrid = angularGrid;
+
+    // display a spinner while downloading
+    this.exportBeforeSub = this.angularGrid.exportService.onGridBeforeExportToFile.subscribe(() => this.processing = true);
+    this.exportAfterSub = this.angularGrid.exportService.onGridAfterExportToFile.subscribe(() => this.processing = false);
   }
 
   loadData(rowCount: number) {

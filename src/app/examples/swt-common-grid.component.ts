@@ -4,7 +4,7 @@ import { Component, OnInit, Injectable, ViewContainerRef, ComponentFactoryResolv
          ElementRef, Renderer} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AngularSlickgridComponent, Column, Editors, FieldType, Formatter, Formatters,
-         GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService,
+         GridService, GridExtraUtils, GridOption, OnEventArgs, ResizerService,
          FormElementType, FilterService, SortService, BackendService,
          BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, SortChangedArgs, Pagination} from '../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
@@ -129,7 +129,9 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
             this.gridOptions.backendServiceApi = {
               service: this,
               preProcess: () => {},
-              process: (query) => { return null; },
+              process: (query) => {
+                return null;
+              },
               postProcess: (response) => {}
             };
             this._paginationComponent.gridPaginationOptions = this.gridOptions;
@@ -144,11 +146,11 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
 
     /**
      *
-     * @param gridExtraService
+     * @param gridService
      * @param resizer
      * @param httpClient
      */
-    constructor( private gridExtraService: GridExtraService, private resizer: ResizerService, private httpClient: HttpClient,
+    constructor( private gridService: GridService, private resizer: ResizerService, private httpClient: HttpClient,
             private filterService: FilterService, private sortService: SortService, private translate: TranslateService,
             private el: ElementRef, private renderer: Renderer) {
         this.logger = new Logger('grid', httpClient);

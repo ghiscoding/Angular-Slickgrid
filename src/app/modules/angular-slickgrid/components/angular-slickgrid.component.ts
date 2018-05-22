@@ -23,13 +23,13 @@ import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Outp
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
-import { BackendServiceOption, Column, GridOption, GridStateChange, GridStateType, Pagination } from './../models/index';
+import { AngularGridInstance, BackendServiceOption, Column, GridOption, GridStateChange, GridStateType, Pagination } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
 import { GraphqlService } from './../services/graphql.service';
 import { GridEventService } from './../services/gridEvent.service';
-import { GridExtraService } from './../services/gridExtra.service';
+import { GridService } from './../services/grid.service';
 import { GridStateService } from './../services/gridState.service';
 import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
 import { ResizerService } from './../services/resizer.service';
@@ -46,18 +46,18 @@ const eventPrefix = 'sg';
 @Component({
   selector: 'angular-slickgrid',
   templateUrl: './angular-slickgrid.component.html',
-  // providers: [
-  //   ControlAndPluginService,
-  //   ExportService,
-  //   FilterService,
-  //   GraphqlService,
-  //   GridEventService,
-  //   GridExtraService,
-  //   GridStateService,
-  //   GroupingAndColspanService,
-  //   ResizerService,
-  //   SortService
-  // ]
+  providers: [
+    ControlAndPluginService,
+    ExportService,
+    FilterService,
+    GraphqlService,
+    GridEventService,
+    GridService,
+    GridStateService,
+    GroupingAndColspanService,
+    ResizerService,
+    SortService
+  ]
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
   private _dataset: any[];
@@ -75,6 +75,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   showPagination = false;
   isGridInitialized = false;
 
+  @Output() onAngularGridCreated = new EventEmitter<AngularGridInstance>();
   @Output() onDataviewCreated = new EventEmitter<any>();
   @Output() onGridCreated = new EventEmitter<any>();
   @Output() onGridInitialized = new EventEmitter<any>();
@@ -110,7 +111,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private controlAndPluginService: ControlAndPluginService,
     private exportService: ExportService,
     private filterService: FilterService,
-    private gridExtraService: GridExtraService,
+    private gridService: GridService,
     private gridEventService: GridEventService,
     private gridStateService: GridStateService,
     private groupingAndColspanService: GroupingAndColspanService,
@@ -198,8 +199,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.groupingAndColspanService.init(this.grid, this._dataView);
     }
 
-    // attach grid extra service
-    this.gridExtraService.init(this.grid, this._dataView);
+    // attach grid  service
+    this.gridService.init(this.grid, this._dataView);
 
     // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
     if (this.gridOptions.enableTranslate) {
@@ -221,6 +222,19 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     this.gridStateService.init(this.grid, this.filterService, this.sortService);
+
+    this.onAngularGridCreated.emit({
+      backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
+      exportService: this.exportService,
+      filterService: this.filterService,
+      gridEventService: this.gridEventService,
+      gridStateService: this.gridStateService,
+      gridService: this.gridService,
+      groupingService: this.groupingAndColspanService,
+      pluginService: this.controlAndPluginService,
+      resizerService: this.resizer,
+      sortService: this.sortService,
+    });
   }
 
   /**

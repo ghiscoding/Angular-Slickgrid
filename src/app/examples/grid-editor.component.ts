@@ -1,15 +1,14 @@
 import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
+  AngularGridInstance,
   Column,
   Editors,
   FieldType,
   Formatters,
-  GridExtraService,
   GridExtraUtils,
   GridOption,
-  OnEventArgs,
-  ResizerService
+  OnEventArgs
 } from './../modules/angular-slickgrid';
 
 // using external non-typed js libraries
@@ -35,6 +34,7 @@ export class GridEditorComponent implements OnInit, OnDestroy {
   `;
 
   private _commandQueue = [];
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
@@ -45,7 +45,7 @@ export class GridEditorComponent implements OnInit, OnDestroy {
   dataviewObj: any;
   selectedLanguage = 'en';
 
-  constructor(private gridExtraService: GridExtraService, private resizer: ResizerService, private translate: TranslateService) {}
+  constructor(private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -70,8 +70,8 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       onCellClick: (args: OnEventArgs) => {
         console.log(args);
         this.alertWarning = `Editing: ${args.dataContext.title}`;
-        this.gridExtraService.highlightRow(args.row, 1500);
-        this.gridExtraService.setSelectedRow(args.row);
+        this.angularGrid.gridService.highlightRow(args.row, 1500);
+        this.angularGrid.gridService.setSelectedRow(args.row);
       }
     }, {
       id: 'delete',
@@ -220,13 +220,17 @@ export class GridEditorComponent implements OnInit, OnDestroy {
     this.dataset = mockedDataset;
   }
 
+  angularGridReady(angularGrid: AngularGridInstance) {
+    this.angularGrid = angularGrid;
+  }
+
   gridReady(grid) {
     this.gridObj = grid;
 
     grid.onCellChange.subscribe((e, args) => {
       console.log('onCellChange', args);
       this.updatedObject = args.item;
-      this.resizer.resizeGrid(10);
+      this.angularGrid.resizerService.resizeGrid(10);
     });
 
     // You could also subscribe to grid.onClick
@@ -238,13 +242,13 @@ export class GridEditorComponent implements OnInit, OnDestroy {
         this.alertWarning = `open a modal window to edit: ${column.dataContext.title}`;
 
         // highlight the row, to customize the color, you can change the SASS variable $row-highlight-background-color
-        this.gridExtraService.highlightRow(args.row, 1500);
+        this.angularGrid.gridService.highlightRow(args.row, 1500);
 
         // you could also select the row, when using "enableCellNavigation: true", it automatically selects the row
-        // this.gridExtraService.setSelectedRow(args.row);
+        // this.angularGrid.gridService.setSelectedRow(args.row);
       } else if (column.columnDef.id === 'delete') {
         if (confirm('Are you sure?')) {
-          this.gridExtraService.deleteDataGridItemById(column.dataContext.id);
+          this.angularGrid.gridService.deleteDataGridItemById(column.dataContext.id);
         }
       }
     });

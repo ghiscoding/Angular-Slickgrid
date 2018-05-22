@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, Editors, FieldType, Formatters, GridExtraService, GridOption, OnEventArgs } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption, OnEventArgs } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-additem.component.html'
@@ -23,12 +23,13 @@ export class GridAddItemComponent implements OnInit {
   </ul>
   `;
 
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
   updatedObject: any;
 
-  constructor(private gridExtraService: GridExtraService) {}
+  constructor() {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -96,16 +97,20 @@ export class GridAddItemComponent implements OnInit {
       finish: new Date(randomYear, (randomMonth + 2), randomDay),
       effortDriven: true
     };
-    this.gridExtraService.addItemToDatagrid(newItem);
+    this.angularGrid.gridService.addItemToDatagrid(newItem);
   }
 
   highlighFifthRow() {
-    this.gridExtraService.highlightRow(4, 1500);
+    this.angularGrid.gridService.highlightRow(4, 1500);
+  }
+
+  angularGridReady(angularGrid: any) {
+    this.angularGrid = angularGrid;
   }
 
   updateSecondItem() {
-    const firstItem = this.gridExtraService.getDataItemByRowNumber(1);
+    const firstItem = this.angularGrid.gridService.getDataItemByRowNumber(1);
     firstItem.duration = Math.round(Math.random() * 100);
-    this.gridExtraService.updateDataGridItem(firstItem);
+    this.angularGrid.gridService.updateDataGridItem(firstItem);
   }
 }

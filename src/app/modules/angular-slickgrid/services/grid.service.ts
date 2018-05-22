@@ -4,7 +4,7 @@ import { Column, GridOption } from './../models/index';
 declare var $: any;
 declare var Slick: any;
 
-export class GridExtraService {
+export class GridService {
   private _grid: any;
   private _dataView: any;
 

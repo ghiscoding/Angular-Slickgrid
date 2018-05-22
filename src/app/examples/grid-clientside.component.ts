@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs/Subscription';
 import { CustomInputFilter } from './custom-inputFilter';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Column, FieldType, FilterType, Formatters, GridOption, GridStateChange, GridStateService, OperatorType } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, FieldType, FilterType, Formatters, GridOption, GridStateChange, OperatorType } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 
 function randomBetween(min, max) {
@@ -33,11 +33,12 @@ export class GridClientSideComponent implements OnInit {
     </ul>
   `;
 
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
 
-  constructor(private gridStateService: GridStateService, private translate: TranslateService) {
+  constructor(private translate: TranslateService) {
   }
 
   ngOnInit(): void {
@@ -158,6 +159,10 @@ export class GridClientSideComponent implements OnInit {
     }
   }
 
+  angularGridReady(angularGrid: any) {
+    this.angularGrid = angularGrid;
+  }
+
   /** Dispatched event of a Grid State Changed event */
   gridStateChanged(gridState: GridStateChange) {
     console.log('Client sample, Grid State changed:: ', gridState);
@@ -165,6 +170,6 @@ export class GridClientSideComponent implements OnInit {
 
   /** Save current Filters, Sorters in LocaleStorage or DB */
   saveCurrentGridState(grid) {
-    console.log('Client sample, last Grid State:: ', this.gridStateService.getCurrentGridState());
+    console.log('Client sample, last Grid State:: ', this.angularGrid.gridStateService.getCurrentGridState());
   }
 }

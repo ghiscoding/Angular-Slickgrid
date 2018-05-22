@@ -1,13 +1,12 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Column, FieldType, FilterService, FilterType, GridOdataService, GridOption, OperatorType, SortService } from './../modules/angular-slickgrid';
+import { Column, FieldType, FilterType, GridOdataService, GridOption } from './../modules/angular-slickgrid';
 
 const defaultPageSize = 20;
 const sampleDataRoot = '/assets/data';
 
 @Component({
-  templateUrl: './grid-odata.component.html',
-  providers: [GridOdataService]
+  templateUrl: './grid-odata.component.html'
 })
 @Injectable()
 export class GridOdataComponent implements OnInit {
@@ -34,7 +33,7 @@ export class GridOdataComponent implements OnInit {
   processing = true;
   status = { text: 'processing...', class: 'alert alert-danger' };
 
-  constructor(private http: HttpClient, private odataService: GridOdataService) {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -69,7 +68,7 @@ export class GridOdataComponent implements OnInit {
         totalItems: 0
       },
       backendServiceApi: {
-        service: this.odataService,
+        service: new GridOdataService(),
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {

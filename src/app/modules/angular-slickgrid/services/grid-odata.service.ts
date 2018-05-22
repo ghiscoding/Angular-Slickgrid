@@ -36,6 +36,7 @@ export class GridOdataService implements BackendService {
   private _currentSorters: CurrentSorter[];
   private _columnDefinitions: Column[];
   private _grid: any;
+  odataService: OdataService;
   options: OdataOption;
   pagination: Pagination | undefined;
   defaultOptions: OdataOption = {
@@ -44,7 +45,9 @@ export class GridOdataService implements BackendService {
     caseType: CaseType.pascalCase
   };
 
-  constructor(private odataService: OdataService) { }
+  constructor() {
+    this.odataService = new OdataService();
+  }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
