@@ -214,7 +214,7 @@ export class ExportService {
       }
 
       // does the user want to evaluate current column Formatter?
-      const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this._exportOptions.exportWithFormatter || this._gridOptions.exportWithFormatter);
+      const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._exportOptions.exportWithFormatter;
 
       // did the user provide a Custom Formatter for the export
       const exportCustomFormatter: Formatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;

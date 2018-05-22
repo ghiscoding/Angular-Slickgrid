@@ -46,7 +46,6 @@ export const GlobalGridOptions: GridOption = {
     sanitizeDataExport: false,
     useUtf8WithBom: true
   },
-  exportWithFormatter: false,
   forceFitColumns: false,
   gridMenu: {
     hideForceFitButton: false,
