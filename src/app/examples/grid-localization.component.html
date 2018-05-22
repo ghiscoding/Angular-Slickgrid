@@ -6,7 +6,10 @@
     <hr/>
 
     <div class="row col-sm-12">
-        <button class="btn btn-default btn-sm" (click)="switchLanguage()">Switch Language</button>
+        <button class="btn btn-default btn-sm" (click)="switchLanguage()">
+            <i class="fa fa-language"></i>
+            Switch Language
+        </button>
         <b>Locale:</b> <span style="font-style: italic">{{selectedLanguage + '.json'}}</span>
 
         <span style="margin-left: 20px">
@@ -17,6 +20,10 @@
             <button class="btn btn-default btn-sm" (click)="exportToFile('txt')">
                 <i class="fa fa-download"></i>
                 Download to Text
+            </button>
+            <button class="btn btn-default btn-sm" (click)="dynamicallyAddTitleHeader()">
+                <i class="fa fa-plus"></i>
+                Dynamically Duplicate Title Column
             </button>
         </span>
     </div>

@@ -39,6 +39,7 @@ export class GridLocalizationComponent implements OnInit {
   gridOptions: GridOption;
   dataset: any[];
   selectedLanguage: string;
+  duplicateTitleHeaderCount = 1;
 
   constructor(private exportService: ExportService, private translate: TranslateService) {
     this.selectedLanguage = this.translate.getDefaultLang();
@@ -128,6 +129,12 @@ export class GridLocalizationComponent implements OnInit {
         completed: (i % 5 === 0) ? 'TRUE' : 'FALSE'
       };
     }
+  }
+
+  dynamicallyAddTitleHeader() {
+    const newCol = { id: `title${this.duplicateTitleHeaderCount++}`, field: 'id', headerKey: 'TITLE', formatter: this.taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true } };
+    this.columnDefinitions.push(newCol);
+    this.columnDefinitions = this.columnDefinitions.slice();
   }
 
   exportToFile(type = 'csv') {
