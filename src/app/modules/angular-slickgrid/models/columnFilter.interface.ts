@@ -4,7 +4,6 @@ import {
   Column,
   Filter,
   FilterType,
-  FormElementType,
   MultipleSelectOption,
   OperatorString,
   OperatorType,
@@ -34,7 +33,7 @@ export interface ColumnFilter {
   operator?: OperatorType | OperatorString;
 
   /** Filter Type to use (input, multipleSelect, singleSelect, select, custom) */
-  type?: FilterType | FormElementType;
+  type?: FilterType;
 
   /** A collection of items/options (commonly used with a Select/Multi-Select Filter) */
   collection?: any[];

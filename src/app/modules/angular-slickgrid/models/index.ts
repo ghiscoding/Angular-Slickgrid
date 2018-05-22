@@ -32,7 +32,6 @@ export * from './filterCondition.interface';
 export * from './filterConditionOption.interface';
 export * from './filterType';
 export * from './formatter.interface';
-export * from './formElementType';
 export * from './graphqlDatasetFilter.interface';
 export * from './graphqlCursorPaginationOption.interface';
 export * from './graphqlFilteringOption.interface';

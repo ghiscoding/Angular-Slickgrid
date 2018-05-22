@@ -5,7 +5,7 @@ import { Component, OnInit, Injectable, ViewContainerRef, ComponentFactoryResolv
 import { HttpClient } from '@angular/common/http';
 import { AngularSlickgridComponent, Column, Editors, FieldType, Formatter, Formatters,
          GridService, GridExtraUtils, GridOption, OnEventArgs, ResizerService,
-         FormElementType, FilterService, SortService, BackendService,
+         FilterService, SortService, BackendService,
          BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, SortChangedArgs, Pagination} from '../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 import { Logger } from './swt-logger.service';
