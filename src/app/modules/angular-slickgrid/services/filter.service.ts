@@ -75,7 +75,7 @@ export class FilterService {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
     }
-    const backendApi = this._gridOptions.backendServiceApi || this._gridOptions.onBackendEventApi;
+    const backendApi = this._gridOptions.backendServiceApi;
     if (!backendApi || !backendApi.process || !backendApi.service) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }

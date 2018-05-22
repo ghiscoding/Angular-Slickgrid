@@ -246,7 +246,7 @@ export class GraphqlService implements BackendService {
    */
   onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
     const gridOptions: GridOption = this._gridOptions || args.grid.getOptions();
-    const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+    const backendApi = gridOptions.backendServiceApi;
 
     if (backendApi === undefined) {
       throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');

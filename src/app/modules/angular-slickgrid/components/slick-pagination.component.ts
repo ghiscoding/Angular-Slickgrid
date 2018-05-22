@@ -112,7 +112,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   }
 
   refreshPagination(isPageNumberReset: boolean = false) {
-    const backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
+    const backendApi = this._gridPaginationOptions.backendServiceApi;
     if (!backendApi || !backendApi.service || !backendApi.process) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }
@@ -149,7 +149,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   async onPageChanged(event: Event | undefined, pageNumber: number) {
     this.recalculateFromToIndexes();
 
-    const backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
+    const backendApi = this._gridPaginationOptions.backendServiceApi;
     if (!backendApi || !backendApi.service || !backendApi.process) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }

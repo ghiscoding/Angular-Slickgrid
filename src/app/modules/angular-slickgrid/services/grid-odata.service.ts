@@ -121,7 +121,7 @@ export class GridOdataService implements BackendService {
    */
   onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
     const serviceOptions: GridOption = args.grid.getOptions();
-    const backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
+    const backendApi = serviceOptions.backendServiceApi;
 
     if (backendApi === undefined) {
       throw new Error('Something went wrong in the GridOdataService, "backendServiceApi" is not initialized');
