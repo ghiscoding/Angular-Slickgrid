@@ -71,11 +71,11 @@ export class SelectFilter implements Filter {
   // ------------------
 
   private buildTemplateHtmlString() {
-    if (!this.columnDef || !this.columnDef.filter || (!this.columnDef.filter.collection && !this.columnDef.filter.selectOptions)) {
+    if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
       throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
 
-    const optionCollection = this.columnDef.filter.collection || this.columnDef.filter.selectOptions || [];
+    const optionCollection = this.columnDef.filter.collection || [];
     const labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
     const valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
 
