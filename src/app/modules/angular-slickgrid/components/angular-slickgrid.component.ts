@@ -203,7 +203,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
     if (this.gridOptions.enableTranslate) {
-      this.controlAndPluginService.translateHeaders();
+      this.controlAndPluginService.translateColumnHeaders();
     }
 
     // if Export is enabled, initialize the service with the necessary grid and other objects
@@ -250,7 +250,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // on locale change, we have to manually translate the Headers, GridMenu
     this._translateSubscriber = this.translate.onLangChange.subscribe((event) => {
       if (gridOptions.enableTranslate) {
-        this.controlAndPluginService.translateHeaders();
+        this.controlAndPluginService.translateColumnHeaders();
         this.controlAndPluginService.translateColumnPicker();
         this.controlAndPluginService.translateGridMenu();
         this.controlAndPluginService.translateHeaderMenu();
@@ -440,11 +440,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  updateColumnDefinitionsList(dynamicColumns) {
-    this.grid.setColumns(dynamicColumns);
+  /**
+   * Dynamically change or update the column definitions list.
+   * We will re-render the grid so that the new header and data shows up correctly.
+   * If using i18n, we also need to trigger a re-translate of the column headers
+   */
+  updateColumnDefinitionsList(newColumnDefinitions) {
     if (this.gridOptions.enableTranslate) {
-      this.controlAndPluginService.translateHeaders();
+      this.controlAndPluginService.translateColumnHeaders();
+    } else {
+      this.controlAndPluginService.renderColumnHeaders(newColumnDefinitions);
     }
+    this.grid.autosizeColumns();
   }
 
   /** Toggle the filter row displayed on first row

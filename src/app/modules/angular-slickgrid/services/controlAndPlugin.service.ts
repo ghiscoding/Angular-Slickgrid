@@ -731,7 +731,7 @@ export class ControlAndPluginService {
    * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
    * @param locale locale to use
    */
-  translateHeaders(locale?: string) {
+  translateColumnHeaders(locale?: string) {
     if (locale) {
       this.translate.use(locale);
     }
@@ -742,8 +742,19 @@ export class ControlAndPluginService {
       }
     }
 
-    // calling setColumns() will trigger a grid re-render
-    this._grid.setColumns(this._columnDefinitions);
+    // re-render the column headers
+    this.renderColumnHeaders();
+  }
+
+  /**
+   * Render (or re-render) the column headers from column definitions.
+   * calling setColumns() will trigger a grid re-render
+   */
+  renderColumnHeaders(newColumnDefinitions?: Column[]) {
+    const collection = newColumnDefinitions || this._columnDefinitions;
+    if (Array.isArray(collection) && this._grid && this._grid.setColumns) {
+      this._grid.setColumns(collection);
+    }
   }
 
   /**
