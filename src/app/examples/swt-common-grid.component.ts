@@ -314,8 +314,8 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
         return 'buildQuery...';
     }
 
-    initOptions( options: BackendServiceOption, pagination?: Pagination ): void {
-        this.options = options;
+    init( serviceOptions: BackendServiceOption, pagination?: Pagination ): void {
+        this.options = serviceOptions;
         this.pagination = pagination;
     }
 

@@ -23,9 +23,6 @@ export interface BackendService {
   /** initialize the backend service with certain options */
   init?: (serviceOptions?: BackendServiceOption, pagination?: Pagination, grid?: any) => void;
 
-  /** DEPRECATED, please use "init()" instead */
-  initOptions?: (serviceOptions?: BackendServiceOption, pagination?: Pagination, gridOptions?: GridOption, columnDefinitions?: Column[]) => void;
-
   /** Get the dataset name */
   getDatasetName?: () => string;
 
