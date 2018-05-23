@@ -1,4 +1,4 @@
-import { Column, GridOption } from './../models/index';
+import { CellArgs, Column, GridOption } from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -16,6 +16,20 @@ export class GridService {
   init(grid: any, dataView: any): void {
     this._grid = grid;
     this._dataView = dataView;
+  }
+
+  /**
+   * From a cell args, get the Column Definitions and Item Data
+   * @param args
+   */
+  getColumnDefinitionAndData(args: CellArgs) {
+    if (!args || !args.grid || !args.grid.getColumns || !args.grid.getDataItem) {
+      throw new Error('To get the column definition and data, we need to have these arguments passed (row, cell, grid)');
+    }
+    return {
+      columnDef: args.grid.getColumns()[args.cell],
+      dataContext: args.grid.getDataItem(args.row)
+    };
   }
 
   getDataItemByRowNumber(rowNumber: number) {

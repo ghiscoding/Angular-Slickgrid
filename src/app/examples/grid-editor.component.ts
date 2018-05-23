@@ -6,7 +6,6 @@ import {
   Editors,
   FieldType,
   Formatters,
-  GridExtraUtils,
   GridOption,
   OnEventArgs
 } from './../modules/angular-slickgrid';
@@ -236,7 +235,7 @@ export class GridEditorComponent implements OnInit, OnDestroy {
     // You could also subscribe to grid.onClick
     // Note that if you had already setup "onCellClick" in the column definition, you cannot use grid.onClick
     grid.onClick.subscribe((e, args) => {
-      const column = GridExtraUtils.getColumnDefinitionAndData(args);
+      const column = this.angularGrid.gridService.getColumnDefinitionAndData(args);
       console.log('onClick', args, column);
       if (column.columnDef.id === 'edit') {
         this.alertWarning = `open a modal window to edit: ${column.dataContext.title}`;

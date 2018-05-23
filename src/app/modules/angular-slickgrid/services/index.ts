@@ -7,7 +7,6 @@ export * from './graphql.service';
 export * from './grid-odata.service';
 export * from './gridEvent.service';
 export * from './grid.service';
-export * from './gridExtraUtils';
 export * from './gridState.service';
 export * from './groupingAndColspan.service';
 export * from './odata.service';
