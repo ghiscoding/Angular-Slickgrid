@@ -71,8 +71,9 @@ export class GridRowSelectionComponent implements OnInit, OnDestroy {
         // True (Single Selection), False (Multiple Selections)
         selectActiveRow: false
       },
+      preselectedRows: [0, 2],
       enableCheckboxSelector: true,
-      enableRowSelection: true
+      enableRowSelection: true,
     };
 
     this.dataset1 = this.prepareData();

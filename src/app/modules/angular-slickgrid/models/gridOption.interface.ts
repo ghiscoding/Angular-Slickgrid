@@ -250,6 +250,9 @@ export interface GridOption {
   /** Query presets before grid load (filters, sorters, pagination) */
   presets?: GridState;
 
+  /** Preselect certain rows by their row index ("enableCheckboxSelector" must be enabled) */
+  preselectedRows?: number[];
+
   /** Register 1 or more Slick Plugins */
   registerPlugins?: any | any[];
 
