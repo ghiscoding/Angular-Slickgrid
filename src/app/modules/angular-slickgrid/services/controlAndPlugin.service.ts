@@ -219,7 +219,7 @@ export class ControlAndPluginService {
 
     grid.setSelectionModel(new Slick.CellSelectionModel());
     this.cellExternalCopyManagerPlugin = new Slick.CellExternalCopyManager(pluginOptions);
-    grid.registerPlugin(new Slick.CellExternalCopyManager(pluginOptions));
+    grid.registerPlugin(this.cellExternalCopyManagerPlugin);
     this.pluginList.push(this.cellExternalCopyManagerPlugin);
   }
 
