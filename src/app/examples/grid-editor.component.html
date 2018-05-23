@@ -39,6 +39,7 @@
             (onAngularGridCreated)="angularGridReady($event)"
             (onDataviewCreated)="dataviewReady($event)"
             (onGridCreated)="gridReady($event)"
+            (sg-on-click)="onCellClicked($event.detail.eventData, $event.detail.args)"
             [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
         </angular-slickgrid>
     </div>

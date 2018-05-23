@@ -65,7 +65,7 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       formatter: Formatters.editIcon,
       minWidth: 30,
       maxWidth: 30,
-      // use onCellClick OR grid.onClick.subscribe which you can see down below
+      // use column onCellClick OR (sg-on-click)="onCellClicked()" you can see down below
       onCellClick: (args: OnEventArgs) => {
         console.log(args);
         this.alertWarning = `Editing: ${args.dataContext.title}`;
@@ -79,7 +79,7 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       formatter: Formatters.deleteIcon,
       minWidth: 30,
       maxWidth: 30,
-      // use onCellClick OR grid.onClick.subscribe which you can see down below
+      // use column onCellClick OR (sg-on-click)="onCellClicked()" you can see down below
       /*
       onCellClick: (args: OnEventArgs) => {
         console.log(args);
@@ -231,29 +231,28 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       this.updatedObject = args.item;
       this.angularGrid.resizerService.resizeGrid(10);
     });
-
-    // You could also subscribe to grid.onClick
-    // Note that if you had already setup "onCellClick" in the column definition, you cannot use grid.onClick
-    grid.onClick.subscribe((e, args) => {
-      const column = this.angularGrid.gridService.getColumnDefinitionAndData(args);
-      console.log('onClick', args, column);
-      if (column.columnDef.id === 'edit') {
-        this.alertWarning = `open a modal window to edit: ${column.dataContext.title}`;
-
-        // highlight the row, to customize the color, you can change the SASS variable $row-highlight-background-color
-        this.angularGrid.gridService.highlightRow(args.row, 1500);
-
-        // you could also select the row, when using "enableCellNavigation: true", it automatically selects the row
-        // this.angularGrid.gridService.setSelectedRow(args.row);
-      } else if (column.columnDef.id === 'delete') {
-        if (confirm('Are you sure?')) {
-          this.angularGrid.gridService.deleteDataGridItemById(column.dataContext.id);
-        }
-      }
-    });
   }
   dataviewReady(dataview) {
     this.dataviewObj = dataview;
+  }
+
+  onCellClicked(e, args) {
+    const metadata = this.angularGrid.gridService.getColumnFromEventArguments(args);
+    console.log(metadata);
+
+    if (metadata.columnDef.id === 'edit') {
+      this.alertWarning = `open a modal window to edit: ${metadata.dataContext.title}`;
+
+      // highlight the row, to customize the color, you can change the SASS variable $row-highlight-background-color
+      this.angularGrid.gridService.highlightRow(args.row, 1500);
+
+      // you could also select the row, when using "enableCellNavigation: true", it automatically selects the row
+      // this.angularGrid.gridService.setSelectedRow(args.row);
+    } else if (metadata.columnDef.id === 'delete') {
+      if (confirm('Are you sure?')) {
+        this.angularGrid.gridService.deleteDataGridItemById(metadata.dataContext.id);
+      }
+    }
   }
 
   setAutoEdit(isAutoEdit) {

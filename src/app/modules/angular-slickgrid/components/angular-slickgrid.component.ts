@@ -19,9 +19,9 @@ import 'slickgrid/plugins/slick.headerbuttons';
 import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
-import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit, ViewChildren, ElementRef, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { castToPromise } from './../services/utilities';
+import { castToPromise, toKebabCase } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
 import { AngularGridInstance, BackendServiceOption, Column, GridOption, GridStateChange, GridStateType, Pagination } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
@@ -40,7 +40,7 @@ import { Subscription } from 'rxjs/Subscription';
 declare var Slick: any;
 declare var $: any;
 
-const eventPrefix = 'sg';
+const slickgridEventPrefix = 'sg';
 
 @Injectable()
 @Component({
@@ -60,6 +60,7 @@ const eventPrefix = 'sg';
   ]
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
+  @ViewChild('customElm', {read: ElementRef}) customElm: ElementRef;
   private _dataset: any[];
   private _columnDefinitions: Column[];
   private _dataView: any;
@@ -293,6 +294,36 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
       if (backendApi && backendApi.service && backendApi.service.init) {
         backendApi.service.init(backendApi.options, gridOptions.pagination, this.grid);
+      }
+    }
+
+    // expose all Slick Grid Events through dispatch
+    for (const prop in grid) {
+      if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
+        this._eventHandler.subscribe(grid[prop], (e: any, args: any) => {
+          this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}-${toKebabCase(prop)}`, {
+            bubbles: true,
+            detail: {
+              eventData: e,
+              args
+            }
+          }));
+        });
+      }
+    }
+
+    // expose all Slick DataView Events through dispatch
+    for (const prop in dataView) {
+      if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
+        this._eventHandler.subscribe(dataView[prop], (e: any, args: any) => {
+          this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}-${toKebabCase(prop)}`, {
+            bubbles: true,
+            detail: {
+              eventData: e,
+              args
+            }
+          }));
+        });
       }
     }
 
