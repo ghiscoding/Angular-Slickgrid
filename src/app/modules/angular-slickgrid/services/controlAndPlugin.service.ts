@@ -31,11 +31,14 @@ export class ControlAndPluginService {
   private _grid: any;
   visibleColumns: Column[];
   areVisibleColumnDifferent = false;
+  pluginList: any[] = [];
 
   // controls & plugins
   autoTooltipPlugin: any;
+  cellExternalCopyManagerPlugin: any;
   checkboxSelectorPlugin: any;
   columnPickerControl: any;
+  groupItemMetaProviderPlugin: any;
   headerButtonsPlugin: any;
   headerMenuPlugin: any;
   gridMenuControl: any;
@@ -75,34 +78,39 @@ export class ControlAndPluginService {
     this._dataView = dataView;
     this.visibleColumns = this._columnDefinitions;
 
-    // Column Picker Plugin
+    // Column Picker Control
     if (this._gridOptions.enableColumnPicker) {
       this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions);
+      this.pluginList.push(this.columnPickerControl);
     }
 
-    // Grid Menu Plugin
+    // Grid Menu Control
     if (this._gridOptions.enableGridMenu) {
       this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions);
+      this.pluginList.push(this.gridMenuControl);
     }
 
     // Auto Tooltip Plugin
     if (this._gridOptions.enableAutoTooltip) {
       this.autoTooltipPlugin = new Slick.AutoTooltips(this._gridOptions.autoTooltipOptions || {});
       this._grid.registerPlugin(this.autoTooltipPlugin);
+      this.pluginList.push(this.autoTooltipPlugin);
     }
 
     // Grouping Plugin
     // register the group item metadata provider to add expand/collapse group handlers
     if (this._gridOptions.enableGrouping) {
-      const groupItemMetaProvider = groupItemMetadataProvider || {};
-      this._grid.registerPlugin(groupItemMetaProvider);
+      this.groupItemMetaProviderPlugin = groupItemMetadataProvider || {};
+      this._grid.registerPlugin(this.groupItemMetaProviderPlugin);
+      this.pluginList.push(this.groupItemMetaProviderPlugin);
     }
 
     // Checkbox Selector Plugin
     if (this._gridOptions.enableCheckboxSelector) {
       // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
-      // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
+      // the selector column has to be created BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
       this._grid.registerPlugin(this.checkboxSelectorPlugin);
+      this.pluginList.push(this.checkboxSelectorPlugin);
 
       // this also requires the Row Selection Model to be registered as well
       if (!this.rowSelectionPlugin) {
@@ -121,6 +129,7 @@ export class ControlAndPluginService {
     if (this._gridOptions.enableHeaderButton) {
       this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(this._gridOptions.headerButton || {});
       this._grid.registerPlugin(this.headerButtonsPlugin);
+      this.pluginList.push(this.headerButtonsPlugin);
       this.headerButtonsPlugin.onCommand.subscribe((e: Event, args: HeaderButtonOnCommandArgs) => {
         if (this._gridOptions.headerButton && typeof this._gridOptions.headerButton.onCommand === 'function') {
           this._gridOptions.headerButton.onCommand(e, args);
@@ -145,9 +154,11 @@ export class ControlAndPluginService {
       if (Array.isArray(this._gridOptions.registerPlugins)) {
         this._gridOptions.registerPlugins.forEach((plugin) => {
           this._grid.registerPlugin(plugin);
+          this.pluginList.push(plugin);
         });
       } else {
         this._grid.registerPlugin(this._gridOptions.registerPlugins);
+        this.pluginList.push(this._gridOptions.registerPlugins);
       }
     }
   }
@@ -207,7 +218,9 @@ export class ControlAndPluginService {
     };
 
     grid.setSelectionModel(new Slick.CellSelectionModel());
+    this.cellExternalCopyManagerPlugin = new Slick.CellExternalCopyManager(pluginOptions);
     grid.registerPlugin(new Slick.CellExternalCopyManager(pluginOptions));
+    this.pluginList.push(this.cellExternalCopyManagerPlugin);
   }
 
   /**
@@ -369,34 +382,12 @@ export class ControlAndPluginService {
     this._dataView = null;
     this.visibleColumns = [];
 
-    if (this.columnPickerControl) {
-      this.columnPickerControl.destroy();
-      this.columnPickerControl = null;
-    }
-    if (this.gridMenuControl) {
-      this.gridMenuControl.destroy();
-      this.gridMenuControl = null;
-    }
-    if (this.rowSelectionPlugin) {
-      this.rowSelectionPlugin.destroy();
-      this.rowSelectionPlugin = null;
-    }
-    if (this.checkboxSelectorPlugin) {
-      this.checkboxSelectorPlugin.destroy();
-      this.checkboxSelectorPlugin = null;
-    }
-    if (this.autoTooltipPlugin) {
-      this.autoTooltipPlugin.destroy();
-      this.autoTooltipPlugin = null;
-    }
-    if (this.headerButtonsPlugin) {
-      this.headerButtonsPlugin.destroy();
-      this.headerButtonsPlugin = null;
-    }
-    if (this.headerMenuPlugin) {
-      this.headerMenuPlugin.destroy();
-      this.headerMenuPlugin = null;
-    }
+    // destroy the control/plugin if it has that method
+    this.pluginList.forEach((plugin) => {
+      if (plugin && plugin.destroy) {
+        plugin.destroy();
+      }
+    });
   }
 
   /**
