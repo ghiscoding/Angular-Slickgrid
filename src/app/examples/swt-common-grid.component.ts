@@ -4,8 +4,7 @@ import { Component, OnInit, Injectable, ViewContainerRef, ComponentFactoryResolv
          ElementRef, Renderer} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AngularSlickgridComponent, Column, Editors, FieldType, Formatter, Formatters,
-         GridService, GridExtraUtils, GridOption, OnEventArgs, ResizerService,
-         FilterService, SortService, BackendService,
+         GridOption, OnEventArgs, BackendService,
          BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, SortChangedArgs, Pagination} from '../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 import { Logger } from './swt-logger.service';
@@ -150,8 +149,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
      * @param resizer
      * @param httpClient
      */
-    constructor( private gridService: GridService, private resizer: ResizerService, private httpClient: HttpClient,
-            private filterService: FilterService, private sortService: SortService, private translate: TranslateService,
+    constructor(private httpClient: HttpClient, private translate: TranslateService,
             private el: ElementRef, private renderer: Renderer) {
         this.logger = new Logger('grid', httpClient);
 
