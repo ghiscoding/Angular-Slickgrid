@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
@@ -17,7 +17,7 @@ declare var Slick: any;
   templateUrl: './grid-editor.component.html'
 })
 @Injectable()
-export class GridEditorComponent implements OnInit, OnDestroy {
+export class GridEditorComponent implements OnInit {
   title = 'Example 3: Editors';
   subTitle = `
   Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors" target="_blank">Wiki docs</a>).
@@ -37,24 +37,16 @@ export class GridEditorComponent implements OnInit, OnDestroy {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
+  gridObj: any;
   isAutoEdit = true;
   alertWarning: any;
   updatedObject: any;
-  gridObj: any;
-  dataviewObj: any;
   selectedLanguage = 'en';
 
   constructor(private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.prepareGrid();
-  }
-
-  ngOnDestroy(): void {
-    // unsubscrible any Slick.Event you might have used
-    // a reminder again, these are SlickGrid Event, not RxJS events
-    this.gridObj.onCellChange.unsubscribe();
-    this.gridObj.onClick.unsubscribe();
   }
 
   prepareGrid() {
@@ -225,15 +217,11 @@ export class GridEditorComponent implements OnInit, OnDestroy {
 
   gridReady(grid) {
     this.gridObj = grid;
-
-    grid.onCellChange.subscribe((e, args) => {
-      console.log('onCellChange', args);
-      this.updatedObject = args.item;
-      this.angularGrid.resizerService.resizeGrid(10);
-    });
   }
-  dataviewReady(dataview) {
-    this.dataviewObj = dataview;
+
+  onCellChanged(e, args) {
+    this.updatedObject = args.item;
+    this.angularGrid.resizerService.resizeGrid(10);
   }
 
   onCellClicked(e, args) {
