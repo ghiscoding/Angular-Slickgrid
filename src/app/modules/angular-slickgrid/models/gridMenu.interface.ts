@@ -25,11 +25,29 @@ export interface GridMenu {
   /** Defaults to "Force fit columns" which is 1 of the last 2 checkbox title shown at the end of the picker list */
   forceFitTitle?: string;
 
+  /** Defaults to True, which will show the "Clear All Filters" command in the Grid Menu (Grid Option "enableFiltering: true" has to be enabled) */
+  hideClearAllFiltersCommand?: boolean;
+
+  /** Defaults to True, which will show the "Clear All Sorting" command in the Grid Menu (Grid Option "enableSorting: true" has to be enabled) */
+  hideClearAllSortingCommand?: boolean;
+
+  /** Defaults to True, which will show the "Export to CSV" command in the Grid Menu (Grid Option "enableExport: true" has to be enabled) */
+  hideExportCsvCommand?: boolean;
+
+  /** Defaults to True, which will show the "Export to Text Delimited" command in the Grid Menu (Grid Option "enableExport: true" has to be enabled) */
+  hideExportTextDelimitedCommand?: boolean;
+
   /** Defaults to True, show/hide 1 of the last 2 checkbox at the end of the picker list */
   hideForceFitButton?: boolean;
 
+  /** Defaults to True, which will show the "Refresh Dataset" command in the Grid Menu (only works with a Backend Service API) */
+  hideRefreshDatasetCommand?: boolean;
+
   /** Defaults to True, show/hide 1 of the last 2 checkbox at the end of the picker list */
   hideSyncResizeButton?: boolean;
+
+  /** Defaults to True, which will show the "Toggle Filter Row" command in the Grid Menu (Grid Option "enableFiltering: true" has to be enabled) */
+  hideToggleFilterCommand?: boolean;
 
   /** icon for the "Clear All Filters" command */
   iconClearAllFiltersCommand?: string;
@@ -51,24 +69,6 @@ export interface GridMenu {
 
   /** Defaults to False, which will resize the Header Row and remove the width of the Grid Menu icon from it's total width. */
   resizeOnShowHeaderRow?: boolean;
-
-  /** Defaults to True, which will show the "Clear All Filters" command in the Grid Menu (Grid Option "enableFiltering: true" has to be enabled) */
-  showClearAllFiltersCommand?: boolean;
-
-  /** Defaults to True, which will show the "Clear All Sorting" command in the Grid Menu (Grid Option "enableSorting: true" has to be enabled) */
-  showClearAllSortingCommand?: boolean;
-
-  /** Defaults to True, which will show the "Export to CSV" command in the Grid Menu (Grid Option "enableExport: true" has to be enabled) */
-  showExportCsvCommand?: boolean;
-
-  /** Defaults to True, which will show the "Export to Text Delimited" command in the Grid Menu (Grid Option "enableExport: true" has to be enabled) */
-  showExportTextDelimitedCommand?: boolean;
-
-  /** Defaults to True, which will show the "Refresh Dataset" command in the Grid Menu (only works with a Backend Service API) */
-  showRefreshDatasetCommand?: boolean;
-
-  /** Defaults to True, which will show the "Toggle Filter Row" command in the Grid Menu (Grid Option "enableFiltering: true" has to be enabled) */
-  showToggleFilterCommand?: boolean;
 
   /** Defaults to "Synchronous resize" which is 1 of the last 2 checkbox title shown at the end of the picker list */
   syncResizeTitle?: string;

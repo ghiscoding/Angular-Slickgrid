@@ -410,7 +410,7 @@ export class ControlAndPluginService {
 
     if (options.enableFiltering) {
       // show grid menu: clear all filters
-      if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-filter').length === 0) {
+      if (options && options.gridMenu && !options.gridMenu.hideClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-filter').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: options.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
@@ -423,7 +423,7 @@ export class ControlAndPluginService {
       }
 
       // show grid menu: toggle filter row
-      if (options && options.gridMenu && options.gridMenu.showToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'toggle-filter').length === 0) {
+      if (options && options.gridMenu && !options.gridMenu.hideToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'toggle-filter').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: options.gridMenu.iconToggleFilterCommand || 'fa fa-random',
@@ -436,7 +436,7 @@ export class ControlAndPluginService {
       }
 
       // show grid menu: refresh dataset
-      if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
+      if (options && options.gridMenu && !options.gridMenu.hideRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: options.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
@@ -451,7 +451,7 @@ export class ControlAndPluginService {
 
     if (options.enableSorting) {
       // show grid menu: clear all sorting
-      if (options && options.gridMenu && options.gridMenu.showClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-sorting').length === 0) {
+      if (options && options.gridMenu && !options.gridMenu.hideClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-sorting').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: options.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
@@ -465,7 +465,7 @@ export class ControlAndPluginService {
     }
 
     // show grid menu: export to file
-    if (options && options.enableExport && options.gridMenu && options.gridMenu.showExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-csv').length === 0) {
+    if (options && options.enableExport && options.gridMenu && !options.gridMenu.hideExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-csv').length === 0) {
       options.gridMenu.customItems.push(
         {
           iconCssClass: options.gridMenu.iconExportCsvCommand || 'fa fa-download',
@@ -477,7 +477,7 @@ export class ControlAndPluginService {
       );
     }
     // show grid menu: export to text file as tab delimited
-    if (options && options.enableExport && options.gridMenu && options.gridMenu.showExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-text-delimited').length === 0) {
+    if (options && options.enableExport && options.gridMenu && !options.gridMenu.hideExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-text-delimited').length === 0) {
       options.gridMenu.customItems.push(
         {
           iconCssClass: options.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
@@ -769,9 +769,9 @@ export class ControlAndPluginService {
       menuWidth: 18,
       customTitle: undefined,
       customItems: [],
-      showClearAllFiltersCommand: true,
-      showRefreshDatasetCommand: true,
-      showToggleFilterCommand: true
+      hideClearAllFiltersCommand: false,
+      hideRefreshDatasetCommand: false,
+      hideToggleFilterCommand: false
     };
   }
 

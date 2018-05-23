@@ -100,8 +100,8 @@ export class GridLocalizationComponent implements OnInit {
         sanitizeDataExport: true
       },
       gridMenu: {
-        showExportCsvCommand: true,           // true by default, so it's optional
-        showExportTextDelimitedCommand: true  // false by default, so if you want it, you will need to enable it
+        hideExportCsvCommand: false,           // false by default, so it's optional
+        hideExportTextDelimitedCommand: false  // true by default, so if you want it, you will need to disable the flag
       },
       params: {
         i18n: this.translate

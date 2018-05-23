@@ -59,11 +59,12 @@ export const GlobalGridOptions: GridOption = {
     iconToggleFilterCommand: 'fa fa-random',
     menuWidth: 16,
     resizeOnShowHeaderRow: true,
-    showClearAllFiltersCommand: true,
-    showClearAllSortingCommand: true,
-    showExportCsvCommand: true,
-    showRefreshDatasetCommand: true,
-    showToggleFilterCommand: true
+    hideClearAllFiltersCommand: false,
+    hideClearAllSortingCommand: false,
+    hideExportCsvCommand: false,
+    hideExportTextDelimitedCommand: true,
+    hideRefreshDatasetCommand: false,
+    hideToggleFilterCommand: false
   },
   headerMenu: {
     autoAlign: true,
