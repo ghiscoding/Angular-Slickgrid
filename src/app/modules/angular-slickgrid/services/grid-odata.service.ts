@@ -203,7 +203,7 @@ export class GridOdataService implements BackendService {
         let fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field || columnDef.name || '';
         const fieldType = columnDef.type || 'string';
         const searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
-        let fieldSearchValue = columnFilter.searchTerm;
+        let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
         if (typeof fieldSearchValue === 'undefined') {
           fieldSearchValue = '';
         }
@@ -220,7 +220,7 @@ export class GridOdataService implements BackendService {
         const bypassOdataQuery = columnFilter.bypassBackendQuery || false;
 
         // no need to query if search value is empty
-        if (fieldName && searchValue === '') {
+        if (fieldName && searchValue === '' && searchTerms.length === 0) {
           this.removeColumnFilter(fieldName);
           continue;
         }
@@ -244,7 +244,7 @@ export class GridOdataService implements BackendService {
           }
 
           // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
-          if (searchTerms && searchTerms.length > 0) {
+          if (searchTerms && searchTerms.length > 1) {
             const tmpSearchTerms = [];
 
             if (operator === 'IN') {
@@ -405,8 +405,6 @@ export class GridOdataService implements BackendService {
       }
       if (Array.isArray(filter.searchTerms)) {
         tmpFilter.searchTerms = filter.searchTerms;
-      } else {
-        tmpFilter.searchTerm = filter.searchTerm;
       }
       return tmpFilter;
     });

@@ -7,7 +7,8 @@ export const stringFilterCondition: FilterCondition = (options: FilterConditionO
 
   // make both the cell value and search value lower for case insensitive comparison
   const cellValue = options.cellValue.toLowerCase();
-  const searchTerm = (typeof options.searchTerm === 'string') ? options.searchTerm.toLowerCase() : options.searchTerm;
+  const searchTerms = Array.isArray(options.searchTerms) && options.searchTerms[0] || [];
+  const searchTerm = typeof searchTerms[0] === 'string' ? searchTerms[0].toLowerCase() : searchTerms[0];
 
   if (options.operator === '*' || options.operator === OperatorType.endsWith) {
     return cellValue.endsWith(searchTerm);

@@ -344,7 +344,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
             this.filteredGridColumns = '';
             for (let idx = 0; idx < this.columnDefinitions.length; idx++) {
                 if (args.columnFilters.hasOwnProperty(this.columnDefinitions[idx].field)) {
-                    this.filteredGridColumns += args.columnFilters[this.columnDefinitions[idx].field].searchTerm + '|';
+                    this.filteredGridColumns += args.columnFilters[this.columnDefinitions[idx].field].searchTerms[0] + '|';
                 } else {
                     this.filteredGridColumns += 'All|';
                 }

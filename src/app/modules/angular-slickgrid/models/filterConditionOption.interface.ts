@@ -6,6 +6,5 @@ export interface FilterConditionOption {
   cellValueLastChar?: string;
   fieldType: FieldType;
   filterSearchType?: FieldType;
-  searchTerm?: string | number;
   searchTerms?: string[] | number[];
 }

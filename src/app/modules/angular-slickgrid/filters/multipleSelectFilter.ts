@@ -19,7 +19,6 @@ declare var $: any;
 export class MultipleSelectFilter implements Filter {
   $filterElm: any;
   grid: any;
-  gridOptions: GridOption;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
@@ -61,6 +60,11 @@ export class MultipleSelectFilter implements Filter {
     };
   }
 
+  /** Getter for the Grid Options pulled through the Grid Object */
+  private get gridOptions(): GridOption {
+    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+  }
+
   /**
    * Initialize the filter template
    */
@@ -79,7 +83,6 @@ export class MultipleSelectFilter implements Filter {
     this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
 
     let newCollection = this.columnDef.filter.collection || [];
-    this.gridOptions = this.grid.getOptions();
 
     // user might want to filter certain items of the collection
     if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {

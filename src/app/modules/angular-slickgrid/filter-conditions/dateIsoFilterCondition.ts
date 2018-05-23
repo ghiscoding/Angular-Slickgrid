@@ -6,11 +6,12 @@ const moment = moment_; // patch to fix rollup "moment has no default export" is
 const FORMAT = mapMomentDateFormatWithFieldType(FieldType.dateIso);
 
 export const dateIsoFilterCondition: FilterCondition = (options: FilterConditionOption) => {
-  if (!moment(options.cellValue, FORMAT, true).isValid() || !moment(options.searchTerm, FORMAT, true).isValid()) {
+  const searchTerms = Array.isArray(options.searchTerms) && options.searchTerms[0] || [];
+  if (!moment(options.cellValue, FORMAT, true).isValid() || !moment(searchTerms[0], FORMAT, true).isValid()) {
     return true;
   }
   const dateCell = moment(options.cellValue, FORMAT, true);
-  const dateSearch = moment(options.searchTerm, FORMAT, true);
+  const dateSearch = moment(searchTerms[0], FORMAT, true);
 
   // run the filter condition with date in Unix Timestamp format
   return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));

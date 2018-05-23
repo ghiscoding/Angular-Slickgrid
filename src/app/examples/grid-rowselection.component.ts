@@ -11,7 +11,7 @@ export class GridRowSelectionComponent implements OnInit, OnDestroy {
     Row selection, single or multi-select (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Row-Selection" target="_blank">Wiki docs</a>).
     <ul>
       <li>Single Select, you can click on any cell to make the row active</li>
-      <li>Multiple Selections, you need to specifically click on the checkbox to make a selection</li>
+      <li>Multiple Selections, you need to specifically click on the checkbox to make 1 or more selections</li>
     </ul>
   `;
 

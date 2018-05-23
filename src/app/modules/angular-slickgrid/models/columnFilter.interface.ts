@@ -23,9 +23,6 @@ export interface ColumnFilter {
   /** Custom Filter */
   customFilter?: Filter;
 
-  /** Search term (singular) */
-  searchTerm?: SearchTerm;
-
   /** Search terms (collection) */
   searchTerms?: SearchTerm[];
 

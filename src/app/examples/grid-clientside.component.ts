@@ -120,9 +120,9 @@ export class GridClientSideComponent implements OnInit {
       presets: {
         filters: [
           { columnId: 'duration', searchTerms: [2, 22, 44] },
-          // { columnId: 'complete', searchTerm: '5', operator: '>' },
-          { columnId: 'usDateShort', operator: '<', searchTerm: '4/20/25' },
-          // { columnId: 'effort-driven', searchTerm: true }
+          // { columnId: 'complete', searchTerms: ['5'], operator: '>' },
+          { columnId: 'usDateShort', operator: '<', searchTerms: ['4/20/25'] },
+          // { columnId: 'effort-driven', searchTerms: [true] }
         ],
         sorters: [
           { columnId: 'duration', direction: 'DESC' },

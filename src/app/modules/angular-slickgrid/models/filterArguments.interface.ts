@@ -6,7 +6,6 @@ export interface FilterArguments {
   columnDef: Column;
   callback: FilterCallback;
   operator?: OperatorType | OperatorString;
-  searchTerm?: SearchTerm;
   searchTerms?: SearchTerm[];
   i18n?: TranslateService;
   params?: any | any[];
