@@ -332,7 +332,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
      * @param event
      * @param args
      */
-    onFilterChanged( event: Event, args: FilterChangedArgs ): Promise<string> {
+    processOnFilterChanged( event: Event, args: FilterChangedArgs ): Promise<string> {
         this.logger.info('method [onFilterChanged] - START', args);
         this.filteredGridColumns = '';
         let timing = 0;
@@ -369,7 +369,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
      * @param event
      * @param args
      */
-    onPaginationChanged( event: Event, args: PaginationChangedArgs ) {
+    processOnPaginationChanged( event: Event, args: PaginationChangedArgs ) {
         this.logger.info('method [onPaginationChanged] - START');
         this.currentPage = args.newPage;
         this.onPaginationChanged_.emit(args);
@@ -382,7 +382,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
      * @param event
      * @param args
      */
-    onSortChanged( event: Event, args: SortChangedArgs ) {
+    processOnSortChanged( event: Event, args: SortChangedArgs ) {
         this.logger.info('method [onSortChanged] - START');
         this.sortedGridColumn = '';
         const sortDirection = '|' + args.sortCols[0].sortAsc + '|';

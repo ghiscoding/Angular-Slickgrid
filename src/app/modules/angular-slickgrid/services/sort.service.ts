@@ -65,7 +65,7 @@ export class SortService {
     if (backendApi.preProcess) {
       backendApi.preProcess();
     }
-    const query = backendApi.service.onSortChanged(event, args);
+    const query = backendApi.service.processOnSortChanged(event, args);
     this.emitSortChanged('remote');
 
     // the process could be an Observable (like HttpClient) or a Promise

@@ -244,7 +244,7 @@ export class GraphqlService implements BackendService {
   /*
    * FILTERING
    */
-  onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
+  processOnFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
     const gridOptions: GridOption = this._gridOptions || args.grid.getOptions();
     const backendApi = gridOptions.backendServiceApi;
 
@@ -304,7 +304,7 @@ export class GraphqlService implements BackendService {
    *     }
    *   }
    */
-  onPaginationChanged(event: Event, args: PaginationChangedArgs) {
+  processOnPaginationChanged(event: Event, args: PaginationChangedArgs) {
     const pageSize = +(args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE));
     this.updatePagination(args.newPage, pageSize);
 
@@ -317,7 +317,7 @@ export class GraphqlService implements BackendService {
    * we will use sorting as per a Facebook suggestion on a Github issue (with some small changes)
    * https://github.com/graphql/graphql-relay-js/issues/20#issuecomment-220494222
    */
-  onSortChanged(event: Event, args: SortChangedArgs) {
+  processOnSortChanged(event: Event, args: SortChangedArgs) {
     const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
 
     // loop through all columns to inspect sorters & set the query

@@ -166,7 +166,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
         backendApi.preProcess();
       }
 
-      const query = backendApi.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
+      const query = backendApi.service.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
 
       // the process could be an Observable (like HttpClient) or a Promise
       // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)

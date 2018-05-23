@@ -86,7 +86,7 @@ export class FilterService {
     }
 
     // call the service to get a query back
-    const query = await backendApi.service.onFilterChanged(event, args);
+    const query = await backendApi.service.processOnFilterChanged(event, args);
 
     // emit an onFilterChanged event
     this.emitFilterChanged('remote');
