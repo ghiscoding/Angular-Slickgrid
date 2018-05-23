@@ -92,7 +92,9 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         pageSize: defaultPageSize,
         totalItems: 0
       },
-
+      params: {
+        i18n: this.translate
+      },
       presets: {
         // you can also type operator as string, e.g.: operator: 'EQ'
         filters: [
@@ -107,9 +109,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         ],
         pagination: { pageNumber: 2, pageSize: 20 }
       },
-
       backendServiceApi: {
-        service: new GraphqlService(this.translate),
+        service: new GraphqlService(),
         options: this.getBackendOptions(this.isWithCursor),
         // you can define the onInit callback OR enable the "executeProcessCommandOnInit" flag in the service init
         // onInit: (query) => this.getCustomerApiCall(query)
