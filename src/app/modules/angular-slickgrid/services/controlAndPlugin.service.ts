@@ -120,13 +120,14 @@ export class ControlAndPluginService {
       this.pluginList.push({ name: 'CheckboxSelector', plugin: this.checkboxSelectorPlugin });
 
       // this also requires the Row Selection Model to be registered as well
-      if (!this.rowSelectionPlugin) {
+      if (!this.rowSelectionPlugin || !this._grid.getSelectionModel()) {
         this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
         this._grid.setSelectionModel(this.rowSelectionPlugin);
       }
 
       // user might want to pre-select some rows
-      if (this._gridOptions.preselectedRows) {
+      // the setTimeout is because of timing issue with styling (row selection happen but rows aren't highlighted properly)
+      if (this._gridOptions.preselectedRows && this.rowSelectionPlugin && this._grid.getSelectionModel()) {
         setTimeout(() => this.checkboxSelectorPlugin.selectRows(this._gridOptions.preselectedRows), 0);
       }
     }
@@ -402,6 +403,7 @@ export class ControlAndPluginService {
         item.plugin.destroy();
       }
     });
+    this.pluginList = [];
   }
 
   /**

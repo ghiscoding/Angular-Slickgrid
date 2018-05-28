@@ -12,6 +12,7 @@ export class GridRowSelectionComponent implements OnInit, OnDestroy {
     <ul>
       <li>Single Select, you can click on any cell to make the row active</li>
       <li>Multiple Selections, you need to specifically click on the checkbox to make 1 or more selections</li>
+      <li>Note that "enableExcelCopyBuffer" cannot be used at the same time as Row Selection because there can exist only 1 SelectionModel at a time</li>
     </ul>
   `;
 
