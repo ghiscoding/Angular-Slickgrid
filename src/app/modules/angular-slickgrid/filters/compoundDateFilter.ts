@@ -41,7 +41,7 @@ export class CompoundDateFilter implements Filter {
     this.searchTerms = args.searchTerms || [];
 
     // date input can only have 1 search term, so we will use the 1st array index if it exist
-    const searchTerm = ((Array.isArray(this.searchTerms) && this.searchTerms[0]) || '') as string;
+    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
 
     // step 1, create the DOM Element of the filter which contain the compound Operator+Input
     // and initialize it if searchTerms is filled

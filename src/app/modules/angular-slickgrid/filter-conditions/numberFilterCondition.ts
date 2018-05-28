@@ -3,8 +3,10 @@ import { testFilterCondition } from './filterUtilities';
 
 export const numberFilterCondition: FilterCondition = (options: FilterConditionOption) => {
   const cellValue = parseFloat(options.cellValue);
-  const searchTerms = Array.isArray(options.searchTerms) && options.searchTerms[0] || [];
-  const searchTerm = typeof searchTerms[0] === 'string' ? parseFloat(searchTerms[0]) : searchTerms[0];
+  let searchTerm = (Array.isArray(options.searchTerms) && options.searchTerms[0]) || 0;
+  if (typeof searchTerm === 'string') {
+    searchTerm = parseFloat(searchTerm);
+  }
 
   return testFilterCondition(options.operator || '==', cellValue, searchTerm);
 };

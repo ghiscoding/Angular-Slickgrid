@@ -172,7 +172,7 @@ export class FilterService {
 
       let cellValue = item[columnDef.queryField || columnDef.queryFieldFilter || columnDef.field];
       const searchTerms = (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null;
-      let fieldSearchValue = (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined;
+      let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
 
       if (typeof fieldSearchValue === 'undefined') {
         fieldSearchValue = '';
@@ -184,7 +184,7 @@ export class FilterService {
       const searchTerm = (!!matches) ? matches[2] : '';
       const lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
 
-      if (searchTerms && searchTerms.length > 0) {
+      if (searchTerms && searchTerms.length > 1) {
         fieldSearchValue = searchTerms.join(',');
       } else if (typeof fieldSearchValue === 'string') {
         // escaping the search value
@@ -240,7 +240,6 @@ export class FilterService {
       const conditionOptions = {
         fieldType,
         searchTerms,
-        searchTerm,
         cellValue,
         operator,
         cellValueLastChar: lastValueChar,
@@ -313,7 +312,8 @@ export class FilterService {
 
   callbackSearchEvent(e: Event | undefined, args: FilterCallbackArg) {
     if (args) {
-      const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : undefined;
+      const searchTerm = ((e && e.target) ? (e.target as HTMLInputElement).value : undefined);
+      const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : searchTerm ? [searchTerm] : undefined;
       const columnDef = args.columnDef || null;
       const columnId = columnDef ? (columnDef.id || '') : '';
       const operator = args.operator || undefined;

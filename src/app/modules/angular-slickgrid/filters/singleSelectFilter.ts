@@ -88,8 +88,12 @@ export class SingleSelectFilter implements Filter {
       newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
     }
 
-    const searchTerms = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || [];
-    const searchTerm = typeof searchTerms[0] === 'boolean' ? `${searchTerms[0]}` : searchTerms[0];
+    // filter input can only have 1 search term, so we will use the 1st array index if it exist
+    // also when the search term is a boolean or a number, we will convert it to a string
+    let searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+    if (typeof searchTerm === 'boolean' || typeof searchTerm === 'number') {
+      searchTerm = `${searchTerm}`;
+    }
 
     // step 1, create HTML string template
     const filterTemplate = this.buildTemplateHtmlString(newCollection || [], searchTerm);

@@ -23,8 +23,10 @@ export class SelectFilter implements Filter {
     this.searchTerms = args.searchTerms || [];
 
     // filter input can only have 1 search term, so we will use the 1st array index if it exist
-    const searchTerms = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || [];
-    const searchTerm = typeof searchTerms[0] === 'boolean' ? `${searchTerms[0]}` : searchTerms[0];
+    let searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+    if (typeof searchTerm === 'boolean' || typeof searchTerm === 'number') {
+      searchTerm = `${searchTerm}`;
+    }
 
     // step 1, create HTML string template
     const filterTemplate = this.buildTemplateHtmlString();
@@ -105,7 +107,9 @@ export class SelectFilter implements Filter {
 
     // create the DOM element & add an ID and filter class
     const $filterElm = $(filterTemplate);
-    $filterElm.val(searchTerm);
+    const searchTermInput = (searchTerm || '') as string;
+
+    $filterElm.val(searchTermInput);
     $filterElm.attr('id', `filter-${this.columnDef.id}`);
     $filterElm.data('columnId', this.columnDef.id);
 

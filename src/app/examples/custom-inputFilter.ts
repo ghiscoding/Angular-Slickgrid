@@ -22,8 +22,7 @@ export class CustomInputFilter implements Filter {
     this.searchTerms = args.searchTerms || [];
 
     // filter input can only have 1 search term, so we will use the 1st array index if it exist
-    const searchTerms = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || [];
-    const searchTerm = typeof searchTerms[0] === 'boolean' ? `${searchTerms[0]}` : searchTerms[0];
+    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
 
     // step 1, create HTML string template
     const filterTemplate = this.buildTemplateHtmlString();
