@@ -21,8 +21,10 @@ import { hyperlinkUriPrefixFormatter } from './hyperlinkUriPrefixFormatter';
 import { infoIconFormatter } from './infoIconFormatter';
 import { lowercaseFormatter } from './lowercaseFormatter';
 import { multipleFormatter } from './multipleFormatter';
-import { percentCompleteFormatter } from './percentCompleteFormatter';
+import { percentFormatter } from './percentFormatter';
 import { percentCompleteBarFormatter } from './percentCompleteBarFormatter';
+import { percentCompleteFormatter } from './percentCompleteFormatter';
+import { percentSymbolFormatter } from './percentSymbolFormatter';
 import { progressBarFormatter } from './progressBarFormatter';
 import { translateFormatter } from './translateFormatter';
 import { translateBooleanFormatter } from './translateBooleanFormatter';
@@ -106,11 +108,17 @@ export const Formatters = {
    */
   multiple: multipleFormatter,
 
-  /** Takes a cell value number (between 0-100) and displays a red (<50) or green (>=50) bar */
+  /** Takes a cell value number (between 0.0-1.0) and displays a red (<50) or green (>=50) bar */
+  percent: percentFormatter,
+
+  /** Takes a cell value number (between 0.0-100) and displays a red (<50) or green (>=50) bar */
   percentComplete: percentCompleteFormatter,
 
   /** Takes a cell value number (between 0-100) and displays Bootstrap "percent-complete-bar" a red (<30), silver (>30 & <70) or green (>=70) bar */
   percentCompleteBar: percentCompleteBarFormatter,
+
+  /** Takes a cell value number (between 0-100) and add the "%" after the number */
+  percentSymbol: percentSymbolFormatter,
 
   /** Takes a cell value number (between 0-100) and displays Bootstrap "progress-bar" a red (<30), silver (>30 & <70) or green (>=70) bar */
   progressBar: progressBarFormatter,
