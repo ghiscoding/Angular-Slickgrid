@@ -112,9 +112,7 @@ export class GridClientSideComponent implements OnInit {
       },
       enableExcelCopyBuffer: true,
       enableFiltering: true,
-      params: {
-        i18n: this.translate
-      },
+      i18n: this.translate,
 
       // use columnDef searchTerms OR use presets as shown below
       presets: {

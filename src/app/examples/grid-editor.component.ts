@@ -179,9 +179,7 @@ export class GridEditorComponent implements OnInit {
         this._commandQueue.push(editCommand);
         editCommand.execute();
       },
-      params: {
-        i18n: this.translate
-      }
+      i18n: this.translate
     };
 
     this.getData();

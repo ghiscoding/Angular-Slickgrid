@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import {
   AutoResizeOption,
   BackendEventChanged,
@@ -219,6 +220,9 @@ export interface GridOption {
 
   /** Header menu options */
   headerMenu?: HeaderMenu;
+
+  /** ngx-translate i18n translation service instance */
+  i18n?: TranslateService;
 
   /** Do we leave space for new rows in the DOM visible buffer */
   leaveSpaceForNewRows?: boolean;

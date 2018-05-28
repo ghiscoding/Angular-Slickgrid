@@ -4,12 +4,11 @@ import { Column, Formatter } from './../models/index';
 export const translateBooleanFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
   const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
   const columnParams = columnDef.params || {};
-  const gridParams = gridOptions.params || {};
-  const translate = gridParams.i18n || columnParams.i18n;
+  const translate = gridOptions.i18n || columnParams.i18n;
 
   if (!translate || typeof translate.instant !== 'function') {
-    throw new Error(`The translate formatter requires the "ngx-translate" Service to be provided as a Grid Options or Column Definition "params".
-    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translate }}`);
+    throw new Error(`The translate formatter requires the "ngx-translate" Service to be provided as a Grid Options or Column Definition "i18n".
+    For example: this.gridOptions = { enableTranslate: true, i18n: this.translate }`);
   }
 
   // make sure the value is a string (for example a boolean value would throw an error)

@@ -115,7 +115,7 @@ export const Formatters = {
   /** Takes a cell value number (between 0-100) and displays Bootstrap "progress-bar" a red (<30), silver (>30 & <70) or green (>=70) bar */
   progressBar: progressBarFormatter,
 
-  /** Takes a cell value and translates it (i18n). Requires an instance of the Translate Service:: `params: { i18n: this.translate } */
+  /** Takes a cell value and translates it (i18n). Requires an instance of the Translate Service:: `i18n: this.translate */
   translate: translateFormatter,
 
   /** Takes a boolean value, cast it to upperCase string and finally translates it (i18n). */

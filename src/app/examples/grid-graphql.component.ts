@@ -84,6 +84,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       enableCheckboxSelector: true,
       enableRowSelection: true,
       enableTranslate: true,
+      i18n: this.translate,
       gridMenu: {
         resizeOnShowHeaderRow: true,
       },
@@ -91,9 +92,6 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
         pageSize: defaultPageSize,
         totalItems: 0
-      },
-      params: {
-        i18n: this.translate
       },
       presets: {
         // you can also type operator as string, e.g.: operator: 'EQ'

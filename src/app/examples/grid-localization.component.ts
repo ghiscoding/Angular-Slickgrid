@@ -8,7 +8,7 @@ import { AngularGridInstance, Column, DelimiterType, FileType, FilterType, Forma
 @Injectable()
 export class GridLocalizationComponent implements OnInit {
   title = 'Example 12: Localization (i18n)';
-  subTitle = `Support multiple locales with the i18next plugin, following these steps (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Localization" target="_blank">Wiki docs</a>)
+  subTitle = `Support multiple locales with the ngx-translate plugin, following these steps (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Localization" target="_blank">Wiki docs</a>)
   <ol class="small">
     <li>You first need to "enableTranslate" in the Grid Options</li>
     <li>In the Column Definitions, you have following options</li>
@@ -17,7 +17,7 @@ export class GridLocalizationComponent implements OnInit {
       <li>For the cell values, you need to use a Formatter, there's 2 ways of doing it</li>
       <ul>
         <li>formatter: myCustomTranslateFormatter <b>&lt;= "Title" column uses it</b></li>
-        <li>formatter: Formatters.translate, params: { i18n: this.translateService } <b>&lt;= "Completed" column uses it</b></li>
+        <li>formatter: Formatters.translate, i18n: this.translateService <b>&lt;= "Completed" column uses it</b></li>
       </ul>
     </ul>
     <li>For date localization, you need to create your own custom formatter. </li>
@@ -91,9 +91,10 @@ export class GridLocalizationComponent implements OnInit {
         sidePadding: 15
       },
       enableAutoResize: true,
+      enableExcelCopyBuffer: true,
       enableFiltering: true,
       enableTranslate: true,
-      enableExcelCopyBuffer: true,
+      i18n: this.translate,
       exportOptions: {
         // set at the grid option level, meaning all column will evaluate the Formatter (when it has a Formatter defined)
         exportWithFormatter: true,
@@ -102,9 +103,6 @@ export class GridLocalizationComponent implements OnInit {
       gridMenu: {
         hideExportCsvCommand: false,           // false by default, so it's optional
         hideExportTextDelimitedCommand: false  // true by default, so if you want it, you will need to disable the flag
-      },
-      params: {
-        i18n: this.translate
       }
     };
 
