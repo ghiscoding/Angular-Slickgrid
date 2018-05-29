@@ -124,7 +124,9 @@ export class SingleSelectEditor implements Editor {
 
   loadValue(item: any): void {
     // convert to string because that is how the DOM will return these values
-    this.defaultValue = item[this.columnDef.field].toString();
+    // make sure the prop exists first
+    this.defaultValue = item[this.columnDef.field] && item[this.columnDef.field].toString();
+
 
     this.$editorElm.find('option').each((i: number, $e: any) => {
       if (this.defaultValue === $e.value) {
