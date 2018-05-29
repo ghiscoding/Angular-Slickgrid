@@ -525,7 +525,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    */
   updateColumnDefinitionsList(newColumnDefinitions) {
     if (this.gridOptions.enableTranslate) {
-      this.controlAndPluginService.translateColumnHeaders();
+      this.controlAndPluginService.translateColumnHeaders(false, newColumnDefinitions);
     } else {
       this.controlAndPluginService.renderColumnHeaders(newColumnDefinitions);
     }

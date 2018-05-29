@@ -744,19 +744,20 @@ export class ControlAndPluginService {
    * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
    * @param locale locale to use
    */
-  translateColumnHeaders(locale?: string) {
+  translateColumnHeaders(locale?: boolean | string, newColumnDefinitions?: Column[]) {
     if (locale) {
-      this.translate.use(locale);
+      this.translate.use(locale as string);
     }
 
-    for (const column of this._columnDefinitions) {
+    const columnDefinitions = newColumnDefinitions || this._columnDefinitions;
+    for (const column of columnDefinitions) {
       if (column.headerKey) {
         column.name = this.translate.instant(column.headerKey);
       }
     }
 
     // re-render the column headers
-    this.renderColumnHeaders();
+    this.renderColumnHeaders(columnDefinitions);
   }
 
   /**
