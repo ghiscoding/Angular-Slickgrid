@@ -3,7 +3,7 @@ import { Component, OnInit, Injectable, ViewContainerRef, ComponentFactoryResolv
          AfterViewInit, Input, EventEmitter, Output, ViewChild ,
          ElementRef, Renderer} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AngularSlickgridComponent, Column, Editors, FieldType, Formatter, Formatters,
+import { AngularSlickgridComponent, Column, FieldType, Formatter, Formatters,
          GridOption, OnEventArgs, BackendService,
          BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, SortChangedArgs, Pagination} from '../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';

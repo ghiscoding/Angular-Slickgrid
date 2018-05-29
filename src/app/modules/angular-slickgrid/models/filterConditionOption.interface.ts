@@ -1,4 +1,4 @@
-import { FieldType } from './fieldType';
+import { FieldType } from './fieldType.enum';
 
 export interface FilterConditionOption {
   operator: string;

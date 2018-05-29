@@ -19,11 +19,22 @@ import 'slickgrid/plugins/slick.headerbuttons';
 import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
-import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit, ViewChildren, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit, ViewChildren, ElementRef, ViewChild, ReflectiveInjector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise, toKebabCase } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
-import { AngularGridInstance, BackendServiceOption, Column, GridOption, GridStateChange, GridStateType, Pagination } from './../models/index';
+import {
+  AngularGridInstance,
+  BackendServiceOption,
+  Column,
+  Editor,
+  EditorType,
+  GridOption,
+  GridStateChange,
+  GridStateType,
+  Pagination
+} from './../models/index';
+import { Editors, AVAILABLE_EDITORS } from './../editors/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
@@ -108,6 +119,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     return this._dataView.getItems();
   }
 
+
   constructor(
     private controlAndPluginService: ControlAndPluginService,
     private exportService: ExportService,
@@ -177,6 +189,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this._dataView = new Slick.Data.DataView();
     }
 
+    // for convenience, we provide the property "editor" as an Angular-Slickgrid editor complex object
+    // however "editor" is used internally by SlickGrid for it's Editor Factory
+    // so in our lib we will swap "editor" and copy it into "internalColumnEditor"
+    // then take back "editor.type" and make it the new "editor" so that SlickGrid Editor Factory still works
+    this._columnDefinitions = this._columnDefinitions.map((c: Column | any) => ({ ...c, editor: this.getEditor((c.editor && c.editor.type), c), internalColumnEditor: { ...c.editor } })),
+
     this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
 
@@ -236,6 +254,25 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       resizerService: this.resizer,
       sortService: this.sortService,
     });
+  }
+
+  /**
+   * From the list of available editors, find the editor associated to it's type
+   * and if it's a custom one, return the "customEditor" from the column
+   * @param type
+   * @param column
+   */
+  getEditor(type: EditorType, column: Column) {
+    if (type === EditorType.custom && column && column.editor && column.editor.hasOwnProperty('customEditor')) {
+      return column.editor['customEditor'];
+    }
+
+    const editorFound = AVAILABLE_EDITORS.find(editor => editor.type === type);
+    if (editorFound && editorFound.editor) {
+      return editorFound.editor;
+    }
+
+    return undefined;
   }
 
   /**
@@ -477,7 +514,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (this.grid &&  this.gridOptions.enableAutoResize) {
         // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
         this.resizer.resizeGrid(10, { height: this.gridHeight, width: this.gridWidth });
-        // this.grid.autosizeColumns();
       }
     }
   }

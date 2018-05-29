@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption, OnEventArgs } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, EditorType, FieldType, Formatters, GridOption, OnEventArgs } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-additem.component.html'
@@ -33,17 +33,58 @@ export class GridAddItemComponent implements OnInit {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, editor: Editors.longText },
-      { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, editor: Editors.text,
+      {
+        id: 'title', name: 'Title', field: 'title',
+        sortable: true,
+        type: FieldType.string,
+        editor: {
+          type: EditorType.longText
+        }
+      },
+      {
+        id: 'duration', name: 'Duration (days)', field: 'duration',
+        sortable: true,
+        type: FieldType.number,
+        editor: {
+          type: EditorType.text
+        },
         onCellChange: (args: OnEventArgs) => {
         alert('onCellChange directly attached to the column definition');
         console.log(args);
         }
       },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, editor: Editors.integer },
-      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.date/*, editor: Editors.date*/ },
-      { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, editor: Editors.checkbox }
+      {
+        id: 'complete', name: '% Complete', field: 'percentComplete',
+        formatter: Formatters.percentCompleteBar,
+        type: FieldType.number,
+        editor: {
+          type: EditorType.integer
+        }
+      },
+      {
+        id: 'start', name: 'Start', field: 'start',
+        formatter: Formatters.dateIso,
+        sortable: true,
+        type: FieldType.date,
+        /*
+        editor: {
+          type: EditorType.date
+        }
+        */
+      },
+      {
+        id: 'finish', name: 'Finish', field: 'finish',
+        formatter: Formatters.dateIso, sortable: true,
+        type: FieldType.date
+      },
+      {
+        id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
+        formatter: Formatters.checkmark,
+        type: FieldType.number,
+        editor: {
+          type: EditorType.checkbox
+        }
+      }
     ];
 
     this.gridOptions = {
