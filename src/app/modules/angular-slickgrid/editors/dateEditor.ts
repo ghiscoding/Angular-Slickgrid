@@ -101,18 +101,30 @@ export class DateEditor implements Editor {
 
   loadValue(item: any) {
     this.defaultDate = item[this.args.column.field];
+    this.flatInstance.setDate(item[this.args.column.field]);
   }
 
   serializeValue() {
-    const inputValue = this.$input.val() || '';
+    const domValue: string = this.$input.val();
+
+    if (!domValue) {
+      return '';
+    }
+
     const outputFormat = mapMomentDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
-    const value = moment(inputValue).format(outputFormat);
+    const value = moment(domValue).format(outputFormat);
 
     return value;
   }
 
   applyValue(item: any, state: any) {
-    item[this.args.column.field] = state;
+    if (!state) {
+      return;
+    }
+
+    const outputFormat = mapMomentDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
+
+    item[this.args.column.field] = moment(state, outputFormat).toDate();
   }
 
   isValueChanged() {
