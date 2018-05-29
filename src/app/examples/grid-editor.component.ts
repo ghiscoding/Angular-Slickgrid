@@ -7,7 +7,8 @@ import {
   FieldType,
   Formatters,
   GridOption,
-  OnEventArgs
+  OnEventArgs,
+  OperatorType
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
 
@@ -124,6 +125,11 @@ export class GridEditorComponent implements OnInit {
       editor: {
         type: EditorType.singleSelect,
         collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k })),
+        collectionFilterBy: {
+          property: 'value',
+          value: 0,
+          operator: OperatorType.notEqual
+        },
         collectionSortBy: {
           property: 'label',
           sortDesc: true
@@ -181,7 +187,8 @@ export class GridEditorComponent implements OnInit {
         },
         collectionFilterBy: {
           property: 'label',
-          value: 'Task 2'
+          value: [ 'Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5', 'Task 6' ],
+          operator: OperatorType.contains
         }
       },
       minWidth: 100

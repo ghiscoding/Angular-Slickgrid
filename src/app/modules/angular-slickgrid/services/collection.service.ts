@@ -18,17 +18,29 @@ export class CollectionService {
    * @param filterBy
    */
   filterCollection(collection: any[], filterBy: CollectionFilterBy): any[] {
-    let filteredCollection: any[];
+    let filteredCollection: any[] = [];
 
     if (filterBy) {
       const property = filterBy.property || '';
       const operator = filterBy.operator || OperatorType.equal;
-      const value = filterBy.value || '';
+      // just check for undefined since the filter value could be null, 0, '', false etc
+      const value = typeof filterBy.value === 'undefined' ? '' : filterBy.value;
 
-      if (operator === OperatorType.equal) {
-        filteredCollection = collection.filter((item) => item[property] !== value);
-      } else {
-        filteredCollection = collection.filter((item) => item[property] === value);
+      switch (operator) {
+        case OperatorType.equal:
+          filteredCollection = collection.filter((item) => item[property] === value);
+          break;
+        case OperatorType.in:
+          filteredCollection = collection.filter((item) => item[property].indexOf(value) !== -1);
+          break;
+        case OperatorType.notIn:
+          filteredCollection = collection.filter((item) => item[property].indexOf(value) === -1);
+          break;
+        case OperatorType.contains:
+          filteredCollection = collection.filter((item) => value.indexOf(item[property]) !== -1);
+          break;
+        default:
+          filteredCollection = collection.filter((item) => item[property] !== value);
       }
     }
 
@@ -39,11 +51,10 @@ export class CollectionService {
    * Sort items in a collection
    * @param collection
    * @param sortBy
-   * @param columnDef
-   * @param translate
+   * @param enableTranslateLabel
    */
   sortCollection(collection: any[], sortBy: CollectionSortBy, enableTranslateLabel?: boolean): any[] {
-    let sortedCollection: any[];
+    let sortedCollection: any[] = [];
 
     if (sortBy) {
       const property = sortBy.property || '';
