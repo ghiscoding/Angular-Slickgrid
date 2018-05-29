@@ -137,8 +137,7 @@ export class GridEditorComponent implements OnInit {
       },
       minWidth: 100,
       params: {
-        collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k })),
-        formatters: [ Formatters.collection, Formatters.percentCompleteBar ]
+        formatters: [ Formatters.collectionEditor, Formatters.percentCompleteBar ]
       }
     }, {
       id: 'start',

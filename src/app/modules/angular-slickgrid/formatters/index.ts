@@ -4,6 +4,7 @@ import { boldFormatter } from './boldFormatter';
 import { checkboxFormatter } from './checkboxFormatter';
 import { checkmarkFormatter } from './checkmarkFormatter';
 import { collectionFormatter } from './collectionFormatter';
+import { collectionEditorFormatter } from './collectionEditorFormatter';
 import { complexObjectFormatter } from './complexObjectFormatter';
 import { dateIsoFormatter } from './dateIsoFormatter';
 import { dateTimeIsoFormatter } from './dateTimeIsoFormatter';
@@ -56,6 +57,15 @@ export const Formatters = {
    * const dataset = [{ value: 1 },{ value: 2 }];
    */
   collection: collectionFormatter,
+
+  /**
+   * Looks up values from the columnDefinition.editor.collection property and displays the label in CSV or string format
+   * @example
+   * // the grid will display 'foo' and 'bar' and not 1 and 2 from your dataset
+   * { params: { collection: [{ value: 1, label: 'foo'}, {value: 2, label: 'bar' }] }}
+   * const dataset = [{ value: 1 },{ value: 2 }];
+   */
+  collectionEditor: collectionEditorFormatter,
 
   /** Takes a Date object and displays it as an ISO Date format */
   dateIso: dateIsoFormatter,
