@@ -1,4 +1,4 @@
-import { BackendServiceOption, Column, ColumnFilters, ColumnSort, CurrentFilter, CurrentPagination, CurrentSorter, FilterChangedArgs, GridOption, Pagination, PaginationChangedArgs, SortChangedArgs } from './../models/index';
+import { BackendServiceOption, ColumnFilters, ColumnSort, CurrentFilter, CurrentPagination, CurrentSorter, FilterChangedArgs, Pagination, PaginationChangedArgs, SortChangedArgs } from './../models/index';
 export interface BackendService {
     /** Backend Service options */
     options?: BackendServiceOption;
@@ -6,8 +6,6 @@ export interface BackendService {
     buildQuery: (serviceOptions?: BackendServiceOption) => string;
     /** initialize the backend service with certain options */
     init?: (serviceOptions?: BackendServiceOption, pagination?: Pagination, grid?: any) => void;
-    /** DEPRECATED, please use "init()" instead */
-    initOptions?: (serviceOptions?: BackendServiceOption, pagination?: Pagination, gridOptions?: GridOption, columnDefinitions?: Column[]) => void;
     /** Get the dataset name */
     getDatasetName?: () => string;
     /** Get the Filters that are currently used by the grid */
@@ -27,9 +25,9 @@ export interface BackendService {
     /** Update the backend service options */
     updateOptions: (serviceOptions?: BackendServiceOption) => void;
     /** Execute when any of the filters changed */
-    onFilterChanged: (event: Event, args: FilterChangedArgs) => Promise<string>;
+    processOnFilterChanged: (event: Event, args: FilterChangedArgs) => Promise<string>;
     /** Execute when the pagination changed */
-    onPaginationChanged: (event: Event | undefined, args: PaginationChangedArgs) => string;
+    processOnPaginationChanged: (event: Event | undefined, args: PaginationChangedArgs) => string;
     /** Execute when any of the sorters changed */
-    onSortChanged: (event: Event, args: SortChangedArgs) => string;
+    processOnSortChanged: (event: Event, args: SortChangedArgs) => string;
 }

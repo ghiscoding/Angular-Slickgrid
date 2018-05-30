@@ -19,8 +19,7 @@ declare var $: any;
 export class SingleSelectFilter implements Filter {
   $filterElm: any;
   grid: any;
-  gridOptions: GridOption;
-  searchTerm: SearchTerm;
+  searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
   defaultOptions: MultipleSelectOption;
@@ -48,9 +47,14 @@ export class SingleSelectFilter implements Filter {
           this.isFilled = false;
           this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
         }
-        this.callback(undefined, { columnDef: this.columnDef, operator: 'EQ', searchTerm: selectedItem });
+        this.callback(undefined, { columnDef: this.columnDef, operator: 'EQ', searchTerms: [selectedItem] });
       }
     };
+  }
+
+  /** Getter for the Grid Options pulled through the Grid Object */
+  private get gridOptions(): GridOption {
+    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
   /**
@@ -60,7 +64,7 @@ export class SingleSelectFilter implements Filter {
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
-    this.searchTerm = args.searchTerm;
+    this.searchTerms = args.searchTerms;
 
     if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
       throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
@@ -71,7 +75,6 @@ export class SingleSelectFilter implements Filter {
     this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
 
     let newCollection = this.columnDef.filter.collection || [];
-    this.gridOptions = this.grid.getOptions();
 
     // user might want to filter certain items of the collection
     if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
@@ -85,8 +88,15 @@ export class SingleSelectFilter implements Filter {
       newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
     }
 
+    // filter input can only have 1 search term, so we will use the 1st array index if it exist
+    // also when the search term is a boolean or a number, we will convert it to a string
+    let searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+    if (typeof searchTerm === 'boolean' || typeof searchTerm === 'number') {
+      searchTerm = `${searchTerm}`;
+    }
+
     // step 1, create HTML string template
-    const filterTemplate = this.buildTemplateHtmlString(newCollection || []);
+    const filterTemplate = this.buildTemplateHtmlString(newCollection || [], searchTerm);
 
     // step 2, create the DOM Element of the filter & pre-load search term
     this.createDomElement(filterTemplate);
@@ -102,7 +112,7 @@ export class SingleSelectFilter implements Filter {
       this.$filterElm.multipleSelect('setSelects', []);
 
       if (triggerFilterChange) {
-        this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerm: undefined });
+        this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: [] });
       }
     }
   }
@@ -133,7 +143,7 @@ export class SingleSelectFilter implements Filter {
   /**
    * Create the HTML template as a string
    */
-  private buildTemplateHtmlString(optionCollection: any[]) {
+  private buildTemplateHtmlString(optionCollection: any[], searchTerm?: SearchTerm) {
     let options = '';
     optionCollection.forEach((option: SelectOption) => {
       if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
@@ -141,7 +151,7 @@ export class SingleSelectFilter implements Filter {
       }
 
       const labelKey = (option.labelKey || option[this.labelName]) as string;
-      const selected = (option[this.valueName] === this.searchTerm) ? 'selected' : '';
+      const selected = (option[this.valueName] === searchTerm) ? 'selected' : '';
       const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
 
       // html text of each select option

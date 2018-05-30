@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { mapOperatorType, mapOperatorByFilterType, mapOperatorByFieldType } from './utilities';
 import {
   BackendService,
@@ -33,7 +32,6 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 const DEFAULT_ITEMS_PER_PAGE = 25;
 const DEFAULT_PAGE_SIZE = 20;
 
-@Injectable()
 export class GraphqlService implements BackendService {
   private _currentFilters: ColumnFilters | CurrentFilter[];
   private _currentPagination: CurrentPagination;
@@ -47,8 +45,6 @@ export class GraphqlService implements BackendService {
     first: DEFAULT_ITEMS_PER_PAGE,
     offset: 0
   };
-
-  constructor(private translate: TranslateService) {}
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
@@ -128,7 +124,7 @@ export class GraphqlService implements BackendService {
     }
     if (this.options.addLocaleIntoQuery) {
       // first: 20, ... locale: "en-CA"
-      datasetFilters.locale = this.translate.currentLang || 'en';
+      datasetFilters.locale = (this._gridOptions.params && this._gridOptions.params.i18n && this._gridOptions.params.i18n.currentLang) || 'en';
     }
     if (this.options.extraQueryArguments) {
       // first: 20, ... userId: 123
@@ -244,9 +240,9 @@ export class GraphqlService implements BackendService {
   /*
    * FILTERING
    */
-  onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
+  processOnFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
     const gridOptions: GridOption = this._gridOptions || args.grid.getOptions();
-    const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+    const backendApi = gridOptions.backendServiceApi;
 
     if (backendApi === undefined) {
       throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');
@@ -304,7 +300,7 @@ export class GraphqlService implements BackendService {
    *     }
    *   }
    */
-  onPaginationChanged(event: Event, args: PaginationChangedArgs) {
+  processOnPaginationChanged(event: Event, args: PaginationChangedArgs) {
     const pageSize = +(args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE));
     this.updatePagination(args.newPage, pageSize);
 
@@ -317,7 +313,7 @@ export class GraphqlService implements BackendService {
    * we will use sorting as per a Facebook suggestion on a Github issue (with some small changes)
    * https://github.com/graphql/graphql-relay-js/issues/20#issuecomment-220494222
    */
-  onSortChanged(event: Event, args: SortChangedArgs) {
+  processOnSortChanged(event: Event, args: SortChangedArgs) {
     const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
 
     // loop through all columns to inspect sorters & set the query
@@ -355,7 +351,7 @@ export class GraphqlService implements BackendService {
 
         const fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field || columnDef.name || '';
         const searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
-        let fieldSearchValue = columnFilter.searchTerm;
+        let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
         if (typeof fieldSearchValue === 'undefined') {
           fieldSearchValue = '';
         }
@@ -376,7 +372,7 @@ export class GraphqlService implements BackendService {
         }
 
         // when having more than 1 search term (we need to create a CSV string for GraphQL "IN" or "NOT IN" filter search)
-        if (searchTerms && searchTerms.length > 0) {
+        if (searchTerms && searchTerms.length > 1) {
           searchValue = searchTerms.join(',');
         } else if (typeof searchValue === 'string') {
           // escaping the search value
@@ -550,8 +546,6 @@ export class GraphqlService implements BackendService {
       }
       if (Array.isArray(filter.searchTerms)) {
         tmpFilter.searchTerms = filter.searchTerms;
-      } else {
-        tmpFilter.searchTerm = filter.searchTerm;
       }
       return tmpFilter;
     });

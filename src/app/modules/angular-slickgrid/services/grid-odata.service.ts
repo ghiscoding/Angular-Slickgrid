@@ -36,6 +36,7 @@ export class GridOdataService implements BackendService {
   private _currentSorters: CurrentSorter[];
   private _columnDefinitions: Column[];
   private _grid: any;
+  odataService: OdataService;
   options: OdataOption;
   pagination: Pagination | undefined;
   defaultOptions: OdataOption = {
@@ -44,7 +45,9 @@ export class GridOdataService implements BackendService {
     caseType: CaseType.pascalCase
   };
 
-  constructor(private odataService: OdataService) { }
+  constructor() {
+    this.odataService = new OdataService();
+  }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
@@ -116,9 +119,9 @@ export class GridOdataService implements BackendService {
   /*
    * FILTERING
    */
-  onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
+  processOnFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
     const serviceOptions: GridOption = args.grid.getOptions();
-    const backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
+    const backendApi = serviceOptions.backendServiceApi;
 
     if (backendApi === undefined) {
       throw new Error('Something went wrong in the GridOdataService, "backendServiceApi" is not initialized');
@@ -149,7 +152,7 @@ export class GridOdataService implements BackendService {
   /*
    * PAGINATION
    */
-  onPaginationChanged(event: Event, args: PaginationChangedArgs) {
+  processOnPaginationChanged(event: Event, args: PaginationChangedArgs) {
     const pageSize = +(args.pageSize || DEFAULT_PAGE_SIZE);
     this.updatePagination(args.newPage, pageSize);
 
@@ -160,7 +163,7 @@ export class GridOdataService implements BackendService {
   /*
    * SORTING
    */
-  onSortChanged(event: Event, args: SortChangedArgs) {
+  processOnSortChanged(event: Event, args: SortChangedArgs) {
     const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
 
     // loop through all columns to inspect sorters & set the query
@@ -200,7 +203,7 @@ export class GridOdataService implements BackendService {
         let fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field || columnDef.name || '';
         const fieldType = columnDef.type || 'string';
         const searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
-        let fieldSearchValue = columnFilter.searchTerm;
+        let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
         if (typeof fieldSearchValue === 'undefined') {
           fieldSearchValue = '';
         }
@@ -217,7 +220,7 @@ export class GridOdataService implements BackendService {
         const bypassOdataQuery = columnFilter.bypassBackendQuery || false;
 
         // no need to query if search value is empty
-        if (fieldName && searchValue === '') {
+        if (fieldName && searchValue === '' && searchTerms.length === 0) {
           this.removeColumnFilter(fieldName);
           continue;
         }
@@ -241,7 +244,7 @@ export class GridOdataService implements BackendService {
           }
 
           // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
-          if (searchTerms && searchTerms.length > 0) {
+          if (searchTerms && searchTerms.length > 1) {
             const tmpSearchTerms = [];
 
             if (operator === 'IN') {
@@ -402,8 +405,6 @@ export class GridOdataService implements BackendService {
       }
       if (Array.isArray(filter.searchTerms)) {
         tmpFilter.searchTerms = filter.searchTerms;
-      } else {
-        tmpFilter.searchTerm = filter.searchTerm;
       }
       return tmpFilter;
     });

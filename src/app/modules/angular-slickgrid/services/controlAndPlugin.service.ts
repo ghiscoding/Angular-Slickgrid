@@ -31,11 +31,14 @@ export class ControlAndPluginService {
   private _grid: any;
   visibleColumns: Column[];
   areVisibleColumnDifferent = false;
+  pluginList: { name: string; plugin: any }[] = [];
 
   // controls & plugins
   autoTooltipPlugin: any;
+  cellExternalCopyManagerPlugin: any;
   checkboxSelectorPlugin: any;
   columnPickerControl: any;
+  groupItemMetaProviderPlugin: any;
   headerButtonsPlugin: any;
   headerMenuPlugin: any;
   gridMenuControl: any;
@@ -59,6 +62,13 @@ export class ControlAndPluginService {
     return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
   }
 
+  getPlugin(name?: string) {
+    if (name) {
+      return this.pluginList.find((p) => p.name === name);
+    }
+    return this.pluginList;
+  }
+
   /** Auto-resize all the column in the grid to fit the grid width */
   autoResizeColumns() {
     this._grid.autosizeColumns();
@@ -75,39 +85,50 @@ export class ControlAndPluginService {
     this._dataView = dataView;
     this.visibleColumns = this._columnDefinitions;
 
-    // Column Picker Plugin
+    // Column Picker Control
     if (this._gridOptions.enableColumnPicker) {
       this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions);
+      this.pluginList.push({ name: 'ColumnPicker', plugin: this.columnPickerControl });
     }
 
-    // Grid Menu Plugin
+    // Grid Menu Control
     if (this._gridOptions.enableGridMenu) {
       this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions);
+      this.pluginList.push({ name: 'GridMenu', plugin: this.gridMenuControl });
     }
 
     // Auto Tooltip Plugin
     if (this._gridOptions.enableAutoTooltip) {
       this.autoTooltipPlugin = new Slick.AutoTooltips(this._gridOptions.autoTooltipOptions || {});
       this._grid.registerPlugin(this.autoTooltipPlugin);
+      this.pluginList.push({ name: 'AutoTooltip', plugin: this.autoTooltipPlugin });
     }
 
     // Grouping Plugin
     // register the group item metadata provider to add expand/collapse group handlers
     if (this._gridOptions.enableGrouping) {
-      const groupItemMetaProvider = groupItemMetadataProvider || {};
-      this._grid.registerPlugin(groupItemMetaProvider);
+      this.groupItemMetaProviderPlugin = groupItemMetadataProvider || {};
+      this._grid.registerPlugin(this.groupItemMetaProviderPlugin);
+      this.pluginList.push({ name: 'GroupItemMetaProvider', plugin: this.groupItemMetaProviderPlugin });
     }
 
     // Checkbox Selector Plugin
     if (this._gridOptions.enableCheckboxSelector) {
       // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
-      // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
+      // the selector column has to be created BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
       this._grid.registerPlugin(this.checkboxSelectorPlugin);
+      this.pluginList.push({ name: 'CheckboxSelector', plugin: this.checkboxSelectorPlugin });
 
       // this also requires the Row Selection Model to be registered as well
-      if (!this.rowSelectionPlugin) {
+      if (!this.rowSelectionPlugin || !this._grid.getSelectionModel()) {
         this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
         this._grid.setSelectionModel(this.rowSelectionPlugin);
+      }
+
+      // user might want to pre-select some rows
+      // the setTimeout is because of timing issue with styling (row selection happen but rows aren't highlighted properly)
+      if (this._gridOptions.preselectedRows && this.rowSelectionPlugin && this._grid.getSelectionModel()) {
+        setTimeout(() => this.checkboxSelectorPlugin.selectRows(this._gridOptions.preselectedRows), 0);
       }
     }
 
@@ -121,6 +142,7 @@ export class ControlAndPluginService {
     if (this._gridOptions.enableHeaderButton) {
       this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(this._gridOptions.headerButton || {});
       this._grid.registerPlugin(this.headerButtonsPlugin);
+      this.pluginList.push({ name: 'HeaderButtons', plugin: this.headerButtonsPlugin });
       this.headerButtonsPlugin.onCommand.subscribe((e: Event, args: HeaderButtonOnCommandArgs) => {
         if (this._gridOptions.headerButton && typeof this._gridOptions.headerButton.onCommand === 'function') {
           this._gridOptions.headerButton.onCommand(e, args);
@@ -145,9 +167,11 @@ export class ControlAndPluginService {
       if (Array.isArray(this._gridOptions.registerPlugins)) {
         this._gridOptions.registerPlugins.forEach((plugin) => {
           this._grid.registerPlugin(plugin);
+          this.pluginList.push({ name: 'generic', plugin });
         });
       } else {
         this._grid.registerPlugin(this._gridOptions.registerPlugins);
+        this.pluginList.push({ name: 'generic', plugin: this._gridOptions.registerPlugins });
       }
     }
   }
@@ -207,7 +231,9 @@ export class ControlAndPluginService {
     };
 
     grid.setSelectionModel(new Slick.CellSelectionModel());
-    grid.registerPlugin(new Slick.CellExternalCopyManager(pluginOptions));
+    this.cellExternalCopyManagerPlugin = new Slick.CellExternalCopyManager(pluginOptions);
+    grid.registerPlugin(this.cellExternalCopyManagerPlugin);
+    this.pluginList.push({ name: 'CellExternalCopyManager', plugin: this.cellExternalCopyManagerPlugin });
   }
 
   /**
@@ -233,6 +259,8 @@ export class ControlAndPluginService {
         }
       });
     }
+
+    return this.columnPickerControl;
   }
 
   /**
@@ -369,34 +397,13 @@ export class ControlAndPluginService {
     this._dataView = null;
     this.visibleColumns = [];
 
-    if (this.columnPickerControl) {
-      this.columnPickerControl.destroy();
-      this.columnPickerControl = null;
-    }
-    if (this.gridMenuControl) {
-      this.gridMenuControl.destroy();
-      this.gridMenuControl = null;
-    }
-    if (this.rowSelectionPlugin) {
-      this.rowSelectionPlugin.destroy();
-      this.rowSelectionPlugin = null;
-    }
-    if (this.checkboxSelectorPlugin) {
-      this.checkboxSelectorPlugin.destroy();
-      this.checkboxSelectorPlugin = null;
-    }
-    if (this.autoTooltipPlugin) {
-      this.autoTooltipPlugin.destroy();
-      this.autoTooltipPlugin = null;
-    }
-    if (this.headerButtonsPlugin) {
-      this.headerButtonsPlugin.destroy();
-      this.headerButtonsPlugin = null;
-    }
-    if (this.headerMenuPlugin) {
-      this.headerMenuPlugin.destroy();
-      this.headerMenuPlugin = null;
-    }
+    // destroy the control/plugin if it has that method
+    this.pluginList.forEach((item) => {
+      if (item && item.plugin && item.plugin.destroy) {
+        item.plugin.destroy();
+      }
+    });
+    this.pluginList = [];
   }
 
   /**
@@ -406,11 +413,11 @@ export class ControlAndPluginService {
    * @return gridMenu
    */
   private addGridMenuCustomCommands(grid: any, options: GridOption) {
-    const backendApi = options.backendServiceApi || options.onBackendEventApi || null;
+    const backendApi = options.backendServiceApi || null;
 
     if (options.enableFiltering) {
       // show grid menu: clear all filters
-      if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-filter').length === 0) {
+      if (options && options.gridMenu && !options.gridMenu.hideClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-filter').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: options.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
@@ -423,7 +430,7 @@ export class ControlAndPluginService {
       }
 
       // show grid menu: toggle filter row
-      if (options && options.gridMenu && options.gridMenu.showToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'toggle-filter').length === 0) {
+      if (options && options.gridMenu && !options.gridMenu.hideToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'toggle-filter').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: options.gridMenu.iconToggleFilterCommand || 'fa fa-random',
@@ -436,7 +443,7 @@ export class ControlAndPluginService {
       }
 
       // show grid menu: refresh dataset
-      if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
+      if (options && options.gridMenu && !options.gridMenu.hideRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: options.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
@@ -451,7 +458,7 @@ export class ControlAndPluginService {
 
     if (options.enableSorting) {
       // show grid menu: clear all sorting
-      if (options && options.gridMenu && options.gridMenu.showClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-sorting').length === 0) {
+      if (options && options.gridMenu && !options.gridMenu.hideClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-sorting').length === 0) {
         options.gridMenu.customItems.push(
           {
             iconCssClass: options.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
@@ -465,7 +472,7 @@ export class ControlAndPluginService {
     }
 
     // show grid menu: export to file
-    if (options && options.enableExport && options.gridMenu && options.gridMenu.showExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-csv').length === 0) {
+    if (options && options.enableExport && options.gridMenu && !options.gridMenu.hideExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-csv').length === 0) {
       options.gridMenu.customItems.push(
         {
           iconCssClass: options.gridMenu.iconExportCsvCommand || 'fa fa-download',
@@ -477,7 +484,7 @@ export class ControlAndPluginService {
       );
     }
     // show grid menu: export to text file as tab delimited
-    if (options && options.enableExport && options.gridMenu && options.gridMenu.showExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-text-delimited').length === 0) {
+    if (options && options.enableExport && options.gridMenu && !options.gridMenu.hideExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-text-delimited').length === 0) {
       options.gridMenu.customItems.push(
         {
           iconCssClass: options.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
@@ -645,7 +652,7 @@ export class ControlAndPluginService {
   /** Refresh the dataset through the Backend Service */
   refreshBackendDataset() {
     let query;
-    const backendApi = this._gridOptions.backendServiceApi || this._gridOptions.onBackendEventApi;
+    const backendApi = this._gridOptions.backendServiceApi;
     if (!backendApi || !backendApi.service || !backendApi.process) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }
@@ -696,7 +703,13 @@ export class ControlAndPluginService {
       this.columnPickerControl = null;
     }
 
+    const tempHideForceFit = this._gridOptions.columnPicker.hideForceFitButton;
+    const tempSyncResize = this._gridOptions.columnPicker.hideSyncResizeButton;
     this._gridOptions.columnPicker = undefined;
+    this._gridOptions.columnPicker = {
+      hideForceFitButton: tempHideForceFit,
+      hideSyncResizeButton: tempSyncResize
+    };
     this.createColumnPicker(this._grid, this.visibleColumns);
   }
 
@@ -731,19 +744,20 @@ export class ControlAndPluginService {
    * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
    * @param locale locale to use
    */
-  translateColumnHeaders(locale?: string) {
+  translateColumnHeaders(locale?: boolean | string, newColumnDefinitions?: Column[]) {
     if (locale) {
-      this.translate.use(locale);
+      this.translate.use(locale as string);
     }
 
-    for (const column of this._columnDefinitions) {
+    const columnDefinitions = newColumnDefinitions || this._columnDefinitions;
+    for (const column of columnDefinitions) {
       if (column.headerKey) {
         column.name = this.translate.instant(column.headerKey);
       }
     }
 
     // re-render the column headers
-    this.renderColumnHeaders();
+    this.renderColumnHeaders(columnDefinitions);
   }
 
   /**
@@ -769,9 +783,9 @@ export class ControlAndPluginService {
       menuWidth: 18,
       customTitle: undefined,
       customItems: [],
-      showClearAllFiltersCommand: true,
-      showRefreshDatasetCommand: true,
-      showToggleFilterCommand: true
+      hideClearAllFiltersCommand: false,
+      hideRefreshDatasetCommand: false,
+      hideToggleFilterCommand: false
     };
   }
 

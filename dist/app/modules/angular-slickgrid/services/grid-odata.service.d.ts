@@ -2,16 +2,16 @@ import './global-utilities';
 import { BackendService, ColumnFilters, ColumnSort, CurrentFilter, CurrentPagination, CurrentSorter, FilterChangedArgs, OdataOption, Pagination, PaginationChangedArgs, SortChangedArgs } from './../models/index';
 import { OdataService } from './odata.service';
 export declare class GridOdataService implements BackendService {
-    private odataService;
     private _currentFilters;
     private _currentPagination;
     private _currentSorters;
     private _columnDefinitions;
     private _grid;
+    odataService: OdataService;
     options: OdataOption;
     pagination: Pagination | undefined;
     defaultOptions: OdataOption;
-    constructor(odataService: OdataService);
+    constructor();
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly _gridOptions;
     buildQuery(): string;
@@ -26,9 +26,9 @@ export declare class GridOdataService implements BackendService {
     getCurrentSorters(): CurrentSorter[];
     resetPaginationOptions(): void;
     saveColumnFilter(fieldName: string, value: string, terms?: any[]): void;
-    onFilterChanged(event: Event, args: FilterChangedArgs): Promise<string>;
-    onPaginationChanged(event: Event, args: PaginationChangedArgs): string;
-    onSortChanged(event: Event, args: SortChangedArgs): string;
+    processOnFilterChanged(event: Event, args: FilterChangedArgs): Promise<string>;
+    processOnPaginationChanged(event: Event, args: PaginationChangedArgs): string;
+    processOnSortChanged(event: Event, args: SortChangedArgs): string;
     /**
      * loop through all columns to inspect filters & update backend service filteringOptions
      * @param columnFilters

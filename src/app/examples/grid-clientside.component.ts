@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs/Subscription';
 import { CustomInputFilter } from './custom-inputFilter';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Column, FieldType, FilterType, Formatters, GridOption, GridStateChange, GridStateService, OperatorType } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, FieldType, FilterType, Formatters, GridOption, GridStateChange, OperatorType } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 
 function randomBetween(min, max) {
@@ -33,11 +33,12 @@ export class GridClientSideComponent implements OnInit {
     </ul>
   `;
 
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
 
-  constructor(private gridStateService: GridStateService, private translate: TranslateService) {
+  constructor(private translate: TranslateService) {
   }
 
   ngOnInit(): void {
@@ -111,17 +112,15 @@ export class GridClientSideComponent implements OnInit {
       },
       enableExcelCopyBuffer: true,
       enableFiltering: true,
-      params: {
-        i18n: this.translate
-      },
+      i18n: this.translate,
 
       // use columnDef searchTerms OR use presets as shown below
       presets: {
         filters: [
           { columnId: 'duration', searchTerms: [2, 22, 44] },
-          // { columnId: 'complete', searchTerm: '5', operator: '>' },
-          { columnId: 'usDateShort', operator: '<', searchTerm: '4/20/25' },
-          // { columnId: 'effort-driven', searchTerm: true }
+          // { columnId: 'complete', searchTerms: ['5'], operator: '>' },
+          { columnId: 'usDateShort', operator: '<', searchTerms: ['4/20/25'] },
+          // { columnId: 'effort-driven', searchTerms: [true] }
         ],
         sorters: [
           { columnId: 'duration', direction: 'DESC' },
@@ -150,12 +149,16 @@ export class GridClientSideComponent implements OnInit {
         duration: randomDuration,
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
-        start: new Date(randomYear, randomMonth, randomDay),          // provide a Date format
+        start: (i % 3) ? null : new Date(randomYear, randomMonth, randomDay),          // provide a Date format
         usDateShort: `${randomMonth}/${randomDay}/${randomYearShort}`, // provide a date US Short in the dataset
         utcDate: `${randomYear}-${randomMonthStr}-${randomDay}T${randomHour}:${randomTime}:${randomTime}Z`,
         effortDriven: (i % 3 === 0)
       };
     }
+  }
+
+  angularGridReady(angularGrid: any) {
+    this.angularGrid = angularGrid;
   }
 
   /** Dispatched event of a Grid State Changed event */
@@ -165,6 +168,6 @@ export class GridClientSideComponent implements OnInit {
 
   /** Save current Filters, Sorters in LocaleStorage or DB */
   saveCurrentGridState(grid) {
-    console.log('Client sample, last Grid State:: ', this.gridStateService.getCurrentGridState());
+    console.log('Client sample, last Grid State:: ', this.angularGrid.gridStateService.getCurrentGridState());
   }
 }

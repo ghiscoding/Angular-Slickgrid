@@ -84,27 +84,27 @@ export class SingleSelectEditor implements Editor {
 
     this.columnDef = this.args.column;
 
-    if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
-      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" on the params property in the column definition for the MultipleSelect Editor to work correctly.
+    if (!this.columnDef || !this.columnDef.internalColumnEditor || !this.columnDef.internalColumnEditor.collection) {
+      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" inside Column Definition Editor for the SingleSelect Editor to work correctly.
       Also each option should include a value/label pair (or value/labelKey when using Locale).
-      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }`);
+      For example: { editor: { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } }`);
     }
 
     const collectionService = new CollectionService(this._translate);
-    this.enableTranslateLabel = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
-    let newCollection =  this.columnDef.params.collection || [];
-    this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
-    this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
+    this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
+    let newCollection =  this.columnDef.internalColumnEditor.collection || [];
+    this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
+    this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
 
     // user might want to filter certain items of the collection
-    if (this.gridOptions.params && this.columnDef.params.collectionFilterBy) {
-      const filterBy = this.columnDef.params.collectionFilterBy;
+    if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionFilterBy) {
+      const filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
       newCollection = collectionService.filterCollection(newCollection, filterBy);
     }
 
     // user might want to sort the collection
-    if (this.columnDef.params && this.columnDef.params.collectionSortBy) {
-      const sortBy = this.columnDef.params.collectionSortBy;
+    if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
+      const sortBy = this.columnDef.internalColumnEditor.collectionSortBy;
       newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
     }
 
@@ -124,7 +124,9 @@ export class SingleSelectEditor implements Editor {
 
   loadValue(item: any): void {
     // convert to string because that is how the DOM will return these values
-    this.defaultValue = item[this.columnDef.field].toString();
+    // make sure the prop exists first
+    this.defaultValue = item[this.columnDef.field] && item[this.columnDef.field].toString();
+
 
     this.$editorElm.find('option').each((i: number, $e: any) => {
       if (this.defaultValue === $e.value) {

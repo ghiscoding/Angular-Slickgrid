@@ -7,7 +7,7 @@ declare var $: any;
 export class SelectFilter implements Filter {
   $filterElm: any;
   grid: any;
-  searchTerm: SearchTerm;
+  searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
 
@@ -20,13 +20,19 @@ export class SelectFilter implements Filter {
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
-    this.searchTerm = args.searchTerm;
+    this.searchTerms = args.searchTerms || [];
+
+    // filter input can only have 1 search term, so we will use the 1st array index if it exist
+    let searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+    if (typeof searchTerm === 'boolean' || typeof searchTerm === 'number') {
+      searchTerm = `${searchTerm}`;
+    }
 
     // step 1, create HTML string template
     const filterTemplate = this.buildTemplateHtmlString();
 
     // step 2, create the DOM Element of the filter & initialize it if searchTerm is filled
-    this.$filterElm = this.createDomElement(filterTemplate);
+    this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
 
     // step 3, subscribe to the change event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
@@ -71,14 +77,11 @@ export class SelectFilter implements Filter {
   // ------------------
 
   private buildTemplateHtmlString() {
-    if (!this.columnDef || !this.columnDef.filter || (!this.columnDef.filter.collection && !this.columnDef.filter.selectOptions)) {
+    if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
       throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
-    if (!this.columnDef.filter.collection && this.columnDef.filter.selectOptions) {
-      console.warn(`[Angular-SlickGrid] The Select Filter "selectOptions" property will de deprecated in future version. Please use the new "collection" property which is more generic and can be used with other Filters (not just Select).`);
-    }
 
-    const optionCollection = this.columnDef.filter.collection || this.columnDef.filter.selectOptions || [];
+    const optionCollection = this.columnDef.filter.collection || [];
     const labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
     const valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
 
@@ -98,14 +101,15 @@ export class SelectFilter implements Filter {
    * From the html template string, create a DOM element
    * @param filterTemplate
    */
-  private createDomElement(filterTemplate: string) {
+  private createDomElement(filterTemplate: string, searchTerm?: SearchTerm) {
     const $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
     $($headerElm).empty();
 
     // create the DOM element & add an ID and filter class
     const $filterElm = $(filterTemplate);
-    const searchTerm = (typeof this.searchTerm === 'boolean') ? `${this.searchTerm}` : this.searchTerm;
-    $filterElm.val(searchTerm);
+    const searchTermInput = (searchTerm || '') as string;
+
+    $filterElm.val(searchTermInput);
     $filterElm.attr('id', `filter-${this.columnDef.id}`);
     $filterElm.data('columnId', this.columnDef.id);
 

@@ -1,17 +1,18 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Column, Filter, FilterArguments, FilterCallback, GridOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
+import { Column, Filter, FilterArguments, FilterCallback, OperatorString, OperatorType, SearchTerm } from './../models/index';
 export declare class CompoundInputFilter implements Filter {
     private translate;
     private $filterElm;
     private $filterInputElm;
     private $selectOperatorElm;
     grid: any;
-    gridOptions: GridOption;
     operator: OperatorType | OperatorString;
-    searchTerm: SearchTerm;
+    searchTerms: SearchTerm[];
     columnDef: Column;
     callback: FilterCallback;
     constructor(translate: TranslateService);
+    /** Getter for the Grid Options pulled through the Grid Object */
+    private readonly gridOptions;
     /**
      * Initialize the Filter
      */
@@ -27,13 +28,13 @@ export declare class CompoundInputFilter implements Filter {
     /**
      * Set value(s) on the DOM element
      */
-    setValues(values: SearchTerm): void;
+    setValues(values: SearchTerm[]): void;
     private buildInputHtmlString();
     private buildSelectOperatorHtmlString();
     private getOptionValues();
     /**
      * Create the DOM element
      */
-    private createDomElement();
+    private createDomElement(searchTerm?);
     private onTriggerEvent(e);
 }

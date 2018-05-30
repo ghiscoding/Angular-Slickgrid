@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import {
   AutoResizeOption,
   BackendEventChanged,
@@ -58,7 +59,7 @@ export interface GridOption {
     maxToolTipLength: number;
   };
 
-  /** Backend Service API definition (GraphQL/OData Services), also goes with onBackendEventApi */
+  /** Backend Service API definition (GraphQL/OData Services) */
   backendServiceApi?: BackendServiceApi;
 
   /** CSS class name used to simulate cell flashing */
@@ -187,9 +188,6 @@ export interface GridOption {
   /** Some default options to set for the export service */
   exportOptions?: ExportOption;
 
-  /** @deprecated Defaults to false, which leads to all Formatters of the grid being evaluated on export. You can also override a column by changing the propery on the column itself */
-  exportWithFormatter?: boolean;
-
   /** Defaults to 25, which is the grid footer row panel height */
   footerRowHeight?: number;
 
@@ -223,6 +221,9 @@ export interface GridOption {
   /** Header menu options */
   headerMenu?: HeaderMenu;
 
+  /** ngx-translate i18n translation service instance */
+  i18n?: TranslateService;
+
   /** Do we leave space for new rows in the DOM visible buffer */
   leaveSpaceForNewRows?: boolean;
 
@@ -238,9 +239,6 @@ export interface GridOption {
   /** Defaults to true, which will display numbers indicating column sort precedence are displayed in the columns when multiple columns selected */
   numberedMultiColumnSort?: boolean;
 
-  /** @deprecated Please use "backendServiceApi" instead */
-  onBackendEventApi?: BackendEventChanged;
-
   /** Pagination options, these are currently used ONLY with a Backend Service API (GraphQL/OData Services) */
   pagination?: Pagination;
 
@@ -255,6 +253,9 @@ export interface GridOption {
 
   /** Query presets before grid load (filters, sorters, pagination) */
   presets?: GridState;
+
+  /** Preselect certain rows by their row index ("enableCheckboxSelector" must be enabled) */
+  preselectedRows?: number[];
 
   /** Register 1 or more Slick Plugins */
   registerPlugins?: any | any[];

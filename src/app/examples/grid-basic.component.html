@@ -3,12 +3,24 @@
     <h2>{{title}}</h2>
     <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <angular-slickgrid gridId="grid1"
-            [columnDefinitions]="columnDefinitions"
-            [gridOptions]="gridOptions"
-            [dataset]="dataset"
-            gridHeight="400"
-            gridWidth="800">
-  </angular-slickgrid>
+    <h3>Grid 1</h3>
+    <angular-slickgrid gridId="grid1"
+                [columnDefinitions]="columnDefinitions1"
+                [gridOptions]="gridOptions1"
+                [dataset]="dataset1"
+                gridHeight="300"
+                gridWidth="800">
+    </angular-slickgrid>
+
+    <hr/>
+
+    <h3>Grid 2</h3>
+    <angular-slickgrid gridId="grid2"
+                [columnDefinitions]="columnDefinitions2"
+                [gridOptions]="gridOptions2"
+                [dataset]="dataset2"
+                gridHeight="300"
+                gridWidth="800">
+    </angular-slickgrid>
 </div>
 

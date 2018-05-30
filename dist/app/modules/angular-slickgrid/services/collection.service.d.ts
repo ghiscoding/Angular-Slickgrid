@@ -13,8 +13,7 @@ export declare class CollectionService {
      * Sort items in a collection
      * @param collection
      * @param sortBy
-     * @param columnDef
-     * @param translate
+     * @param enableTranslateLabel
      */
     sortCollection(collection: any[], sortBy: CollectionSortBy, enableTranslateLabel?: boolean): any[];
 }

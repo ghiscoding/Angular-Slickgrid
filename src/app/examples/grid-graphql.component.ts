@@ -1,14 +1,13 @@
 import { Subscription } from 'rxjs/Subscription';
 import { Component, Injectable, Input, OnInit, Output, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Column, FieldType, FilterType, Formatters, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption, OperatorType, SearchTerm, SortDirection, GridStateService } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, FieldType, FilterType, Formatters, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption, OperatorType, SearchTerm, SortDirection, GridStateService } from './../modules/angular-slickgrid';
 
 const defaultPageSize = 20;
 const GRAPHQL_QUERY_DATASET_NAME = 'users';
 
 @Component({
-  templateUrl: './grid-graphql.component.html',
-  providers: [GraphqlService]
+  templateUrl: './grid-graphql.component.html'
 })
 @Injectable()
 export class GridGraphqlComponent implements OnInit, OnDestroy {
@@ -27,6 +26,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       <li>You can also preload a grid with certain "presets" like Filters / Sorters / Pagination <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki - Grid Preset</a>
     </ul>
   `;
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset = [];
@@ -38,9 +38,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   selectedLanguage: string;
   gridStateSub: Subscription;
 
-  constructor(private graphqlService: GraphqlService, private gridStateService: GridStateService, private translate: TranslateService) {
+  constructor(private translate: TranslateService) {
     this.selectedLanguage = this.translate.getDefaultLang();
-    this.gridStateSub = this.gridStateService.onGridStateChanged.subscribe((data) => console.log(data));
   }
 
   ngOnDestroy() {
@@ -85,6 +84,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       enableCheckboxSelector: true,
       enableRowSelection: true,
       enableTranslate: true,
+      i18n: this.translate,
       gridMenu: {
         resizeOnShowHeaderRow: true,
       },
@@ -93,12 +93,11 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         pageSize: defaultPageSize,
         totalItems: 0
       },
-
       presets: {
         // you can also type operator as string, e.g.: operator: 'EQ'
         filters: [
-          { columnId: 'gender', searchTerm: 'male', operator: OperatorType.equal },
-          { columnId: 'name', searchTerm: 'John Doe', operator: OperatorType.contains },
+          { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
+          { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },
           { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' }
         ],
         sorters: [
@@ -108,9 +107,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         ],
         pagination: { pageNumber: 2, pageSize: 20 }
       },
-
       backendServiceApi: {
-        service: this.graphqlService,
+        service: new GraphqlService(),
         options: this.getBackendOptions(this.isWithCursor),
         // you can define the onInit callback OR enable the "executeProcessCommandOnInit" flag in the service init
         // onInit: (query) => this.getCustomerApiCall(query)
@@ -121,18 +119,16 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     };
   }
 
+  angularGridReady(angularGrid: AngularGridInstance) {
+    this.angularGrid = angularGrid;
+    this.gridStateSub = this.angularGrid.gridStateService.onGridStateChanged.subscribe((data) => console.log(data));
+  }
+
   displaySpinner(isProcessing) {
     this.processing = isProcessing;
     this.status = (isProcessing)
       ? { text: 'processing...', class: 'alert alert-danger' }
       : { text: 'done', class: 'alert alert-success' };
-  }
-
-  onWithCursorChange(isWithCursor) {
-    this.isWithCursor = isWithCursor;
-    const paginationOption = this.getBackendOptions(isWithCursor);
-    this.graphqlService.init(paginationOption);
-    this.graphqlQuery = this.graphqlService.buildQuery();
   }
 
   getBackendOptions(withCursor: boolean): GraphqlServiceOption {
@@ -179,7 +175,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        this.graphqlQuery = this.graphqlService.buildQuery();
+        this.graphqlQuery = this.angularGrid.backendService.buildQuery();
         resolve(mockedResult);
       }, 500);
     });
@@ -187,7 +183,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
 
   /** Save current Filters, Sorters in LocaleStorage or DB */
   saveCurrentGridState(grid) {
-    console.log('GraphQL current grid state', this.gridStateService.getCurrentGridState());
+    console.log('GraphQL current grid state', this.angularGrid.gridStateService.getCurrentGridState());
   }
 
   switchLanguage() {

@@ -3,9 +3,8 @@ import { Component, OnInit, Injectable, ViewContainerRef, ComponentFactoryResolv
          AfterViewInit, Input, EventEmitter, Output, ViewChild ,
          ElementRef, Renderer} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AngularSlickgridComponent, Column, Editors, FieldType, Formatter, Formatters,
-         GridExtraService, GridExtraUtils, GridOption, OnEventArgs, ResizerService,
-         FormElementType, FilterService, SortService, BackendService,
+import { AngularSlickgridComponent, Column, FieldType, Formatter, Formatters,
+         GridOption, OnEventArgs, BackendService,
          BackendServiceOption, FilterChangedArgs, PaginationChangedArgs, SortChangedArgs, Pagination} from '../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 import { Logger } from './swt-logger.service';
@@ -129,7 +128,9 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
             this.gridOptions.backendServiceApi = {
               service: this,
               preProcess: () => {},
-              process: (query) => { return null; },
+              process: (query) => {
+                return null;
+              },
               postProcess: (response) => {}
             };
             this._paginationComponent.gridPaginationOptions = this.gridOptions;
@@ -144,12 +145,11 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
 
     /**
      *
-     * @param gridExtraService
+     * @param gridService
      * @param resizer
      * @param httpClient
      */
-    constructor( private gridExtraService: GridExtraService, private resizer: ResizerService, private httpClient: HttpClient,
-            private filterService: FilterService, private sortService: SortService, private translate: TranslateService,
+    constructor(private httpClient: HttpClient, private translate: TranslateService,
             private el: ElementRef, private renderer: Renderer) {
         this.logger = new Logger('grid', httpClient);
 
@@ -312,8 +312,8 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
         return 'buildQuery...';
     }
 
-    initOptions( options: BackendServiceOption, pagination?: Pagination ): void {
-        this.options = options;
+    init( serviceOptions: BackendServiceOption, pagination?: Pagination ): void {
+        this.options = serviceOptions;
         this.pagination = pagination;
     }
 
@@ -332,7 +332,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
      * @param event
      * @param args
      */
-    onFilterChanged( event: Event, args: FilterChangedArgs ): Promise<string> {
+    processOnFilterChanged( event: Event, args: FilterChangedArgs ): Promise<string> {
         this.logger.info('method [onFilterChanged] - START', args);
         this.filteredGridColumns = '';
         let timing = 0;
@@ -344,7 +344,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
             this.filteredGridColumns = '';
             for (let idx = 0; idx < this.columnDefinitions.length; idx++) {
                 if (args.columnFilters.hasOwnProperty(this.columnDefinitions[idx].field)) {
-                    this.filteredGridColumns += args.columnFilters[this.columnDefinitions[idx].field].searchTerm + '|';
+                    this.filteredGridColumns += args.columnFilters[this.columnDefinitions[idx].field].searchTerms[0] + '|';
                 } else {
                     this.filteredGridColumns += 'All|';
                 }
@@ -369,7 +369,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
      * @param event
      * @param args
      */
-    onPaginationChanged( event: Event, args: PaginationChangedArgs ) {
+    processOnPaginationChanged( event: Event, args: PaginationChangedArgs ) {
         this.logger.info('method [onPaginationChanged] - START');
         this.currentPage = args.newPage;
         this.onPaginationChanged_.emit(args);
@@ -382,7 +382,7 @@ export class SwtCommonGridComponent implements OnInit, AfterViewInit, BackendSer
      * @param event
      * @param args
      */
-    onSortChanged( event: Event, args: SortChangedArgs ) {
+    processOnSortChanged( event: Event, args: SortChangedArgs ) {
         this.logger.info('method [onSortChanged] - START');
         this.sortedGridColumn = '';
         const sortDirection = '|' + args.sortCols[0].sortAsc + '|';

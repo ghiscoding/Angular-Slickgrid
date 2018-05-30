@@ -112,7 +112,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   }
 
   refreshPagination(isPageNumberReset: boolean = false) {
-    const backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
+    const backendApi = this._gridPaginationOptions.backendServiceApi;
     if (!backendApi || !backendApi.service || !backendApi.process) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }
@@ -149,7 +149,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   async onPageChanged(event: Event | undefined, pageNumber: number) {
     this.recalculateFromToIndexes();
 
-    const backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
+    const backendApi = this._gridPaginationOptions.backendServiceApi;
     if (!backendApi || !backendApi.service || !backendApi.process) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }
@@ -166,7 +166,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
         backendApi.preProcess();
       }
 
-      const query = backendApi.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
+      const query = backendApi.service.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
 
       // the process could be an Observable (like HttpClient) or a Promise
       // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)

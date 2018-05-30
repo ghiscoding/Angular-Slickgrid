@@ -12,9 +12,15 @@ export declare class ControlAndPluginService {
     private _grid;
     visibleColumns: Column[];
     areVisibleColumnDifferent: boolean;
+    pluginList: {
+        name: string;
+        plugin: any;
+    }[];
     autoTooltipPlugin: any;
+    cellExternalCopyManagerPlugin: any;
     checkboxSelectorPlugin: any;
     columnPickerControl: any;
+    groupItemMetaProviderPlugin: any;
     headerButtonsPlugin: any;
     headerMenuPlugin: any;
     gridMenuControl: any;
@@ -25,6 +31,13 @@ export declare class ControlAndPluginService {
     private readonly _gridOptions;
     /** Getter for the Column Definitions pulled through the Grid Object */
     private readonly _columnDefinitions;
+    getPlugin(name?: string): {
+        name: string;
+        plugin: any;
+    } | {
+        name: string;
+        plugin: any;
+    }[];
     /** Auto-resize all the column in the grid to fit the grid width */
     autoResizeColumns(): void;
     /**
@@ -49,7 +62,7 @@ export declare class ControlAndPluginService {
      * @param columnDefinitions
      * @param gridOptions
      */
-    createColumnPicker(grid: any, columnDefinitions: Column[]): void;
+    createColumnPicker(grid: any, columnDefinitions: Column[]): any;
     /**
      * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)
      * @param grid
@@ -113,7 +126,12 @@ export declare class ControlAndPluginService {
      * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
      * @param locale locale to use
      */
-    translateHeaders(locale?: string): void;
+    translateColumnHeaders(locale?: boolean | string, newColumnDefinitions?: Column[]): void;
+    /**
+     * Render (or re-render) the column headers from column definitions.
+     * calling setColumns() will trigger a grid re-render
+     */
+    renderColumnHeaders(newColumnDefinitions?: Column[]): void;
     /**
      * @return default Grid Menu options
      */

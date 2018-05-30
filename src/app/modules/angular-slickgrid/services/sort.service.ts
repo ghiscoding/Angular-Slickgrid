@@ -57,7 +57,7 @@ export class SortService {
       throw new Error('Something went wrong when trying to attach the "onBackendSortChanged(event, args)" function, it seems that "args" is not populated correctly');
     }
     const gridOptions: GridOption = args.grid.getOptions() || {};
-    const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+    const backendApi = gridOptions.backendServiceApi;
 
     if (!backendApi || !backendApi.process || !backendApi.service) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
@@ -65,7 +65,7 @@ export class SortService {
     if (backendApi.preProcess) {
       backendApi.preProcess();
     }
-    const query = backendApi.service.onSortChanged(event, args);
+    const query = backendApi.service.processOnSortChanged(event, args);
     this.emitSortChanged('remote');
 
     // the process could be an Observable (like HttpClient) or a Promise

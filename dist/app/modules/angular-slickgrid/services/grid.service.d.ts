@@ -1,9 +1,19 @@
-export declare class GridExtraService {
+import { CellArgs, OnEventArgs } from './../models/index';
+export declare class GridService {
     private _grid;
     private _dataView;
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly _gridOptions;
     init(grid: any, dataView: any): void;
+    /**
+     * From a SlickGrid Event triggered get the Column Definition and Item Data Context
+     *
+     * For example the SlickGrid onClick will return cell arguments when subscribing to it.
+     * From these cellArgs, we want to get the Column Definition and Item Data
+     * @param cell event args
+     * @return object with columnDef and dataContext
+     */
+    getColumnFromEventArguments(args: CellArgs): OnEventArgs;
     getDataItemByRowNumber(rowNumber: number): any;
     /** Chain the item Metadata with our implementation of Metadata at given row index */
     getItemRowMetadata(previousItemMetadata: any): (rowNumber: number) => {

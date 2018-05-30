@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Column, Editors, FieldType, Formatters, GridExtraService, GridOption, OnEventArgs } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, EditorType, FieldType, Formatters, GridOption, OnEventArgs } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-additem.component.html'
@@ -23,26 +23,68 @@ export class GridAddItemComponent implements OnInit {
   </ul>
   `;
 
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
   updatedObject: any;
 
-  constructor(private gridExtraService: GridExtraService) {}
+  constructor() {}
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, editor: Editors.longText },
-      { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, editor: Editors.text,
+      {
+        id: 'title', name: 'Title', field: 'title',
+        sortable: true,
+        type: FieldType.string,
+        editor: {
+          type: EditorType.longText
+        }
+      },
+      {
+        id: 'duration', name: 'Duration (days)', field: 'duration',
+        sortable: true,
+        type: FieldType.number,
+        editor: {
+          type: EditorType.text
+        },
         onCellChange: (args: OnEventArgs) => {
         alert('onCellChange directly attached to the column definition');
         console.log(args);
         }
       },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, editor: Editors.integer },
-      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.date/*, editor: Editors.date*/ },
-      { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, editor: Editors.checkbox }
+      {
+        id: 'complete', name: '% Complete', field: 'percentComplete',
+        formatter: Formatters.percentCompleteBar,
+        type: FieldType.number,
+        editor: {
+          type: EditorType.integer
+        }
+      },
+      {
+        id: 'start', name: 'Start', field: 'start',
+        formatter: Formatters.dateIso,
+        sortable: true,
+        type: FieldType.date,
+        /*
+        editor: {
+          type: EditorType.date
+        }
+        */
+      },
+      {
+        id: 'finish', name: 'Finish', field: 'finish',
+        formatter: Formatters.dateIso, sortable: true,
+        type: FieldType.date
+      },
+      {
+        id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
+        formatter: Formatters.checkmark,
+        type: FieldType.number,
+        editor: {
+          type: EditorType.checkbox
+        }
+      }
     ];
 
     this.gridOptions = {
@@ -96,16 +138,20 @@ export class GridAddItemComponent implements OnInit {
       finish: new Date(randomYear, (randomMonth + 2), randomDay),
       effortDriven: true
     };
-    this.gridExtraService.addItemToDatagrid(newItem);
+    this.angularGrid.gridService.addItemToDatagrid(newItem);
   }
 
   highlighFifthRow() {
-    this.gridExtraService.highlightRow(4, 1500);
+    this.angularGrid.gridService.highlightRow(4, 1500);
+  }
+
+  angularGridReady(angularGrid: any) {
+    this.angularGrid = angularGrid;
   }
 
   updateSecondItem() {
-    const firstItem = this.gridExtraService.getDataItemByRowNumber(1);
+    const firstItem = this.angularGrid.gridService.getDataItemByRowNumber(1);
     firstItem.duration = Math.round(Math.random() * 100);
-    this.gridExtraService.updateDataGridItem(firstItem);
+    this.angularGrid.gridService.updateDataGridItem(firstItem);
   }
 }

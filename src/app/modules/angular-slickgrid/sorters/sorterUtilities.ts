@@ -1,4 +1,4 @@
-import { FieldType } from './../models/fieldType';
+import { FieldType } from './../models/index';
 import { Sorters } from './index';
 
 export function sortByFieldType(value1: any, value2: any, fieldType: FieldType, sortDirection: number) {

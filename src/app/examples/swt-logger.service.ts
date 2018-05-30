@@ -1,7 +1,7 @@
 /**
  * This is a "ngx-logger" branch (https://www.npmjs.com/package/ngx-logger)
  * Customized logging template + Simplified into our needs
- * 
+ *
  * @author Saber Chebka, saber.chebka@gmail.com
  */
 import {Inject, Injectable, Optional, PLATFORM_ID} from '@angular/core';
@@ -19,7 +19,7 @@ export class Logger {
 
     private _serverLogLevel: LoggerLevel = LoggerLevel.OFF;
 
-    private _isIE: boolean = true;
+    private _isIE = true;
 
     private options: LoggerConfig = {
             level: this._clientLogLevel,
@@ -28,7 +28,7 @@ export class Logger {
           };
 
     constructor(private _class: string, private http?: HttpClient) {
-        this._isIE = !!(navigator.userAgent.indexOf('MSIE') !== -1 || navigator.userAgent.match(/Trident\//) || navigator.userAgent.match(/Edge\//));;
+        this._isIE = !!(navigator.userAgent.indexOf('MSIE') !== -1 || navigator.userAgent.match(/Trident\//) || navigator.userAgent.match(/Edge\//));
     }
 
     trace(message, ...additional: any[]) {
@@ -73,8 +73,8 @@ export class Logger {
 
       this.http.post(this.options.serverLoggingUrl, {
         level: Levels[level],
-        message: message,
-        additional: additional,
+        message,
+        additional,
         timestamp: this._timestamp()
       }, {headers})
         .subscribe(
@@ -150,7 +150,6 @@ export class Logger {
           return 'black';
       }
     }
-    
 }
 
 export class LoggerConfig {
@@ -172,4 +171,3 @@ export class LoggerConfig {
       'ERROR',
       'OFF'
   ];
-    

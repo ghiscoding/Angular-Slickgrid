@@ -19,17 +19,28 @@ import 'slickgrid/plugins/slick.headerbuttons';
 import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
-import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit, ViewChildren, ElementRef, ViewChild, ReflectiveInjector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { castToPromise } from './../services/utilities';
+import { castToPromise, toKebabCase } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
-import { BackendServiceOption, Column, GridOption, GridStateChange, GridStateType, Pagination } from './../models/index';
+import {
+  AngularGridInstance,
+  BackendServiceOption,
+  Column,
+  Editor,
+  EditorType,
+  GridOption,
+  GridStateChange,
+  GridStateType,
+  Pagination
+} from './../models/index';
+import { Editors, AVAILABLE_EDITORS } from './../editors/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
 import { GraphqlService } from './../services/graphql.service';
 import { GridEventService } from './../services/gridEvent.service';
-import { GridExtraService } from './../services/gridExtra.service';
+import { GridService } from './../services/grid.service';
 import { GridStateService } from './../services/gridState.service';
 import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
 import { ResizerService } from './../services/resizer.service';
@@ -40,26 +51,27 @@ import { Subscription } from 'rxjs/Subscription';
 declare var Slick: any;
 declare var $: any;
 
-const eventPrefix = 'sg';
+const slickgridEventPrefix = 'sg';
 
 @Injectable()
 @Component({
   selector: 'angular-slickgrid',
   templateUrl: './angular-slickgrid.component.html',
-  // providers: [
-  //   ControlAndPluginService,
-  //   ExportService,
-  //   FilterService,
-  //   GraphqlService,
-  //   GridEventService,
-  //   GridExtraService,
-  //   GridStateService,
-  //   GroupingAndColspanService,
-  //   ResizerService,
-  //   SortService
-  // ]
+  providers: [
+    ControlAndPluginService,
+    ExportService,
+    FilterService,
+    GraphqlService,
+    GridEventService,
+    GridService,
+    GridStateService,
+    GroupingAndColspanService,
+    ResizerService,
+    SortService
+  ]
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
+  @ViewChild('customElm', {read: ElementRef}) customElm: ElementRef;
   private _dataset: any[];
   private _columnDefinitions: Column[];
   private _dataView: any;
@@ -75,6 +87,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   showPagination = false;
   isGridInitialized = false;
 
+  @Output() onAngularGridCreated = new EventEmitter<AngularGridInstance>();
   @Output() onDataviewCreated = new EventEmitter<any>();
   @Output() onGridCreated = new EventEmitter<any>();
   @Output() onGridInitialized = new EventEmitter<any>();
@@ -106,11 +119,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     return this._dataView.getItems();
   }
 
+
   constructor(
     private controlAndPluginService: ControlAndPluginService,
     private exportService: ExportService,
     private filterService: FilterService,
-    private gridExtraService: GridExtraService,
+    private gridService: GridService,
     private gridEventService: GridEventService,
     private gridStateService: GridStateService,
     private groupingAndColspanService: GroupingAndColspanService,
@@ -175,6 +189,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this._dataView = new Slick.Data.DataView();
     }
 
+    // for convenience, we provide the property "editor" as an Angular-Slickgrid editor complex object
+    // however "editor" is used internally by SlickGrid for it's Editor Factory
+    // so in our lib we will swap "editor" and copy it into "internalColumnEditor"
+    // then take back "editor.type" and make it the new "editor" so that SlickGrid Editor Factory still works
+    this._columnDefinitions = this._columnDefinitions.map((c: Column | any) => ({ ...c, editor: this.getEditor((c.editor && c.editor.type), c), internalColumnEditor: { ...c.editor } })),
+
     this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
 
@@ -198,8 +218,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.groupingAndColspanService.init(this.grid, this._dataView);
     }
 
-    // attach grid extra service
-    this.gridExtraService.init(this.grid, this._dataView);
+    // attach grid  service
+    this.gridService.init(this.grid, this._dataView);
 
     // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
     if (this.gridOptions.enableTranslate) {
@@ -216,11 +236,48 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // attach the Backend Service API callback functions only after the grid is initialized
     // because the preProcess() and onInit() might get triggered
-    if (this.gridOptions && (this.gridOptions.backendServiceApi || this.gridOptions.onBackendEventApi)) {
+    if (this.gridOptions && this.gridOptions.backendServiceApi) {
       this.attachBackendCallbackFunctions(this.gridOptions);
     }
 
     this.gridStateService.init(this.grid, this.filterService, this.sortService);
+
+    this.onAngularGridCreated.emit({
+      // Slick Grid & DataView objects
+      dataView: this._dataView,
+      slickGrid: this.grid,
+
+      // return all available Services (non-singleton)
+      backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
+      exportService: this.exportService,
+      filterService: this.filterService,
+      gridEventService: this.gridEventService,
+      gridStateService: this.gridStateService,
+      gridService: this.gridService,
+      groupingService: this.groupingAndColspanService,
+      pluginService: this.controlAndPluginService,
+      resizerService: this.resizer,
+      sortService: this.sortService,
+    });
+  }
+
+  /**
+   * From the list of available editors, find the editor associated to it's type
+   * and if it's a custom one, return the "customEditor" from the column
+   * @param type
+   * @param column
+   */
+  getEditor(type: EditorType, column: Column) {
+    if (type === EditorType.custom && column && column.editor && column.editor.hasOwnProperty('customEditor')) {
+      return column.editor['customEditor'];
+    }
+
+    const editorFound = AVAILABLE_EDITORS.find(editor => editor.type === type);
+    if (editorFound && editorFound.editor) {
+      return editorFound.editor;
+    }
+
+    return undefined;
   }
 
   /**
@@ -228,8 +285,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
    */
   createBackendApiInternalPostProcessCallback(gridOptions: GridOption) {
-    if (gridOptions && (gridOptions.backendServiceApi || gridOptions.onBackendEventApi)) {
-      const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+    if (gridOptions && gridOptions.backendServiceApi) {
+      const backendApi = gridOptions.backendServiceApi;
 
       // internalPostProcess only works with a GraphQL Service, so make sure it is that type
       if (backendApi && backendApi.service && backendApi.service instanceof GraphqlService) {
@@ -259,7 +316,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // attach external sorting (backend) when available or default onSort (dataView)
     if (gridOptions.enableSorting) {
-      (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
+      gridOptions.backendServiceApi ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
     }
 
     // attach external filter (backend) when available or default onFilter (dataView)
@@ -270,18 +327,45 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (gridOptions.presets && gridOptions.presets.filters) {
         this.filterService.populateColumnFilterSearchTerms(grid);
       }
-      (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid) : this.filterService.attachLocalOnFilter(grid, this._dataView);
+      gridOptions.backendServiceApi ? this.filterService.attachBackendOnFilter(grid) : this.filterService.attachLocalOnFilter(grid, this._dataView);
     }
 
     // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
-    if (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) {
-      const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
-      if (gridOptions.onBackendEventApi) {
-        console.warn(`"onBackendEventApi" has been DEPRECATED, please consider using "backendServiceApi" in the short term since "onBackendEventApi" will be removed in future versions. You can take look at the Angular-Slickgrid Wikis for OData/GraphQL Services implementation`);
-      }
+    if (gridOptions.backendServiceApi) {
+      const backendApi = gridOptions.backendServiceApi;
 
       if (backendApi && backendApi.service && backendApi.service.init) {
         backendApi.service.init(backendApi.options, gridOptions.pagination, this.grid);
+      }
+    }
+
+    // expose all Slick Grid Events through dispatch
+    for (const prop in grid) {
+      if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
+        this._eventHandler.subscribe(grid[prop], (e: any, args: any) => {
+          this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}-${toKebabCase(prop)}`, {
+            bubbles: true,
+            detail: {
+              eventData: e,
+              args
+            }
+          }));
+        });
+      }
+    }
+
+    // expose all Slick DataView Events through dispatch
+    for (const prop in dataView) {
+      if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
+        this._eventHandler.subscribe(dataView[prop], (e: any, args: any) => {
+          this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}-${toKebabCase(prop)}`, {
+            bubbles: true,
+            detail: {
+              eventData: e,
+              args
+            }
+          }));
+        });
       }
     }
 
@@ -314,7 +398,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   attachBackendCallbackFunctions(gridOptions: GridOption) {
-    const backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+    const backendApi = gridOptions.backendServiceApi;
     const serviceOptions: BackendServiceOption = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : {};
     const isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && serviceOptions.hasOwnProperty('executeProcessCommandOnInit')) ? serviceOptions['executeProcessCommandOnInit'] : true);
 
@@ -435,7 +519,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (this.grid &&  this.gridOptions.enableAutoResize) {
         // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
         this.resizer.resizeGrid(10, { height: this.gridHeight, width: this.gridWidth });
-        // this.grid.autosizeColumns();
       }
     }
   }
@@ -447,7 +530,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    */
   updateColumnDefinitionsList(newColumnDefinitions) {
     if (this.gridOptions.enableTranslate) {
-      this.controlAndPluginService.translateColumnHeaders();
+      this.controlAndPluginService.translateColumnHeaders(false, newColumnDefinitions);
     } else {
       this.controlAndPluginService.renderColumnHeaders(newColumnDefinitions);
     }

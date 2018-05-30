@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { FieldType } from './../models/fieldType';
+import { FieldType } from './../models/index';
 import { Column, Filter, FilterArguments, FilterCallback, GridOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
 import { htmlEntityEncode } from '..';
 
@@ -13,13 +13,17 @@ export class CompoundInputFilter implements Filter {
   private $filterInputElm: any;
   private $selectOperatorElm: any;
   grid: any;
-  gridOptions: GridOption;
   operator: OperatorType | OperatorString;
-  searchTerm: SearchTerm;
+  searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
 
   constructor(private translate: TranslateService) {}
+
+  /** Getter for the Grid Options pulled through the Grid Object */
+  private get gridOptions(): GridOption {
+    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+  }
 
   /**
    * Initialize the Filter
@@ -29,14 +33,14 @@ export class CompoundInputFilter implements Filter {
     this.callback = args.callback;
     this.columnDef = args.columnDef;
     this.operator = args.operator;
-    this.searchTerm = args.searchTerm;
-    if (this.grid && typeof this.grid.getOptions === 'function') {
-      this.gridOptions = this.grid.getOptions();
-    }
+    this.searchTerms = args.searchTerms || [];
+
+    // filter input can only have 1 search term, so we will use the 1st array index if it exist
+    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
 
     // step 1, create the DOM Element of the filter which contain the compound Operator+Input
-    // and initialize it if searchTerm is filled
-    this.$filterElm = this.createDomElement();
+    // and initialize it if searchTerms is filled
+    this.$filterElm = this.createDomElement(searchTerm);
 
     // step 3, subscribe to the keyup event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
@@ -74,9 +78,9 @@ export class CompoundInputFilter implements Filter {
   /**
    * Set value(s) on the DOM element
    */
-  setValues(values: SearchTerm) {
-    if (values) {
-      this.$filterElm.val(values);
+  setValues(values: SearchTerm[]) {
+    if (values && Array.isArray(values)) {
+      this.$filterElm.val(values[0]);
     }
   }
 
@@ -134,7 +138,7 @@ export class CompoundInputFilter implements Filter {
   /**
    * Create the DOM element
    */
-  private createDomElement() {
+  private createDomElement(searchTerm?: SearchTerm) {
     const $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
     $($headerElm).empty();
 
@@ -161,7 +165,6 @@ export class CompoundInputFilter implements Filter {
     $filterContainerElm.append($containerInputGroup);
     $filterContainerElm.attr('id', `filter-${this.columnDef.id}`);
 
-    const searchTerm = (typeof this.searchTerm === 'boolean') ? `${this.searchTerm}` : this.searchTerm;
     this.$filterInputElm.val(searchTerm);
     this.$filterInputElm.data('columnId', this.columnDef.id);
 
@@ -170,7 +173,7 @@ export class CompoundInputFilter implements Filter {
     }
 
     // if there's a search term, we will add the "filled" class for styling purposes
-    if (this.searchTerm) {
+    if (searchTerm) {
       $filterContainerElm.addClass('filled');
     }
 
@@ -186,6 +189,6 @@ export class CompoundInputFilter implements Filter {
     const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
     const value = this.$filterInputElm.val();
     (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-    this.callback(e, { columnDef: this.columnDef, searchTerm: value, operator: selectedOperator || '' });
+    this.callback(e, { columnDef: this.columnDef, searchTerms: [value], operator: selectedOperator || '' });
   }
 }

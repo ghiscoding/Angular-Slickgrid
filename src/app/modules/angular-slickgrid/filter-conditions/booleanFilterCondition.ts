@@ -5,5 +5,6 @@ function parseBoolean(str: number | string) {
 }
 
 export const booleanFilterCondition: FilterCondition = (options: FilterConditionOption) => {
-  return parseBoolean(options.cellValue) === parseBoolean(options.searchTerm);
+  const searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
+  return parseBoolean(options.cellValue) === parseBoolean(searchTerm);
 };

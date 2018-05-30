@@ -4,7 +4,7 @@ export declare class SelectFilter implements Filter {
     private translate;
     $filterElm: any;
     grid: any;
-    searchTerm: SearchTerm;
+    searchTerms: SearchTerm[];
     columnDef: Column;
     callback: FilterCallback;
     constructor(translate: TranslateService);
@@ -29,5 +29,5 @@ export declare class SelectFilter implements Filter {
      * From the html template string, create a DOM element
      * @param filterTemplate
      */
-    private createDomElement(filterTemplate);
+    private createDomElement(filterTemplate, searchTerm?);
 }

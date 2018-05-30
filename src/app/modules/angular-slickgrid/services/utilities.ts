@@ -1,4 +1,4 @@
-import { FieldType, OperatorType, FilterType, FormElementType } from '../models/index';
+import { FieldType, OperatorType, FilterType } from '../models/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
@@ -368,7 +368,7 @@ export function mapOperatorByFieldType(fieldType: FieldType | string): OperatorT
  * @param operator
  * @returns string map
  */
-export function mapOperatorByFilterType(filterType: FilterType | FormElementType | string): OperatorType {
+export function mapOperatorByFilterType(filterType: FilterType | string): OperatorType {
   let map: OperatorType;
 
   switch (filterType) {

@@ -4,7 +4,6 @@ import {
   Column,
   Filter,
   FilterType,
-  FormElementType,
   MultipleSelectOption,
   OperatorString,
   OperatorType,
@@ -24,9 +23,6 @@ export interface ColumnFilter {
   /** Custom Filter */
   customFilter?: Filter;
 
-  /** Search term (singular) */
-  searchTerm?: SearchTerm;
-
   /** Search terms (collection) */
   searchTerms?: SearchTerm[];
 
@@ -34,7 +30,7 @@ export interface ColumnFilter {
   operator?: OperatorType | OperatorString;
 
   /** Filter Type to use (input, multipleSelect, singleSelect, select, custom) */
-  type?: FilterType | FormElementType;
+  type?: FilterType;
 
   /** A collection of items/options (commonly used with a Select/Multi-Select Filter) */
   collection?: any[];
@@ -47,9 +43,6 @@ export interface ColumnFilter {
 
   /** Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250} */
   filterOptions?: MultipleSelectOption | any;
-
-  /** DEPRECATED, please use "collection" instead which is more generic and not specific to a Select Filter. Refer to the Select Filter Wiki page for more info: https://github.com/ghiscoding/Angular-Slickgrid/wiki/Select-Filter  */
-  selectOptions?: any[];
 
   /** Do we want the Filter to handle translation (localization)? */
   enableTranslateLabel?: boolean;

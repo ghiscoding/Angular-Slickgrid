@@ -13,9 +13,6 @@ export interface Filter {
   /** SlickGrid grid object */
   grid: any;
 
-  /** Defined search term to pre-load */
-  searchTerm?: SearchTerm;
-
   /** Array of defined search terms to pre-load */
   searchTerms?: SearchTerm[];
 

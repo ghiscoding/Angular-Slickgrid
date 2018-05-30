@@ -43,7 +43,12 @@
         </span>
     </div>
 
-    <angular-slickgrid gridId="grid2" (onDataviewCreated)="dataviewReady($event)" (onGridCreated)="gridReady($event)" [columnDefinitions]="columnDefinitions"
-        [gridOptions]="gridOptions" [dataset]="dataset">
+    <angular-slickgrid gridId="grid2"
+        (onAngularGridCreated)="angularGridReady($event)"
+        (onDataviewCreated)="dataviewReady($event)"
+        (onGridCreated)="gridReady($event)"
+        [dataset]="dataset"
+        [columnDefinitions]="columnDefinitions"
+        [gridOptions]="gridOptions">
     </angular-slickgrid>
 </div>

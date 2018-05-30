@@ -151,6 +151,6 @@ export class SwtCommonGridPaginationComponent implements OnInit {
 
     onPageChanged(event?: Event, pageNumber?: number) {
         this.logger.info('method [onPageChanged] - START/END', this.commonGrid);
-        this.commonGrid.onPaginationChanged(event, { newPage: pageNumber, pageSize: -1 });
+        this.commonGrid.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: -1 });
       }
 }

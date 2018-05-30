@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ModuleWithProviders, NgModule, ViewContainerRef, ComponentFactoryResolver, OnChanges, AfterContentInit, AfterViewChecked, ElementRef, Renderer, EventEmitter,
-    Output, AfterViewInit} from '@angular/core';
+    Output, AfterViewInit, Injectable} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Routes, RouterModule } from '@angular/router';
 
@@ -17,6 +17,7 @@ import { Logger } from './swt-logger.service';
   selector: 'swt-common-grid-test',
   templateUrl: './swt-common-grid-test.component.html'
 })
+@Injectable()
 export class SwtCommonGridTestComponent implements OnInit, AfterViewInit {
     componentFactory: any;
     testurl = 'http://127.0.0.1:8080/grid!display.do?';

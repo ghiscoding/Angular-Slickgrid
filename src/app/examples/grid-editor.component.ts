@@ -1,16 +1,16 @@
-import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
+  AngularGridInstance,
   Column,
-  Editors,
+  EditorType,
   FieldType,
   Formatters,
-  GridExtraService,
-  GridExtraUtils,
   GridOption,
   OnEventArgs,
-  ResizerService
+  OperatorType
 } from './../modules/angular-slickgrid';
+import { CustomInputEditor } from './custom-inputEditor';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -19,7 +19,7 @@ declare var Slick: any;
   templateUrl: './grid-editor.component.html'
 })
 @Injectable()
-export class GridEditorComponent implements OnInit, OnDestroy {
+export class GridEditorComponent implements OnInit {
   title = 'Example 3: Editors';
   subTitle = `
   Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors" target="_blank">Wiki docs</a>).
@@ -35,27 +35,20 @@ export class GridEditorComponent implements OnInit, OnDestroy {
   `;
 
   private _commandQueue = [];
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
+  gridObj: any;
   isAutoEdit = true;
   alertWarning: any;
   updatedObject: any;
-  gridObj: any;
-  dataviewObj: any;
   selectedLanguage = 'en';
 
-  constructor(private gridExtraService: GridExtraService, private resizer: ResizerService, private translate: TranslateService) {}
+  constructor(private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.prepareGrid();
-  }
-
-  ngOnDestroy(): void {
-    // unsubscrible any Slick.Event you might have used
-    // a reminder again, these are SlickGrid Event, not RxJS events
-    this.gridObj.onCellChange.unsubscribe();
-    this.gridObj.onClick.unsubscribe();
   }
 
   prepareGrid() {
@@ -66,12 +59,12 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       formatter: Formatters.editIcon,
       minWidth: 30,
       maxWidth: 30,
-      // use onCellClick OR grid.onClick.subscribe which you can see down below
+      // use column onCellClick OR (sg-on-click)="onCellClicked()" you can see down below
       onCellClick: (args: OnEventArgs) => {
         console.log(args);
         this.alertWarning = `Editing: ${args.dataContext.title}`;
-        this.gridExtraService.highlightRow(args.row, 1500);
-        this.gridExtraService.setSelectedRow(args.row);
+        this.angularGrid.gridService.highlightRow(args.row, 1500);
+        this.angularGrid.gridService.setSelectedRow(args.row);
       }
     }, {
       id: 'delete',
@@ -80,7 +73,7 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       formatter: Formatters.deleteIcon,
       minWidth: 30,
       maxWidth: 30,
-      // use onCellClick OR grid.onClick.subscribe which you can see down below
+      // use column onCellClick OR (sg-on-click)="onCellClicked()" you can see down below
       /*
       onCellClick: (args: OnEventArgs) => {
         console.log(args);
@@ -93,20 +86,35 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       field: 'title',
       sortable: true,
       type: FieldType.string,
-      editor: Editors.longText,
+      editor: {
+        type: EditorType.longText
+      },
       minWidth: 100,
       onCellChange: (args: OnEventArgs) => {
         console.log(args);
         this.alertWarning = `Updated Title: ${args.dataContext.title}`;
       }
     }, {
+      id: 'title2',
+      name: 'Title, Custom Editor',
+      field: 'title',
+      sortable: true,
+      type: FieldType.string,
+      editor: {
+        type: EditorType.custom,
+        customEditor: CustomInputEditor
+      },
+      minWidth: 70
+    }, {
       id: 'duration',
       name: 'Duration (days)',
       field: 'duration',
       sortable: true,
       type: FieldType.number,
-      editor: Editors.float,
-      params: { decimalPlaces: 2 },
+      editor: {
+        type: EditorType.float,
+        params: { decimalPlaces: 2 },
+      },
       minWidth: 100
     }, {
       id: 'complete',
@@ -114,15 +122,22 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       field: 'percentComplete',
       formatter: Formatters.multiple,
       type: FieldType.number,
-      editor: Editors.singleSelect,
-      minWidth: 100,
-      params: {
-        formatters: [ Formatters.collection, Formatters.percentCompleteBar ],
+      editor: {
+        type: EditorType.singleSelect,
         collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k })),
+        collectionFilterBy: {
+          property: 'value',
+          value: 0,
+          operator: OperatorType.notEqual
+        },
         collectionSortBy: {
           property: 'label',
           sortDesc: true
-        },
+        }
+      },
+      minWidth: 100,
+      params: {
+        formatters: [ Formatters.collectionEditor, Formatters.percentCompleteBar ]
       }
     }, {
       id: 'start',
@@ -132,7 +147,9 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       sortable: true,
       minWidth: 100,
       type: FieldType.date,
-      editor: Editors.date
+      editor: {
+        type: EditorType.date
+      }
     }, {
       id: 'finish',
       name: 'Finish',
@@ -141,14 +158,18 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       sortable: true,
       minWidth: 100,
       type: FieldType.date,
-      editor: Editors.date
+      editor: {
+        type: EditorType.date
+      }
     }, {
       id: 'effort-driven',
       name: 'Effort Driven',
       field: 'effortDriven',
       formatter: Formatters.checkmark,
       type: FieldType.number,
-      editor: Editors.checkbox,
+      editor: {
+        type: EditorType.checkbox
+      },
       minWidth: 60
     }, {
       id: 'prerequisites',
@@ -156,9 +177,8 @@ export class GridEditorComponent implements OnInit, OnDestroy {
       field: 'prerequisites',
       sortable: true,
       type: FieldType.string,
-      editor: Editors.multipleSelect,
-      minWidth: 100,
-      params: {
+      editor: {
+        type: EditorType.multipleSelect,
         collection: Array.from(Array(12).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
         collectionSortBy: {
           property: 'label',
@@ -166,9 +186,11 @@ export class GridEditorComponent implements OnInit, OnDestroy {
         },
         collectionFilterBy: {
           property: 'label',
-          value: 'Task 2'
+          value: [ 'Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5', 'Task 6' ],
+          operator: OperatorType.contains
         }
-      }
+      },
+      minWidth: 100
     }];
 
     this.gridOptions = {
@@ -188,9 +210,7 @@ export class GridEditorComponent implements OnInit, OnDestroy {
         this._commandQueue.push(editCommand);
         editCommand.execute();
       },
-      params: {
-        i18n: this.translate
-      }
+      i18n: this.translate
     };
 
     this.getData();
@@ -220,37 +240,36 @@ export class GridEditorComponent implements OnInit, OnDestroy {
     this.dataset = mockedDataset;
   }
 
+  angularGridReady(angularGrid: AngularGridInstance) {
+    this.angularGrid = angularGrid;
+  }
+
   gridReady(grid) {
     this.gridObj = grid;
-
-    grid.onCellChange.subscribe((e, args) => {
-      console.log('onCellChange', args);
-      this.updatedObject = args.item;
-      this.resizer.resizeGrid(10);
-    });
-
-    // You could also subscribe to grid.onClick
-    // Note that if you had already setup "onCellClick" in the column definition, you cannot use grid.onClick
-    grid.onClick.subscribe((e, args) => {
-      const column = GridExtraUtils.getColumnDefinitionAndData(args);
-      console.log('onClick', args, column);
-      if (column.columnDef.id === 'edit') {
-        this.alertWarning = `open a modal window to edit: ${column.dataContext.title}`;
-
-        // highlight the row, to customize the color, you can change the SASS variable $row-highlight-background-color
-        this.gridExtraService.highlightRow(args.row, 1500);
-
-        // you could also select the row, when using "enableCellNavigation: true", it automatically selects the row
-        // this.gridExtraService.setSelectedRow(args.row);
-      } else if (column.columnDef.id === 'delete') {
-        if (confirm('Are you sure?')) {
-          this.gridExtraService.deleteDataGridItemById(column.dataContext.id);
-        }
-      }
-    });
   }
-  dataviewReady(dataview) {
-    this.dataviewObj = dataview;
+
+  onCellChanged(e, args) {
+    this.updatedObject = args.item;
+    this.angularGrid.resizerService.resizeGrid(10);
+  }
+
+  onCellClicked(e, args) {
+    const metadata = this.angularGrid.gridService.getColumnFromEventArguments(args);
+    console.log(metadata);
+
+    if (metadata.columnDef.id === 'edit') {
+      this.alertWarning = `open a modal window to edit: ${metadata.dataContext.title}`;
+
+      // highlight the row, to customize the color, you can change the SASS variable $row-highlight-background-color
+      this.angularGrid.gridService.highlightRow(args.row, 1500);
+
+      // you could also select the row, when using "enableCellNavigation: true", it automatically selects the row
+      // this.angularGrid.gridService.setSelectedRow(args.row);
+    } else if (metadata.columnDef.id === 'delete') {
+      if (confirm('Are you sure?')) {
+        this.angularGrid.gridService.deleteDataGridItemById(metadata.dataContext.id);
+      }
+    }
   }
 
   setAutoEdit(isAutoEdit) {

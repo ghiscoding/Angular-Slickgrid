@@ -41,8 +41,8 @@ export class FloatEditor implements Editor {
 
   getDecimalPlaces() {
     // returns the number of fixed decimal places or null
-    const columnParams = this.args.column.params || {};
-    let rtn = (columnParams && columnParams.hasOwnProperty('decimalPlaces')) ? columnParams.decimalPlaces : undefined;
+    const columnEditor = this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+    let rtn = (columnEditor && columnEditor.params && columnEditor.params.hasOwnProperty('decimalPlaces')) ? columnEditor.params.decimalPlaces : undefined;
     if (rtn === undefined) {
       rtn = defaultDecimalPlaces;
     }
