@@ -1369,9 +1369,9 @@ class CompoundDateFilter {
      * @return {?}
      */
     getCurrentLocale(columnDef, gridOptions) {
-        const /** @type {?} */ params = gridOptions.params || columnDef.params || {};
-        if (params.i18n && params.i18n instanceof TranslateService) {
-            return params.i18n.currentLang;
+        const /** @type {?} */ options = gridOptions || columnDef.params || {};
+        if (options.i18n && options.i18n instanceof TranslateService) {
+            return options.i18n.currentLang;
         }
         return 'en';
     }
@@ -4307,7 +4307,7 @@ class GraphqlService {
         }
         if (this.options.addLocaleIntoQuery) {
             // first: 20, ... locale: "en-CA"
-            datasetFilters.locale = (this._gridOptions.params && this._gridOptions.params.i18n && this._gridOptions.params.i18n.currentLang) || 'en';
+            datasetFilters.locale = this._gridOptions && this._gridOptions.i18n && this._gridOptions.i18n.currentLang || 'en';
         }
         if (this.options.extraQueryArguments) {
             // first: 20, ... userId: 123
@@ -6344,9 +6344,9 @@ class DateEditor {
      * @return {?}
      */
     getCurrentLocale(columnDef, gridOptions) {
-        const /** @type {?} */ params = gridOptions || columnDef.params || {};
-        if (params.i18n && params.i18n instanceof TranslateService) {
-            return params.i18n.currentLang;
+        const /** @type {?} */ options = gridOptions || columnDef.params || {};
+        if (options.i18n && options.i18n instanceof TranslateService) {
+            return options.i18n.currentLang;
         }
         return 'en';
     }
@@ -6830,8 +6830,8 @@ class MultipleSelectEditor {
          */
         this.collection = [];
         this.gridOptions = /** @type {?} */ (this.args.grid.getOptions());
-        const /** @type {?} */ params = this.gridOptions.params || this.args.column.params || {};
-        this._translate = params.i18n;
+        const /** @type {?} */ options = this.gridOptions || this.args.column.params || {};
+        this._translate = options.i18n;
         this.defaultOptions = {
             container: 'body',
             filter: false,
@@ -7058,8 +7058,8 @@ class SingleSelectEditor {
          */
         this.collection = [];
         this.gridOptions = /** @type {?} */ (this.args.grid.getOptions());
-        const /** @type {?} */ params = this.gridOptions.params || this.args.column.params || {};
-        this._translate = params.i18n;
+        const /** @type {?} */ options = this.gridOptions || this.args.column.params || {};
+        this._translate = options.i18n;
         this.defaultOptions = {
             container: 'body',
             filter: false,
@@ -7748,8 +7748,8 @@ const progressBarFormatter = (row, cell, value, columnDef, dataContext) => {
  */
 const translateFormatter = (row, cell, value, columnDef, dataContext, grid) => {
     const /** @type {?} */ gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
-    const /** @type {?} */ columnParams = columnDef.params || {};
-    const /** @type {?} */ translate = gridOptions.i18n || columnParams.i18n;
+    const /** @type {?} */ options = gridOptions || columnDef.params || {};
+    const /** @type {?} */ translate = options.i18n;
     if (!translate || typeof translate.instant !== 'function') {
         throw new Error(`The translate formatter requires the "ngx-translate" Service to be provided as a Grid Options or Column Definition "i18n".
     For example: this.gridOptions = { enableTranslate: true, i18n: this.translate }`);
@@ -7770,8 +7770,8 @@ const translateFormatter = (row, cell, value, columnDef, dataContext, grid) => {
  */
 const translateBooleanFormatter = (row, cell, value, columnDef, dataContext, grid) => {
     const /** @type {?} */ gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
-    const /** @type {?} */ columnParams = columnDef.params || {};
-    const /** @type {?} */ translate = gridOptions.i18n || columnParams.i18n;
+    const /** @type {?} */ options = gridOptions || columnDef.params || {};
+    const /** @type {?} */ translate = options.i18n;
     if (!translate || typeof translate.instant !== 'function') {
         throw new Error(`The translate formatter requires the "ngx-translate" Service to be provided as a Grid Options or Column Definition "i18n".
     For example: this.gridOptions = { enableTranslate: true, i18n: this.translate }`);
