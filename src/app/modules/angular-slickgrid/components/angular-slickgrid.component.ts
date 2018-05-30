@@ -94,7 +94,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   @Output() onBeforeGridCreate = new EventEmitter<boolean>();
   @Output() onBeforeGridDestroy = new EventEmitter<any>();
   @Output() onAfterGridDestroyed = new EventEmitter<boolean>();
-  @Output() onGridStateServiceChanged = new EventEmitter<GridStateChange>();
+  @Output() onGridStateChanged = new EventEmitter<GridStateChange>();
   @Input() gridId: string;
   @Input() gridOptions: GridOption;
   @Input() gridHeight = 0;
@@ -371,7 +371,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // expose GridState Service changes event through dispatch
     this._gridStateSubscriber = this.gridStateService.onGridStateChanged.subscribe((gridStateChange: GridStateChange) => {
-      this.onGridStateServiceChanged.emit(gridStateChange);
+      this.onGridStateChanged.emit(gridStateChange);
     });
 
 
