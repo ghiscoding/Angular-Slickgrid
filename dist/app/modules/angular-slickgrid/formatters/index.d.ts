@@ -7,6 +7,7 @@ export declare const Formatters: {
     checkmark: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     complexObject: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     collection: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    collectionEditor: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateIso: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateTimeIso: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateTimeIsoAmPm: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
@@ -23,8 +24,10 @@ export declare const Formatters: {
     infoIcon: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     lowercase: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     multiple: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    percent: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     percentComplete: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     percentCompleteBar: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    percentSymbol: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     progressBar: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     translate: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     translateBoolean: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;

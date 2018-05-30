@@ -18,14 +18,14 @@ import 'slickgrid/plugins/slick.headerbuttons';
 import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
-import { AfterViewInit, EventEmitter, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, EventEmitter, OnDestroy, OnInit, ElementRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Column, GridOption, GridStateChange, Pagination } from './../models/index';
+import { AngularGridInstance, Column, EditorType, GridOption, GridStateChange, Pagination } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
 import { GridEventService } from './../services/gridEvent.service';
-import { GridExtraService } from './../services/gridExtra.service';
+import { GridService } from './../services/grid.service';
 import { GridStateService } from './../services/gridState.service';
 import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
 import { ResizerService } from './../services/resizer.service';
@@ -34,7 +34,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private controlAndPluginService;
     private exportService;
     private filterService;
-    private gridExtraService;
+    private gridService;
     private gridEventService;
     private gridStateService;
     private groupingAndColspanService;
@@ -42,6 +42,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private sortService;
     private translate;
     private forRootConfig;
+    customElm: ElementRef;
     private _dataset;
     private _columnDefinitions;
     private _dataView;
@@ -56,6 +57,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     groupItemMetadataProvider: any;
     showPagination: boolean;
     isGridInitialized: boolean;
+    onAngularGridCreated: EventEmitter<AngularGridInstance>;
     onDataviewCreated: EventEmitter<any>;
     onGridCreated: EventEmitter<any>;
     onGridInitialized: EventEmitter<any>;
@@ -69,12 +71,19 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridWidth: number;
     columnDefinitions: Column[];
     dataset: any[];
-    constructor(controlAndPluginService: ControlAndPluginService, exportService: ExportService, filterService: FilterService, gridExtraService: GridExtraService, gridEventService: GridEventService, gridStateService: GridStateService, groupingAndColspanService: GroupingAndColspanService, resizer: ResizerService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
+    constructor(controlAndPluginService: ControlAndPluginService, exportService: ExportService, filterService: FilterService, gridService: GridService, gridEventService: GridEventService, gridStateService: GridStateService, groupingAndColspanService: GroupingAndColspanService, resizer: ResizerService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
     ngOnInit(): void;
     ngOnDestroy(): void;
     destroy(): void;
     ngAfterViewInit(): void;
     initialization(): void;
+    /**
+     * From the list of available editors, find the editor associated to it's type
+     * and if it's a custom one, return the "customEditor" from the column
+     * @param type
+     * @param column
+     */
+    getEditor(type: EditorType, column: Column): any;
     /**
      * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
      * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
@@ -90,7 +99,12 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
      * @param dataset
      */
     refreshGridData(dataset: any[], totalCount?: number): void;
-    updateColumnDefinitionsList(dynamicColumns: any): void;
+    /**
+     * Dynamically change or update the column definitions list.
+     * We will re-render the grid so that the new header and data shows up correctly.
+     * If using i18n, we also need to trigger a re-translate of the column headers
+     */
+    updateColumnDefinitionsList(newColumnDefinitions: any): void;
     /** Toggle the filter row displayed on first row
      * @param isShowing
      */

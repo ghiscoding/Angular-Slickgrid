@@ -1,3 +1,4 @@
+import { EditorType } from './../models/editorType.enum';
 import { CheckboxEditor } from './checkboxEditor';
 import { DateEditor } from './dateEditor';
 import { FloatEditor } from './floatEditor';
@@ -6,6 +7,11 @@ import { LongTextEditor } from './longTextEditor';
 import { MultipleSelectEditor } from './multipleSelectEditor';
 import { SingleSelectEditor } from './singleSelectEditor';
 import { TextEditor } from './textEditor';
+export declare class AvailableEditor {
+    type: EditorType;
+    editor: any;
+    constructor(type: EditorType, editor: any);
+}
 export declare const Editors: {
     checkbox: typeof CheckboxEditor;
     date: typeof DateEditor;
@@ -16,3 +22,4 @@ export declare const Editors: {
     singleSelect: typeof SingleSelectEditor;
     text: typeof TextEditor;
 };
+export declare const AVAILABLE_EDITORS: AvailableEditor[];

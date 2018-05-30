@@ -1,5 +1,4 @@
 import { QueryArgument } from './queryArgument.interface';
-import { BackendEventChanged } from './backendEventChanged.interface';
 export interface BackendServiceOption {
     /** Array of column ids that are included in the column definitions */
     datasetName?: string;
@@ -17,6 +16,4 @@ export interface BackendServiceOption {
      * users (first: 20, offset: 10, userId: 123) { ... }
      */
     extraQueryArguments?: QueryArgument[];
-    /** Backend Event callbacks that will be used by the Backend Service */
-    onBackendEventApi?: BackendEventChanged;
 }

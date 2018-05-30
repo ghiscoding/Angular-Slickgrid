@@ -111,6 +111,26 @@ var DelimiterType = {
     doublePipe: '||',
     doubleSemicolon: ';;',
 };
+var EditorType = {
+    custom: 0,
+    checkbox: 1,
+    date: 2,
+    float: 3,
+    integer: 4,
+    longText: 5,
+    multipleSelect: 6,
+    singleSelect: 7,
+    text: 8,
+};
+EditorType[EditorType.custom] = "custom";
+EditorType[EditorType.checkbox] = "checkbox";
+EditorType[EditorType.date] = "date";
+EditorType[EditorType.float] = "float";
+EditorType[EditorType.integer] = "integer";
+EditorType[EditorType.longText] = "longText";
+EditorType[EditorType.multipleSelect] = "multipleSelect";
+EditorType[EditorType.singleSelect] = "singleSelect";
+EditorType[EditorType.text] = "text";
 var FieldType = {
     unknown: 0,
     string: 1,
@@ -180,22 +200,6 @@ FilterType[FilterType.singleSelect] = "singleSelect";
 FilterType[FilterType.custom] = "custom";
 FilterType[FilterType.compoundDate] = "compoundDate";
 FilterType[FilterType.compoundInput] = "compoundInput";
-var FormElementType = {
-    input: 0,
-    select: 1,
-    multipleSelect: 2,
-    singleSelect: 3,
-    custom: 4,
-    inputNoPlaceholder: 5,
-    textarea: 6,
-};
-FormElementType[FormElementType.input] = "input";
-FormElementType[FormElementType.select] = "select";
-FormElementType[FormElementType.multipleSelect] = "multipleSelect";
-FormElementType[FormElementType.singleSelect] = "singleSelect";
-FormElementType[FormElementType.custom] = "custom";
-FormElementType[FormElementType.inputNoPlaceholder] = "inputNoPlaceholder";
-FormElementType[FormElementType.textarea] = "textarea";
 var GridStateType = {
     filter: 'filter',
     pagination: 'pagination',
@@ -550,47 +554,36 @@ function toKebabCase(str) {
     return toCamelCase(str).replace(/([A-Z])/g, '-$1').toLowerCase();
 }
 var moment$1 = moment_;
+function compareDates(value1, value2, format, sortDirection, strict) {
+    var diff = 0;
+    if (value1 === null || value1 === '' || !moment$1(value1, format, strict).isValid()) {
+        diff = -1;
+    }
+    else if (value2 === null || value2 === '' || !moment$1(value2, format, strict).isValid()) {
+        diff = 1;
+    }
+    else {
+        var date1 = moment$1(value1, format, strict);
+        var date2 = moment$1(value2, format, strict);
+        diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    }
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+}
 var FORMAT = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
 var dateUsShortSorter = function (value1, value2, sortDirection) {
-    if (!moment$1(value1, FORMAT, true).isValid() || !moment$1(value2, FORMAT, true).isValid()) {
-        return 0;
-    }
-    var date1 = moment$1(value1, FORMAT, true);
-    var date2 = moment$1(value2, FORMAT, true);
-    var diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+    return compareDates(value1, value2, FORMAT, sortDirection, true);
 };
 var moment$2 = moment_;
 var dateSorter = function (value1, value2, sortDirection) {
-    if (!moment$2(value1, moment$2.ISO_8601).isValid() || !moment$2(value2, moment$2.ISO_8601, true).isValid()) {
-        return 0;
-    }
-    var date1 = moment$2(value1);
-    var date2 = moment$2(value2);
-    var diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+    return compareDates(value1, value2, moment$2.ISO_8601, sortDirection);
 };
-var moment$3 = moment_;
 var FORMAT$1 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
 var dateIsoSorter = function (value1, value2, sortDirection) {
-    if (!moment$3(value1, FORMAT$1, true).isValid() || !moment$3(value2, FORMAT$1, true).isValid()) {
-        return 0;
-    }
-    var date1 = moment$3(value1, FORMAT$1, true);
-    var date2 = moment$3(value2, FORMAT$1, true);
-    var diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+    return compareDates(value1, value2, FORMAT$1, sortDirection, true);
 };
-var moment$4 = moment_;
 var FORMAT$2 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
 var dateUsSorter = function (value1, value2, sortDirection) {
-    if (!moment$4(value1, FORMAT$2, true).isValid() || !moment$4(value2, FORMAT$2, true).isValid()) {
-        return 0;
-    }
-    var date1 = moment$4(value1, FORMAT$2, true);
-    var date2 = moment$4(value2, FORMAT$2, true);
-    var diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+    return compareDates(value1, value2, FORMAT$2, sortDirection, true);
 };
 var numericSorter = function (value1, value2, sortDirection) {
     var x = (isNaN(value1) || value1 === '' || value1 === null) ? -99e+10 : parseFloat(value1);
@@ -653,23 +646,33 @@ var CollectionService = /** @class */ (function () {
         this.translate = translate;
     }
     CollectionService.prototype.filterCollection = function (collection, filterBy) {
-        var filteredCollection;
+        var filteredCollection = [];
         if (filterBy) {
             var property_1 = filterBy.property || '';
             var operator = filterBy.operator || OperatorType.equal;
-            var value_1 = filterBy.value || '';
-            if (operator === OperatorType.equal) {
-                filteredCollection = collection.filter(function (item) { return item[property_1] !== value_1; });
-            }
-            else {
-                filteredCollection = collection.filter(function (item) { return item[property_1] === value_1; });
+            var value_1 = typeof filterBy.value === 'undefined' ? '' : filterBy.value;
+            switch (operator) {
+                case OperatorType.equal:
+                    filteredCollection = collection.filter(function (item) { return item[property_1] === value_1; });
+                    break;
+                case OperatorType.in:
+                    filteredCollection = collection.filter(function (item) { return item[property_1].indexOf(value_1) !== -1; });
+                    break;
+                case OperatorType.notIn:
+                    filteredCollection = collection.filter(function (item) { return item[property_1].indexOf(value_1) === -1; });
+                    break;
+                case OperatorType.contains:
+                    filteredCollection = collection.filter(function (item) { return value_1.indexOf(item[property_1]) !== -1; });
+                    break;
+                default:
+                    filteredCollection = collection.filter(function (item) { return item[property_1] !== value_1; });
             }
         }
         return filteredCollection;
     };
     CollectionService.prototype.sortCollection = function (collection, sortBy, enableTranslateLabel) {
         var _this = this;
-        var sortedCollection;
+        var sortedCollection = [];
         if (sortBy) {
             var property_2 = sortBy.property || '';
             var sortDirection_1 = sortBy.hasOwnProperty('sortDesc') ? (sortBy.sortDesc ? -1 : 1) : 1;
@@ -695,7 +698,8 @@ function parseBoolean(str) {
     return /(true|1)/i.test(str + '');
 }
 var booleanFilterCondition = function (options) {
-    return parseBoolean(options.cellValue) === parseBoolean(options.searchTerm);
+    var searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
+    return parseBoolean(options.cellValue) === parseBoolean(searchTerm);
 };
 var testFilterCondition = function (operator, value1, value2) {
     switch (operator) {
@@ -717,55 +721,60 @@ var testFilterCondition = function (operator, value1, value2) {
     }
     return true;
 };
-var moment$5 = moment_;
+var moment$3 = moment_;
 var dateFilterCondition = function (options) {
+    var searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
     var filterSearchType = options.filterSearchType || FieldType.dateIso;
     var searchDateFormat = mapMomentDateFormatWithFieldType(filterSearchType);
-    if (!moment$5(options.cellValue, moment$5.ISO_8601).isValid() || !moment$5(options.searchTerm, searchDateFormat, true).isValid()) {
-        return true;
+    if (searchTerm === null || searchTerm === '' || !moment$3(options.cellValue, moment$3.ISO_8601).isValid() || !moment$3(searchTerm, searchDateFormat, true).isValid()) {
+        return false;
     }
-    var dateCell = moment$5(options.cellValue);
-    var dateSearch = moment$5(options.searchTerm);
+    var dateCell = moment$3(options.cellValue);
+    var dateSearch = moment$3(searchTerm);
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+var moment$4 = moment_;
+var FORMAT$3 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
+var dateIsoFilterCondition = function (options) {
+    var searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
+    if (searchTerm === null || searchTerm === '' || !moment$4(options.cellValue, FORMAT$3, true).isValid() || !moment$4(searchTerm, FORMAT$3, true).isValid()) {
+        return false;
+    }
+    var dateCell = moment$4(options.cellValue, FORMAT$3, true);
+    var dateSearch = moment$4(searchTerm, FORMAT$3, true);
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+var moment$5 = moment_;
+var FORMAT$4 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
+var dateUsFilterCondition = function (options) {
+    var searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
+    if (searchTerm === null || searchTerm === '' || !moment$5(options.cellValue, FORMAT$4, true).isValid() || !moment$5(searchTerm, FORMAT$4, true).isValid()) {
+        return false;
+    }
+    var dateCell = moment$5(options.cellValue, FORMAT$4, true);
+    var dateSearch = moment$5(searchTerm, FORMAT$4, true);
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
 var moment$6 = moment_;
-var FORMAT$3 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-var dateIsoFilterCondition = function (options) {
-    if (!moment$6(options.cellValue, FORMAT$3, true).isValid() || !moment$6(options.searchTerm, FORMAT$3, true).isValid()) {
-        return true;
+var FORMAT$5 = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
+var dateUsShortFilterCondition = function (options) {
+    var searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
+    if (searchTerm === null || searchTerm === '' || !moment$6(options.cellValue, FORMAT$5, true).isValid() || !moment$6(searchTerm, FORMAT$5, true).isValid()) {
+        return false;
     }
-    var dateCell = moment$6(options.cellValue, FORMAT$3, true);
-    var dateSearch = moment$6(options.searchTerm, FORMAT$3, true);
+    var dateCell = moment$6(options.cellValue, FORMAT$5, true);
+    var dateSearch = moment$6(searchTerm, FORMAT$5, true);
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
 var moment$7 = moment_;
-var FORMAT$4 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-var dateUsFilterCondition = function (options) {
-    if (!moment$7(options.cellValue, FORMAT$4, true).isValid() || !moment$7(options.searchTerm, FORMAT$4, true).isValid()) {
-        return true;
-    }
-    var dateCell = moment$7(options.cellValue, FORMAT$4, true);
-    var dateSearch = moment$7(options.searchTerm, FORMAT$4, true);
-    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
-};
-var moment$8 = moment_;
-var FORMAT$5 = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
-var dateUsShortFilterCondition = function (options) {
-    if (!moment$8(options.cellValue, FORMAT$5, true).isValid() || !moment$8(options.searchTerm, FORMAT$5, true).isValid()) {
-        return true;
-    }
-    var dateCell = moment$8(options.cellValue, FORMAT$5, true);
-    var dateSearch = moment$8(options.searchTerm, FORMAT$5, true);
-    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
-};
-var moment$9 = moment_;
 var dateUtcFilterCondition = function (options) {
+    var searchTerms = Array.isArray(options.searchTerms) && options.searchTerms[0] || [];
     var searchDateFormat = mapMomentDateFormatWithFieldType(options.filterSearchType || options.fieldType);
-    if (!moment$9(options.cellValue, moment$9.ISO_8601).isValid() || !moment$9(options.searchTerm, searchDateFormat, true).isValid()) {
+    if (!moment$7(options.cellValue, moment$7.ISO_8601).isValid() || !moment$7(searchTerms[0], searchDateFormat, true).isValid()) {
         return true;
     }
-    var dateCell = moment$9(options.cellValue, moment$9.ISO_8601, true);
-    var dateSearch = moment$9(options.searchTerm, searchDateFormat, true);
+    var dateCell = moment$7(options.cellValue, moment$7.ISO_8601, true);
+    var dateSearch = moment$7(searchTerms[0], searchDateFormat, true);
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
 var collectionSearchFilterCondition = function (options) {
@@ -774,13 +783,19 @@ var collectionSearchFilterCondition = function (options) {
 };
 var numberFilterCondition = function (options) {
     var cellValue = parseFloat(options.cellValue);
-    var searchTerm = (typeof options.searchTerm === 'string') ? parseFloat(options.searchTerm) : options.searchTerm;
+    var searchTerm = (Array.isArray(options.searchTerms) && options.searchTerms[0]) || 0;
+    if (typeof searchTerm === 'string') {
+        searchTerm = parseFloat(searchTerm);
+    }
     return testFilterCondition(options.operator || '==', cellValue, searchTerm);
 };
 var stringFilterCondition = function (options) {
     options.cellValue = (options.cellValue === undefined || options.cellValue === null) ? '' : options.cellValue.toString();
     var cellValue = options.cellValue.toLowerCase();
-    var searchTerm = (typeof options.searchTerm === 'string') ? options.searchTerm.toLowerCase() : options.searchTerm;
+    var searchTerm = (Array.isArray(options.searchTerms) && options.searchTerms[0]) || '';
+    if (typeof searchTerm === 'string') {
+        searchTerm = searchTerm.toLowerCase();
+    }
     if (options.operator === '*' || options.operator === OperatorType.endsWith) {
         return cellValue.endsWith(searchTerm);
     }
@@ -836,17 +851,22 @@ var CompoundDateFilter = /** @class */ (function () {
     function CompoundDateFilter(translate) {
         this.translate = translate;
     }
+    Object.defineProperty(CompoundDateFilter.prototype, "gridOptions", {
+        get: function () {
+            return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+        },
+        enumerable: true,
+        configurable: true
+    });
     CompoundDateFilter.prototype.init = function (args) {
         var _this = this;
         this.grid = args.grid;
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.operator = args.operator;
-        this.searchTerm = args.searchTerm;
-        if (this.grid && typeof this.grid.getOptions === 'function') {
-            this.gridOptions = this.grid.getOptions();
-        }
-        this.$filterElm = this.createDomElement();
+        this.searchTerms = args.searchTerms || [];
+        var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+        this.$filterElm = this.createDomElement(searchTerm);
         this.$filterInputElm.keyup(function (e) {
             _this.onTriggerEvent(e);
         });
@@ -868,8 +888,8 @@ var CompoundDateFilter = /** @class */ (function () {
         }
     };
     CompoundDateFilter.prototype.setValues = function (values) {
-        if (values) {
-            this.flatInstance.setDate(values);
+        if (values && Array.isArray(values)) {
+            this.flatInstance.setDate(values[0]);
         }
     };
     CompoundDateFilter.prototype.buildDatePickerInput = function (searchTerm) {
@@ -925,12 +945,11 @@ var CompoundDateFilter = /** @class */ (function () {
             { operator: ('<>'), description: '' }
         ];
     };
-    CompoundDateFilter.prototype.createDomElement = function () {
+    CompoundDateFilter.prototype.createDomElement = function (searchTerm) {
         var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
-        var searchTerm = ((this.searchTerm || ''));
         if (searchTerm) {
-            this._currentValue = searchTerm;
+            this._currentValue = (searchTerm);
         }
         this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
         this.$filterInputElm = this.buildDatePickerInput(searchTerm);
@@ -946,7 +965,7 @@ var CompoundDateFilter = /** @class */ (function () {
         if (this.operator) {
             this.$selectOperatorElm.val(this.operator);
         }
-        if (this.searchTerm) {
+        if (searchTerm) {
             $filterContainerElm.addClass('filled');
         }
         if ($filterContainerElm && typeof $filterContainerElm.appendTo === 'function') {
@@ -971,7 +990,7 @@ var CompoundDateFilter = /** @class */ (function () {
     CompoundDateFilter.prototype.onTriggerEvent = function (e) {
         var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
         (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-        this.callback(e, { columnDef: this.columnDef, searchTerm: this._currentValue, operator: selectedOperator || '=' });
+        this.callback(e, { columnDef: this.columnDef, searchTerms: [this._currentValue], operator: selectedOperator || '=' });
     };
     CompoundDateFilter.prototype.hide = function () {
         if (this.flatInstance && typeof this.flatInstance.close === 'function') {
@@ -995,17 +1014,22 @@ var CompoundInputFilter = /** @class */ (function () {
     function CompoundInputFilter(translate) {
         this.translate = translate;
     }
+    Object.defineProperty(CompoundInputFilter.prototype, "gridOptions", {
+        get: function () {
+            return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+        },
+        enumerable: true,
+        configurable: true
+    });
     CompoundInputFilter.prototype.init = function (args) {
         var _this = this;
         this.grid = args.grid;
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.operator = args.operator;
-        this.searchTerm = args.searchTerm;
-        if (this.grid && typeof this.grid.getOptions === 'function') {
-            this.gridOptions = this.grid.getOptions();
-        }
-        this.$filterElm = this.createDomElement();
+        this.searchTerms = args.searchTerms || [];
+        var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+        this.$filterElm = this.createDomElement(searchTerm);
         this.$filterInputElm.keyup(function (e) {
             _this.onTriggerEvent(e);
         });
@@ -1030,8 +1054,8 @@ var CompoundInputFilter = /** @class */ (function () {
         }
     };
     CompoundInputFilter.prototype.setValues = function (values) {
-        if (values) {
-            this.$filterElm.val(values);
+        if (values && Array.isArray(values)) {
+            this.$filterElm.val(values[0]);
         }
     };
     CompoundInputFilter.prototype.buildInputHtmlString = function () {
@@ -1072,7 +1096,7 @@ var CompoundInputFilter = /** @class */ (function () {
         }
         return optionValues;
     };
-    CompoundInputFilter.prototype.createDomElement = function () {
+    CompoundInputFilter.prototype.createDomElement = function (searchTerm) {
         var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
         this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
@@ -1085,13 +1109,12 @@ var CompoundInputFilter = /** @class */ (function () {
         $containerInputGroup.append(this.$filterInputElm);
         $filterContainerElm.append($containerInputGroup);
         $filterContainerElm.attr('id', "filter-" + this.columnDef.id);
-        var searchTerm = (typeof this.searchTerm === 'boolean') ? "" + this.searchTerm : this.searchTerm;
         this.$filterInputElm.val(searchTerm);
         this.$filterInputElm.data('columnId', this.columnDef.id);
         if (this.operator) {
             this.$selectOperatorElm.val(this.operator);
         }
-        if (this.searchTerm) {
+        if (searchTerm) {
             $filterContainerElm.addClass('filled');
         }
         if ($filterContainerElm && typeof $filterContainerElm.appendTo === 'function') {
@@ -1103,7 +1126,7 @@ var CompoundInputFilter = /** @class */ (function () {
         var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
         var value = this.$filterInputElm.val();
         (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-        this.callback(e, { columnDef: this.columnDef, searchTerm: value, operator: selectedOperator || '' });
+        this.callback(e, { columnDef: this.columnDef, searchTerms: [value], operator: selectedOperator || '' });
     };
     return CompoundInputFilter;
 }());
@@ -1116,17 +1139,22 @@ CompoundInputFilter.ctorParameters = function () { return [
 var InputFilter = /** @class */ (function () {
     function InputFilter() {
     }
+    Object.defineProperty(InputFilter.prototype, "gridOptions", {
+        get: function () {
+            return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+        },
+        enumerable: true,
+        configurable: true
+    });
     InputFilter.prototype.init = function (args) {
         var _this = this;
         this.grid = args.grid;
         this.callback = args.callback;
         this.columnDef = args.columnDef;
-        this.searchTerm = args.searchTerm;
-        if (this.grid && typeof this.grid.getOptions === 'function') {
-            this.gridOptions = this.grid.getOptions();
-        }
+        this.searchTerms = args.searchTerms || [];
+        var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
         var filterTemplate = this.buildTemplateHtmlString();
-        this.$filterElm = this.createDomElement(filterTemplate);
+        this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
         this.$filterElm.keyup(function (e) {
             (e && e.target && e.target.value) ? _this.$filterElm.addClass('filled') : _this.$filterElm.removeClass('filled');
             _this.callback(e, { columnDef: _this.columnDef });
@@ -1155,15 +1183,14 @@ var InputFilter = /** @class */ (function () {
         var placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
         return "<input type=\"text\" class=\"form-control search-filter\" placeholder=\"" + placeholder + "\">";
     };
-    InputFilter.prototype.createDomElement = function (filterTemplate) {
+    InputFilter.prototype.createDomElement = function (filterTemplate, searchTerm) {
         var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
         var $filterElm = $(filterTemplate);
-        var searchTerm = (typeof this.searchTerm === 'boolean') ? "" + this.searchTerm : this.searchTerm;
         $filterElm.val(searchTerm);
         $filterElm.attr('id', "filter-" + this.columnDef.id);
         $filterElm.data('columnId', this.columnDef.id);
-        if (this.searchTerm) {
+        if (searchTerm) {
             $filterElm.addClass('filled');
         }
         if ($filterElm && typeof $filterElm.appendTo === 'function') {
@@ -1204,6 +1231,13 @@ var MultipleSelectFilter = /** @class */ (function () {
             }
         };
     }
+    Object.defineProperty(MultipleSelectFilter.prototype, "gridOptions", {
+        get: function () {
+            return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+        },
+        enumerable: true,
+        configurable: true
+    });
     MultipleSelectFilter.prototype.init = function (args) {
         this.grid = args.grid;
         this.callback = args.callback;
@@ -1216,7 +1250,6 @@ var MultipleSelectFilter = /** @class */ (function () {
         this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
         this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         var newCollection = this.columnDef.filter.collection || [];
-        this.gridOptions = this.grid.getOptions();
         if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
             var filterBy = this.columnDef.filter.collectionFilterBy;
             newCollection = this.collectionService.filterCollection(newCollection, filterBy);
@@ -1311,9 +1344,13 @@ var SelectFilter = /** @class */ (function () {
         this.grid = args.grid;
         this.callback = args.callback;
         this.columnDef = args.columnDef;
-        this.searchTerm = args.searchTerm;
+        this.searchTerms = args.searchTerms || [];
+        var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+        if (typeof searchTerm === 'boolean' || typeof searchTerm === 'number') {
+            searchTerm = "" + searchTerm;
+        }
         var filterTemplate = this.buildTemplateHtmlString();
-        this.$filterElm = this.createDomElement(filterTemplate);
+        this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
         this.$filterElm.change(function (e) {
             (e && e.target && e.target.value) ? _this.$filterElm.addClass('filled') : _this.$filterElm.removeClass('filled');
             _this.callback(e, { columnDef: _this.columnDef, operator: 'EQ' });
@@ -1340,13 +1377,10 @@ var SelectFilter = /** @class */ (function () {
     };
     SelectFilter.prototype.buildTemplateHtmlString = function () {
         var _this = this;
-        if (!this.columnDef || !this.columnDef.filter || (!this.columnDef.filter.collection && !this.columnDef.filter.selectOptions)) {
+        if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
             throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
         }
-        if (!this.columnDef.filter.collection && this.columnDef.filter.selectOptions) {
-            console.warn("[Angular-SlickGrid] The Select Filter \"selectOptions\" property will de deprecated in future version. Please use the new \"collection\" property which is more generic and can be used with other Filters (not just Select).");
-        }
-        var optionCollection = this.columnDef.filter.collection || this.columnDef.filter.selectOptions || [];
+        var optionCollection = this.columnDef.filter.collection || [];
         var labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
         var valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         var options = '';
@@ -1360,12 +1394,12 @@ var SelectFilter = /** @class */ (function () {
         });
         return "<select class=\"form-control search-filter\">" + options + "</select>";
     };
-    SelectFilter.prototype.createDomElement = function (filterTemplate) {
+    SelectFilter.prototype.createDomElement = function (filterTemplate, searchTerm) {
         var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
         var $filterElm = $(filterTemplate);
-        var searchTerm = (typeof this.searchTerm === 'boolean') ? "" + this.searchTerm : this.searchTerm;
-        $filterElm.val(searchTerm);
+        var searchTermInput = ((searchTerm || ''));
+        $filterElm.val(searchTermInput);
         $filterElm.attr('id', "filter-" + this.columnDef.id);
         $filterElm.data('columnId', this.columnDef.id);
         if ($filterElm && typeof $filterElm.appendTo === 'function') {
@@ -1399,15 +1433,22 @@ var SingleSelectFilter = /** @class */ (function () {
                     _this.isFilled = false;
                     _this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                _this.callback(undefined, { columnDef: _this.columnDef, operator: 'EQ', searchTerm: selectedItem });
+                _this.callback(undefined, { columnDef: _this.columnDef, operator: 'EQ', searchTerms: [selectedItem] });
             }
         };
     }
+    Object.defineProperty(SingleSelectFilter.prototype, "gridOptions", {
+        get: function () {
+            return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+        },
+        enumerable: true,
+        configurable: true
+    });
     SingleSelectFilter.prototype.init = function (args) {
         this.grid = args.grid;
         this.callback = args.callback;
         this.columnDef = args.columnDef;
-        this.searchTerm = args.searchTerm;
+        this.searchTerms = args.searchTerms;
         if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
             throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
         }
@@ -1415,7 +1456,6 @@ var SingleSelectFilter = /** @class */ (function () {
         this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
         this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         var newCollection = this.columnDef.filter.collection || [];
-        this.gridOptions = this.grid.getOptions();
         if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
             var filterBy = this.columnDef.filter.collectionFilterBy;
             newCollection = this.collectionService.filterCollection(newCollection, filterBy);
@@ -1424,7 +1464,11 @@ var SingleSelectFilter = /** @class */ (function () {
             var sortBy = this.columnDef.filter.collectionSortBy;
             newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
         }
-        var filterTemplate = this.buildTemplateHtmlString(newCollection || []);
+        var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+        if (typeof searchTerm === 'boolean' || typeof searchTerm === 'number') {
+            searchTerm = "" + searchTerm;
+        }
+        var filterTemplate = this.buildTemplateHtmlString(newCollection || [], searchTerm);
         this.createDomElement(filterTemplate);
     };
     SingleSelectFilter.prototype.clear = function (triggerFilterChange) {
@@ -1432,7 +1476,7 @@ var SingleSelectFilter = /** @class */ (function () {
         if (this.$filterElm && this.$filterElm.multipleSelect) {
             this.$filterElm.multipleSelect('setSelects', []);
             if (triggerFilterChange) {
-                this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerm: undefined });
+                this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: [] });
             }
         }
     };
@@ -1447,7 +1491,7 @@ var SingleSelectFilter = /** @class */ (function () {
             this.$filterElm.multipleSelect('setSelects', values);
         }
     };
-    SingleSelectFilter.prototype.buildTemplateHtmlString = function (optionCollection) {
+    SingleSelectFilter.prototype.buildTemplateHtmlString = function (optionCollection, searchTerm) {
         var _this = this;
         var options = '';
         optionCollection.forEach(function (option) {
@@ -1455,7 +1499,7 @@ var SingleSelectFilter = /** @class */ (function () {
                 throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.singleSelect, collection: [ { value: '1', label: 'One' } ]')");
             }
             var labelKey = ((option.labelKey || option[_this.labelName]));
-            var selected = (option[_this.valueName] === _this.searchTerm) ? 'selected' : '';
+            var selected = (option[_this.valueName] === searchTerm) ? 'selected' : '';
             var textLabel = ((option.labelKey || _this.columnDef.filter.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
             options += "<option value=\"" + option[_this.valueName] + "\" " + selected + ">" + textLabel + "</option>";
             if (selected) {
@@ -1541,14 +1585,14 @@ var FilterService = /** @class */ (function () {
                         if (!args || !args.grid) {
                             throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
                         }
-                        backendApi = this._gridOptions.backendServiceApi || this._gridOptions.onBackendEventApi;
+                        backendApi = this._gridOptions.backendServiceApi;
                         if (!backendApi || !backendApi.process || !backendApi.service) {
                             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
                         }
                         if (backendApi.preProcess) {
                             backendApi.preProcess();
                         }
-                        return [4 /*yield*/, backendApi.service.onFilterChanged(event, args)];
+                        return [4 /*yield*/, backendApi.service.processOnFilterChanged(event, args)];
                     case 1:
                         query = _a.sent();
                         this.emitFilterChanged('remote');
@@ -1616,7 +1660,7 @@ var FilterService = /** @class */ (function () {
                 var filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
                 var cellValue = item[columnDef.queryField || columnDef.queryFieldFilter || columnDef.field];
                 var searchTerms = (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null;
-                var fieldSearchValue = (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined;
+                var fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
                 if (typeof fieldSearchValue === 'undefined') {
                     fieldSearchValue = '';
                 }
@@ -1625,7 +1669,7 @@ var FilterService = /** @class */ (function () {
                 var operator = columnFilter.operator || ((matches) ? matches[1] : '');
                 var searchTerm = (!!matches) ? matches[2] : '';
                 var lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
-                if (searchTerms && searchTerms.length > 0) {
+                if (searchTerms && searchTerms.length > 1) {
                     fieldSearchValue = searchTerms.join(',');
                 }
                 else if (typeof fieldSearchValue === 'string') {
@@ -1667,7 +1711,6 @@ var FilterService = /** @class */ (function () {
                 var conditionOptions = {
                     fieldType: fieldType,
                     searchTerms: searchTerms,
-                    searchTerm: searchTerm,
                     cellValue: cellValue,
                     operator: operator,
                     cellValueLastChar: lastValueChar,
@@ -1722,9 +1765,6 @@ var FilterService = /** @class */ (function () {
                     if (columnFilter && columnFilter.searchTerms) {
                         filter.searchTerms = columnFilter.searchTerms;
                     }
-                    else {
-                        filter.searchTerm = (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined;
-                    }
                     if (columnFilter.operator) {
                         filter.operator = columnFilter.operator;
                     }
@@ -1744,12 +1784,12 @@ var FilterService = /** @class */ (function () {
     };
     FilterService.prototype.callbackSearchEvent = function (e, args) {
         if (args) {
-            var searchTerm = args.searchTerm ? args.searchTerm : ((e && e.target) ? ((e.target)).value : undefined);
-            var searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : undefined;
+            var searchTerm = ((e && e.target) ? ((e.target)).value : undefined);
+            var searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : searchTerm ? [searchTerm] : undefined;
             var columnDef = args.columnDef || null;
             var columnId = columnDef ? (columnDef.id || '') : '';
             var operator = args.operator || undefined;
-            if (!searchTerm && (!searchTerms || (Array.isArray(searchTerms) && searchTerms.length === 0))) {
+            if (!searchTerms || (Array.isArray(searchTerms) && searchTerms.length === 0)) {
                 delete this._columnFilters[columnId];
             }
             else {
@@ -1757,7 +1797,6 @@ var FilterService = /** @class */ (function () {
                 var colFilter = {
                     columnId: colId,
                     columnDef: columnDef,
-                    searchTerm: searchTerm,
                     searchTerms: searchTerms,
                 };
                 if (operator) {
@@ -1770,7 +1809,6 @@ var FilterService = /** @class */ (function () {
                 columnDef: args.columnDef || null,
                 columnFilters: this._columnFilters,
                 operator: operator,
-                searchTerm: searchTerm,
                 searchTerms: searchTerms,
                 serviceOptions: this._onFilterChangedOptions,
                 grid: this._grid
@@ -1782,23 +1820,19 @@ var FilterService = /** @class */ (function () {
         var columnId = columnDef.id || '';
         if (columnDef && columnId !== 'selector' && columnDef.filterable) {
             var searchTerms = void 0;
-            var searchTerm = void 0;
             var operator = void 0;
             if (this._columnFilters[columnDef.id]) {
-                searchTerm = this._columnFilters[columnDef.id].searchTerm || undefined;
                 searchTerms = this._columnFilters[columnDef.id].searchTerms || undefined;
                 operator = this._columnFilters[columnDef.id].operator || undefined;
             }
             else if (columnDef.filter) {
                 searchTerms = columnDef.filter.searchTerms || undefined;
-                searchTerm = columnDef.filter.searchTerm || undefined;
                 operator = columnDef.filter.operator || undefined;
-                this.updateColumnFilters(searchTerm, searchTerms, columnDef);
+                this.updateColumnFilters(searchTerms, columnDef);
             }
             var filterArguments = {
                 grid: this._grid,
                 operator: operator,
-                searchTerm: searchTerm,
                 searchTerms: searchTerms,
                 columnDef: columnDef,
                 callback: this.callbackSearchEvent.bind(this)
@@ -1843,8 +1877,8 @@ var FilterService = /** @class */ (function () {
                 else {
                     this._filters[filterExistIndex] = filter_1;
                 }
-                if ((searchTerm || searchTerms) && filter_1.setValues) {
-                    filter_1.setValues(searchTerm || searchTerms);
+                if (searchTerms && filter_1.setValues) {
+                    filter_1.setValues(searchTerms);
                 }
             }
         }
@@ -1869,11 +1903,6 @@ var FilterService = /** @class */ (function () {
                 var columnPreset = filters_1.find(function (presetFilter) {
                     return presetFilter.columnId === columnDef.id;
                 });
-                if (columnPreset && columnPreset.searchTerm) {
-                    columnDef.filter = columnDef.filter || {};
-                    columnDef.filter.operator = columnPreset.operator;
-                    columnDef.filter.searchTerm = columnPreset.searchTerm;
-                }
                 if (columnPreset && columnPreset.searchTerms) {
                     columnDef.filter = columnDef.filter || {};
                     columnDef.filter.operator = columnPreset.operator || columnDef.filter.operator || OperatorType.in;
@@ -1883,16 +1912,7 @@ var FilterService = /** @class */ (function () {
         }
         return this._columnDefinitions;
     };
-    FilterService.prototype.updateColumnFilters = function (searchTerm, searchTerms, columnDef) {
-        if (searchTerm !== undefined && searchTerm !== null && searchTerm !== '') {
-            this._columnFilters[columnDef.id] = {
-                columnId: columnDef.id,
-                columnDef: columnDef,
-                searchTerm: searchTerm,
-                operator: (columnDef && columnDef.filter && columnDef.filter.operator) ? columnDef.filter.operator : null,
-                type: (columnDef && columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input
-            };
-        }
+    FilterService.prototype.updateColumnFilters = function (searchTerms, columnDef) {
         if (searchTerms) {
             this._columnFilters[columnDef.id] = {
                 columnId: columnDef.id,
@@ -2034,7 +2054,7 @@ var ExportService = /** @class */ (function () {
             if (this._hasGroupedItems && idx === 0) {
                 rowOutputString += "\"\"" + delimiter;
             }
-            var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this._exportOptions.exportWithFormatter || this._gridOptions.exportWithFormatter);
+            var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._exportOptions.exportWithFormatter;
             var exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
             var itemData = '';
             if (exportCustomFormatter) {
@@ -2170,14 +2190,14 @@ var SortService = /** @class */ (function () {
                             throw new Error('Something went wrong when trying to attach the "onBackendSortChanged(event, args)" function, it seems that "args" is not populated correctly');
                         }
                         gridOptions = args.grid.getOptions() || {};
-                        backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+                        backendApi = gridOptions.backendServiceApi;
                         if (!backendApi || !backendApi.process || !backendApi.service) {
                             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
                         }
                         if (backendApi.preProcess) {
                             backendApi.preProcess();
                         }
-                        query = backendApi.service.onSortChanged(event, args);
+                        query = backendApi.service.processOnSortChanged(event, args);
                         this.emitSortChanged('remote');
                         observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
@@ -2328,6 +2348,7 @@ var ControlAndPluginService = /** @class */ (function () {
         this.sortService = sortService;
         this.translate = translate;
         this.areVisibleColumnDifferent = false;
+        this.pluginList = [];
     }
     Object.defineProperty(ControlAndPluginService.prototype, "_gridOptions", {
         get: function () {
@@ -2343,6 +2364,12 @@ var ControlAndPluginService = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    ControlAndPluginService.prototype.getPlugin = function (name) {
+        if (name) {
+            return this.pluginList.find(function (p) { return p.name === name; });
+        }
+        return this.pluginList;
+    };
     ControlAndPluginService.prototype.autoResizeColumns = function () {
         this._grid.autosizeColumns();
     };
@@ -2353,23 +2380,31 @@ var ControlAndPluginService = /** @class */ (function () {
         this.visibleColumns = this._columnDefinitions;
         if (this._gridOptions.enableColumnPicker) {
             this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions);
+            this.pluginList.push({ name: 'ColumnPicker', plugin: this.columnPickerControl });
         }
         if (this._gridOptions.enableGridMenu) {
             this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions);
+            this.pluginList.push({ name: 'GridMenu', plugin: this.gridMenuControl });
         }
         if (this._gridOptions.enableAutoTooltip) {
             this.autoTooltipPlugin = new Slick.AutoTooltips(this._gridOptions.autoTooltipOptions || {});
             this._grid.registerPlugin(this.autoTooltipPlugin);
+            this.pluginList.push({ name: 'AutoTooltip', plugin: this.autoTooltipPlugin });
         }
         if (this._gridOptions.enableGrouping) {
-            var groupItemMetaProvider = groupItemMetadataProvider || {};
-            this._grid.registerPlugin(groupItemMetaProvider);
+            this.groupItemMetaProviderPlugin = groupItemMetadataProvider || {};
+            this._grid.registerPlugin(this.groupItemMetaProviderPlugin);
+            this.pluginList.push({ name: 'GroupItemMetaProvider', plugin: this.groupItemMetaProviderPlugin });
         }
         if (this._gridOptions.enableCheckboxSelector) {
             this._grid.registerPlugin(this.checkboxSelectorPlugin);
-            if (!this.rowSelectionPlugin) {
+            this.pluginList.push({ name: 'CheckboxSelector', plugin: this.checkboxSelectorPlugin });
+            if (!this.rowSelectionPlugin || !this._grid.getSelectionModel()) {
                 this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
                 this._grid.setSelectionModel(this.rowSelectionPlugin);
+            }
+            if (this._gridOptions.preselectedRows && this.rowSelectionPlugin && this._grid.getSelectionModel()) {
+                setTimeout(function () { return _this.checkboxSelectorPlugin.selectRows(_this._gridOptions.preselectedRows); }, 0);
             }
         }
         if (!this._gridOptions.enableCheckboxSelector && this._gridOptions.enableRowSelection) {
@@ -2379,6 +2414,7 @@ var ControlAndPluginService = /** @class */ (function () {
         if (this._gridOptions.enableHeaderButton) {
             this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(this._gridOptions.headerButton || {});
             this._grid.registerPlugin(this.headerButtonsPlugin);
+            this.pluginList.push({ name: 'HeaderButtons', plugin: this.headerButtonsPlugin });
             this.headerButtonsPlugin.onCommand.subscribe(function (e, args) {
                 if (_this._gridOptions.headerButton && typeof _this._gridOptions.headerButton.onCommand === 'function') {
                     _this._gridOptions.headerButton.onCommand(e, args);
@@ -2397,10 +2433,12 @@ var ControlAndPluginService = /** @class */ (function () {
             if (Array.isArray(this._gridOptions.registerPlugins)) {
                 this._gridOptions.registerPlugins.forEach(function (plugin) {
                     _this._grid.registerPlugin(plugin);
+                    _this.pluginList.push({ name: 'generic', plugin: plugin });
                 });
             }
             else {
                 this._grid.registerPlugin(this._gridOptions.registerPlugins);
+                this.pluginList.push({ name: 'generic', plugin: this._gridOptions.registerPlugins });
             }
         }
     };
@@ -2446,7 +2484,9 @@ var ControlAndPluginService = /** @class */ (function () {
             }
         };
         grid.setSelectionModel(new Slick.CellSelectionModel());
-        grid.registerPlugin(new Slick.CellExternalCopyManager(pluginOptions));
+        this.cellExternalCopyManagerPlugin = new Slick.CellExternalCopyManager(pluginOptions);
+        grid.registerPlugin(this.cellExternalCopyManagerPlugin);
+        this.pluginList.push({ name: 'CellExternalCopyManager', plugin: this.cellExternalCopyManagerPlugin });
     };
     ControlAndPluginService.prototype.createColumnPicker = function (grid, columnDefinitions) {
         var _this = this;
@@ -2463,6 +2503,7 @@ var ControlAndPluginService = /** @class */ (function () {
                 }
             });
         }
+        return this.columnPickerControl;
     };
     ControlAndPluginService.prototype.createGridMenu = function (grid, columnDefinitions) {
         var _this = this;
@@ -2575,40 +2616,18 @@ var ControlAndPluginService = /** @class */ (function () {
         this._grid = null;
         this._dataView = null;
         this.visibleColumns = [];
-        if (this.columnPickerControl) {
-            this.columnPickerControl.destroy();
-            this.columnPickerControl = null;
-        }
-        if (this.gridMenuControl) {
-            this.gridMenuControl.destroy();
-            this.gridMenuControl = null;
-        }
-        if (this.rowSelectionPlugin) {
-            this.rowSelectionPlugin.destroy();
-            this.rowSelectionPlugin = null;
-        }
-        if (this.checkboxSelectorPlugin) {
-            this.checkboxSelectorPlugin.destroy();
-            this.checkboxSelectorPlugin = null;
-        }
-        if (this.autoTooltipPlugin) {
-            this.autoTooltipPlugin.destroy();
-            this.autoTooltipPlugin = null;
-        }
-        if (this.headerButtonsPlugin) {
-            this.headerButtonsPlugin.destroy();
-            this.headerButtonsPlugin = null;
-        }
-        if (this.headerMenuPlugin) {
-            this.headerMenuPlugin.destroy();
-            this.headerMenuPlugin = null;
-        }
+        this.pluginList.forEach(function (item) {
+            if (item && item.plugin && item.plugin.destroy) {
+                item.plugin.destroy();
+            }
+        });
+        this.pluginList = [];
     };
     ControlAndPluginService.prototype.addGridMenuCustomCommands = function (grid, options) {
         var _this = this;
-        var backendApi = options.backendServiceApi || options.onBackendEventApi || null;
+        var backendApi = options.backendServiceApi || null;
         if (options.enableFiltering) {
-            if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
+            if (options && options.gridMenu && !options.gridMenu.hideClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: options.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
                     title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
@@ -2617,7 +2636,7 @@ var ControlAndPluginService = /** @class */ (function () {
                     positionOrder: 50
                 });
             }
-            if (options && options.gridMenu && options.gridMenu.showToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'toggle-filter'; }).length === 0) {
+            if (options && options.gridMenu && !options.gridMenu.hideToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'toggle-filter'; }).length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: options.gridMenu.iconToggleFilterCommand || 'fa fa-random',
                     title: options.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
@@ -2626,7 +2645,7 @@ var ControlAndPluginService = /** @class */ (function () {
                     positionOrder: 52
                 });
             }
-            if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'refresh-dataset'; }).length === 0) {
+            if (options && options.gridMenu && !options.gridMenu.hideRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'refresh-dataset'; }).length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: options.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
                     title: options.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
@@ -2637,7 +2656,7 @@ var ControlAndPluginService = /** @class */ (function () {
             }
         }
         if (options.enableSorting) {
-            if (options && options.gridMenu && options.gridMenu.showClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-sorting'; }).length === 0) {
+            if (options && options.gridMenu && !options.gridMenu.hideClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-sorting'; }).length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: options.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
                     title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
@@ -2647,7 +2666,7 @@ var ControlAndPluginService = /** @class */ (function () {
                 });
             }
         }
-        if (options && options.enableExport && options.gridMenu && options.gridMenu.showExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'export-csv'; }).length === 0) {
+        if (options && options.enableExport && options.gridMenu && !options.gridMenu.hideExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'export-csv'; }).length === 0) {
             options.gridMenu.customItems.push({
                 iconCssClass: options.gridMenu.iconExportCsvCommand || 'fa fa-download',
                 title: options.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
@@ -2656,7 +2675,7 @@ var ControlAndPluginService = /** @class */ (function () {
                 positionOrder: 53
             });
         }
-        if (options && options.enableExport && options.gridMenu && options.gridMenu.showExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'export-text-delimited'; }).length === 0) {
+        if (options && options.enableExport && options.gridMenu && !options.gridMenu.hideExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'export-text-delimited'; }).length === 0) {
             options.gridMenu.customItems.push({
                 iconCssClass: options.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
                 title: options.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
@@ -2794,7 +2813,7 @@ var ControlAndPluginService = /** @class */ (function () {
     };
     ControlAndPluginService.prototype.refreshBackendDataset = function () {
         var query;
-        var backendApi = this._gridOptions.backendServiceApi || this._gridOptions.onBackendEventApi;
+        var backendApi = this._gridOptions.backendServiceApi;
         if (!backendApi || !backendApi.service || !backendApi.process) {
             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
         }
@@ -2826,7 +2845,13 @@ var ControlAndPluginService = /** @class */ (function () {
             this.columnPickerControl.destroy();
             this.columnPickerControl = null;
         }
+        var tempHideForceFit = this._gridOptions.columnPicker.hideForceFitButton;
+        var tempSyncResize = this._gridOptions.columnPicker.hideSyncResizeButton;
         this._gridOptions.columnPicker = undefined;
+        this._gridOptions.columnPicker = {
+            hideForceFitButton: tempHideForceFit,
+            hideSyncResizeButton: tempSyncResize
+        };
         this.createColumnPicker(this._grid, this.visibleColumns);
     };
     ControlAndPluginService.prototype.translateGridMenu = function () {
@@ -2841,13 +2866,14 @@ var ControlAndPluginService = /** @class */ (function () {
             this.resetHeaderMenuTranslations(this.visibleColumns);
         }
     };
-    ControlAndPluginService.prototype.translateHeaders = function (locale) {
+    ControlAndPluginService.prototype.translateColumnHeaders = function (locale, newColumnDefinitions) {
         if (locale) {
-            this.translate.use(locale);
+            this.translate.use((locale));
         }
+        var columnDefinitions = newColumnDefinitions || this._columnDefinitions;
         try {
-            for (var _a = __values(this._columnDefinitions), _b = _a.next(); !_b.done; _b = _a.next()) {
-                var column = _b.value;
+            for (var columnDefinitions_1 = __values(columnDefinitions), columnDefinitions_1_1 = columnDefinitions_1.next(); !columnDefinitions_1_1.done; columnDefinitions_1_1 = columnDefinitions_1.next()) {
+                var column = columnDefinitions_1_1.value;
                 if (column.headerKey) {
                     column.name = this.translate.instant(column.headerKey);
                 }
@@ -2856,12 +2882,18 @@ var ControlAndPluginService = /** @class */ (function () {
         catch (e_3_1) { e_3 = { error: e_3_1 }; }
         finally {
             try {
-                if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
+                if (columnDefinitions_1_1 && !columnDefinitions_1_1.done && (_a = columnDefinitions_1.return)) _a.call(columnDefinitions_1);
             }
             finally { if (e_3) throw e_3.error; }
         }
-        this._grid.setColumns(this._columnDefinitions);
-        var e_3, _c;
+        this.renderColumnHeaders(columnDefinitions);
+        var e_3, _a;
+    };
+    ControlAndPluginService.prototype.renderColumnHeaders = function (newColumnDefinitions) {
+        var collection = newColumnDefinitions || this._columnDefinitions;
+        if (Array.isArray(collection) && this._grid && this._grid.setColumns) {
+            this._grid.setColumns(collection);
+        }
     };
     ControlAndPluginService.prototype.getDefaultGridMenuOptions = function () {
         return {
@@ -2872,9 +2904,9 @@ var ControlAndPluginService = /** @class */ (function () {
             menuWidth: 18,
             customTitle: undefined,
             customItems: [],
-            showClearAllFiltersCommand: true,
-            showRefreshDatasetCommand: true,
-            showToggleFilterCommand: true
+            hideClearAllFiltersCommand: false,
+            hideRefreshDatasetCommand: false,
+            hideToggleFilterCommand: false
         };
     };
     ControlAndPluginService.prototype.getDefaultHeaderMenuOptions = function () {
@@ -3063,8 +3095,7 @@ var DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 var DEFAULT_ITEMS_PER_PAGE = 25;
 var DEFAULT_PAGE_SIZE = 20;
 var GraphqlService = /** @class */ (function () {
-    function GraphqlService(translate) {
-        this.translate = translate;
+    function GraphqlService() {
         this.defaultOrderBy = { field: 'id', direction: SortDirection.ASC };
         this.defaultPaginationOptions = {
             first: DEFAULT_ITEMS_PER_PAGE,
@@ -3090,8 +3121,8 @@ var GraphqlService = /** @class */ (function () {
         var columnIds = [];
         if (columnDefinitions && Array.isArray(columnDefinitions)) {
             try {
-                for (var columnDefinitions_1 = __values(columnDefinitions), columnDefinitions_1_1 = columnDefinitions_1.next(); !columnDefinitions_1_1.done; columnDefinitions_1_1 = columnDefinitions_1.next()) {
-                    var column = columnDefinitions_1_1.value;
+                for (var columnDefinitions_2 = __values(columnDefinitions), columnDefinitions_2_1 = columnDefinitions_2.next(); !columnDefinitions_2_1.done; columnDefinitions_2_1 = columnDefinitions_2.next()) {
+                    var column = columnDefinitions_2_1.value;
                     columnIds.push(column.field);
                     if (column.fields) {
                         columnIds.push.apply(columnIds, __spread(column.fields));
@@ -3101,7 +3132,7 @@ var GraphqlService = /** @class */ (function () {
             catch (e_6_1) { e_6 = { error: e_6_1 }; }
             finally {
                 try {
-                    if (columnDefinitions_1_1 && !columnDefinitions_1_1.done && (_a = columnDefinitions_1.return)) _a.call(columnDefinitions_1);
+                    if (columnDefinitions_2_1 && !columnDefinitions_2_1.done && (_a = columnDefinitions_2.return)) _a.call(columnDefinitions_2);
                 }
                 finally { if (e_6) throw e_6.error; }
             }
@@ -3134,7 +3165,7 @@ var GraphqlService = /** @class */ (function () {
             datasetFilters.filterBy = this.options.filteringOptions;
         }
         if (this.options.addLocaleIntoQuery) {
-            datasetFilters.locale = this.translate.currentLang || 'en';
+            datasetFilters.locale = (this._gridOptions.params && this._gridOptions.params.i18n && this._gridOptions.params.i18n.currentLang) || 'en';
         }
         if (this.options.extraQueryArguments) {
             try {
@@ -3215,10 +3246,10 @@ var GraphqlService = /** @class */ (function () {
     GraphqlService.prototype.updateOptions = function (serviceOptions) {
         this.options = Object.assign({}, this.options, serviceOptions);
     };
-    GraphqlService.prototype.onFilterChanged = function (event, args) {
+    GraphqlService.prototype.processOnFilterChanged = function (event, args) {
         var _this = this;
         var gridOptions = this._gridOptions || args.grid.getOptions();
-        var backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+        var backendApi = gridOptions.backendServiceApi;
         if (backendApi === undefined) {
             throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');
         }
@@ -3239,12 +3270,12 @@ var GraphqlService = /** @class */ (function () {
         });
         return promise;
     };
-    GraphqlService.prototype.onPaginationChanged = function (event, args) {
+    GraphqlService.prototype.processOnPaginationChanged = function (event, args) {
         var pageSize = +(args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE));
         this.updatePagination(args.newPage, pageSize);
         return this.buildQuery();
     };
-    GraphqlService.prototype.onSortChanged = function (event, args) {
+    GraphqlService.prototype.processOnSortChanged = function (event, args) {
         var sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
         this.updateSorters(sortColumns);
         return this.buildQuery();
@@ -3268,7 +3299,7 @@ var GraphqlService = /** @class */ (function () {
                 }
                 var fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field || columnDef.name || '';
                 var searchTerms = (columnFilter_1 ? columnFilter_1.searchTerms : null) || [];
-                var fieldSearchValue = columnFilter_1.searchTerm;
+                var fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
                 if (typeof fieldSearchValue === 'undefined') {
                     fieldSearchValue = '';
                 }
@@ -3283,7 +3314,7 @@ var GraphqlService = /** @class */ (function () {
                 if (fieldName && searchValue === '' && searchTerms.length === 0) {
                     return "continue";
                 }
-                if (searchTerms && searchTerms.length > 0) {
+                if (searchTerms && searchTerms.length > 1) {
                     searchValue = searchTerms.join(',');
                 }
                 else if (typeof searchValue === 'string') {
@@ -3414,20 +3445,11 @@ var GraphqlService = /** @class */ (function () {
             if (Array.isArray(filter.searchTerms)) {
                 tmpFilter.searchTerms = filter.searchTerms;
             }
-            else {
-                tmpFilter.searchTerm = filter.searchTerm;
-            }
             return tmpFilter;
         });
     };
     return GraphqlService;
 }());
-GraphqlService.decorators = [
-    { type: core.Injectable },
-];
-GraphqlService.ctorParameters = function () { return [
-    { type: core$1.TranslateService, },
-]; };
 String.format = function (format, args) {
     return format.replace(/{(\d+)}/g, function (match, number) {
         return (typeof args[number] !== 'undefined') ? args[number] : match;
@@ -3614,13 +3636,13 @@ var DEFAULT_FILTER_TYPING_DEBOUNCE$1 = 750;
 var DEFAULT_ITEMS_PER_PAGE$1 = 25;
 var DEFAULT_PAGE_SIZE$1 = 20;
 var GridOdataService = /** @class */ (function () {
-    function GridOdataService(odataService) {
-        this.odataService = odataService;
+    function GridOdataService() {
         this.defaultOptions = {
             top: DEFAULT_ITEMS_PER_PAGE$1,
             orderBy: '',
             caseType: CaseType.pascalCase
         };
+        this.odataService = new OdataService();
     }
     Object.defineProperty(GridOdataService.prototype, "_gridOptions", {
         get: function () {
@@ -3673,10 +3695,10 @@ var GridOdataService = /** @class */ (function () {
     GridOdataService.prototype.saveColumnFilter = function (fieldName, value, terms) {
         this.odataService.saveColumnFilter(fieldName, value, terms);
     };
-    GridOdataService.prototype.onFilterChanged = function (event, args) {
+    GridOdataService.prototype.processOnFilterChanged = function (event, args) {
         var _this = this;
         var serviceOptions = args.grid.getOptions();
-        var backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
+        var backendApi = serviceOptions.backendServiceApi;
         if (backendApi === undefined) {
             throw new Error('Something went wrong in the GridOdataService, "backendServiceApi" is not initialized');
         }
@@ -3694,12 +3716,12 @@ var GridOdataService = /** @class */ (function () {
         });
         return promise;
     };
-    GridOdataService.prototype.onPaginationChanged = function (event, args) {
+    GridOdataService.prototype.processOnPaginationChanged = function (event, args) {
         var pageSize = +(args.pageSize || DEFAULT_PAGE_SIZE$1);
         this.updatePagination(args.newPage, pageSize);
         return this.odataService.buildQuery();
     };
-    GridOdataService.prototype.onSortChanged = function (event, args) {
+    GridOdataService.prototype.processOnSortChanged = function (event, args) {
         var sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
         this.updateSorters(sortColumns);
         return this.odataService.buildQuery();
@@ -3726,7 +3748,7 @@ var GridOdataService = /** @class */ (function () {
                 var fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field || columnDef.name || '';
                 var fieldType = columnDef.type || 'string';
                 var searchTerms = (columnFilter_2 ? columnFilter_2.searchTerms : null) || [];
-                var fieldSearchValue = columnFilter_2.searchTerm;
+                var fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
                 if (typeof fieldSearchValue === 'undefined') {
                     fieldSearchValue = '';
                 }
@@ -3739,7 +3761,7 @@ var GridOdataService = /** @class */ (function () {
                 var searchValue = (!!matches) ? matches[2] : '';
                 var lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
                 var bypassOdataQuery = columnFilter_2.bypassBackendQuery || false;
-                if (fieldName && searchValue === '') {
+                if (fieldName && searchValue === '' && searchTerms.length === 0) {
                     this_2.removeColumnFilter(fieldName);
                     return "continue";
                 }
@@ -3755,7 +3777,7 @@ var GridOdataService = /** @class */ (function () {
                     if (this_2.odataService.options.caseType === CaseType.pascalCase) {
                         fieldName = String.titleCase(fieldName || '');
                     }
-                    if (searchTerms && searchTerms.length > 0) {
+                    if (searchTerms && searchTerms.length > 1) {
                         var tmpSearchTerms = [];
                         if (operator === 'IN') {
                             for (var j = 0, lnj = searchTerms.length; j < lnj; j++) {
@@ -3894,9 +3916,6 @@ var GridOdataService = /** @class */ (function () {
             if (Array.isArray(filter.searchTerms)) {
                 tmpFilter.searchTerms = filter.searchTerms;
             }
-            else {
-                tmpFilter.searchTerm = filter.searchTerm;
-            }
             return tmpFilter;
         });
     };
@@ -3932,9 +3951,7 @@ var GridOdataService = /** @class */ (function () {
 GridOdataService.decorators = [
     { type: core.Injectable },
 ];
-GridOdataService.ctorParameters = function () { return [
-    { type: OdataService, },
-]; };
+GridOdataService.ctorParameters = function () { return []; };
 var GridEventService = /** @class */ (function () {
     function GridEventService() {
         this._eventHandler = new Slick.EventHandler();
@@ -3987,27 +4004,41 @@ var GridEventService = /** @class */ (function () {
     };
     return GridEventService;
 }());
-var GridExtraService = /** @class */ (function () {
-    function GridExtraService() {
+var GridService = /** @class */ (function () {
+    function GridService() {
     }
-    Object.defineProperty(GridExtraService.prototype, "_gridOptions", {
+    Object.defineProperty(GridService.prototype, "_gridOptions", {
         get: function () {
             return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
         },
         enumerable: true,
         configurable: true
     });
-    GridExtraService.prototype.init = function (grid, dataView) {
+    GridService.prototype.init = function (grid, dataView) {
         this._grid = grid;
         this._dataView = dataView;
     };
-    GridExtraService.prototype.getDataItemByRowNumber = function (rowNumber) {
+    GridService.prototype.getColumnFromEventArguments = function (args) {
+        if (!args || !args.grid || !args.grid.getColumns || !args.grid.getDataItem) {
+            throw new Error('To get the column definition and data, we need to have these arguments passed as objects (row, cell, grid)');
+        }
+        return {
+            row: args.row,
+            cell: args.cell,
+            columnDef: args.grid.getColumns()[args.cell],
+            dataContext: args.grid.getDataItem(args.row),
+            dataView: this._dataView,
+            grid: this._grid,
+            gridDefinition: this._gridOptions
+        };
+    };
+    GridService.prototype.getDataItemByRowNumber = function (rowNumber) {
         if (!this._grid || typeof this._grid.getDataItem !== 'function') {
             throw new Error('We could not find SlickGrid Grid object');
         }
         return this._grid.getDataItem(rowNumber);
     };
-    GridExtraService.prototype.getItemRowMetadata = function (previousItemMetadata) {
+    GridService.prototype.getItemRowMetadata = function (previousItemMetadata) {
         var _this = this;
         return function (rowNumber) {
             var item = _this._dataView.getItem(rowNumber);
@@ -4027,7 +4058,7 @@ var GridExtraService = /** @class */ (function () {
             return meta;
         };
     };
-    GridExtraService.prototype.highlightRow = function (rowNumber, fadeDelay) {
+    GridService.prototype.highlightRow = function (rowNumber, fadeDelay) {
         var _this = this;
         if (fadeDelay === void 0) { fadeDelay = 1500; }
         if (!this._grid.getSelectionModel()) {
@@ -4055,22 +4086,22 @@ var GridExtraService = /** @class */ (function () {
             }, fadeDelay + 10);
         }
     };
-    GridExtraService.prototype.getSelectedRows = function () {
+    GridService.prototype.getSelectedRows = function () {
         return this._grid.getSelectedRows();
     };
-    GridExtraService.prototype.setSelectedRow = function (rowIndex) {
+    GridService.prototype.setSelectedRow = function (rowIndex) {
         this._grid.setSelectedRows([rowIndex]);
     };
-    GridExtraService.prototype.setSelectedRows = function (rowIndexes) {
+    GridService.prototype.setSelectedRows = function (rowIndexes) {
         this._grid.setSelectedRows(rowIndexes);
     };
-    GridExtraService.prototype.renderGrid = function () {
+    GridService.prototype.renderGrid = function () {
         if (this._grid && typeof this._grid.invalidate === 'function') {
             this._grid.invalidate();
             this._grid.render();
         }
     };
-    GridExtraService.prototype.addItemToDatagrid = function (item) {
+    GridService.prototype.addItemToDatagrid = function (item) {
         if (!this._grid || !this._gridOptions || !this._dataView) {
             throw new Error('We could not find SlickGrid Grid, DataView objects');
         }
@@ -4083,7 +4114,7 @@ var GridExtraService = /** @class */ (function () {
         this.highlightRow(0, 1500);
         this._dataView.refresh();
     };
-    GridExtraService.prototype.deleteDataGridItem = function (item) {
+    GridService.prototype.deleteDataGridItem = function (item) {
         var row = this._dataView.getRowById(item.id);
         var itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
         if (row === undefined || itemId === -1) {
@@ -4092,7 +4123,7 @@ var GridExtraService = /** @class */ (function () {
         this._dataView.deleteItem(itemId);
         this._dataView.refresh();
     };
-    GridExtraService.prototype.deleteDataGridItemById = function (id) {
+    GridService.prototype.deleteDataGridItemById = function (id) {
         var row = this._dataView.getRowById(id);
         if (row === undefined) {
             throw new Error("Could not find the item in the grid by it's associated \"id\"");
@@ -4100,7 +4131,7 @@ var GridExtraService = /** @class */ (function () {
         this._dataView.deleteItem(id);
         this._dataView.refresh();
     };
-    GridExtraService.prototype.updateDataGridItem = function (item) {
+    GridService.prototype.updateDataGridItem = function (item) {
         var row = this._dataView.getRowById(item.id);
         var itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
         if (itemId === -1) {
@@ -4113,21 +4144,7 @@ var GridExtraService = /** @class */ (function () {
             this._dataView.refresh();
         }
     };
-    return GridExtraService;
-}());
-var GridExtraUtils = /** @class */ (function () {
-    function GridExtraUtils() {
-    }
-    GridExtraUtils.getColumnDefinitionAndData = function (args) {
-        if (!args || !args.grid || !args.grid.getColumns || !args.grid.getDataItem) {
-            throw new Error('To get the column definition and data, we need to have these arguments passed (row, cell, grid)');
-        }
-        return {
-            columnDef: args.grid.getColumns()[args.cell],
-            dataContext: args.grid.getDataItem(args.row)
-        };
-    };
-    return GridExtraUtils;
+    return GridService;
 }());
 var GridStateService = /** @class */ (function () {
     function GridStateService() {
@@ -4386,17 +4403,6 @@ var ResizerService = /** @class */ (function () {
     };
     return ResizerService;
 }());
-var SharedService = /** @class */ (function () {
-    function SharedService() {
-    }
-    SharedService.prototype.init = function (grid, dataView, gridOptions, columnDefinitions) {
-        this.grid = grid;
-        this.dataView = dataView;
-        this.gridOptions = gridOptions;
-        this.columnDefinitions = columnDefinitions;
-    };
-    return SharedService;
-}());
 var AvgAggregator = /** @class */ (function () {
     function AvgAggregator(field) {
         this._field = field;
@@ -4548,7 +4554,7 @@ var CheckboxEditor = /** @class */ (function () {
     };
     return CheckboxEditor;
 }());
-var moment$10 = moment_;
+var moment$8 = moment_;
 require('flatpickr');
 var DateEditor = /** @class */ (function () {
     function DateEditor(args) {
@@ -4585,7 +4591,7 @@ var DateEditor = /** @class */ (function () {
         }
     };
     DateEditor.prototype.getCurrentLocale = function (columnDef, gridOptions) {
-        var params = gridOptions.params || columnDef.params || {};
+        var params = gridOptions || columnDef.params || {};
         if (params.i18n && params.i18n instanceof core$1.TranslateService) {
             return params.i18n.currentLang;
         }
@@ -4620,15 +4626,23 @@ var DateEditor = /** @class */ (function () {
     };
     DateEditor.prototype.loadValue = function (item) {
         this.defaultDate = item[this.args.column.field];
+        this.flatInstance.setDate(item[this.args.column.field]);
     };
     DateEditor.prototype.serializeValue = function () {
-        var inputValue = this.$input.val() || '';
+        var domValue = this.$input.val();
+        if (!domValue) {
+            return '';
+        }
         var outputFormat = mapMomentDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
-        var value = moment$10(inputValue).format(outputFormat);
+        var value = moment$8(domValue).format(outputFormat);
         return value;
     };
     DateEditor.prototype.applyValue = function (item, state) {
-        item[this.args.column.field] = state;
+        if (!state) {
+            return;
+        }
+        var outputFormat = mapMomentDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
+        item[this.args.column.field] = moment$8(state, outputFormat).toDate();
     };
     DateEditor.prototype.isValueChanged = function () {
         return (!(this.$input.val() === '' && this.defaultDate == null)) && (this.$input.val() !== this.defaultDate);
@@ -4673,8 +4687,8 @@ var FloatEditor = /** @class */ (function () {
         this.$input.focus();
     };
     FloatEditor.prototype.getDecimalPlaces = function () {
-        var columnParams = this.args.column.params || {};
-        var rtn = (columnParams && columnParams.hasOwnProperty('decimalPlaces')) ? columnParams.decimalPlaces : undefined;
+        var columnEditor = this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+        var rtn = (columnEditor && columnEditor.params && columnEditor.params.hasOwnProperty('decimalPlaces')) ? columnEditor.params.decimalPlaces : undefined;
         if (rtn === undefined) {
             rtn = defaultDecimalPlaces;
         }
@@ -4919,21 +4933,21 @@ var MultipleSelectEditor = /** @class */ (function () {
         if (!this.args) {
             throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
-        this.columnDef = this.args.column;
-        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
-            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" on the params property in the column definition for the MultipleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }");
+        this.columnDef = (this.args.column);
+        if (!this.columnDef || !this.columnDef.internalColumnEditor || !this.columnDef.internalColumnEditor.collection) {
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" inside Column Definition Editor for the MultipleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { editor: { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } }");
         }
         var collectionService = new CollectionService(this._translate);
-        this.enableTranslateLabel = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
-        var newCollection = this.columnDef.params.collection || [];
-        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
-        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
-        if (this.columnDef.params && this.columnDef.params.collectionSortBy) {
-            var filterBy = this.columnDef.params.collectionFilterBy;
+        this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
+        var newCollection = this.columnDef.internalColumnEditor.collection || [];
+        this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
+        this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
+        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
+            var filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
             newCollection = collectionService.filterCollection(newCollection, filterBy);
         }
-        if (this.gridOptions.params && this.columnDef.params.collectionSortBy) {
-            var sortBy = this.columnDef.params.collectionSortBy;
+        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
+            var sortBy = this.columnDef.internalColumnEditor.collectionSortBy;
             newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
         }
         this.collection = newCollection;
@@ -5029,7 +5043,7 @@ var MultipleSelectEditor = /** @class */ (function () {
             this.$editorElm.addClass('form-control');
         }
         else {
-            var elementOptions = (this.columnDef.params) ? this.columnDef.params.elementOptions : {};
+            var elementOptions = (this.columnDef.internalColumnEditor) ? this.columnDef.internalColumnEditor.elementOptions : {};
             this.editorElmOptions = Object.assign({}, this.defaultOptions, elementOptions);
             this.$editorElm = this.$editorElm.multipleSelect(this.editorElmOptions);
             setTimeout(function () { return _this.$editorElm.multipleSelect('open'); });
@@ -5075,20 +5089,20 @@ var SingleSelectEditor = /** @class */ (function () {
             throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
         this.columnDef = this.args.column;
-        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
-            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" on the params property in the column definition for the MultipleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }");
+        if (!this.columnDef || !this.columnDef.internalColumnEditor || !this.columnDef.internalColumnEditor.collection) {
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" inside Column Definition Editor for the SingleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { editor: { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } }");
         }
         var collectionService = new CollectionService(this._translate);
-        this.enableTranslateLabel = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
-        var newCollection = this.columnDef.params.collection || [];
-        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
-        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
-        if (this.gridOptions.params && this.columnDef.params.collectionFilterBy) {
-            var filterBy = this.columnDef.params.collectionFilterBy;
+        this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
+        var newCollection = this.columnDef.internalColumnEditor.collection || [];
+        this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
+        this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
+        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionFilterBy) {
+            var filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
             newCollection = collectionService.filterCollection(newCollection, filterBy);
         }
-        if (this.columnDef.params && this.columnDef.params.collectionSortBy) {
-            var sortBy = this.columnDef.params.collectionSortBy;
+        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
+            var sortBy = this.columnDef.internalColumnEditor.collectionSortBy;
             newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
         }
         this.collection = newCollection;
@@ -5103,7 +5117,7 @@ var SingleSelectEditor = /** @class */ (function () {
     };
     SingleSelectEditor.prototype.loadValue = function (item) {
         var _this = this;
-        this.defaultValue = item[this.columnDef.field].toString();
+        this.defaultValue = item[this.columnDef.field] && item[this.columnDef.field].toString();
         this.$editorElm.find('option').each(function (i, $e) {
             if (_this.defaultValue === $e.value) {
                 $e.selected = true;
@@ -5206,7 +5220,7 @@ var TextEditor = /** @class */ (function () {
     }
     TextEditor.prototype.init = function () {
         var _this = this;
-        this.$input = $("<input type=\"text\" class='editor-text' />")
+        this.$input = $("<input type=\"text\" class=\"editor-text\" />")
             .appendTo(this.args.container)
             .on('keydown.nav', function (e) {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
@@ -5258,6 +5272,13 @@ var TextEditor = /** @class */ (function () {
     };
     return TextEditor;
 }());
+var AvailableEditor = /** @class */ (function () {
+    function AvailableEditor(type, editor) {
+        this.type = type;
+        this.editor = editor;
+    }
+    return AvailableEditor;
+}());
 var Editors = {
     checkbox: CheckboxEditor,
     date: DateEditor,
@@ -5268,6 +5289,16 @@ var Editors = {
     singleSelect: SingleSelectEditor,
     text: TextEditor
 };
+var AVAILABLE_EDITORS = [
+    { type: EditorType.checkbox, editor: CheckboxEditor },
+    { type: EditorType.date, editor: DateEditor },
+    { type: EditorType.float, editor: FloatEditor },
+    { type: EditorType.integer, editor: IntegerEditor },
+    { type: EditorType.longText, editor: LongTextEditor },
+    { type: EditorType.multipleSelect, editor: MultipleSelectEditor },
+    { type: EditorType.singleSelect, editor: SingleSelectEditor },
+    { type: EditorType.text, editor: TextEditor },
+];
 var arrayToCsvFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value && Array.isArray(value)) {
         var values = value.join(', ');
@@ -5301,6 +5332,19 @@ var collectionFormatter = function (row, cell, value, columnDef, dataContext) {
     }
     return findOrDefault(collection, function (c) { return c[valueName] === value; })[labelName] || '';
 };
+var collectionEditorFormatter = function (row, cell, value, columnDef, dataContext) {
+    if (!value || !columnDef || !columnDef.internalColumnEditor || !columnDef.internalColumnEditor.collection
+        || !columnDef.internalColumnEditor.collection.length) {
+        return '';
+    }
+    var internalColumnEditor = columnDef.internalColumnEditor, collection = columnDef.internalColumnEditor.collection;
+    var labelName = (internalColumnEditor.customStructure) ? internalColumnEditor.customStructure.label : 'label';
+    var valueName = (internalColumnEditor.customStructure) ? internalColumnEditor.customStructure.value : 'value';
+    if (Array.isArray(value)) {
+        return arrayToCsvFormatter(row, cell, value.map(function (v) { return findOrDefault(collection, function (c) { return c[valueName] === v; })[labelName]; }), columnDef, dataContext);
+    }
+    return findOrDefault(collection, function (c) { return c[valueName] === value; })[labelName] || '';
+};
 var complexObjectFormatter = function (row, cell, value, columnDef, dataContext) {
     if (!columnDef) {
         return '';
@@ -5308,24 +5352,24 @@ var complexObjectFormatter = function (row, cell, value, columnDef, dataContext)
     var complexField = columnDef.field || '';
     return complexField.split('.').reduce(function (obj, i) { return (obj ? obj[i] : ''); }, dataContext);
 };
-var moment$11 = moment_;
+var moment$9 = moment_;
 var FORMAT$6 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-var dateIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$11(value).format(FORMAT$6) : ''; };
-var moment$12 = moment_;
+var dateIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$9(value).format(FORMAT$6) : ''; };
+var moment$10 = moment_;
 var FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
-var dateTimeIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$12(value).format(FORMAT$7) : ''; };
-var moment$13 = moment_;
+var dateTimeIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$10(value).format(FORMAT$7) : ''; };
+var moment$11 = moment_;
 var FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
-var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$13(value).format(FORMAT$8) : ''; };
-var moment$14 = moment_;
+var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$11(value).format(FORMAT$8) : ''; };
+var moment$12 = moment_;
 var FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
-var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$14(value).format(FORMAT$9) : ''; };
-var moment$15 = moment_;
+var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$12(value).format(FORMAT$9) : ''; };
+var moment$13 = moment_;
 var FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
-var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$15(value).format(FORMAT$10) : ''; };
-var moment$16 = moment_;
+var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$13(value).format(FORMAT$10) : ''; };
+var moment$14 = moment_;
 var FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$16(value).format(FORMAT$11) : ''; };
+var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$14(value).format(FORMAT$11) : ''; };
 var deleteIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-trash pointer delete-icon\" aria-hidden=\"true\"></i>"; };
 var dollarColoredBoldFormatter = function (row, cell, value, columnDef, dataContext) {
     if (isNaN(+value)) {
@@ -5401,16 +5445,12 @@ var multipleFormatter = function (row, cell, value, columnDef, dataContext, grid
     return currentValue;
     var e_11, _a;
 };
-var percentCompleteFormatter = function (row, cell, value, columnDef, dataContext) {
+var percentFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {
-        return '-';
+        return '';
     }
-    else if (value < 50) {
-        return "<span style='color:red;font-weight:bold;'>" + value + "%</span>";
-    }
-    else {
-        return "<span style='color:green'>" + value + "%</span>";
-    }
+    var outputValue = value > 0 ? value / 100 : 0;
+    return "<span>" + outputValue + "%</span>";
 };
 var percentCompleteBarFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {
@@ -5427,6 +5467,20 @@ var percentCompleteBarFormatter = function (row, cell, value, columnDef, dataCon
         color = 'green';
     }
     return "<span class=\"percent-complete-bar\" style=\"background:" + color + "; width:" + value + "%\"></span>";
+};
+var percentCompleteFormatter = function (row, cell, value, columnDef, dataContext) {
+    if (value === null || value === '') {
+        return '-';
+    }
+    else if (value < 50) {
+        return "<span style='color:red;font-weight:bold;'>" + value + "%</span>";
+    }
+    else {
+        return "<span style='color:green'>" + value + "%</span>";
+    }
+};
+var percentSymbolFormatter = function (row, cell, value, columnDef, dataContext) {
+    return value ? "<span>" + value + "%</span>" : '';
 };
 var progressBarFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {
@@ -5447,10 +5501,9 @@ var progressBarFormatter = function (row, cell, value, columnDef, dataContext) {
 var translateFormatter = function (row, cell, value, columnDef, dataContext, grid) {
     var gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
     var columnParams = columnDef.params || {};
-    var gridParams = gridOptions.params || {};
-    var translate = gridParams.i18n || columnParams.i18n;
+    var translate = gridOptions.i18n || columnParams.i18n;
     if (!translate || typeof translate.instant !== 'function') {
-        throw new Error("The translate formatter requires the \"ngx-translate\" Service to be provided as a Grid Options or Column Definition \"params\".\n    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translate }}");
+        throw new Error("The translate formatter requires the \"ngx-translate\" Service to be provided as a Grid Options or Column Definition \"i18n\".\n    For example: this.gridOptions = { enableTranslate: true, i18n: this.translate }");
     }
     if (value !== undefined && typeof value !== 'string') {
         value = value + '';
@@ -5460,10 +5513,9 @@ var translateFormatter = function (row, cell, value, columnDef, dataContext, gri
 var translateBooleanFormatter = function (row, cell, value, columnDef, dataContext, grid) {
     var gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
     var columnParams = columnDef.params || {};
-    var gridParams = gridOptions.params || {};
-    var translate = gridParams.i18n || columnParams.i18n;
+    var translate = gridOptions.i18n || columnParams.i18n;
     if (!translate || typeof translate.instant !== 'function') {
-        throw new Error("The translate formatter requires the \"ngx-translate\" Service to be provided as a Grid Options or Column Definition \"params\".\n    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translate }}");
+        throw new Error("The translate formatter requires the \"ngx-translate\" Service to be provided as a Grid Options or Column Definition \"i18n\".\n    For example: this.gridOptions = { enableTranslate: true, i18n: this.translate }");
     }
     if (value !== undefined && typeof value !== 'string') {
         value = value + '';
@@ -5484,6 +5536,7 @@ var Formatters = {
     checkmark: checkmarkFormatter,
     complexObject: complexObjectFormatter,
     collection: collectionFormatter,
+    collectionEditor: collectionEditorFormatter,
     dateIso: dateIsoFormatter,
     dateTimeIso: dateTimeIsoFormatter,
     dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
@@ -5500,8 +5553,10 @@ var Formatters = {
     infoIcon: infoIconFormatter,
     lowercase: lowercaseFormatter,
     multiple: multipleFormatter,
+    percent: percentFormatter,
     percentComplete: percentCompleteFormatter,
     percentCompleteBar: percentCompleteBarFormatter,
+    percentSymbol: percentSymbolFormatter,
     progressBar: progressBarFormatter,
     translate: translateFormatter,
     translateBoolean: translateBooleanFormatter,
@@ -5746,7 +5801,7 @@ var SlickPaginationComponent = /** @class */ (function () {
     };
     SlickPaginationComponent.prototype.refreshPagination = function (isPageNumberReset) {
         if (isPageNumberReset === void 0) { isPageNumberReset = false; }
-        var backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
+        var backendApi = this._gridPaginationOptions.backendServiceApi;
         if (!backendApi || !backendApi.service || !backendApi.process) {
             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
         }
@@ -5779,7 +5834,7 @@ var SlickPaginationComponent = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         this.recalculateFromToIndexes();
-                        backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
+                        backendApi = this._gridPaginationOptions.backendServiceApi;
                         if (!backendApi || !backendApi.service || !backendApi.process) {
                             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
                         }
@@ -5794,7 +5849,7 @@ var SlickPaginationComponent = /** @class */ (function () {
                         if (backendApi.preProcess) {
                             backendApi.preProcess();
                         }
-                        query = backendApi.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
+                        query = backendApi.service.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
                         observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 1:
@@ -5884,11 +5939,16 @@ var GlobalGridOptions = {
         sanitizeDataExport: false,
         useUtf8WithBom: true
     },
-    exportWithFormatter: false,
     forceFitColumns: false,
     gridMenu: {
+        hideClearAllFiltersCommand: false,
+        hideClearAllSortingCommand: false,
+        hideExportCsvCommand: false,
+        hideExportTextDelimitedCommand: true,
         hideForceFitButton: false,
+        hideRefreshDatasetCommand: false,
         hideSyncResizeButton: true,
+        hideToggleFilterCommand: false,
         iconCssClass: 'fa fa-bars',
         iconClearAllFiltersCommand: 'fa fa-filter text-danger',
         iconClearAllSortingCommand: 'fa fa-unsorted text-danger',
@@ -5897,12 +5957,7 @@ var GlobalGridOptions = {
         iconRefreshDatasetCommand: 'fa fa-refresh',
         iconToggleFilterCommand: 'fa fa-random',
         menuWidth: 16,
-        resizeOnShowHeaderRow: true,
-        showClearAllFiltersCommand: true,
-        showClearAllSortingCommand: true,
-        showExportCsvCommand: true,
-        showRefreshDatasetCommand: true,
-        showToggleFilterCommand: true
+        resizeOnShowHeaderRow: true
     },
     headerMenu: {
         autoAlign: true,
@@ -5929,12 +5984,13 @@ var GlobalGridOptions = {
     showHeaderRow: false,
     topPanelHeight: 35
 };
+var slickgridEventPrefix = 'sg';
 var AngularSlickgridComponent = /** @class */ (function () {
-    function AngularSlickgridComponent(controlAndPluginService, exportService, filterService, gridExtraService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
+    function AngularSlickgridComponent(controlAndPluginService, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
         this.controlAndPluginService = controlAndPluginService;
         this.exportService = exportService;
         this.filterService = filterService;
-        this.gridExtraService = gridExtraService;
+        this.gridService = gridService;
         this.gridEventService = gridEventService;
         this.gridStateService = gridStateService;
         this.groupingAndColspanService = groupingAndColspanService;
@@ -5946,6 +6002,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.groupingDefinition = {};
         this.showPagination = false;
         this.isGridInitialized = false;
+        this.onAngularGridCreated = new core.EventEmitter();
         this.onDataviewCreated = new core.EventEmitter();
         this.onGridCreated = new core.EventEmitter();
         this.onGridInitialized = new core.EventEmitter();
@@ -6016,6 +6073,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.isGridInitialized = true;
     };
     AngularSlickgridComponent.prototype.initialization = function () {
+        var _this = this;
         this._dataset = this._dataset || [];
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
@@ -6029,7 +6087,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         else {
             this._dataView = new Slick.Data.DataView();
         }
-        this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+        this._columnDefinitions = this._columnDefinitions.map(function (c) { return (Object.assign({}, c, { editor: _this.getEditor((c.editor && c.editor.type), c), internalColumnEditor: Object.assign({}, c.editor) })); }), this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
         this.grid = new Slick.Grid("#" + this.gridId, this._dataView, this._columnDefinitions, this.gridOptions);
         this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._dataView, this.groupItemMetadataProvider);
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
@@ -6043,23 +6101,47 @@ var AngularSlickgridComponent = /** @class */ (function () {
         if (this.gridOptions.createPreHeaderPanel) {
             this.groupingAndColspanService.init(this.grid, this._dataView);
         }
-        this.gridExtraService.init(this.grid, this._dataView);
+        this.gridService.init(this.grid, this._dataView);
         if (this.gridOptions.enableTranslate) {
-            this.controlAndPluginService.translateHeaders();
+            this.controlAndPluginService.translateColumnHeaders();
         }
         if (this.gridOptions.enableExport) {
             this.exportService.init(this.grid, this._dataView);
         }
         this.onGridInitialized.emit(this.grid);
-        if (this.gridOptions && (this.gridOptions.backendServiceApi || this.gridOptions.onBackendEventApi)) {
+        if (this.gridOptions && this.gridOptions.backendServiceApi) {
             this.attachBackendCallbackFunctions(this.gridOptions);
         }
         this.gridStateService.init(this.grid, this.filterService, this.sortService);
+        this.onAngularGridCreated.emit({
+            dataView: this._dataView,
+            slickGrid: this.grid,
+            backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
+            exportService: this.exportService,
+            filterService: this.filterService,
+            gridEventService: this.gridEventService,
+            gridStateService: this.gridStateService,
+            gridService: this.gridService,
+            groupingService: this.groupingAndColspanService,
+            pluginService: this.controlAndPluginService,
+            resizerService: this.resizer,
+            sortService: this.sortService,
+        });
+    };
+    AngularSlickgridComponent.prototype.getEditor = function (type, column) {
+        if (type === EditorType.custom && column && column.editor && column.editor.hasOwnProperty('customEditor')) {
+            return column.editor['customEditor'];
+        }
+        var editorFound = AVAILABLE_EDITORS.find(function (editor) { return editor.type === type; });
+        if (editorFound && editorFound.editor) {
+            return editorFound.editor;
+        }
+        return undefined;
     };
     AngularSlickgridComponent.prototype.createBackendApiInternalPostProcessCallback = function (gridOptions) {
         var _this = this;
-        if (gridOptions && (gridOptions.backendServiceApi || gridOptions.onBackendEventApi)) {
-            var backendApi_1 = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+        if (gridOptions && gridOptions.backendServiceApi) {
+            var backendApi_1 = gridOptions.backendServiceApi;
             if (backendApi_1 && backendApi_1.service && backendApi_1.service instanceof GraphqlService) {
                 backendApi_1.internalPostProcess = function (processResult) {
                     var datasetName = (backendApi_1 && backendApi_1.service && typeof backendApi_1.service.getDatasetName === 'function') ? backendApi_1.service.getDatasetName() : '';
@@ -6078,30 +6160,61 @@ var AngularSlickgridComponent = /** @class */ (function () {
         var _this = this;
         this._translateSubscriber = this.translate.onLangChange.subscribe(function (event) {
             if (gridOptions.enableTranslate) {
-                _this.controlAndPluginService.translateHeaders();
+                _this.controlAndPluginService.translateColumnHeaders();
                 _this.controlAndPluginService.translateColumnPicker();
                 _this.controlAndPluginService.translateGridMenu();
                 _this.controlAndPluginService.translateHeaderMenu();
             }
         });
         if (gridOptions.enableSorting) {
-            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
+            gridOptions.backendServiceApi ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
         }
         if (gridOptions.enableFiltering) {
             this.filterService.init(grid);
             if (gridOptions.presets && gridOptions.presets.filters) {
                 this.filterService.populateColumnFilterSearchTerms(grid);
             }
-            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid) : this.filterService.attachLocalOnFilter(grid, this._dataView);
+            gridOptions.backendServiceApi ? this.filterService.attachBackendOnFilter(grid) : this.filterService.attachLocalOnFilter(grid, this._dataView);
         }
-        if (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) {
-            var backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
-            if (gridOptions.onBackendEventApi) {
-                console.warn("\"onBackendEventApi\" has been DEPRECATED, please consider using \"backendServiceApi\" in the short term since \"onBackendEventApi\" will be removed in future versions. You can take look at the Angular-Slickgrid Wikis for OData/GraphQL Services implementation");
-            }
+        if (gridOptions.backendServiceApi) {
+            var backendApi = gridOptions.backendServiceApi;
             if (backendApi && backendApi.service && backendApi.service.init) {
                 backendApi.service.init(backendApi.options, gridOptions.pagination, this.grid);
             }
+        }
+        var _loop_3 = function (prop) {
+            if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
+                this_3._eventHandler.subscribe(grid[prop], function (e, args) {
+                    _this.customElm.nativeElement.dispatchEvent(new CustomEvent(slickgridEventPrefix + "-" + toKebabCase(prop), {
+                        bubbles: true,
+                        detail: {
+                            eventData: e,
+                            args: args
+                        }
+                    }));
+                });
+            }
+        };
+        var this_3 = this;
+        for (var prop in grid) {
+            _loop_3(prop);
+        }
+        var _loop_4 = function (prop) {
+            if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
+                this_4._eventHandler.subscribe(dataView[prop], function (e, args) {
+                    _this.customElm.nativeElement.dispatchEvent(new CustomEvent(slickgridEventPrefix + "-" + toKebabCase(prop), {
+                        bubbles: true,
+                        detail: {
+                            eventData: e,
+                            args: args
+                        }
+                    }));
+                });
+            }
+        };
+        var this_4 = this;
+        for (var prop in dataView) {
+            _loop_4(prop);
         }
         this._gridStateSubscriber = this.gridStateService.onGridStateChanged.subscribe(function (gridStateChange) {
             _this.onGridStateServiceChanged.emit(gridStateChange);
@@ -6125,7 +6238,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
     };
     AngularSlickgridComponent.prototype.attachBackendCallbackFunctions = function (gridOptions) {
         var _this = this;
-        var backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+        var backendApi = gridOptions.backendServiceApi;
         var serviceOptions = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : {};
         var isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && serviceOptions.hasOwnProperty('executeProcessCommandOnInit')) ? serviceOptions['executeProcessCommandOnInit'] : true);
         if (backendApi) {
@@ -6225,11 +6338,14 @@ var AngularSlickgridComponent = /** @class */ (function () {
             }
         }
     };
-    AngularSlickgridComponent.prototype.updateColumnDefinitionsList = function (dynamicColumns) {
-        this.grid.setColumns(dynamicColumns);
+    AngularSlickgridComponent.prototype.updateColumnDefinitionsList = function (newColumnDefinitions) {
         if (this.gridOptions.enableTranslate) {
-            this.controlAndPluginService.translateHeaders();
+            this.controlAndPluginService.translateColumnHeaders(false, newColumnDefinitions);
         }
+        else {
+            this.controlAndPluginService.renderColumnHeaders(newColumnDefinitions);
+        }
+        this.grid.autosizeColumns();
     };
     AngularSlickgridComponent.prototype.showHeaderRow = function (isShowing) {
         this.grid.setHeaderRowVisibility(isShowing);
@@ -6246,14 +6362,26 @@ AngularSlickgridComponent.decorators = [
     { type: core.Injectable },
     { type: core.Component, args: [{
                 selector: 'angular-slickgrid',
-                template: "<div id=\"slickGridContainer-{{gridId}}\" class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n",
+                template: "<div id=\"slickGridContainer-{{gridId}}\" #customElm class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n",
+                providers: [
+                    ControlAndPluginService,
+                    ExportService,
+                    FilterService,
+                    GraphqlService,
+                    GridEventService,
+                    GridService,
+                    GridStateService,
+                    GroupingAndColspanService,
+                    ResizerService,
+                    SortService
+                ]
             },] },
 ];
 AngularSlickgridComponent.ctorParameters = function () { return [
     { type: ControlAndPluginService, },
     { type: ExportService, },
     { type: FilterService, },
-    { type: GridExtraService, },
+    { type: GridService, },
     { type: GridEventService, },
     { type: GridStateService, },
     { type: GroupingAndColspanService, },
@@ -6263,6 +6391,8 @@ AngularSlickgridComponent.ctorParameters = function () { return [
     { type: undefined, decorators: [{ type: core.Inject, args: ['config',] },] },
 ]; };
 AngularSlickgridComponent.propDecorators = {
+    "customElm": [{ type: core.ViewChild, args: ['customElm', { read: core.ElementRef },] },],
+    "onAngularGridCreated": [{ type: core.Output },],
     "onDataviewCreated": [{ type: core.Output },],
     "onGridCreated": [{ type: core.Output },],
     "onGridInitialized": [{ type: core.Output },],
@@ -6287,19 +6417,8 @@ var AngularSlickgridModule = /** @class */ (function () {
             providers: [
                 { provide: 'config', useValue: config },
                 CollectionService,
-                ControlAndPluginService,
-                ExportService,
-                FilterService,
                 GraphqlService,
-                GridEventService,
-                GridExtraService,
-                GridOdataService,
-                GridStateService,
-                GroupingAndColspanService,
-                OdataService,
-                ResizerService,
-                SharedService,
-                SortService
+                GridOdataService
             ]
         };
     };
@@ -6329,10 +6448,10 @@ exports.AngularSlickgridComponent = AngularSlickgridComponent;
 exports.AngularSlickgridModule = AngularSlickgridModule;
 exports.CaseType = CaseType;
 exports.DelimiterType = DelimiterType;
+exports.EditorType = EditorType;
 exports.FieldType = FieldType;
 exports.FileType = FileType;
 exports.FilterType = FilterType;
-exports.FormElementType = FormElementType;
 exports.GridStateType = GridStateType;
 exports.KeyCode = KeyCode;
 exports.OperatorType = OperatorType;
@@ -6345,13 +6464,11 @@ exports.FilterService = FilterService;
 exports.GraphqlService = GraphqlService;
 exports.GridOdataService = GridOdataService;
 exports.GridEventService = GridEventService;
-exports.GridExtraService = GridExtraService;
-exports.GridExtraUtils = GridExtraUtils;
+exports.GridService = GridService;
 exports.GridStateService = GridStateService;
 exports.GroupingAndColspanService = GroupingAndColspanService;
 exports.OdataService = OdataService;
 exports.ResizerService = ResizerService;
-exports.SharedService = SharedService;
 exports.SortService = SortService;
 exports.addWhiteSpaces = addWhiteSpaces;
 exports.htmlEntityDecode = htmlEntityDecode;
@@ -6370,7 +6487,9 @@ exports.sanitizeHtmlToText = sanitizeHtmlToText;
 exports.toCamelCase = toCamelCase;
 exports.toKebabCase = toKebabCase;
 exports.Aggregators = Aggregators;
+exports.AvailableEditor = AvailableEditor;
 exports.Editors = Editors;
+exports.AVAILABLE_EDITORS = AVAILABLE_EDITORS;
 exports.FilterConditions = FilterConditions;
 exports.Filters = Filters;
 exports.Formatters = Formatters;
@@ -6409,49 +6528,52 @@ exports.ɵbd = arrayToCsvFormatter;
 exports.ɵbe = boldFormatter;
 exports.ɵbf = checkboxFormatter;
 exports.ɵbg = checkmarkFormatter;
+exports.ɵbj = collectionEditorFormatter;
 exports.ɵbi = collectionFormatter;
 exports.ɵbh = complexObjectFormatter;
-exports.ɵbj = dateIsoFormatter;
-exports.ɵbl = dateTimeIsoAmPmFormatter;
-exports.ɵbk = dateTimeIsoFormatter;
-exports.ɵbo = dateTimeUsAmPmFormatter;
-exports.ɵbn = dateTimeUsFormatter;
-exports.ɵbm = dateUsFormatter;
-exports.ɵbp = deleteIconFormatter;
-exports.ɵbs = dollarColoredBoldFormatter;
-exports.ɵbr = dollarColoredFormatter;
-exports.ɵbq = dollarFormatter;
-exports.ɵbt = editIconFormatter;
-exports.ɵbu = hyperlinkFormatter;
-exports.ɵbv = hyperlinkUriPrefixFormatter;
-exports.ɵbw = infoIconFormatter;
-exports.ɵbx = lowercaseFormatter;
-exports.ɵby = multipleFormatter;
-exports.ɵca = percentCompleteBarFormatter;
-exports.ɵbz = percentCompleteFormatter;
-exports.ɵcb = progressBarFormatter;
-exports.ɵcd = translateBooleanFormatter;
-exports.ɵcc = translateFormatter;
-exports.ɵce = uppercaseFormatter;
-exports.ɵcf = yesNoFormatter;
-exports.ɵch = avgTotalsDollarFormatter;
-exports.ɵcg = avgTotalsFormatter;
-exports.ɵci = avgTotalsPercentageFormatter;
-exports.ɵcj = maxTotalsFormatter;
-exports.ɵck = minTotalsFormatter;
-exports.ɵcm = sumTotalsBoldFormatter;
-exports.ɵcn = sumTotalsColoredFormatter;
-exports.ɵcp = sumTotalsDollarBoldFormatter;
-exports.ɵcr = sumTotalsDollarColoredBoldFormatter;
-exports.ɵcq = sumTotalsDollarColoredFormatter;
-exports.ɵco = sumTotalsDollarFormatter;
-exports.ɵcl = sumTotalsFormatter;
-exports.ɵct = dateIsoSorter;
-exports.ɵcs = dateSorter;
-exports.ɵcv = dateUsShortSorter;
-exports.ɵcu = dateUsSorter;
-exports.ɵcw = numericSorter;
-exports.ɵcx = stringSorter;
+exports.ɵbk = dateIsoFormatter;
+exports.ɵbm = dateTimeIsoAmPmFormatter;
+exports.ɵbl = dateTimeIsoFormatter;
+exports.ɵbp = dateTimeUsAmPmFormatter;
+exports.ɵbo = dateTimeUsFormatter;
+exports.ɵbn = dateUsFormatter;
+exports.ɵbq = deleteIconFormatter;
+exports.ɵbt = dollarColoredBoldFormatter;
+exports.ɵbs = dollarColoredFormatter;
+exports.ɵbr = dollarFormatter;
+exports.ɵbu = editIconFormatter;
+exports.ɵbv = hyperlinkFormatter;
+exports.ɵbw = hyperlinkUriPrefixFormatter;
+exports.ɵbx = infoIconFormatter;
+exports.ɵby = lowercaseFormatter;
+exports.ɵbz = multipleFormatter;
+exports.ɵcc = percentCompleteBarFormatter;
+exports.ɵcb = percentCompleteFormatter;
+exports.ɵca = percentFormatter;
+exports.ɵcd = percentSymbolFormatter;
+exports.ɵce = progressBarFormatter;
+exports.ɵcg = translateBooleanFormatter;
+exports.ɵcf = translateFormatter;
+exports.ɵch = uppercaseFormatter;
+exports.ɵci = yesNoFormatter;
+exports.ɵck = avgTotalsDollarFormatter;
+exports.ɵcj = avgTotalsFormatter;
+exports.ɵcl = avgTotalsPercentageFormatter;
+exports.ɵcm = maxTotalsFormatter;
+exports.ɵcn = minTotalsFormatter;
+exports.ɵcp = sumTotalsBoldFormatter;
+exports.ɵcq = sumTotalsColoredFormatter;
+exports.ɵcs = sumTotalsDollarBoldFormatter;
+exports.ɵcu = sumTotalsDollarColoredBoldFormatter;
+exports.ɵct = sumTotalsDollarColoredFormatter;
+exports.ɵcr = sumTotalsDollarFormatter;
+exports.ɵco = sumTotalsFormatter;
+exports.ɵcw = dateIsoSorter;
+exports.ɵcv = dateSorter;
+exports.ɵcy = dateUsShortSorter;
+exports.ɵcx = dateUsSorter;
+exports.ɵcz = numericSorter;
+exports.ɵda = stringSorter;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -6,8 +6,6 @@ export interface Filter {
     callback: FilterCallback;
     /** SlickGrid grid object */
     grid: any;
-    /** Defined search term to pre-load */
-    searchTerm?: SearchTerm;
     /** Array of defined search terms to pre-load */
     searchTerms?: SearchTerm[];
     /** You can use "params" to pass any types of arguments to your Filter */

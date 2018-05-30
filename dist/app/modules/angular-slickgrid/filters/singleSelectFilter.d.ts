@@ -1,13 +1,12 @@
 import { TranslateService } from '@ngx-translate/core';
 import { CollectionService } from './../services/collection.service';
-import { Column, Filter, FilterArguments, FilterCallback, GridOption, MultipleSelectOption, SearchTerm } from './../models/index';
+import { Column, Filter, FilterArguments, FilterCallback, MultipleSelectOption, SearchTerm } from './../models/index';
 export declare class SingleSelectFilter implements Filter {
     private collectionService;
     private translate;
     $filterElm: any;
     grid: any;
-    gridOptions: GridOption;
-    searchTerm: SearchTerm;
+    searchTerms: SearchTerm[];
     columnDef: Column;
     callback: FilterCallback;
     defaultOptions: MultipleSelectOption;
@@ -16,6 +15,8 @@ export declare class SingleSelectFilter implements Filter {
     valueName: string;
     enableTranslateLabel: boolean;
     constructor(collectionService: CollectionService, translate: TranslateService);
+    /** Getter for the Grid Options pulled through the Grid Object */
+    private readonly gridOptions;
     /**
      * Initialize the Filter
      */
@@ -35,7 +36,7 @@ export declare class SingleSelectFilter implements Filter {
     /**
      * Create the HTML template as a string
      */
-    private buildTemplateHtmlString(optionCollection);
+    private buildTemplateHtmlString(optionCollection, searchTerm?);
     /**
      * From the html template string, create a DOM element
      * Subscribe to the onClose event and run the callback when that happens

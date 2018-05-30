@@ -1,12 +1,11 @@
 import { TranslateService } from '@ngx-translate/core';
 import { CollectionService } from './../services/collection.service';
-import { Column, Filter, FilterArguments, FilterCallback, GridOption, MultipleSelectOption, SearchTerm } from './../models/index';
+import { Column, Filter, FilterArguments, FilterCallback, MultipleSelectOption, SearchTerm } from './../models/index';
 export declare class MultipleSelectFilter implements Filter {
     private collectionService;
     private translate;
     $filterElm: any;
     grid: any;
-    gridOptions: GridOption;
     searchTerms: SearchTerm[];
     columnDef: Column;
     callback: FilterCallback;
@@ -19,6 +18,8 @@ export declare class MultipleSelectFilter implements Filter {
      * Initialize the Filter
      */
     constructor(collectionService: CollectionService, translate: TranslateService);
+    /** Getter for the Grid Options pulled through the Grid Object */
+    private readonly gridOptions;
     /**
      * Initialize the filter template
      */

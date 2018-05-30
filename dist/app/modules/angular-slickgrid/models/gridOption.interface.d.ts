@@ -1,4 +1,5 @@
-import { AutoResizeOption, BackendEventChanged, BackendServiceApi, Column, ColumnPicker, CheckboxSelector, EditCommand, ExportOption, FilterType, GridMenu, GridState, HeaderButton, HeaderMenu, Pagination } from './../models/index';
+import { TranslateService } from '@ngx-translate/core';
+import { AutoResizeOption, BackendServiceApi, Column, ColumnPicker, CheckboxSelector, EditCommand, ExportOption, FilterType, GridMenu, GridState, HeaderButton, HeaderMenu, Pagination } from './../models/index';
 export interface GridOption {
     /** CSS class name used on newly added row */
     addNewRowCssClass?: string;
@@ -29,7 +30,7 @@ export interface GridOption {
         /** what is the maximum tooltip length in pixels (only type the number) */
         maxToolTipLength: number;
     };
-    /** Backend Service API definition (GraphQL/OData Services), also goes with onBackendEventApi */
+    /** Backend Service API definition (GraphQL/OData Services) */
     backendServiceApi?: BackendServiceApi;
     /** CSS class name used to simulate cell flashing */
     cellFlashingCssClass?: string;
@@ -117,8 +118,6 @@ export interface GridOption {
     explicitInitialization?: boolean;
     /** Some default options to set for the export service */
     exportOptions?: ExportOption;
-    /** @deprecated Defaults to false, which leads to all Formatters of the grid being evaluated on export. You can also override a column by changing the propery on the column itself */
-    exportWithFormatter?: boolean;
     /** Defaults to 25, which is the grid footer row panel height */
     footerRowHeight?: number;
     /** Do we want to force fit columns in the grid at all time? */
@@ -141,6 +140,8 @@ export interface GridOption {
     headerButton?: HeaderButton;
     /** Header menu options */
     headerMenu?: HeaderMenu;
+    /** ngx-translate i18n translation service instance */
+    i18n?: TranslateService;
     /** Do we leave space for new rows in the DOM visible buffer */
     leaveSpaceForNewRows?: boolean;
     /** What is the minimum row buffer to use? */
@@ -151,8 +152,6 @@ export interface GridOption {
     multiSelect?: boolean;
     /** Defaults to true, which will display numbers indicating column sort precedence are displayed in the columns when multiple columns selected */
     numberedMultiColumnSort?: boolean;
-    /** @deprecated Please use "backendServiceApi" instead */
-    onBackendEventApi?: BackendEventChanged;
     /** Pagination options, these are currently used ONLY with a Backend Service API (GraphQL/OData Services) */
     pagination?: Pagination;
     /** if you want to pass custom paramaters to your Formatter/Editor or anything else */
@@ -163,6 +162,8 @@ export interface GridOption {
     preserveCopiedSelectionOnPaste?: boolean;
     /** Query presets before grid load (filters, sorters, pagination) */
     presets?: GridState;
+    /** Preselect certain rows by their row index ("enableCheckboxSelector" must be enabled) */
+    preselectedRows?: number[];
     /** Register 1 or more Slick Plugins */
     registerPlugins?: any | any[];
     /** Grid row height in pixels (only type the number). Row of cell values. */

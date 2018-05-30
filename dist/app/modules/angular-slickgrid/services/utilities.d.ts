@@ -1,4 +1,4 @@
-import { FieldType, OperatorType, FilterType, FormElementType } from '../models/index';
+import { FieldType, OperatorType, FilterType } from '../models/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
@@ -80,7 +80,7 @@ export declare function mapOperatorByFieldType(fieldType: FieldType | string): O
  * @param operator
  * @returns string map
  */
-export declare function mapOperatorByFilterType(filterType: FilterType | FormElementType | string): OperatorType;
+export declare function mapOperatorByFilterType(filterType: FilterType | string): OperatorType;
 /**
  * Parse a date passed as a string and return a Date object (if valid)
  * @param inputDateString

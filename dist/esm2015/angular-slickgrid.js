@@ -3,7 +3,7 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
-import { Injectable, Component, EventEmitter, Input, Output, Inject, NgModule } from '@angular/core';
+import { Injectable, Component, EventEmitter, Input, Output, Inject, ElementRef, ViewChild, NgModule } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { __awaiter } from 'tslib';
 import { Subject } from 'rxjs/Subject';
@@ -60,6 +60,41 @@ const DelimiterType = {
     doublePipe: '||',
     doubleSemicolon: ';;',
 };
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/** @enum {number} */
+const EditorType = {
+    /** Custom Editor type */
+    custom: 0,
+    /** Checkbox Editor */
+    checkbox: 1,
+    /** Date Picker Editor */
+    date: 2,
+    /** Float Editor */
+    float: 3,
+    /** Integer Editor */
+    integer: 4,
+    /** Long Text Editor */
+    longText: 5,
+    /** Multiple Select Editor */
+    multipleSelect: 6,
+    /** Single Select Editor */
+    singleSelect: 7,
+    /** Text Editor */
+    text: 8,
+};
+EditorType[EditorType.custom] = "custom";
+EditorType[EditorType.checkbox] = "checkbox";
+EditorType[EditorType.date] = "date";
+EditorType[EditorType.float] = "float";
+EditorType[EditorType.integer] = "integer";
+EditorType[EditorType.longText] = "longText";
+EditorType[EditorType.multipleSelect] = "multipleSelect";
+EditorType[EditorType.singleSelect] = "singleSelect";
+EditorType[EditorType.text] = "text";
 
 /**
  * @fileoverview added by tsickle
@@ -170,35 +205,6 @@ FilterType[FilterType.singleSelect] = "singleSelect";
 FilterType[FilterType.custom] = "custom";
 FilterType[FilterType.compoundDate] = "compoundDate";
 FilterType[FilterType.compoundInput] = "compoundInput";
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/** @enum {number} */
-const FormElementType = {
-    /** Input Filter type */
-    input: 0,
-    /** Select Filter type, just a regular select dropdown. You might want to try "singleSelect" which has a nicer look and feel. */
-    select: 1,
-    /** Multiple-Select Filter type */
-    multipleSelect: 2,
-    /** Single Filter type */
-    singleSelect: 3,
-    /** Custom Filter type */
-    custom: 4,
-    /** Input Filter type */
-    inputNoPlaceholder: 5,
-    /** TextArea element type */
-    textarea: 6,
-};
-FormElementType[FormElementType.input] = "input";
-FormElementType[FormElementType.select] = "select";
-FormElementType[FormElementType.multipleSelect] = "multipleSelect";
-FormElementType[FormElementType.singleSelect] = "singleSelect";
-FormElementType[FormElementType.custom] = "custom";
-FormElementType[FormElementType.inputNoPlaceholder] = "inputNoPlaceholder";
-FormElementType[FormElementType.textarea] = "textarea";
 
 /**
  * @fileoverview added by tsickle
@@ -718,16 +724,38 @@ function toKebabCase(str) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const moment$1 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment$1 = moment_;
+/**
+ * @param {?} value1
+ * @param {?} value2
+ * @param {?} format
+ * @param {?} sortDirection
+ * @param {?=} strict
+ * @return {?}
+ */
+function compareDates(value1, value2, format, sortDirection, strict) {
+    let /** @type {?} */ diff = 0;
+    if (value1 === null || value1 === '' || !moment$1(value1, format, strict).isValid()) {
+        diff = -1;
+    }
+    else if (value2 === null || value2 === '' || !moment$1(value2, format, strict).isValid()) {
+        diff = 1;
+    }
+    else {
+        const /** @type {?} */ date1 = moment$1(value1, format, strict);
+        const /** @type {?} */ date2 = moment$1(value2, format, strict);
+        diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
+    }
+    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 const FORMAT = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
 const dateUsShortSorter = (value1, value2, sortDirection) => {
-    if (!moment$1(value1, FORMAT, true).isValid() || !moment$1(value2, FORMAT, true).isValid()) {
-        return 0;
-    }
-    const /** @type {?} */ date1 = moment$1(value1, FORMAT, true);
-    const /** @type {?} */ date2 = moment$1(value2, FORMAT, true);
-    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+    return compareDates(value1, value2, FORMAT, sortDirection, true);
 };
 
 /**
@@ -736,45 +764,25 @@ const dateUsShortSorter = (value1, value2, sortDirection) => {
  */
 const moment$2 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const dateSorter = (value1, value2, sortDirection) => {
-    if (!moment$2(value1, moment$2.ISO_8601).isValid() || !moment$2(value2, moment$2.ISO_8601, true).isValid()) {
-        return 0;
-    }
-    const /** @type {?} */ date1 = moment$2(value1);
-    const /** @type {?} */ date2 = moment$2(value2);
-    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+    return compareDates(value1, value2, moment$2.ISO_8601, sortDirection);
 };
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const moment$3 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$1 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
 const dateIsoSorter = (value1, value2, sortDirection) => {
-    if (!moment$3(value1, FORMAT$1, true).isValid() || !moment$3(value2, FORMAT$1, true).isValid()) {
-        return 0;
-    }
-    const /** @type {?} */ date1 = moment$3(value1, FORMAT$1, true);
-    const /** @type {?} */ date2 = moment$3(value2, FORMAT$1, true);
-    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+    return compareDates(value1, value2, FORMAT$1, sortDirection, true);
 };
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const moment$4 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$2 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
 const dateUsSorter = (value1, value2, sortDirection) => {
-    if (!moment$4(value1, FORMAT$2, true).isValid() || !moment$4(value2, FORMAT$2, true).isValid()) {
-        return 0;
-    }
-    const /** @type {?} */ date1 = moment$4(value1, FORMAT$2, true);
-    const /** @type {?} */ date2 = moment$4(value2, FORMAT$2, true);
-    const /** @type {?} */ diff = parseInt(date1.format('X'), 10) - parseInt(date2.format('X'), 10);
-    return sortDirection * (diff === 0 ? 0 : (diff > 0 ? 1 : -1));
+    return compareDates(value1, value2, FORMAT$2, sortDirection, true);
 };
 
 /**
@@ -878,16 +886,27 @@ class CollectionService {
      * @return {?}
      */
     filterCollection(collection, filterBy) {
-        let /** @type {?} */ filteredCollection;
+        let /** @type {?} */ filteredCollection = [];
         if (filterBy) {
             const /** @type {?} */ property = filterBy.property || '';
             const /** @type {?} */ operator = filterBy.operator || OperatorType.equal;
-            const /** @type {?} */ value = filterBy.value || '';
-            if (operator === OperatorType.equal) {
-                filteredCollection = collection.filter((item) => item[property] !== value);
-            }
-            else {
-                filteredCollection = collection.filter((item) => item[property] === value);
+            // just check for undefined since the filter value could be null, 0, '', false etc
+            const /** @type {?} */ value = typeof filterBy.value === 'undefined' ? '' : filterBy.value;
+            switch (operator) {
+                case OperatorType.equal:
+                    filteredCollection = collection.filter((item) => item[property] === value);
+                    break;
+                case OperatorType.in:
+                    filteredCollection = collection.filter((item) => item[property].indexOf(value) !== -1);
+                    break;
+                case OperatorType.notIn:
+                    filteredCollection = collection.filter((item) => item[property].indexOf(value) === -1);
+                    break;
+                case OperatorType.contains:
+                    filteredCollection = collection.filter((item) => value.indexOf(item[property]) !== -1);
+                    break;
+                default:
+                    filteredCollection = collection.filter((item) => item[property] !== value);
             }
         }
         return filteredCollection;
@@ -900,7 +919,7 @@ class CollectionService {
      * @return {?}
      */
     sortCollection(collection, sortBy, enableTranslateLabel) {
-        let /** @type {?} */ sortedCollection;
+        let /** @type {?} */ sortedCollection = [];
         if (sortBy) {
             const /** @type {?} */ property = sortBy.property || '';
             const /** @type {?} */ sortDirection = sortBy.hasOwnProperty('sortDesc') ? (sortBy.sortDesc ? -1 : 1) : 1;
@@ -935,7 +954,8 @@ function parseBoolean(str) {
     return /(true|1)/i.test(str + '');
 }
 const booleanFilterCondition = (options) => {
-    return parseBoolean(options.cellValue) === parseBoolean(options.searchTerm);
+    const /** @type {?} */ searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
+    return parseBoolean(options.cellValue) === parseBoolean(searchTerm);
 };
 
 /**
@@ -967,15 +987,50 @@ const testFilterCondition = (operator, value1, value2) => {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const moment$5 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment$3 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const dateFilterCondition = (options) => {
+    const /** @type {?} */ searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
     const /** @type {?} */ filterSearchType = options.filterSearchType || FieldType.dateIso;
     const /** @type {?} */ searchDateFormat = mapMomentDateFormatWithFieldType(filterSearchType);
-    if (!moment$5(options.cellValue, moment$5.ISO_8601).isValid() || !moment$5(options.searchTerm, searchDateFormat, true).isValid()) {
-        return true;
+    if (searchTerm === null || searchTerm === '' || !moment$3(options.cellValue, moment$3.ISO_8601).isValid() || !moment$3(searchTerm, searchDateFormat, true).isValid()) {
+        return false;
     }
-    const /** @type {?} */ dateCell = moment$5(options.cellValue);
-    const /** @type {?} */ dateSearch = moment$5(options.searchTerm);
+    const /** @type {?} */ dateCell = moment$3(options.cellValue);
+    const /** @type {?} */ dateSearch = moment$3(searchTerm);
+    // run the filter condition with date in Unix Timestamp format
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$4 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT$3 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
+const dateIsoFilterCondition = (options) => {
+    const /** @type {?} */ searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
+    if (searchTerm === null || searchTerm === '' || !moment$4(options.cellValue, FORMAT$3, true).isValid() || !moment$4(searchTerm, FORMAT$3, true).isValid()) {
+        return false;
+    }
+    const /** @type {?} */ dateCell = moment$4(options.cellValue, FORMAT$3, true);
+    const /** @type {?} */ dateSearch = moment$4(searchTerm, FORMAT$3, true);
+    // run the filter condition with date in Unix Timestamp format
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$5 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT$4 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
+const dateUsFilterCondition = (options) => {
+    const /** @type {?} */ searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
+    if (searchTerm === null || searchTerm === '' || !moment$5(options.cellValue, FORMAT$4, true).isValid() || !moment$5(searchTerm, FORMAT$4, true).isValid()) {
+        return false;
+    }
+    const /** @type {?} */ dateCell = moment$5(options.cellValue, FORMAT$4, true);
+    const /** @type {?} */ dateSearch = moment$5(searchTerm, FORMAT$4, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
@@ -985,13 +1040,14 @@ const dateFilterCondition = (options) => {
  * @suppress {checkTypes} checked by tsc
  */
 const moment$6 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$3 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-const dateIsoFilterCondition = (options) => {
-    if (!moment$6(options.cellValue, FORMAT$3, true).isValid() || !moment$6(options.searchTerm, FORMAT$3, true).isValid()) {
-        return true;
+const FORMAT$5 = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
+const dateUsShortFilterCondition = (options) => {
+    const /** @type {?} */ searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
+    if (searchTerm === null || searchTerm === '' || !moment$6(options.cellValue, FORMAT$5, true).isValid() || !moment$6(searchTerm, FORMAT$5, true).isValid()) {
+        return false;
     }
-    const /** @type {?} */ dateCell = moment$6(options.cellValue, FORMAT$3, true);
-    const /** @type {?} */ dateSearch = moment$6(options.searchTerm, FORMAT$3, true);
+    const /** @type {?} */ dateCell = moment$6(options.cellValue, FORMAT$5, true);
+    const /** @type {?} */ dateSearch = moment$6(searchTerm, FORMAT$5, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
@@ -1001,45 +1057,14 @@ const dateIsoFilterCondition = (options) => {
  * @suppress {checkTypes} checked by tsc
  */
 const moment$7 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$4 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-const dateUsFilterCondition = (options) => {
-    if (!moment$7(options.cellValue, FORMAT$4, true).isValid() || !moment$7(options.searchTerm, FORMAT$4, true).isValid()) {
-        return true;
-    }
-    const /** @type {?} */ dateCell = moment$7(options.cellValue, FORMAT$4, true);
-    const /** @type {?} */ dateSearch = moment$7(options.searchTerm, FORMAT$4, true);
-    // run the filter condition with date in Unix Timestamp format
-    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const moment$8 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$5 = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
-const dateUsShortFilterCondition = (options) => {
-    if (!moment$8(options.cellValue, FORMAT$5, true).isValid() || !moment$8(options.searchTerm, FORMAT$5, true).isValid()) {
-        return true;
-    }
-    const /** @type {?} */ dateCell = moment$8(options.cellValue, FORMAT$5, true);
-    const /** @type {?} */ dateSearch = moment$8(options.searchTerm, FORMAT$5, true);
-    // run the filter condition with date in Unix Timestamp format
-    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
-};
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const moment$9 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const dateUtcFilterCondition = (options) => {
+    const /** @type {?} */ searchTerms = Array.isArray(options.searchTerms) && options.searchTerms[0] || [];
     const /** @type {?} */ searchDateFormat = mapMomentDateFormatWithFieldType(options.filterSearchType || options.fieldType);
-    if (!moment$9(options.cellValue, moment$9.ISO_8601).isValid() || !moment$9(options.searchTerm, searchDateFormat, true).isValid()) {
+    if (!moment$7(options.cellValue, moment$7.ISO_8601).isValid() || !moment$7(searchTerms[0], searchDateFormat, true).isValid()) {
         return true;
     }
-    const /** @type {?} */ dateCell = moment$9(options.cellValue, moment$9.ISO_8601, true);
-    const /** @type {?} */ dateSearch = moment$9(options.searchTerm, searchDateFormat, true);
+    const /** @type {?} */ dateCell = moment$7(options.cellValue, moment$7.ISO_8601, true);
+    const /** @type {?} */ dateSearch = moment$7(searchTerms[0], searchDateFormat, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
@@ -1060,7 +1085,10 @@ const collectionSearchFilterCondition = (options) => {
  */
 const numberFilterCondition = (options) => {
     const /** @type {?} */ cellValue = parseFloat(options.cellValue);
-    const /** @type {?} */ searchTerm = (typeof options.searchTerm === 'string') ? parseFloat(options.searchTerm) : options.searchTerm;
+    let /** @type {?} */ searchTerm = (Array.isArray(options.searchTerms) && options.searchTerms[0]) || 0;
+    if (typeof searchTerm === 'string') {
+        searchTerm = parseFloat(searchTerm);
+    }
     return testFilterCondition(options.operator || '==', cellValue, searchTerm);
 };
 
@@ -1073,7 +1101,10 @@ const stringFilterCondition = (options) => {
     options.cellValue = (options.cellValue === undefined || options.cellValue === null) ? '' : options.cellValue.toString();
     // make both the cell value and search value lower for case insensitive comparison
     const /** @type {?} */ cellValue = options.cellValue.toLowerCase();
-    const /** @type {?} */ searchTerm = (typeof options.searchTerm === 'string') ? options.searchTerm.toLowerCase() : options.searchTerm;
+    let /** @type {?} */ searchTerm = (Array.isArray(options.searchTerms) && options.searchTerms[0]) || '';
+    if (typeof searchTerm === 'string') {
+        searchTerm = searchTerm.toLowerCase();
+    }
     if (options.operator === '*' || options.operator === OperatorType.endsWith) {
         return cellValue.endsWith(searchTerm);
     }
@@ -1150,6 +1181,13 @@ class CompoundDateFilter {
         this.translate = translate;
     }
     /**
+     * Getter for the Grid Options pulled through the Grid Object
+     * @return {?}
+     */
+    get gridOptions() {
+        return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+    }
+    /**
      * Initialize the Filter
      * @param {?} args
      * @return {?}
@@ -1159,13 +1197,12 @@ class CompoundDateFilter {
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.operator = args.operator;
-        this.searchTerm = args.searchTerm;
-        if (this.grid && typeof this.grid.getOptions === 'function') {
-            this.gridOptions = this.grid.getOptions();
-        }
+        this.searchTerms = args.searchTerms || [];
+        // date input can only have 1 search term, so we will use the 1st array index if it exist
+        const /** @type {?} */ searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
         // step 1, create the DOM Element of the filter which contain the compound Operator+Input
-        // and initialize it if searchTerm is filled
-        this.$filterElm = this.createDomElement();
+        // and initialize it if searchTerms is filled
+        this.$filterElm = this.createDomElement(searchTerm);
         // step 3, subscribe to the keyup event and run the callback when that happens
         // also add/remove "filled" class for styling purposes
         this.$filterInputElm.keyup((e) => {
@@ -1202,12 +1239,12 @@ class CompoundDateFilter {
      * @return {?}
      */
     setValues(values) {
-        if (values) {
-            this.flatInstance.setDate(values);
+        if (values && Array.isArray(values)) {
+            this.flatInstance.setDate(values[0]);
         }
     }
     /**
-     * @param {?} searchTerm
+     * @param {?=} searchTerm
      * @return {?}
      */
     buildDatePickerInput(searchTerm) {
@@ -1273,14 +1310,14 @@ class CompoundDateFilter {
     }
     /**
      * Create the DOM element
+     * @param {?=} searchTerm
      * @return {?}
      */
-    createDomElement() {
+    createDomElement(searchTerm) {
         const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
-        const /** @type {?} */ searchTerm = /** @type {?} */ ((this.searchTerm || ''));
         if (searchTerm) {
-            this._currentValue = searchTerm;
+            this._currentValue = /** @type {?} */ (searchTerm);
         }
         // create the DOM Select dropdown for the Operator
         this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
@@ -1309,7 +1346,7 @@ class CompoundDateFilter {
             this.$selectOperatorElm.val(this.operator);
         }
         // if there's a search term, we will add the "filled" class for styling purposes
-        if (this.searchTerm) {
+        if (searchTerm) {
             $filterContainerElm.addClass('filled');
         }
         // append the new DOM element to the header row
@@ -1349,7 +1386,7 @@ class CompoundDateFilter {
     onTriggerEvent(e) {
         const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
         (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-        this.callback(e, { columnDef: this.columnDef, searchTerm: this._currentValue, operator: selectedOperator || '=' });
+        this.callback(e, { columnDef: this.columnDef, searchTerms: [this._currentValue], operator: selectedOperator || '=' });
     }
     /**
      * @return {?}
@@ -1388,6 +1425,13 @@ class CompoundInputFilter {
         this.translate = translate;
     }
     /**
+     * Getter for the Grid Options pulled through the Grid Object
+     * @return {?}
+     */
+    get gridOptions() {
+        return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+    }
+    /**
      * Initialize the Filter
      * @param {?} args
      * @return {?}
@@ -1397,13 +1441,12 @@ class CompoundInputFilter {
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.operator = args.operator;
-        this.searchTerm = args.searchTerm;
-        if (this.grid && typeof this.grid.getOptions === 'function') {
-            this.gridOptions = this.grid.getOptions();
-        }
+        this.searchTerms = args.searchTerms || [];
+        // filter input can only have 1 search term, so we will use the 1st array index if it exist
+        const /** @type {?} */ searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
         // step 1, create the DOM Element of the filter which contain the compound Operator+Input
-        // and initialize it if searchTerm is filled
-        this.$filterElm = this.createDomElement();
+        // and initialize it if searchTerms is filled
+        this.$filterElm = this.createDomElement(searchTerm);
         // step 3, subscribe to the keyup event and run the callback when that happens
         // also add/remove "filled" class for styling purposes
         this.$filterInputElm.keyup((e) => {
@@ -1443,8 +1486,8 @@ class CompoundInputFilter {
      * @return {?}
      */
     setValues(values) {
-        if (values) {
-            this.$filterElm.val(values);
+        if (values && Array.isArray(values)) {
+            this.$filterElm.val(values[0]);
         }
     }
     /**
@@ -1496,9 +1539,10 @@ class CompoundInputFilter {
     }
     /**
      * Create the DOM element
+     * @param {?=} searchTerm
      * @return {?}
      */
-    createDomElement() {
+    createDomElement(searchTerm) {
         const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
         // create the DOM Select dropdown for the Operator
@@ -1521,14 +1565,13 @@ class CompoundInputFilter {
         // create the DOM element & add an ID and filter class
         $filterContainerElm.append($containerInputGroup);
         $filterContainerElm.attr('id', `filter-${this.columnDef.id}`);
-        const /** @type {?} */ searchTerm = (typeof this.searchTerm === 'boolean') ? `${this.searchTerm}` : this.searchTerm;
         this.$filterInputElm.val(searchTerm);
         this.$filterInputElm.data('columnId', this.columnDef.id);
         if (this.operator) {
             this.$selectOperatorElm.val(this.operator);
         }
         // if there's a search term, we will add the "filled" class for styling purposes
-        if (this.searchTerm) {
+        if (searchTerm) {
             $filterContainerElm.addClass('filled');
         }
         // append the new DOM element to the header row
@@ -1545,7 +1588,7 @@ class CompoundInputFilter {
         const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
         const /** @type {?} */ value = this.$filterInputElm.val();
         (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-        this.callback(e, { columnDef: this.columnDef, searchTerm: value, operator: selectedOperator || '' });
+        this.callback(e, { columnDef: this.columnDef, searchTerms: [value], operator: selectedOperator || '' });
     }
 }
 CompoundInputFilter.decorators = [
@@ -1563,6 +1606,13 @@ CompoundInputFilter.ctorParameters = () => [
 class InputFilter {
     constructor() { }
     /**
+     * Getter for the Grid Options pulled through the Grid Object
+     * @return {?}
+     */
+    get gridOptions() {
+        return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+    }
+    /**
      * Initialize the Filter
      * @param {?} args
      * @return {?}
@@ -1571,14 +1621,13 @@ class InputFilter {
         this.grid = args.grid;
         this.callback = args.callback;
         this.columnDef = args.columnDef;
-        this.searchTerm = args.searchTerm;
-        if (this.grid && typeof this.grid.getOptions === 'function') {
-            this.gridOptions = this.grid.getOptions();
-        }
+        this.searchTerms = args.searchTerms || [];
+        // filter input can only have 1 search term, so we will use the 1st array index if it exist
+        const /** @type {?} */ searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
         // step 1, create HTML string template
         const /** @type {?} */ filterTemplate = this.buildTemplateHtmlString();
         // step 2, create the DOM Element of the filter & initialize it if searchTerm is filled
-        this.$filterElm = this.createDomElement(filterTemplate);
+        this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
         // step 3, subscribe to the keyup event and run the callback when that happens
         // also add/remove "filled" class for styling purposes
         this.$filterElm.keyup((e) => {
@@ -1629,19 +1678,19 @@ class InputFilter {
     /**
      * From the html template string, create a DOM element
      * @param {?} filterTemplate
+     * @param {?=} searchTerm
      * @return {?}
      */
-    createDomElement(filterTemplate) {
+    createDomElement(filterTemplate, searchTerm) {
         const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
         // create the DOM element & add an ID and filter class
         const /** @type {?} */ $filterElm = $(filterTemplate);
-        const /** @type {?} */ searchTerm = (typeof this.searchTerm === 'boolean') ? `${this.searchTerm}` : this.searchTerm;
         $filterElm.val(searchTerm);
         $filterElm.attr('id', `filter-${this.columnDef.id}`);
         $filterElm.data('columnId', this.columnDef.id);
         // if there's a search term, we will add the "filled" class for styling purposes
-        if (this.searchTerm) {
+        if (searchTerm) {
             $filterElm.addClass('filled');
         }
         // append the new DOM element to the header row
@@ -1698,6 +1747,13 @@ class MultipleSelectFilter {
         };
     }
     /**
+     * Getter for the Grid Options pulled through the Grid Object
+     * @return {?}
+     */
+    get gridOptions() {
+        return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+    }
+    /**
      * Initialize the filter template
      * @param {?} args
      * @return {?}
@@ -1714,7 +1770,6 @@ class MultipleSelectFilter {
         this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
         this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         let /** @type {?} */ newCollection = this.columnDef.filter.collection || [];
-        this.gridOptions = this.grid.getOptions();
         // user might want to filter certain items of the collection
         if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
             const /** @type {?} */ filterBy = this.columnDef.filter.collectionFilterBy;
@@ -1861,11 +1916,16 @@ class SelectFilter {
         this.grid = args.grid;
         this.callback = args.callback;
         this.columnDef = args.columnDef;
-        this.searchTerm = args.searchTerm;
+        this.searchTerms = args.searchTerms || [];
+        // filter input can only have 1 search term, so we will use the 1st array index if it exist
+        let /** @type {?} */ searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+        if (typeof searchTerm === 'boolean' || typeof searchTerm === 'number') {
+            searchTerm = `${searchTerm}`;
+        }
         // step 1, create HTML string template
         const /** @type {?} */ filterTemplate = this.buildTemplateHtmlString();
         // step 2, create the DOM Element of the filter & initialize it if searchTerm is filled
-        this.$filterElm = this.createDomElement(filterTemplate);
+        this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
         // step 3, subscribe to the change event and run the callback when that happens
         // also add/remove "filled" class for styling purposes
         this.$filterElm.change((e) => {
@@ -1909,13 +1969,10 @@ class SelectFilter {
      * @return {?}
      */
     buildTemplateHtmlString() {
-        if (!this.columnDef || !this.columnDef.filter || (!this.columnDef.filter.collection && !this.columnDef.filter.selectOptions)) {
+        if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
             throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
         }
-        if (!this.columnDef.filter.collection && this.columnDef.filter.selectOptions) {
-            console.warn(`[Angular-SlickGrid] The Select Filter "selectOptions" property will de deprecated in future version. Please use the new "collection" property which is more generic and can be used with other Filters (not just Select).`);
-        }
-        const /** @type {?} */ optionCollection = this.columnDef.filter.collection || this.columnDef.filter.selectOptions || [];
+        const /** @type {?} */ optionCollection = this.columnDef.filter.collection || [];
         const /** @type {?} */ labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
         const /** @type {?} */ valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         let /** @type {?} */ options = '';
@@ -1932,15 +1989,16 @@ class SelectFilter {
     /**
      * From the html template string, create a DOM element
      * @param {?} filterTemplate
+     * @param {?=} searchTerm
      * @return {?}
      */
-    createDomElement(filterTemplate) {
+    createDomElement(filterTemplate, searchTerm) {
         const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
         // create the DOM element & add an ID and filter class
         const /** @type {?} */ $filterElm = $(filterTemplate);
-        const /** @type {?} */ searchTerm = (typeof this.searchTerm === 'boolean') ? `${this.searchTerm}` : this.searchTerm;
-        $filterElm.val(searchTerm);
+        const /** @type {?} */ searchTermInput = /** @type {?} */ ((searchTerm || ''));
+        $filterElm.val(searchTermInput);
         $filterElm.attr('id', `filter-${this.columnDef.id}`);
         $filterElm.data('columnId', this.columnDef.id);
         // append the new DOM element to the header row
@@ -1984,9 +2042,16 @@ class SingleSelectFilter {
                     this.isFilled = false;
                     this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                this.callback(undefined, { columnDef: this.columnDef, operator: 'EQ', searchTerm: selectedItem });
+                this.callback(undefined, { columnDef: this.columnDef, operator: 'EQ', searchTerms: [selectedItem] });
             }
         };
+    }
+    /**
+     * Getter for the Grid Options pulled through the Grid Object
+     * @return {?}
+     */
+    get gridOptions() {
+        return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
     }
     /**
      * Initialize the Filter
@@ -1997,7 +2062,7 @@ class SingleSelectFilter {
         this.grid = args.grid;
         this.callback = args.callback;
         this.columnDef = args.columnDef;
-        this.searchTerm = args.searchTerm;
+        this.searchTerms = args.searchTerms;
         if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
             throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
         }
@@ -2005,7 +2070,6 @@ class SingleSelectFilter {
         this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
         this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         let /** @type {?} */ newCollection = this.columnDef.filter.collection || [];
-        this.gridOptions = this.grid.getOptions();
         // user might want to filter certain items of the collection
         if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
             const /** @type {?} */ filterBy = this.columnDef.filter.collectionFilterBy;
@@ -2016,8 +2080,14 @@ class SingleSelectFilter {
             const /** @type {?} */ sortBy = this.columnDef.filter.collectionSortBy;
             newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
         }
+        // filter input can only have 1 search term, so we will use the 1st array index if it exist
+        // also when the search term is a boolean or a number, we will convert it to a string
+        let /** @type {?} */ searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+        if (typeof searchTerm === 'boolean' || typeof searchTerm === 'number') {
+            searchTerm = `${searchTerm}`;
+        }
         // step 1, create HTML string template
-        const /** @type {?} */ filterTemplate = this.buildTemplateHtmlString(newCollection || []);
+        const /** @type {?} */ filterTemplate = this.buildTemplateHtmlString(newCollection || [], searchTerm);
         // step 2, create the DOM Element of the filter & pre-load search term
         this.createDomElement(filterTemplate);
     }
@@ -2032,7 +2102,7 @@ class SingleSelectFilter {
             // this.$filterElm = $(`#${this.$filterElm[0].id}`);
             this.$filterElm.multipleSelect('setSelects', []);
             if (triggerFilterChange) {
-                this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerm: undefined });
+                this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: [] });
             }
         }
     }
@@ -2059,16 +2129,17 @@ class SingleSelectFilter {
     /**
      * Create the HTML template as a string
      * @param {?} optionCollection
+     * @param {?=} searchTerm
      * @return {?}
      */
-    buildTemplateHtmlString(optionCollection) {
+    buildTemplateHtmlString(optionCollection, searchTerm) {
         let /** @type {?} */ options = '';
         optionCollection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.singleSelect, collection: [ { value: '1', label: 'One' } ]')`);
             }
             const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
-            const /** @type {?} */ selected = (option[this.valueName] === this.searchTerm) ? 'selected' : '';
+            const /** @type {?} */ selected = (option[this.valueName] === searchTerm) ? 'selected' : '';
             const /** @type {?} */ textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
             // html text of each select option
             options += `<option value="${option[this.valueName]}" ${selected}>${textLabel}</option>`;
@@ -2196,7 +2267,7 @@ class FilterService {
             if (!args || !args.grid) {
                 throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
             }
-            const /** @type {?} */ backendApi = this._gridOptions.backendServiceApi || this._gridOptions.onBackendEventApi;
+            const /** @type {?} */ backendApi = this._gridOptions.backendServiceApi;
             if (!backendApi || !backendApi.process || !backendApi.service) {
                 throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
             }
@@ -2205,7 +2276,7 @@ class FilterService {
                 backendApi.preProcess();
             }
             // call the service to get a query back
-            const /** @type {?} */ query = yield backendApi.service.onFilterChanged(event, args);
+            const /** @type {?} */ query = yield backendApi.service.processOnFilterChanged(event, args);
             // emit an onFilterChanged event
             this.emitFilterChanged('remote');
             // the process could be an Observable (like HttpClient) or a Promise
@@ -2289,7 +2360,7 @@ class FilterService {
             const /** @type {?} */ filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
             let /** @type {?} */ cellValue = item[columnDef.queryField || columnDef.queryFieldFilter || columnDef.field];
             const /** @type {?} */ searchTerms = (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null;
-            let /** @type {?} */ fieldSearchValue = (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined;
+            let /** @type {?} */ fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
             if (typeof fieldSearchValue === 'undefined') {
                 fieldSearchValue = '';
             }
@@ -2298,7 +2369,7 @@ class FilterService {
             let /** @type {?} */ operator = columnFilter.operator || ((matches) ? matches[1] : '');
             const /** @type {?} */ searchTerm = (!!matches) ? matches[2] : '';
             const /** @type {?} */ lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
-            if (searchTerms && searchTerms.length > 0) {
+            if (searchTerms && searchTerms.length > 1) {
                 fieldSearchValue = searchTerms.join(',');
             }
             else if (typeof fieldSearchValue === 'string') {
@@ -2349,7 +2420,6 @@ class FilterService {
             const /** @type {?} */ conditionOptions = {
                 fieldType,
                 searchTerms,
-                searchTerm,
                 cellValue,
                 operator,
                 cellValueLastChar: lastValueChar,
@@ -2411,9 +2481,6 @@ class FilterService {
                 if (columnFilter && columnFilter.searchTerms) {
                     filter.searchTerms = columnFilter.searchTerms;
                 }
-                else {
-                    filter.searchTerm = (columnFilter && (columnFilter.searchTerm !== undefined || columnFilter.searchTerm !== null)) ? columnFilter.searchTerm : undefined;
-                }
                 if (columnFilter.operator) {
                     filter.operator = columnFilter.operator;
                 }
@@ -2429,12 +2496,12 @@ class FilterService {
      */
     callbackSearchEvent(e, args) {
         if (args) {
-            const /** @type {?} */ searchTerm = args.searchTerm ? args.searchTerm : ((e && e.target) ? (/** @type {?} */ (e.target)).value : undefined);
-            const /** @type {?} */ searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : undefined;
+            const /** @type {?} */ searchTerm = ((e && e.target) ? (/** @type {?} */ (e.target)).value : undefined);
+            const /** @type {?} */ searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : searchTerm ? [searchTerm] : undefined;
             const /** @type {?} */ columnDef = args.columnDef || null;
             const /** @type {?} */ columnId = columnDef ? (columnDef.id || '') : '';
             const /** @type {?} */ operator = args.operator || undefined;
-            if (!searchTerm && (!searchTerms || (Array.isArray(searchTerms) && searchTerms.length === 0))) {
+            if (!searchTerms || (Array.isArray(searchTerms) && searchTerms.length === 0)) {
                 // delete the property from the columnFilters when it becomes empty
                 // without doing this, it would leave an incorrect state of the previous column filters when filtering on another column
                 delete this._columnFilters[columnId];
@@ -2444,7 +2511,6 @@ class FilterService {
                 const /** @type {?} */ colFilter = {
                     columnId: colId,
                     columnDef,
-                    searchTerm,
                     searchTerms,
                 };
                 if (operator) {
@@ -2457,7 +2523,6 @@ class FilterService {
                 columnDef: args.columnDef || null,
                 columnFilters: this._columnFilters,
                 operator,
-                searchTerm,
                 searchTerms,
                 serviceOptions: this._onFilterChangedOptions,
                 grid: this._grid
@@ -2473,10 +2538,8 @@ class FilterService {
         const /** @type {?} */ columnId = columnDef.id || '';
         if (columnDef && columnId !== 'selector' && columnDef.filterable) {
             let /** @type {?} */ searchTerms;
-            let /** @type {?} */ searchTerm;
             let /** @type {?} */ operator;
             if (this._columnFilters[columnDef.id]) {
-                searchTerm = this._columnFilters[columnDef.id].searchTerm || undefined;
                 searchTerms = this._columnFilters[columnDef.id].searchTerms || undefined;
                 operator = this._columnFilters[columnDef.id].operator || undefined;
             }
@@ -2484,14 +2547,12 @@ class FilterService {
                 // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
                 // because of that we need to first get searchTerm(s) from the columnFilters (that is what the user last entered)
                 searchTerms = columnDef.filter.searchTerms || undefined;
-                searchTerm = columnDef.filter.searchTerm || undefined;
                 operator = columnDef.filter.operator || undefined;
-                this.updateColumnFilters(searchTerm, searchTerms, columnDef);
+                this.updateColumnFilters(searchTerms, columnDef);
             }
             const /** @type {?} */ filterArguments = {
                 grid: this._grid,
                 operator,
-                searchTerm,
                 searchTerms,
                 columnDef,
                 callback: this.callbackSearchEvent.bind(this)
@@ -2541,8 +2602,8 @@ class FilterService {
                 }
                 // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
                 // we need to also set again the values in the DOM elements if the values were set by a searchTerm(s)
-                if ((searchTerm || searchTerms) && filter.setValues) {
-                    filter.setValues(searchTerm || searchTerms);
+                if (searchTerms && filter.setValues) {
+                    filter.setValues(searchTerms);
                 }
             }
         }
@@ -2581,11 +2642,6 @@ class FilterService {
                 const /** @type {?} */ columnPreset = filters.find((presetFilter) => {
                     return presetFilter.columnId === columnDef.id;
                 });
-                if (columnPreset && columnPreset.searchTerm) {
-                    columnDef.filter = columnDef.filter || {};
-                    columnDef.filter.operator = columnPreset.operator;
-                    columnDef.filter.searchTerm = columnPreset.searchTerm;
-                }
                 if (columnPreset && columnPreset.searchTerms) {
                     columnDef.filter = columnDef.filter || {};
                     columnDef.filter.operator = columnPreset.operator || columnDef.filter.operator || OperatorType.in;
@@ -2596,21 +2652,11 @@ class FilterService {
         return this._columnDefinitions;
     }
     /**
-     * @param {?} searchTerm
      * @param {?} searchTerms
      * @param {?} columnDef
      * @return {?}
      */
-    updateColumnFilters(searchTerm, searchTerms, columnDef) {
-        if (searchTerm !== undefined && searchTerm !== null && searchTerm !== '') {
-            this._columnFilters[columnDef.id] = {
-                columnId: columnDef.id,
-                columnDef,
-                searchTerm,
-                operator: (columnDef && columnDef.filter && columnDef.filter.operator) ? columnDef.filter.operator : null,
-                type: (columnDef && columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input
-            };
-        }
+    updateColumnFilters(searchTerms, columnDef) {
         if (searchTerms) {
             // this._columnFilters.searchTerms = searchTerms;
             this._columnFilters[columnDef.id] = {
@@ -2827,7 +2873,7 @@ class ExportService {
                 rowOutputString += `""` + delimiter;
             }
             // does the user want to evaluate current column Formatter?
-            const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this._exportOptions.exportWithFormatter || this._gridOptions.exportWithFormatter);
+            const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._exportOptions.exportWithFormatter;
             // did the user provide a Custom Formatter for the export
             const /** @type {?} */ exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
             let /** @type {?} */ itemData = '';
@@ -3021,14 +3067,14 @@ class SortService {
                 throw new Error('Something went wrong when trying to attach the "onBackendSortChanged(event, args)" function, it seems that "args" is not populated correctly');
             }
             const /** @type {?} */ gridOptions = args.grid.getOptions() || {};
-            const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+            const /** @type {?} */ backendApi = gridOptions.backendServiceApi;
             if (!backendApi || !backendApi.process || !backendApi.service) {
                 throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
             }
             if (backendApi.preProcess) {
                 backendApi.preProcess();
             }
-            const /** @type {?} */ query = backendApi.service.onSortChanged(event, args);
+            const /** @type {?} */ query = backendApi.service.processOnSortChanged(event, args);
             this.emitSortChanged('remote');
             // the process could be an Observable (like HttpClient) or a Promise
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
@@ -3238,6 +3284,7 @@ class ControlAndPluginService {
         this.sortService = sortService;
         this.translate = translate;
         this.areVisibleColumnDifferent = false;
+        this.pluginList = [];
     }
     /**
      * Getter for the Grid Options pulled through the Grid Object
@@ -3252,6 +3299,16 @@ class ControlAndPluginService {
      */
     get _columnDefinitions() {
         return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
+    }
+    /**
+     * @param {?=} name
+     * @return {?}
+     */
+    getPlugin(name) {
+        if (name) {
+            return this.pluginList.find((p) => p.name === name);
+        }
+        return this.pluginList;
     }
     /**
      * Auto-resize all the column in the grid to fit the grid width
@@ -3271,34 +3328,44 @@ class ControlAndPluginService {
         this._grid = grid;
         this._dataView = dataView;
         this.visibleColumns = this._columnDefinitions;
-        // Column Picker Plugin
+        // Column Picker Control
         if (this._gridOptions.enableColumnPicker) {
             this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions);
+            this.pluginList.push({ name: 'ColumnPicker', plugin: this.columnPickerControl });
         }
-        // Grid Menu Plugin
+        // Grid Menu Control
         if (this._gridOptions.enableGridMenu) {
             this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions);
+            this.pluginList.push({ name: 'GridMenu', plugin: this.gridMenuControl });
         }
         // Auto Tooltip Plugin
         if (this._gridOptions.enableAutoTooltip) {
             this.autoTooltipPlugin = new Slick.AutoTooltips(this._gridOptions.autoTooltipOptions || {});
             this._grid.registerPlugin(this.autoTooltipPlugin);
+            this.pluginList.push({ name: 'AutoTooltip', plugin: this.autoTooltipPlugin });
         }
         // Grouping Plugin
         // register the group item metadata provider to add expand/collapse group handlers
         if (this._gridOptions.enableGrouping) {
-            const /** @type {?} */ groupItemMetaProvider = groupItemMetadataProvider || {};
-            this._grid.registerPlugin(groupItemMetaProvider);
+            this.groupItemMetaProviderPlugin = groupItemMetadataProvider || {};
+            this._grid.registerPlugin(this.groupItemMetaProviderPlugin);
+            this.pluginList.push({ name: 'GroupItemMetaProvider', plugin: this.groupItemMetaProviderPlugin });
         }
         // Checkbox Selector Plugin
         if (this._gridOptions.enableCheckboxSelector) {
             // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
-            // the selector column has to be create BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
+            // the selector column has to be created BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
             this._grid.registerPlugin(this.checkboxSelectorPlugin);
+            this.pluginList.push({ name: 'CheckboxSelector', plugin: this.checkboxSelectorPlugin });
             // this also requires the Row Selection Model to be registered as well
-            if (!this.rowSelectionPlugin) {
+            if (!this.rowSelectionPlugin || !this._grid.getSelectionModel()) {
                 this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
                 this._grid.setSelectionModel(this.rowSelectionPlugin);
+            }
+            // user might want to pre-select some rows
+            // the setTimeout is because of timing issue with styling (row selection happen but rows aren't highlighted properly)
+            if (this._gridOptions.preselectedRows && this.rowSelectionPlugin && this._grid.getSelectionModel()) {
+                setTimeout(() => this.checkboxSelectorPlugin.selectRows(this._gridOptions.preselectedRows), 0);
             }
         }
         // Row Selection Plugin
@@ -3310,6 +3377,7 @@ class ControlAndPluginService {
         if (this._gridOptions.enableHeaderButton) {
             this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(this._gridOptions.headerButton || {});
             this._grid.registerPlugin(this.headerButtonsPlugin);
+            this.pluginList.push({ name: 'HeaderButtons', plugin: this.headerButtonsPlugin });
             this.headerButtonsPlugin.onCommand.subscribe((e, args) => {
                 if (this._gridOptions.headerButton && typeof this._gridOptions.headerButton.onCommand === 'function') {
                     this._gridOptions.headerButton.onCommand(e, args);
@@ -3331,10 +3399,12 @@ class ControlAndPluginService {
             if (Array.isArray(this._gridOptions.registerPlugins)) {
                 this._gridOptions.registerPlugins.forEach((plugin) => {
                     this._grid.registerPlugin(plugin);
+                    this.pluginList.push({ name: 'generic', plugin });
                 });
             }
             else {
                 this._grid.registerPlugin(this._gridOptions.registerPlugins);
+                this.pluginList.push({ name: 'generic', plugin: this._gridOptions.registerPlugins });
             }
         }
     }
@@ -3395,7 +3465,9 @@ class ControlAndPluginService {
             }
         };
         grid.setSelectionModel(new Slick.CellSelectionModel());
-        grid.registerPlugin(new Slick.CellExternalCopyManager(pluginOptions));
+        this.cellExternalCopyManagerPlugin = new Slick.CellExternalCopyManager(pluginOptions);
+        grid.registerPlugin(this.cellExternalCopyManagerPlugin);
+        this.pluginList.push({ name: 'CellExternalCopyManager', plugin: this.cellExternalCopyManagerPlugin });
     }
     /**
      * Create the Column Picker and expose all the available hooks that user can subscribe (onColumnsChanged)
@@ -3418,6 +3490,7 @@ class ControlAndPluginService {
                 }
             });
         }
+        return this.columnPickerControl;
     }
     /**
      * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)
@@ -3561,34 +3634,13 @@ class ControlAndPluginService {
         this._grid = null;
         this._dataView = null;
         this.visibleColumns = [];
-        if (this.columnPickerControl) {
-            this.columnPickerControl.destroy();
-            this.columnPickerControl = null;
-        }
-        if (this.gridMenuControl) {
-            this.gridMenuControl.destroy();
-            this.gridMenuControl = null;
-        }
-        if (this.rowSelectionPlugin) {
-            this.rowSelectionPlugin.destroy();
-            this.rowSelectionPlugin = null;
-        }
-        if (this.checkboxSelectorPlugin) {
-            this.checkboxSelectorPlugin.destroy();
-            this.checkboxSelectorPlugin = null;
-        }
-        if (this.autoTooltipPlugin) {
-            this.autoTooltipPlugin.destroy();
-            this.autoTooltipPlugin = null;
-        }
-        if (this.headerButtonsPlugin) {
-            this.headerButtonsPlugin.destroy();
-            this.headerButtonsPlugin = null;
-        }
-        if (this.headerMenuPlugin) {
-            this.headerMenuPlugin.destroy();
-            this.headerMenuPlugin = null;
-        }
+        // destroy the control/plugin if it has that method
+        this.pluginList.forEach((item) => {
+            if (item && item.plugin && item.plugin.destroy) {
+                item.plugin.destroy();
+            }
+        });
+        this.pluginList = [];
     }
     /**
      * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
@@ -3597,10 +3649,10 @@ class ControlAndPluginService {
      * @return {?} gridMenu
      */
     addGridMenuCustomCommands(grid, options) {
-        const /** @type {?} */ backendApi = options.backendServiceApi || options.onBackendEventApi || null;
+        const /** @type {?} */ backendApi = options.backendServiceApi || null;
         if (options.enableFiltering) {
             // show grid menu: clear all filters
-            if (options && options.gridMenu && options.gridMenu.showClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'clear-filter').length === 0) {
+            if (options && options.gridMenu && !options.gridMenu.hideClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'clear-filter').length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: options.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
                     title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
@@ -3610,7 +3662,7 @@ class ControlAndPluginService {
                 });
             }
             // show grid menu: toggle filter row
-            if (options && options.gridMenu && options.gridMenu.showToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'toggle-filter').length === 0) {
+            if (options && options.gridMenu && !options.gridMenu.hideToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'toggle-filter').length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: options.gridMenu.iconToggleFilterCommand || 'fa fa-random',
                     title: options.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
@@ -3620,7 +3672,7 @@ class ControlAndPluginService {
                 });
             }
             // show grid menu: refresh dataset
-            if (options && options.gridMenu && options.gridMenu.showRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'refresh-dataset').length === 0) {
+            if (options && options.gridMenu && !options.gridMenu.hideRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'refresh-dataset').length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: options.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
                     title: options.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
@@ -3632,7 +3684,7 @@ class ControlAndPluginService {
         }
         if (options.enableSorting) {
             // show grid menu: clear all sorting
-            if (options && options.gridMenu && options.gridMenu.showClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'clear-sorting').length === 0) {
+            if (options && options.gridMenu && !options.gridMenu.hideClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'clear-sorting').length === 0) {
                 options.gridMenu.customItems.push({
                     iconCssClass: options.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
                     title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
@@ -3643,7 +3695,7 @@ class ControlAndPluginService {
             }
         }
         // show grid menu: export to file
-        if (options && options.enableExport && options.gridMenu && options.gridMenu.showExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'export-csv').length === 0) {
+        if (options && options.enableExport && options.gridMenu && !options.gridMenu.hideExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'export-csv').length === 0) {
             options.gridMenu.customItems.push({
                 iconCssClass: options.gridMenu.iconExportCsvCommand || 'fa fa-download',
                 title: options.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
@@ -3653,7 +3705,7 @@ class ControlAndPluginService {
             });
         }
         // show grid menu: export to text file as tab delimited
-        if (options && options.enableExport && options.gridMenu && options.gridMenu.showExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'export-text-delimited').length === 0) {
+        if (options && options.enableExport && options.gridMenu && !options.gridMenu.hideExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item) => item.command === 'export-text-delimited').length === 0) {
             options.gridMenu.customItems.push({
                 iconCssClass: options.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
                 title: options.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
@@ -3811,7 +3863,7 @@ class ControlAndPluginService {
      */
     refreshBackendDataset() {
         let /** @type {?} */ query;
-        const /** @type {?} */ backendApi = this._gridOptions.backendServiceApi || this._gridOptions.onBackendEventApi;
+        const /** @type {?} */ backendApi = this._gridOptions.backendServiceApi;
         if (!backendApi || !backendApi.service || !backendApi.process) {
             throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
         }
@@ -3860,7 +3912,13 @@ class ControlAndPluginService {
             this.columnPickerControl.destroy();
             this.columnPickerControl = null;
         }
+        const /** @type {?} */ tempHideForceFit = this._gridOptions.columnPicker.hideForceFitButton;
+        const /** @type {?} */ tempSyncResize = this._gridOptions.columnPicker.hideSyncResizeButton;
         this._gridOptions.columnPicker = undefined;
+        this._gridOptions.columnPicker = {
+            hideForceFitButton: tempHideForceFit,
+            hideSyncResizeButton: tempSyncResize
+        };
         this.createColumnPicker(this._grid, this.visibleColumns);
     }
     /**
@@ -3892,19 +3950,33 @@ class ControlAndPluginService {
      * Translate manually the header titles.
      * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
      * @param {?=} locale locale to use
+     * @param {?=} newColumnDefinitions
      * @return {?}
      */
-    translateHeaders(locale) {
+    translateColumnHeaders(locale, newColumnDefinitions) {
         if (locale) {
-            this.translate.use(locale);
+            this.translate.use(/** @type {?} */ (locale));
         }
-        for (const /** @type {?} */ column of this._columnDefinitions) {
+        const /** @type {?} */ columnDefinitions = newColumnDefinitions || this._columnDefinitions;
+        for (const /** @type {?} */ column of columnDefinitions) {
             if (column.headerKey) {
                 column.name = this.translate.instant(column.headerKey);
             }
         }
-        // calling setColumns() will trigger a grid re-render
-        this._grid.setColumns(this._columnDefinitions);
+        // re-render the column headers
+        this.renderColumnHeaders(columnDefinitions);
+    }
+    /**
+     * Render (or re-render) the column headers from column definitions.
+     * calling setColumns() will trigger a grid re-render
+     * @param {?=} newColumnDefinitions
+     * @return {?}
+     */
+    renderColumnHeaders(newColumnDefinitions) {
+        const /** @type {?} */ collection = newColumnDefinitions || this._columnDefinitions;
+        if (Array.isArray(collection) && this._grid && this._grid.setColumns) {
+            this._grid.setColumns(collection);
+        }
     }
     /**
      * @return {?} default Grid Menu options
@@ -3918,9 +3990,9 @@ class ControlAndPluginService {
             menuWidth: 18,
             customTitle: undefined,
             customItems: [],
-            showClearAllFiltersCommand: true,
-            showRefreshDatasetCommand: true,
-            showToggleFilterCommand: true
+            hideClearAllFiltersCommand: false,
+            hideRefreshDatasetCommand: false,
+            hideToggleFilterCommand: false
         };
     }
     /**
@@ -4151,11 +4223,7 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 const DEFAULT_ITEMS_PER_PAGE = 25;
 const DEFAULT_PAGE_SIZE = 20;
 class GraphqlService {
-    /**
-     * @param {?} translate
-     */
-    constructor(translate) {
-        this.translate = translate;
+    constructor() {
         this.defaultOrderBy = { field: 'id', direction: SortDirection.ASC };
         this.defaultPaginationOptions = {
             first: DEFAULT_ITEMS_PER_PAGE,
@@ -4231,7 +4299,7 @@ class GraphqlService {
         }
         if (this.options.addLocaleIntoQuery) {
             // first: 20, ... locale: "en-CA"
-            datasetFilters.locale = this.translate.currentLang || 'en';
+            datasetFilters.locale = (this._gridOptions.params && this._gridOptions.params.i18n && this._gridOptions.params.i18n.currentLang) || 'en';
         }
         if (this.options.extraQueryArguments) {
             // first: 20, ... userId: 123
@@ -4355,9 +4423,9 @@ class GraphqlService {
      * @param {?} args
      * @return {?}
      */
-    onFilterChanged(event, args) {
+    processOnFilterChanged(event, args) {
         const /** @type {?} */ gridOptions = this._gridOptions || args.grid.getOptions();
-        const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+        const /** @type {?} */ backendApi = gridOptions.backendServiceApi;
         if (backendApi === undefined) {
             throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');
         }
@@ -4387,7 +4455,7 @@ class GraphqlService {
      * @param {?} args
      * @return {?}
      */
-    onPaginationChanged(event, args) {
+    processOnPaginationChanged(event, args) {
         const /** @type {?} */ pageSize = +(args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE));
         this.updatePagination(args.newPage, pageSize);
         // build the GraphQL query which we will use in the WebAPI callback
@@ -4398,7 +4466,7 @@ class GraphqlService {
      * @param {?} args
      * @return {?}
      */
-    onSortChanged(event, args) {
+    processOnSortChanged(event, args) {
         const /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
         // loop through all columns to inspect sorters & set the query
         this.updateSorters(sortColumns);
@@ -4432,7 +4500,7 @@ class GraphqlService {
                 }
                 const /** @type {?} */ fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field || columnDef.name || '';
                 const /** @type {?} */ searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
-                let /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
+                let /** @type {?} */ fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
                 if (typeof fieldSearchValue === 'undefined') {
                     fieldSearchValue = '';
                 }
@@ -4449,7 +4517,7 @@ class GraphqlService {
                     continue;
                 }
                 // when having more than 1 search term (we need to create a CSV string for GraphQL "IN" or "NOT IN" filter search)
-                if (searchTerms && searchTerms.length > 0) {
+                if (searchTerms && searchTerms.length > 1) {
                     searchValue = searchTerms.join(',');
                 }
                 else if (typeof searchValue === 'string') {
@@ -4614,20 +4682,10 @@ class GraphqlService {
             if (Array.isArray(filter.searchTerms)) {
                 tmpFilter.searchTerms = filter.searchTerms;
             }
-            else {
-                tmpFilter.searchTerm = filter.searchTerm;
-            }
             return tmpFilter;
         });
     }
 }
-GraphqlService.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-GraphqlService.ctorParameters = () => [
-    { type: TranslateService, },
-];
 
 /**
  * @fileoverview added by tsickle
@@ -4879,16 +4937,13 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE$1 = 750;
 const DEFAULT_ITEMS_PER_PAGE$1 = 25;
 const DEFAULT_PAGE_SIZE$1 = 20;
 class GridOdataService {
-    /**
-     * @param {?} odataService
-     */
-    constructor(odataService) {
-        this.odataService = odataService;
+    constructor() {
         this.defaultOptions = {
             top: DEFAULT_ITEMS_PER_PAGE$1,
             orderBy: '',
             caseType: CaseType.pascalCase
         };
+        this.odataService = new OdataService();
     }
     /**
      * Getter for the Grid Options pulled through the Grid Object
@@ -4985,9 +5040,9 @@ class GridOdataService {
      * @param {?} args
      * @return {?}
      */
-    onFilterChanged(event, args) {
+    processOnFilterChanged(event, args) {
         const /** @type {?} */ serviceOptions = args.grid.getOptions();
-        const /** @type {?} */ backendApi = serviceOptions.backendServiceApi || serviceOptions.onBackendEventApi;
+        const /** @type {?} */ backendApi = serviceOptions.backendServiceApi;
         if (backendApi === undefined) {
             throw new Error('Something went wrong in the GridOdataService, "backendServiceApi" is not initialized');
         }
@@ -5014,7 +5069,7 @@ class GridOdataService {
      * @param {?} args
      * @return {?}
      */
-    onPaginationChanged(event, args) {
+    processOnPaginationChanged(event, args) {
         const /** @type {?} */ pageSize = +(args.pageSize || DEFAULT_PAGE_SIZE$1);
         this.updatePagination(args.newPage, pageSize);
         // build the OData query which we will use in the WebAPI callback
@@ -5025,7 +5080,7 @@ class GridOdataService {
      * @param {?} args
      * @return {?}
      */
-    onSortChanged(event, args) {
+    processOnSortChanged(event, args) {
         const /** @type {?} */ sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
         // loop through all columns to inspect sorters & set the query
         this.updateSorters(sortColumns);
@@ -5062,7 +5117,7 @@ class GridOdataService {
                 let /** @type {?} */ fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field || columnDef.name || '';
                 const /** @type {?} */ fieldType = columnDef.type || 'string';
                 const /** @type {?} */ searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
-                let /** @type {?} */ fieldSearchValue = columnFilter.searchTerm;
+                let /** @type {?} */ fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
                 if (typeof fieldSearchValue === 'undefined') {
                     fieldSearchValue = '';
                 }
@@ -5076,7 +5131,7 @@ class GridOdataService {
                 const /** @type {?} */ lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
                 const /** @type {?} */ bypassOdataQuery = columnFilter.bypassBackendQuery || false;
                 // no need to query if search value is empty
-                if (fieldName && searchValue === '') {
+                if (fieldName && searchValue === '' && searchTerms.length === 0) {
                     this.removeColumnFilter(fieldName);
                     continue;
                 }
@@ -5097,7 +5152,7 @@ class GridOdataService {
                         fieldName = String.titleCase(fieldName || '');
                     }
                     // when having more than 1 search term (then check if we have a "IN" or "NOT IN" filter search)
-                    if (searchTerms && searchTerms.length > 0) {
+                    if (searchTerms && searchTerms.length > 1) {
                         const /** @type {?} */ tmpSearchTerms = [];
                         if (operator === 'IN') {
                             // example:: (Stage eq "Expired" or Stage eq "Renewal")
@@ -5254,9 +5309,6 @@ class GridOdataService {
             if (Array.isArray(filter.searchTerms)) {
                 tmpFilter.searchTerms = filter.searchTerms;
             }
-            else {
-                tmpFilter.searchTerm = filter.searchTerm;
-            }
             return tmpFilter;
         });
     }
@@ -5297,9 +5349,7 @@ GridOdataService.decorators = [
     { type: Injectable },
 ];
 /** @nocollapse */
-GridOdataService.ctorParameters = () => [
-    { type: OdataService, },
-];
+GridOdataService.ctorParameters = () => [];
 
 /**
  * @fileoverview added by tsickle
@@ -5385,7 +5435,7 @@ class GridEventService {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-class GridExtraService {
+class GridService {
     /**
      * Getter for the Grid Options pulled through the Grid Object
      * @return {?}
@@ -5401,6 +5451,28 @@ class GridExtraService {
     init(grid, dataView) {
         this._grid = grid;
         this._dataView = dataView;
+    }
+    /**
+     * From a SlickGrid Event triggered get the Column Definition and Item Data Context
+     *
+     * For example the SlickGrid onClick will return cell arguments when subscribing to it.
+     * From these cellArgs, we want to get the Column Definition and Item Data
+     * @param {?} args
+     * @return {?} object with columnDef and dataContext
+     */
+    getColumnFromEventArguments(args) {
+        if (!args || !args.grid || !args.grid.getColumns || !args.grid.getDataItem) {
+            throw new Error('To get the column definition and data, we need to have these arguments passed as objects (row, cell, grid)');
+        }
+        return {
+            row: args.row,
+            cell: args.cell,
+            columnDef: args.grid.getColumns()[args.cell],
+            dataContext: args.grid.getDataItem(args.row),
+            dataView: this._dataView,
+            grid: this._grid,
+            gridDefinition: this._gridOptions
+        };
     }
     /**
      * @param {?} rowNumber
@@ -5569,26 +5641,6 @@ class GridExtraService {
             // refresh dataview & grid
             this._dataView.refresh();
         }
-    }
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-class GridExtraUtils {
-    /**
-     * @param {?} args
-     * @return {?}
-     */
-    static getColumnDefinitionAndData(args) {
-        if (!args || !args.grid || !args.grid.getColumns || !args.grid.getDataItem) {
-            throw new Error('To get the column definition and data, we need to have these arguments passed (row, cell, grid)');
-        }
-        return {
-            columnDef: args.grid.getColumns()[args.cell],
-            dataContext: args.grid.getDataItem(args.row)
-        };
     }
 }
 
@@ -5958,26 +6010,6 @@ class ResizerService {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-class SharedService {
-    /**
-     * @param {?} grid
-     * @param {?} dataView
-     * @param {?} gridOptions
-     * @param {?} columnDefinitions
-     * @return {?}
-     */
-    init(grid, dataView, gridOptions, columnDefinitions) {
-        this.grid = grid;
-        this.dataView = dataView;
-        this.gridOptions = gridOptions;
-        this.columnDefinitions = columnDefinitions;
-    }
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
 
 /**
  * @fileoverview added by tsickle
@@ -6257,7 +6289,7 @@ class CheckboxEditor {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const moment$10 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment$8 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 require('flatpickr');
 class DateEditor {
     /**
@@ -6304,7 +6336,7 @@ class DateEditor {
      * @return {?}
      */
     getCurrentLocale(columnDef, gridOptions) {
-        const /** @type {?} */ params = gridOptions.params || columnDef.params || {};
+        const /** @type {?} */ params = gridOptions || columnDef.params || {};
         if (params.i18n && params.i18n instanceof TranslateService) {
             return params.i18n.currentLang;
         }
@@ -6364,14 +6396,18 @@ class DateEditor {
      */
     loadValue(item) {
         this.defaultDate = item[this.args.column.field];
+        this.flatInstance.setDate(item[this.args.column.field]);
     }
     /**
      * @return {?}
      */
     serializeValue() {
-        const /** @type {?} */ inputValue = this.$input.val() || '';
+        const /** @type {?} */ domValue = this.$input.val();
+        if (!domValue) {
+            return '';
+        }
         const /** @type {?} */ outputFormat = mapMomentDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
-        const /** @type {?} */ value = moment$10(inputValue).format(outputFormat);
+        const /** @type {?} */ value = moment$8(domValue).format(outputFormat);
         return value;
     }
     /**
@@ -6380,7 +6416,11 @@ class DateEditor {
      * @return {?}
      */
     applyValue(item, state) {
-        item[this.args.column.field] = state;
+        if (!state) {
+            return;
+        }
+        const /** @type {?} */ outputFormat = mapMomentDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
+        item[this.args.column.field] = moment$8(state, outputFormat).toDate();
     }
     /**
      * @return {?}
@@ -6450,8 +6490,8 @@ class FloatEditor {
      */
     getDecimalPlaces() {
         // returns the number of fixed decimal places or null
-        const /** @type {?} */ columnParams = this.args.column.params || {};
-        let /** @type {?} */ rtn = (columnParams && columnParams.hasOwnProperty('decimalPlaces')) ? columnParams.decimalPlaces : undefined;
+        const /** @type {?} */ columnEditor = this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+        let /** @type {?} */ rtn = (columnEditor && columnEditor.params && columnEditor.params.hasOwnProperty('decimalPlaces')) ? columnEditor.params.decimalPlaces : undefined;
         if (rtn === undefined) {
             rtn = defaultDecimalPlaces;
         }
@@ -6818,25 +6858,25 @@ class MultipleSelectEditor {
         if (!this.args) {
             throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
-        this.columnDef = this.args.column;
-        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
-            throw new Error(`[Angular-SlickGrid] You need to pass a "collection" on the params property in the column definition for the MultipleSelect Editor to work correctly.
+        this.columnDef = /** @type {?} */ (this.args.column);
+        if (!this.columnDef || !this.columnDef.internalColumnEditor || !this.columnDef.internalColumnEditor.collection) {
+            throw new Error(`[Angular-SlickGrid] You need to pass a "collection" inside Column Definition Editor for the MultipleSelect Editor to work correctly.
       Also each option should include a value/label pair (or value/labelKey when using Locale).
-      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }`);
+      For example: { editor: { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } }`);
         }
         const /** @type {?} */ collectionService = new CollectionService(this._translate);
-        this.enableTranslateLabel = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
-        let /** @type {?} */ newCollection = this.columnDef.params.collection || [];
-        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
-        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
+        this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
+        let /** @type {?} */ newCollection = this.columnDef.internalColumnEditor.collection || [];
+        this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
+        this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
         // user might want to filter certain items of the collection
-        if (this.columnDef.params && this.columnDef.params.collectionSortBy) {
-            const /** @type {?} */ filterBy = this.columnDef.params.collectionFilterBy;
+        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
+            const /** @type {?} */ filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
             newCollection = collectionService.filterCollection(newCollection, filterBy);
         }
         // user might want to sort the collection
-        if (this.gridOptions.params && this.columnDef.params.collectionSortBy) {
-            const /** @type {?} */ sortBy = this.columnDef.params.collectionSortBy;
+        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
+            const /** @type {?} */ sortBy = this.columnDef.internalColumnEditor.collectionSortBy;
             newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
         }
         this.collection = newCollection;
@@ -6974,7 +7014,7 @@ class MultipleSelectEditor {
             this.$editorElm.addClass('form-control');
         }
         else {
-            const /** @type {?} */ elementOptions = (this.columnDef.params) ? this.columnDef.params.elementOptions : {};
+            const /** @type {?} */ elementOptions = (this.columnDef.internalColumnEditor) ? this.columnDef.internalColumnEditor.elementOptions : {};
             this.editorElmOptions = Object.assign({}, this.defaultOptions, elementOptions);
             this.$editorElm = this.$editorElm.multipleSelect(this.editorElmOptions);
             setTimeout(() => this.$editorElm.multipleSelect('open'));
@@ -7038,24 +7078,24 @@ class SingleSelectEditor {
             throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
         this.columnDef = this.args.column;
-        if (!this.columnDef || !this.columnDef.params || !this.columnDef.params.collection) {
-            throw new Error(`[Angular-SlickGrid] You need to pass a "collection" on the params property in the column definition for the MultipleSelect Editor to work correctly.
+        if (!this.columnDef || !this.columnDef.internalColumnEditor || !this.columnDef.internalColumnEditor.collection) {
+            throw new Error(`[Angular-SlickGrid] You need to pass a "collection" inside Column Definition Editor for the SingleSelect Editor to work correctly.
       Also each option should include a value/label pair (or value/labelKey when using Locale).
-      For example: { params: { { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } } }`);
+      For example: { editor: { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } }`);
         }
         const /** @type {?} */ collectionService = new CollectionService(this._translate);
-        this.enableTranslateLabel = (this.columnDef.params.enableTranslateLabel) ? this.columnDef.params.enableTranslateLabel : false;
-        let /** @type {?} */ newCollection = this.columnDef.params.collection || [];
-        this.labelName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.label : 'label';
-        this.valueName = (this.columnDef.params.customStructure) ? this.columnDef.params.customStructure.value : 'value';
+        this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
+        let /** @type {?} */ newCollection = this.columnDef.internalColumnEditor.collection || [];
+        this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
+        this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
         // user might want to filter certain items of the collection
-        if (this.gridOptions.params && this.columnDef.params.collectionFilterBy) {
-            const /** @type {?} */ filterBy = this.columnDef.params.collectionFilterBy;
+        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionFilterBy) {
+            const /** @type {?} */ filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
             newCollection = collectionService.filterCollection(newCollection, filterBy);
         }
         // user might want to sort the collection
-        if (this.columnDef.params && this.columnDef.params.collectionSortBy) {
-            const /** @type {?} */ sortBy = this.columnDef.params.collectionSortBy;
+        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
+            const /** @type {?} */ sortBy = this.columnDef.internalColumnEditor.collectionSortBy;
             newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
         }
         this.collection = newCollection;
@@ -7082,7 +7122,8 @@ class SingleSelectEditor {
      */
     loadValue(item) {
         // convert to string because that is how the DOM will return these values
-        this.defaultValue = item[this.columnDef.field].toString();
+        // make sure the prop exists first
+        this.defaultValue = item[this.columnDef.field] && item[this.columnDef.field].toString();
         this.$editorElm.find('option').each((i, $e) => {
             if (this.defaultValue === $e.value) {
                 $e.selected = true;
@@ -7227,7 +7268,7 @@ class TextEditor {
      * @return {?}
      */
     init() {
-        this.$input = $(`<input type="text" class='editor-text' />`)
+        this.$input = $(`<input type="text" class="editor-text" />`)
             .appendTo(this.args.container)
             .on('keydown.nav', (e) => {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
@@ -7314,6 +7355,16 @@ class TextEditor {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+class AvailableEditor {
+    /**
+     * @param {?} type
+     * @param {?} editor
+     */
+    constructor(type, editor) {
+        this.type = type;
+        this.editor = editor;
+    }
+}
 const Editors = {
     checkbox: CheckboxEditor,
     date: DateEditor,
@@ -7324,6 +7375,16 @@ const Editors = {
     singleSelect: SingleSelectEditor,
     text: TextEditor
 };
+const AVAILABLE_EDITORS = [
+    { type: EditorType.checkbox, editor: CheckboxEditor },
+    { type: EditorType.date, editor: DateEditor },
+    { type: EditorType.float, editor: FloatEditor },
+    { type: EditorType.integer, editor: IntegerEditor },
+    { type: EditorType.longText, editor: LongTextEditor },
+    { type: EditorType.multipleSelect, editor: MultipleSelectEditor },
+    { type: EditorType.singleSelect, editor: SingleSelectEditor },
+    { type: EditorType.text, editor: TextEditor },
+];
 
 /**
  * @fileoverview added by tsickle
@@ -7390,6 +7451,27 @@ const collectionFormatter = (row, cell, value, columnDef, dataContext) => {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+/**
+ * A formatter to show the label property value of an editor collection
+ */
+const collectionEditorFormatter = (row, cell, value, columnDef, dataContext) => {
+    if (!value || !columnDef || !columnDef.internalColumnEditor || !columnDef.internalColumnEditor.collection
+        || !columnDef.internalColumnEditor.collection.length) {
+        return '';
+    }
+    const { internalColumnEditor, internalColumnEditor: { collection } } = columnDef;
+    const /** @type {?} */ labelName = (internalColumnEditor.customStructure) ? internalColumnEditor.customStructure.label : 'label';
+    const /** @type {?} */ valueName = (internalColumnEditor.customStructure) ? internalColumnEditor.customStructure.value : 'value';
+    if (Array.isArray(value)) {
+        return arrayToCsvFormatter(row, cell, value.map((v) => findOrDefault(collection, (c) => c[valueName] === v)[labelName]), columnDef, dataContext);
+    }
+    return findOrDefault(collection, (c) => c[valueName] === value)[labelName] || '';
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 const complexObjectFormatter = (row, cell, value, columnDef, dataContext) => {
     if (!columnDef) {
         return '';
@@ -7402,49 +7484,49 @@ const complexObjectFormatter = (row, cell, value, columnDef, dataContext) => {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const moment$11 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const moment$9 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$6 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-const dateIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$11(value).format(FORMAT$6) : '';
+const dateIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$9(value).format(FORMAT$6) : '';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$10 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
+const dateTimeIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$10(value).format(FORMAT$7) : '';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const moment$11 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+const FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
+const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$11(value).format(FORMAT$8) : '';
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
 const moment$12 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
-const dateTimeIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$12(value).format(FORMAT$7) : '';
+const FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
+const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$12(value).format(FORMAT$9) : '';
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
 const moment$13 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
-const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$13(value).format(FORMAT$8) : '';
+const FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
+const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$13(value).format(FORMAT$10) : '';
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
 const moment$14 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
-const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$14(value).format(FORMAT$9) : '';
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const moment$15 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
-const FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
-const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$15(value).format(FORMAT$10) : '';
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-const moment$16 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-const dateUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$16(value).format(FORMAT$11) : '';
+const dateUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$14(value).format(FORMAT$11) : '';
 
 /**
  * @fileoverview added by tsickle
@@ -7571,16 +7653,12 @@ const multipleFormatter = (row, cell, value, columnDef, dataContext, grid) => {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const percentCompleteFormatter = (row, cell, value, columnDef, dataContext) => {
+const percentFormatter = (row, cell, value, columnDef, dataContext) => {
     if (value === null || value === '') {
-        return '-';
+        return '';
     }
-    else if (value < 50) {
-        return `<span style='color:red;font-weight:bold;'>${value}%</span>`;
-    }
-    else {
-        return `<span style='color:green'>${value}%</span>`;
-    }
+    const /** @type {?} */ outputValue = value > 0 ? value / 100 : 0;
+    return `<span>${outputValue}%</span>`;
 };
 
 /**
@@ -7602,6 +7680,30 @@ const percentCompleteBarFormatter = (row, cell, value, columnDef, dataContext) =
         color = 'green';
     }
     return `<span class="percent-complete-bar" style="background:${color}; width:${value}%"></span>`;
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const percentCompleteFormatter = (row, cell, value, columnDef, dataContext) => {
+    if (value === null || value === '') {
+        return '-';
+    }
+    else if (value < 50) {
+        return `<span style='color:red;font-weight:bold;'>${value}%</span>`;
+    }
+    else {
+        return `<span style='color:green'>${value}%</span>`;
+    }
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const percentSymbolFormatter = (row, cell, value, columnDef, dataContext) => {
+    return value ? `<span>${value}%</span>` : '';
 };
 
 /**
@@ -7639,11 +7741,10 @@ const progressBarFormatter = (row, cell, value, columnDef, dataContext) => {
 const translateFormatter = (row, cell, value, columnDef, dataContext, grid) => {
     const /** @type {?} */ gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
     const /** @type {?} */ columnParams = columnDef.params || {};
-    const /** @type {?} */ gridParams = gridOptions.params || {};
-    const /** @type {?} */ translate = gridParams.i18n || columnParams.i18n;
+    const /** @type {?} */ translate = gridOptions.i18n || columnParams.i18n;
     if (!translate || typeof translate.instant !== 'function') {
-        throw new Error(`The translate formatter requires the "ngx-translate" Service to be provided as a Grid Options or Column Definition "params".
-    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translate }}`);
+        throw new Error(`The translate formatter requires the "ngx-translate" Service to be provided as a Grid Options or Column Definition "i18n".
+    For example: this.gridOptions = { enableTranslate: true, i18n: this.translate }`);
     }
     // make sure the value is a string (for example a boolean value would throw an error)
     if (value !== undefined && typeof value !== 'string') {
@@ -7662,11 +7763,10 @@ const translateFormatter = (row, cell, value, columnDef, dataContext, grid) => {
 const translateBooleanFormatter = (row, cell, value, columnDef, dataContext, grid) => {
     const /** @type {?} */ gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
     const /** @type {?} */ columnParams = columnDef.params || {};
-    const /** @type {?} */ gridParams = gridOptions.params || {};
-    const /** @type {?} */ translate = gridParams.i18n || columnParams.i18n;
+    const /** @type {?} */ translate = gridOptions.i18n || columnParams.i18n;
     if (!translate || typeof translate.instant !== 'function') {
-        throw new Error(`The translate formatter requires the "ngx-translate" Service to be provided as a Grid Options or Column Definition "params".
-    For example: this.gridOptions = { enableTranslate: true, params: { i18n: this.translate }}`);
+        throw new Error(`The translate formatter requires the "ngx-translate" Service to be provided as a Grid Options or Column Definition "i18n".
+    For example: this.gridOptions = { enableTranslate: true, i18n: this.translate }`);
     }
     // make sure the value is a string (for example a boolean value would throw an error)
     if (value !== undefined && typeof value !== 'string') {
@@ -7719,6 +7819,14 @@ const Formatters = {
        * const dataset = [{ value: 1 },{ value: 2 }];
        */
     collection: collectionFormatter,
+    /**
+       * Looks up values from the columnDefinition.editor.collection property and displays the label in CSV or string format
+       * @example
+       * // the grid will display 'foo' and 'bar' and not 1 and 2 from your dataset
+       * { params: { collection: [{ value: 1, label: 'foo'}, {value: 2, label: 'bar' }] }}
+       * const dataset = [{ value: 1 },{ value: 2 }];
+       */
+    collectionEditor: collectionEditorFormatter,
     /** Takes a Date object and displays it as an ISO Date format */
     dateIso: dateIsoFormatter,
     /** Takes a Date object and displays it as an ISO Date+Time format */
@@ -7754,13 +7862,17 @@ const Formatters = {
        * { field: 'title', formatter: Formatters.multiple, params: { formatters: [ Formatters.lowercase, Formatters.uppercase ] }
        */
     multiple: multipleFormatter,
-    /** Takes a cell value number (between 0-100) and displays a red (<50) or green (>=50) bar */
+    /** Takes a cell value number (between 0.0-1.0) and displays a red (<50) or green (>=50) bar */
+    percent: percentFormatter,
+    /** Takes a cell value number (between 0.0-100) and displays a red (<50) or green (>=50) bar */
     percentComplete: percentCompleteFormatter,
     /** Takes a cell value number (between 0-100) and displays Bootstrap "percent-complete-bar" a red (<30), silver (>30 & <70) or green (>=70) bar */
     percentCompleteBar: percentCompleteBarFormatter,
+    /** Takes a cell value number (between 0-100) and add the "%" after the number */
+    percentSymbol: percentSymbolFormatter,
     /** Takes a cell value number (between 0-100) and displays Bootstrap "progress-bar" a red (<30), silver (>30 & <70) or green (>=70) bar */
     progressBar: progressBarFormatter,
-    /** Takes a cell value and translates it (i18n). Requires an instance of the Translate Service:: `params: { i18n: this.translate } */
+    /** Takes a cell value and translates it (i18n). Requires an instance of the Translate Service:: `i18n: this.translate */
     translate: translateFormatter,
     /** Takes a boolean value, cast it to upperCase string and finally translates it (i18n). */
     translateBoolean: translateBooleanFormatter,
@@ -8176,7 +8288,7 @@ class SlickPaginationComponent {
      * @return {?}
      */
     refreshPagination(isPageNumberReset = false) {
-        const /** @type {?} */ backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
+        const /** @type {?} */ backendApi = this._gridPaginationOptions.backendServiceApi;
         if (!backendApi || !backendApi.service || !backendApi.process) {
             throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
         }
@@ -8214,7 +8326,7 @@ class SlickPaginationComponent {
     onPageChanged(event, pageNumber) {
         return __awaiter(this, void 0, void 0, function* () {
             this.recalculateFromToIndexes();
-            const /** @type {?} */ backendApi = this._gridPaginationOptions.backendServiceApi || this._gridPaginationOptions.onBackendEventApi;
+            const /** @type {?} */ backendApi = this._gridPaginationOptions.backendServiceApi;
             if (!backendApi || !backendApi.service || !backendApi.process) {
                 throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
             }
@@ -8229,7 +8341,7 @@ class SlickPaginationComponent {
                 if (backendApi.preProcess) {
                     backendApi.preProcess();
                 }
-                const /** @type {?} */ query = backendApi.service.onPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
+                const /** @type {?} */ query = backendApi.service.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
                 // the process could be an Observable (like HttpClient) or a Promise
                 // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
                 const /** @type {?} */ observableOrPromise = backendApi.process(query);
@@ -8373,11 +8485,16 @@ const GlobalGridOptions = {
         sanitizeDataExport: false,
         useUtf8WithBom: true
     },
-    exportWithFormatter: false,
     forceFitColumns: false,
     gridMenu: {
+        hideClearAllFiltersCommand: false,
+        hideClearAllSortingCommand: false,
+        hideExportCsvCommand: false,
+        hideExportTextDelimitedCommand: true,
         hideForceFitButton: false,
+        hideRefreshDatasetCommand: false,
         hideSyncResizeButton: true,
+        hideToggleFilterCommand: false,
         iconCssClass: 'fa fa-bars',
         iconClearAllFiltersCommand: 'fa fa-filter text-danger',
         iconClearAllSortingCommand: 'fa fa-unsorted text-danger',
@@ -8386,12 +8503,7 @@ const GlobalGridOptions = {
         iconRefreshDatasetCommand: 'fa fa-refresh',
         iconToggleFilterCommand: 'fa fa-random',
         menuWidth: 16,
-        resizeOnShowHeaderRow: true,
-        showClearAllFiltersCommand: true,
-        showClearAllSortingCommand: true,
-        showExportCsvCommand: true,
-        showRefreshDatasetCommand: true,
-        showToggleFilterCommand: true
+        resizeOnShowHeaderRow: true
     },
     headerMenu: {
         autoAlign: true,
@@ -8423,12 +8535,13 @@ const GlobalGridOptions = {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+const slickgridEventPrefix = 'sg';
 class AngularSlickgridComponent {
     /**
      * @param {?} controlAndPluginService
      * @param {?} exportService
      * @param {?} filterService
-     * @param {?} gridExtraService
+     * @param {?} gridService
      * @param {?} gridEventService
      * @param {?} gridStateService
      * @param {?} groupingAndColspanService
@@ -8437,11 +8550,11 @@ class AngularSlickgridComponent {
      * @param {?} translate
      * @param {?} forRootConfig
      */
-    constructor(controlAndPluginService, exportService, filterService, gridExtraService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
+    constructor(controlAndPluginService, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
         this.controlAndPluginService = controlAndPluginService;
         this.exportService = exportService;
         this.filterService = filterService;
-        this.gridExtraService = gridExtraService;
+        this.gridService = gridService;
         this.gridEventService = gridEventService;
         this.gridStateService = gridStateService;
         this.groupingAndColspanService = groupingAndColspanService;
@@ -8453,6 +8566,7 @@ class AngularSlickgridComponent {
         this.groupingDefinition = {};
         this.showPagination = false;
         this.isGridInitialized = false;
+        this.onAngularGridCreated = new EventEmitter();
         this.onDataviewCreated = new EventEmitter();
         this.onGridCreated = new EventEmitter();
         this.onGridInitialized = new EventEmitter();
@@ -8558,7 +8672,11 @@ class AngularSlickgridComponent {
         else {
             this._dataView = new Slick.Data.DataView();
         }
-        this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+        // for convenience, we provide the property "editor" as an Angular-Slickgrid editor complex object
+        // however "editor" is used internally by SlickGrid for it's Editor Factory
+        // so in our lib we will swap "editor" and copy it into "internalColumnEditor"
+        // then take back "editor.type" and make it the new "editor" so that SlickGrid Editor Factory still works
+        this._columnDefinitions = this._columnDefinitions.map((c) => (Object.assign({}, c, { editor: this.getEditor((c.editor && c.editor.type), c), internalColumnEditor: Object.assign({}, c.editor) }))), this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
         this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
         this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._dataView, this.groupItemMetadataProvider);
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
@@ -8575,11 +8693,11 @@ class AngularSlickgridComponent {
         if (this.gridOptions.createPreHeaderPanel) {
             this.groupingAndColspanService.init(this.grid, this._dataView);
         }
-        // attach grid extra service
-        this.gridExtraService.init(this.grid, this._dataView);
+        // attach grid  service
+        this.gridService.init(this.grid, this._dataView);
         // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
         if (this.gridOptions.enableTranslate) {
-            this.controlAndPluginService.translateHeaders();
+            this.controlAndPluginService.translateColumnHeaders();
         }
         // if Export is enabled, initialize the service with the necessary grid and other objects
         if (this.gridOptions.enableExport) {
@@ -8589,10 +8707,43 @@ class AngularSlickgridComponent {
         this.onGridInitialized.emit(this.grid);
         // attach the Backend Service API callback functions only after the grid is initialized
         // because the preProcess() and onInit() might get triggered
-        if (this.gridOptions && (this.gridOptions.backendServiceApi || this.gridOptions.onBackendEventApi)) {
+        if (this.gridOptions && this.gridOptions.backendServiceApi) {
             this.attachBackendCallbackFunctions(this.gridOptions);
         }
         this.gridStateService.init(this.grid, this.filterService, this.sortService);
+        this.onAngularGridCreated.emit({
+            // Slick Grid & DataView objects
+            dataView: this._dataView,
+            slickGrid: this.grid,
+            // return all available Services (non-singleton)
+            backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
+            exportService: this.exportService,
+            filterService: this.filterService,
+            gridEventService: this.gridEventService,
+            gridStateService: this.gridStateService,
+            gridService: this.gridService,
+            groupingService: this.groupingAndColspanService,
+            pluginService: this.controlAndPluginService,
+            resizerService: this.resizer,
+            sortService: this.sortService,
+        });
+    }
+    /**
+     * From the list of available editors, find the editor associated to it's type
+     * and if it's a custom one, return the "customEditor" from the column
+     * @param {?} type
+     * @param {?} column
+     * @return {?}
+     */
+    getEditor(type, column) {
+        if (type === EditorType.custom && column && column.editor && column.editor.hasOwnProperty('customEditor')) {
+            return column.editor['customEditor'];
+        }
+        const /** @type {?} */ editorFound = AVAILABLE_EDITORS.find(editor => editor.type === type);
+        if (editorFound && editorFound.editor) {
+            return editorFound.editor;
+        }
+        return undefined;
     }
     /**
      * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
@@ -8601,8 +8752,8 @@ class AngularSlickgridComponent {
      * @return {?}
      */
     createBackendApiInternalPostProcessCallback(gridOptions) {
-        if (gridOptions && (gridOptions.backendServiceApi || gridOptions.onBackendEventApi)) {
-            const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+        if (gridOptions && gridOptions.backendServiceApi) {
+            const /** @type {?} */ backendApi = gridOptions.backendServiceApi;
             // internalPostProcess only works with a GraphQL Service, so make sure it is that type
             if (backendApi && backendApi.service && backendApi.service instanceof GraphqlService) {
                 backendApi.internalPostProcess = (processResult) => {
@@ -8628,7 +8779,7 @@ class AngularSlickgridComponent {
         // on locale change, we have to manually translate the Headers, GridMenu
         this._translateSubscriber = this.translate.onLangChange.subscribe((event) => {
             if (gridOptions.enableTranslate) {
-                this.controlAndPluginService.translateHeaders();
+                this.controlAndPluginService.translateColumnHeaders();
                 this.controlAndPluginService.translateColumnPicker();
                 this.controlAndPluginService.translateGridMenu();
                 this.controlAndPluginService.translateHeaderMenu();
@@ -8636,7 +8787,7 @@ class AngularSlickgridComponent {
         });
         // attach external sorting (backend) when available or default onSort (dataView)
         if (gridOptions.enableSorting) {
-            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
+            gridOptions.backendServiceApi ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
         }
         // attach external filter (backend) when available or default onFilter (dataView)
         if (gridOptions.enableFiltering) {
@@ -8645,16 +8796,41 @@ class AngularSlickgridComponent {
             if (gridOptions.presets && gridOptions.presets.filters) {
                 this.filterService.populateColumnFilterSearchTerms(grid);
             }
-            (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) ? this.filterService.attachBackendOnFilter(grid) : this.filterService.attachLocalOnFilter(grid, this._dataView);
+            gridOptions.backendServiceApi ? this.filterService.attachBackendOnFilter(grid) : this.filterService.attachLocalOnFilter(grid, this._dataView);
         }
         // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
-        if (gridOptions.backendServiceApi || gridOptions.onBackendEventApi) {
-            const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
-            if (gridOptions.onBackendEventApi) {
-                console.warn(`"onBackendEventApi" has been DEPRECATED, please consider using "backendServiceApi" in the short term since "onBackendEventApi" will be removed in future versions. You can take look at the Angular-Slickgrid Wikis for OData/GraphQL Services implementation`);
-            }
+        if (gridOptions.backendServiceApi) {
+            const /** @type {?} */ backendApi = gridOptions.backendServiceApi;
             if (backendApi && backendApi.service && backendApi.service.init) {
                 backendApi.service.init(backendApi.options, gridOptions.pagination, this.grid);
+            }
+        }
+        // expose all Slick Grid Events through dispatch
+        for (const /** @type {?} */ prop in grid) {
+            if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
+                this._eventHandler.subscribe(grid[prop], (e, args) => {
+                    this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}-${toKebabCase(prop)}`, {
+                        bubbles: true,
+                        detail: {
+                            eventData: e,
+                            args
+                        }
+                    }));
+                });
+            }
+        }
+        // expose all Slick DataView Events through dispatch
+        for (const /** @type {?} */ prop in dataView) {
+            if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
+                this._eventHandler.subscribe(dataView[prop], (e, args) => {
+                    this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}-${toKebabCase(prop)}`, {
+                        bubbles: true,
+                        detail: {
+                            eventData: e,
+                            args
+                        }
+                    }));
+                });
             }
         }
         // expose GridState Service changes event through dispatch
@@ -8685,7 +8861,7 @@ class AngularSlickgridComponent {
      * @return {?}
      */
     attachBackendCallbackFunctions(gridOptions) {
-        const /** @type {?} */ backendApi = gridOptions.backendServiceApi || gridOptions.onBackendEventApi;
+        const /** @type {?} */ backendApi = gridOptions.backendServiceApi;
         const /** @type {?} */ serviceOptions = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : {};
         const /** @type {?} */ isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && serviceOptions.hasOwnProperty('executeProcessCommandOnInit')) ? serviceOptions['executeProcessCommandOnInit'] : true);
         // update backend filters (if need be) before the query runs
@@ -8808,19 +8984,24 @@ class AngularSlickgridComponent {
             if (this.grid && this.gridOptions.enableAutoResize) {
                 // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
                 this.resizer.resizeGrid(10, { height: this.gridHeight, width: this.gridWidth });
-                // this.grid.autosizeColumns();
             }
         }
     }
     /**
-     * @param {?} dynamicColumns
+     * Dynamically change or update the column definitions list.
+     * We will re-render the grid so that the new header and data shows up correctly.
+     * If using i18n, we also need to trigger a re-translate of the column headers
+     * @param {?} newColumnDefinitions
      * @return {?}
      */
-    updateColumnDefinitionsList(dynamicColumns) {
-        this.grid.setColumns(dynamicColumns);
+    updateColumnDefinitionsList(newColumnDefinitions) {
         if (this.gridOptions.enableTranslate) {
-            this.controlAndPluginService.translateHeaders();
+            this.controlAndPluginService.translateColumnHeaders(false, newColumnDefinitions);
         }
+        else {
+            this.controlAndPluginService.renderColumnHeaders(newColumnDefinitions);
+        }
+        this.grid.autosizeColumns();
     }
     /**
      * Toggle the filter row displayed on first row
@@ -8845,7 +9026,7 @@ AngularSlickgridComponent.decorators = [
     { type: Injectable },
     { type: Component, args: [{
                 selector: 'angular-slickgrid',
-                template: `<div id="slickGridContainer-{{gridId}}" class="gridPane" [style.width]="gridWidthString">
+                template: `<div id="slickGridContainer-{{gridId}}" #customElm class="gridPane" [style.width]="gridWidthString">
     <div attr.id='{{gridId}}' class="slickgrid-container" style="width: 100%" [style.height]="gridHeightString">
     </div>
     <slick-pagination id="slickPagingContainer-{{gridId}}"
@@ -8855,6 +9036,18 @@ AngularSlickgridComponent.decorators = [
     </slick-pagination>
 </div>
 `,
+                providers: [
+                    ControlAndPluginService,
+                    ExportService,
+                    FilterService,
+                    GraphqlService,
+                    GridEventService,
+                    GridService,
+                    GridStateService,
+                    GroupingAndColspanService,
+                    ResizerService,
+                    SortService
+                ]
             },] },
 ];
 /** @nocollapse */
@@ -8862,7 +9055,7 @@ AngularSlickgridComponent.ctorParameters = () => [
     { type: ControlAndPluginService, },
     { type: ExportService, },
     { type: FilterService, },
-    { type: GridExtraService, },
+    { type: GridService, },
     { type: GridEventService, },
     { type: GridStateService, },
     { type: GroupingAndColspanService, },
@@ -8872,6 +9065,8 @@ AngularSlickgridComponent.ctorParameters = () => [
     { type: undefined, decorators: [{ type: Inject, args: ['config',] },] },
 ];
 AngularSlickgridComponent.propDecorators = {
+    "customElm": [{ type: ViewChild, args: ['customElm', { read: ElementRef },] },],
+    "onAngularGridCreated": [{ type: Output },],
     "onDataviewCreated": [{ type: Output },],
     "onGridCreated": [{ type: Output },],
     "onGridInitialized": [{ type: Output },],
@@ -8902,19 +9097,8 @@ class AngularSlickgridModule {
             providers: [
                 { provide: 'config', useValue: config },
                 CollectionService,
-                ControlAndPluginService,
-                ExportService,
-                FilterService,
                 GraphqlService,
-                GridEventService,
-                GridExtraService,
-                GridOdataService,
-                GridStateService,
-                GroupingAndColspanService,
-                OdataService,
-                ResizerService,
-                SharedService,
-                SortService
+                GridOdataService
             ]
         };
     }
@@ -8958,5 +9142,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterType, FormElementType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridExtraService, GridExtraUtils, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, sanitizeHtmlToText, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbj, dateTimeIsoAmPmFormatter as ɵbl, dateTimeIsoFormatter as ɵbk, dateTimeUsAmPmFormatter as ɵbo, dateTimeUsFormatter as ɵbn, dateUsFormatter as ɵbm, deleteIconFormatter as ɵbp, dollarColoredBoldFormatter as ɵbs, dollarColoredFormatter as ɵbr, dollarFormatter as ɵbq, editIconFormatter as ɵbt, hyperlinkFormatter as ɵbu, hyperlinkUriPrefixFormatter as ɵbv, infoIconFormatter as ɵbw, lowercaseFormatter as ɵbx, multipleFormatter as ɵby, percentCompleteBarFormatter as ɵca, percentCompleteFormatter as ɵbz, progressBarFormatter as ɵcb, translateBooleanFormatter as ɵcd, translateFormatter as ɵcc, uppercaseFormatter as ɵce, yesNoFormatter as ɵcf, avgTotalsDollarFormatter as ɵch, avgTotalsFormatter as ɵcg, avgTotalsPercentageFormatter as ɵci, maxTotalsFormatter as ɵcj, minTotalsFormatter as ɵck, sumTotalsBoldFormatter as ɵcm, sumTotalsColoredFormatter as ɵcn, sumTotalsDollarBoldFormatter as ɵcp, sumTotalsDollarColoredBoldFormatter as ɵcr, sumTotalsDollarColoredFormatter as ɵcq, sumTotalsDollarFormatter as ɵco, sumTotalsFormatter as ɵcl, dateIsoSorter as ɵct, dateSorter as ɵcs, dateUsShortSorter as ɵcv, dateUsSorter as ɵcu, numericSorter as ɵcw, stringSorter as ɵcx };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, EditorType, FieldType, FileType, FilterType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, sanitizeHtmlToText, toCamelCase, toKebabCase, Aggregators, AvailableEditor, Editors, AVAILABLE_EDITORS, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionEditorFormatter as ɵbj, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbk, dateTimeIsoAmPmFormatter as ɵbm, dateTimeIsoFormatter as ɵbl, dateTimeUsAmPmFormatter as ɵbp, dateTimeUsFormatter as ɵbo, dateUsFormatter as ɵbn, deleteIconFormatter as ɵbq, dollarColoredBoldFormatter as ɵbt, dollarColoredFormatter as ɵbs, dollarFormatter as ɵbr, editIconFormatter as ɵbu, hyperlinkFormatter as ɵbv, hyperlinkUriPrefixFormatter as ɵbw, infoIconFormatter as ɵbx, lowercaseFormatter as ɵby, multipleFormatter as ɵbz, percentCompleteBarFormatter as ɵcc, percentCompleteFormatter as ɵcb, percentFormatter as ɵca, percentSymbolFormatter as ɵcd, progressBarFormatter as ɵce, translateBooleanFormatter as ɵcg, translateFormatter as ɵcf, uppercaseFormatter as ɵch, yesNoFormatter as ɵci, avgTotalsDollarFormatter as ɵck, avgTotalsFormatter as ɵcj, avgTotalsPercentageFormatter as ɵcl, maxTotalsFormatter as ɵcm, minTotalsFormatter as ɵcn, sumTotalsBoldFormatter as ɵcp, sumTotalsColoredFormatter as ɵcq, sumTotalsDollarBoldFormatter as ɵcs, sumTotalsDollarColoredBoldFormatter as ɵcu, sumTotalsDollarColoredFormatter as ɵct, sumTotalsDollarFormatter as ɵcr, sumTotalsFormatter as ɵco, dateIsoSorter as ɵcw, dateSorter as ɵcv, dateUsShortSorter as ɵcy, dateUsSorter as ɵcx, numericSorter as ɵcz, stringSorter as ɵda };
 //# sourceMappingURL=angular-slickgrid.js.map

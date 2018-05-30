@@ -1,6 +1,7 @@
+import { ColumnEditor } from './columnEditor.interface';
 import { ColumnFilter } from './columnFilter.interface';
-import { Editor } from './editor.interface';
-import { FieldType } from './fieldType';
+import { EditorType } from './editorType.enum';
+import { FieldType } from './fieldType.enum';
 import { Formatter } from './formatter.interface';
 import { GroupTotalsFormatter } from './groupTotalsFormatter.interface';
 import { HeaderButtonItem } from './headerButtonItem.interface';
@@ -21,7 +22,7 @@ export interface Column {
     /** Do we want default sort to be ascending? True by default */
     defaultSortAsc?: boolean;
     /** Inline editor for the cell value */
-    editor?: Editor | any;
+    editor?: EditorType | ColumnEditor;
     /** Default to false, which leads to exclude the column from the export? */
     excludeFromExport?: boolean;
     /** Defaults to false, which leads to exclude the field from the query (mostly a backend service query) */
@@ -78,6 +79,10 @@ export interface Column {
     headerKey?: string;
     /** ID of the column, each row have to be unique or SlickGrid will throw an error. */
     id: number | string;
+    /**
+     * @internal used internally by Angular-Slickgrid, to copy over the Column Editor Options
+     */
+    internalColumnEditor?: any;
     /** is the column editable? Goes with grid option "editable: true". */
     isEditable?: boolean;
     /** is the field hidden? (part of the dataset but not shown in the grid/UI) */
