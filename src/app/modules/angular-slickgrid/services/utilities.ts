@@ -417,6 +417,15 @@ export function sanitizeHtmlToText(htmlString: string) {
 }
 
 /**
+ * Title case the complete sentence (upper case first char of each word while changing everything else to lower case)
+ * @param string
+ * @returns string
+ */
+export function titleCase(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+/**
  * Converts a string to camel case
  * @param str the string to convert
  * @return the string in camel case

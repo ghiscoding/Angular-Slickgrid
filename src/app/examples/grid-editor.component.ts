@@ -59,7 +59,7 @@ export class GridEditorComponent implements OnInit {
       formatter: Formatters.editIcon,
       minWidth: 30,
       maxWidth: 30,
-      // use column onCellClick OR (sg-on-click)="onCellClicked()" you can see down below
+      // use column onCellClick OR (sgOnClick)="onCellClicked()" you can see down below
       onCellClick: (args: OnEventArgs) => {
         console.log(args);
         this.alertWarning = `Editing: ${args.dataContext.title}`;
@@ -73,7 +73,7 @@ export class GridEditorComponent implements OnInit {
       formatter: Formatters.deleteIcon,
       minWidth: 30,
       maxWidth: 30,
-      // use column onCellClick OR (sg-on-click)="onCellClicked()" you can see down below
+      // use column onCellClick OR (sgOnClick)="onCellClicked()" you can see down below
       /*
       onCellClick: (args: OnEventArgs) => {
         console.log(args);

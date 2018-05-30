@@ -13,12 +13,13 @@
     </div>
 
     <angular-slickgrid gridId="grid1"
-            (onGridCreated)="gridReady1($event)"
-            [columnDefinitions]="columnDefinitions1"
-            [gridOptions]="gridOptions1"
-            gridHeight="200"
-            gridWidth="800"
-            [dataset]="dataset1">
+        gridHeight="200"
+        gridWidth="800"
+        [columnDefinitions]="columnDefinitions1"
+        [gridOptions]="gridOptions1"
+        [dataset]="dataset1"
+        (onAngularGridCreated)="angularGridReady1($event)"
+        (sgOnSelectedRowsChanged)="handleSelectedRowsChanged1($event.detail.eventData, $event.detail.args)">
     </angular-slickgrid>
 
     <hr>
@@ -33,11 +34,12 @@
     </div>
 
     <angular-slickgrid gridId="grid2"
-            (onGridCreated)="gridReady2($event)"
-            [columnDefinitions]="columnDefinitions2"
-            [gridOptions]="gridOptions2"
-            gridHeight="200"
-            gridWidth="800"
-            [dataset]="dataset2">
+        gridHeight="200"
+        gridWidth="800"
+        [columnDefinitions]="columnDefinitions2"
+        [gridOptions]="gridOptions2"
+        [dataset]="dataset2"
+        (onAngularGridCreated)="angularGridReady2($event)"
+        (sgOnSelectedRowsChanged)="handleSelectedRowsChanged2($event.detail.eventData, $event.detail.args)">
     </angular-slickgrid>
   </div>

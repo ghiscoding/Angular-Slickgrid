@@ -1,11 +1,11 @@
-import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
-import { Column, FieldType, Formatters, GridOption } from './../modules/angular-slickgrid';
+import { Component, Injectable, OnInit } from '@angular/core';
+import { AngularGridInstance, Column, FieldType, Formatters, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-rowselection.component.html'
 })
 @Injectable()
-export class GridRowSelectionComponent implements OnInit, OnDestroy {
+export class GridRowSelectionComponent implements OnInit {
   title = 'Example 10: Multiple Grids with Row Selection';
   subTitle = `
     Row selection, single or multi-select (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Row-Selection" target="_blank">Wiki docs</a>).
@@ -16,6 +16,8 @@ export class GridRowSelectionComponent implements OnInit, OnDestroy {
     </ul>
   `;
 
+  angularGrid1: AngularGridInstance;
+  angularGrid2: AngularGridInstance;
   columnDefinitions1: Column[];
   columnDefinitions2: Column[];
   gridOptions1: GridOption;
@@ -31,11 +33,14 @@ export class GridRowSelectionComponent implements OnInit, OnDestroy {
     this.prepareGrid();
   }
 
-  ngOnDestroy(): void {
-    // unsubscrible any Slick.Event you might have used
-    // a reminder again, these are SlickGrid Event, not RxJS events
-    this.gridObj1.onSelectedRowsChanged.unsubscribe();
-    this.gridObj2.onSelectedRowsChanged.unsubscribe();
+  angularGridReady1(angularGrid: AngularGridInstance) {
+    this.angularGrid1 = angularGrid;
+    this.gridObj1 = angularGrid && angularGrid.slickGrid || {};
+  }
+
+  angularGridReady2(angularGrid: AngularGridInstance) {
+    this.angularGrid2 = angularGrid;
+    this.gridObj2 = angularGrid && angularGrid.slickGrid || {};
   }
 
   prepareGrid() {
@@ -104,29 +109,21 @@ export class GridRowSelectionComponent implements OnInit, OnDestroy {
     return mockDataset;
   }
 
-  gridReady1(grid) {
-    this.gridObj1 = grid;
-
-    this.gridObj1.onSelectedRowsChanged.subscribe((e, args) => {
-      if (Array.isArray(args.rows)) {
-        this.selectedTitle = args.rows.map(idx => {
-          const item = grid.getDataItem(idx);
-          return item.title || '';
-        });
-      }
-    });
+  handleSelectedRowsChanged1(e, args) {
+    if (Array.isArray(args.rows)) {
+      this.selectedTitle = args.rows.map(idx => {
+        const item = this.gridObj1.getDataItem(idx);
+        return item.title || '';
+      });
+    }
   }
 
-  gridReady2(grid) {
-    this.gridObj2 = grid;
-
-    this.gridObj2.onSelectedRowsChanged.subscribe((e, args) => {
-      if (Array.isArray(args.rows)) {
-        this.selectedTitles = args.rows.map(idx => {
-          const item = grid.getDataItem(idx);
-          return item.title || '';
-        });
-      }
-    });
+  handleSelectedRowsChanged2(e, args) {
+    if (Array.isArray(args.rows)) {
+      this.selectedTitles = args.rows.map(idx => {
+        const item = this.gridObj2.getDataItem(idx);
+        return item.title || '';
+      });
+    }
   }
 }
