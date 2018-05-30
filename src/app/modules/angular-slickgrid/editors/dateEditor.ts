@@ -56,9 +56,9 @@ export class DateEditor implements Editor {
   }
 
   getCurrentLocale(columnDef: Column, gridOptions: GridOption) {
-    const params = gridOptions || columnDef.params || {};
-    if (params.i18n && params.i18n instanceof TranslateService) {
-      return params.i18n.currentLang;
+    const options = gridOptions || columnDef.params || {};
+    if (options.i18n && options.i18n instanceof TranslateService) {
+      return options.i18n.currentLang;
     }
 
     return 'en';

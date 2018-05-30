@@ -53,8 +53,8 @@ export class SingleSelectEditor implements Editor {
 
   constructor(private args: any) {
     this.gridOptions = this.args.grid.getOptions() as GridOption;
-    const params = this.gridOptions.params || this.args.column.params || {};
-    this._translate = params.i18n;
+    const options = this.gridOptions || this.args.column.params || {};
+    this._translate = options.i18n;
 
     this.defaultOptions = {
       container: 'body',

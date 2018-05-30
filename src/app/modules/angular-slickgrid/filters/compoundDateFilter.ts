@@ -207,9 +207,9 @@ export class CompoundDateFilter implements Filter {
   }
 
   private getCurrentLocale(columnDef: Column, gridOptions: GridOption) {
-    const params = gridOptions.params || columnDef.params || {};
-    if (params.i18n && params.i18n instanceof TranslateService) {
-      return params.i18n.currentLang;
+    const options = gridOptions || columnDef.params || {};
+    if (options.i18n && options.i18n instanceof TranslateService) {
+      return options.i18n.currentLang;
     }
 
     return 'en';
