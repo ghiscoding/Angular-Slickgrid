@@ -64,7 +64,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     onBeforeGridCreate: EventEmitter<boolean>;
     onBeforeGridDestroy: EventEmitter<any>;
     onAfterGridDestroyed: EventEmitter<boolean>;
-    onGridStateServiceChanged: EventEmitter<GridStateChange>;
+    onGridStateChanged: EventEmitter<GridStateChange>;
     gridId: string;
     gridOptions: GridOption;
     gridHeight: number;

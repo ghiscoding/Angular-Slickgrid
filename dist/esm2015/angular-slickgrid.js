@@ -8573,7 +8573,7 @@ class AngularSlickgridComponent {
         this.onBeforeGridCreate = new EventEmitter();
         this.onBeforeGridDestroy = new EventEmitter();
         this.onAfterGridDestroyed = new EventEmitter();
-        this.onGridStateServiceChanged = new EventEmitter();
+        this.onGridStateChanged = new EventEmitter();
         this.gridHeight = 0;
         this.gridWidth = 0;
     }
@@ -8835,7 +8835,7 @@ class AngularSlickgridComponent {
         }
         // expose GridState Service changes event through dispatch
         this._gridStateSubscriber = this.gridStateService.onGridStateChanged.subscribe((gridStateChange) => {
-            this.onGridStateServiceChanged.emit(gridStateChange);
+            this.onGridStateChanged.emit(gridStateChange);
         });
         // on cell click, mainly used with the columnDef.action callback
         this.gridEventService.attachOnCellChange(grid, dataView);
@@ -9073,7 +9073,7 @@ AngularSlickgridComponent.propDecorators = {
     "onBeforeGridCreate": [{ type: Output },],
     "onBeforeGridDestroy": [{ type: Output },],
     "onAfterGridDestroyed": [{ type: Output },],
-    "onGridStateServiceChanged": [{ type: Output },],
+    "onGridStateChanged": [{ type: Output },],
     "gridId": [{ type: Input },],
     "gridOptions": [{ type: Input },],
     "gridHeight": [{ type: Input },],

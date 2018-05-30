@@ -5947,7 +5947,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.onBeforeGridCreate = new EventEmitter();
         this.onBeforeGridDestroy = new EventEmitter();
         this.onAfterGridDestroyed = new EventEmitter();
-        this.onGridStateServiceChanged = new EventEmitter();
+        this.onGridStateChanged = new EventEmitter();
         this.gridHeight = 0;
         this.gridWidth = 0;
     }
@@ -6155,7 +6155,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
             _loop_4(prop);
         }
         this._gridStateSubscriber = this.gridStateService.onGridStateChanged.subscribe(function (gridStateChange) {
-            _this.onGridStateServiceChanged.emit(gridStateChange);
+            _this.onGridStateChanged.emit(gridStateChange);
         });
         this.gridEventService.attachOnCellChange(grid, dataView);
         this.gridEventService.attachOnClick(grid, dataView);
@@ -6337,7 +6337,7 @@ AngularSlickgridComponent.propDecorators = {
     "onBeforeGridCreate": [{ type: Output },],
     "onBeforeGridDestroy": [{ type: Output },],
     "onAfterGridDestroyed": [{ type: Output },],
-    "onGridStateServiceChanged": [{ type: Output },],
+    "onGridStateChanged": [{ type: Output },],
     "gridId": [{ type: Input },],
     "gridOptions": [{ type: Input },],
     "gridHeight": [{ type: Input },],
