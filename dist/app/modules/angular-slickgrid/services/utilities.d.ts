@@ -94,6 +94,12 @@ export declare function parseUtcDate(inputDateString: string, useUtc: boolean): 
  */
 export declare function sanitizeHtmlToText(htmlString: string): string;
 /**
+ * Title case the complete sentence (upper case first char of each word while changing everything else to lower case)
+ * @param string
+ * @returns string
+ */
+export declare function titleCase(string: any): any;
+/**
  * Converts a string to camel case
  * @param str the string to convert
  * @return the string in camel case

@@ -542,6 +542,9 @@ function sanitizeHtmlToText(htmlString) {
     temp.innerHTML = htmlString;
     return temp.textContent || temp.innerText;
 }
+function titleCase(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 function toCamelCase(str) {
     return str.replace(/(?:^\w|[A-Z]|\b\w|[\s+\-_\/])/g, function (match, offset) {
         if (/[\s+\-_\/]/.test(match)) {
@@ -6185,7 +6188,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         var _loop_3 = function (prop) {
             if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this_3._eventHandler.subscribe(grid[prop], function (e, args) {
-                    _this.customElm.nativeElement.dispatchEvent(new CustomEvent(slickgridEventPrefix + "-" + toKebabCase(prop), {
+                    _this.customElm.nativeElement.dispatchEvent(new CustomEvent("" + slickgridEventPrefix + titleCase(prop), {
                         bubbles: true,
                         detail: {
                             eventData: e,
@@ -6202,7 +6205,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         var _loop_4 = function (prop) {
             if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this_4._eventHandler.subscribe(dataView[prop], function (e, args) {
-                    _this.customElm.nativeElement.dispatchEvent(new CustomEvent(slickgridEventPrefix + "-" + toKebabCase(prop), {
+                    _this.customElm.nativeElement.dispatchEvent(new CustomEvent("" + slickgridEventPrefix + titleCase(prop), {
                         bubbles: true,
                         detail: {
                             eventData: e,
@@ -6484,6 +6487,7 @@ exports.mapOperatorByFieldType = mapOperatorByFieldType;
 exports.mapOperatorByFilterType = mapOperatorByFilterType;
 exports.parseUtcDate = parseUtcDate;
 exports.sanitizeHtmlToText = sanitizeHtmlToText;
+exports.titleCase = titleCase;
 exports.toCamelCase = toCamelCase;
 exports.toKebabCase = toKebabCase;
 exports.Aggregators = Aggregators;
