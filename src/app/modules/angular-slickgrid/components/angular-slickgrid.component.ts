@@ -21,7 +21,7 @@ import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit, ViewChildren, ElementRef, ViewChild, ReflectiveInjector } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { castToPromise, toKebabCase } from './../services/utilities';
+import { castToPromise, titleCase } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
 import {
   AngularGridInstance,
@@ -94,7 +94,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   @Output() onBeforeGridCreate = new EventEmitter<boolean>();
   @Output() onBeforeGridDestroy = new EventEmitter<any>();
   @Output() onAfterGridDestroyed = new EventEmitter<boolean>();
-  @Output() onGridStateServiceChanged = new EventEmitter<GridStateChange>();
+  @Output() onGridStateChanged = new EventEmitter<GridStateChange>();
   @Input() gridId: string;
   @Input() gridOptions: GridOption;
   @Input() gridHeight = 0;
@@ -343,7 +343,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     for (const prop in grid) {
       if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
         this._eventHandler.subscribe(grid[prop], (e: any, args: any) => {
-          this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}-${toKebabCase(prop)}`, {
+          this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, {
             bubbles: true,
             detail: {
               eventData: e,
@@ -358,7 +358,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     for (const prop in dataView) {
       if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
         this._eventHandler.subscribe(dataView[prop], (e: any, args: any) => {
-          this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}-${toKebabCase(prop)}`, {
+          this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, {
             bubbles: true,
             detail: {
               eventData: e,
@@ -371,7 +371,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // expose GridState Service changes event through dispatch
     this._gridStateSubscriber = this.gridStateService.onGridStateChanged.subscribe((gridStateChange: GridStateChange) => {
-      this.onGridStateServiceChanged.emit(gridStateChange);
+      this.onGridStateChanged.emit(gridStateChange);
     });
 
 

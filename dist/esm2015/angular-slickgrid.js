@@ -698,6 +698,14 @@ function sanitizeHtmlToText(htmlString) {
     return temp.textContent || temp.innerText;
 }
 /**
+ * Title case the complete sentence (upper case first char of each word while changing everything else to lower case)
+ * @param {?} string
+ * @return {?} string
+ */
+function titleCase(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+/**
  * Converts a string to camel case
  * @param {?} str the string to convert
  * @return {?} the string in camel case
@@ -8573,7 +8581,7 @@ class AngularSlickgridComponent {
         this.onBeforeGridCreate = new EventEmitter();
         this.onBeforeGridDestroy = new EventEmitter();
         this.onAfterGridDestroyed = new EventEmitter();
-        this.onGridStateServiceChanged = new EventEmitter();
+        this.onGridStateChanged = new EventEmitter();
         this.gridHeight = 0;
         this.gridWidth = 0;
     }
@@ -8809,7 +8817,7 @@ class AngularSlickgridComponent {
         for (const /** @type {?} */ prop in grid) {
             if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this._eventHandler.subscribe(grid[prop], (e, args) => {
-                    this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}-${toKebabCase(prop)}`, {
+                    this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, {
                         bubbles: true,
                         detail: {
                             eventData: e,
@@ -8823,7 +8831,7 @@ class AngularSlickgridComponent {
         for (const /** @type {?} */ prop in dataView) {
             if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this._eventHandler.subscribe(dataView[prop], (e, args) => {
-                    this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}-${toKebabCase(prop)}`, {
+                    this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, {
                         bubbles: true,
                         detail: {
                             eventData: e,
@@ -8835,7 +8843,7 @@ class AngularSlickgridComponent {
         }
         // expose GridState Service changes event through dispatch
         this._gridStateSubscriber = this.gridStateService.onGridStateChanged.subscribe((gridStateChange) => {
-            this.onGridStateServiceChanged.emit(gridStateChange);
+            this.onGridStateChanged.emit(gridStateChange);
         });
         // on cell click, mainly used with the columnDef.action callback
         this.gridEventService.attachOnCellChange(grid, dataView);
@@ -9073,7 +9081,7 @@ AngularSlickgridComponent.propDecorators = {
     "onBeforeGridCreate": [{ type: Output },],
     "onBeforeGridDestroy": [{ type: Output },],
     "onAfterGridDestroyed": [{ type: Output },],
-    "onGridStateServiceChanged": [{ type: Output },],
+    "onGridStateChanged": [{ type: Output },],
     "gridId": [{ type: Input },],
     "gridOptions": [{ type: Input },],
     "gridHeight": [{ type: Input },],
@@ -9142,5 +9150,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, EditorType, FieldType, FileType, FilterType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, sanitizeHtmlToText, toCamelCase, toKebabCase, Aggregators, AvailableEditor, Editors, AVAILABLE_EDITORS, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionEditorFormatter as ɵbj, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbk, dateTimeIsoAmPmFormatter as ɵbm, dateTimeIsoFormatter as ɵbl, dateTimeUsAmPmFormatter as ɵbp, dateTimeUsFormatter as ɵbo, dateUsFormatter as ɵbn, deleteIconFormatter as ɵbq, dollarColoredBoldFormatter as ɵbt, dollarColoredFormatter as ɵbs, dollarFormatter as ɵbr, editIconFormatter as ɵbu, hyperlinkFormatter as ɵbv, hyperlinkUriPrefixFormatter as ɵbw, infoIconFormatter as ɵbx, lowercaseFormatter as ɵby, multipleFormatter as ɵbz, percentCompleteBarFormatter as ɵcc, percentCompleteFormatter as ɵcb, percentFormatter as ɵca, percentSymbolFormatter as ɵcd, progressBarFormatter as ɵce, translateBooleanFormatter as ɵcg, translateFormatter as ɵcf, uppercaseFormatter as ɵch, yesNoFormatter as ɵci, avgTotalsDollarFormatter as ɵck, avgTotalsFormatter as ɵcj, avgTotalsPercentageFormatter as ɵcl, maxTotalsFormatter as ɵcm, minTotalsFormatter as ɵcn, sumTotalsBoldFormatter as ɵcp, sumTotalsColoredFormatter as ɵcq, sumTotalsDollarBoldFormatter as ɵcs, sumTotalsDollarColoredBoldFormatter as ɵcu, sumTotalsDollarColoredFormatter as ɵct, sumTotalsDollarFormatter as ɵcr, sumTotalsFormatter as ɵco, dateIsoSorter as ɵcw, dateSorter as ɵcv, dateUsShortSorter as ɵcy, dateUsSorter as ɵcx, numericSorter as ɵcz, stringSorter as ɵda };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, EditorType, FieldType, FileType, FilterType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, AvailableEditor, Editors, AVAILABLE_EDITORS, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionEditorFormatter as ɵbj, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbk, dateTimeIsoAmPmFormatter as ɵbm, dateTimeIsoFormatter as ɵbl, dateTimeUsAmPmFormatter as ɵbp, dateTimeUsFormatter as ɵbo, dateUsFormatter as ɵbn, deleteIconFormatter as ɵbq, dollarColoredBoldFormatter as ɵbt, dollarColoredFormatter as ɵbs, dollarFormatter as ɵbr, editIconFormatter as ɵbu, hyperlinkFormatter as ɵbv, hyperlinkUriPrefixFormatter as ɵbw, infoIconFormatter as ɵbx, lowercaseFormatter as ɵby, multipleFormatter as ɵbz, percentCompleteBarFormatter as ɵcc, percentCompleteFormatter as ɵcb, percentFormatter as ɵca, percentSymbolFormatter as ɵcd, progressBarFormatter as ɵce, translateBooleanFormatter as ɵcg, translateFormatter as ɵcf, uppercaseFormatter as ɵch, yesNoFormatter as ɵci, avgTotalsDollarFormatter as ɵck, avgTotalsFormatter as ɵcj, avgTotalsPercentageFormatter as ɵcl, maxTotalsFormatter as ɵcm, minTotalsFormatter as ɵcn, sumTotalsBoldFormatter as ɵcp, sumTotalsColoredFormatter as ɵcq, sumTotalsDollarBoldFormatter as ɵcs, sumTotalsDollarColoredBoldFormatter as ɵcu, sumTotalsDollarColoredFormatter as ɵct, sumTotalsDollarFormatter as ɵcr, sumTotalsFormatter as ɵco, dateIsoSorter as ɵcw, dateSorter as ɵcv, dateUsShortSorter as ɵcy, dateUsSorter as ɵcx, numericSorter as ɵcz, stringSorter as ɵda };
 //# sourceMappingURL=angular-slickgrid.js.map
