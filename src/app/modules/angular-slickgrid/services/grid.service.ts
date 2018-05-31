@@ -155,11 +155,23 @@ export class GridService {
    * @param object item: item object holding all properties of that row
    */
   deleteDataGridItem(item: any) {
-    const row = this._dataView.getRowById(item.id);
-    const itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
+    if (!item || !item.hasOwnProperty('id')) {
+      throw new Error(`deleteDataGridItem() requires an item object which includes the "id" property`);
+    }
+    const itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
+    this.deleteDataGridItemById(itemId);
+  }
 
-    if (row === undefined || itemId === -1) {
-      throw new Error(`Could not find the item in the grid or it's associated "id"`);
+  /**
+   * Delete an existing item from the datagrid (dataView) by it's id
+   * @param itemId: item unique id
+   */
+  deleteDataGridItemById(itemId: string | number) {
+    if (itemId === undefined) {
+      throw new Error(`Cannot delete a row without a valid "id"`);
+    }
+    if (this._dataView.getRowById(itemId) === undefined) {
+      throw new Error(`Could not find the item in the grid by it's associated "id"`);
     }
 
     // delete the item from the dataView
@@ -168,30 +180,31 @@ export class GridService {
   }
 
   /**
-   * Delete an existing item from the datagrid (dataView)
-   * @param object item: item object holding all properties of that row
-   */
-  deleteDataGridItemById(id: string | number) {
-    const row = this._dataView.getRowById(id);
-
-    if (row === undefined) {
-      throw new Error(`Could not find the item in the grid by it's associated "id"`);
-    }
-
-    // delete the item from the dataView
-    this._dataView.deleteItem(id);
-    this._dataView.refresh();
-  }
-
-  /**
    * Update an existing item with new properties inside the datagrid
    * @param object item: item object holding all properties of that row
    */
   updateDataGridItem(item: any) {
-    const row = this._dataView.getRowById(item.id);
-    const itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
+    const itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
 
-    if (itemId === -1) {
+    if (itemId === undefined) {
+      throw new Error(`Could not find the item in the grid or it's associated "id"`);
+    }
+
+    this.updateDataGridItemById(itemId, item);
+  }
+
+  /**
+   * Update an existing item in the datagrid by it's id and new properties
+   * @param itemId: item unique id
+   * @param object item: item object holding all properties of that row
+   */
+  updateDataGridItemById(itemId: number | string, item: any) {
+    if (itemId === undefined) {
+      throw new Error(`Cannot update a row without a valid "id"`);
+    }
+    const row = this._dataView.getRowById(itemId);
+
+    if (!item || !row) {
       throw new Error(`Could not find the item in the grid or it's associated "id"`);
     }
 
