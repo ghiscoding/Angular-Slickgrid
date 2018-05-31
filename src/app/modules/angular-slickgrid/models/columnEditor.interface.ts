@@ -41,6 +41,9 @@ export interface ColumnEditor {
     value: string;
   };
 
+  /** DOM element extra options */
+  elementOptions?: any;
+
   /**
    * Use "params" to pass any type of arguments to your Custom Editor (type: EditorType.custom)
    * or regular Editor like the EditorType.float

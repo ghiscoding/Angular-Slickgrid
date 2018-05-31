@@ -30,7 +30,7 @@ export interface Column {
   defaultSortAsc?: boolean;
 
   /** Inline editor for the cell value */
-  editor?: EditorType | ColumnEditor;
+  editor?: Editor | ColumnEditor;
 
   /** Default to false, which leads to exclude the column from the export? */
   excludeFromExport?: boolean;
@@ -109,7 +109,7 @@ export interface Column {
   /**
    * @internal used internally by Angular-Slickgrid, to copy over the Column Editor Options
    */
-  internalColumnEditor?: any;
+  internalColumnEditor?: ColumnEditor;
 
   /** is the column editable? Goes with grid option "editable: true". */
   isEditable?: boolean;
