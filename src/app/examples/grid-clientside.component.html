@@ -8,7 +8,7 @@
               [gridOptions]="gridOptions"
               [dataset]="dataset"
               (onAngularGridCreated)="angularGridReady($event)"
-              (onGridStateServiceChanged)="gridStateChanged($event)"
+              (onGridStateChanged)="gridStateChanged($event)"
               (onBeforeGridDestroy)="saveCurrentGridState($event)">
     </angular-slickgrid>
   </div>
