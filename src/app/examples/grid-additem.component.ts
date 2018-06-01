@@ -48,9 +48,9 @@ export class GridAddItemComponent implements OnInit {
         editor: {
           type: EditorType.text
         },
-        onCellChange: (args: OnEventArgs) => {
-        alert('onCellChange directly attached to the column definition');
-        console.log(args);
+        onCellChange: (e: Event, args: OnEventArgs) => {
+          alert('onCellChange directly attached to the column definition');
+          console.log(args);
         }
       },
       {

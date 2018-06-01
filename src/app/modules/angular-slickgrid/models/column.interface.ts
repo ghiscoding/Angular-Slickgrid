@@ -136,10 +136,10 @@ export interface Column {
   name?: string;
 
   /** an event that can be used for triggering an action after a cell change */
-  onCellChange?: (args: OnEventArgs) => void;
+  onCellChange?: (e: Event, args: OnEventArgs) => void;
 
   /** an event that can be used for triggering an action after a cell click */
-  onCellClick?: (args: OnEventArgs) => void;
+  onCellClick?: (e: Event, args: OnEventArgs) => void;
 
   /** column output type */
   outputType?: FieldType;

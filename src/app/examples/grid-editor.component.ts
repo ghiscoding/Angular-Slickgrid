@@ -60,11 +60,12 @@ export class GridEditorComponent implements OnInit {
       minWidth: 30,
       maxWidth: 30,
       // use column onCellClick OR (sgOnClick)="onCellClicked()" you can see down below
-      onCellClick: (args: OnEventArgs) => {
+      onCellClick: (e: Event, args: OnEventArgs) => {
         console.log(args);
         this.alertWarning = `Editing: ${args.dataContext.title}`;
         this.angularGrid.gridService.highlightRow(args.row, 1500);
         this.angularGrid.gridService.setSelectedRow(args.row);
+        // e.stopImmediatePropagation();
       }
     }, {
       id: 'delete',
@@ -90,7 +91,7 @@ export class GridEditorComponent implements OnInit {
         type: EditorType.longText
       },
       minWidth: 100,
-      onCellChange: (args: OnEventArgs) => {
+      onCellChange: (e: Event, args: OnEventArgs) => {
         console.log(args);
         this.alertWarning = `Updated Title: ${args.dataContext.title}`;
       }
@@ -250,7 +251,6 @@ export class GridEditorComponent implements OnInit {
 
   onCellChanged(e, args) {
     this.updatedObject = args.item;
-    this.angularGrid.resizerService.resizeGrid(10);
   }
 
   onCellClicked(e, args) {
