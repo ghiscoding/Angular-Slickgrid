@@ -76,8 +76,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _columnDefinitions: Column[];
   private _dataView: any;
   private _eventHandler: any = new Slick.EventHandler();
-  private _translateSubscriber: Subscription;
-  private _gridStateSubscriber: Subscription;
   grid: any;
   gridPaginationOptions: GridOption;
   gridHeightString: string;
@@ -86,6 +84,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   groupItemMetadataProvider: any;
   showPagination = false;
   isGridInitialized = false;
+  subscriptions: Subscription[] = [];
 
   @Output() onAngularGridCreated = new EventEmitter<AngularGridInstance>();
   @Output() onDataviewCreated = new EventEmitter<any>();
@@ -160,12 +159,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.resizer.dispose();
     this.sortService.dispose();
     this.grid.destroy();
-    if (this._translateSubscriber) {
-      this._translateSubscriber.unsubscribe();
-    }
-    if (this._gridStateSubscriber) {
-      this._gridStateSubscriber.unsubscribe();
-    }
+
+    // also unsubscribe all RxJS subscriptions
+    this.subscriptions.forEach((subscription: Subscription) => {
+      subscription.unsubscribe();
+    });
+    this.subscriptions = [];
   }
 
   ngAfterViewInit() {
@@ -305,14 +304,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   attachDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
     // on locale change, we have to manually translate the Headers, GridMenu
-    this._translateSubscriber = this.translate.onLangChange.subscribe((event) => {
-      if (gridOptions.enableTranslate) {
-        this.controlAndPluginService.translateColumnHeaders();
-        this.controlAndPluginService.translateColumnPicker();
-        this.controlAndPluginService.translateGridMenu();
-        this.controlAndPluginService.translateHeaderMenu();
-      }
-    });
+    this.subscriptions.push(
+      this.translate.onLangChange.subscribe((event) => {
+        if (gridOptions.enableTranslate) {
+          this.controlAndPluginService.translateColumnHeaders();
+          this.controlAndPluginService.translateColumnPicker();
+          this.controlAndPluginService.translateGridMenu();
+          this.controlAndPluginService.translateHeaderMenu();
+        }
+      })
+    );
 
     // attach external sorting (backend) when available or default onSort (dataView)
     if (gridOptions.enableSorting) {
@@ -370,9 +371,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // expose GridState Service changes event through dispatch
-    this._gridStateSubscriber = this.gridStateService.onGridStateChanged.subscribe((gridStateChange: GridStateChange) => {
-      this.onGridStateChanged.emit(gridStateChange);
-    });
+    this.subscriptions.push(
+      this.gridStateService.onGridStateChanged.subscribe((gridStateChange: GridStateChange) => {
+        this.onGridStateChanged.emit(gridStateChange);
+      })
+    );
 
 
     // on cell click, mainly used with the columnDef.action callback
