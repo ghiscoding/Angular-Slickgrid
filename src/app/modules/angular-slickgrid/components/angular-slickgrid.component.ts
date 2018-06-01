@@ -239,7 +239,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.attachBackendCallbackFunctions(this.gridOptions);
     }
 
-    this.gridStateService.init(this.grid, this.filterService, this.sortService);
+    this.gridStateService.init(this.grid, this.controlAndPluginService, this.filterService, this.sortService);
 
     this.onAngularGridCreated.emit({
       // Slick Grid & DataView objects
@@ -314,6 +314,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         }
       })
     );
+
+    // if user entered some Columns "presets", we need to reflect them all in the grid
+    if (gridOptions.presets && gridOptions.presets.columns) {
+      grid.setColumns(gridOptions.presets.columns);
+    }
 
     // attach external sorting (backend) when available or default onSort (dataView)
     if (gridOptions.enableSorting) {
