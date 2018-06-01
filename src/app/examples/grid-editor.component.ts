@@ -76,7 +76,7 @@ export class GridEditorComponent implements OnInit {
       maxWidth: 30,
       // use column onCellClick OR (sgOnClick)="onCellClicked()" you can see down below
       /*
-      onCellClick: (args: OnEventArgs) => {
+      onCellClick: (e: Event, args: OnEventArgs) => {
         console.log(args);
         this.alertWarning = `Deleting: ${args.dataContext.title}`;
       }
