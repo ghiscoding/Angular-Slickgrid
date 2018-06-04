@@ -194,11 +194,19 @@ export class GridOdataComponent implements OnInit {
               filteredData = filteredData.filter(column => {
                 const filterType = columnFilters[columnId].type;
                 const searchTerm = columnFilters[columnId].term;
-                switch (filterType) {
-                  case 'equal': return column[columnId].toLowerCase() === searchTerm;
-                  case 'ends': return column[columnId].toLowerCase().endsWith(searchTerm);
-                  case 'starts': return column[columnId].toLowerCase().startsWith(searchTerm);
-                  case 'substring': return column[columnId].toLowerCase().includes(searchTerm);
+                let colId = columnId;
+                if (columnId && columnId.indexOf(' ') !== -1) {
+                  const splitIds = columnId.split(' ');
+                  colId = splitIds[splitIds.length - 1];
+                }
+                const filterTerm = column[colId];
+                if (filterTerm) {
+                  switch (filterType) {
+                    case 'equal': return filterTerm.toLowerCase() === searchTerm;
+                    case 'ends': return filterTerm.toLowerCase().endsWith(searchTerm);
+                    case 'starts': return filterTerm.toLowerCase().startsWith(searchTerm);
+                    case 'substring': return filterTerm.toLowerCase().includes(searchTerm);
+                  }
                 }
               });
             }
