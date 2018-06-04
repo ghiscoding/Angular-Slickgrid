@@ -116,29 +116,6 @@ export class GridClientSideComponent implements OnInit {
 
       // use columnDef searchTerms OR use presets as shown below
       presets: {
-        columns: [
-          { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, width: 170,
-            type: FieldType.string
-          },
-          { id: 'title', name: 'Title', field: 'title', sortable: true, minWidth: 55,
-            type: FieldType.string, filterable: true
-          },
-          { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, exportCsvForceToKeepAsString: true,
-            minWidth: 55,
-            filterable: true,
-          },
-          { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 70, type: FieldType.number, sortable: true,
-            filterable: true
-          },
-          { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true,
-            type: FieldType.date, filterable: true, filter: { type: FilterType.compoundDate }
-          },
-          { id: 'usDateShort', name: 'US Date Short', field: 'usDateShort', sortable: true, minWidth: 70, width: 70,
-            type: FieldType.dateUsShort, filterable: true, filter: { type: FilterType.compoundDate }
-          },
-          { id: 'utcDate', name: 'UTC Date', field: 'utcDate', formatter: Formatters.dateTimeIsoAmPm, sortable: true, minWidth: 115,
-            type: FieldType.dateUtc, outputType: FieldType.dateTimeIsoAmPm, filterable: true, filter: { type: FilterType.compoundDate } }
-        ],
         filters: [
           { columnId: 'duration', searchTerms: [2, 22, 44] },
           // { columnId: 'complete', searchTerms: ['5'], operator: '>' },
