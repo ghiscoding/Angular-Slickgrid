@@ -1,4 +1,4 @@
-import { Column, GridOption } from './../models/index';
+import { Column, Extension, GridOption } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
 import { FilterService } from './filter.service';
 import { ExportService } from './export.service';
@@ -12,10 +12,7 @@ export declare class ControlAndPluginService {
     private _grid;
     visibleColumns: Column[];
     areVisibleColumnDifferent: boolean;
-    pluginList: {
-        name: string;
-        plugin: any;
-    }[];
+    extensionList: Extension[];
     autoTooltipPlugin: any;
     cellExternalCopyManagerPlugin: any;
     checkboxSelectorPlugin: any;
@@ -31,13 +28,8 @@ export declare class ControlAndPluginService {
     private readonly _gridOptions;
     /** Getter for the Column Definitions pulled through the Grid Object */
     private readonly _columnDefinitions;
-    getPlugin(name?: string): {
-        name: string;
-        plugin: any;
-    } | {
-        name: string;
-        plugin: any;
-    }[];
+    getAllExtensions(): Extension[];
+    getExtensionByName(name: string): Extension | undefined;
     /** Auto-resize all the column in the grid to fit the grid width */
     autoResizeColumns(): void;
     /**

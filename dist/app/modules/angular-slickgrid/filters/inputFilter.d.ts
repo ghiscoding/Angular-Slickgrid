@@ -15,7 +15,7 @@ export declare class InputFilter implements Filter {
     /**
      * Clear the filter value
      */
-    clear(triggerFilterKeyup?: boolean): void;
+    clear(): void;
     /**
      * destroy the filter
      */

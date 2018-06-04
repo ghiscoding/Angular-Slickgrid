@@ -8,6 +8,7 @@ export declare class SortService {
     private _slickSubscriber;
     private _isBackendGrid;
     onSortChanged: Subject<CurrentSorter[]>;
+    onSortCleared: Subject<boolean>;
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly _gridOptions;
     /** Getter for the Column Definitions pulled through the Grid Object */

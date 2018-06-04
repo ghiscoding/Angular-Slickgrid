@@ -15,7 +15,7 @@ export declare class SelectFilter implements Filter {
     /**
      * Clear the filter values
      */
-    clear(triggerFilterChange?: boolean): void;
+    clear(): void;
     /**
      * destroy the filter
      */

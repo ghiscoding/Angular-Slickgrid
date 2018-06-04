@@ -21,6 +21,7 @@ import { GridLocalizationComponent } from './examples/grid-localization.componen
 import { GridMenuComponent } from './examples/grid-menu.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
 import { GridRowSelectionComponent } from './examples/grid-rowselection.component';
+import { GridStateComponent } from './examples/grid-state.component';
 import { HomeComponent } from './examples/home.component';
 
 import { SwtCommonGridTestComponent } from './examples/swt-common-grid-test.component';
@@ -72,6 +73,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridMenuComponent,
     GridOdataComponent,
     GridRowSelectionComponent,
+    GridStateComponent,
     SwtCommonGridTestComponent,
     SwtCommonGridPaginationComponent,
     SwtCommonGridComponent,

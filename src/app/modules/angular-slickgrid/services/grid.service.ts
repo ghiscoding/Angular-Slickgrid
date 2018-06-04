@@ -1,12 +1,24 @@
+import { Injectable } from '@angular/core';
 import { CellArgs, Column, GridOption, OnEventArgs } from './../models/index';
+import { FilterService } from './filter.service';
+import { GridStateService } from './gridState.service';
+import { SortService } from './sort.service';
 
 // using external non-typed js libraries
 declare var $: any;
 declare var Slick: any;
 
+@Injectable()
 export class GridService {
   private _grid: any;
   private _dataView: any;
+
+  constructor(private filterService: FilterService, private gridStateService: GridStateService, private sortService: SortService) { }
+
+  /** Getter for the Column Definitions pulled through the Grid Object */
+  private get _columnDefinitions(): Column[] {
+    return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
+  }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
@@ -112,20 +124,51 @@ export class GridService {
     }
   }
 
+  /** Get the currently selected rows */
   getSelectedRows() {
     return this._grid.getSelectedRows();
   }
+
+  /** Select the selected row by a row index */
   setSelectedRow(rowIndex: number) {
     this._grid.setSelectedRows([rowIndex]);
   }
+
+  /** Set selected rows with provided array of row indexes */
   setSelectedRows(rowIndexes: number[]) {
     this._grid.setSelectedRows(rowIndexes);
   }
 
+  /** Re-Render the Grid */
   renderGrid() {
     if (this._grid && typeof this._grid.invalidate === 'function') {
       this._grid.invalidate();
       this._grid.render();
+    }
+  }
+
+  /**
+   * Reset the grid to it's original state (clear any filters, sorting & pagination if exists) .
+   * The column definitions could be passed as argument to reset (this can be used after a Grid State reset)
+   * The reset will clear the Filters & Sort, then will reset the Columns to their original state
+   */
+  resetGrid(columnDefinitions?: Column[]) {
+    if (this.filterService && this.filterService.clearFilters) {
+      this.filterService.clearFilters();
+    }
+    if (this.sortService && this.sortService.clearSorting) {
+      this.sortService.clearSorting();
+    }
+
+    // reset columns to original states & refresh the grid
+    if (this._grid && this._dataView) {
+      const originalColumns = columnDefinitions || this._columnDefinitions;
+      if (Array.isArray(originalColumns) && originalColumns.length > 0) {
+        this._grid.setColumns(originalColumns);
+        this._dataView.refresh();
+        this._grid.autosizeColumns();
+        this.gridStateService.resetColumns(columnDefinitions);
+      }
     }
   }
 

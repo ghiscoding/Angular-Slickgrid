@@ -1,7 +1,16 @@
-import { CellArgs, OnEventArgs } from './../models/index';
+import { CellArgs, Column, OnEventArgs } from './../models/index';
+import { FilterService } from './filter.service';
+import { GridStateService } from './gridState.service';
+import { SortService } from './sort.service';
 export declare class GridService {
+    private filterService;
+    private gridStateService;
+    private sortService;
     private _grid;
     private _dataView;
+    constructor(filterService: FilterService, gridStateService: GridStateService, sortService: SortService);
+    /** Getter for the Column Definitions pulled through the Grid Object */
+    private readonly _columnDefinitions;
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly _gridOptions;
     init(grid: any, dataView: any): void;
@@ -26,10 +35,20 @@ export declare class GridService {
      * @param fadeDelay
      */
     highlightRow(rowNumber: number, fadeDelay?: number): void;
+    /** Get the currently selected rows */
     getSelectedRows(): any;
+    /** Select the selected row by a row index */
     setSelectedRow(rowIndex: number): void;
+    /** Set selected rows with provided array of row indexes */
     setSelectedRows(rowIndexes: number[]): void;
+    /** Re-Render the Grid */
     renderGrid(): void;
+    /**
+     * Reset the grid to it's original state (clear any filters, sorting & pagination if exists) .
+     * The column definitions could be passed as argument to reset (this can be used after a Grid State reset)
+     * The reset will clear the Filters & Sort, then will reset the Columns to their original state
+     */
+    resetGrid(columnDefinitions?: Column[]): void;
     /**
      * Add an item (data item) to the datagrid
      * @param object dataItem: item object holding all properties of that row
@@ -41,13 +60,19 @@ export declare class GridService {
      */
     deleteDataGridItem(item: any): void;
     /**
-     * Delete an existing item from the datagrid (dataView)
-     * @param object item: item object holding all properties of that row
+     * Delete an existing item from the datagrid (dataView) by it's id
+     * @param itemId: item unique id
      */
-    deleteDataGridItemById(id: string | number): void;
+    deleteDataGridItemById(itemId: string | number): void;
     /**
      * Update an existing item with new properties inside the datagrid
      * @param object item: item object holding all properties of that row
      */
     updateDataGridItem(item: any): void;
+    /**
+     * Update an existing item in the datagrid by it's id and new properties
+     * @param itemId: item unique id
+     * @param object item: item object holding all properties of that row
+     */
+    updateDataGridItemById(itemId: number | string, item: any): void;
 }

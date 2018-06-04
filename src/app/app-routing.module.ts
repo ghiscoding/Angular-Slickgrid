@@ -12,6 +12,7 @@ import { GridLocalizationComponent } from './examples/grid-localization.componen
 import { GridOdataComponent } from './examples/grid-odata.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
 import { GridRowSelectionComponent } from './examples/grid-rowselection.component';
+import { GridStateComponent } from './examples/grid-state.component';
 import { HomeComponent } from './examples/home.component';
 import { SwtCommonGridTestComponent } from './examples/swt-common-grid-test.component';
 
@@ -30,6 +31,7 @@ const routes: Routes = [
   { path: 'headermenu', component: GridHeaderMenuComponent },
   { path: 'gridgraphql', component: GridGraphqlComponent },
   { path: 'gridmenu', component: GridMenuComponent },
+  { path: 'gridstate', component: GridStateComponent },
   { path: 'grouping', component: GridGroupingComponent },
   { path: 'localization', component: GridLocalizationComponent },
   { path: 'clientside', component: GridClientSideComponent },

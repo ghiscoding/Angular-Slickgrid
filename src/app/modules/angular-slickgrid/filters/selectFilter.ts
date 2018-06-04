@@ -37,20 +37,24 @@ export class SelectFilter implements Filter {
     // step 3, subscribe to the change event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
     this.$filterElm.change((e: any) => {
-      (e && e.target && e.target.value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-      this.callback(e, { columnDef: this.columnDef, operator: 'EQ' });
+      const value = e && e.target && e.target.value || '';
+      if (!value || value === '') {
+        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+        this.$filterElm.removeClass('filled');
+      } else {
+        this.$filterElm.addClass('filled');
+        this.callback(e, { columnDef: this.columnDef, searchTerms: [value], operator: 'EQ' });
+      }
     });
   }
 
   /**
    * Clear the filter values
    */
-  clear(triggerFilterChange = true) {
+  clear() {
     if (this.$filterElm) {
       this.$filterElm.val('');
-      if (triggerFilterChange) {
-        this.$filterElm.trigger('change');
-      }
+      this.$filterElm.trigger('change');
     }
   }
 

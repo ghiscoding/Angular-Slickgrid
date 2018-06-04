@@ -76,8 +76,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _columnDefinitions: Column[];
   private _dataView: any;
   private _eventHandler: any = new Slick.EventHandler();
-  private _translateSubscriber: Subscription;
-  private _gridStateSubscriber: Subscription;
   grid: any;
   gridPaginationOptions: GridOption;
   gridHeightString: string;
@@ -86,6 +84,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   groupItemMetadataProvider: any;
   showPagination = false;
   isGridInitialized = false;
+  subscriptions: Subscription[] = [];
 
   @Output() onAngularGridCreated = new EventEmitter<AngularGridInstance>();
   @Output() onDataviewCreated = new EventEmitter<any>();
@@ -160,12 +159,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.resizer.dispose();
     this.sortService.dispose();
     this.grid.destroy();
-    if (this._translateSubscriber) {
-      this._translateSubscriber.unsubscribe();
-    }
-    if (this._gridStateSubscriber) {
-      this._gridStateSubscriber.unsubscribe();
-    }
+
+    // also unsubscribe all RxJS subscriptions
+    this.subscriptions.forEach((subscription: Subscription) => {
+      if (subscription && subscription.unsubscribe) {
+        subscription.unsubscribe();
+      }
+    });
+    this.subscriptions = [];
   }
 
   ngAfterViewInit() {
@@ -240,7 +241,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.attachBackendCallbackFunctions(this.gridOptions);
     }
 
-    this.gridStateService.init(this.grid, this.filterService, this.sortService);
+    this.gridStateService.init(this.grid, this.controlAndPluginService, this.filterService, this.sortService);
 
     this.onAngularGridCreated.emit({
       // Slick Grid & DataView objects
@@ -305,14 +306,24 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   attachDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
     // on locale change, we have to manually translate the Headers, GridMenu
-    this._translateSubscriber = this.translate.onLangChange.subscribe((event) => {
-      if (gridOptions.enableTranslate) {
-        this.controlAndPluginService.translateColumnHeaders();
-        this.controlAndPluginService.translateColumnPicker();
-        this.controlAndPluginService.translateGridMenu();
-        this.controlAndPluginService.translateHeaderMenu();
+    this.subscriptions.push(
+      this.translate.onLangChange.subscribe((event) => {
+        if (gridOptions.enableTranslate) {
+          this.controlAndPluginService.translateColumnHeaders();
+          this.controlAndPluginService.translateColumnPicker();
+          this.controlAndPluginService.translateGridMenu();
+          this.controlAndPluginService.translateHeaderMenu();
+        }
+      })
+    );
+
+    // if user entered some Columns "presets", we need to reflect them all in the grid
+    if (gridOptions.presets && Array.isArray(gridOptions.presets.columns) && gridOptions.presets.columns.length > 0) {
+      const gridColumns: Column[] = this.gridStateService.getAssociatedGridColumns(grid, gridOptions.presets.columns);
+      if (gridColumns && Array.isArray(gridColumns)) {
+        grid.setColumns(gridColumns);
       }
-    });
+    }
 
     // attach external sorting (backend) when available or default onSort (dataView)
     if (gridOptions.enableSorting) {
@@ -324,8 +335,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.filterService.init(grid);
 
       // if user entered some "presets", we need to reflect them all in the DOM
-      if (gridOptions.presets && gridOptions.presets.filters) {
-        this.filterService.populateColumnFilterSearchTerms(grid);
+      if (gridOptions.presets && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
+        this.filterService.populateColumnFilterSearchTerms();
       }
       gridOptions.backendServiceApi ? this.filterService.attachBackendOnFilter(grid) : this.filterService.attachLocalOnFilter(grid, this._dataView);
     }
@@ -370,9 +381,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // expose GridState Service changes event through dispatch
-    this._gridStateSubscriber = this.gridStateService.onGridStateChanged.subscribe((gridStateChange: GridStateChange) => {
-      this.onGridStateChanged.emit(gridStateChange);
-    });
+    this.subscriptions.push(
+      this.gridStateService.onGridStateChanged.subscribe((gridStateChange: GridStateChange) => {
+        this.onGridStateChanged.emit(gridStateChange);
+      })
+    );
 
 
     // on cell click, mainly used with the columnDef.action callback
@@ -405,13 +418,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // update backend filters (if need be) before the query runs
     if (backendApi) {
       const backendService = backendApi.service;
+
+      // if user entered some any "presets", we need to reflect them all in the grid
       if (gridOptions && gridOptions.presets) {
-        if (backendService && backendService.updateFilters && gridOptions.presets.filters) {
+         // Filters "presets"
+         if (backendService && backendService.updateFilters && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
           backendService.updateFilters(gridOptions.presets.filters, true);
         }
-        if (backendService && backendService.updateSorters && gridOptions.presets.sorters) {
+        // Sorters "presets"
+        if (backendService && backendService.updateSorters && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
           backendService.updateSorters(undefined, gridOptions.presets.sorters);
         }
+        // Pagination "presets"
         if (backendService && backendService.updatePagination && gridOptions.presets.pagination) {
           backendService.updatePagination(gridOptions.presets.pagination.pageNumber, gridOptions.presets.pagination.pageSize);
         }

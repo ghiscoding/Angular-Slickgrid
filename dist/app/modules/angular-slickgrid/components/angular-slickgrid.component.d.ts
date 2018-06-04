@@ -30,6 +30,7 @@ import { GridStateService } from './../services/gridState.service';
 import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
 import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
+import { Subscription } from 'rxjs/Subscription';
 export declare class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
     private controlAndPluginService;
     private exportService;
@@ -47,8 +48,6 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private _columnDefinitions;
     private _dataView;
     private _eventHandler;
-    private _translateSubscriber;
-    private _gridStateSubscriber;
     grid: any;
     gridPaginationOptions: GridOption;
     gridHeightString: string;
@@ -57,6 +56,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     groupItemMetadataProvider: any;
     showPagination: boolean;
     isGridInitialized: boolean;
+    subscriptions: Subscription[];
     onAngularGridCreated: EventEmitter<AngularGridInstance>;
     onDataviewCreated: EventEmitter<any>;
     onGridCreated: EventEmitter<any>;

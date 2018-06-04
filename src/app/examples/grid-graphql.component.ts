@@ -1,7 +1,19 @@
 import { Subscription } from 'rxjs/Subscription';
-import { Component, Injectable, Input, OnInit, Output, OnDestroy } from '@angular/core';
+import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { AngularGridInstance, Column, FieldType, FilterType, Formatters, GraphqlResult, GraphqlService, GraphqlServiceOption, GridOption, OperatorType, SearchTerm, SortDirection, GridStateService } from './../modules/angular-slickgrid';
+import {
+  AngularGridInstance,
+  Column,
+  FieldType,
+  FilterType,
+  Formatters,
+  GraphqlResult,
+  GraphqlService,
+  GraphqlServiceOption,
+  GridOption,
+  OperatorType,
+  SortDirection
+} from './../modules/angular-slickgrid';
 
 const defaultPageSize = 20;
 const GRAPHQL_QUERY_DATASET_NAME = 'users';

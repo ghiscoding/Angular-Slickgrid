@@ -55,6 +55,10 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     this._filterSubcription = this.filterService.onFilterChanged.subscribe((data) => {
       this.refreshPagination(true);
     });
+    // Subscribe to Filter clear and go back to page 1 when that happen
+    this._filterSubcription = this.filterService.onFilterCleared.subscribe((data) => {
+      this.refreshPagination(true);
+    });
   }
 
   ceil(number: number) {

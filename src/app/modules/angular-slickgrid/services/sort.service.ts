@@ -26,6 +26,7 @@ export class SortService {
   private _slickSubscriber: SlickEvent;
   private _isBackendGrid = false;
   onSortChanged = new Subject<CurrentSorter[]>();
+  onSortCleared = new Subject<boolean>();
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
@@ -104,7 +105,7 @@ export class SortService {
       // keep current sorters
       this._currentLocalSorters = []; // reset current local sorters
       if (Array.isArray(sortColumns)) {
-        sortColumns.forEach((sortColumn) => {
+        sortColumns.forEach((sortColumn: { sortCol: Column, sortAsc: number }) => {
           if (sortColumn.sortCol) {
             this._currentLocalSorters.push({
               columnId: sortColumn.sortCol.id,
@@ -144,6 +145,12 @@ export class SortService {
         }
       }
     }
+    // set current sorter to empty & emit a sort changed event
+    this._currentLocalSorters = [];
+    const sender = (this._gridOptions && this._gridOptions.backendServiceApi) ? 'remote' : 'local';
+
+    // emit an event when filters are all cleared
+    this.onSortCleared.next(true);
   }
 
   getCurrentLocalSorters(): CurrentSorter[] {
@@ -180,28 +187,27 @@ export class SortService {
     this._currentLocalSorters = []; // reset current local sorters
     if (this._gridOptions && this._gridOptions.presets && this._gridOptions.presets.sorters) {
       const sorters = this._gridOptions.presets.sorters;
-      this._columnDefinitions.forEach((columnDef: Column) =>  {
-        const columnPreset = sorters.find((currentSorter: CurrentSorter) => {
-          return currentSorter.columnId === columnDef.id;
-        });
-        if (columnPreset) {
+
+      sorters.forEach((presetSorting: CurrentSorter) => {
+        const gridColumn = this._columnDefinitions.find((col: Column) => col.id === presetSorting.columnId);
+        if (gridColumn) {
           sortCols.push({
-            columnId: columnDef.id,
-            sortAsc: ((columnPreset.direction.toUpperCase() === SortDirection.ASC) ? true : false),
-            sortCol: columnDef
+            columnId: gridColumn.id,
+            sortAsc: ((presetSorting.direction.toUpperCase() === SortDirection.ASC) ? true : false),
+            sortCol: gridColumn
           });
 
           // keep current sorters
           this._currentLocalSorters.push({
-            columnId: columnDef.id + '',
-            direction: columnPreset.direction.toUpperCase() as SortDirectionString
+            columnId: gridColumn.id + '',
+            direction: presetSorting.direction.toUpperCase() as SortDirectionString
           });
         }
       });
 
       if (sortCols.length > 0) {
         this.onLocalSortChanged(grid, dataView, sortCols);
-        grid.setSortColumns(sortCols); // add sort icon in UI
+        grid.setSortColumns(sortCols); // use this to add sort icon(s) in UI
       }
     }
   }

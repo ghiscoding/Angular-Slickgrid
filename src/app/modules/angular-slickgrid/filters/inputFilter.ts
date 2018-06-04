@@ -38,20 +38,24 @@ export class InputFilter implements Filter {
     // step 3, subscribe to the keyup event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
     this.$filterElm.keyup((e: any) => {
-      (e && e.target && e.target.value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-      this.callback(e, { columnDef: this.columnDef });
+      const value = e && e.target && e.target.value || '';
+      if (!value || value === '') {
+        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+        this.$filterElm.removeClass('filled');
+      } else {
+        this.$filterElm.addClass('filled');
+        this.callback(e, { columnDef: this.columnDef, searchTerms: [value] });
+      }
     });
   }
 
   /**
    * Clear the filter value
    */
-  clear(triggerFilterKeyup = true) {
+  clear() {
     if (this.$filterElm) {
       this.$filterElm.val('');
-      if (triggerFilterKeyup) {
-        this.$filterElm.trigger('keyup');
-      }
+      this.$filterElm.trigger('keyup');
     }
   }
 
