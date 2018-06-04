@@ -22,7 +22,7 @@ export declare class CompoundDateFilter implements Filter {
     /**
      * Clear the filter value
      */
-    clear(triggerFilterKeyup?: boolean): void;
+    clear(): void;
     /**
      * destroy the filter
      */
@@ -40,7 +40,7 @@ export declare class CompoundDateFilter implements Filter {
     private createDomElement(searchTerm?);
     private getCurrentLocale(columnDef, gridOptions);
     private loadFlatpickrLocale(locale);
-    private onTriggerEvent(e);
+    private onTriggerEvent(e, clearFilterTriggered?);
     private hide();
     private show();
 }

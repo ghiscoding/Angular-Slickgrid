@@ -20,7 +20,7 @@ export declare class CompoundInputFilter implements Filter {
     /**
      * Clear the filter value
      */
-    clear(triggerFilterKeyup?: boolean): void;
+    clear(): void;
     /**
      * destroy the filter
      */
@@ -36,5 +36,5 @@ export declare class CompoundInputFilter implements Filter {
      * Create the DOM element
      */
     private createDomElement(searchTerm?);
-    private onTriggerEvent(e);
+    private onTriggerEvent(e, clearFilterTriggered?);
 }

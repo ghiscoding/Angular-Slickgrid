@@ -1,8 +1,15 @@
-import { Subscription } from 'rxjs/Subscription';
-import { CustomInputFilter } from './custom-inputFilter';
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AngularGridInstance, Column, FieldType, FilterType, Formatters, GridOption, GridState, GridStateChange, OperatorType } from './../modules/angular-slickgrid';
+import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import {
+  AngularGridInstance,
+  Column,
+  FieldType,
+  FilterType,
+  Formatters,
+  GridOption,
+  GridState,
+  GridStateChange
+} from './../modules/angular-slickgrid';
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);

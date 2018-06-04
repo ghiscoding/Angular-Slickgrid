@@ -14,6 +14,7 @@ export declare class FilterService {
     private _onFilterChangedOptions;
     private _isFirstQuery;
     onFilterChanged: Subject<CurrentFilter[]>;
+    onFilterCleared: Subject<boolean>;
     constructor(collectionService: CollectionService, translate: TranslateService);
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly _gridOptions;
@@ -59,9 +60,8 @@ export declare class FilterService {
      * The process is to loop through the preset filters array, find the associated column from columnDefinitions and fill in the filter object searchTerm(s)
      * This is basically the same as if we would manually add searchTerm(s) to a column filter object in the column definition, but we do it programmatically.
      * At the end of the day, when creating the Filter (DOM Element), it will use these searchTerm(s) so we can take advantage of that without recoding each Filter type (DOM element)
-     * @param grid
      */
-    populateColumnFilterSearchTerms(grid: any): Column[];
+    populateColumnFilterSearchTerms(): Column[];
     private updateColumnFilters(searchTerms, columnDef);
     private triggerEvent(slickEvent, args, e);
 }

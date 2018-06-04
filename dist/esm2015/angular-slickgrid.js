@@ -212,6 +212,7 @@ FilterType[FilterType.compoundInput] = "compoundInput";
  */
 /** @enum {string} */
 const GridStateType = {
+    columns: 'columns',
     filter: 'filter',
     pagination: 'pagination',
     sorter: 'sorter',
@@ -1097,6 +1098,9 @@ const numberFilterCondition = (options) => {
     if (typeof searchTerm === 'string') {
         searchTerm = parseFloat(searchTerm);
     }
+    if (!searchTerm && (!options.operator || options.operator === '')) {
+        return true;
+    }
     return testFilterCondition(options.operator || '==', cellValue, searchTerm);
 };
 
@@ -1222,10 +1226,9 @@ class CompoundDateFilter {
     }
     /**
      * Clear the filter value
-     * @param {?=} triggerFilterKeyup
      * @return {?}
      */
-    clear(triggerFilterKeyup = true) {
+    clear() {
         if (this.flatInstance && this.$selectOperatorElm) {
             this.$selectOperatorElm.val(0);
             this.flatInstance.clear();
@@ -1275,10 +1278,10 @@ class CompoundDateFilter {
                 // when using the time picker, we can simulate a keyup event to avoid multiple backend request
                 // since backend request are only executed after user start typing, changing the time should be treated the same way
                 if (pickerOptions.enableTime) {
-                    this.onTriggerEvent(new CustomEvent('keyup'));
+                    this.onTriggerEvent(new CustomEvent('keyup'), dateStr === '');
                 }
                 else {
-                    this.onTriggerEvent(undefined);
+                    this.onTriggerEvent(undefined, dateStr === '');
                 }
             },
         };
@@ -1389,12 +1392,18 @@ class CompoundDateFilter {
     }
     /**
      * @param {?} e
+     * @param {?=} clearFilterTriggered
      * @return {?}
      */
-    onTriggerEvent(e) {
-        const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
-        (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-        this.callback(e, { columnDef: this.columnDef, searchTerms: [this._currentValue], operator: selectedOperator || '=' });
+    onTriggerEvent(e, clearFilterTriggered) {
+        if (clearFilterTriggered) {
+            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+        }
+        else {
+            const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
+            (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
+            this.callback(e, { columnDef: this.columnDef, searchTerms: [this._currentValue], operator: selectedOperator || '' });
+        }
     }
     /**
      * @return {?}
@@ -1466,16 +1475,13 @@ class CompoundInputFilter {
     }
     /**
      * Clear the filter value
-     * @param {?=} triggerFilterKeyup
      * @return {?}
      */
-    clear(triggerFilterKeyup = true) {
+    clear() {
         if (this.$filterElm && this.$selectOperatorElm) {
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val('');
-            if (triggerFilterKeyup) {
-                this.$filterElm.trigger('keyup');
-            }
+            this.onTriggerEvent(null, true);
         }
     }
     /**
@@ -1590,13 +1596,19 @@ class CompoundInputFilter {
     }
     /**
      * @param {?} e
+     * @param {?=} clearFilterTriggered
      * @return {?}
      */
-    onTriggerEvent(e) {
-        const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
-        const /** @type {?} */ value = this.$filterInputElm.val();
-        (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-        this.callback(e, { columnDef: this.columnDef, searchTerms: [value], operator: selectedOperator || '' });
+    onTriggerEvent(e, clearFilterTriggered) {
+        if (clearFilterTriggered) {
+            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+        }
+        else {
+            const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
+            const /** @type {?} */ value = this.$filterInputElm.val();
+            (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
+            this.callback(e, { columnDef: this.columnDef, searchTerms: [value], operator: selectedOperator || '' });
+        }
     }
 }
 CompoundInputFilter.decorators = [
@@ -1639,21 +1651,25 @@ class InputFilter {
         // step 3, subscribe to the keyup event and run the callback when that happens
         // also add/remove "filled" class for styling purposes
         this.$filterElm.keyup((e) => {
-            (e && e.target && e.target.value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-            this.callback(e, { columnDef: this.columnDef });
+            const /** @type {?} */ value = e && e.target && e.target.value || '';
+            if (!value || value === '') {
+                this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+                this.$filterElm.removeClass('filled');
+            }
+            else {
+                this.$filterElm.addClass('filled');
+                this.callback(e, { columnDef: this.columnDef, searchTerms: [value] });
+            }
         });
     }
     /**
      * Clear the filter value
-     * @param {?=} triggerFilterKeyup
      * @return {?}
      */
-    clear(triggerFilterKeyup = true) {
+    clear() {
         if (this.$filterElm) {
             this.$filterElm.val('');
-            if (triggerFilterKeyup) {
-                this.$filterElm.trigger('keyup');
-            }
+            this.$filterElm.trigger('keyup');
         }
     }
     /**
@@ -1796,18 +1812,15 @@ class MultipleSelectFilter {
     }
     /**
      * Clear the filter values
-     * @param {?=} triggerFilterChange
      * @return {?}
      */
-    clear(triggerFilterChange = true) {
+    clear() {
         if (this.$filterElm && this.$filterElm.multipleSelect) {
             // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
             // this.$filterElm = $(`#${this.$filterElm[0].id}`);
             this.$filterElm.multipleSelect('setSelects', []);
-            if (triggerFilterChange) {
-                this.$filterElm.removeClass('filled');
-                this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: [] });
-            }
+            this.$filterElm.removeClass('filled');
+            this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
         }
     }
     /**
@@ -1937,21 +1950,25 @@ class SelectFilter {
         // step 3, subscribe to the change event and run the callback when that happens
         // also add/remove "filled" class for styling purposes
         this.$filterElm.change((e) => {
-            (e && e.target && e.target.value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-            this.callback(e, { columnDef: this.columnDef, operator: 'EQ' });
+            const /** @type {?} */ value = e && e.target && e.target.value || '';
+            if (!value || value === '') {
+                this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+                this.$filterElm.removeClass('filled');
+            }
+            else {
+                this.$filterElm.addClass('filled');
+                this.callback(e, { columnDef: this.columnDef, searchTerms: [value], operator: 'EQ' });
+            }
         });
     }
     /**
      * Clear the filter values
-     * @param {?=} triggerFilterChange
      * @return {?}
      */
-    clear(triggerFilterChange = true) {
+    clear() {
         if (this.$filterElm) {
             this.$filterElm.val('');
-            if (triggerFilterChange) {
-                this.$filterElm.trigger('change');
-            }
+            this.$filterElm.trigger('change');
         }
     }
     /**
@@ -2101,17 +2118,14 @@ class SingleSelectFilter {
     }
     /**
      * Clear the filter values
-     * @param {?=} triggerFilterChange
      * @return {?}
      */
-    clear(triggerFilterChange = true) {
+    clear() {
         if (this.$filterElm && this.$filterElm.multipleSelect) {
             // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
             // this.$filterElm = $(`#${this.$filterElm[0].id}`);
             this.$filterElm.multipleSelect('setSelects', []);
-            if (triggerFilterChange) {
-                this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: [] });
-            }
+            this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
         }
     }
     /**
@@ -2228,6 +2242,7 @@ class FilterService {
         this._columnFilters = {};
         this._isFirstQuery = true;
         this.onFilterChanged = new Subject();
+        this.onFilterCleared = new Subject();
     }
     /**
      * Getter for the Grid Options pulled through the Grid Object
@@ -2286,7 +2301,12 @@ class FilterService {
             // call the service to get a query back
             const /** @type {?} */ query = yield backendApi.service.processOnFilterChanged(event, args);
             // emit an onFilterChanged event
-            this.emitFilterChanged('remote');
+            if (args && !args.clearFilterTriggered) {
+                this.emitFilterChanged('remote');
+            }
+            else {
+                console.log('clear triggered', args);
+            }
             // the process could be an Observable (like HttpClient) or a Promise
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
             const /** @type {?} */ observableOrPromise = backendApi.process(query);
@@ -2318,7 +2338,9 @@ class FilterService {
             if (columnId != null) {
                 dataView.refresh();
             }
-            this.emitFilterChanged('local');
+            if (args && !args.clearFilterTriggered) {
+                this.emitFilterChanged('local');
+            }
         });
         // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
         this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e, args) => {
@@ -2330,10 +2352,10 @@ class FilterService {
      * @return {?}
      */
     clearFilters() {
-        this._filters.forEach((filter, index) => {
+        this._filters.forEach((filter) => {
             if (filter && filter.clear) {
                 // clear element and trigger a change
-                filter.clear(true);
+                filter.clear();
             }
         });
         // we need to loop through all columnFilters and delete them 1 by 1
@@ -2343,12 +2365,15 @@ class FilterService {
                 delete this._columnFilters[columnId];
             }
         }
+        this._columnFilters = {};
         // we also need to refresh the dataView and optionally the grid (it's optional since we use DataView)
         if (this._dataView) {
             this._dataView.refresh();
             this._grid.invalidate();
             this._grid.render();
         }
+        // emit an event when filters are all cleared
+        this.onFilterCleared.next(true);
     }
     /**
      * @param {?} dataView
@@ -2492,7 +2517,9 @@ class FilterService {
                 if (columnFilter.operator) {
                     filter.operator = columnFilter.operator;
                 }
-                currentFilters.push(filter);
+                if (Array.isArray(filter.searchTerms) && filter.searchTerms.length > 0 && filter.searchTerms[0] !== '') {
+                    currentFilters.push(filter);
+                }
             }
         }
         return currentFilters;
@@ -2527,6 +2554,7 @@ class FilterService {
                 this._columnFilters[colId] = colFilter;
             }
             this.triggerEvent(this._slickSubscriber, {
+                clearFilterTriggered: args && args.clearFilterTriggered,
                 columnId,
                 columnDef: args.columnDef || null,
                 columnFilters: this._columnFilters,
@@ -2640,19 +2668,23 @@ class FilterService {
      * The process is to loop through the preset filters array, find the associated column from columnDefinitions and fill in the filter object searchTerm(s)
      * This is basically the same as if we would manually add searchTerm(s) to a column filter object in the column definition, but we do it programmatically.
      * At the end of the day, when creating the Filter (DOM Element), it will use these searchTerm(s) so we can take advantage of that without recoding each Filter type (DOM element)
-     * @param {?} grid
      * @return {?}
      */
-    populateColumnFilterSearchTerms(grid) {
-        if (this._gridOptions.presets && this._gridOptions.presets.filters) {
+    populateColumnFilterSearchTerms() {
+        if (this._gridOptions.presets && Array.isArray(this._gridOptions.presets.filters) && this._gridOptions.presets.filters.length > 0) {
             const /** @type {?} */ filters = this._gridOptions.presets.filters;
             this._columnDefinitions.forEach((columnDef) => {
+                // clear any columnDef searchTerms before applying Presets
+                if (columnDef.filter && columnDef.filter.searchTerms) {
+                    delete columnDef.filter.searchTerms;
+                }
+                // from each presets, we will find the associated columnDef and apply the preset searchTerms & operator if there is
                 const /** @type {?} */ columnPreset = filters.find((presetFilter) => {
                     return presetFilter.columnId === columnDef.id;
                 });
-                if (columnPreset && columnPreset.searchTerms) {
+                if (columnPreset && columnPreset.searchTerms && Array.isArray(columnPreset.searchTerms)) {
                     columnDef.filter = columnDef.filter || {};
-                    columnDef.filter.operator = columnPreset.operator || columnDef.filter.operator || OperatorType.in;
+                    columnDef.filter.operator = columnPreset.operator || columnDef.filter.operator || '';
                     columnDef.filter.searchTerms = columnPreset.searchTerms;
                 }
             });
@@ -3035,6 +3067,7 @@ class SortService {
         this._eventHandler = new Slick.EventHandler();
         this._isBackendGrid = false;
         this.onSortChanged = new Subject();
+        this.onSortCleared = new Subject();
     }
     /**
      * Getter for the Grid Options pulled through the Grid Object
@@ -3156,6 +3189,11 @@ class SortService {
                 }
             }
         }
+        // set current sorter to empty & emit a sort changed event
+        this._currentLocalSorters = [];
+        const /** @type {?} */ sender = (this._gridOptions && this._gridOptions.backendServiceApi) ? 'remote' : 'local';
+        // emit an event when filters are all cleared
+        this.onSortCleared.next(true);
     }
     /**
      * @return {?}
@@ -3193,26 +3231,24 @@ class SortService {
         this._currentLocalSorters = []; // reset current local sorters
         if (this._gridOptions && this._gridOptions.presets && this._gridOptions.presets.sorters) {
             const /** @type {?} */ sorters = this._gridOptions.presets.sorters;
-            this._columnDefinitions.forEach((columnDef) => {
-                const /** @type {?} */ columnPreset = sorters.find((currentSorter) => {
-                    return currentSorter.columnId === columnDef.id;
-                });
-                if (columnPreset) {
+            sorters.forEach((presetSorting) => {
+                const /** @type {?} */ gridColumn = this._columnDefinitions.find((col) => col.id === presetSorting.columnId);
+                if (gridColumn) {
                     sortCols.push({
-                        columnId: columnDef.id,
-                        sortAsc: ((columnPreset.direction.toUpperCase() === SortDirection.ASC) ? true : false),
-                        sortCol: columnDef
+                        columnId: gridColumn.id,
+                        sortAsc: ((presetSorting.direction.toUpperCase() === SortDirection.ASC) ? true : false),
+                        sortCol: gridColumn
                     });
                     // keep current sorters
                     this._currentLocalSorters.push({
-                        columnId: columnDef.id + '',
-                        direction: /** @type {?} */ (columnPreset.direction.toUpperCase())
+                        columnId: gridColumn.id + '',
+                        direction: /** @type {?} */ (presetSorting.direction.toUpperCase())
                     });
                 }
             });
             if (sortCols.length > 0) {
                 this.onLocalSortChanged(grid, dataView, sortCols);
-                grid.setSortColumns(sortCols); // add sort icon in UI
+                grid.setSortColumns(sortCols); // use this to add sort icon(s) in UI
             }
         }
     }
@@ -3292,7 +3328,7 @@ class ControlAndPluginService {
         this.sortService = sortService;
         this.translate = translate;
         this.areVisibleColumnDifferent = false;
-        this.pluginList = [];
+        this.extensionList = [];
     }
     /**
      * Getter for the Grid Options pulled through the Grid Object
@@ -3309,14 +3345,17 @@ class ControlAndPluginService {
         return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
     }
     /**
-     * @param {?=} name
      * @return {?}
      */
-    getPlugin(name) {
-        if (name) {
-            return this.pluginList.find((p) => p.name === name);
-        }
-        return this.pluginList;
+    getAllExtensions() {
+        return this.extensionList;
+    }
+    /**
+     * @param {?} name
+     * @return {?}
+     */
+    getExtensionByName(name) {
+        return this.extensionList.find((p) => p.name === name);
     }
     /**
      * Auto-resize all the column in the grid to fit the grid width
@@ -3339,32 +3378,32 @@ class ControlAndPluginService {
         // Column Picker Control
         if (this._gridOptions.enableColumnPicker) {
             this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions);
-            this.pluginList.push({ name: 'ColumnPicker', plugin: this.columnPickerControl });
+            this.extensionList.push({ name: 'ColumnPicker', service: this.columnPickerControl });
         }
         // Grid Menu Control
         if (this._gridOptions.enableGridMenu) {
             this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions);
-            this.pluginList.push({ name: 'GridMenu', plugin: this.gridMenuControl });
+            this.extensionList.push({ name: 'GridMenu', service: this.gridMenuControl });
         }
         // Auto Tooltip Plugin
         if (this._gridOptions.enableAutoTooltip) {
             this.autoTooltipPlugin = new Slick.AutoTooltips(this._gridOptions.autoTooltipOptions || {});
             this._grid.registerPlugin(this.autoTooltipPlugin);
-            this.pluginList.push({ name: 'AutoTooltip', plugin: this.autoTooltipPlugin });
+            this.extensionList.push({ name: 'AutoTooltip', service: this.autoTooltipPlugin });
         }
         // Grouping Plugin
         // register the group item metadata provider to add expand/collapse group handlers
         if (this._gridOptions.enableGrouping) {
             this.groupItemMetaProviderPlugin = groupItemMetadataProvider || {};
             this._grid.registerPlugin(this.groupItemMetaProviderPlugin);
-            this.pluginList.push({ name: 'GroupItemMetaProvider', plugin: this.groupItemMetaProviderPlugin });
+            this.extensionList.push({ name: 'GroupItemMetaProvider', service: this.groupItemMetaProviderPlugin });
         }
         // Checkbox Selector Plugin
         if (this._gridOptions.enableCheckboxSelector) {
             // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
             // the selector column has to be created BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
             this._grid.registerPlugin(this.checkboxSelectorPlugin);
-            this.pluginList.push({ name: 'CheckboxSelector', plugin: this.checkboxSelectorPlugin });
+            this.extensionList.push({ name: 'CheckboxSelector', service: this.checkboxSelectorPlugin });
             // this also requires the Row Selection Model to be registered as well
             if (!this.rowSelectionPlugin || !this._grid.getSelectionModel()) {
                 this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
@@ -3385,7 +3424,7 @@ class ControlAndPluginService {
         if (this._gridOptions.enableHeaderButton) {
             this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(this._gridOptions.headerButton || {});
             this._grid.registerPlugin(this.headerButtonsPlugin);
-            this.pluginList.push({ name: 'HeaderButtons', plugin: this.headerButtonsPlugin });
+            this.extensionList.push({ name: 'HeaderButtons', service: this.headerButtonsPlugin });
             this.headerButtonsPlugin.onCommand.subscribe((e, args) => {
                 if (this._gridOptions.headerButton && typeof this._gridOptions.headerButton.onCommand === 'function') {
                     this._gridOptions.headerButton.onCommand(e, args);
@@ -3407,12 +3446,12 @@ class ControlAndPluginService {
             if (Array.isArray(this._gridOptions.registerPlugins)) {
                 this._gridOptions.registerPlugins.forEach((plugin) => {
                     this._grid.registerPlugin(plugin);
-                    this.pluginList.push({ name: 'generic', plugin });
+                    this.extensionList.push({ name: 'generic', service: plugin });
                 });
             }
             else {
                 this._grid.registerPlugin(this._gridOptions.registerPlugins);
-                this.pluginList.push({ name: 'generic', plugin: this._gridOptions.registerPlugins });
+                this.extensionList.push({ name: 'generic', service: this._gridOptions.registerPlugins });
             }
         }
     }
@@ -3475,7 +3514,7 @@ class ControlAndPluginService {
         grid.setSelectionModel(new Slick.CellSelectionModel());
         this.cellExternalCopyManagerPlugin = new Slick.CellExternalCopyManager(pluginOptions);
         grid.registerPlugin(this.cellExternalCopyManagerPlugin);
-        this.pluginList.push({ name: 'CellExternalCopyManager', plugin: this.cellExternalCopyManagerPlugin });
+        this.extensionList.push({ name: 'CellExternalCopyManager', service: this.cellExternalCopyManagerPlugin });
     }
     /**
      * Create the Column Picker and expose all the available hooks that user can subscribe (onColumnsChanged)
@@ -3643,12 +3682,12 @@ class ControlAndPluginService {
         this._dataView = null;
         this.visibleColumns = [];
         // destroy the control/plugin if it has that method
-        this.pluginList.forEach((item) => {
-            if (item && item.plugin && item.plugin.destroy) {
-                item.plugin.destroy();
+        this.extensionList.forEach((item) => {
+            if (item && item.service && item.service.destroy) {
+                item.service.destroy();
             }
         });
-        this.pluginList = [];
+        this.extensionList = [];
     }
     /**
      * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
@@ -5392,8 +5431,7 @@ class GridEventService {
                     dataContext: grid.getDataItem(args.row)
                 };
                 // finally call up the Slick.column.onCellChanges.... function
-                column.onCellChange(returnedArgs);
-                // e.stopImmediatePropagation();
+                column.onCellChange(e, returnedArgs);
             }
         });
     }
@@ -5421,13 +5459,7 @@ class GridEventService {
                     dataContext: grid.getDataItem(args.row)
                 };
                 // finally call up the Slick.column.onCellClick.... function
-                column.onCellClick(returnedArgs);
-                e.stopImmediatePropagation();
-            }
-            // stop the click event bubbling
-            // NOTE: We don't want to stop bubbling when doing an input edit, if we do the autoEdit which has intent of doing singleClick edit will become doubleClick edit
-            if (grid.getOptions && !grid.getOptions().autoEdit) {
-                // e.stopImmediatePropagation();
+                column.onCellClick(e, returnedArgs);
             }
         });
     }
@@ -5443,7 +5475,272 @@ class GridEventService {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+class GridStateService {
+    constructor() {
+        this._eventHandler = new Slick.EventHandler();
+        this._columns = [];
+        this._currentColumns = [];
+        this.subscriptions = [];
+        this.onGridStateChanged = new Subject();
+    }
+    /**
+     * Getter for the Grid Options pulled through the Grid Object
+     * @return {?}
+     */
+    get _gridOptions() {
+        return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+    }
+    /**
+     * Initialize the Export Service
+     * @param {?} grid
+     * @param {?} controlAndPluginService
+     * @param {?} filterService
+     * @param {?} sortService
+     * @return {?}
+     */
+    init(grid, controlAndPluginService, filterService, sortService) {
+        this._grid = grid;
+        this.controlAndPluginService = controlAndPluginService;
+        this.filterService = filterService;
+        this.sortService = sortService;
+        this.subscribeToAllGridChanges(grid);
+    }
+    /**
+     * Dispose of all the SlickGrid & Aurelia subscriptions
+     * @return {?}
+     */
+    dispose() {
+        // unsubscribe all SlickGrid events
+        this._eventHandler.unsubscribeAll();
+        // also unsubscribe all Aurelia Subscriptions
+        this.subscriptions.forEach((subscription) => {
+            if (subscription && subscription.unsubscribe) {
+                subscription.unsubscribe();
+            }
+        });
+        this.subscriptions = [];
+    }
+    /**
+     * Get the current grid state (filters/sorters/pagination)
+     * @return {?} grid state
+     */
+    getCurrentGridState() {
+        const /** @type {?} */ gridState = {
+            columns: this.getCurrentColumns(),
+            filters: this.getCurrentFilters(),
+            sorters: this.getCurrentSorters()
+        };
+        const /** @type {?} */ currentPagination = this.getCurrentPagination();
+        if (currentPagination) {
+            gridState.pagination = currentPagination;
+        }
+        return gridState;
+    }
+    /**
+     * Get the Columns (and their state: visibility/position) that are currently applied in the grid
+     * @return {?} current columns
+     */
+    getColumns() {
+        return this._columns || this._grid.getColumns();
+    }
+    /**
+     * From an array of Grid Column Definitions, get the associated Current Columns
+     * @param {?} gridColumns
+     * @return {?}
+     */
+    getAssociatedCurrentColumns(gridColumns) {
+        const /** @type {?} */ currentColumns = [];
+        if (gridColumns && Array.isArray(gridColumns)) {
+            gridColumns.forEach((column, index) => {
+                if (column && column.id) {
+                    currentColumns.push({
+                        columnId: /** @type {?} */ (column.id),
+                        cssClass: column.cssClass || '',
+                        headerCssClass: column.headerCssClass || '',
+                        width: column.width || 0
+                    });
+                }
+            });
+        }
+        this._currentColumns = currentColumns;
+        return currentColumns;
+    }
+    /**
+     * From an array of Current Columns, get the associated Grid Column Definitions
+     * @param {?} grid
+     * @param {?} currentColumns
+     * @return {?}
+     */
+    getAssociatedGridColumns(grid, currentColumns) {
+        const /** @type {?} */ columns = [];
+        const /** @type {?} */ gridColumns = grid.getColumns();
+        if (currentColumns && Array.isArray(currentColumns)) {
+            currentColumns.forEach((currentColumn, index) => {
+                const /** @type {?} */ gridColumn = gridColumns.find((c) => c.id === currentColumn.columnId);
+                if (gridColumn && gridColumn.id) {
+                    columns.push(Object.assign({}, gridColumn, { cssClass: currentColumn.cssClass, headerCssClass: currentColumn.headerCssClass, width: currentColumn.width }));
+                }
+            });
+        }
+        this._columns = columns;
+        return columns;
+    }
+    /**
+     * Get the Columns (and their state: visibility/position) that are currently applied in the grid
+     * @return {?} current columns
+     */
+    getCurrentColumns() {
+        let /** @type {?} */ currentColumns = [];
+        if (this._currentColumns && Array.isArray(this._currentColumns) && this._currentColumns.length > 0) {
+            currentColumns = this._currentColumns;
+        }
+        else {
+            currentColumns = this.getAssociatedCurrentColumns(this._grid.getColumns());
+        }
+        return currentColumns;
+    }
+    /**
+     * Get the Filters (and their state, columnId, searchTerm(s)) that are currently applied in the grid
+     * @return {?} current filters
+     */
+    getCurrentFilters() {
+        if (this._gridOptions && this._gridOptions.backendServiceApi) {
+            const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
+            if (backendService && backendService.getCurrentFilters) {
+                return /** @type {?} */ (backendService.getCurrentFilters());
+            }
+        }
+        else if (this.filterService && this.filterService.getCurrentLocalFilters) {
+            return this.filterService.getCurrentLocalFilters();
+        }
+        return null;
+    }
+    /**
+     * Get current Pagination (and it's state, pageNumber, pageSize) that are currently applied in the grid
+     * @return {?} current pagination state
+     */
+    getCurrentPagination() {
+        if (this._gridOptions && this._gridOptions.backendServiceApi) {
+            const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
+            if (backendService && backendService.getCurrentPagination) {
+                return backendService.getCurrentPagination();
+            }
+        }
+        else {
+            // TODO implement this whenever local pagination gets implemented
+        }
+        return null;
+    }
+    /**
+     * Get the current Sorters (and their state, columnId, direction) that are currently applied in the grid
+     * @return {?} current sorters
+     */
+    getCurrentSorters() {
+        if (this._gridOptions && this._gridOptions.backendServiceApi) {
+            const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
+            if (backendService && backendService.getCurrentSorters) {
+                return /** @type {?} */ (backendService.getCurrentSorters());
+            }
+        }
+        else if (this.sortService && this.sortService.getCurrentLocalSorters) {
+            return this.sortService.getCurrentLocalSorters();
+        }
+        return null;
+    }
+    /**
+     * Hook a SlickGrid Extension Event to a Grid State change event
+     * @param {?} extensionName
+     * @param {?} eventName
+     * @return {?}
+     */
+    hookExtensionEventToGridStateChange(extensionName, eventName) {
+        const /** @type {?} */ extension = this.controlAndPluginService && this.controlAndPluginService.getExtensionByName(extensionName);
+        if (extension && extension.service && extension.service[eventName] && extension.service[eventName].subscribe) {
+            this._eventHandler.subscribe(extension.service[eventName], (e, args) => {
+                const /** @type {?} */ columns = args && args.columns;
+                const /** @type {?} */ currentColumns = this.getAssociatedCurrentColumns(columns);
+                this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
+            });
+        }
+    }
+    /**
+     * Hook a Grid Event to a Grid State change event
+     * @param {?} eventName
+     * @param {?} grid
+     * @return {?}
+     */
+    hookSlickGridEventToGridStateChange(eventName, grid) {
+        if (grid && grid[eventName] && grid[eventName].subscribe) {
+            this._eventHandler.subscribe(grid[eventName], (e, args) => {
+                const /** @type {?} */ columns = grid.getColumns();
+                const /** @type {?} */ currentColumns = this.getAssociatedCurrentColumns(columns);
+                this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
+            });
+        }
+    }
+    /**
+     * @param {?=} columnDefinitions
+     * @return {?}
+     */
+    resetColumns(columnDefinitions) {
+        const /** @type {?} */ columns = columnDefinitions || this._columns;
+        const /** @type {?} */ currentColumns = this.getAssociatedCurrentColumns(columns);
+        this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
+    }
+    /**
+     * Subscribe to all necessary SlickGrid or Service Events that deals with a Grid change,
+     * when triggered, we will publish a Grid State Event with current Grid State
+     * @param {?} grid
+     * @return {?}
+     */
+    subscribeToAllGridChanges(grid) {
+        // Subscribe to Event Emitter of Filter changed
+        this.subscriptions.push(this.filterService.onFilterChanged.subscribe((currentFilters) => {
+            this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: this.getCurrentGridState() });
+        }));
+        // Subscribe to Event Emitter of Filter cleared
+        this.subscriptions.push(this.filterService.onFilterCleared.subscribe(() => {
+            this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.filter }, gridState: this.getCurrentGridState() });
+        }));
+        // Subscribe to Event Emitter of Sort changed
+        this.subscriptions.push(this.sortService.onSortChanged.subscribe((currentSorters) => {
+            this.onGridStateChanged.next({ change: { newValues: currentSorters, type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
+        }));
+        // Subscribe to Event Emitter of Sort cleared
+        this.subscriptions.push(this.sortService.onSortCleared.subscribe(() => {
+            this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
+        }));
+        // Subscribe to ColumnPicker and/or GridMenu for show/hide Columns visibility changes
+        this.hookExtensionEventToGridStateChange('ColumnPicker', 'onColumnsChanged');
+        this.hookExtensionEventToGridStateChange('GridMenu', 'onColumnsChanged');
+        // subscribe to Column Resize & Reordering
+        this.hookSlickGridEventToGridStateChange('onColumnsReordered', grid);
+        this.hookSlickGridEventToGridStateChange('onColumnsResized', grid);
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 class GridService {
+    /**
+     * @param {?} filterService
+     * @param {?} gridStateService
+     * @param {?} sortService
+     */
+    constructor(filterService, gridStateService, sortService) {
+        this.filterService = filterService;
+        this.gridStateService = gridStateService;
+        this.sortService = sortService;
+    }
+    /**
+     * Getter for the Column Definitions pulled through the Grid Object
+     * @return {?}
+     */
+    get _columnDefinitions() {
+        return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
+    }
     /**
      * Getter for the Grid Options pulled through the Grid Object
      * @return {?}
@@ -5553,12 +5850,14 @@ class GridService {
         }
     }
     /**
+     * Get the currently selected rows
      * @return {?}
      */
     getSelectedRows() {
         return this._grid.getSelectedRows();
     }
     /**
+     * Select the selected row by a row index
      * @param {?} rowIndex
      * @return {?}
      */
@@ -5566,6 +5865,7 @@ class GridService {
         this._grid.setSelectedRows([rowIndex]);
     }
     /**
+     * Set selected rows with provided array of row indexes
      * @param {?} rowIndexes
      * @return {?}
      */
@@ -5573,12 +5873,38 @@ class GridService {
         this._grid.setSelectedRows(rowIndexes);
     }
     /**
+     * Re-Render the Grid
      * @return {?}
      */
     renderGrid() {
         if (this._grid && typeof this._grid.invalidate === 'function') {
             this._grid.invalidate();
             this._grid.render();
+        }
+    }
+    /**
+     * Reset the grid to it's original state (clear any filters, sorting & pagination if exists) .
+     * The column definitions could be passed as argument to reset (this can be used after a Grid State reset)
+     * The reset will clear the Filters & Sort, then will reset the Columns to their original state
+     * @param {?=} columnDefinitions
+     * @return {?}
+     */
+    resetGrid(columnDefinitions) {
+        if (this.filterService && this.filterService.clearFilters) {
+            this.filterService.clearFilters();
+        }
+        if (this.sortService && this.sortService.clearSorting) {
+            this.sortService.clearSorting();
+        }
+        // reset columns to original states & refresh the grid
+        if (this._grid && this._dataView) {
+            const /** @type {?} */ originalColumns = columnDefinitions || this._columnDefinitions;
+            if (Array.isArray(originalColumns) && originalColumns.length > 0) {
+                this._grid.setColumns(originalColumns);
+                this._dataView.refresh();
+                this._grid.autosizeColumns();
+                this.gridStateService.resetColumns(columnDefinitions);
+            }
         }
     }
     /**
@@ -5606,27 +5932,26 @@ class GridService {
      * @return {?}
      */
     deleteDataGridItem(item) {
-        const /** @type {?} */ row = this._dataView.getRowById(item.id);
-        const /** @type {?} */ itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
-        if (row === undefined || itemId === -1) {
-            throw new Error(`Could not find the item in the grid or it's associated "id"`);
+        if (!item || !item.hasOwnProperty('id')) {
+            throw new Error(`deleteDataGridItem() requires an item object which includes the "id" property`);
         }
-        // delete the item from the dataView
-        this._dataView.deleteItem(itemId);
-        this._dataView.refresh();
+        const /** @type {?} */ itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
+        this.deleteDataGridItemById(itemId);
     }
     /**
-     * Delete an existing item from the datagrid (dataView)
-     * @param {?} id
+     * Delete an existing item from the datagrid (dataView) by it's id
+     * @param {?} itemId
      * @return {?}
      */
-    deleteDataGridItemById(id) {
-        const /** @type {?} */ row = this._dataView.getRowById(id);
-        if (row === undefined) {
+    deleteDataGridItemById(itemId) {
+        if (itemId === undefined) {
+            throw new Error(`Cannot delete a row without a valid "id"`);
+        }
+        if (this._dataView.getRowById(itemId) === undefined) {
             throw new Error(`Could not find the item in the grid by it's associated "id"`);
         }
         // delete the item from the dataView
-        this._dataView.deleteItem(id);
+        this._dataView.deleteItem(itemId);
         this._dataView.refresh();
     }
     /**
@@ -5635,9 +5960,24 @@ class GridService {
      * @return {?}
      */
     updateDataGridItem(item) {
-        const /** @type {?} */ row = this._dataView.getRowById(item.id);
-        const /** @type {?} */ itemId = (!item || !item.hasOwnProperty('id')) ? -1 : item.id;
-        if (itemId === -1) {
+        const /** @type {?} */ itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
+        if (itemId === undefined) {
+            throw new Error(`Could not find the item in the grid or it's associated "id"`);
+        }
+        this.updateDataGridItemById(itemId, item);
+    }
+    /**
+     * Update an existing item in the datagrid by it's id and new properties
+     * @param {?} itemId
+     * @param {?} item
+     * @return {?}
+     */
+    updateDataGridItemById(itemId, item) {
+        if (itemId === undefined) {
+            throw new Error(`Cannot update a row without a valid "id"`);
+        }
+        const /** @type {?} */ row = this._dataView.getRowById(itemId);
+        if (!item || !row) {
             throw new Error(`Could not find the item in the grid or it's associated "id"`);
         }
         const /** @type {?} */ gridIdx = this._dataView.getIdxById(itemId);
@@ -5651,112 +5991,15 @@ class GridService {
         }
     }
 }
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-class GridStateService {
-    constructor() {
-        this.onGridStateChanged = new Subject();
-    }
-    /**
-     * Getter for the Grid Options pulled through the Grid Object
-     * @return {?}
-     */
-    get _gridOptions() {
-        return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
-    }
-    /**
-     * Initialize the Export Service
-     * @param {?} grid
-     * @param {?} filterService
-     * @param {?} sortService
-     * @return {?}
-     */
-    init(grid, filterService, sortService) {
-        this._grid = grid;
-        this.filterService = filterService;
-        this.sortService = sortService;
-        // Subscribe to Event Emitter of Filter & Sort changed, go back to page 1 when that happen
-        this._filterSubcription = this.filterService.onFilterChanged.subscribe((currentFilters) => {
-            this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: this.getCurrentGridState() });
-        });
-        this._sorterSubcription = this.sortService.onSortChanged.subscribe((currentSorters) => {
-            this.onGridStateChanged.next({ change: { newValues: currentSorters, type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
-        });
-    }
-    /**
-     * @return {?}
-     */
-    dispose() {
-        this._filterSubcription.unsubscribe();
-        this._sorterSubcription.unsubscribe();
-    }
-    /**
-     * Get the current grid state (filters/sorters/pagination)
-     * @return {?} grid state
-     */
-    getCurrentGridState() {
-        const /** @type {?} */ gridState = {
-            filters: this.getCurrentFilters(),
-            sorters: this.getCurrentSorters()
-        };
-        const /** @type {?} */ currentPagination = this.getCurrentPagination();
-        if (currentPagination) {
-            gridState.pagination = currentPagination;
-        }
-        return gridState;
-    }
-    /**
-     * Get the Filters (and their state, columnId, searchTerm(s)) that are currently applied in the grid
-     * @return {?} current filters
-     */
-    getCurrentFilters() {
-        if (this._gridOptions && this._gridOptions.backendServiceApi) {
-            const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
-            if (backendService && backendService.getCurrentFilters) {
-                return /** @type {?} */ (backendService.getCurrentFilters());
-            }
-        }
-        else if (this.filterService && this.filterService.getCurrentLocalFilters) {
-            return this.filterService.getCurrentLocalFilters();
-        }
-        return null;
-    }
-    /**
-     * Get current Pagination (and it's state, pageNumber, pageSize) that are currently applied in the grid
-     * @return {?} current pagination state
-     */
-    getCurrentPagination() {
-        if (this._gridOptions && this._gridOptions.backendServiceApi) {
-            const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
-            if (backendService && backendService.getCurrentPagination) {
-                return backendService.getCurrentPagination();
-            }
-        }
-        else {
-            // TODO implement this whenever local pagination gets implemented
-        }
-        return null;
-    }
-    /**
-     * Get the current Sorters (and their state, columnId, direction) that are currently applied in the grid
-     * @return {?} current sorters
-     */
-    getCurrentSorters() {
-        if (this._gridOptions && this._gridOptions.backendServiceApi) {
-            const /** @type {?} */ backendService = this._gridOptions.backendServiceApi.service;
-            if (backendService && backendService.getCurrentSorters) {
-                return /** @type {?} */ (backendService.getCurrentSorters());
-            }
-        }
-        else if (this.sortService && this.sortService.getCurrentLocalSorters) {
-            return this.sortService.getCurrentLocalSorters();
-        }
-        return null;
-    }
-}
+GridService.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+GridService.ctorParameters = () => [
+    { type: FilterService, },
+    { type: GridStateService, },
+    { type: SortService, },
+];
 
 /**
  * @fileoverview added by tsickle
@@ -8213,6 +8456,10 @@ class SlickPaginationComponent {
         this._filterSubcription = this.filterService.onFilterChanged.subscribe((data) => {
             this.refreshPagination(true);
         });
+        // Subscribe to Filter clear and go back to page 1 when that happen
+        this._filterSubcription = this.filterService.onFilterCleared.subscribe((data) => {
+            this.refreshPagination(true);
+        });
     }
     /**
      * @param {?} number
@@ -8574,6 +8821,7 @@ class AngularSlickgridComponent {
         this.groupingDefinition = {};
         this.showPagination = false;
         this.isGridInitialized = false;
+        this.subscriptions = [];
         this.onAngularGridCreated = new EventEmitter();
         this.onDataviewCreated = new EventEmitter();
         this.onGridCreated = new EventEmitter();
@@ -8648,12 +8896,13 @@ class AngularSlickgridComponent {
         this.resizer.dispose();
         this.sortService.dispose();
         this.grid.destroy();
-        if (this._translateSubscriber) {
-            this._translateSubscriber.unsubscribe();
-        }
-        if (this._gridStateSubscriber) {
-            this._gridStateSubscriber.unsubscribe();
-        }
+        // also unsubscribe all RxJS subscriptions
+        this.subscriptions.forEach((subscription) => {
+            if (subscription && subscription.unsubscribe) {
+                subscription.unsubscribe();
+            }
+        });
+        this.subscriptions = [];
     }
     /**
      * @return {?}
@@ -8718,7 +8967,7 @@ class AngularSlickgridComponent {
         if (this.gridOptions && this.gridOptions.backendServiceApi) {
             this.attachBackendCallbackFunctions(this.gridOptions);
         }
-        this.gridStateService.init(this.grid, this.filterService, this.sortService);
+        this.gridStateService.init(this.grid, this.controlAndPluginService, this.filterService, this.sortService);
         this.onAngularGridCreated.emit({
             // Slick Grid & DataView objects
             dataView: this._dataView,
@@ -8785,14 +9034,21 @@ class AngularSlickgridComponent {
      */
     attachDifferentHooks(grid, gridOptions, dataView) {
         // on locale change, we have to manually translate the Headers, GridMenu
-        this._translateSubscriber = this.translate.onLangChange.subscribe((event) => {
+        this.subscriptions.push(this.translate.onLangChange.subscribe((event) => {
             if (gridOptions.enableTranslate) {
                 this.controlAndPluginService.translateColumnHeaders();
                 this.controlAndPluginService.translateColumnPicker();
                 this.controlAndPluginService.translateGridMenu();
                 this.controlAndPluginService.translateHeaderMenu();
             }
-        });
+        }));
+        // if user entered some Columns "presets", we need to reflect them all in the grid
+        if (gridOptions.presets && Array.isArray(gridOptions.presets.columns) && gridOptions.presets.columns.length > 0) {
+            const /** @type {?} */ gridColumns = this.gridStateService.getAssociatedGridColumns(grid, gridOptions.presets.columns);
+            if (gridColumns && Array.isArray(gridColumns)) {
+                grid.setColumns(gridColumns);
+            }
+        }
         // attach external sorting (backend) when available or default onSort (dataView)
         if (gridOptions.enableSorting) {
             gridOptions.backendServiceApi ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
@@ -8801,8 +9057,8 @@ class AngularSlickgridComponent {
         if (gridOptions.enableFiltering) {
             this.filterService.init(grid);
             // if user entered some "presets", we need to reflect them all in the DOM
-            if (gridOptions.presets && gridOptions.presets.filters) {
-                this.filterService.populateColumnFilterSearchTerms(grid);
+            if (gridOptions.presets && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
+                this.filterService.populateColumnFilterSearchTerms();
             }
             gridOptions.backendServiceApi ? this.filterService.attachBackendOnFilter(grid) : this.filterService.attachLocalOnFilter(grid, this._dataView);
         }
@@ -8842,9 +9098,9 @@ class AngularSlickgridComponent {
             }
         }
         // expose GridState Service changes event through dispatch
-        this._gridStateSubscriber = this.gridStateService.onGridStateChanged.subscribe((gridStateChange) => {
+        this.subscriptions.push(this.gridStateService.onGridStateChanged.subscribe((gridStateChange) => {
             this.onGridStateChanged.emit(gridStateChange);
-        });
+        }));
         // on cell click, mainly used with the columnDef.action callback
         this.gridEventService.attachOnCellChange(grid, dataView);
         this.gridEventService.attachOnClick(grid, dataView);
@@ -8875,13 +9131,17 @@ class AngularSlickgridComponent {
         // update backend filters (if need be) before the query runs
         if (backendApi) {
             const /** @type {?} */ backendService = backendApi.service;
+            // if user entered some any "presets", we need to reflect them all in the grid
             if (gridOptions && gridOptions.presets) {
-                if (backendService && backendService.updateFilters && gridOptions.presets.filters) {
+                // Filters "presets"
+                if (backendService && backendService.updateFilters && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
                     backendService.updateFilters(gridOptions.presets.filters, true);
                 }
-                if (backendService && backendService.updateSorters && gridOptions.presets.sorters) {
+                // Sorters "presets"
+                if (backendService && backendService.updateSorters && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
                     backendService.updateSorters(undefined, gridOptions.presets.sorters);
                 }
+                // Pagination "presets"
                 if (backendService && backendService.updatePagination && gridOptions.presets.pagination) {
                     backendService.updatePagination(gridOptions.presets.pagination.pageNumber, gridOptions.presets.pagination.pageSize);
                 }

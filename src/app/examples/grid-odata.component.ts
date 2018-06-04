@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Column, FieldType, FilterType, GridOdataService, GridOption } from './../modules/angular-slickgrid';
 
 const defaultPageSize = 20;
-const sampleDataRoot = '/assets/data';
+const sampleDataRoot = 'assets/data';
 
 @Component({
   templateUrl: './grid-odata.component.html'

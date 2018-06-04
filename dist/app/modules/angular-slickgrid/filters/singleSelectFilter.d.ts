@@ -24,7 +24,7 @@ export declare class SingleSelectFilter implements Filter {
     /**
      * Clear the filter values
      */
-    clear(triggerFilterChange?: boolean): void;
+    clear(): void;
     /**
      * destroy the filter
      */
