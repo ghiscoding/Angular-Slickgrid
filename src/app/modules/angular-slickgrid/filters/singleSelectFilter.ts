@@ -105,15 +105,12 @@ export class SingleSelectFilter implements Filter {
   /**
    * Clear the filter values
    */
-  clear(triggerFilterChange = true) {
+  clear() {
     if (this.$filterElm && this.$filterElm.multipleSelect) {
       // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
       // this.$filterElm = $(`#${this.$filterElm[0].id}`);
       this.$filterElm.multipleSelect('setSelects', []);
-
-      if (triggerFilterChange) {
-        this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: [] });
-      }
+      this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
     }
   }
 

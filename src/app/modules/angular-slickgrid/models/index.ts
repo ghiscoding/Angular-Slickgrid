@@ -16,6 +16,7 @@ export * from './columnFilter.interface';
 export * from './columnFilters.interface';
 export * from './columnPicker.interface';
 export * from './columnSort.interface';
+export * from './currentColumn.interface';
 export * from './currentFilter.interface';
 export * from './currentPagination.interface';
 export * from './currentSorter.interface';

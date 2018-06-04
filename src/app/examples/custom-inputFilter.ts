@@ -37,12 +37,10 @@ export class CustomInputFilter implements Filter {
   /**
    * Clear the filter value
    */
-  clear(triggerFilterKeyup = true) {
+  clear() {
     if (this.$filterElm) {
       this.$filterElm.val('');
-      if (triggerFilterKeyup) {
-        this.$filterElm.trigger('keyup');
-      }
+      this.$filterElm.trigger('keyup');
     }
   }
 

@@ -162,7 +162,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // also unsubscribe all RxJS subscriptions
     this.subscriptions.forEach((subscription: Subscription) => {
-      subscription.unsubscribe();
+      if (subscription && subscription.unsubscribe) {
+        subscription.unsubscribe();
+      }
     });
     this.subscriptions = [];
   }
@@ -316,8 +318,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     );
 
     // if user entered some Columns "presets", we need to reflect them all in the grid
-    if (gridOptions.presets && gridOptions.presets.columns) {
-      grid.setColumns(gridOptions.presets.columns);
+    if (gridOptions.presets && Array.isArray(gridOptions.presets.columns) && gridOptions.presets.columns.length > 0) {
+      const gridColumns: Column[] = this.gridStateService.getAssociatedGridColumns(grid, gridOptions.presets.columns);
+      if (gridColumns && Array.isArray(gridColumns)) {
+        grid.setColumns(gridColumns);
+      }
     }
 
     // attach external sorting (backend) when available or default onSort (dataView)
@@ -330,8 +335,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.filterService.init(grid);
 
       // if user entered some "presets", we need to reflect them all in the DOM
-      if (gridOptions.presets && gridOptions.presets.filters) {
-        this.filterService.populateColumnFilterSearchTerms(grid);
+      if (gridOptions.presets && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
+        this.filterService.populateColumnFilterSearchTerms();
       }
       gridOptions.backendServiceApi ? this.filterService.attachBackendOnFilter(grid) : this.filterService.attachLocalOnFilter(grid, this._dataView);
     }
@@ -413,13 +418,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // update backend filters (if need be) before the query runs
     if (backendApi) {
       const backendService = backendApi.service;
+
+      // if user entered some any "presets", we need to reflect them all in the grid
       if (gridOptions && gridOptions.presets) {
-        if (backendService && backendService.updateFilters && gridOptions.presets.filters) {
+         // Filters "presets"
+         if (backendService && backendService.updateFilters && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
           backendService.updateFilters(gridOptions.presets.filters, true);
         }
-        if (backendService && backendService.updateSorters && gridOptions.presets.sorters) {
+        // Sorters "presets"
+        if (backendService && backendService.updateSorters && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
           backendService.updateSorters(undefined, gridOptions.presets.sorters);
         }
+        // Pagination "presets"
         if (backendService && backendService.updatePagination && gridOptions.presets.pagination) {
           backendService.updatePagination(gridOptions.presets.pagination.pageNumber, gridOptions.presets.pagination.pageSize);
         }
