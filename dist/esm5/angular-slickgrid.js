@@ -2519,6 +2519,7 @@ var ControlAndPluginService = /** @class */ (function () {
                 }
             });
             gridMenuControl.onCommand.subscribe(function (e, args) {
+                _this.executeGridMenuInternalCustomCommands(e, args);
                 if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onCommand === 'function') {
                     _this._gridOptions.gridMenu.onCommand(e, args);
                 }
@@ -2546,11 +2547,12 @@ var ControlAndPluginService = /** @class */ (function () {
         var headerMenuPlugin = new Slick.Plugins.HeaderMenu(this._gridOptions.headerMenu);
         grid.registerPlugin(headerMenuPlugin);
         headerMenuPlugin.onCommand.subscribe(function (e, args) {
+            _this.executeHeaderMenuInternalCommands();
             if (_this._gridOptions.headerMenu && typeof _this._gridOptions.headerMenu.onCommand === 'function') {
                 _this._gridOptions.headerMenu.onCommand(e, args);
             }
         });
-        headerMenuPlugin.onCommand.subscribe(function (e, args) {
+        headerMenuPlugin.onBeforeMenuShow.subscribe(function (e, args) {
             if (_this._gridOptions.headerMenu && typeof _this._gridOptions.headerMenu.onBeforeMenuShow === 'function') {
                 _this._gridOptions.headerMenu.onBeforeMenuShow(e, args);
             }
@@ -2620,7 +2622,6 @@ var ControlAndPluginService = /** @class */ (function () {
         this.extensionList = [];
     };
     ControlAndPluginService.prototype.addGridMenuCustomCommands = function (grid) {
-        var _this = this;
         var backendApi = this._gridOptions.backendServiceApi || null;
         if (this._gridOptions.enableFiltering) {
             if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
@@ -2680,50 +2681,6 @@ var ControlAndPluginService = /** @class */ (function () {
                 positionOrder: 54
             });
         }
-        if (this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems.length > 0) {
-            this._gridOptions.gridMenu.onCommand = function (e, args) {
-                if (args && args.command) {
-                    switch (args.command) {
-                        case 'clear-filter':
-                            _this.filterService.clearFilters();
-                            _this._dataView.refresh();
-                            break;
-                        case 'clear-sorting':
-                            _this.sortService.clearSorting();
-                            _this._dataView.refresh();
-                            break;
-                        case 'export-csv':
-                            _this.exportService.exportToFile({
-                                delimiter: DelimiterType.comma,
-                                filename: 'export',
-                                format: FileType.csv,
-                                useUtf8WithBom: true
-                            });
-                            break;
-                        case 'export-text-delimited':
-                            _this.exportService.exportToFile({
-                                delimiter: DelimiterType.tab,
-                                filename: 'export',
-                                format: FileType.txt,
-                                useUtf8WithBom: true
-                            });
-                            break;
-                        case 'toggle-filter':
-                            grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
-                            break;
-                        case 'toggle-toppanel':
-                            grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
-                            break;
-                        case 'refresh-dataset':
-                            _this.refreshBackendDataset();
-                            break;
-                        default:
-                            alert('Command: ' + args.command);
-                            break;
-                    }
-                }
-            };
-        }
         if (this._gridOptions && this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.length > 0) {
             var customTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('commands') : 'Commands';
             this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || customTitle;
@@ -2749,63 +2706,115 @@ var ControlAndPluginService = /** @class */ (function () {
                         };
                     }
                     var columnHeaderMenuItems = columnDef.header.menu.items || [];
-                    if (options.enableSorting && columnDef.sortable && headerMenuOptions.showSortCommands) {
+                    if (options.enableSorting && columnDef.sortable && !headerMenuOptions.hideSortCommands) {
                         if (columnHeaderMenuItems.filter(function (item) { return item.command === 'sort-asc'; }).length === 0) {
                             columnHeaderMenuItems.push({
                                 iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
                                 title: options.enableTranslate ? _this.translate.instant('SORT_ASCENDING') : 'Sort Ascending',
-                                command: 'sort-asc'
+                                command: 'sort-asc',
+                                positionOrder: 50
                             });
                         }
                         if (columnHeaderMenuItems.filter(function (item) { return item.command === 'sort-desc'; }).length === 0) {
                             columnHeaderMenuItems.push({
                                 iconCssClass: headerMenuOptions.iconSortDescCommand || 'fa fa-sort-desc',
                                 title: options.enableTranslate ? _this.translate.instant('SORT_DESCENDING') : 'Sort Descending',
-                                command: 'sort-desc'
+                                command: 'sort-desc',
+                                positionOrder: 51
                             });
                         }
                     }
-                    if (headerMenuOptions.showColumnHideCommand && columnHeaderMenuItems.filter(function (item) { return item.command === 'hide'; }).length === 0) {
+                    if (!headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter(function (item) { return item.command === 'hide'; }).length === 0) {
                         columnHeaderMenuItems.push({
                             iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
                             title: options.enableTranslate ? _this.translate.instant('HIDE_COLUMN') : 'Hide Column',
-                            command: 'hide'
+                            command: 'hide',
+                            positionOrder: 52
                         });
                     }
+                    columnHeaderMenuItems.sort(function (itemA, itemB) {
+                        if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
+                            return itemA.positionOrder - itemB.positionOrder;
+                        }
+                        return 0;
+                    });
                 }
             });
-            if (headerMenuOptions) {
-                headerMenuOptions.onCommand = function (e, args) {
-                    if (args && args.command) {
-                        switch (args.command) {
-                            case 'hide':
-                                _this.hideColumn(args.column);
-                                _this.autoResizeColumns();
-                                break;
-                            case 'sort-asc':
-                            case 'sort-desc':
-                                var cols = _this.sortService.getPreviousColumnSorts(args.column.id + '');
-                                cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
-                                if (options.backendServiceApi) {
-                                    _this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: grid });
-                                }
-                                else {
-                                    _this.sortService.onLocalSortChanged(grid, dataView, cols);
-                                }
-                                var newSortColumns = cols.map(function (col) {
-                                    return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
-                                });
-                                grid.setSortColumns(newSortColumns);
-                                break;
-                            default:
-                                alert('Command: ' + args.command);
-                                break;
-                        }
-                    }
-                };
-            }
         }
         return headerMenuOptions;
+    };
+    ControlAndPluginService.prototype.executeHeaderMenuInternalCommands = function () {
+        var _this = this;
+        if (this.headerMenuPlugin && this._gridOptions.headerMenu) {
+            this.headerMenuPlugin.onCommand.subscribe = function (e, args) {
+                if (args && args.command) {
+                    switch (args.command) {
+                        case 'hide':
+                            _this.hideColumn(args.column);
+                            _this.autoResizeColumns();
+                            break;
+                        case 'sort-asc':
+                        case 'sort-desc':
+                            var cols = _this.sortService.getPreviousColumnSorts(args.column.id + '');
+                            cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
+                            if (_this._gridOptions.backendServiceApi) {
+                                _this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: _this._grid });
+                            }
+                            else {
+                                _this.sortService.onLocalSortChanged(_this._grid, _this._dataView, cols);
+                            }
+                            var newSortColumns = cols.map(function (col) {
+                                return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
+                            });
+                            _this._grid.setSortColumns(newSortColumns);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            };
+        }
+    };
+    ControlAndPluginService.prototype.executeGridMenuInternalCustomCommands = function (e, args) {
+        if (args && args.command) {
+            switch (args.command) {
+                case 'clear-filter':
+                    this.filterService.clearFilters();
+                    this._dataView.refresh();
+                    break;
+                case 'clear-sorting':
+                    this.sortService.clearSorting();
+                    this._dataView.refresh();
+                    break;
+                case 'export-csv':
+                    this.exportService.exportToFile({
+                        delimiter: DelimiterType.comma,
+                        filename: 'export',
+                        format: FileType.csv,
+                        useUtf8WithBom: true
+                    });
+                    break;
+                case 'export-text-delimited':
+                    this.exportService.exportToFile({
+                        delimiter: DelimiterType.tab,
+                        filename: 'export',
+                        format: FileType.txt,
+                        useUtf8WithBom: true
+                    });
+                    break;
+                case 'toggle-filter':
+                    this._grid.setHeaderRowVisibility(!this._grid.getOptions().showHeaderRow);
+                    break;
+                case 'toggle-toppanel':
+                    this._grid.setTopPanelVisibility(!this._grid.getOptions().showTopPanel);
+                    break;
+                case 'refresh-dataset':
+                    this.refreshBackendDataset();
+                    break;
+                default:
+                    break;
+            }
+        }
     };
     ControlAndPluginService.prototype.refreshBackendDataset = function () {
         var query;
@@ -2922,8 +2931,8 @@ var ControlAndPluginService = /** @class */ (function () {
         return {
             autoAlignOffset: 12,
             minWidth: 140,
-            showColumnHideCommand: true,
-            showSortCommands: true
+            hideColumnHideCommand: false,
+            hideSortCommands: false
         };
     };
     ControlAndPluginService.prototype.getDefaultTranslationByKey = function (key) {
@@ -6131,8 +6140,8 @@ var GlobalGridOptions = {
         iconSortAscCommand: 'fa fa-sort-asc',
         iconSortDescCommand: 'fa fa-sort-desc',
         iconColumnHideCommand: 'fa fa-times',
-        showColumnHideCommand: true,
-        showSortCommands: true
+        hideColumnHideCommand: false,
+        hideSortCommands: false
     },
     headerRowHeight: 35,
     multiColumnSort: true,

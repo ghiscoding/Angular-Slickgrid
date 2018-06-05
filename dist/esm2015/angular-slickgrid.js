@@ -3586,6 +3586,7 @@ class ControlAndPluginService {
                 }
             });
             gridMenuControl.onCommand.subscribe((e, args) => {
+                this.executeGridMenuInternalCustomCommands(e, args);
                 if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onCommand === 'function') {
                     this._gridOptions.gridMenu.onCommand(e, args);
                 }
@@ -3621,11 +3622,12 @@ class ControlAndPluginService {
         const /** @type {?} */ headerMenuPlugin = new Slick.Plugins.HeaderMenu(this._gridOptions.headerMenu);
         grid.registerPlugin(headerMenuPlugin);
         headerMenuPlugin.onCommand.subscribe((e, args) => {
+            this.executeHeaderMenuInternalCommands();
             if (this._gridOptions.headerMenu && typeof this._gridOptions.headerMenu.onCommand === 'function') {
                 this._gridOptions.headerMenu.onCommand(e, args);
             }
         });
-        headerMenuPlugin.onCommand.subscribe((e, args) => {
+        headerMenuPlugin.onBeforeMenuShow.subscribe((e, args) => {
             if (this._gridOptions.headerMenu && typeof this._gridOptions.headerMenu.onBeforeMenuShow === 'function') {
                 this._gridOptions.headerMenu.onBeforeMenuShow(e, args);
             }
@@ -3784,51 +3786,6 @@ class ControlAndPluginService {
                 positionOrder: 54
             });
         }
-        // Command callback, what will be executed after command is clicked
-        if (this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems.length > 0) {
-            this._gridOptions.gridMenu.onCommand = (e, args) => {
-                if (args && args.command) {
-                    switch (args.command) {
-                        case 'clear-filter':
-                            this.filterService.clearFilters();
-                            this._dataView.refresh();
-                            break;
-                        case 'clear-sorting':
-                            this.sortService.clearSorting();
-                            this._dataView.refresh();
-                            break;
-                        case 'export-csv':
-                            this.exportService.exportToFile({
-                                delimiter: DelimiterType.comma,
-                                filename: 'export',
-                                format: FileType.csv,
-                                useUtf8WithBom: true
-                            });
-                            break;
-                        case 'export-text-delimited':
-                            this.exportService.exportToFile({
-                                delimiter: DelimiterType.tab,
-                                filename: 'export',
-                                format: FileType.txt,
-                                useUtf8WithBom: true
-                            });
-                            break;
-                        case 'toggle-filter':
-                            grid.setHeaderRowVisibility(!grid.getOptions().showHeaderRow);
-                            break;
-                        case 'toggle-toppanel':
-                            grid.setTopPanelVisibility(!grid.getOptions().showTopPanel);
-                            break;
-                        case 'refresh-dataset':
-                            this.refreshBackendDataset();
-                            break;
-                        default:
-                            alert('Command: ' + args.command);
-                            break;
-                    }
-                }
-            };
-        }
         // add the custom "Commands" title if there are any commands
         if (this._gridOptions && this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.length > 0) {
             const /** @type {?} */ customTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('commands') : 'Commands';
@@ -3864,68 +3821,131 @@ class ControlAndPluginService {
                     }
                     const /** @type {?} */ columnHeaderMenuItems = columnDef.header.menu.items || [];
                     // Sorting Commands
-                    if (options.enableSorting && columnDef.sortable && headerMenuOptions.showSortCommands) {
+                    if (options.enableSorting && columnDef.sortable && !headerMenuOptions.hideSortCommands) {
                         if (columnHeaderMenuItems.filter((item) => item.command === 'sort-asc').length === 0) {
                             columnHeaderMenuItems.push({
                                 iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
                                 title: options.enableTranslate ? this.translate.instant('SORT_ASCENDING') : 'Sort Ascending',
-                                command: 'sort-asc'
+                                command: 'sort-asc',
+                                positionOrder: 50
                             });
                         }
                         if (columnHeaderMenuItems.filter((item) => item.command === 'sort-desc').length === 0) {
                             columnHeaderMenuItems.push({
                                 iconCssClass: headerMenuOptions.iconSortDescCommand || 'fa fa-sort-desc',
                                 title: options.enableTranslate ? this.translate.instant('SORT_DESCENDING') : 'Sort Descending',
-                                command: 'sort-desc'
+                                command: 'sort-desc',
+                                positionOrder: 51
                             });
                         }
                     }
                     // Hide Column Command
-                    if (headerMenuOptions.showColumnHideCommand && columnHeaderMenuItems.filter((item) => item.command === 'hide').length === 0) {
+                    if (!headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter((item) => item.command === 'hide').length === 0) {
                         columnHeaderMenuItems.push({
                             iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
                             title: options.enableTranslate ? this.translate.instant('HIDE_COLUMN') : 'Hide Column',
-                            command: 'hide'
+                            command: 'hide',
+                            positionOrder: 52
                         });
                     }
+                    // sort the custom items by their position in the list
+                    columnHeaderMenuItems.sort((itemA, itemB) => {
+                        if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
+                            return itemA.positionOrder - itemB.positionOrder;
+                        }
+                        return 0;
+                    });
                 }
             });
-            // Command callback, what will be executed after command is clicked
-            if (headerMenuOptions) {
-                headerMenuOptions.onCommand = (e, args) => {
-                    if (args && args.command) {
-                        switch (args.command) {
-                            case 'hide':
-                                this.hideColumn(args.column);
-                                this.autoResizeColumns();
-                                break;
-                            case 'sort-asc':
-                            case 'sort-desc':
-                                // get previously sorted columns
-                                const /** @type {?} */ cols = this.sortService.getPreviousColumnSorts(args.column.id + '');
-                                // add to the column array, the column sorted by the header menu
-                                cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
-                                if (options.backendServiceApi) {
-                                    this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid });
-                                }
-                                else {
-                                    this.sortService.onLocalSortChanged(grid, dataView, cols);
-                                }
-                                // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
-                                const /** @type {?} */ newSortColumns = cols.map((col) => {
-                                    return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
-                                });
-                                grid.setSortColumns(newSortColumns); // add sort icon in UI
-                                break;
-                            default:
-                                alert('Command: ' + args.command);
-                                break;
-                        }
-                    }
-                };
-            }
         }
         return headerMenuOptions;
+    }
+    /**
+     * Execute the Header Menu Commands that was triggered by the onCommand subscribe
+     * @return {?}
+     */
+    executeHeaderMenuInternalCommands() {
+        // Command callback, what will be executed after command is clicked
+        if (this.headerMenuPlugin && this._gridOptions.headerMenu) {
+            this.headerMenuPlugin.onCommand.subscribe = (e, args) => {
+                if (args && args.command) {
+                    switch (args.command) {
+                        case 'hide':
+                            this.hideColumn(args.column);
+                            this.autoResizeColumns();
+                            break;
+                        case 'sort-asc':
+                        case 'sort-desc':
+                            // get previously sorted columns
+                            const /** @type {?} */ cols = this.sortService.getPreviousColumnSorts(args.column.id + '');
+                            // add to the column array, the column sorted by the header menu
+                            cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
+                            if (this._gridOptions.backendServiceApi) {
+                                this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this._grid });
+                            }
+                            else {
+                                this.sortService.onLocalSortChanged(this._grid, this._dataView, cols);
+                            }
+                            // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
+                            const /** @type {?} */ newSortColumns = cols.map((col) => {
+                                return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
+                            });
+                            this._grid.setSortColumns(newSortColumns); // add sort icon in UI
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            };
+        }
+    }
+    /**
+     * Execute the Grid Menu Custom command callback that was triggered by the onCommand subscribe
+     * These are the default internal custom commands
+     * @param {?} e
+     * @param {?} args
+     * @return {?}
+     */
+    executeGridMenuInternalCustomCommands(e, args) {
+        if (args && args.command) {
+            switch (args.command) {
+                case 'clear-filter':
+                    this.filterService.clearFilters();
+                    this._dataView.refresh();
+                    break;
+                case 'clear-sorting':
+                    this.sortService.clearSorting();
+                    this._dataView.refresh();
+                    break;
+                case 'export-csv':
+                    this.exportService.exportToFile({
+                        delimiter: DelimiterType.comma,
+                        filename: 'export',
+                        format: FileType.csv,
+                        useUtf8WithBom: true
+                    });
+                    break;
+                case 'export-text-delimited':
+                    this.exportService.exportToFile({
+                        delimiter: DelimiterType.tab,
+                        filename: 'export',
+                        format: FileType.txt,
+                        useUtf8WithBom: true
+                    });
+                    break;
+                case 'toggle-filter':
+                    this._grid.setHeaderRowVisibility(!this._grid.getOptions().showHeaderRow);
+                    break;
+                case 'toggle-toppanel':
+                    this._grid.setTopPanelVisibility(!this._grid.getOptions().showTopPanel);
+                    break;
+                case 'refresh-dataset':
+                    this.refreshBackendDataset();
+                    break;
+                default:
+                    break;
+            }
+        }
     }
     /**
      * Refresh the dataset through the Backend Service
@@ -4071,8 +4091,8 @@ class ControlAndPluginService {
         return {
             autoAlignOffset: 12,
             minWidth: 140,
-            showColumnHideCommand: true,
-            showSortCommands: true
+            hideColumnHideCommand: false,
+            hideSortCommands: false
         };
     }
     /**
@@ -8811,8 +8831,8 @@ const GlobalGridOptions = {
         iconSortAscCommand: 'fa fa-sort-asc',
         iconSortDescCommand: 'fa fa-sort-desc',
         iconColumnHideCommand: 'fa fa-times',
-        showColumnHideCommand: true,
-        showSortCommands: true
+        hideColumnHideCommand: false,
+        hideSortCommands: false
     },
     headerRowHeight: 35,
     multiColumnSort: true,

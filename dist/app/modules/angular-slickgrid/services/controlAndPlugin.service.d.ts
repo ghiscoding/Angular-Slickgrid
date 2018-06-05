@@ -1,4 +1,4 @@
-import { Column, Extension, GridOption } from './../models/index';
+import { CustomGridMenu, Column, Extension, GridOption } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
 import { FilterService } from './filter.service';
 import { ExportService } from './export.service';
@@ -97,6 +97,13 @@ export declare class ControlAndPluginService {
      * @return header menu
      */
     private addHeaderMenuCustomCommands(grid, dataView, options, columnDefinitions);
+    /** Execute the Header Menu Commands that was triggered by the onCommand subscribe */
+    executeHeaderMenuInternalCommands(): void;
+    /**
+     * Execute the Grid Menu Custom command callback that was triggered by the onCommand subscribe
+     * These are the default internal custom commands
+     */
+    executeGridMenuInternalCustomCommands(e: Event, args: CustomGridMenu): void;
     /** Refresh the dataset through the Backend Service */
     refreshBackendDataset(): void;
     /** Remove a column from the grid by it's index in the grid */

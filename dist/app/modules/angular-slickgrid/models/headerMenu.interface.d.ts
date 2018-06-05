@@ -13,6 +13,10 @@ export interface HeaderMenu {
     command?: string;
     /** Whether the item is disabled. */
     disabled?: boolean;
+    /** Defaults to false, which will hide both Sort (Asc/Desc) commands in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
+    hideSortCommands?: boolean;
+    /** Defaults to false, which will hide the "Hide Column" command in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
+    hideColumnHideCommand?: boolean;
     /** A CSS class to be added to the menu item icon. */
     iconCssClass?: string;
     /** A url to the icon image. */
@@ -25,10 +29,6 @@ export interface HeaderMenu {
     iconSortDescCommand?: string;
     /** Minimum width that the drop menu will have */
     minWidth?: number;
-    /** Defaults to True, which will show both Sort (Asc/Desc) commands in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
-    showSortCommands?: boolean;
-    /** Defaults to True, which will show both "Hide Column" command in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
-    showColumnHideCommand?: boolean;
     /** Menu item text. */
     title?: string;
     /** Item tooltip. */
