@@ -537,6 +537,74 @@ export class ControlAndPluginService {
     }
   }
 
+  /**
+   * Create Header Menu with Custom Commands if user has enabled Header Menu
+   * @param grid
+   * @param dataView
+   * @param options
+   * @param columnDefinitions
+   * @return header menu
+   */
+  private addHeaderMenuCustomCommands(grid: any, dataView: any, options: GridOption, columnDefinitions: Column[]): HeaderMenu {
+    const headerMenuOptions = options.headerMenu;
+
+    if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
+      columnDefinitions.forEach((columnDef: Column) => {
+        if (columnDef && !columnDef.excludeFromHeaderMenu) {
+          if (!columnDef.header || !columnDef.header.menu) {
+            columnDef.header = {
+              menu: {
+                items: []
+              }
+            };
+          }
+          const columnHeaderMenuItems: HeaderMenuItem[] = columnDef.header.menu.items || [];
+
+          // Sorting Commands
+          if (options.enableSorting && columnDef.sortable && !headerMenuOptions.hideSortCommands) {
+            if (columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'sort-asc').length === 0) {
+              columnHeaderMenuItems.push({
+                iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
+                title: options.enableTranslate ? this.translate.instant('SORT_ASCENDING') : 'Sort Ascending',
+                command: 'sort-asc',
+                positionOrder: 50
+              });
+            }
+            if (columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'sort-desc').length === 0) {
+              columnHeaderMenuItems.push({
+                iconCssClass: headerMenuOptions.iconSortDescCommand || 'fa fa-sort-desc',
+                title: options.enableTranslate ? this.translate.instant('SORT_DESCENDING') : 'Sort Descending',
+                command: 'sort-desc',
+                positionOrder: 51
+              });
+            }
+          }
+
+          // Hide Column Command
+          if (!headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'hide').length === 0) {
+            columnHeaderMenuItems.push({
+              iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
+              title: options.enableTranslate ? this.translate.instant('HIDE_COLUMN') : 'Hide Column',
+              command: 'hide',
+              positionOrder: 52
+            });
+          }
+
+          // sort the custom items by their position in the list
+          columnHeaderMenuItems.sort((itemA, itemB) => {
+            if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
+              return itemA.positionOrder - itemB.positionOrder;
+            }
+            return 0;
+          });
+        }
+      });
+
+    }
+
+    return headerMenuOptions;
+  }
+
   /** Execute the Header Menu Commands that was triggered by the onCommand subscribe */
   executeHeaderMenuInternalCommands() {
     // Command callback, what will be executed after command is clicked
@@ -619,74 +687,6 @@ export class ControlAndPluginService {
           break;
       }
     }
-  }
-
-  /**
-   * Create Header Menu with Custom Commands if user has enabled Header Menu
-   * @param grid
-   * @param dataView
-   * @param options
-   * @param columnDefinitions
-   * @return header menu
-   */
-  private addHeaderMenuCustomCommands(grid: any, dataView: any, options: GridOption, columnDefinitions: Column[]): HeaderMenu {
-    const headerMenuOptions = options.headerMenu;
-
-    if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
-      columnDefinitions.forEach((columnDef: Column) => {
-        if (columnDef && !columnDef.excludeFromHeaderMenu) {
-          if (!columnDef.header || !columnDef.header.menu) {
-            columnDef.header = {
-              menu: {
-                items: []
-              }
-            };
-          }
-          const columnHeaderMenuItems: HeaderMenuItem[] = columnDef.header.menu.items || [];
-
-          // Sorting Commands
-          if (options.enableSorting && columnDef.sortable && !headerMenuOptions.hideSortCommands) {
-            if (columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'sort-asc').length === 0) {
-              columnHeaderMenuItems.push({
-                iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
-                title: options.enableTranslate ? this.translate.instant('SORT_ASCENDING') : 'Sort Ascending',
-                command: 'sort-asc',
-                positionOrder: 50
-              });
-            }
-            if (columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'sort-desc').length === 0) {
-              columnHeaderMenuItems.push({
-                iconCssClass: headerMenuOptions.iconSortDescCommand || 'fa fa-sort-desc',
-                title: options.enableTranslate ? this.translate.instant('SORT_DESCENDING') : 'Sort Descending',
-                command: 'sort-desc',
-                positionOrder: 51
-              });
-            }
-          }
-
-          // Hide Column Command
-          if (!headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'hide').length === 0) {
-            columnHeaderMenuItems.push({
-              iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
-              title: options.enableTranslate ? this.translate.instant('HIDE_COLUMN') : 'Hide Column',
-              command: 'hide',
-              positionOrder: 52
-            });
-          }
-
-          // sort the custom items by their position in the list
-          columnHeaderMenuItems.sort((itemA, itemB) => {
-            if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
-              return itemA.positionOrder - itemB.positionOrder;
-            }
-            return 0;
-          });
-        }
-      });
-
-    }
-
-    return headerMenuOptions;
   }
 
   /** Refresh the dataset through the Backend Service */
