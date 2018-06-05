@@ -99,6 +99,8 @@ export class ControlAndPluginService {
     this.visibleColumns = this._columnDefinitions;
     this.allColumns = this._columnDefinitions;
 
+    // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
+    // this is to avoid having hidden columns not being translated on first load
     if (this._gridOptions.enableTranslate) {
       for (const column of this.allColumns) {
         if (column.headerKey) {
@@ -712,33 +714,38 @@ export class ControlAndPluginService {
     });
   }
 
-  /**
-   * Translate the Column Picker and it's last 2 checkboxes
-   * Note that the only way that seems to work is to destroy and re-create the Column Picker
-   * Changing only the columnPicker.columnTitle with i18n translate was not enough.
-   */
+  /** Translate the Column Picker and it's last 2 checkboxes */
   translateColumnPicker() {
     // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
-    this._gridOptions.columnPicker.columnTitle = this.getDefaultTranslationByKey('columns');
-    this._gridOptions.columnPicker.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
-    this._gridOptions.columnPicker.syncResizeTitle = this.getDefaultTranslationByKey('synch');
+    if (this._gridOptions && this._gridOptions.columnPicker) {
+      this._gridOptions.columnPicker.columnTitle = this.getDefaultTranslationByKey('columns');
+      this._gridOptions.columnPicker.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
+      this._gridOptions.columnPicker.syncResizeTitle = this.getDefaultTranslationByKey('synch');
+    }
   }
 
-  /**
-   * Translate the Grid Menu ColumnTitle and CustomTitle.
-   * Note that the only way that seems to work is to destroy and re-create the Grid Menu
-   * Changing only the gridMenu.columnTitle with i18n translate was not enough.
-   */
+  /** Translate the Grid Menu titles and column picker */
   translateGridMenu() {
     // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
     // we also need to call the control init so that it takes the new Grid object with latest values
-    this._gridOptions.gridMenu.customItems = [];
-    this._gridOptions.gridMenu.customTitle = '';
-    this._gridOptions.gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
-    this._gridOptions.gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
-    this._gridOptions.gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
-    this.addGridMenuCustomCommands(this._grid);
-    this.gridMenuControl.init(this._grid);
+    if (this._gridOptions && this._gridOptions.gridMenu) {
+      this._gridOptions.gridMenu.customItems = [];
+      this._gridOptions.gridMenu.customTitle = '';
+      this._gridOptions.gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
+      this._gridOptions.gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
+      this._gridOptions.gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
+
+      // translate all columns (including non-visible)
+      for (const column of this.allColumns) {
+        if (column.headerKey) {
+          column.name = this.translate.instant(column.headerKey);
+        }
+      }
+
+      // re-create the list of Custom Commands
+      this.addGridMenuCustomCommands(this._grid);
+      this.gridMenuControl.init(this._grid);
+    }
   }
 
   /**
