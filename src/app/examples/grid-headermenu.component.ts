@@ -39,27 +39,16 @@ export class GridHeaderMenuComponent implements OnInit {
       columnDef.header = {
         menu: {
           items: [
-            {
-              iconCssClass: 'fa fa-sort-asc',
-              title: 'Sort Ascending',
-              disabled: !columnDef.sortable,
-              command: 'sort-asc'
-            },
-            {
-              iconCssClass: 'fa fa-sort-desc',
-              title: 'Sort Descending',
-              disabled: !columnDef.sortable,
-              command: 'sort-desc'
-            },
-            {
-              iconCssClass: 'fa fa-times',
-              title: 'Hide Column',
-              command: 'hide'
-            },
+            // add Custom Header Menu Item Commands at the bottom of the already existing internal custom items
+            // you cannot override an internal command but you can hide them and create your own
+            // also note that the internal custom commands are in the positionOrder range of 50-60,
+            // if you want yours at the bottom then start with 61, below 50 will make your command(s) on top
             {
               iconCssClass: 'fa fa-question-circle',
+              disabled: (columnDef.id === 'effort-driven'), // you can disable a command with certain logic
               title: 'Help',
-              command: 'help'
+              command: 'help',
+              positionOrder: 99
             }
           ]
         }
@@ -76,25 +65,11 @@ export class GridHeaderMenuComponent implements OnInit {
       enableFiltering: false,
       enableCellNavigation: true,
       headerMenu: {
+        hideSortCommands: false,
+        hideColumnHideCommand: false,
         onCommand: (e, args) => {
-          if (args.command === 'hide') {
-            this.angularGrid.pluginService.hideColumn(args.column);
-            this.angularGrid.pluginService.autoResizeColumns();
-          } else if (args.command === 'sort-asc' || args.command === 'sort-desc') {
-            // get previously sorted columns
-            const cols: ColumnSort[] = this.angularGrid.sortService.getPreviousColumnSorts(args.column.id + '');
-
-            // add to the column array, the column sorted by the header menu
-            cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
-            this.angularGrid.sortService.onLocalSortChanged(this.gridObj, this.dataviewObj, cols);
-
-            // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
-            const newSortColumns: ColumnSort[] = cols.map((col) => {
-              return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
-            });
-            this.gridObj.setSortColumns(newSortColumns); // add sort icon in UI
-          } else {
-            alert('Command: ' + args.command);
+          if (args.command === 'help') {
+            alert('Please help!!!');
           }
         }
       }

@@ -76,37 +76,14 @@ export class GridMenuComponent implements OnInit {
         iconCssClass: 'fa fa-ellipsis-v',
         hideForceFitButton: true,
         hideSyncResizeButton: true,
+        hideToggleFilterCommand: false, // show/hide internal custom commands
         menuWidth: 17,
         resizeOnShowHeaderRow: true,
         customItems: [
-          {
-            iconCssClass: 'fa fa-filter text-danger',
-            title: 'Clear All Filters',
-            disabled: false,
-            command: 'clear-filter',
-            positionOrder: 0
-          },
-          {
-            iconCssClass: 'fa fa-unsorted text-danger',
-            title: 'Clear All Sorting',
-            disabled: false,
-            command: 'clear-sorting',
-            positionOrder: 1
-          },
-          {
-            iconCssClass: 'fa fa-random',
-            title: 'Toggle Filter Row',
-            disabled: false,
-            command: 'toggle-filter',
-            positionOrder: 2
-          },
-          {
-            iconCssClass: 'fa fa-random',
-            title: 'Toggle Top Panel',
-            disabled: false,
-            command: 'toggle-toppanel',
-            positionOrder: 3
-          },
+          // add Custom Items Commands at the bottom of the already existing internal custom items
+          // you cannot override an internal items but you can hide them and create your own
+          // also note that the internal custom commands are in the positionOrder range of 50-60,
+          // if you want yours at the bottom then start with 61, below 50 will make your command(s) on top
           {
             iconCssClass: 'fa fa-question-circle',
             title: 'Help',
@@ -122,18 +99,8 @@ export class GridMenuComponent implements OnInit {
           }
         ],
         onCommand: (e, args) => {
-          if (args.command === 'toggle-filter') {
-            this.gridObj.setHeaderRowVisibility(!this.gridObj.getOptions().showHeaderRow);
-          } else if (args.command === 'toggle-toppanel') {
-            this.gridObj.setTopPanelVisibility(!this.gridObj.getOptions().showTopPanel);
-          } else if (args.command === 'clear-filter') {
-            this.angularGrid.filterService.clearFilters();
-            this.dataviewObj.refresh();
-          } else if (args.command === 'clear-sorting') {
-            this.angularGrid.sortService.clearSorting();
-            this.dataviewObj.refresh();
-          } else {
-            alert('Command: ' + args.command);
+          if (args.command === 'help') {
+            alert('Please help!!!');
           }
         },
         onColumnsChanged: (e, args) => {

@@ -73,8 +73,8 @@ export const GlobalGridOptions: GridOption = {
     iconSortAscCommand: 'fa fa-sort-asc',
     iconSortDescCommand: 'fa fa-sort-desc',
     iconColumnHideCommand: 'fa fa-times',
-    showColumnHideCommand: true,
-    showSortCommands: true
+    hideColumnHideCommand: false,
+    hideSortCommands: false
   },
   headerRowHeight: 35,
   multiColumnSort: true,
