@@ -2304,9 +2304,6 @@ class FilterService {
             if (args && !args.clearFilterTriggered) {
                 this.emitFilterChanged('remote');
             }
-            else {
-                console.log('clear triggered', args);
-            }
             // the process could be an Observable (like HttpClient) or a Promise
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
             const /** @type {?} */ observableOrPromise = backendApi.process(query);
@@ -5792,11 +5789,13 @@ class GridService {
      * @param {?} filterService
      * @param {?} gridStateService
      * @param {?} sortService
+     * @param {?} translate
      */
-    constructor(filterService, gridStateService, sortService) {
+    constructor(filterService, gridStateService, sortService, translate) {
         this.filterService = filterService;
         this.gridStateService = gridStateService;
         this.sortService = sortService;
+        this.translate = translate;
     }
     /**
      * Getter for the Column Definitions pulled through the Grid Object
@@ -5964,6 +5963,15 @@ class GridService {
         if (this._grid && this._dataView) {
             const /** @type {?} */ originalColumns = columnDefinitions || this._columnDefinitions;
             if (Array.isArray(originalColumns) && originalColumns.length > 0) {
+                // make sure all columns are translated if need be
+                if (this._gridOptions && this._gridOptions.enableTranslate) {
+                    for (const /** @type {?} */ column of originalColumns) {
+                        if (column.headerKey) {
+                            column.name = this.translate.instant(column.headerKey);
+                        }
+                    }
+                }
+                // set the grid columns to it's original column definitions
                 this._grid.setColumns(originalColumns);
                 this._dataView.refresh();
                 this._grid.autosizeColumns();
@@ -6063,6 +6071,7 @@ GridService.ctorParameters = () => [
     { type: FilterService, },
     { type: GridStateService, },
     { type: SortService, },
+    { type: TranslateService, },
 ];
 
 /**

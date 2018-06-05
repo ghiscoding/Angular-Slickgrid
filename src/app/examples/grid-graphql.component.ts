@@ -17,6 +17,7 @@ import {
 
 const defaultPageSize = 20;
 const GRAPHQL_QUERY_DATASET_NAME = 'users';
+const LOCAL_STORAGE_KEY = 'gridStateGraphql';
 
 @Component({
   templateUrl: './grid-graphql.component.html'
@@ -99,6 +100,21 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       i18n: this.translate,
       gridMenu: {
         resizeOnShowHeaderRow: true,
+        customItems: [
+          {
+            iconCssClass: 'fa fa-times text-danger',
+            title: 'Reset Grid',
+            disabled: false,
+            command: 'reset-grid',
+            positionOrder: 60
+          }
+        ],
+        onCommand: (e, args) => {
+          if (args.command === 'reset-grid') {
+            this.angularGrid.gridService.resetGrid(this.columnDefinitions);
+            localStorage[LOCAL_STORAGE_KEY] = null;
+          }
+        }
       },
       pagination: {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
@@ -191,6 +207,12 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         resolve(mockedResult);
       }, 500);
     });
+  }
+
+  /** Dispatched event of a Grid State Changed event */
+  gridStateChanged(gridStateChanges: GridStateChange) {
+    console.log('Client sample, Grid State changed:: ', gridStateChanges);
+    localStorage[LOCAL_STORAGE_KEY] = JSON.stringify(gridStateChanges.gridState);
   }
 
   /** Save current Filters, Sorters in LocaleStorage or DB */

@@ -1552,9 +1552,6 @@ var FilterService = /** @class */ (function () {
                         if (args && !args.clearFilterTriggered) {
                             this.emitFilterChanged('remote');
                         }
-                        else {
-                            console.log('clear triggered', args);
-                        }
                         observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 2:
@@ -4207,10 +4204,11 @@ var GridStateService = /** @class */ (function () {
     return GridStateService;
 }());
 var GridService = /** @class */ (function () {
-    function GridService(filterService, gridStateService, sortService) {
+    function GridService(filterService, gridStateService, sortService, translate) {
         this.filterService = filterService;
         this.gridStateService = gridStateService;
         this.sortService = sortService;
+        this.translate = translate;
     }
     Object.defineProperty(GridService.prototype, "_columnDefinitions", {
         get: function () {
@@ -4323,12 +4321,30 @@ var GridService = /** @class */ (function () {
         if (this._grid && this._dataView) {
             var originalColumns = columnDefinitions || this._columnDefinitions;
             if (Array.isArray(originalColumns) && originalColumns.length > 0) {
+                if (this._gridOptions && this._gridOptions.enableTranslate) {
+                    try {
+                        for (var originalColumns_1 = __values(originalColumns), originalColumns_1_1 = originalColumns_1.next(); !originalColumns_1_1.done; originalColumns_1_1 = originalColumns_1.next()) {
+                            var column = originalColumns_1_1.value;
+                            if (column.headerKey) {
+                                column.name = this.translate.instant(column.headerKey);
+                            }
+                        }
+                    }
+                    catch (e_13_1) { e_13 = { error: e_13_1 }; }
+                    finally {
+                        try {
+                            if (originalColumns_1_1 && !originalColumns_1_1.done && (_a = originalColumns_1.return)) _a.call(originalColumns_1);
+                        }
+                        finally { if (e_13) throw e_13.error; }
+                    }
+                }
                 this._grid.setColumns(originalColumns);
                 this._dataView.refresh();
                 this._grid.autosizeColumns();
                 this.gridStateService.resetColumns(columnDefinitions);
             }
         }
+        var e_13, _a;
     };
     GridService.prototype.addItemToDatagrid = function (item) {
         if (!this._grid || !this._gridOptions || !this._dataView) {
@@ -4391,6 +4407,7 @@ GridService.ctorParameters = function () { return [
     { type: FilterService, },
     { type: GridStateService, },
     { type: SortService, },
+    { type: TranslateService, },
 ]; };
 var GroupingAndColspanService = /** @class */ (function () {
     function GroupingAndColspanService() {
@@ -5606,15 +5623,15 @@ var multipleFormatter = function (row, cell, value, columnDef, dataContext, grid
             currentValue = formatter(row, cell, currentValue, columnDef, dataContext, grid);
         }
     }
-    catch (e_13_1) { e_13 = { error: e_13_1 }; }
+    catch (e_14_1) { e_14 = { error: e_14_1 }; }
     finally {
         try {
             if (formatters_1_1 && !formatters_1_1.done && (_a = formatters_1.return)) _a.call(formatters_1);
         }
-        finally { if (e_13) throw e_13.error; }
+        finally { if (e_14) throw e_14.error; }
     }
     return currentValue;
-    var e_13, _a;
+    var e_14, _a;
 };
 var percentFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {

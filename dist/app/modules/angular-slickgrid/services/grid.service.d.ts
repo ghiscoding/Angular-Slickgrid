@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { CellArgs, Column, OnEventArgs } from './../models/index';
 import { FilterService } from './filter.service';
 import { GridStateService } from './gridState.service';
@@ -6,9 +7,10 @@ export declare class GridService {
     private filterService;
     private gridStateService;
     private sortService;
+    private translate;
     private _grid;
     private _dataView;
-    constructor(filterService: FilterService, gridStateService: GridStateService, sortService: SortService);
+    constructor(filterService: FilterService, gridStateService: GridStateService, sortService: SortService, translate: TranslateService);
     /** Getter for the Column Definitions pulled through the Grid Object */
     private readonly _columnDefinitions;
     /** Getter for the Grid Options pulled through the Grid Object */
