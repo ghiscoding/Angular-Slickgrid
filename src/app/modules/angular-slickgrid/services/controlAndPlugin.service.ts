@@ -832,8 +832,8 @@ export class ControlAndPluginService {
     return {
       autoAlignOffset: 12,
       minWidth: 140,
-      showColumnHideCommand: true,
-      showSortCommands: true
+      hideColumnHideCommand: false,
+      hideSortCommands: false
     };
   }
 
