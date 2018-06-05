@@ -1,4 +1,4 @@
-import { CustomGridMenu, Column, Extension, GridOption } from './../models/index';
+import { CustomGridMenu, Column, Extension, GridOption, HeaderMenuOnCommandArgs } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
 import { FilterService } from './filter.service';
 import { ExportService } from './export.service';
@@ -50,7 +50,7 @@ export declare class ControlAndPluginService {
      * @param columnDefinitions
      * @param options
      */
-    createPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption): void;
+    createCheckboxPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption): void;
     /** Create the Excel like copy manager */
     createCellExternalCopyManagerPlugin(grid: any): void;
     /**
@@ -98,7 +98,7 @@ export declare class ControlAndPluginService {
      */
     private addHeaderMenuCustomCommands(grid, dataView, options, columnDefinitions);
     /** Execute the Header Menu Commands that was triggered by the onCommand subscribe */
-    executeHeaderMenuInternalCommands(): void;
+    executeHeaderMenuInternalCommands(e: Event, args: HeaderMenuOnCommandArgs): void;
     /**
      * Execute the Grid Menu Custom command callback that was triggered by the onCommand subscribe
      * These are the default internal custom commands

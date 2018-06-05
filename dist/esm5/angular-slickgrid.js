@@ -1598,7 +1598,6 @@ var FilterService = /** @class */ (function () {
                 delete this._columnFilters[columnId];
             }
         }
-        this._columnFilters = {};
         if (this._dataView) {
             this._dataView.refresh();
             this._grid.invalidate();
@@ -2352,7 +2351,7 @@ var ControlAndPluginService = /** @class */ (function () {
         this._grid = grid;
         this._dataView = dataView;
         this.visibleColumns = this._columnDefinitions;
-        this.allColumns = this._columnDefinitions;
+        this.allColumns = __spread(this._columnDefinitions);
         if (this._gridOptions.enableTranslate) {
             try {
                 for (var _a = __values(this.allColumns), _b = _a.next(); !_b.done; _b = _a.next()) {
@@ -2435,7 +2434,7 @@ var ControlAndPluginService = /** @class */ (function () {
         }
         var e_3, _c;
     };
-    ControlAndPluginService.prototype.createPluginBeforeGridCreation = function (columnDefinitions, options) {
+    ControlAndPluginService.prototype.createCheckboxPluginBeforeGridCreation = function (columnDefinitions, options) {
         if (options.enableCheckboxSelector) {
             this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
             var selectionColumn = this.checkboxSelectorPlugin.getColumnDefinition();
@@ -2544,7 +2543,7 @@ var ControlAndPluginService = /** @class */ (function () {
         var headerMenuPlugin = new Slick.Plugins.HeaderMenu(this._gridOptions.headerMenu);
         grid.registerPlugin(headerMenuPlugin);
         headerMenuPlugin.onCommand.subscribe(function (e, args) {
-            _this.executeHeaderMenuInternalCommands();
+            _this.executeHeaderMenuInternalCommands(e, args);
             if (_this._gridOptions.headerMenu && typeof _this._gridOptions.headerMenu.onCommand === 'function') {
                 _this._gridOptions.headerMenu.onCommand(e, args);
             }
@@ -2740,36 +2739,31 @@ var ControlAndPluginService = /** @class */ (function () {
         }
         return headerMenuOptions;
     };
-    ControlAndPluginService.prototype.executeHeaderMenuInternalCommands = function () {
-        var _this = this;
-        if (this.headerMenuPlugin && this._gridOptions.headerMenu) {
-            this.headerMenuPlugin.onCommand.subscribe = function (e, args) {
-                if (args && args.command) {
-                    switch (args.command) {
-                        case 'hide':
-                            _this.hideColumn(args.column);
-                            _this.autoResizeColumns();
-                            break;
-                        case 'sort-asc':
-                        case 'sort-desc':
-                            var cols = _this.sortService.getPreviousColumnSorts(args.column.id + '');
-                            cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
-                            if (_this._gridOptions.backendServiceApi) {
-                                _this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: _this._grid });
-                            }
-                            else {
-                                _this.sortService.onLocalSortChanged(_this._grid, _this._dataView, cols);
-                            }
-                            var newSortColumns = cols.map(function (col) {
-                                return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
-                            });
-                            _this._grid.setSortColumns(newSortColumns);
-                            break;
-                        default:
-                            break;
+    ControlAndPluginService.prototype.executeHeaderMenuInternalCommands = function (e, args) {
+        if (args && args.command) {
+            switch (args.command) {
+                case 'hide':
+                    this.hideColumn(args.column);
+                    this.autoResizeColumns();
+                    break;
+                case 'sort-asc':
+                case 'sort-desc':
+                    var cols = this.sortService.getPreviousColumnSorts(args.column.id + '');
+                    cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
+                    if (this._gridOptions.backendServiceApi) {
+                        this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this._grid });
                     }
-                }
-            };
+                    else {
+                        this.sortService.onLocalSortChanged(this._grid, this._dataView, cols);
+                    }
+                    var newSortColumns = cols.map(function (col) {
+                        return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
+                    });
+                    this._grid.setSortColumns(newSortColumns);
+                    break;
+                default:
+                    break;
+            }
         }
     };
     ControlAndPluginService.prototype.executeGridMenuInternalCustomCommands = function (e, args) {
@@ -4204,7 +4198,8 @@ var GridStateService = /** @class */ (function () {
     return GridStateService;
 }());
 var GridService = /** @class */ (function () {
-    function GridService(filterService, gridStateService, sortService, translate) {
+    function GridService(controlAndPluginService, filterService, gridStateService, sortService, translate) {
+        this.controlAndPluginService = controlAndPluginService;
         this.filterService = filterService;
         this.gridStateService = gridStateService;
         this.sortService = sortService;
@@ -4312,39 +4307,21 @@ var GridService = /** @class */ (function () {
         }
     };
     GridService.prototype.resetGrid = function (columnDefinitions) {
-        if (this.filterService && this.filterService.clearFilters) {
-            this.filterService.clearFilters();
-        }
-        if (this.sortService && this.sortService.clearSorting) {
-            this.sortService.clearSorting();
-        }
         if (this._grid && this._dataView) {
-            var originalColumns = columnDefinitions || this._columnDefinitions;
+            var originalColumns = this.controlAndPluginService.getAllColumns();
             if (Array.isArray(originalColumns) && originalColumns.length > 0) {
-                if (this._gridOptions && this._gridOptions.enableTranslate) {
-                    try {
-                        for (var originalColumns_1 = __values(originalColumns), originalColumns_1_1 = originalColumns_1.next(); !originalColumns_1_1.done; originalColumns_1_1 = originalColumns_1.next()) {
-                            var column = originalColumns_1_1.value;
-                            if (column.headerKey) {
-                                column.name = this.translate.instant(column.headerKey);
-                            }
-                        }
-                    }
-                    catch (e_13_1) { e_13 = { error: e_13_1 }; }
-                    finally {
-                        try {
-                            if (originalColumns_1_1 && !originalColumns_1_1.done && (_a = originalColumns_1.return)) _a.call(originalColumns_1);
-                        }
-                        finally { if (e_13) throw e_13.error; }
-                    }
-                }
                 this._grid.setColumns(originalColumns);
                 this._dataView.refresh();
                 this._grid.autosizeColumns();
                 this.gridStateService.resetColumns(columnDefinitions);
             }
         }
-        var e_13, _a;
+        if (this.filterService && this.filterService.clearFilters) {
+            this.filterService.clearFilters();
+        }
+        if (this.sortService && this.sortService.clearSorting) {
+            this.sortService.clearSorting();
+        }
     };
     GridService.prototype.addItemToDatagrid = function (item) {
         if (!this._grid || !this._gridOptions || !this._dataView) {
@@ -4404,6 +4381,7 @@ GridService.decorators = [
     { type: Injectable },
 ];
 GridService.ctorParameters = function () { return [
+    { type: ControlAndPluginService, },
     { type: FilterService, },
     { type: GridStateService, },
     { type: SortService, },
@@ -5623,15 +5601,15 @@ var multipleFormatter = function (row, cell, value, columnDef, dataContext, grid
             currentValue = formatter(row, cell, currentValue, columnDef, dataContext, grid);
         }
     }
-    catch (e_14_1) { e_14 = { error: e_14_1 }; }
+    catch (e_13_1) { e_13 = { error: e_13_1 }; }
     finally {
         try {
             if (formatters_1_1 && !formatters_1_1.done && (_a = formatters_1.return)) _a.call(formatters_1);
         }
-        finally { if (e_14) throw e_14.error; }
+        finally { if (e_13) throw e_13.error; }
     }
     return currentValue;
-    var e_14, _a;
+    var e_13, _a;
 };
 var percentFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {
@@ -6279,7 +6257,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         else {
             this._dataView = new Slick.Data.DataView();
         }
-        this._columnDefinitions = this._columnDefinitions.map(function (c) { return (Object.assign({}, c, { editor: _this.getEditor((c.editor && c.editor.type), c), internalColumnEditor: Object.assign({}, c.editor) })); }), this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+        this._columnDefinitions = this._columnDefinitions.map(function (c) { return (Object.assign({}, c, { editor: _this.getEditor((c.editor && c.editor.type), c), internalColumnEditor: Object.assign({}, c.editor) })); }), this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
         this.grid = new Slick.Grid("#" + this.gridId, this._dataView, this._columnDefinitions, this.gridOptions);
         this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._dataView, this.groupItemMetadataProvider);
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);

@@ -2362,7 +2362,6 @@ class FilterService {
                 delete this._columnFilters[columnId];
             }
         }
-        this._columnFilters = {};
         // we also need to refresh the dataView and optionally the grid (it's optional since we use DataView)
         if (this._dataView) {
             this._dataView.refresh();
@@ -3386,7 +3385,7 @@ class ControlAndPluginService {
         this._grid = grid;
         this._dataView = dataView;
         this.visibleColumns = this._columnDefinitions;
-        this.allColumns = this._columnDefinitions;
+        this.allColumns = [...this._columnDefinitions];
         // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
         // this is to avoid having hidden columns not being translated on first load
         if (this._gridOptions.enableTranslate) {
@@ -3483,7 +3482,7 @@ class ControlAndPluginService {
      * @param {?} options
      * @return {?}
      */
-    createPluginBeforeGridCreation(columnDefinitions, options) {
+    createCheckboxPluginBeforeGridCreation(columnDefinitions, options) {
         if (options.enableCheckboxSelector) {
             this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
             const /** @type {?} */ selectionColumn = this.checkboxSelectorPlugin.getColumnDefinition();
@@ -3619,7 +3618,7 @@ class ControlAndPluginService {
         const /** @type {?} */ headerMenuPlugin = new Slick.Plugins.HeaderMenu(this._gridOptions.headerMenu);
         grid.registerPlugin(headerMenuPlugin);
         headerMenuPlugin.onCommand.subscribe((e, args) => {
-            this.executeHeaderMenuInternalCommands();
+            this.executeHeaderMenuInternalCommands(e, args);
             if (this._gridOptions.headerMenu && typeof this._gridOptions.headerMenu.onCommand === 'function') {
                 this._gridOptions.headerMenu.onCommand(e, args);
             }
@@ -3859,41 +3858,38 @@ class ControlAndPluginService {
     }
     /**
      * Execute the Header Menu Commands that was triggered by the onCommand subscribe
+     * @param {?} e
+     * @param {?} args
      * @return {?}
      */
-    executeHeaderMenuInternalCommands() {
-        // Command callback, what will be executed after command is clicked
-        if (this.headerMenuPlugin && this._gridOptions.headerMenu) {
-            this.headerMenuPlugin.onCommand.subscribe = (e, args) => {
-                if (args && args.command) {
-                    switch (args.command) {
-                        case 'hide':
-                            this.hideColumn(args.column);
-                            this.autoResizeColumns();
-                            break;
-                        case 'sort-asc':
-                        case 'sort-desc':
-                            // get previously sorted columns
-                            const /** @type {?} */ cols = this.sortService.getPreviousColumnSorts(args.column.id + '');
-                            // add to the column array, the column sorted by the header menu
-                            cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
-                            if (this._gridOptions.backendServiceApi) {
-                                this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this._grid });
-                            }
-                            else {
-                                this.sortService.onLocalSortChanged(this._grid, this._dataView, cols);
-                            }
-                            // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
-                            const /** @type {?} */ newSortColumns = cols.map((col) => {
-                                return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
-                            });
-                            this._grid.setSortColumns(newSortColumns); // add sort icon in UI
-                            break;
-                        default:
-                            break;
+    executeHeaderMenuInternalCommands(e, args) {
+        if (args && args.command) {
+            switch (args.command) {
+                case 'hide':
+                    this.hideColumn(args.column);
+                    this.autoResizeColumns();
+                    break;
+                case 'sort-asc':
+                case 'sort-desc':
+                    // get previously sorted columns
+                    const /** @type {?} */ cols = this.sortService.getPreviousColumnSorts(args.column.id + '');
+                    // add to the column array, the column sorted by the header menu
+                    cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
+                    if (this._gridOptions.backendServiceApi) {
+                        this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this._grid });
                     }
-                }
-            };
+                    else {
+                        this.sortService.onLocalSortChanged(this._grid, this._dataView, cols);
+                    }
+                    // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
+                    const /** @type {?} */ newSortColumns = cols.map((col) => {
+                        return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
+                    });
+                    this._grid.setSortColumns(newSortColumns); // add sort icon in UI
+                    break;
+                default:
+                    break;
+            }
         }
     }
     /**
@@ -5786,12 +5782,14 @@ class GridStateService {
  */
 class GridService {
     /**
+     * @param {?} controlAndPluginService
      * @param {?} filterService
      * @param {?} gridStateService
      * @param {?} sortService
      * @param {?} translate
      */
-    constructor(filterService, gridStateService, sortService, translate) {
+    constructor(controlAndPluginService, filterService, gridStateService, sortService, translate) {
+        this.controlAndPluginService = controlAndPluginService;
         this.filterService = filterService;
         this.gridStateService = gridStateService;
         this.sortService = sortService;
@@ -5953,30 +5951,23 @@ class GridService {
      * @return {?}
      */
     resetGrid(columnDefinitions) {
-        if (this.filterService && this.filterService.clearFilters) {
-            this.filterService.clearFilters();
-        }
-        if (this.sortService && this.sortService.clearSorting) {
-            this.sortService.clearSorting();
-        }
         // reset columns to original states & refresh the grid
         if (this._grid && this._dataView) {
-            const /** @type {?} */ originalColumns = columnDefinitions || this._columnDefinitions;
+            const /** @type {?} */ originalColumns = this.controlAndPluginService.getAllColumns();
+            // const originalColumns = columnDefinitions || this._columnDefinitions;
             if (Array.isArray(originalColumns) && originalColumns.length > 0) {
-                // make sure all columns are translated if need be
-                if (this._gridOptions && this._gridOptions.enableTranslate) {
-                    for (const /** @type {?} */ column of originalColumns) {
-                        if (column.headerKey) {
-                            column.name = this.translate.instant(column.headerKey);
-                        }
-                    }
-                }
                 // set the grid columns to it's original column definitions
                 this._grid.setColumns(originalColumns);
                 this._dataView.refresh();
                 this._grid.autosizeColumns();
                 this.gridStateService.resetColumns(columnDefinitions);
             }
+        }
+        if (this.filterService && this.filterService.clearFilters) {
+            this.filterService.clearFilters();
+        }
+        if (this.sortService && this.sortService.clearSorting) {
+            this.sortService.clearSorting();
         }
     }
     /**
@@ -6068,6 +6059,7 @@ GridService.decorators = [
 ];
 /** @nocollapse */
 GridService.ctorParameters = () => [
+    { type: ControlAndPluginService, },
     { type: FilterService, },
     { type: GridStateService, },
     { type: SortService, },
@@ -9006,7 +8998,7 @@ class AngularSlickgridComponent {
         // however "editor" is used internally by SlickGrid for it's Editor Factory
         // so in our lib we will swap "editor" and copy it into "internalColumnEditor"
         // then take back "editor.type" and make it the new "editor" so that SlickGrid Editor Factory still works
-        this._columnDefinitions = this._columnDefinitions.map((c) => (Object.assign({}, c, { editor: this.getEditor((c.editor && c.editor.type), c), internalColumnEditor: Object.assign({}, c.editor) }))), this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+        this._columnDefinitions = this._columnDefinitions.map((c) => (Object.assign({}, c, { editor: this.getEditor((c.editor && c.editor.type), c), internalColumnEditor: Object.assign({}, c.editor) }))), this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
         this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
         this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._dataView, this.groupItemMetadataProvider);
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
