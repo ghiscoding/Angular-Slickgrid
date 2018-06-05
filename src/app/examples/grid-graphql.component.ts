@@ -11,6 +11,7 @@ import {
   GraphqlService,
   GraphqlServiceOption,
   GridOption,
+  GridStateChange,
   OperatorType,
   SortDirection
 } from './../modules/angular-slickgrid';

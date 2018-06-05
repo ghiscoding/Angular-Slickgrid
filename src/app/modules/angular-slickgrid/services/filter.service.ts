@@ -155,7 +155,6 @@ export class FilterService {
         delete this._columnFilters[columnId];
       }
     }
-    this._columnFilters = {};
 
     // we also need to refresh the dataView and optionally the grid (it's optional since we use DataView)
     if (this._dataView) {

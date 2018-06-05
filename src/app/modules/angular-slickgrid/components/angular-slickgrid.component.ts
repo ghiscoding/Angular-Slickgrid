@@ -196,7 +196,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // then take back "editor.type" and make it the new "editor" so that SlickGrid Editor Factory still works
     this._columnDefinitions = this._columnDefinitions.map((c: Column | any) => ({ ...c, editor: this.getEditor((c.editor && c.editor.type), c), internalColumnEditor: { ...c.editor } })),
 
-    this.controlAndPluginService.createPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+    this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
 
     this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._dataView, this.groupItemMetadataProvider);

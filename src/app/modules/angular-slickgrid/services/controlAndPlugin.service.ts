@@ -97,7 +97,7 @@ export class ControlAndPluginService {
     this._grid = grid;
     this._dataView = dataView;
     this.visibleColumns = this._columnDefinitions;
-    this.allColumns = this._columnDefinitions;
+    this.allColumns = [...this._columnDefinitions];
 
     // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
     // this is to avoid having hidden columns not being translated on first load
@@ -206,7 +206,7 @@ export class ControlAndPluginService {
    * @param columnDefinitions
    * @param options
    */
-  createPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption) {
+  createCheckboxPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption) {
     if (options.enableCheckboxSelector) {
       this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
       const selectionColumn: Column = this.checkboxSelectorPlugin.getColumnDefinition();
@@ -351,7 +351,7 @@ export class ControlAndPluginService {
 
     grid.registerPlugin(headerMenuPlugin);
     headerMenuPlugin.onCommand.subscribe((e: Event, args: HeaderMenuOnCommandArgs) => {
-      this.executeHeaderMenuInternalCommands();
+      this.executeHeaderMenuInternalCommands(e, args);
       if (this._gridOptions.headerMenu && typeof this._gridOptions.headerMenu.onCommand === 'function') {
         this._gridOptions.headerMenu.onCommand(e, args);
       }
@@ -606,40 +606,35 @@ export class ControlAndPluginService {
   }
 
   /** Execute the Header Menu Commands that was triggered by the onCommand subscribe */
-  executeHeaderMenuInternalCommands() {
-    // Command callback, what will be executed after command is clicked
-    if (this.headerMenuPlugin && this._gridOptions.headerMenu) {
-      this.headerMenuPlugin.onCommand.subscribe = (e, args) => {
-        if (args && args.command) {
-          switch (args.command) {
-            case 'hide':
-            this.hideColumn(args.column);
-            this.autoResizeColumns();
-              break;
-            case 'sort-asc':
-            case 'sort-desc':
-              // get previously sorted columns
-              const cols: ColumnSort[] = this.sortService.getPreviousColumnSorts(args.column.id + '');
+  executeHeaderMenuInternalCommands(e: Event, args: HeaderMenuOnCommandArgs) {
+    if (args && args.command) {
+      switch (args.command) {
+        case 'hide':
+        this.hideColumn(args.column);
+        this.autoResizeColumns();
+          break;
+        case 'sort-asc':
+        case 'sort-desc':
+          // get previously sorted columns
+          const cols: ColumnSort[] = this.sortService.getPreviousColumnSorts(args.column.id + '');
 
-              // add to the column array, the column sorted by the header menu
-              cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
-              if (this._gridOptions.backendServiceApi) {
-                this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this._grid });
-              } else {
-                this.sortService.onLocalSortChanged(this._grid, this._dataView, cols);
-              }
-
-              // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
-              const newSortColumns: ColumnSort[] = cols.map((col) => {
-                return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
-              });
-              this._grid.setSortColumns(newSortColumns); // add sort icon in UI
-              break;
-            default:
-              break;
+          // add to the column array, the column sorted by the header menu
+          cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
+          if (this._gridOptions.backendServiceApi) {
+            this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this._grid });
+          } else {
+            this.sortService.onLocalSortChanged(this._grid, this._dataView, cols);
           }
-        }
-      };
+
+          // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
+          const newSortColumns: ColumnSort[] = cols.map((col) => {
+            return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
+          });
+          this._grid.setSortColumns(newSortColumns); // add sort icon in UI
+          break;
+        default:
+          break;
+      }
     }
   }
 

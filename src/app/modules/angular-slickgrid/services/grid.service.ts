@@ -1,6 +1,7 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Injectable } from '@angular/core';
 import { CellArgs, Column, GridOption, OnEventArgs } from './../models/index';
+import { ControlAndPluginService } from './controlAndPlugin.service';
 import { FilterService } from './filter.service';
 import { GridStateService } from './gridState.service';
 import { SortService } from './sort.service';
@@ -14,7 +15,7 @@ export class GridService {
   private _grid: any;
   private _dataView: any;
 
-  constructor(private filterService: FilterService, private gridStateService: GridStateService, private sortService: SortService, private translate: TranslateService) { }
+  constructor(private controlAndPluginService: ControlAndPluginService, private filterService: FilterService, private gridStateService: GridStateService, private sortService: SortService, private translate: TranslateService) { }
 
   /** Getter for the Column Definitions pulled through the Grid Object */
   private get _columnDefinitions(): Column[] {
@@ -154,33 +155,23 @@ export class GridService {
    * The reset will clear the Filters & Sort, then will reset the Columns to their original state
    */
   resetGrid(columnDefinitions?: Column[]) {
-    if (this.filterService && this.filterService.clearFilters) {
-      this.filterService.clearFilters();
-    }
-    if (this.sortService && this.sortService.clearSorting) {
-      this.sortService.clearSorting();
-    }
-
     // reset columns to original states & refresh the grid
     if (this._grid && this._dataView) {
-      const originalColumns = columnDefinitions || this._columnDefinitions;
+      const originalColumns = this.controlAndPluginService.getAllColumns();
+      // const originalColumns = columnDefinitions || this._columnDefinitions;
       if (Array.isArray(originalColumns) && originalColumns.length > 0) {
-
-        // make sure all columns are translated if need be
-        if (this._gridOptions && this._gridOptions.enableTranslate) {
-          for (const column of originalColumns) {
-            if (column.headerKey) {
-              column.name = this.translate.instant(column.headerKey);
-            }
-          }
-        }
-
         // set the grid columns to it's original column definitions
         this._grid.setColumns(originalColumns);
         this._dataView.refresh();
         this._grid.autosizeColumns();
         this.gridStateService.resetColumns(columnDefinitions);
       }
+    }
+    if (this.filterService && this.filterService.clearFilters) {
+      this.filterService.clearFilters();
+    }
+    if (this.sortService && this.sortService.clearSorting) {
+      this.sortService.clearSorting();
     }
   }
 

@@ -138,6 +138,7 @@ export class GridStateComponent implements OnInit {
         containerId: 'demo-container',
         sidePadding: 15
       },
+      enableCheckboxSelector: true,
       enableFiltering: true,
       enableTranslate: true,
       i18n: this.translate
