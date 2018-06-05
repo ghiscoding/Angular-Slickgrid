@@ -2397,6 +2397,12 @@ var ControlAndPluginService = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    ControlAndPluginService.prototype.getAllColumns = function () {
+        return this.allColumns || [];
+    };
+    ControlAndPluginService.prototype.getVisibleColumns = function () {
+        return this.visibleColumns || [];
+    };
     ControlAndPluginService.prototype.getAllExtensions = function () {
         return this.extensionList;
     };
@@ -2411,6 +2417,24 @@ var ControlAndPluginService = /** @class */ (function () {
         this._grid = grid;
         this._dataView = dataView;
         this.visibleColumns = this._columnDefinitions;
+        this.allColumns = this._columnDefinitions;
+        if (this._gridOptions.enableTranslate) {
+            try {
+                for (var _a = __values(this.allColumns), _b = _a.next(); !_b.done; _b = _a.next()) {
+                    var column = _b.value;
+                    if (column.headerKey) {
+                        column.name = this.translate.instant(column.headerKey);
+                    }
+                }
+            }
+            catch (e_3_1) { e_3 = { error: e_3_1 }; }
+            finally {
+                try {
+                    if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
+                }
+                finally { if (e_3) throw e_3.error; }
+            }
+        }
         if (this._gridOptions.enableColumnPicker) {
             this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions);
             this.extensionList.push({ name: 'ColumnPicker', service: this.columnPickerControl });
@@ -2474,6 +2498,7 @@ var ControlAndPluginService = /** @class */ (function () {
                 this.extensionList.push({ name: 'generic', service: this._gridOptions.registerPlugins });
             }
         }
+        var e_3, _c;
     };
     ControlAndPluginService.prototype.createPluginBeforeGridCreation = function (columnDefinitions, options) {
         if (options.enableCheckboxSelector) {
@@ -2523,8 +2548,8 @@ var ControlAndPluginService = /** @class */ (function () {
     };
     ControlAndPluginService.prototype.createColumnPicker = function (grid, columnDefinitions) {
         var _this = this;
-        var forceFitTitle = this._gridOptions.enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : 'Force fit columns';
-        var syncResizeTitle = this._gridOptions.enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : 'Synchronous resize';
+        var forceFitTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('forcefit') : 'Force fit columns';
+        var syncResizeTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('synch') : 'Synchronous resize';
         this._gridOptions.columnPicker = this._gridOptions.columnPicker || {};
         this._gridOptions.columnPicker.forceFitTitle = this._gridOptions.columnPicker.forceFitTitle || forceFitTitle;
         this._gridOptions.columnPicker.syncResizeTitle = this._gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
@@ -2541,7 +2566,7 @@ var ControlAndPluginService = /** @class */ (function () {
     ControlAndPluginService.prototype.createGridMenu = function (grid, columnDefinitions) {
         var _this = this;
         this._gridOptions.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), this._gridOptions.gridMenu);
-        this.addGridMenuCustomCommands(grid, this._gridOptions);
+        this.addGridMenuCustomCommands(grid);
         var gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
         if (grid && this._gridOptions.gridMenu) {
             gridMenuControl.onBeforeMenuShow.subscribe(function (e, args) {
@@ -2656,69 +2681,69 @@ var ControlAndPluginService = /** @class */ (function () {
         });
         this.extensionList = [];
     };
-    ControlAndPluginService.prototype.addGridMenuCustomCommands = function (grid, options) {
+    ControlAndPluginService.prototype.addGridMenuCustomCommands = function (grid) {
         var _this = this;
-        var backendApi = options.backendServiceApi || null;
-        if (options.enableFiltering) {
-            if (options && options.gridMenu && !options.gridMenu.hideClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
-                options.gridMenu.customItems.push({
-                    iconCssClass: options.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
-                    title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
+        var backendApi = this._gridOptions.backendServiceApi || null;
+        if (this._gridOptions.enableFiltering) {
+            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
+                this._gridOptions.gridMenu.customItems.push({
+                    iconCssClass: this._gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
+                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
                     disabled: false,
                     command: 'clear-filter',
                     positionOrder: 50
                 });
             }
-            if (options && options.gridMenu && !options.gridMenu.hideToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'toggle-filter'; }).length === 0) {
-                options.gridMenu.customItems.push({
-                    iconCssClass: options.gridMenu.iconToggleFilterCommand || 'fa fa-random',
-                    title: options.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
+            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideToggleFilterCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'toggle-filter'; }).length === 0) {
+                this._gridOptions.gridMenu.customItems.push({
+                    iconCssClass: this._gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
+                    title: this._gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
                     disabled: false,
                     command: 'toggle-filter',
                     positionOrder: 52
                 });
             }
-            if (options && options.gridMenu && !options.gridMenu.hideRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'refresh-dataset'; }).length === 0) {
-                options.gridMenu.customItems.push({
-                    iconCssClass: options.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
-                    title: options.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
+            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'refresh-dataset'; }).length === 0) {
+                this._gridOptions.gridMenu.customItems.push({
+                    iconCssClass: this._gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
+                    title: this._gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
                     disabled: false,
                     command: 'refresh-dataset',
                     positionOrder: 54
                 });
             }
         }
-        if (options.enableSorting) {
-            if (options && options.gridMenu && !options.gridMenu.hideClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'clear-sorting'; }).length === 0) {
-                options.gridMenu.customItems.push({
-                    iconCssClass: options.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
-                    title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
+        if (this._gridOptions.enableSorting) {
+            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllSortingCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'clear-sorting'; }).length === 0) {
+                this._gridOptions.gridMenu.customItems.push({
+                    iconCssClass: this._gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
+                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
                     disabled: false,
                     command: 'clear-sorting',
                     positionOrder: 51
                 });
             }
         }
-        if (options && options.enableExport && options.gridMenu && !options.gridMenu.hideExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'export-csv'; }).length === 0) {
-            options.gridMenu.customItems.push({
-                iconCssClass: options.gridMenu.iconExportCsvCommand || 'fa fa-download',
-                title: options.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
+        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportCsvCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'export-csv'; }).length === 0) {
+            this._gridOptions.gridMenu.customItems.push({
+                iconCssClass: this._gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
+                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
                 disabled: false,
                 command: 'export-csv',
                 positionOrder: 53
             });
         }
-        if (options && options.enableExport && options.gridMenu && !options.gridMenu.hideExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter(function (item) { return item.command === 'export-text-delimited'; }).length === 0) {
-            options.gridMenu.customItems.push({
-                iconCssClass: options.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
-                title: options.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
+        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportTextDelimitedCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'export-text-delimited'; }).length === 0) {
+            this._gridOptions.gridMenu.customItems.push({
+                iconCssClass: this._gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
+                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
                 disabled: false,
                 command: 'export-text-delimited',
                 positionOrder: 54
             });
         }
-        if (options.gridMenu && options.gridMenu.customItems.length > 0) {
-            options.gridMenu.onCommand = function (e, args) {
+        if (this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems.length > 0) {
+            this._gridOptions.gridMenu.onCommand = function (e, args) {
                 if (args && args.command) {
                     switch (args.command) {
                         case 'clear-filter':
@@ -2761,10 +2786,10 @@ var ControlAndPluginService = /** @class */ (function () {
                 }
             };
         }
-        if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
-            var customTitle = options.enableTranslate ? this.translate.instant('COMMANDS') : 'Commands';
-            options.gridMenu.customTitle = options.gridMenu.customTitle || customTitle;
-            options.gridMenu.customItems.sort(function (itemA, itemB) {
+        if (this._gridOptions && this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.length > 0) {
+            var customTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('commands') : 'Commands';
+            this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || customTitle;
+            this._gridOptions.gridMenu.customItems.sort(function (itemA, itemB) {
                 if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
                     return itemA.positionOrder - itemB.positionOrder;
                 }
@@ -2874,25 +2899,38 @@ var ControlAndPluginService = /** @class */ (function () {
         });
     };
     ControlAndPluginService.prototype.translateColumnPicker = function () {
-        if (this.columnPickerControl) {
-            this.columnPickerControl.destroy();
-            this.columnPickerControl = null;
+        if (this._gridOptions && this._gridOptions.columnPicker) {
+            this._gridOptions.columnPicker.columnTitle = this.getDefaultTranslationByKey('columns');
+            this._gridOptions.columnPicker.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
+            this._gridOptions.columnPicker.syncResizeTitle = this.getDefaultTranslationByKey('synch');
         }
-        var tempHideForceFit = this._gridOptions.columnPicker.hideForceFitButton;
-        var tempSyncResize = this._gridOptions.columnPicker.hideSyncResizeButton;
-        this._gridOptions.columnPicker = undefined;
-        this._gridOptions.columnPicker = {
-            hideForceFitButton: tempHideForceFit,
-            hideSyncResizeButton: tempSyncResize
-        };
-        this.createColumnPicker(this._grid, this.visibleColumns);
     };
     ControlAndPluginService.prototype.translateGridMenu = function () {
-        this.gridMenuControl.destroy();
         if (this._gridOptions && this._gridOptions.gridMenu) {
-            this._gridOptions.gridMenu = this.resetGridMenuTranslations(this._gridOptions.gridMenu);
+            this._gridOptions.gridMenu.customItems = [];
+            this._gridOptions.gridMenu.customTitle = '';
+            this._gridOptions.gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
+            this._gridOptions.gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
+            this._gridOptions.gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
+            try {
+                for (var _a = __values(this.allColumns), _b = _a.next(); !_b.done; _b = _a.next()) {
+                    var column = _b.value;
+                    if (column.headerKey) {
+                        column.name = this.translate.instant(column.headerKey);
+                    }
+                }
+            }
+            catch (e_4_1) { e_4 = { error: e_4_1 }; }
+            finally {
+                try {
+                    if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
+                }
+                finally { if (e_4) throw e_4.error; }
+            }
+            this.addGridMenuCustomCommands(this._grid);
+            this.gridMenuControl.init(this._grid);
         }
-        this.createGridMenu(this._grid, this.visibleColumns);
+        var e_4, _c;
     };
     ControlAndPluginService.prototype.translateHeaderMenu = function () {
         if (this._gridOptions && this._gridOptions.headerMenu) {
@@ -2912,15 +2950,15 @@ var ControlAndPluginService = /** @class */ (function () {
                 }
             }
         }
-        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        catch (e_5_1) { e_5 = { error: e_5_1 }; }
         finally {
             try {
                 if (columnDefinitions_1_1 && !columnDefinitions_1_1.done && (_a = columnDefinitions_1.return)) _a.call(columnDefinitions_1);
             }
-            finally { if (e_3) throw e_3.error; }
+            finally { if (e_5) throw e_5.error; }
         }
         this.renderColumnHeaders(columnDefinitions);
-        var e_3, _a;
+        var e_5, _a;
     };
     ControlAndPluginService.prototype.renderColumnHeaders = function (newColumnDefinitions) {
         var collection = newColumnDefinitions || this._columnDefinitions;
@@ -2930,9 +2968,9 @@ var ControlAndPluginService = /** @class */ (function () {
     };
     ControlAndPluginService.prototype.getDefaultGridMenuOptions = function () {
         return {
-            columnTitle: this.translate.instant('COLUMNS') || 'Columns',
-            forceFitTitle: this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns',
-            syncResizeTitle: this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize',
+            columnTitle: this.getDefaultTranslationByKey('columns'),
+            forceFitTitle: this.getDefaultTranslationByKey('forcefit'),
+            syncResizeTitle: this.getDefaultTranslationByKey('synch'),
             iconCssClass: 'fa fa-bars',
             menuWidth: 18,
             customTitle: undefined,
@@ -2950,12 +2988,30 @@ var ControlAndPluginService = /** @class */ (function () {
             showSortCommands: true
         };
     };
+    ControlAndPluginService.prototype.getDefaultTranslationByKey = function (key) {
+        var output = '';
+        switch (key) {
+            case 'commands':
+                output = this.translate.instant('COMMANDS') || 'Commands';
+                break;
+            case 'columns':
+                output = this.translate.instant('COLUMNS') || 'Columns';
+                break;
+            case 'forcefit':
+                output = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
+                break;
+            case 'synch':
+                output = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
+                break;
+        }
+        return output;
+    };
     ControlAndPluginService.prototype.resetGridMenuTranslations = function (gridMenu) {
         gridMenu.customItems = [];
         delete gridMenu.customTitle;
-        gridMenu.columnTitle = this.translate.instant('COLUMNS') || 'Columns';
-        gridMenu.forceFitTitle = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
-        gridMenu.syncResizeTitle = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
+        gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
+        gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
+        gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
         return gridMenu;
     };
     ControlAndPluginService.prototype.resetHeaderMenuTranslations = function (columnDefinitions) {
@@ -3023,15 +3079,15 @@ var GraphqlQueryBuilder = /** @class */ (function () {
                 this.head.push(prop + ":" + val);
             }
         }
-        catch (e_4_1) { e_4 = { error: e_4_1 }; }
+        catch (e_6_1) { e_6 = { error: e_6_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_4) throw e_4.error; }
+            finally { if (e_6) throw e_6.error; }
         }
         return this;
-        var e_4, _c;
+        var e_6, _c;
     };
     GraphqlQueryBuilder.prototype.find = function () {
         var searches = [];
@@ -3111,15 +3167,15 @@ var GraphqlQueryBuilder = /** @class */ (function () {
                 sourceA.push(prop + ":" + this.getGraphQLValue(obj[prop]));
             }
         }
-        catch (e_5_1) { e_5 = { error: e_5_1 }; }
+        catch (e_7_1) { e_7 = { error: e_7_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_5) throw e_5.error; }
+            finally { if (e_7) throw e_7.error; }
         }
         return "{" + sourceA.join() + "}";
-        var e_5, _c;
+        var e_7, _c;
     };
     return GraphqlQueryBuilder;
 }());
@@ -3162,12 +3218,12 @@ var GraphqlService = /** @class */ (function () {
                     }
                 }
             }
-            catch (e_6_1) { e_6 = { error: e_6_1 }; }
+            catch (e_8_1) { e_8 = { error: e_8_1 }; }
             finally {
                 try {
                     if (columnDefinitions_2_1 && !columnDefinitions_2_1.done && (_a = columnDefinitions_2.return)) _a.call(columnDefinitions_2);
                 }
-                finally { if (e_6) throw e_6.error; }
+                finally { if (e_8) throw e_8.error; }
             }
         }
         else {
@@ -3207,19 +3263,19 @@ var GraphqlService = /** @class */ (function () {
                     datasetFilters[queryArgument.field] = queryArgument.value;
                 }
             }
-            catch (e_7_1) { e_7 = { error: e_7_1 }; }
+            catch (e_9_1) { e_9 = { error: e_9_1 }; }
             finally {
                 try {
                     if (_c && !_c.done && (_d = _b.return)) _d.call(_b);
                 }
-                finally { if (e_7) throw e_7.error; }
+                finally { if (e_9) throw e_9.error; }
             }
         }
         datasetQb.filter(datasetFilters);
         queryQb.find(datasetQb);
         var enumSearchProperties = ['direction:', 'field:', 'operator:'];
         return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.options.keepArgumentFieldDoubleQuotes || false);
-        var e_6, _a, e_7, _d;
+        var e_8, _a, e_9, _d;
     };
     GraphqlService.prototype.buildFilterQuery = function (inputArray) {
         var set = function (o, a) {
@@ -3438,19 +3494,19 @@ var GraphqlService = /** @class */ (function () {
                             }
                         }
                     }
-                    catch (e_8_1) { e_8 = { error: e_8_1 }; }
+                    catch (e_10_1) { e_10 = { error: e_10_1 }; }
                     finally {
                         try {
                             if (sortColumns_1_1 && !sortColumns_1_1.done && (_a = sortColumns_1.return)) _a.call(sortColumns_1);
                         }
-                        finally { if (e_8) throw e_8.error; }
+                        finally { if (e_10) throw e_10.error; }
                     }
                 }
             }
         }
         this._currentSorters = currentSorters;
         this.updateOptions({ sortingOptions: graphqlSorters });
-        var e_8, _a;
+        var e_10, _a;
     };
     GraphqlService.prototype.trimDoubleQuotesOnEnumField = function (inputStr, enumSearchWords, keepArgumentFieldDoubleQuotes) {
         var patternWordInQuotes = "s?((field:s*)?\".*?\")";
@@ -3653,14 +3709,14 @@ var OdataService = /** @class */ (function () {
                 }
             }
         }
-        catch (e_9_1) { e_9 = { error: e_9_1 }; }
+        catch (e_11_1) { e_11 = { error: e_11_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_9) throw e_9.error; }
+            finally { if (e_11) throw e_11.error; }
         }
-        var e_9, _c;
+        var e_11, _c;
     };
     return OdataService;
 }());
@@ -3917,12 +3973,12 @@ var GridOdataService = /** @class */ (function () {
                             }
                         }
                     }
-                    catch (e_10_1) { e_10 = { error: e_10_1 }; }
+                    catch (e_12_1) { e_12 = { error: e_12_1 }; }
                     finally {
                         try {
                             if (sortColumns_2_1 && !sortColumns_2_1.done && (_a = sortColumns_2.return)) _a.call(sortColumns_2);
                         }
-                        finally { if (e_10) throw e_10.error; }
+                        finally { if (e_12) throw e_12.error; }
                     }
                     sortByArray = sorterArray;
                 }
@@ -3935,7 +3991,7 @@ var GridOdataService = /** @class */ (function () {
         });
         this._currentSorters = (sortByArray);
         return this.odataService.buildQuery();
-        var e_10, _a;
+        var e_12, _a;
     };
     GridOdataService.prototype.castFilterToColumnFilter = function (columnFilters) {
         var filtersArray = (((typeof columnFilters === 'object') ? Object.keys(columnFilters).map(function (key) { return columnFilters[key]; }) : columnFilters));
@@ -5603,15 +5659,15 @@ var multipleFormatter = function (row, cell, value, columnDef, dataContext, grid
             currentValue = formatter(row, cell, currentValue, columnDef, dataContext, grid);
         }
     }
-    catch (e_11_1) { e_11 = { error: e_11_1 }; }
+    catch (e_13_1) { e_13 = { error: e_13_1 }; }
     finally {
         try {
             if (formatters_1_1 && !formatters_1_1.done && (_a = formatters_1.return)) _a.call(formatters_1);
         }
-        finally { if (e_11) throw e_11.error; }
+        finally { if (e_13) throw e_13.error; }
     }
     return currentValue;
-    var e_11, _a;
+    var e_13, _a;
 };
 var percentFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {

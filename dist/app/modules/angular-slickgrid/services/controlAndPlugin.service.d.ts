@@ -10,6 +10,7 @@ export declare class ControlAndPluginService {
     private translate;
     private _dataView;
     private _grid;
+    allColumns: Column[];
     visibleColumns: Column[];
     areVisibleColumnDifferent: boolean;
     extensionList: Extension[];
@@ -28,6 +29,10 @@ export declare class ControlAndPluginService {
     private readonly _gridOptions;
     /** Getter for the Column Definitions pulled through the Grid Object */
     private readonly _columnDefinitions;
+    /** Get all columns (includes visible and non-visible) */
+    getAllColumns(): Column[];
+    /** Get only visible columns */
+    getVisibleColumns(): Column[];
     getAllExtensions(): Extension[];
     getExtensionByName(name: string): Extension | undefined;
     /** Auto-resize all the column in the grid to fit the grid width */
@@ -80,10 +85,9 @@ export declare class ControlAndPluginService {
     /**
      * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
      * @param grid
-     * @param options
      * @return gridMenu
      */
-    private addGridMenuCustomCommands(grid, options);
+    private addGridMenuCustomCommands(grid);
     /**
      * Create Header Menu with Custom Commands if user has enabled Header Menu
      * @param grid
@@ -97,17 +101,9 @@ export declare class ControlAndPluginService {
     refreshBackendDataset(): void;
     /** Remove a column from the grid by it's index in the grid */
     removeColumnByIndex(array: any[], index: number): any[];
-    /**
-     * Translate the Column Picker and it's last 2 checkboxes
-     * Note that the only way that seems to work is to destroy and re-create the Column Picker
-     * Changing only the columnPicker.columnTitle with i18n translate was not enough.
-     */
+    /** Translate the Column Picker and it's last 2 checkboxes */
     translateColumnPicker(): void;
-    /**
-     * Translate the Grid Menu ColumnTitle and CustomTitle.
-     * Note that the only way that seems to work is to destroy and re-create the Grid Menu
-     * Changing only the gridMenu.columnTitle with i18n translate was not enough.
-     */
+    /** Translate the Grid Menu titles and column picker */
     translateGridMenu(): void;
     /**
      * Translate the Header Menu titles, we need to loop through all column definition to re-translate them
@@ -132,6 +128,7 @@ export declare class ControlAndPluginService {
      * @return default Header Menu options
      */
     private getDefaultHeaderMenuOptions();
+    private getDefaultTranslationByKey(key);
     /**
      * Reset all the Grid Menu options which have text to translate
      * @param grid menu object
