@@ -30,6 +30,7 @@ declare var $: any;
 export class ControlAndPluginService {
   private _dataView: any;
   private _grid: any;
+  allColumns: Column[];
   visibleColumns: Column[];
   areVisibleColumnDifferent = false;
   extensionList: Extension[] = [];
@@ -63,6 +64,16 @@ export class ControlAndPluginService {
     return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
   }
 
+  /** Get all columns (includes visible and non-visible) */
+  getAllColumns(): Column[] {
+    return this.allColumns || [];
+  }
+
+  /** Get only visible columns */
+  getVisibleColumns(): Column[] {
+    return this.visibleColumns || [];
+  }
+
   getAllExtensions(): Extension[] {
     return this.extensionList;
   }
@@ -86,6 +97,15 @@ export class ControlAndPluginService {
     this._grid = grid;
     this._dataView = dataView;
     this.visibleColumns = this._columnDefinitions;
+    this.allColumns = this._columnDefinitions;
+
+    if (this._gridOptions.enableTranslate) {
+      for (const column of this.allColumns) {
+        if (column.headerKey) {
+          column.name = this.translate.instant(column.headerKey);
+        }
+      }
+    }
 
     // Column Picker Control
     if (this._gridOptions.enableColumnPicker) {
@@ -246,8 +266,8 @@ export class ControlAndPluginService {
    */
   createColumnPicker(grid: any, columnDefinitions: Column[]) {
     // localization support for the picker
-    const forceFitTitle = this._gridOptions.enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : 'Force fit columns';
-    const syncResizeTitle = this._gridOptions.enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : 'Synchronous resize';
+    const forceFitTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('forcefit') : 'Force fit columns';
+    const syncResizeTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('synch') : 'Synchronous resize';
 
     this._gridOptions.columnPicker = this._gridOptions.columnPicker || {};
     this._gridOptions.columnPicker.forceFitTitle = this._gridOptions.columnPicker.forceFitTitle || forceFitTitle;
@@ -273,7 +293,7 @@ export class ControlAndPluginService {
    */
   createGridMenu(grid: any, columnDefinitions: Column[]) {
     this._gridOptions.gridMenu = { ...this.getDefaultGridMenuOptions(), ...this._gridOptions.gridMenu };
-    this.addGridMenuCustomCommands(grid, this._gridOptions);
+    this.addGridMenuCustomCommands(grid);
 
     const gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
     if (grid && this._gridOptions.gridMenu) {
@@ -411,19 +431,18 @@ export class ControlAndPluginService {
   /**
    * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
    * @param grid
-   * @param options
    * @return gridMenu
    */
-  private addGridMenuCustomCommands(grid: any, options: GridOption) {
-    const backendApi = options.backendServiceApi || null;
+  private addGridMenuCustomCommands(grid: any) {
+    const backendApi = this._gridOptions.backendServiceApi || null;
 
-    if (options.enableFiltering) {
+    if (this._gridOptions.enableFiltering) {
       // show grid menu: clear all filters
-      if (options && options.gridMenu && !options.gridMenu.hideClearAllFiltersCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-filter').length === 0) {
-        options.gridMenu.customItems.push(
+      if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-filter').length === 0) {
+        this._gridOptions.gridMenu.customItems.push(
           {
-            iconCssClass: options.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
-            title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
+            iconCssClass: this._gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
+            title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
             disabled: false,
             command: 'clear-filter',
             positionOrder: 50
@@ -432,11 +451,11 @@ export class ControlAndPluginService {
       }
 
       // show grid menu: toggle filter row
-      if (options && options.gridMenu && !options.gridMenu.hideToggleFilterCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'toggle-filter').length === 0) {
-        options.gridMenu.customItems.push(
+      if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideToggleFilterCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'toggle-filter').length === 0) {
+        this._gridOptions.gridMenu.customItems.push(
           {
-            iconCssClass: options.gridMenu.iconToggleFilterCommand || 'fa fa-random',
-            title: options.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
+            iconCssClass: this._gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
+            title: this._gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
             disabled: false,
             command: 'toggle-filter',
             positionOrder: 52
@@ -445,11 +464,11 @@ export class ControlAndPluginService {
       }
 
       // show grid menu: refresh dataset
-      if (options && options.gridMenu && !options.gridMenu.hideRefreshDatasetCommand && backendApi && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
-        options.gridMenu.customItems.push(
+      if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
+        this._gridOptions.gridMenu.customItems.push(
           {
-            iconCssClass: options.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
-            title: options.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
+            iconCssClass: this._gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
+            title: this._gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
             disabled: false,
             command: 'refresh-dataset',
             positionOrder: 54
@@ -458,13 +477,13 @@ export class ControlAndPluginService {
       }
     }
 
-    if (options.enableSorting) {
+    if (this._gridOptions.enableSorting) {
       // show grid menu: clear all sorting
-      if (options && options.gridMenu && !options.gridMenu.hideClearAllSortingCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-sorting').length === 0) {
-        options.gridMenu.customItems.push(
+      if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllSortingCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-sorting').length === 0) {
+        this._gridOptions.gridMenu.customItems.push(
           {
-            iconCssClass: options.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
-            title: options.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
+            iconCssClass: this._gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
+            title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
             disabled: false,
             command: 'clear-sorting',
             positionOrder: 51
@@ -474,11 +493,11 @@ export class ControlAndPluginService {
     }
 
     // show grid menu: export to file
-    if (options && options.enableExport && options.gridMenu && !options.gridMenu.hideExportCsvCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-csv').length === 0) {
-      options.gridMenu.customItems.push(
+    if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportCsvCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-csv').length === 0) {
+      this._gridOptions.gridMenu.customItems.push(
         {
-          iconCssClass: options.gridMenu.iconExportCsvCommand || 'fa fa-download',
-          title: options.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
+          iconCssClass: this._gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
+          title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
           disabled: false,
           command: 'export-csv',
           positionOrder: 53
@@ -486,11 +505,11 @@ export class ControlAndPluginService {
       );
     }
     // show grid menu: export to text file as tab delimited
-    if (options && options.enableExport && options.gridMenu && !options.gridMenu.hideExportTextDelimitedCommand && options.gridMenu.customItems && options.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-text-delimited').length === 0) {
-      options.gridMenu.customItems.push(
+    if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportTextDelimitedCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-text-delimited').length === 0) {
+      this._gridOptions.gridMenu.customItems.push(
         {
-          iconCssClass: options.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
-          title: options.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
+          iconCssClass: this._gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
+          title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
           disabled: false,
           command: 'export-text-delimited',
           positionOrder: 54
@@ -499,8 +518,8 @@ export class ControlAndPluginService {
     }
 
     // Command callback, what will be executed after command is clicked
-    if (options.gridMenu && options.gridMenu.customItems.length > 0) {
-      options.gridMenu.onCommand = (e, args) => {
+    if (this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems.length > 0) {
+      this._gridOptions.gridMenu.onCommand = (e, args) => {
         if (args && args.command) {
           switch (args.command) {
             case 'clear-filter':
@@ -545,12 +564,12 @@ export class ControlAndPluginService {
     }
 
     // add the custom "Commands" title if there are any commands
-    if (options && options.gridMenu && options.gridMenu.customItems && options.gridMenu.customItems.length > 0) {
-      const customTitle = options.enableTranslate ? this.translate.instant('COMMANDS') : 'Commands';
-      options.gridMenu.customTitle = options.gridMenu.customTitle || customTitle;
+    if (this._gridOptions && this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.length > 0) {
+      const customTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('commands') : 'Commands';
+      this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || customTitle;
 
       // sort the custom items by their position in the list
-      options.gridMenu.customItems.sort((itemA, itemB) => {
+      this._gridOptions.gridMenu.customItems.sort((itemA, itemB) => {
         if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
           return itemA.positionOrder - itemB.positionOrder;
         }
@@ -699,20 +718,10 @@ export class ControlAndPluginService {
    * Changing only the columnPicker.columnTitle with i18n translate was not enough.
    */
   translateColumnPicker() {
-    // destroy and re-create the Column Picker which seems to be the only way to translate properly
-    if (this.columnPickerControl) {
-      this.columnPickerControl.destroy();
-      this.columnPickerControl = null;
-    }
-
-    const tempHideForceFit = this._gridOptions.columnPicker.hideForceFitButton;
-    const tempSyncResize = this._gridOptions.columnPicker.hideSyncResizeButton;
-    this._gridOptions.columnPicker = undefined;
-    this._gridOptions.columnPicker = {
-      hideForceFitButton: tempHideForceFit,
-      hideSyncResizeButton: tempSyncResize
-    };
-    this.createColumnPicker(this._grid, this.visibleColumns);
+    // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
+    this._gridOptions.columnPicker.columnTitle = this.getDefaultTranslationByKey('columns');
+    this._gridOptions.columnPicker.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
+    this._gridOptions.columnPicker.syncResizeTitle = this.getDefaultTranslationByKey('synch');
   }
 
   /**
@@ -721,21 +730,21 @@ export class ControlAndPluginService {
    * Changing only the gridMenu.columnTitle with i18n translate was not enough.
    */
   translateGridMenu() {
-    // destroy and re-create the Grid Menu which seems to be the only way to translate properly
-    this.gridMenuControl.destroy();
-
-    // reset all Grid Menu options that have translation text & then re-create the Grid Menu and also the custom items array
-    if (this._gridOptions && this._gridOptions.gridMenu) {
-      this._gridOptions.gridMenu = this.resetGridMenuTranslations(this._gridOptions.gridMenu);
-    }
-    this.createGridMenu(this._grid, this.visibleColumns);
+    // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
+    // we also need to call the control init so that it takes the new Grid object with latest values
+    this._gridOptions.gridMenu.customItems = [];
+    this._gridOptions.gridMenu.customTitle = '';
+    this._gridOptions.gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
+    this._gridOptions.gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
+    this._gridOptions.gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
+    this.addGridMenuCustomCommands(this._grid);
+    this.gridMenuControl.init(this._grid);
   }
 
   /**
    * Translate the Header Menu titles, we need to loop through all column definition to re-translate them
    */
   translateHeaderMenu() {
-    // reset all Grid Menu options that have translation text & then re-create the Grid Menu and also the custom items array
     if (this._gridOptions && this._gridOptions.headerMenu) {
       this.resetHeaderMenuTranslations(this.visibleColumns);
     }
@@ -752,6 +761,7 @@ export class ControlAndPluginService {
     }
 
     const columnDefinitions = newColumnDefinitions || this._columnDefinitions;
+
     for (const column of columnDefinitions) {
       if (column.headerKey) {
         column.name = this.translate.instant(column.headerKey);
@@ -778,9 +788,9 @@ export class ControlAndPluginService {
    */
   private getDefaultGridMenuOptions(): GridMenu {
     return {
-      columnTitle: this.translate.instant('COLUMNS') || 'Columns',
-      forceFitTitle: this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns',
-      syncResizeTitle: this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize',
+      columnTitle: this.getDefaultTranslationByKey('columns'),
+      forceFitTitle: this.getDefaultTranslationByKey('forcefit'),
+      syncResizeTitle: this.getDefaultTranslationByKey('synch'),
       iconCssClass: 'fa fa-bars',
       menuWidth: 18,
       customTitle: undefined,
@@ -803,6 +813,25 @@ export class ControlAndPluginService {
     };
   }
 
+  private getDefaultTranslationByKey(key: 'commands' | 'columns' | 'forcefit' | 'synch') {
+    let output = '';
+    switch (key) {
+      case 'commands':
+        output = this.translate.instant('COMMANDS') || 'Commands';
+        break;
+      case 'columns':
+        output = this.translate.instant('COLUMNS') || 'Columns';
+        break;
+      case 'forcefit':
+        output = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
+        break;
+      case 'synch':
+        output = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
+        break;
+    }
+    return output;
+  }
+
   /**
    * Reset all the Grid Menu options which have text to translate
    * @param grid menu object
@@ -812,9 +841,9 @@ export class ControlAndPluginService {
     gridMenu.customItems = [];
     delete gridMenu.customTitle;
 
-    gridMenu.columnTitle = this.translate.instant('COLUMNS') || 'Columns';
-    gridMenu.forceFitTitle = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
-    gridMenu.syncResizeTitle = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
+    gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
+    gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
+    gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
 
     return gridMenu;
   }
