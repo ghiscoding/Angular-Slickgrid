@@ -92,8 +92,6 @@ export class FilterService {
     // emit an onFilterChanged event
     if (args && !args.clearFilterTriggered) {
       this.emitFilterChanged('remote');
-    } else {
-      console.log('clear triggered', args);
     }
 
     // the process could be an Observable (like HttpClient) or a Promise
