@@ -2264,13 +2264,6 @@ var SortService = /** @class */ (function () {
             _this.onLocalSortChanged(grid, dataView, sortColumns);
             _this.emitSortChanged('local');
         });
-        if (dataView && dataView.onRowCountChanged) {
-            this._eventHandler.subscribe(dataView.onRowCountChanged, function (e, args) {
-                if (args.current > 0) {
-                    _this.loadLocalPresets(grid, dataView);
-                }
-            });
-        }
     };
     SortService.prototype.clearSorting = function () {
         if (this._grid && this._gridOptions && this._dataView) {
@@ -2285,7 +2278,6 @@ var SortService = /** @class */ (function () {
             }
         }
         this._currentLocalSorters = [];
-        var sender = (this._gridOptions && this._gridOptions.backendServiceApi) ? 'remote' : 'local';
         this.onSortCleared.next(true);
     };
     SortService.prototype.getCurrentLocalSorters = function () {
@@ -2498,7 +2490,9 @@ var ControlAndPluginService = /** @class */ (function () {
     };
     ControlAndPluginService.prototype.createCheckboxPluginBeforeGridCreation = function (columnDefinitions, options) {
         if (options.enableCheckboxSelector) {
-            this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
+            if (!this.checkboxSelectorPlugin) {
+                this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
+            }
             var selectionColumn = this.checkboxSelectorPlugin.getColumnDefinition();
             selectionColumn.excludeFromExport = true;
             selectionColumn.excludeFromQuery = true;
@@ -6329,6 +6323,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataView.beginUpdate();
         this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
         this._dataView.endUpdate();
+        this.executeAfterDataviewCreated(this.grid, this.gridOptions, this._dataView);
         this.attachResizeHook(this.grid, this.gridOptions);
         if (this.gridOptions.createPreHeaderPanel) {
             this.groupingAndColspanService.init(this.grid, this._dataView);
@@ -6401,6 +6396,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         if (gridOptions.presets && Array.isArray(gridOptions.presets.columns) && gridOptions.presets.columns.length > 0) {
             var gridColumns = this.gridStateService.getAssociatedGridColumns(grid, gridOptions.presets.columns);
             if (gridColumns && Array.isArray(gridColumns)) {
+                this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(gridColumns, this.gridOptions);
                 grid.setColumns(gridColumns);
             }
         }
@@ -6423,13 +6419,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         var _loop_3 = function (prop) {
             if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this_3._eventHandler.subscribe(grid[prop], function (e, args) {
-                    _this.customElm.nativeElement.dispatchEvent(new CustomEvent("" + slickgridEventPrefix + titleCase(prop), {
-                        bubbles: true,
-                        detail: {
-                            eventData: e,
-                            args: args
-                        }
-                    }));
+                    _this.dispatchCustomEvent("" + slickgridEventPrefix + titleCase(prop), { eventData: e, args: args });
                 });
             }
         };
@@ -6440,13 +6430,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         var _loop_4 = function (prop) {
             if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this_4._eventHandler.subscribe(dataView[prop], function (e, args) {
-                    _this.customElm.nativeElement.dispatchEvent(new CustomEvent("" + slickgridEventPrefix + titleCase(prop), {
-                        bubbles: true,
-                        detail: {
-                            eventData: e,
-                            args: args
-                        }
-                    }));
+                    _this.dispatchCustomEvent("" + slickgridEventPrefix + titleCase(prop), { eventData: e, args: args });
                 });
             }
         };
@@ -6537,6 +6521,13 @@ var AngularSlickgridComponent = /** @class */ (function () {
             }
         }
     };
+    AngularSlickgridComponent.prototype.executeAfterDataviewCreated = function (grid, gridOptions, dataView) {
+        if (gridOptions.enableSorting) {
+            if (gridOptions.presets && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
+                this.sortService.loadLocalPresets(grid, dataView);
+            }
+        }
+    };
     AngularSlickgridComponent.prototype.mergeGridOptions = function (gridOptions) {
         gridOptions.gridId = this.gridId;
         gridOptions.gridContainerId = "slickGridContainer-" + this.gridId;
@@ -6593,6 +6584,14 @@ var AngularSlickgridComponent = /** @class */ (function () {
         var isShowing = !this.grid.getOptions().showHeaderRow;
         this.grid.setHeaderRowVisibility(isShowing);
         return isShowing;
+    };
+    AngularSlickgridComponent.prototype.dispatchCustomEvent = function (eventName, data, isBubbling) {
+        if (isBubbling === void 0) { isBubbling = true; }
+        var eventInit = { bubbles: isBubbling };
+        if (data) {
+            eventInit.detail = data;
+        }
+        this.customElm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
     };
     return AngularSlickgridComponent;
 }());

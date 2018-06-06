@@ -92,6 +92,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     attachDifferentHooks(grid: any, gridOptions: GridOption, dataView: any): void;
     attachBackendCallbackFunctions(gridOptions: GridOption): void;
     attachResizeHook(grid: any, options: GridOption): void;
+    executeAfterDataviewCreated(grid: any, gridOptions: GridOption, dataView: any): void;
     mergeGridOptions(gridOptions: any): GridOption;
     paginationChanged(pagination: Pagination): void;
     /**
@@ -111,4 +112,5 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     showHeaderRow(isShowing: boolean): boolean;
     /** Toggle the filter row displayed on first row */
     toggleHeaderRow(): boolean;
+    private dispatchCustomEvent(eventName, data?, isBubbling?);
 }
