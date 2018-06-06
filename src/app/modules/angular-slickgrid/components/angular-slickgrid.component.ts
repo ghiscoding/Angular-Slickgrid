@@ -323,8 +323,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // if user entered some Columns "presets", we need to reflect them all in the grid
     if (gridOptions.presets && Array.isArray(gridOptions.presets.columns) && gridOptions.presets.columns.length > 0) {
       const gridColumns: Column[] = this.gridStateService.getAssociatedGridColumns(grid, gridOptions.presets.columns);
-      if (gridColumns && Array.isArray(gridColumns)) {
-        this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(gridColumns, this.gridOptions);
+      if (gridColumns && Array.isArray(gridColumns) && gridColumns.length > 0) {
+        // make sure that the checkbox selector is also visible if it is enabled
+        if (gridOptions.enableCheckboxSelector) {
+          const checkboxColumn = (Array.isArray(this.columnDefinitions) && this.columnDefinitions.length > 0) ? this.columnDefinitions[0] : null;
+          if (checkboxColumn && checkboxColumn.id === '_checkbox_selector' && gridColumns[0].id !== '_checkbox_selector') {
+            gridColumns.unshift(checkboxColumn);
+          }
+        }
+
+        // finally set the new presets columns (including checkbox selector if need be)
         grid.setColumns(gridColumns);
       }
     }
