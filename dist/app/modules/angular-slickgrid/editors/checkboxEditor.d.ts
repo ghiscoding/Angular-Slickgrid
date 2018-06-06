@@ -14,8 +14,5 @@ export declare class CheckboxEditor implements Editor {
     serializeValue(): boolean;
     applyValue(item: any, state: any): void;
     isValueChanged(): boolean;
-    validate(): {
-        valid: boolean;
-        msg: any;
-    };
+    validate(): any;
 }

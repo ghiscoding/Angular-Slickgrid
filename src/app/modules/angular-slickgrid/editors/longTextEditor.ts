@@ -1,4 +1,4 @@
-import { Editor, HtmlElementPosition, KeyCode } from './../models/index';
+import { Column, Editor, HtmlElementPosition, KeyCode } from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -82,6 +82,10 @@ export class LongTextEditor implements Editor {
     this.$input.focus();
   }
 
+  getColumnEditor() {
+    return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+  }
+
   loadValue(item: any) {
     this.$input.val(this.defaultValue = item[this.args.column.field]);
     this.$input.select();
@@ -100,17 +104,18 @@ export class LongTextEditor implements Editor {
   }
 
   validate() {
-    let valid = true;
-    let msg = null;
-    if (this.args.column.validator) {
-      const validationResults = this.args.column.validator(this.$input.val(), this.args);
-      valid = validationResults.valid;
-      msg = validationResults.msg;
+    const column = (this.args && this.args.column) as Column;
+
+    if (column.validator) {
+      const validationResults = column.validator(this.$input.val(), this.args);
+      if (!validationResults.valid) {
+        return validationResults;
+      }
     }
 
     return {
-      valid,
-      msg
+      valid: true,
+      msg: null
     };
   }
 }

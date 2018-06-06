@@ -4682,6 +4682,13 @@ var CheckboxEditor = /** @class */ (function () {
         return (this.serializeValue() !== this.defaultValue);
     };
     CheckboxEditor.prototype.validate = function () {
+        var column = ((this.args && this.args.column));
+        if (column.validator) {
+            var validationResults = column.validator(this.$input.val(), this.args);
+            if (!validationResults.valid) {
+                return validationResults;
+            }
+        }
         return {
             valid: true,
             msg: null
@@ -4759,6 +4766,9 @@ var DateEditor = /** @class */ (function () {
     DateEditor.prototype.save = function () {
         this.args.commitChanges();
     };
+    DateEditor.prototype.getColumnEditor = function () {
+        return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+    };
     DateEditor.prototype.loadValue = function (item) {
         this.defaultDate = item[this.args.column.field];
         this.flatInstance.setDate(item[this.args.column.field]);
@@ -4783,8 +4793,9 @@ var DateEditor = /** @class */ (function () {
         return (!(this.$input.val() === '' && this.defaultDate == null)) && (this.$input.val() !== this.defaultDate);
     };
     DateEditor.prototype.validate = function () {
-        if (this.args.column.validator) {
-            var validationResults = this.args.column.validator(this.$input.val(), this.args);
+        var column = ((this.args && this.args.column));
+        if (column.validator) {
+            var validationResults = column.validator(this.$input.val(), this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -4796,7 +4807,7 @@ var DateEditor = /** @class */ (function () {
     };
     return DateEditor;
 }());
-var defaultDecimalPlaces = 2;
+var defaultDecimalPlaces = 0;
 var FloatEditor = /** @class */ (function () {
     function FloatEditor(args) {
         this.args = args;
@@ -4804,7 +4815,7 @@ var FloatEditor = /** @class */ (function () {
     }
     FloatEditor.prototype.init = function () {
         var _this = this;
-        this.$input = $("<input type=\"number\" class='editor-text' />")
+        this.$input = $("<input type=\"number\" class=\"editor-text\" step=\"" + this.getInputDecimalSteps() + "\" />")
             .appendTo(this.args.container)
             .on('keydown.nav', function (e) {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
@@ -4821,13 +4832,27 @@ var FloatEditor = /** @class */ (function () {
     FloatEditor.prototype.focus = function () {
         this.$input.focus();
     };
+    FloatEditor.prototype.getColumnEditor = function () {
+        return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+    };
     FloatEditor.prototype.getDecimalPlaces = function () {
-        var columnEditor = this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+        var columnEditor = this.getColumnEditor();
         var rtn = (columnEditor && columnEditor.params && columnEditor.params.hasOwnProperty('decimalPlaces')) ? columnEditor.params.decimalPlaces : undefined;
         if (rtn === undefined) {
             rtn = defaultDecimalPlaces;
         }
         return (!rtn && rtn !== 0 ? null : rtn);
+    };
+    FloatEditor.prototype.getInputDecimalSteps = function () {
+        var decimals = this.getDecimalPlaces();
+        var zeroString = '';
+        for (var i = 1; i < decimals; i++) {
+            zeroString += '0';
+        }
+        if (decimals > 0) {
+            return "0." + zeroString + "1";
+        }
+        return '1';
     };
     FloatEditor.prototype.loadValue = function (item) {
         this.defaultValue = item[this.args.column.field];
@@ -4859,18 +4884,28 @@ var FloatEditor = /** @class */ (function () {
         return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
     };
     FloatEditor.prototype.validate = function () {
+        var column = ((this.args && this.args.column));
         var elmValue = this.$input.val();
-        if (isNaN((elmValue))) {
-            return {
-                valid: false,
-                msg: 'Please enter a valid number'
-            };
-        }
-        if (this.args.column.validator) {
-            var validationResults = this.args.column.validator(elmValue);
+        var columnEditor = this.getColumnEditor();
+        var decPlaces = this.getDecimalPlaces();
+        var errorMsg = columnEditor.params && columnEditor.params.validatorErrorMessage;
+        if (column.validator) {
+            var validationResults = column.validator(elmValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
+        }
+        else if (isNaN((elmValue)) || (decPlaces === 0 && !/^(\d+(\.)?(\d)*)$/.test(elmValue))) {
+            return {
+                valid: false,
+                msg: errorMsg || "Please enter a valid number"
+            };
+        }
+        else if (isNaN((elmValue)) || (decPlaces > 0 && !new RegExp("^(\\d+(\\.)?(\\d){0," + decPlaces + "})$").test(elmValue))) {
+            return {
+                valid: false,
+                msg: errorMsg || "Please enter a valid number between 0 and " + decPlaces + " decimals"
+            };
         }
         return {
             valid: true,
@@ -4903,6 +4938,9 @@ var IntegerEditor = /** @class */ (function () {
     IntegerEditor.prototype.focus = function () {
         this.$input.focus();
     };
+    IntegerEditor.prototype.getColumnEditor = function () {
+        return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+    };
     IntegerEditor.prototype.loadValue = function (item) {
         this.defaultValue = parseInt(item[this.args.column.field], 10);
         this.$input.val(this.defaultValue);
@@ -4921,18 +4959,21 @@ var IntegerEditor = /** @class */ (function () {
         return (!(value === '' && this.defaultValue === null)) && (value !== this.defaultValue);
     };
     IntegerEditor.prototype.validate = function () {
+        var column = ((this.args && this.args.column));
+        var columnEditor = this.getColumnEditor();
+        var errorMsg = columnEditor.params && columnEditor.params.validatorErrorMessage;
         var elmValue = this.$input.val();
-        if (isNaN((elmValue))) {
-            return {
-                valid: false,
-                msg: 'Please enter a valid integer'
-            };
-        }
-        if (this.args.column.validator) {
-            var validationResults = this.args.column.validator(elmValue);
+        if (column.validator) {
+            var validationResults = column.validator(elmValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
+        }
+        else if (isNaN((elmValue)) || !/^[+-]?\d+$/.test(elmValue)) {
+            return {
+                valid: false,
+                msg: errorMsg || 'Please enter a valid integer number'
+            };
         }
         return {
             valid: true,
@@ -4999,6 +5040,9 @@ var LongTextEditor = /** @class */ (function () {
     LongTextEditor.prototype.focus = function () {
         this.$input.focus();
     };
+    LongTextEditor.prototype.getColumnEditor = function () {
+        return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+    };
     LongTextEditor.prototype.loadValue = function (item) {
         this.$input.val(this.defaultValue = item[this.args.column.field]);
         this.$input.select();
@@ -5013,16 +5057,16 @@ var LongTextEditor = /** @class */ (function () {
         return (!(this.$input.val() === '' && this.defaultValue == null)) && (this.$input.val() !== this.defaultValue);
     };
     LongTextEditor.prototype.validate = function () {
-        var valid = true;
-        var msg = null;
-        if (this.args.column.validator) {
-            var validationResults = this.args.column.validator(this.$input.val(), this.args);
-            valid = validationResults.valid;
-            msg = validationResults.msg;
+        var column = ((this.args && this.args.column));
+        if (column.validator) {
+            var validationResults = column.validator(this.$input.val(), this.args);
+            if (!validationResults.valid) {
+                return validationResults;
+            }
         }
         return {
-            valid: valid,
-            msg: msg
+            valid: true,
+            msg: null
         };
     };
     return LongTextEditor;
@@ -5118,8 +5162,9 @@ var MultipleSelectEditor = /** @class */ (function () {
         return !arraysEqual(this.$editorElm.val(), this.defaultValue);
     };
     MultipleSelectEditor.prototype.validate = function () {
-        if (this.args.column.validator) {
-            var validationResults = this.args.column.validator(this.currentValues, this.args);
+        var column = ((this.args && this.args.column));
+        if (column.validator) {
+            var validationResults = column.validator(this.currentValues, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5273,8 +5318,9 @@ var SingleSelectEditor = /** @class */ (function () {
         return this.$editorElm.val() !== this.defaultValue;
     };
     SingleSelectEditor.prototype.validate = function () {
-        if (this.args.column.validator) {
-            var validationResults = this.args.column.validator(this.currentValue, this.args);
+        var column = ((this.args && this.args.column));
+        if (column.validator) {
+            var validationResults = column.validator(this.currentValue, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5394,8 +5440,9 @@ var TextEditor = /** @class */ (function () {
         return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
     };
     TextEditor.prototype.validate = function () {
-        if (this.args.column.validator) {
-            var validationResults = this.args.column.validator(this.$input.val());
+        var column = ((this.args && this.args.column));
+        if (column.validator) {
+            var validationResults = column.validator(this.$input.val());
             if (!validationResults.valid) {
                 return validationResults;
             }

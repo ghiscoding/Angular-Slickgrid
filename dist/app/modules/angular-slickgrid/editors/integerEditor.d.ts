@@ -7,6 +7,7 @@ export declare class IntegerEditor implements Editor {
     init(): void;
     destroy(): void;
     focus(): void;
+    getColumnEditor(): any;
     loadValue(item: any): void;
     serializeValue(): number;
     applyValue(item: any, state: any): void;

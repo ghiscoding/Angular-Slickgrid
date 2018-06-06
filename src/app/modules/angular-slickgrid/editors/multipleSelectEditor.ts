@@ -159,8 +159,10 @@ export class MultipleSelectEditor implements Editor {
   }
 
   validate() {
-    if (this.args.column.validator) {
-      const validationResults = this.args.column.validator(this.currentValues, this.args);
+    const column = (this.args && this.args.column) as Column;
+
+    if (column.validator) {
+      const validationResults = column.validator(this.currentValues, this.args);
       if (!validationResults.valid) {
         return validationResults;
       }
