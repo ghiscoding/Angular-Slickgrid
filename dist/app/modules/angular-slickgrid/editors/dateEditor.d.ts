@@ -13,6 +13,7 @@ export declare class DateEditor implements Editor {
     hide(): void;
     focus(): void;
     save(): void;
+    getColumnEditor(): any;
     loadValue(item: any): void;
     serializeValue(): any;
     applyValue(item: any, state: any): void;

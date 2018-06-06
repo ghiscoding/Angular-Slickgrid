@@ -14,12 +14,10 @@ export declare class LongTextEditor implements Editor {
     position(position: HtmlElementPosition): void;
     destroy(): void;
     focus(): void;
+    getColumnEditor(): any;
     loadValue(item: any): void;
     serializeValue(): any;
     applyValue(item: any, state: any): void;
     isValueChanged(): boolean;
-    validate(): {
-        valid: boolean;
-        msg: any;
-    };
+    validate(): any;
 }

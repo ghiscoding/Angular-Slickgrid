@@ -7,7 +7,9 @@ export declare class FloatEditor implements Editor {
     init(): void;
     destroy(): void;
     focus(): void;
+    getColumnEditor(): any;
     getDecimalPlaces(): any;
+    getInputDecimalSteps(): string;
     loadValue(item: any): void;
     serializeValue(): number;
     applyValue(item: any, state: any): void;

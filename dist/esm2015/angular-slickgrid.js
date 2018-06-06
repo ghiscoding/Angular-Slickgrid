@@ -6590,6 +6590,13 @@ class CheckboxEditor {
      * @return {?}
      */
     validate() {
+        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
+        if (column.validator) {
+            const /** @type {?} */ validationResults = column.validator(this.$input.val(), this.args);
+            if (!validationResults.valid) {
+                return validationResults;
+            }
+        }
         return {
             valid: true,
             msg: null
@@ -6703,6 +6710,12 @@ class DateEditor {
         this.args.commitChanges();
     }
     /**
+     * @return {?}
+     */
+    getColumnEditor() {
+        return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+    }
+    /**
      * @param {?} item
      * @return {?}
      */
@@ -6744,8 +6757,9 @@ class DateEditor {
      * @return {?}
      */
     validate() {
-        if (this.args.column.validator) {
-            const /** @type {?} */ validationResults = this.args.column.validator(this.$input.val(), this.args);
+        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
+        if (column.validator) {
+            const /** @type {?} */ validationResults = column.validator(this.$input.val(), this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -6761,7 +6775,7 @@ class DateEditor {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const defaultDecimalPlaces = 2;
+const defaultDecimalPlaces = 0;
 class FloatEditor {
     /**
      * @param {?} args
@@ -6774,7 +6788,7 @@ class FloatEditor {
      * @return {?}
      */
     init() {
-        this.$input = $(`<input type="number" class='editor-text' />`)
+        this.$input = $(`<input type="number" class="editor-text" step="${this.getInputDecimalSteps()}" />`)
             .appendTo(this.args.container)
             .on('keydown.nav', (e) => {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
@@ -6800,14 +6814,34 @@ class FloatEditor {
     /**
      * @return {?}
      */
+    getColumnEditor() {
+        return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+    }
+    /**
+     * @return {?}
+     */
     getDecimalPlaces() {
         // returns the number of fixed decimal places or null
-        const /** @type {?} */ columnEditor = this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+        const /** @type {?} */ columnEditor = this.getColumnEditor();
         let /** @type {?} */ rtn = (columnEditor && columnEditor.params && columnEditor.params.hasOwnProperty('decimalPlaces')) ? columnEditor.params.decimalPlaces : undefined;
         if (rtn === undefined) {
             rtn = defaultDecimalPlaces;
         }
         return (!rtn && rtn !== 0 ? null : rtn);
+    }
+    /**
+     * @return {?}
+     */
+    getInputDecimalSteps() {
+        const /** @type {?} */ decimals = this.getDecimalPlaces();
+        let /** @type {?} */ zeroString = '';
+        for (let /** @type {?} */ i = 1; i < decimals; i++) {
+            zeroString += '0';
+        }
+        if (decimals > 0) {
+            return `0.${zeroString}1`;
+        }
+        return '1';
     }
     /**
      * @param {?} item
@@ -6857,18 +6891,31 @@ class FloatEditor {
      * @return {?}
      */
     validate() {
+        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
         const /** @type {?} */ elmValue = this.$input.val();
-        if (isNaN(/** @type {?} */ (elmValue))) {
-            return {
-                valid: false,
-                msg: 'Please enter a valid number'
-            };
-        }
-        if (this.args.column.validator) {
-            const /** @type {?} */ validationResults = this.args.column.validator(elmValue);
+        const /** @type {?} */ columnEditor = this.getColumnEditor();
+        const /** @type {?} */ decPlaces = this.getDecimalPlaces();
+        const /** @type {?} */ errorMsg = columnEditor.params && columnEditor.params.validatorErrorMessage;
+        if (column.validator) {
+            const /** @type {?} */ validationResults = column.validator(elmValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
+        }
+        else if (isNaN(/** @type {?} */ (elmValue)) || (decPlaces === 0 && !/^(\d+(\.)?(\d)*)$/.test(elmValue))) {
+            // when decimal value is 0 (which is the default), we accept 0 or more decimal values
+            return {
+                valid: false,
+                msg: errorMsg || `Please enter a valid number`
+            };
+        }
+        else if (isNaN(/** @type {?} */ (elmValue)) || (decPlaces > 0 && !new RegExp(`^(\\d+(\\.)?(\\d){0,${decPlaces}})$`).test(elmValue))) {
+            // when decimal value is bigger than 0, we only accept the decimal values as that value set
+            // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
+            return {
+                valid: false,
+                msg: errorMsg || `Please enter a valid number between 0 and ${decPlaces} decimals`
+            };
         }
         return {
             valid: true,
@@ -6917,6 +6964,12 @@ class IntegerEditor {
         this.$input.focus();
     }
     /**
+     * @return {?}
+     */
+    getColumnEditor() {
+        return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+    }
+    /**
      * @param {?} item
      * @return {?}
      */
@@ -6952,18 +7005,21 @@ class IntegerEditor {
      * @return {?}
      */
     validate() {
+        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
+        const /** @type {?} */ columnEditor = this.getColumnEditor();
+        const /** @type {?} */ errorMsg = columnEditor.params && columnEditor.params.validatorErrorMessage;
         const /** @type {?} */ elmValue = this.$input.val();
-        if (isNaN(/** @type {?} */ (elmValue))) {
-            return {
-                valid: false,
-                msg: 'Please enter a valid integer'
-            };
-        }
-        if (this.args.column.validator) {
-            const /** @type {?} */ validationResults = this.args.column.validator(elmValue);
+        if (column.validator) {
+            const /** @type {?} */ validationResults = column.validator(elmValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
+        }
+        else if (isNaN(/** @type {?} */ (elmValue)) || !/^[+-]?\d+$/.test(elmValue)) {
+            return {
+                valid: false,
+                msg: errorMsg || 'Please enter a valid integer number'
+            };
         }
         return {
             valid: true,
@@ -7069,6 +7125,12 @@ class LongTextEditor {
         this.$input.focus();
     }
     /**
+     * @return {?}
+     */
+    getColumnEditor() {
+        return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+    }
+    /**
      * @param {?} item
      * @return {?}
      */
@@ -7100,16 +7162,16 @@ class LongTextEditor {
      * @return {?}
      */
     validate() {
-        let /** @type {?} */ valid = true;
-        let /** @type {?} */ msg = null;
-        if (this.args.column.validator) {
-            const /** @type {?} */ validationResults = this.args.column.validator(this.$input.val(), this.args);
-            valid = validationResults.valid;
-            msg = validationResults.msg;
+        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
+        if (column.validator) {
+            const /** @type {?} */ validationResults = column.validator(this.$input.val(), this.args);
+            if (!validationResults.valid) {
+                return validationResults;
+            }
         }
         return {
-            valid,
-            msg
+            valid: true,
+            msg: null
         };
     }
 }
@@ -7248,8 +7310,9 @@ class MultipleSelectEditor {
      * @return {?}
      */
     validate() {
-        if (this.args.column.validator) {
-            const /** @type {?} */ validationResults = this.args.column.validator(this.currentValues, this.args);
+        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
+        if (column.validator) {
+            const /** @type {?} */ validationResults = column.validator(this.currentValues, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -7468,8 +7531,9 @@ class SingleSelectEditor {
      * @return {?}
      */
     validate() {
-        if (this.args.column.validator) {
-            const /** @type {?} */ validationResults = this.args.column.validator(this.currentValue, this.args);
+        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
+        if (column.validator) {
+            const /** @type {?} */ validationResults = column.validator(this.currentValue, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -7650,8 +7714,9 @@ class TextEditor {
      * @return {?}
      */
     validate() {
-        if (this.args.column.validator) {
-            const /** @type {?} */ validationResults = this.args.column.validator(this.$input.val());
+        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
+        if (column.validator) {
+            const /** @type {?} */ validationResults = column.validator(this.$input.val());
             if (!validationResults.valid) {
                 return validationResults;
             }
