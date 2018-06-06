@@ -208,7 +208,9 @@ export class ControlAndPluginService {
    */
   createCheckboxPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption) {
     if (options.enableCheckboxSelector) {
-      this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
+      if (!this.checkboxSelectorPlugin) {
+        this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
+      }
       const selectionColumn: Column = this.checkboxSelectorPlugin.getColumnDefinition();
       selectionColumn.excludeFromExport = true;
       selectionColumn.excludeFromQuery = true;

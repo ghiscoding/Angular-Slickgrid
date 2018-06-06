@@ -324,6 +324,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (gridOptions.presets && Array.isArray(gridOptions.presets.columns) && gridOptions.presets.columns.length > 0) {
       const gridColumns: Column[] = this.gridStateService.getAssociatedGridColumns(grid, gridOptions.presets.columns);
       if (gridColumns && Array.isArray(gridColumns)) {
+        this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(gridColumns, this.gridOptions);
         grid.setColumns(gridColumns);
       }
     }
