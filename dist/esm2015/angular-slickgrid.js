@@ -3376,15 +3376,11 @@ class ControlAndPluginService {
         this._grid = grid;
         this._dataView = dataView;
         this.visibleColumns = this._columnDefinitions;
-        this.allColumns = [...this._columnDefinitions];
+        this.allColumns = this._columnDefinitions;
         // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
         // this is to avoid having hidden columns not being translated on first load
         if (this._gridOptions.enableTranslate) {
-            for (const /** @type {?} */ column of this.allColumns) {
-                if (column.headerKey) {
-                    column.name = this.translate.instant(column.headerKey);
-                }
-            }
+            this.translateHeaderKeys(this.allColumns);
         }
         // Column Picker Control
         if (this._gridOptions.enableColumnPicker) {
@@ -3987,6 +3983,7 @@ class ControlAndPluginService {
             this._gridOptions.columnPicker.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
             this._gridOptions.columnPicker.syncResizeTitle = this.getDefaultTranslationByKey('synch');
         }
+        this.translateHeaderKeys(this.allColumns);
     }
     /**
      * Translate the Grid Menu titles and column picker
@@ -4002,11 +3999,7 @@ class ControlAndPluginService {
             this._gridOptions.gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
             this._gridOptions.gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
             // translate all columns (including non-visible)
-            for (const /** @type {?} */ column of this.allColumns) {
-                if (column.headerKey) {
-                    column.name = this.translate.instant(column.headerKey);
-                }
-            }
+            this.translateHeaderKeys(this.allColumns);
             // re-create the list of Custom Commands
             this.addGridMenuCustomCommands(this._grid);
             this.gridMenuControl.init(this._grid);
@@ -4033,11 +4026,8 @@ class ControlAndPluginService {
             this.translate.use(/** @type {?} */ (locale));
         }
         const /** @type {?} */ columnDefinitions = newColumnDefinitions || this._columnDefinitions;
-        for (const /** @type {?} */ column of columnDefinitions) {
-            if (column.headerKey) {
-                column.name = this.translate.instant(column.headerKey);
-            }
-        }
+        this.translateHeaderKeys(columnDefinitions);
+        this.translateHeaderKeys(this.allColumns);
         // re-render the column headers
         this.renderColumnHeaders(columnDefinitions);
     }
@@ -4143,6 +4133,19 @@ class ControlAndPluginService {
                 }
             }
         });
+    }
+    /**
+     * Translate the columns headerKey
+     * Note that this is done through pointers so we don't need to return anything to see them translated
+     * @param {?} columns
+     * @return {?}
+     */
+    translateHeaderKeys(columns) {
+        for (const /** @type {?} */ column of columns) {
+            if (column.headerKey) {
+                column.name = this.translate.instant(column.headerKey);
+            }
+        }
     }
 }
 ControlAndPluginService.decorators = [
@@ -9105,8 +9108,15 @@ class AngularSlickgridComponent {
         // if user entered some Columns "presets", we need to reflect them all in the grid
         if (gridOptions.presets && Array.isArray(gridOptions.presets.columns) && gridOptions.presets.columns.length > 0) {
             const /** @type {?} */ gridColumns = this.gridStateService.getAssociatedGridColumns(grid, gridOptions.presets.columns);
-            if (gridColumns && Array.isArray(gridColumns)) {
-                this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(gridColumns, this.gridOptions);
+            if (gridColumns && Array.isArray(gridColumns) && gridColumns.length > 0) {
+                // make sure that the checkbox selector is also visible if it is enabled
+                if (gridOptions.enableCheckboxSelector) {
+                    const /** @type {?} */ checkboxColumn = (Array.isArray(this.columnDefinitions) && this.columnDefinitions.length > 0) ? this.columnDefinitions[0] : null;
+                    if (checkboxColumn && checkboxColumn.id === '_checkbox_selector' && gridColumns[0].id !== '_checkbox_selector') {
+                        gridColumns.unshift(checkboxColumn);
+                    }
+                }
+                // finally set the new presets columns (including checkbox selector if need be)
                 grid.setColumns(gridColumns);
             }
         }

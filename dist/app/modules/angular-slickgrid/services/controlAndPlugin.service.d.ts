@@ -146,4 +146,9 @@ export declare class ControlAndPluginService {
      * @param grid menu object
      */
     private resetHeaderMenuTranslations(columnDefinitions);
+    /**
+     * Translate the columns headerKey
+     * Note that this is done through pointers so we don't need to return anything to see them translated
+     */
+    private translateHeaderKeys(columns);
 }
