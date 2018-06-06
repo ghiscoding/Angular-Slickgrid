@@ -97,16 +97,12 @@ export class ControlAndPluginService {
     this._grid = grid;
     this._dataView = dataView;
     this.visibleColumns = this._columnDefinitions;
-    this.allColumns = [...this._columnDefinitions];
+    this.allColumns = this._columnDefinitions;
 
     // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
     // this is to avoid having hidden columns not being translated on first load
     if (this._gridOptions.enableTranslate) {
-      for (const column of this.allColumns) {
-        if (column.headerKey) {
-          column.name = this.translate.instant(column.headerKey);
-        }
-      }
+      this.translateHeaderKeys(this.allColumns);
     }
 
     // Column Picker Control
@@ -736,6 +732,7 @@ export class ControlAndPluginService {
       this._gridOptions.columnPicker.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
       this._gridOptions.columnPicker.syncResizeTitle = this.getDefaultTranslationByKey('synch');
     }
+    this.translateHeaderKeys(this.allColumns);
   }
 
   /** Translate the Grid Menu titles and column picker */
@@ -750,11 +747,7 @@ export class ControlAndPluginService {
       this._gridOptions.gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
 
       // translate all columns (including non-visible)
-      for (const column of this.allColumns) {
-        if (column.headerKey) {
-          column.name = this.translate.instant(column.headerKey);
-        }
-      }
+      this.translateHeaderKeys(this.allColumns);
 
       // re-create the list of Custom Commands
       this.addGridMenuCustomCommands(this._grid);
@@ -783,11 +776,8 @@ export class ControlAndPluginService {
 
     const columnDefinitions = newColumnDefinitions || this._columnDefinitions;
 
-    for (const column of columnDefinitions) {
-      if (column.headerKey) {
-        column.name = this.translate.instant(column.headerKey);
-      }
-    }
+    this.translateHeaderKeys(columnDefinitions);
+    this.translateHeaderKeys(this.allColumns);
 
     // re-render the column headers
     this.renderColumnHeaders(columnDefinitions);
@@ -895,5 +885,17 @@ export class ControlAndPluginService {
         }
       }
     });
+  }
+
+  /**
+   * Translate the columns headerKey
+   * Note that this is done through pointers so we don't need to return anything to see them translated
+   */
+  private translateHeaderKeys(columns: Column[]) {
+    for (const column of columns) {
+      if (column.headerKey) {
+        column.name = this.translate.instant(column.headerKey);
+      }
+    }
   }
 }
