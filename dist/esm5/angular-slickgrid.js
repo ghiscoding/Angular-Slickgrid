@@ -4334,7 +4334,7 @@ var GridService = /** @class */ (function () {
             throw new Error("Cannot update a row without a valid \"id\"");
         }
         var row = this._dataView.getRowById(itemId);
-        if (!item || !row) {
+        if (!item || row === undefined) {
             throw new Error("Could not find the item in the grid or it's associated \"id\"");
         }
         var gridIdx = this._dataView.getIdxById(itemId);

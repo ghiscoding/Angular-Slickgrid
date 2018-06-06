@@ -6036,7 +6036,7 @@ class GridService {
             throw new Error(`Cannot update a row without a valid "id"`);
         }
         const /** @type {?} */ row = this._dataView.getRowById(itemId);
-        if (!item || !row) {
+        if (!item || row === undefined) {
             throw new Error(`Could not find the item in the grid or it's associated "id"`);
         }
         const /** @type {?} */ gridIdx = this._dataView.getIdxById(itemId);
