@@ -211,6 +211,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
     this._dataView.endUpdate();
 
+    // after the DataView is created & updated execute some processes
+    this.executeAfterDataviewCreated(this.grid, this.gridOptions, this._dataView);
+
     // attach resize ONLY after the dataView is ready
     this.attachResizeHook(this.grid, this.gridOptions);
 
@@ -354,13 +357,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     for (const prop in grid) {
       if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
         this._eventHandler.subscribe(grid[prop], (e: any, args: any) => {
-          this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, {
-            bubbles: true,
-            detail: {
-              eventData: e,
-              args
-            }
-          }));
+          this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
         });
       }
     }
@@ -369,13 +366,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     for (const prop in dataView) {
       if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
         this._eventHandler.subscribe(dataView[prop], (e: any, args: any) => {
-          this.customElm.nativeElement.dispatchEvent(new CustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, {
-            bubbles: true,
-            detail: {
-              eventData: e,
-              args
-            }
-          }));
+          this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
         });
       }
     }
@@ -485,6 +476,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
+  executeAfterDataviewCreated(grid: any, gridOptions: GridOption, dataView: any) {
+    // if user entered some Sort "presets", we need to reflect them all in the DOM
+    if (gridOptions.enableSorting) {
+      if (gridOptions.presets && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
+        this.sortService.loadLocalPresets(grid, dataView);
+      }
+    }
+  }
+
   mergeGridOptions(gridOptions): GridOption {
     gridOptions.gridId = this.gridId;
     gridOptions.gridContainerId = `slickGridContainer-${this.gridId}`;
@@ -568,5 +568,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     const isShowing = !this.grid.getOptions().showHeaderRow;
     this.grid.setHeaderRowVisibility(isShowing);
     return isShowing;
+  }
+
+  private dispatchCustomEvent(eventName: string, data?: any, isBubbling: boolean = true) {
+    const eventInit: CustomEventInit = { bubbles: isBubbling };
+    if (data) {
+      eventInit.detail = data;
+    }
+    this.customElm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
   }
 }
