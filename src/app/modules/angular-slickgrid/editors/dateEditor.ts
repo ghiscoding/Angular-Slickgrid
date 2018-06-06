@@ -99,6 +99,10 @@ export class DateEditor implements Editor {
     this.args.commitChanges();
   }
 
+  getColumnEditor() {
+    return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+  }
+
   loadValue(item: any) {
     this.defaultDate = item[this.args.column.field];
     this.flatInstance.setDate(item[this.args.column.field]);
@@ -132,8 +136,10 @@ export class DateEditor implements Editor {
   }
 
   validate() {
-    if (this.args.column.validator) {
-      const validationResults = this.args.column.validator(this.$input.val(), this.args);
+    const column = (this.args && this.args.column) as Column;
+
+    if (column.validator) {
+      const validationResults = column.validator(this.$input.val(), this.args);
       if (!validationResults.valid) {
         return validationResults;
       }

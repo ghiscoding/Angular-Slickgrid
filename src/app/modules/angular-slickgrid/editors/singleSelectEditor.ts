@@ -152,8 +152,10 @@ export class SingleSelectEditor implements Editor {
   }
 
   validate() {
-    if (this.args.column.validator) {
-      const validationResults = this.args.column.validator(this.currentValue, this.args);
+    const column = (this.args && this.args.column) as Column;
+
+    if (column.validator) {
+      const validationResults = column.validator(this.currentValue, this.args);
       if (!validationResults.valid) {
         return validationResults;
       }

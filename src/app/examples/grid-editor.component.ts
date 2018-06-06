@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
   Column,
+  CustomEditorValidator,
   EditorType,
   FieldType,
   Formatters,
@@ -14,6 +15,17 @@ import { CustomInputEditor } from './custom-inputEditor';
 
 // using external non-typed js libraries
 declare var Slick: any;
+
+// you can create custom validator to pass to an inline editor
+const myCustomTitleValidator: CustomEditorValidator = (value) => {
+  if (value == null || value === undefined || !value.length) {
+    return { valid: false, msg: 'This is a required field' };
+  } else if (!/^Task\s\d+$/.test(value)) {
+    return { valid: false, msg: 'Your title is invalid, it must start with "Task" followed by a number' };
+  } else {
+    return { valid: true, msg: '' };
+  }
+};
 
 @Component({
   templateUrl: './grid-editor.component.html'
@@ -88,8 +100,9 @@ export class GridEditorComponent implements OnInit {
       sortable: true,
       type: FieldType.string,
       editor: {
-        type: EditorType.longText
+        type: EditorType.longText,
       },
+      validator: myCustomTitleValidator, // use a custom validator
       minWidth: 100,
       onCellChange: (e: Event, args: OnEventArgs) => {
         console.log(args);
@@ -105,6 +118,7 @@ export class GridEditorComponent implements OnInit {
         type: EditorType.custom,
         customEditor: CustomInputEditor
       },
+      validator: myCustomTitleValidator, // use a custom validator
       minWidth: 70
     }, {
       id: 'duration',
@@ -113,8 +127,11 @@ export class GridEditorComponent implements OnInit {
       sortable: true,
       type: FieldType.number,
       editor: {
+        // default is 0 decimals, if no decimals is passed it will accept 0 or more decimals
+        // however if you pass the decimalPlaces, it will validate with that maximum
+        // the default validation error message is in English but you can override it by using validatorErrorMessage in params
         type: EditorType.float,
-        params: { decimalPlaces: 2 },
+        params: { decimalPlaces: 2, validatorErrorMessage: this.translate.instant('INVALID_FLOAT', { maxDecimal: 2 }) },
       },
       minWidth: 100
     }, {
@@ -270,6 +287,10 @@ export class GridEditorComponent implements OnInit {
         this.angularGrid.gridService.deleteDataGridItemById(metadata.dataContext.id);
       }
     }
+  }
+
+  onCellValidation(e, args) {
+    alert(args.validationResults.msg);
   }
 
   setAutoEdit(isAutoEdit) {

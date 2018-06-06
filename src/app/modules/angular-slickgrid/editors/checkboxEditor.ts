@@ -1,4 +1,4 @@
-import { Editor } from './../models/index';
+import { Column, Editor } from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -63,6 +63,15 @@ export class CheckboxEditor implements Editor {
   }
 
   validate() {
+    const column = (this.args && this.args.column) as Column;
+
+    if (column.validator) {
+      const validationResults = column.validator(this.$input.val(), this.args);
+      if (!validationResults.valid) {
+        return validationResults;
+      }
+    }
+
     return {
       valid: true,
       msg: null
