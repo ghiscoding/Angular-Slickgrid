@@ -1,4 +1,4 @@
-import { Column, FilterArguments, FilterCallback, SearchTerm } from './../models/index';
+import { Column, FilterArguments, FilterCallback, OperatorType, OperatorString, SearchTerm } from './../models/index';
 export interface Filter {
     /** Column definition */
     columnDef: Column;
@@ -8,6 +8,8 @@ export interface Filter {
     grid: any;
     /** Array of defined search terms to pre-load */
     searchTerms?: SearchTerm[];
+    /** The search operator for the filter */
+    operator: OperatorType | OperatorString;
     /** You can use "params" to pass any types of arguments to your Filter */
     params?: any | any[];
     /** Funtion to initialize the Filter class */

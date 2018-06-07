@@ -6,15 +6,16 @@ export declare class CompoundDateFilter implements Filter {
     private $filterInputElm;
     private $selectOperatorElm;
     private _currentValue;
+    private _operator;
     flatInstance: any;
     grid: any;
-    operator: OperatorType | OperatorString;
     searchTerms: SearchTerm[];
     columnDef: Column;
     callback: FilterCallback;
     constructor(translate: TranslateService);
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly gridOptions;
+    operator: OperatorType | OperatorString;
     /**
      * Initialize the Filter
      */
@@ -38,7 +39,6 @@ export declare class CompoundDateFilter implements Filter {
      * Create the DOM element
      */
     private createDomElement(searchTerm?);
-    private getCurrentLocale(columnDef, gridOptions);
     private loadFlatpickrLocale(locale);
     private onTriggerEvent(e, clearFilterTriggered?);
     private hide();

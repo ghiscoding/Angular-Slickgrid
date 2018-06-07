@@ -1,4 +1,5 @@
 export declare enum OperatorType {
+    empty = "",
     contains = "Contains",
     lessThan = "LT",
     lessThanOrEqual = "LE",

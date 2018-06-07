@@ -1,4 +1,4 @@
-import { Column, Filter, FilterArguments, FilterCallback, SearchTerm } from './../models/index';
+import { Column, Filter, FilterArguments, FilterCallback, OperatorType, OperatorString, SearchTerm } from './../models/index';
 export declare class InputFilter implements Filter {
     private $filterElm;
     grid: any;
@@ -8,6 +8,7 @@ export declare class InputFilter implements Filter {
     constructor();
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly gridOptions;
+    readonly operator: OperatorType | OperatorString;
     /**
      * Initialize the Filter
      */

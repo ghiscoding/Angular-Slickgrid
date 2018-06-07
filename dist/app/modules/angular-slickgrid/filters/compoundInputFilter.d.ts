@@ -5,14 +5,15 @@ export declare class CompoundInputFilter implements Filter {
     private $filterElm;
     private $filterInputElm;
     private $selectOperatorElm;
+    private _operator;
     grid: any;
-    operator: OperatorType | OperatorString;
     searchTerms: SearchTerm[];
     columnDef: Column;
     callback: FilterCallback;
     constructor(translate: TranslateService);
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly gridOptions;
+    operator: OperatorType | OperatorString;
     /**
      * Initialize the Filter
      */

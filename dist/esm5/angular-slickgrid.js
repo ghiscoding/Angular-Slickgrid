@@ -4,7 +4,7 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
-import { Injectable, Component, EventEmitter, Input, Output, Inject, ElementRef, ViewChild, NgModule } from '@angular/core';
+import { Injectable, Inject, Injector, Component, EventEmitter, Input, Output, ElementRef, ViewChild, NgModule } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Subject } from 'rxjs/Subject';
 import { TextEncoder } from 'text-encoding-utf-8';
@@ -49,26 +49,6 @@ var DelimiterType = {
     doublePipe: '||',
     doubleSemicolon: ';;',
 };
-var EditorType = {
-    custom: 0,
-    checkbox: 1,
-    date: 2,
-    float: 3,
-    integer: 4,
-    longText: 5,
-    multipleSelect: 6,
-    singleSelect: 7,
-    text: 8,
-};
-EditorType[EditorType.custom] = "custom";
-EditorType[EditorType.checkbox] = "checkbox";
-EditorType[EditorType.date] = "date";
-EditorType[EditorType.float] = "float";
-EditorType[EditorType.integer] = "integer";
-EditorType[EditorType.longText] = "longText";
-EditorType[EditorType.multipleSelect] = "multipleSelect";
-EditorType[EditorType.singleSelect] = "singleSelect";
-EditorType[EditorType.text] = "text";
 var FieldType = {
     unknown: 0,
     string: 1,
@@ -122,22 +102,6 @@ var FileType = {
     xls: 'xls',
     xlsx: 'xlsx',
 };
-var FilterType = {
-    input: 0,
-    select: 1,
-    multipleSelect: 2,
-    singleSelect: 3,
-    custom: 4,
-    compoundDate: 5,
-    compoundInput: 6,
-};
-FilterType[FilterType.input] = "input";
-FilterType[FilterType.select] = "select";
-FilterType[FilterType.multipleSelect] = "multipleSelect";
-FilterType[FilterType.singleSelect] = "singleSelect";
-FilterType[FilterType.custom] = "custom";
-FilterType[FilterType.compoundDate] = "compoundDate";
-FilterType[FilterType.compoundInput] = "compoundInput";
 var GridStateType = {
     columns: 'columns',
     filter: 'filter',
@@ -175,6 +139,7 @@ KeyCode[KeyCode.RIGHT] = "RIGHT";
 KeyCode[KeyCode.TAB] = "TAB";
 KeyCode[KeyCode.UP] = "UP";
 var OperatorType = {
+    empty: '',
     contains: 'Contains',
     lessThan: 'LT',
     lessThanOrEqual: 'LE',
@@ -447,20 +412,6 @@ function mapOperatorByFieldType(fieldType) {
         case FieldType.dateTimeUsShortAM_PM:
         default:
             map = OperatorType.equal;
-            break;
-    }
-    return map;
-}
-function mapOperatorByFilterType(filterType) {
-    var map;
-    switch (filterType) {
-        case FilterType.multipleSelect:
-            map = OperatorType.in;
-            break;
-        case FilterType.singleSelect:
-            map = OperatorType.equal;
-            break;
-        default:
             break;
     }
     return map;
@@ -803,21 +754,33 @@ var CompoundDateFilter = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(CompoundDateFilter.prototype, "operator", {
+        get: function () {
+            return this._operator || OperatorType.empty;
+        },
+        set: function (op) {
+            this._operator = op;
+        },
+        enumerable: true,
+        configurable: true
+    });
     CompoundDateFilter.prototype.init = function (args) {
         var _this = this;
-        this.grid = args.grid;
-        this.callback = args.callback;
-        this.columnDef = args.columnDef;
-        this.operator = args.operator;
-        this.searchTerms = args.searchTerms || [];
-        var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
-        this.$filterElm = this.createDomElement(searchTerm);
-        this.$filterInputElm.keyup(function (e) {
-            _this.onTriggerEvent(e);
-        });
-        this.$selectOperatorElm.change(function (e) {
-            _this.onTriggerEvent(e);
-        });
+        if (args) {
+            this.grid = args.grid;
+            this.callback = args.callback;
+            this.columnDef = args.columnDef;
+            this.operator = args.operator || '';
+            this.searchTerms = args.searchTerms || [];
+            var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+            this.$filterElm = this.createDomElement(searchTerm);
+            this.$filterInputElm.keyup(function (e) {
+                _this.onTriggerEvent(e);
+            });
+            this.$selectOperatorElm.change(function (e) {
+                _this.onTriggerEvent(e);
+            });
+        }
     };
     CompoundDateFilter.prototype.clear = function () {
         if (this.flatInstance && this.$selectOperatorElm) {
@@ -828,7 +791,6 @@ var CompoundDateFilter = /** @class */ (function () {
     CompoundDateFilter.prototype.destroy = function () {
         if (this.$filterElm) {
             this.$filterElm.off('keyup').remove();
-            this.$selectOperatorElm.off('change').remove();
         }
     };
     CompoundDateFilter.prototype.setValues = function (values) {
@@ -840,7 +802,7 @@ var CompoundDateFilter = /** @class */ (function () {
         var _this = this;
         var inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
         var outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateUtc);
-        var currentLocale = this.getCurrentLocale(this.columnDef, this.gridOptions) || '';
+        var currentLocale = this.translate.currentLang || 'en';
         if (currentLocale.length > 2) {
             currentLocale = currentLocale.substring(0, 2);
         }
@@ -860,7 +822,7 @@ var CompoundDateFilter = /** @class */ (function () {
                 else {
                     _this.onTriggerEvent(undefined, dateStr === '');
                 }
-            },
+            }
         };
         if (outputFormat && (outputFormat === 'Z' || outputFormat.toLowerCase().includes('h'))) {
             pickerOptions.enableTime = true;
@@ -892,9 +854,6 @@ var CompoundDateFilter = /** @class */ (function () {
     CompoundDateFilter.prototype.createDomElement = function (searchTerm) {
         var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
-        if (searchTerm) {
-            this._currentValue = (searchTerm);
-        }
         this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
         this.$filterInputElm = this.buildDatePickerInput(searchTerm);
         var $filterContainerElm = $("<div class=\"form-group search-filter\"></div>");
@@ -911,18 +870,12 @@ var CompoundDateFilter = /** @class */ (function () {
         }
         if (searchTerm) {
             $filterContainerElm.addClass('filled');
+            this._currentValue = (searchTerm);
         }
         if ($filterContainerElm && typeof $filterContainerElm.appendTo === 'function') {
             $filterContainerElm.appendTo($headerElm);
         }
         return $filterContainerElm;
-    };
-    CompoundDateFilter.prototype.getCurrentLocale = function (columnDef, gridOptions) {
-        var options = gridOptions || columnDef.params || {};
-        if (options.i18n && options.i18n instanceof TranslateService) {
-            return options.i18n.currentLang;
-        }
-        return 'en';
     };
     CompoundDateFilter.prototype.loadFlatpickrLocale = function (locale) {
         if (locale !== 'en') {
@@ -938,7 +891,7 @@ var CompoundDateFilter = /** @class */ (function () {
         else {
             var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
             (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-            this.callback(e, { columnDef: this.columnDef, searchTerms: [this._currentValue], operator: selectedOperator || '' });
+            this.callback(e, { columnDef: this.columnDef, searchTerms: (this._currentValue ? [this._currentValue] : null), operator: selectedOperator || '' });
         }
     };
     CompoundDateFilter.prototype.hide = function () {
@@ -966,6 +919,16 @@ var CompoundInputFilter = /** @class */ (function () {
     Object.defineProperty(CompoundInputFilter.prototype, "gridOptions", {
         get: function () {
             return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CompoundInputFilter.prototype, "operator", {
+        get: function () {
+            return this._operator || OperatorType.empty;
+        },
+        set: function (op) {
+            this._operator = op;
         },
         enumerable: true,
         configurable: true
@@ -1076,13 +1039,13 @@ var CompoundInputFilter = /** @class */ (function () {
             var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
             var value = this.$filterInputElm.val();
             (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-            this.callback(e, { columnDef: this.columnDef, searchTerms: [value], operator: selectedOperator || '' });
+            this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '' });
         }
     };
     return CompoundInputFilter;
 }());
 CompoundInputFilter.decorators = [
-    { type: Injectable },
+    { type: Inject, args: [TranslateService,] },
 ];
 CompoundInputFilter.ctorParameters = function () { return [
     { type: TranslateService, },
@@ -1093,6 +1056,13 @@ var InputFilter = /** @class */ (function () {
     Object.defineProperty(InputFilter.prototype, "gridOptions", {
         get: function () {
             return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(InputFilter.prototype, "operator", {
+        get: function () {
+            return OperatorType.equal;
         },
         enumerable: true,
         configurable: true
@@ -1156,10 +1126,10 @@ var InputFilter = /** @class */ (function () {
     return InputFilter;
 }());
 var MultipleSelectFilter = /** @class */ (function () {
-    function MultipleSelectFilter(collectionService, translate) {
+    function MultipleSelectFilter(translate, collectionService) {
         var _this = this;
-        this.collectionService = collectionService;
         this.translate = translate;
+        this.collectionService = collectionService;
         this.isFilled = false;
         this.enableTranslateLabel = false;
         this.defaultOptions = {
@@ -1193,13 +1163,20 @@ var MultipleSelectFilter = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(MultipleSelectFilter.prototype, "operator", {
+        get: function () {
+            return OperatorType.in;
+        },
+        enumerable: true,
+        configurable: true
+    });
     MultipleSelectFilter.prototype.init = function (args) {
         this.grid = args.grid;
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.searchTerms = args.searchTerms || [];
         if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
         }
         this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
         this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
@@ -1238,7 +1215,7 @@ var MultipleSelectFilter = /** @class */ (function () {
         var options = '';
         optionCollection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.multipleSelect, collection: [ { value: '1', label: 'One' } ]')");
+                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')");
             }
             var labelKey = ((option.labelKey || option[_this.labelName]));
             var selected = (_this.findValueInSearchTerms(option[_this.valueName]) >= 0) ? 'selected' : '';
@@ -1284,13 +1261,20 @@ MultipleSelectFilter.decorators = [
     { type: Injectable },
 ];
 MultipleSelectFilter.ctorParameters = function () { return [
-    { type: CollectionService, },
     { type: TranslateService, },
+    { type: CollectionService, },
 ]; };
 var SelectFilter = /** @class */ (function () {
     function SelectFilter(translate) {
         this.translate = translate;
     }
+    Object.defineProperty(SelectFilter.prototype, "operator", {
+        get: function () {
+            return OperatorType.equal;
+        },
+        enumerable: true,
+        configurable: true
+    });
     SelectFilter.prototype.init = function (args) {
         var _this = this;
         this.grid = args.grid;
@@ -1334,7 +1318,7 @@ var SelectFilter = /** @class */ (function () {
     SelectFilter.prototype.buildTemplateHtmlString = function () {
         var _this = this;
         if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
         }
         var optionCollection = this.columnDef.filter.collection || [];
         var labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
@@ -1342,7 +1326,7 @@ var SelectFilter = /** @class */ (function () {
         var options = '';
         optionCollection.forEach(function (option) {
             if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.select, collection: [ { value: '1', label: 'One' } ]')");
+                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.select, collection: [ { value: '1', label: 'One' } ]')");
             }
             var labelKey = option.labelKey || option[labelName];
             var textLabel = ((option.labelKey || _this.columnDef.filter.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
@@ -1365,11 +1349,17 @@ var SelectFilter = /** @class */ (function () {
     };
     return SelectFilter;
 }());
+SelectFilter.decorators = [
+    { type: Injectable },
+];
+SelectFilter.ctorParameters = function () { return [
+    { type: TranslateService, },
+]; };
 var SingleSelectFilter = /** @class */ (function () {
-    function SingleSelectFilter(collectionService, translate) {
+    function SingleSelectFilter(translate, collectionService) {
         var _this = this;
-        this.collectionService = collectionService;
         this.translate = translate;
+        this.collectionService = collectionService;
         this.isFilled = false;
         this.enableTranslateLabel = false;
         this.defaultOptions = {
@@ -1381,7 +1371,7 @@ var SingleSelectFilter = /** @class */ (function () {
                 var selectedItems = _this.$filterElm.multipleSelect('getSelects');
                 var selectedItem = '';
                 if (Array.isArray(selectedItems) && selectedItems.length > 0) {
-                    selectedItem = selectedItems[0];
+                    selectedItem = selectedItems[0] || null;
                     _this.isFilled = true;
                     _this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
                 }
@@ -1389,10 +1379,17 @@ var SingleSelectFilter = /** @class */ (function () {
                     _this.isFilled = false;
                     _this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                _this.callback(undefined, { columnDef: _this.columnDef, operator: 'EQ', searchTerms: [selectedItem] });
+                _this.callback(undefined, { columnDef: _this.columnDef, operator: 'EQ', searchTerms: (selectedItem ? [selectedItem] : null) });
             }
         };
     }
+    Object.defineProperty(SingleSelectFilter.prototype, "operator", {
+        get: function () {
+            return OperatorType.equal;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(SingleSelectFilter.prototype, "gridOptions", {
         get: function () {
             return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
@@ -1406,7 +1403,7 @@ var SingleSelectFilter = /** @class */ (function () {
         this.columnDef = args.columnDef;
         this.searchTerms = args.searchTerms;
         if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
         }
         this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
         this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
@@ -1449,7 +1446,7 @@ var SingleSelectFilter = /** @class */ (function () {
         var options = '';
         optionCollection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.singleSelect, collection: [ { value: '1', label: 'One' } ]')");
+                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.singleSelect, collection: [ { value: '1', label: 'One' } ]')");
             }
             var labelKey = ((option.labelKey || option[_this.labelName]));
             var selected = (option[_this.valueName] === searchTerm) ? 'selected' : '';
@@ -1482,8 +1479,8 @@ SingleSelectFilter.decorators = [
     { type: Injectable },
 ];
 SingleSelectFilter.ctorParameters = function () { return [
-    { type: CollectionService, },
     { type: TranslateService, },
+    { type: CollectionService, },
 ]; };
 var Filters = {
     input: InputFilter,
@@ -1493,14 +1490,141 @@ var Filters = {
     compoundDate: CompoundDateFilter,
     compoundInput: CompoundInputFilter,
 };
-var FilterService = /** @class */ (function () {
-    function FilterService(collectionService, translate) {
-        this.collectionService = collectionService;
+var GlobalGridOptions = {
+    alwaysShowVerticalScroll: true,
+    autoEdit: false,
+    asyncEditorLoading: false,
+    autoFitColumnsOnFirstLoad: true,
+    autoResize: {
+        bottomPadding: 20,
+        minHeight: 180,
+        minWidth: 300,
+        sidePadding: 0
+    },
+    cellHighlightCssClass: 'slick-cell-modified',
+    checkboxSelector: {
+        cssClass: 'slick-cell-checkboxsel'
+    },
+    columnPicker: {
+        hideForceFitButton: false,
+        hideSyncResizeButton: true
+    },
+    datasetIdPropertyName: 'id',
+    defaultFilterPlaceholder: '&#128269;',
+    defaultFilter: Filters.input,
+    editable: false,
+    enableAutoResize: true,
+    enableCellNavigation: false,
+    enableColumnPicker: true,
+    enableColumnReorder: true,
+    enableExport: true,
+    enableGridMenu: true,
+    enableHeaderMenu: true,
+    enableMouseHoverHighlightRow: true,
+    enableSorting: true,
+    enableTextSelectionOnCells: true,
+    explicitInitialization: true,
+    exportOptions: {
+        delimiter: DelimiterType.comma,
+        exportWithFormatter: false,
+        filename: 'export',
+        format: FileType.csv,
+        groupingAggregatorRowText: '',
+        sanitizeDataExport: false,
+        useUtf8WithBom: true
+    },
+    forceFitColumns: false,
+    gridMenu: {
+        hideClearAllFiltersCommand: false,
+        hideClearAllSortingCommand: false,
+        hideExportCsvCommand: false,
+        hideExportTextDelimitedCommand: true,
+        hideForceFitButton: false,
+        hideRefreshDatasetCommand: false,
+        hideSyncResizeButton: true,
+        hideToggleFilterCommand: false,
+        iconCssClass: 'fa fa-bars',
+        iconClearAllFiltersCommand: 'fa fa-filter text-danger',
+        iconClearAllSortingCommand: 'fa fa-unsorted text-danger',
+        iconExportCsvCommand: 'fa fa-download',
+        iconExportTextDelimitedCommand: 'fa fa-download',
+        iconRefreshDatasetCommand: 'fa fa-refresh',
+        iconToggleFilterCommand: 'fa fa-random',
+        menuWidth: 16,
+        resizeOnShowHeaderRow: true
+    },
+    headerMenu: {
+        autoAlign: true,
+        autoAlignOffset: 12,
+        minWidth: 140,
+        iconSortAscCommand: 'fa fa-sort-asc',
+        iconSortDescCommand: 'fa fa-sort-desc',
+        iconColumnHideCommand: 'fa fa-times',
+        hideColumnHideCommand: false,
+        hideSortCommands: false
+    },
+    headerRowHeight: 35,
+    multiColumnSort: true,
+    numberedMultiColumnSort: true,
+    tristateMultiColumnSort: false,
+    sortColNumberInSeparateSpan: true,
+    suppressActiveCellChangeOnEdit: true,
+    pagination: {
+        pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
+        pageSize: 25,
+        totalItems: 0
+    },
+    rowHeight: 35,
+    showHeaderRow: false,
+    topPanelHeight: 35
+};
+var SlickgridConfig = /** @class */ (function () {
+    function SlickgridConfig() {
+        this.options = GlobalGridOptions;
+    }
+    return SlickgridConfig;
+}());
+var FilterFactory = /** @class */ (function () {
+    function FilterFactory(injector, config, translate, collectionService) {
+        this.injector = injector;
+        this.config = config;
         this.translate = translate;
+        this.collectionService = collectionService;
+        this._options = this.config.options;
+    }
+    FilterFactory.prototype.createFilter = function (columnFilter) {
+        var filter;
+        if (columnFilter && columnFilter.model) {
+            var filterInstance = columnFilter.model;
+            var filterName = typeof columnFilter.model === 'function' ? filterInstance.name : '';
+            filter = typeof columnFilter.model === 'function' ? new columnFilter.model(this.translate, this.collectionService) : columnFilter.model;
+        }
+        if (!filter && this._options.defaultFilter) {
+            filter = new this._options.defaultFilter(this.translate, this.collectionService);
+        }
+        return filter;
+    };
+    FilterFactory.prototype.createInjector = function (service) {
+        var injector = Injector.create([{ provide: service, deps: [TranslateService] }]);
+        return injector.get(service);
+    };
+    return FilterFactory;
+}());
+FilterFactory.decorators = [
+    { type: Injectable },
+];
+FilterFactory.ctorParameters = function () { return [
+    { type: Injector, },
+    { type: SlickgridConfig, },
+    { type: TranslateService, },
+    { type: CollectionService, },
+]; };
+var FilterService = /** @class */ (function () {
+    function FilterService(filterFactory) {
+        this.filterFactory = filterFactory;
         this._eventHandler = new Slick.EventHandler();
         this._filters = [];
         this._columnFilters = {};
-        this._isFirstQuery = true;
         this.onFilterChanged = new Subject();
         this.onFilterCleared = new Subject();
     }
@@ -1637,21 +1761,6 @@ var FilterService = /** @class */ (function () {
                         operator = (operator === '*' || operator === '*z') ? OperatorType.endsWith : OperatorType.startsWith;
                     }
                 }
-                var filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
-                if (!operator && filterType !== FilterType.custom) {
-                    switch (filterType) {
-                        case FilterType.select:
-                        case FilterType.multipleSelect:
-                            operator = 'IN';
-                            break;
-                        case FilterType.singleSelect:
-                            operator = 'EQ';
-                            break;
-                        default:
-                            operator = operator;
-                            break;
-                    }
-                }
                 if (searchTerm === '' && !searchTerms) {
                     return true;
                 }
@@ -1783,14 +1892,15 @@ var FilterService = /** @class */ (function () {
         if (columnDef && columnId !== 'selector' && columnDef.filterable) {
             var searchTerms = void 0;
             var operator = void 0;
+            var filter_1 = this.filterFactory.createFilter(args.column.filter);
+            operator = (columnDef && columnDef.filter && columnDef.filter.operator) || (filter_1 && filter_1.operator) || undefined;
             if (this._columnFilters[columnDef.id]) {
                 searchTerms = this._columnFilters[columnDef.id].searchTerms || undefined;
                 operator = this._columnFilters[columnDef.id].operator || undefined;
             }
             else if (columnDef.filter) {
                 searchTerms = columnDef.filter.searchTerms || undefined;
-                operator = columnDef.filter.operator || undefined;
-                this.updateColumnFilters(searchTerms, columnDef);
+                this.updateColumnFilters(searchTerms, columnDef, operator);
             }
             var filterArguments = {
                 grid: this._grid,
@@ -1799,37 +1909,6 @@ var FilterService = /** @class */ (function () {
                 columnDef: columnDef,
                 callback: this.callbackSearchEvent.bind(this)
             };
-            var filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
-            if (!filterType) {
-                filterType = this._gridOptions.defaultFilterType;
-            }
-            var filter_1;
-            switch (filterType) {
-                case FilterType.custom:
-                    if (columnDef && columnDef.filter && columnDef.filter.customFilter) {
-                        filter_1 = columnDef.filter.customFilter;
-                    }
-                    break;
-                case FilterType.select:
-                    filter_1 = new Filters.select(this.translate);
-                    break;
-                case FilterType.multipleSelect:
-                    filter_1 = new Filters.multipleSelect(this.collectionService, this.translate);
-                    break;
-                case FilterType.singleSelect:
-                    filter_1 = new Filters.singleSelect(this.collectionService, this.translate);
-                    break;
-                case FilterType.compoundDate:
-                    filter_1 = new Filters.compoundDate(this.translate);
-                    break;
-                case FilterType.compoundInput:
-                    filter_1 = new Filters.compoundInput(this.translate);
-                    break;
-                case FilterType.input:
-                default:
-                    filter_1 = new Filters.input();
-                    break;
-            }
             if (filter_1) {
                 filter_1.init(filterArguments);
                 var filterExistIndex = this._filters.findIndex(function (filt) { return filter_1.columnDef.name === filt.columnDef.name; });
@@ -1875,16 +1954,14 @@ var FilterService = /** @class */ (function () {
                 }
             });
         }
-        return this._columnDefinitions;
     };
-    FilterService.prototype.updateColumnFilters = function (searchTerms, columnDef) {
-        if (searchTerms) {
+    FilterService.prototype.updateColumnFilters = function (searchTerms, columnDef, operator) {
+        if (searchTerms && columnDef) {
             this._columnFilters[columnDef.id] = {
                 columnId: columnDef.id,
                 columnDef: columnDef,
                 searchTerms: searchTerms,
-                operator: (columnDef && columnDef.filter && columnDef.filter.operator) ? columnDef.filter.operator : null,
-                type: (columnDef && columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input
+                operator: operator
             };
         }
     };
@@ -1902,8 +1979,7 @@ FilterService.decorators = [
     { type: Injectable },
 ];
 FilterService.ctorParameters = function () { return [
-    { type: CollectionService, },
-    { type: TranslateService, },
+    { type: FilterFactory, },
 ]; };
 var ExportService = /** @class */ (function () {
     function ExportService(translate) {
@@ -3300,7 +3376,7 @@ var GraphqlService = /** @class */ (function () {
                     fieldSearchValue = '';
                 }
                 if (typeof fieldSearchValue !== 'string' && !searchTerms) {
-                    throw new Error("GraphQL filter searchTerm property must be provided as type \"string\", if you use filter with options then make sure your IDs are also string. For example: filter: {type: FilterType.select, collection: [{ id: \"0\", value: \"0\" }, { id: \"1\", value: \"1\" }]");
+                    throw new Error("GraphQL filter searchTerm property must be provided as type \"string\", if you use filter with options then make sure your IDs are also string. For example: filter: {model: Filters.select, collection: [{ id: \"0\", value: \"0\" }, { id: \"1\", value: \"1\" }]");
                 }
                 fieldSearchValue = '' + fieldSearchValue;
                 var matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/);
@@ -3320,7 +3396,7 @@ var GraphqlService = /** @class */ (function () {
                     }
                 }
                 if (!operator && columnDef.filter) {
-                    operator = mapOperatorByFilterType(columnDef.filter.type || '');
+                    operator = columnDef.filter.operator;
                 }
                 if (!operator) {
                     operator = mapOperatorByFieldType(columnDef.type || FieldType.string);
@@ -3749,7 +3825,7 @@ var GridOdataService = /** @class */ (function () {
                     fieldSearchValue = '';
                 }
                 if (typeof fieldSearchValue !== 'string' && !searchTerms) {
-                    throw new Error("ODdata filter searchTerm property must be provided as type \"string\", if you use filter with options then make sure your IDs are also string. For example: filter: {type: FilterType.select, collection: [{ id: \"0\", value: \"0\" }, { id: \"1\", value: \"1\" }]");
+                    throw new Error("ODdata filter searchTerm property must be provided as type \"string\", if you use filter with options then make sure your IDs are also string. For example: filter: {model: Filters.select, collection: [{ id: \"0\", value: \"0\" }, { id: \"1\", value: \"1\" }]");
                 }
                 fieldSearchValue = '' + fieldSearchValue;
                 var matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/);
@@ -5454,13 +5530,6 @@ var TextEditor = /** @class */ (function () {
     };
     return TextEditor;
 }());
-var AvailableEditor = /** @class */ (function () {
-    function AvailableEditor(type, editor) {
-        this.type = type;
-        this.editor = editor;
-    }
-    return AvailableEditor;
-}());
 var Editors = {
     checkbox: CheckboxEditor,
     date: DateEditor,
@@ -5471,16 +5540,6 @@ var Editors = {
     singleSelect: SingleSelectEditor,
     text: TextEditor
 };
-var AVAILABLE_EDITORS = [
-    { type: EditorType.checkbox, editor: CheckboxEditor },
-    { type: EditorType.date, editor: DateEditor },
-    { type: EditorType.float, editor: FloatEditor },
-    { type: EditorType.integer, editor: IntegerEditor },
-    { type: EditorType.longText, editor: LongTextEditor },
-    { type: EditorType.multipleSelect, editor: MultipleSelectEditor },
-    { type: EditorType.singleSelect, editor: SingleSelectEditor },
-    { type: EditorType.text, editor: TextEditor },
-];
 var arrayToCsvFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value && Array.isArray(value)) {
         var values = value.join(', ');
@@ -6081,94 +6140,6 @@ SlickPaginationComponent.propDecorators = {
     "gridPaginationOptions": [{ type: Input },],
     "grid": [{ type: Input },],
 };
-var GlobalGridOptions = {
-    alwaysShowVerticalScroll: true,
-    autoEdit: false,
-    asyncEditorLoading: false,
-    autoFitColumnsOnFirstLoad: true,
-    autoResize: {
-        bottomPadding: 20,
-        minHeight: 180,
-        minWidth: 300,
-        sidePadding: 0
-    },
-    cellHighlightCssClass: 'slick-cell-modified',
-    checkboxSelector: {
-        cssClass: 'slick-cell-checkboxsel'
-    },
-    columnPicker: {
-        hideForceFitButton: false,
-        hideSyncResizeButton: true
-    },
-    datasetIdPropertyName: 'id',
-    defaultFilterPlaceholder: '&#128269;',
-    defaultFilterType: FilterType.input,
-    editable: false,
-    enableAutoResize: true,
-    enableCellNavigation: false,
-    enableColumnPicker: true,
-    enableColumnReorder: true,
-    enableExport: true,
-    enableGridMenu: true,
-    enableHeaderMenu: true,
-    enableMouseHoverHighlightRow: true,
-    enableSorting: true,
-    enableTextSelectionOnCells: true,
-    explicitInitialization: true,
-    exportOptions: {
-        delimiter: DelimiterType.comma,
-        exportWithFormatter: false,
-        filename: 'export',
-        format: FileType.csv,
-        groupingAggregatorRowText: '',
-        sanitizeDataExport: false,
-        useUtf8WithBom: true
-    },
-    forceFitColumns: false,
-    gridMenu: {
-        hideClearAllFiltersCommand: false,
-        hideClearAllSortingCommand: false,
-        hideExportCsvCommand: false,
-        hideExportTextDelimitedCommand: true,
-        hideForceFitButton: false,
-        hideRefreshDatasetCommand: false,
-        hideSyncResizeButton: true,
-        hideToggleFilterCommand: false,
-        iconCssClass: 'fa fa-bars',
-        iconClearAllFiltersCommand: 'fa fa-filter text-danger',
-        iconClearAllSortingCommand: 'fa fa-unsorted text-danger',
-        iconExportCsvCommand: 'fa fa-download',
-        iconExportTextDelimitedCommand: 'fa fa-download',
-        iconRefreshDatasetCommand: 'fa fa-refresh',
-        iconToggleFilterCommand: 'fa fa-random',
-        menuWidth: 16,
-        resizeOnShowHeaderRow: true
-    },
-    headerMenu: {
-        autoAlign: true,
-        autoAlignOffset: 12,
-        minWidth: 140,
-        iconSortAscCommand: 'fa fa-sort-asc',
-        iconSortDescCommand: 'fa fa-sort-desc',
-        iconColumnHideCommand: 'fa fa-times',
-        hideColumnHideCommand: false,
-        hideSortCommands: false
-    },
-    headerRowHeight: 35,
-    multiColumnSort: true,
-    numberedMultiColumnSort: true,
-    tristateMultiColumnSort: false,
-    sortColNumberInSeparateSpan: true,
-    suppressActiveCellChangeOnEdit: true,
-    pagination: {
-        pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
-        pageSize: 25,
-        totalItems: 0
-    },
-    rowHeight: 35,
-    showHeaderRow: false,
-    topPanelHeight: 35
-};
 var slickgridEventPrefix = 'sg';
 var AngularSlickgridComponent = /** @class */ (function () {
     function AngularSlickgridComponent(controlAndPluginService, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
@@ -6259,7 +6230,6 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.isGridInitialized = true;
     };
     AngularSlickgridComponent.prototype.initialization = function () {
-        var _this = this;
         this._dataset = this._dataset || [];
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
@@ -6273,7 +6243,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         else {
             this._dataView = new Slick.Data.DataView();
         }
-        this._columnDefinitions = this._columnDefinitions.map(function (c) { return (Object.assign({}, c, { editor: _this.getEditor((c.editor && c.editor.type), c), internalColumnEditor: Object.assign({}, c.editor) })); }), this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+        this._columnDefinitions = this._columnDefinitions.map(function (c) { return (Object.assign({}, c, { editor: c.editor && c.editor.model, internalColumnEditor: Object.assign({}, c.editor) })); }), this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
         this.grid = new Slick.Grid("#" + this.gridId, this._dataView, this._columnDefinitions, this.gridOptions);
         this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._dataView, this.groupItemMetadataProvider);
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
@@ -6314,16 +6284,6 @@ var AngularSlickgridComponent = /** @class */ (function () {
             resizerService: this.resizer,
             sortService: this.sortService,
         });
-    };
-    AngularSlickgridComponent.prototype.getEditor = function (type, column) {
-        if (type === EditorType.custom && column && column.editor && column.editor.hasOwnProperty('customEditor')) {
-            return column.editor['customEditor'];
-        }
-        var editorFound = AVAILABLE_EDITORS.find(function (editor) { return editor.type === type; });
-        if (editorFound && editorFound.editor) {
-            return editorFound.editor;
-        }
-        return undefined;
     };
     AngularSlickgridComponent.prototype.createBackendApiInternalPostProcessCallback = function (gridOptions) {
         var _this = this;
@@ -6566,8 +6526,15 @@ AngularSlickgridComponent.decorators = [
                 selector: 'angular-slickgrid',
                 template: "<div id=\"slickGridContainer-{{gridId}}\" #customElm class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n",
                 providers: [
+                    CompoundDateFilter,
+                    CompoundInputFilter,
+                    InputFilter,
+                    MultipleSelectFilter,
+                    SingleSelectFilter,
+                    SelectFilter,
                     ControlAndPluginService,
                     ExportService,
+                    FilterFactory,
                     FilterService,
                     GraphqlService,
                     GridEventService,
@@ -6575,7 +6542,8 @@ AngularSlickgridComponent.decorators = [
                     GridStateService,
                     GroupingAndColspanService,
                     ResizerService,
-                    SortService
+                    SortService,
+                    SlickgridConfig
                 ]
             },] },
 ];
@@ -6645,5 +6613,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, EditorType, FieldType, FileType, FilterType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, mapOperatorByFilterType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, AvailableEditor, Editors, AVAILABLE_EDITORS, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, TextEditor as ɵl, booleanFilterCondition as ɵn, collectionSearchFilterCondition as ɵo, dateFilterCondition as ɵp, dateIsoFilterCondition as ɵq, dateUsFilterCondition as ɵs, dateUsShortFilterCondition as ɵt, dateUtcFilterCondition as ɵr, executeMappedCondition as ɵm, testFilterCondition as ɵw, numberFilterCondition as ɵu, stringFilterCondition as ɵv, CompoundDateFilter as ɵbb, CompoundInputFilter as ɵbc, InputFilter as ɵx, MultipleSelectFilter as ɵy, SelectFilter as ɵba, SingleSelectFilter as ɵz, arrayToCsvFormatter as ɵbd, boldFormatter as ɵbe, checkboxFormatter as ɵbf, checkmarkFormatter as ɵbg, collectionEditorFormatter as ɵbj, collectionFormatter as ɵbi, complexObjectFormatter as ɵbh, dateIsoFormatter as ɵbk, dateTimeIsoAmPmFormatter as ɵbm, dateTimeIsoFormatter as ɵbl, dateTimeUsAmPmFormatter as ɵbp, dateTimeUsFormatter as ɵbo, dateUsFormatter as ɵbn, deleteIconFormatter as ɵbq, dollarColoredBoldFormatter as ɵbt, dollarColoredFormatter as ɵbs, dollarFormatter as ɵbr, editIconFormatter as ɵbu, hyperlinkFormatter as ɵbv, hyperlinkUriPrefixFormatter as ɵbw, infoIconFormatter as ɵbx, lowercaseFormatter as ɵby, multipleFormatter as ɵbz, percentCompleteBarFormatter as ɵcc, percentCompleteFormatter as ɵcb, percentFormatter as ɵca, percentSymbolFormatter as ɵcd, progressBarFormatter as ɵce, translateBooleanFormatter as ɵcg, translateFormatter as ɵcf, uppercaseFormatter as ɵch, yesNoFormatter as ɵci, avgTotalsDollarFormatter as ɵck, avgTotalsFormatter as ɵcj, avgTotalsPercentageFormatter as ɵcl, maxTotalsFormatter as ɵcm, minTotalsFormatter as ɵcn, sumTotalsBoldFormatter as ɵcp, sumTotalsColoredFormatter as ɵcq, sumTotalsDollarBoldFormatter as ɵcs, sumTotalsDollarColoredBoldFormatter as ɵcu, sumTotalsDollarColoredFormatter as ɵct, sumTotalsDollarFormatter as ɵcr, sumTotalsFormatter as ɵco, dateIsoSorter as ɵcw, dateSorter as ɵcv, dateUsShortSorter as ɵcy, dateUsSorter as ɵcx, numericSorter as ɵcz, stringSorter as ɵda };
+export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵc, MaxAggregator as ɵe, MinAggregator as ɵd, SumAggregator as ɵf, CheckboxEditor as ɵg, DateEditor as ɵh, FloatEditor as ɵi, IntegerEditor as ɵj, LongTextEditor as ɵk, MultipleSelectEditor as ɵl, SingleSelectEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵbd, CompoundInputFilter as ɵbe, FilterFactory as ɵa, InputFilter as ɵz, MultipleSelectFilter as ɵba, SelectFilter as ɵbc, SingleSelectFilter as ɵbb, arrayToCsvFormatter as ɵbf, boldFormatter as ɵbg, checkboxFormatter as ɵbh, checkmarkFormatter as ɵbi, collectionEditorFormatter as ɵbl, collectionFormatter as ɵbk, complexObjectFormatter as ɵbj, dateIsoFormatter as ɵbm, dateTimeIsoAmPmFormatter as ɵbo, dateTimeIsoFormatter as ɵbn, dateTimeUsAmPmFormatter as ɵbr, dateTimeUsFormatter as ɵbq, dateUsFormatter as ɵbp, deleteIconFormatter as ɵbs, dollarColoredBoldFormatter as ɵbv, dollarColoredFormatter as ɵbu, dollarFormatter as ɵbt, editIconFormatter as ɵbw, hyperlinkFormatter as ɵbx, hyperlinkUriPrefixFormatter as ɵby, infoIconFormatter as ɵbz, lowercaseFormatter as ɵca, multipleFormatter as ɵcb, percentCompleteBarFormatter as ɵce, percentCompleteFormatter as ɵcd, percentFormatter as ɵcc, percentSymbolFormatter as ɵcf, progressBarFormatter as ɵcg, translateBooleanFormatter as ɵci, translateFormatter as ɵch, uppercaseFormatter as ɵcj, yesNoFormatter as ɵck, avgTotalsDollarFormatter as ɵcm, avgTotalsFormatter as ɵcl, avgTotalsPercentageFormatter as ɵcn, maxTotalsFormatter as ɵco, minTotalsFormatter as ɵcp, sumTotalsBoldFormatter as ɵcr, sumTotalsColoredFormatter as ɵcs, sumTotalsDollarBoldFormatter as ɵcu, sumTotalsDollarColoredBoldFormatter as ɵcw, sumTotalsDollarColoredFormatter as ɵcv, sumTotalsDollarFormatter as ɵct, sumTotalsFormatter as ɵcq, SlickgridConfig as ɵb, dateIsoSorter as ɵcy, dateSorter as ɵcx, dateUsShortSorter as ɵda, dateUsSorter as ɵcz, numericSorter as ɵdb, stringSorter as ɵdc };
 //# sourceMappingURL=angular-slickgrid.js.map

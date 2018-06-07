@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Column, Filter, FilterArguments, FilterCallback, SearchTerm } from './../models/index';
+import { Column, Filter, FilterArguments, FilterCallback, OperatorType, OperatorString, SearchTerm } from './../models/index';
 export declare class SelectFilter implements Filter {
     private translate;
     $filterElm: any;
@@ -8,6 +8,7 @@ export declare class SelectFilter implements Filter {
     columnDef: Column;
     callback: FilterCallback;
     constructor(translate: TranslateService);
+    readonly operator: OperatorType | OperatorString;
     /**
      * Initialize the Filter
      */

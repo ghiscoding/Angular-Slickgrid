@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { AutoResizeOption, BackendServiceApi, Column, ColumnPicker, CheckboxSelector, EditCommand, ExportOption, FilterType, GridMenu, GridState, HeaderButton, HeaderMenu, Pagination } from './../models/index';
+import { AutoResizeOption, BackendServiceApi, Column, ColumnPicker, CheckboxSelector, EditCommand, ExportOption, GridMenu, GridState, HeaderButton, HeaderMenu, Pagination } from './../models/index';
 export interface GridOption {
     /** CSS class name used on newly added row */
     addNewRowCssClass?: string;
@@ -58,8 +58,8 @@ export interface GridOption {
     defaultColumnWidth?: number;
     /** Default placeholder to use in Filters that support placeholder (input, flatpickr) */
     defaultFilterPlaceholder?: string;
-    /** The default filter type to use when none is specified */
-    defaultFilterType?: FilterType;
+    /** The default filter model to use when none is specified */
+    defaultFilter?: any;
     /** Defaults to false, when enabled will give the possibility to edit cell values with inline editors. */
     editable?: boolean;
     /** option to intercept edit commands and implement undo support. */

@@ -1,10 +1,8 @@
-import { TranslateService } from '@ngx-translate/core';
-import { CollectionService } from './collection.service';
 import { Column, ColumnFilters, FilterCallbackArg, CurrentFilter } from './../models/index';
+import { FilterFactory } from '../filters/filterFactory';
 import { Subject } from 'rxjs/Subject';
 export declare class FilterService {
-    private collectionService;
-    private translate;
+    private filterFactory;
     private _eventHandler;
     private _slickSubscriber;
     private _filters;
@@ -12,10 +10,9 @@ export declare class FilterService {
     private _dataView;
     private _grid;
     private _onFilterChangedOptions;
-    private _isFirstQuery;
     onFilterChanged: Subject<CurrentFilter[]>;
     onFilterCleared: Subject<boolean>;
-    constructor(collectionService: CollectionService, translate: TranslateService);
+    constructor(filterFactory: FilterFactory);
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly _gridOptions;
     /** Getter for the Column Definitions pulled through the Grid Object */
@@ -61,7 +58,7 @@ export declare class FilterService {
      * This is basically the same as if we would manually add searchTerm(s) to a column filter object in the column definition, but we do it programmatically.
      * At the end of the day, when creating the Filter (DOM Element), it will use these searchTerm(s) so we can take advantage of that without recoding each Filter type (DOM element)
      */
-    populateColumnFilterSearchTerms(): Column[];
-    private updateColumnFilters(searchTerms, columnDef);
+    populateColumnFilterSearchTerms(): void;
+    private updateColumnFilters(searchTerms, columnDef, operator?);
     private triggerEvent(slickEvent, args, e);
 }

@@ -1,10 +1,9 @@
-import { EditorType } from './editorType.enum';
 import { CollectionFilterBy, CollectionSortBy, MultipleSelectOption } from './../models/index';
 export interface ColumnEditor {
     /** Custom Editor */
     customEditor?: any;
-    /** Editor Type to use (input, multipleSelect, singleSelect, select, custom) */
-    type?: EditorType;
+    /** Any inline editor function that implements Editor for the cell */
+    model?: any;
     collection?: any[];
     /** We could filter some items from the collection */
     collectionFilterBy?: CollectionFilterBy;
@@ -22,8 +21,8 @@ export interface ColumnEditor {
     /** DOM element extra options */
     elementOptions?: any;
     /**
-     * Use "params" to pass any type of arguments to your Custom Editor (type: EditorType.custom)
-     * or regular Editor like the EditorType.float
+     * Use "params" to pass any type of arguments to your Custom Editor
+     * or regular Editor like the Editors.float
      * for example, to pass the option collection to a select Filter we can type this:
      * params: { decimalPlaces: 2 }
      */

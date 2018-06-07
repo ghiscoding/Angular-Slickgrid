@@ -20,7 +20,7 @@ import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, EventEmitter, OnDestroy, OnInit, ElementRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { AngularGridInstance, Column, EditorType, GridOption, GridStateChange, Pagination } from './../models/index';
+import { AngularGridInstance, Column, GridOption, GridStateChange, Pagination } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
@@ -77,13 +77,6 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     destroy(): void;
     ngAfterViewInit(): void;
     initialization(): void;
-    /**
-     * From the list of available editors, find the editor associated to it's type
-     * and if it's a custom one, return the "customEditor" from the column
-     * @param type
-     * @param column
-     */
-    getEditor(type: EditorType, column: Column): any;
     /**
      * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
      * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
