@@ -1,4 +1,4 @@
-import { FieldType, OperatorType, FilterType } from '../models/index';
+import { FieldType, OperatorType } from '../models/index';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
@@ -356,29 +356,6 @@ export function mapOperatorByFieldType(fieldType: FieldType | string): OperatorT
     case FieldType.dateTimeUsShortAM_PM:
     default:
       map = OperatorType.equal;
-      break;
-  }
-
-  return map;
-}
-
-/**
- * Mapper for query operator by a Filter Type
- * For example a multiple-select typically uses 'IN' operator
- * @param operator
- * @returns string map
- */
-export function mapOperatorByFilterType(filterType: FilterType | string): OperatorType {
-  let map: OperatorType;
-
-  switch (filterType) {
-    case FilterType.multipleSelect:
-      map = OperatorType.in;
-      break;
-    case FilterType.singleSelect:
-      map = OperatorType.equal;
-      break;
-    default:
       break;
   }
 

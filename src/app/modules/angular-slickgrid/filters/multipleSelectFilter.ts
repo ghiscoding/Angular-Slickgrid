@@ -8,6 +8,8 @@ import {
   FilterCallback,
   GridOption,
   MultipleSelectOption,
+  OperatorType,
+  OperatorString,
   SearchTerm,
   SelectOption,
 } from './../models/index';
@@ -31,7 +33,7 @@ export class MultipleSelectFilter implements Filter {
   /**
    * Initialize the Filter
    */
-  constructor(private collectionService: CollectionService, private translate: TranslateService) {
+  constructor(private translate: TranslateService, private collectionService: CollectionService) {
     // default options used by this Filter, user can overwrite any of these by passing "otions"
     this.defaultOptions = {
       container: 'body',
@@ -65,6 +67,10 @@ export class MultipleSelectFilter implements Filter {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
+  get operator(): OperatorType | OperatorString {
+    return OperatorType.in;
+  }
+
   /**
    * Initialize the filter template
    */
@@ -75,7 +81,7 @@ export class MultipleSelectFilter implements Filter {
     this.searchTerms = args.searchTerms || [];
 
     if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
+      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
 
     this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
@@ -147,7 +153,7 @@ export class MultipleSelectFilter implements Filter {
     let options = '';
     optionCollection.forEach((option: SelectOption) => {
       if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
-        throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
+        throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
       }
       const labelKey = (option.labelKey || option[this.labelName]) as string;
       const selected = (this.findValueInSearchTerms(option[this.valueName]) >= 0) ? 'selected' : '';

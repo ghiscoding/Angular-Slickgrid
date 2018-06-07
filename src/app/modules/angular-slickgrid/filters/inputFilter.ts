@@ -1,4 +1,13 @@
-import { Column, Filter, FilterArguments, FilterCallback, GridOption, SearchTerm } from './../models/index';
+import {
+  Column,
+  Filter,
+  FilterArguments,
+  FilterCallback,
+  GridOption,
+  OperatorType,
+  OperatorString,
+  SearchTerm
+} from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -15,6 +24,10 @@ export class InputFilter implements Filter {
   /** Getter for the Grid Options pulled through the Grid Object */
   private get gridOptions(): GridOption {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+  }
+
+  get operator(): OperatorType | OperatorString {
+    return OperatorType.equal;
   }
 
   /**

@@ -19,7 +19,7 @@ import 'slickgrid/plugins/slick.headerbuttons';
 import 'slickgrid/plugins/slick.headermenu';
 import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
-import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit, ViewChildren, ElementRef, ViewChild, ReflectiveInjector } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise, titleCase } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
@@ -27,14 +27,11 @@ import {
   AngularGridInstance,
   BackendServiceOption,
   Column,
-  Editor,
-  EditorType,
   GridOption,
   GridStateChange,
   GridStateType,
   Pagination
 } from './../models/index';
-import { Editors, AVAILABLE_EDITORS } from './../editors/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
@@ -46,6 +43,14 @@ import { GroupingAndColspanService } from './../services/groupingAndColspan.serv
 import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
 import { Subscription } from 'rxjs/Subscription';
+import { CompoundDateFilter } from '../filters/compoundDateFilter';
+import { CompoundInputFilter } from '../filters/compoundInputFilter';
+import { InputFilter } from '../filters/inputFilter';
+import { MultipleSelectFilter } from '../filters/multipleSelectFilter';
+import { SingleSelectFilter } from '../filters/singleSelectFilter';
+import { SelectFilter } from '../filters/selectFilter';
+import { FilterFactory } from '../filters/filterFactory';
+import { SlickgridConfig } from '../slickgrid-config';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -58,8 +63,15 @@ const slickgridEventPrefix = 'sg';
   selector: 'angular-slickgrid',
   templateUrl: './angular-slickgrid.component.html',
   providers: [
+    CompoundDateFilter,
+    CompoundInputFilter,
+    InputFilter,
+    MultipleSelectFilter,
+    SingleSelectFilter,
+    SelectFilter,
     ControlAndPluginService,
     ExportService,
+    FilterFactory,
     FilterService,
     GraphqlService,
     GridEventService,
@@ -67,7 +79,8 @@ const slickgridEventPrefix = 'sg';
     GridStateService,
     GroupingAndColspanService,
     ResizerService,
-    SortService
+    SortService,
+    SlickgridConfig
   ]
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
@@ -193,8 +206,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // for convenience, we provide the property "editor" as an Angular-Slickgrid editor complex object
     // however "editor" is used internally by SlickGrid for it's Editor Factory
     // so in our lib we will swap "editor" and copy it into "internalColumnEditor"
-    // then take back "editor.type" and make it the new "editor" so that SlickGrid Editor Factory still works
-    this._columnDefinitions = this._columnDefinitions.map((c: Column | any) => ({ ...c, editor: this.getEditor((c.editor && c.editor.type), c), internalColumnEditor: { ...c.editor } })),
+    // then take back "editor.model" and make it the new "editor" so that SlickGrid Editor Factory still works
+    this._columnDefinitions = this._columnDefinitions.map((c: Column | any) => ({
+      ...c,
+      editor: c.editor && c.editor.model,
+      internalColumnEditor: { ...c.editor }
+    })),
 
     this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
@@ -263,25 +280,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       resizerService: this.resizer,
       sortService: this.sortService,
     });
-  }
-
-  /**
-   * From the list of available editors, find the editor associated to it's type
-   * and if it's a custom one, return the "customEditor" from the column
-   * @param type
-   * @param column
-   */
-  getEditor(type: EditorType, column: Column) {
-    if (type === EditorType.custom && column && column.editor && column.editor.hasOwnProperty('customEditor')) {
-      return column.editor['customEditor'];
-    }
-
-    const editorFound = AVAILABLE_EDITORS.find(editor => editor.type === type);
-    if (editorFound && editorFound.editor) {
-      return editorFound.editor;
-    }
-
-    return undefined;
   }
 
   /**

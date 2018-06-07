@@ -5,7 +5,7 @@ import {
   AngularGridInstance,
   Column,
   FieldType,
-  FilterType,
+  Filters,
   Formatters,
   GraphqlResult,
   GraphqlService,
@@ -66,7 +66,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       {
         id: 'gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true, width: 60,
         filter: {
-          type: FilterType.singleSelect,
+          model: Filters.singleSelect,
           collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }]
         }
       },
@@ -75,7 +75,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         sortable: true,
         filterable: true,
         filter: {
-          type: FilterType.multipleSelect,
+          model: Filters.multipleSelect,
           collection: [{ value: 'acme', label: 'Acme'}, { value: 'abc', label: 'Company ABC'}, { value: 'xyz', label: 'Company XYZ'}]
         }
       },
@@ -85,7 +85,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         type: FieldType.number,
         filterable: true, sortable: true,
         filter: {
-          type: FilterType.compoundInput
+          model: Filters.compoundInput
         },
         formatter: Formatters.multiple, params: { formatters: [Formatters.complexObject, Formatters.translate] } },
     ];

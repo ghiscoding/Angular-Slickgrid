@@ -16,45 +16,54 @@ export class CompoundDateFilter implements Filter {
   private $filterInputElm: any;
   private $selectOperatorElm: any;
   private _currentValue: string;
+  private _operator: OperatorType | OperatorString;
   flatInstance: any;
   grid: any;
-  operator: OperatorType | OperatorString;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
 
-  constructor(private translate: TranslateService) {}
+  constructor(private translate: TranslateService) { }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get gridOptions(): GridOption {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
+  set operator(op: OperatorType | OperatorString) {
+    this._operator = op;
+  }
+  get operator(): OperatorType | OperatorString {
+    return this._operator || OperatorType.empty;
+  }
+
   /**
    * Initialize the Filter
    */
   init(args: FilterArguments) {
-    this.grid = args.grid;
-    this.callback = args.callback;
-    this.columnDef = args.columnDef;
-    this.operator = args.operator;
-    this.searchTerms = args.searchTerms || [];
+    if (args) {
+      this.grid = args.grid;
+      this.callback = args.callback;
+      this.columnDef = args.columnDef;
+      this.operator = args.operator || '';
+      this.searchTerms = args.searchTerms || [];
 
-    // date input can only have 1 search term, so we will use the 1st array index if it exist
-    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+      // date input can only have 1 search term, so we will use the 1st array index if it exist
+      const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
 
-    // step 1, create the DOM Element of the filter which contain the compound Operator+Input
-    // and initialize it if searchTerms is filled
-    this.$filterElm = this.createDomElement(searchTerm);
+      // step 1, create the DOM Element of the filter which contain the compound Operator+Input
+      // and initialize it if searchTerm is filled
+      this.$filterElm = this.createDomElement(searchTerm);
 
-    // step 3, subscribe to the keyup event and run the callback when that happens
-    // also add/remove "filled" class for styling purposes
-    this.$filterInputElm.keyup((e: any) => {
-      this.onTriggerEvent(e);
-    });
-    this.$selectOperatorElm.change((e: any) => {
-      this.onTriggerEvent(e);
-    });
+      // step 3, subscribe to the keyup event and run the callback when that happens
+      // also add/remove "filled" class for styling purposes
+      this.$filterInputElm.keyup((e: any) => {
+        this.onTriggerEvent(e);
+      });
+      this.$selectOperatorElm.change((e: any) => {
+        this.onTriggerEvent(e);
+      });
+    }
   }
 
   /**
@@ -73,7 +82,6 @@ export class CompoundDateFilter implements Filter {
   destroy() {
     if (this.$filterElm) {
       this.$filterElm.off('keyup').remove();
-      this.$selectOperatorElm.off('change').remove();
     }
   }
 
@@ -89,11 +97,10 @@ export class CompoundDateFilter implements Filter {
   //
   // private functions
   // ------------------
-
   private buildDatePickerInput(searchTerm?: SearchTerm) {
     const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
     const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateUtc);
-    let currentLocale = this.getCurrentLocale(this.columnDef, this.gridOptions) || '';
+    let currentLocale = this.translate.currentLang || 'en';
     if (currentLocale.length > 2) {
       currentLocale = currentLocale.substring(0, 2);
     }
@@ -116,7 +123,7 @@ export class CompoundDateFilter implements Filter {
         } else {
           this.onTriggerEvent(undefined, dateStr === '');
         }
-      },
+      }
     };
 
     // add the time picker when format is UTC (Z) or has the 'h' (meaning hours)
@@ -125,7 +132,7 @@ export class CompoundDateFilter implements Filter {
     }
 
     const placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
-    const $filterInputElm = $(`<div class=flatpickr><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
+    const $filterInputElm: any = $(`<div class=flatpickr><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
     this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : null;
     return $filterInputElm;
   }
@@ -158,10 +165,6 @@ export class CompoundDateFilter implements Filter {
   private createDomElement(searchTerm?: SearchTerm) {
     const $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
     $($headerElm).empty();
-
-    if (searchTerm) {
-      this._currentValue = searchTerm as string;
-    }
 
     // create the DOM Select dropdown for the Operator
     this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
@@ -196,6 +199,7 @@ export class CompoundDateFilter implements Filter {
     // if there's a search term, we will add the "filled" class for styling purposes
     if (searchTerm) {
       $filterContainerElm.addClass('filled');
+      this._currentValue = searchTerm as string;
     }
 
     // append the new DOM element to the header row
@@ -204,15 +208,6 @@ export class CompoundDateFilter implements Filter {
     }
 
     return $filterContainerElm;
-  }
-
-  private getCurrentLocale(columnDef: Column, gridOptions: GridOption) {
-    const options = gridOptions || columnDef.params || {};
-    if (options.i18n && options.i18n instanceof TranslateService) {
-      return options.i18n.currentLang;
-    }
-
-    return 'en';
   }
 
   private loadFlatpickrLocale(locale: string) {
@@ -230,7 +225,7 @@ export class CompoundDateFilter implements Filter {
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-      this.callback(e, { columnDef: this.columnDef, searchTerms: [this._currentValue], operator: selectedOperator || '' });
+      this.callback(e, { columnDef: this.columnDef, searchTerms: (this._currentValue ? [this._currentValue] : null), operator: selectedOperator || '' });
     }
   }
 

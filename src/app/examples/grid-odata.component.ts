@@ -1,6 +1,6 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Column, FieldType, FilterType, GridOdataService, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, Filters, GridOdataService, GridOption } from './../modules/angular-slickgrid';
 
 const defaultPageSize = 20;
 const sampleDataRoot = 'assets/data';
@@ -40,12 +40,12 @@ export class GridOdataComponent implements OnInit {
       { id: 'name', name: 'Name', field: 'name', sortable: true, type: FieldType.string,
         filterable: true,
         filter: {
-          type: FilterType.compoundInput
+          model: Filters.compoundInput
         }
       },
       { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
         filter: {
-          type: FilterType.singleSelect,
+          model: Filters.singleSelect,
           collection: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
         }
       },

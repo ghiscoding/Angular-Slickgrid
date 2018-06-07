@@ -4,7 +4,7 @@ import {
   AngularGridInstance,
   Column,
   FieldType,
-  FilterType,
+  Filters,
   Formatters,
   GridOption,
   GridState,
@@ -82,14 +82,14 @@ export class GridStateComponent implements OnInit {
         type: FieldType.string,
         minWidth: 45, width: 100,
         filter: {
-          type: FilterType.compoundInput
+          model: Filters.compoundInput
         }
       },
       {
         id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80, width: 100,
         type: FieldType.string,
         filter: {
-          type: FilterType.input
+          model: Filters.input
         }
       },
       {
@@ -99,7 +99,7 @@ export class GridStateComponent implements OnInit {
         filterable: true,
         filter: {
           collection: multiSelectFilterArray,
-          type: FilterType.multipleSelect,
+          model: Filters.multipleSelect,
           searchTerms: [1, 33, 50], // default selection
           // we could add certain option(s) to the "multiple-select" plugin
           filterOptions: {
@@ -110,11 +110,11 @@ export class GridStateComponent implements OnInit {
       },
       {
         id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 70, type: FieldType.number, sortable: true, width: 100,
-        filterable: true, filter: { type: FilterType.compoundInput }
+        filterable: true, filter: { model: Filters.compoundInput }
       },
       {
         id: 'start', name: 'Start', field: 'start', headerKey: 'START', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true, width: 100,
-        type: FieldType.date, filterable: true, filter: { type: FilterType.compoundDate }
+        type: FieldType.date, filterable: true, filter: { model: Filters.compoundDate }
       },
       {
         id: 'completed', field: 'completed', headerKey: 'COMPLETED', minWidth: 85, maxWidth: 85, formatter: Formatters.checkmark, width: 100,
@@ -123,7 +123,7 @@ export class GridStateComponent implements OnInit {
         filterable: true,
         filter: {
           collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
-          type: FilterType.singleSelect,
+          model: Filters.singleSelect,
 
           // we could add certain option(s) to the "multiple-select" plugin
           filterOptions: {

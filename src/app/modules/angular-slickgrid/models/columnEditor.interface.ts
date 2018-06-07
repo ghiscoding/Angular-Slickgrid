@@ -1,16 +1,6 @@
-import { EditorType } from './editorType.enum';
-import { TextEditor } from './../editors/textEditor';
-import { SingleSelectEditor } from './../editors/singleSelectEditor';
-import { MultipleSelectEditor } from './../editors/multipleSelectEditor';
-import { LongTextEditor } from './../editors/longTextEditor';
-import { IntegerEditor } from './../editors/integerEditor';
-import { FloatEditor } from './../editors/floatEditor';
-import { DateEditor } from './../editors/dateEditor';
-import { CheckboxEditor } from './../editors/checkboxEditor';
 import {
   CollectionFilterBy,
   CollectionSortBy,
-  Editor,
   MultipleSelectOption
 } from './../models/index';
 
@@ -18,8 +8,8 @@ export interface ColumnEditor {
   /** Custom Editor */
   customEditor?: any;
 
-  /** Editor Type to use (input, multipleSelect, singleSelect, select, custom) */
-  type?: EditorType;
+  /** Any inline editor function that implements Editor for the cell */
+  model?: any;
 
   collection?: any[];
 
@@ -45,8 +35,8 @@ export interface ColumnEditor {
   elementOptions?: any;
 
   /**
-   * Use "params" to pass any type of arguments to your Custom Editor (type: EditorType.custom)
-   * or regular Editor like the EditorType.float
+   * Use "params" to pass any type of arguments to your Custom Editor
+   * or regular Editor like the Editors.float
    * for example, to pass the option collection to a select Filter we can type this:
    * params: { decimalPlaces: 2 }
    */

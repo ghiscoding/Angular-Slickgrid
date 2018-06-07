@@ -1,9 +1,6 @@
-import { Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { CollectionService } from './collection.service';
+import { Component, Injectable } from '@angular/core';
 import { castToPromise } from './utilities';
 import { FilterConditions } from './../filter-conditions';
-import { Filters } from './../filters';
 import {
   Column,
   ColumnFilter,
@@ -12,7 +9,6 @@ import {
   FilterArguments,
   FilterCallbackArg,
   FieldType,
-  FilterType,
   GridOption,
   OperatorType,
   CurrentFilter,
@@ -20,6 +16,7 @@ import {
   SlickEvent,
   OperatorString
 } from './../models/index';
+import { FilterFactory } from '../filters/filterFactory';
 import { Subject } from 'rxjs/Subject';
 
 // using external non-typed js libraries
@@ -35,11 +32,10 @@ export class FilterService {
   private _dataView: any;
   private _grid: any;
   private _onFilterChangedOptions: any;
-  private _isFirstQuery = true;
   onFilterChanged = new Subject<CurrentFilter[]>();
   onFilterCleared = new Subject<boolean>();
 
-  constructor(private collectionService: CollectionService, private translate: TranslateService) { }
+  constructor(private filterFactory: FilterFactory) { }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
@@ -202,24 +198,6 @@ export class FilterService {
         }
       }
 
-      // when using a Filter that is not a custom type, we want to make sure that we have a default operator type
-      // for example a multiple-select should always be using IN, while a single select will use an EQ
-      const filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
-      if (!operator && filterType !== FilterType.custom) {
-        switch (filterType) {
-          case FilterType.select:
-          case FilterType.multipleSelect:
-            operator = 'IN';
-            break;
-          case FilterType.singleSelect:
-            operator = 'EQ';
-            break;
-          default:
-            operator = operator;
-            break;
-        }
-      }
-
       // no need to query if search value is empty
       if (searchTerm === '' && !searchTerms) {
         return true;
@@ -365,6 +343,8 @@ export class FilterService {
     if (columnDef && columnId !== 'selector' && columnDef.filterable) {
       let searchTerms: SearchTerm[] | undefined;
       let operator: OperatorString | OperatorType;
+      const filter: Filter | undefined = this.filterFactory.createFilter(args.column.filter);
+      operator = (columnDef && columnDef.filter && columnDef.filter.operator) || (filter && filter.operator) || undefined;
 
       if (this._columnFilters[columnDef.id]) {
         searchTerms = this._columnFilters[columnDef.id].searchTerms || undefined;
@@ -373,8 +353,7 @@ export class FilterService {
         // when hiding/showing (with Column Picker or Grid Menu), it will try to re-create yet again the filters (since SlickGrid does a re-render)
         // because of that we need to first get searchTerm(s) from the columnFilters (that is what the user last entered)
         searchTerms = columnDef.filter.searchTerms || undefined;
-        operator = columnDef.filter.operator || undefined;
-        this.updateColumnFilters(searchTerms, columnDef);
+        this.updateColumnFilters(searchTerms, columnDef, operator);
       }
 
       const filterArguments: FilterArguments = {
@@ -384,41 +363,6 @@ export class FilterService {
         columnDef,
         callback: this.callbackSearchEvent.bind(this)
       };
-
-      // depending on the Filter type, we will watch the correct event
-      // or use the global default when no filter type is provided
-      let filterType = (columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input;
-      if (!filterType) {
-        filterType = this._gridOptions.defaultFilterType;
-      }
-
-      let filter: Filter;
-      switch (filterType) {
-        case FilterType.custom:
-          if (columnDef && columnDef.filter && columnDef.filter.customFilter) {
-            filter = columnDef.filter.customFilter;
-          }
-          break;
-        case FilterType.select:
-          filter = new Filters.select(this.translate);
-          break;
-        case FilterType.multipleSelect:
-          filter = new Filters.multipleSelect(this.collectionService, this.translate);
-          break;
-        case FilterType.singleSelect:
-          filter = new Filters.singleSelect(this.collectionService, this.translate);
-          break;
-        case FilterType.compoundDate:
-          filter = new Filters.compoundDate(this.translate);
-          break;
-        case FilterType.compoundInput:
-          filter = new Filters.compoundInput(this.translate);
-          break;
-        case FilterType.input:
-        default:
-          filter = new Filters.input();
-          break;
-      }
 
       if (filter) {
         filter.init(filterArguments);
@@ -484,18 +428,16 @@ export class FilterService {
         }
       });
     }
-    return this._columnDefinitions;
   }
 
-  private updateColumnFilters(searchTerms: SearchTerm[] | undefined, columnDef: any) {
-    if (searchTerms) {
+  private updateColumnFilters(searchTerms: SearchTerm[] | undefined, columnDef: any, operator?: OperatorType | OperatorString) {
+    if (searchTerms && columnDef) {
       // this._columnFilters.searchTerms = searchTerms;
       this._columnFilters[columnDef.id] = {
         columnId: columnDef.id,
         columnDef,
         searchTerms,
-        operator: (columnDef && columnDef.filter && columnDef.filter.operator) ? columnDef.filter.operator : null,
-        type: (columnDef && columnDef.filter && columnDef.filter.type) ? columnDef.filter.type : FilterType.input
+        operator
       };
     }
   }

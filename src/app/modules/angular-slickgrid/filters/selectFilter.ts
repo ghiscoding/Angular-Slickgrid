@@ -1,9 +1,19 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Column, Filter, FilterArguments, FilterCallback, SearchTerm } from './../models/index';
+import {
+  Column,
+  Filter,
+  FilterArguments,
+  FilterCallback,
+  OperatorType,
+  OperatorString,
+  SearchTerm,
+} from './../models/index';
+import { Injectable } from '@angular/core';
 
 // using external non-typed js libraries
 declare var $: any;
 
+@Injectable()
 export class SelectFilter implements Filter {
   $filterElm: any;
   grid: any;
@@ -12,6 +22,10 @@ export class SelectFilter implements Filter {
   callback: FilterCallback;
 
   constructor(private translate: TranslateService) {}
+
+  get operator(): OperatorType | OperatorString {
+    return OperatorType.equal;
+  }
 
   /**
    * Initialize the Filter
@@ -82,7 +96,7 @@ export class SelectFilter implements Filter {
 
   private buildTemplateHtmlString() {
     if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
+      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
 
     const optionCollection = this.columnDef.filter.collection || [];
@@ -92,7 +106,7 @@ export class SelectFilter implements Filter {
     let options = '';
     optionCollection.forEach((option: any) => {
       if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
-        throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.select, collection: [ { value: '1', label: 'One' } ]')`);
+        throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.select, collection: [ { value: '1', label: 'One' } ]')`);
       }
       const labelKey = option.labelKey || option[labelName];
       const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
