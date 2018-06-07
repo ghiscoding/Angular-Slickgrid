@@ -34,7 +34,6 @@ export * from './filterCallback.interface';
 export * from './filterChangedArgs.interface';
 export * from './filterCondition.interface';
 export * from './filterConditionOption.interface';
-export * from './filterType.enum';
 export * from './formatter.interface';
 export * from './graphqlDatasetFilter.interface';
 export * from './graphqlCursorPaginationOption.interface';

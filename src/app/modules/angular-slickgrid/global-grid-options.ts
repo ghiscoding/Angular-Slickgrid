@@ -1,4 +1,5 @@
-import { DelimiterType, FileType, FilterType, GridOption } from './models/index';
+import { DelimiterType, FileType, GridOption } from './models/index';
+import { Filters } from './filters/index';
 
 /**
  * Options that can be passed to the Bootstrap-Datetimepicker directly
@@ -24,7 +25,7 @@ export const GlobalGridOptions: GridOption = {
   },
   datasetIdPropertyName: 'id',
   defaultFilterPlaceholder: '&#128269;',
-  defaultFilterType: FilterType.input,
+  defaultFilter: Filters.input,
   editable: false,
   enableAutoResize: true,
   enableCellNavigation: false,

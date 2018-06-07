@@ -222,8 +222,6 @@ export class GridEditorComponent implements OnInit {
       enableCellNavigation: true,
       enableColumnPicker: true,
       enableExcelCopyBuffer: true,
-      enableCheckboxSelector: true,
-      enableRowSelection: true,
       editCommandHandler: (item, column, editCommand) => {
         this._commandQueue.push(editCommand);
         editCommand.execute();

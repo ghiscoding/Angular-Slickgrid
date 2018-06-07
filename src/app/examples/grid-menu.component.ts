@@ -1,5 +1,5 @@
-import { Component, OnInit, Injectable } from '@angular/core';
-import { AngularGridInstance, Column, FieldType, FilterType, Formatters, GridOption } from './../modules/angular-slickgrid';
+import { Component, OnInit } from '@angular/core';
+import { AngularGridInstance, Column, FieldType, Filters, Formatters, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-menu.component.html'
@@ -42,7 +42,7 @@ export class GridMenuComponent implements OnInit {
         filterable: true,
         filter: {
           collection: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }],
-          type: FilterType.singleSelect,
+          model: Filters.singleSelect,
           filterOptions: {
             // you can add "multiple-select" plugin options like styling the first row
             offsetLeft: 14,

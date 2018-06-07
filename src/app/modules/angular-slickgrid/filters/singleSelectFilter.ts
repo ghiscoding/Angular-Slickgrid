@@ -8,6 +8,8 @@ import {
   FilterCallback,
   GridOption,
   MultipleSelectOption,
+  OperatorType,
+  OperatorString,
   SearchTerm,
   SelectOption,
 } from './../models/index';
@@ -28,7 +30,7 @@ export class SingleSelectFilter implements Filter {
   valueName: string;
   enableTranslateLabel = false;
 
-  constructor(private collectionService: CollectionService, private translate: TranslateService) {
+  constructor(private translate: TranslateService, private collectionService: CollectionService) {
     // default options used by this Filter, user can overwrite any of these by passing "otions"
     this.defaultOptions = {
       container: 'body',
@@ -40,16 +42,20 @@ export class SingleSelectFilter implements Filter {
         let selectedItem = '';
 
         if (Array.isArray(selectedItems) && selectedItems.length > 0) {
-          selectedItem = selectedItems[0];
+          selectedItem = selectedItems[0] || null;
           this.isFilled = true;
           this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
         } else {
           this.isFilled = false;
           this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
         }
-        this.callback(undefined, { columnDef: this.columnDef, operator: 'EQ', searchTerms: [selectedItem] });
+        this.callback(undefined, { columnDef: this.columnDef, operator: 'EQ', searchTerms: (selectedItem ? [selectedItem] : null) });
       }
     };
+  }
+
+  get operator(): OperatorType | OperatorString {
+    return OperatorType.equal;
   }
 
   /** Getter for the Grid Options pulled through the Grid Object */
@@ -67,7 +73,7 @@ export class SingleSelectFilter implements Filter {
     this.searchTerms = args.searchTerms;
 
     if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: type: FilterType.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
+      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
 
     this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
@@ -144,7 +150,7 @@ export class SingleSelectFilter implements Filter {
     let options = '';
     optionCollection.forEach((option: SelectOption) => {
       if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
-        throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: type: FilterType.singleSelect, collection: [ { value: '1', label: 'One' } ]')`);
+        throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.singleSelect, collection: [ { value: '1', label: 'One' } ]')`);
       }
 
       const labelKey = (option.labelKey || option[this.labelName]) as string;

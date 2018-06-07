@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { mapOperatorType, mapOperatorByFilterType, mapOperatorByFieldType } from './utilities';
+import { mapOperatorType, mapOperatorByFieldType } from './utilities';
 import {
   BackendService,
   Column,
@@ -357,7 +357,7 @@ export class GraphqlService implements BackendService {
         }
 
         if (typeof fieldSearchValue !== 'string' && !searchTerms) {
-          throw new Error(`GraphQL filter searchTerm property must be provided as type "string", if you use filter with options then make sure your IDs are also string. For example: filter: {type: FilterType.select, collection: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
+          throw new Error(`GraphQL filter searchTerm property must be provided as type "string", if you use filter with options then make sure your IDs are also string. For example: filter: {model: Filters.select, collection: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
         }
 
         fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
@@ -385,7 +385,7 @@ export class GraphqlService implements BackendService {
         // if we didn't find an Operator but we have a Filter Type, we should use default Operator
         // multipleSelect is "IN", while singleSelect is "EQ", else don't map any operator
         if (!operator && columnDef.filter) {
-          operator = mapOperatorByFilterType(columnDef.filter.type || '');
+          operator = columnDef.filter.operator;
         }
 
         // if we still don't have an operator find the proper Operator to use by it's field type

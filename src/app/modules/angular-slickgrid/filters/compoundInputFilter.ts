@@ -1,19 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FieldType } from './../models/index';
 import { Column, Filter, FilterArguments, FilterCallback, GridOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
-import { htmlEntityEncode } from '..';
 
 // using external non-typed js libraries
 declare var $: any;
 
-@Injectable()
+@Inject(TranslateService)
 export class CompoundInputFilter implements Filter {
   private $filterElm: any;
   private $filterInputElm: any;
   private $selectOperatorElm: any;
+  private _operator: OperatorType | OperatorString;
   grid: any;
-  operator: OperatorType | OperatorString;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
@@ -23,6 +22,13 @@ export class CompoundInputFilter implements Filter {
   /** Getter for the Grid Options pulled through the Grid Object */
   private get gridOptions(): GridOption {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+  }
+
+  set operator(op: OperatorType | OperatorString) {
+    this._operator = op;
+  }
+  get operator(): OperatorType | OperatorString {
+    return this._operator || OperatorType.empty;
   }
 
   /**
@@ -190,7 +196,7 @@ export class CompoundInputFilter implements Filter {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       const value = this.$filterInputElm.val();
       (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-      this.callback(e, { columnDef: this.columnDef, searchTerms: [value], operator: selectedOperator || '' });
+      this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '' });
     }
   }
 }

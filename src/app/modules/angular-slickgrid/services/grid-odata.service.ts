@@ -209,7 +209,7 @@ export class GridOdataService implements BackendService {
         }
 
         if (typeof fieldSearchValue !== 'string' && !searchTerms) {
-          throw new Error(`ODdata filter searchTerm property must be provided as type "string", if you use filter with options then make sure your IDs are also string. For example: filter: {type: FilterType.select, collection: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
+          throw new Error(`ODdata filter searchTerm property must be provided as type "string", if you use filter with options then make sure your IDs are also string. For example: filter: {model: Filters.select, collection: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
         }
 
         fieldSearchValue = '' + fieldSearchValue; // make sure it's a string

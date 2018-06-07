@@ -1,4 +1,4 @@
-import { Column, Filter, FilterArguments, FilterCallback, SearchTerm } from './../modules/angular-slickgrid';
+import { Column, Filter, FilterArguments, FilterCallback, SearchTerm, OperatorType, OperatorString } from './../modules/angular-slickgrid';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -9,6 +9,7 @@ export class CustomInputFilter implements Filter {
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
+  operator: OperatorType | OperatorString = OperatorType.equal;
 
   constructor() {}
 

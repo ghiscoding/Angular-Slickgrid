@@ -1,6 +1,16 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { AngularGridInstance, Column, DelimiterType, FileType, FilterType, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
+import {
+  AngularGridInstance,
+  Column,
+  DelimiterType,
+  FieldType,
+  FileType,
+  Filters,
+  Formatter,
+  Formatters,
+  GridOption
+} from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-localization.component.html'
@@ -50,8 +60,8 @@ export class GridLocalizationComponent implements OnInit {
       { id: 'title', name: 'Title', field: 'id', headerKey: 'TITLE', formatter: this.taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true } },
       { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80 },
       { id: 'duration', name: 'Duration (days)', field: 'duration', headerKey: 'DURATION', sortable: true, minWidth: 100, filterable: true },
-      { id: 'start', name: 'Start', field: 'start', headerKey: 'START', formatter: Formatters.dateIso, minWidth: 100, filterable: true },
-      { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, minWidth: 100, filterable: true },
+      { id: 'start', name: 'Start', field: 'start', headerKey: 'START', formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date, minWidth: 100, filterable: true, filter: { model: Filters.compoundDate } },
+      { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date, minWidth: 100, filterable: true, filter: { model: Filters.compoundDate } },
       { id: 'completedBool', name: 'Completed', field: 'completedBool', headerKey: 'COMPLETED', minWidth: 100,
         sortable: true,
         formatter: Formatters.checkmark,
@@ -59,7 +69,7 @@ export class GridLocalizationComponent implements OnInit {
         filterable: true,
         filter: {
           collection: [ { value: '', label: '' }, { value: true, labelKey: 'TRUE' }, { value: false, labelKey: 'FALSE' } ],
-          type: FilterType.singleSelect,
+          model: Filters.singleSelect,
           enableTranslateLabel: true,
           filterOptions: {
             autoDropWidth: true
@@ -76,7 +86,7 @@ export class GridLocalizationComponent implements OnInit {
             property: 'labelKey' // will sort by translated value since "enableTranslateLabel" is true
           },
           enableTranslateLabel: true,
-          type: FilterType.singleSelect,
+          model: Filters.singleSelect,
           filterOptions: {
             autoDropWidth: true
           }
@@ -113,7 +123,7 @@ export class GridLocalizationComponent implements OnInit {
   loadData() {
     this.dataset = [];
     for (let i = 0; i < 1000; i++) {
-      const randomYear = 2000 + Math.floor(Math.random() * 10);
+      const randomYear = 2000 + Math.floor(Math.random() * 30);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
 

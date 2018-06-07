@@ -1,4 +1,11 @@
-import { Column, FilterArguments, FilterCallback, SearchTerm } from './../models/index';
+import {
+  Column,
+  FilterArguments,
+  FilterCallback,
+  OperatorType,
+  OperatorString,
+  SearchTerm
+} from './../models/index';
 
 // export type Filter = (searchTerms: string | number | string[] | number[], columnDef: Column, params?: any) => string;
 export interface Filter {
@@ -15,6 +22,9 @@ export interface Filter {
 
   /** Array of defined search terms to pre-load */
   searchTerms?: SearchTerm[];
+
+  /** The search operator for the filter */
+  operator: OperatorType | OperatorString;
 
   /** You can use "params" to pass any types of arguments to your Filter */
   params?: any | any[];
