@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { AngularGridInstance, Column, EditorType, FieldType, Formatters, GridOption, OnEventArgs } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption, OnEventArgs } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-additem.component.html'
@@ -38,7 +38,7 @@ export class GridAddItemComponent implements OnInit {
         sortable: true,
         type: FieldType.string,
         editor: {
-          type: EditorType.longText
+          model: Editors.longText
         }
       },
       {
@@ -46,7 +46,7 @@ export class GridAddItemComponent implements OnInit {
         sortable: true,
         type: FieldType.number,
         editor: {
-          type: EditorType.text
+          model: Editors.text
         },
         onCellChange: (e: Event, args: OnEventArgs) => {
           alert('onCellChange directly attached to the column definition');
@@ -58,7 +58,7 @@ export class GridAddItemComponent implements OnInit {
         formatter: Formatters.percentCompleteBar,
         type: FieldType.number,
         editor: {
-          type: EditorType.integer
+          model: Editors.integer
         }
       },
       {
@@ -68,7 +68,7 @@ export class GridAddItemComponent implements OnInit {
         type: FieldType.date,
         /*
         editor: {
-          type: EditorType.date
+          model: Editors.date
         }
         */
       },
@@ -82,7 +82,7 @@ export class GridAddItemComponent implements OnInit {
         formatter: Formatters.checkmark,
         type: FieldType.number,
         editor: {
-          type: EditorType.checkbox
+          model: Editors.checkbox
         }
       }
     ];

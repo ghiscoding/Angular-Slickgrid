@@ -1,7 +1,5 @@
 import { ColumnEditor } from './columnEditor.interface';
 import { ColumnFilter } from './columnFilter.interface';
-import { Editor } from './editor.interface';
-import { EditorType } from './editorType.enum';
 import { FieldType } from './fieldType.enum';
 import { Formatter } from './formatter.interface';
 import { GroupTotalsFormatter } from './groupTotalsFormatter.interface';
@@ -29,8 +27,8 @@ export interface Column {
   /** Do we want default sort to be ascending? True by default */
   defaultSortAsc?: boolean;
 
-  /** Inline editor for the cell value */
-  editor?: Editor | ColumnEditor;
+  /** Any inline editor function that implements Editor for the cell value or ColumnEditor */
+  editor?: any | ColumnEditor;
 
   /** Default to false, which leads to exclude the column from the export? */
   excludeFromExport?: boolean;

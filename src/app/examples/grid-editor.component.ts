@@ -4,7 +4,7 @@ import {
   AngularGridInstance,
   Column,
   CustomEditorValidator,
-  EditorType,
+  Editors,
   FieldType,
   Formatters,
   GridOption,
@@ -100,7 +100,7 @@ export class GridEditorComponent implements OnInit {
       sortable: true,
       type: FieldType.string,
       editor: {
-        type: EditorType.longText,
+        model: Editors.longText,
       },
       validator: myCustomTitleValidator, // use a custom validator
       minWidth: 100,
@@ -115,8 +115,7 @@ export class GridEditorComponent implements OnInit {
       sortable: true,
       type: FieldType.string,
       editor: {
-        type: EditorType.custom,
-        customEditor: CustomInputEditor
+        model: CustomInputEditor
       },
       validator: myCustomTitleValidator, // use a custom validator
       minWidth: 70
@@ -130,7 +129,7 @@ export class GridEditorComponent implements OnInit {
         // default is 0 decimals, if no decimals is passed it will accept 0 or more decimals
         // however if you pass the decimalPlaces, it will validate with that maximum
         // the default validation error message is in English but you can override it by using validatorErrorMessage in params
-        type: EditorType.float,
+        model: Editors.float,
         params: { decimalPlaces: 2, validatorErrorMessage: this.translate.instant('INVALID_FLOAT', { maxDecimal: 2 }) },
       },
       minWidth: 100
@@ -141,7 +140,7 @@ export class GridEditorComponent implements OnInit {
       formatter: Formatters.multiple,
       type: FieldType.number,
       editor: {
-        type: EditorType.singleSelect,
+        model: Editors.singleSelect,
         collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k })),
         collectionFilterBy: {
           property: 'value',
@@ -166,7 +165,7 @@ export class GridEditorComponent implements OnInit {
       minWidth: 100,
       type: FieldType.date,
       editor: {
-        type: EditorType.date
+        model: Editors.date
       }
     }, {
       id: 'finish',
@@ -177,7 +176,7 @@ export class GridEditorComponent implements OnInit {
       minWidth: 100,
       type: FieldType.date,
       editor: {
-        type: EditorType.date
+        model: Editors.date
       }
     }, {
       id: 'effort-driven',
@@ -186,7 +185,7 @@ export class GridEditorComponent implements OnInit {
       formatter: Formatters.checkmark,
       type: FieldType.number,
       editor: {
-        type: EditorType.checkbox
+        model: Editors.checkbox
       },
       minWidth: 60
     }, {
@@ -196,7 +195,7 @@ export class GridEditorComponent implements OnInit {
       sortable: true,
       type: FieldType.string,
       editor: {
-        type: EditorType.multipleSelect,
+        model: Editors.multipleSelect,
         collection: Array.from(Array(12).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
         collectionSortBy: {
           property: 'label',
@@ -209,7 +208,8 @@ export class GridEditorComponent implements OnInit {
         }
       },
       minWidth: 100
-    }];
+    }
+  ];
 
     this.gridOptions = {
       asyncEditorLoading: false,

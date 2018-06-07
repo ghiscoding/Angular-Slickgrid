@@ -24,7 +24,6 @@ export * from './customEditorValidator.interface';
 export * from './delimiterType.enum';
 export * from './editCommand.interface';
 export * from './editor.interface';
-export * from './editorType.enum';
 export * from './exportOption.interface';
 export * from './extension.interface';
 export * from './fieldType.enum';
