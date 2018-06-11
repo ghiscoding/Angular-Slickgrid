@@ -3447,12 +3447,15 @@ class ControlAndPluginService {
         return this.visibleColumns || [];
     }
     /**
+     * Get all Extensions
      * @return {?}
      */
     getAllExtensions() {
         return this.extensionList;
     }
     /**
+     * Get an Extension by it's name
+     *  \@param name
      * @param {?} name
      * @return {?}
      */
@@ -3476,8 +3479,8 @@ class ControlAndPluginService {
     attachDifferentControlOrPlugins(grid, dataView, groupItemMetadataProvider) {
         this._grid = grid;
         this._dataView = dataView;
-        this.visibleColumns = this._columnDefinitions;
         this.allColumns = this._columnDefinitions;
+        this.visibleColumns = this._columnDefinitions;
         // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
         // this is to avoid having hidden columns not being translated on first load
         if (this._gridOptions.enableTranslate) {
@@ -3490,6 +3493,8 @@ class ControlAndPluginService {
         }
         // Grid Menu Control
         if (this._gridOptions.enableGridMenu) {
+            // keep original user grid menu, useful when switching locale to translate
+            this.userOriginalGridMenu = Object.assign({}, this._gridOptions.gridMenu);
             this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions);
             this.extensionList.push({ name: 'GridMenu', service: this.gridMenuControl });
         }
@@ -3656,42 +3661,49 @@ class ControlAndPluginService {
      * @return {?}
      */
     createGridMenu(grid, columnDefinitions) {
-        this._gridOptions.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), this._gridOptions.gridMenu);
-        this.addGridMenuCustomCommands(grid);
-        const /** @type {?} */ gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
-        if (grid && this._gridOptions.gridMenu) {
-            gridMenuControl.onBeforeMenuShow.subscribe((e, args) => {
-                if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onBeforeMenuShow === 'function') {
-                    this._gridOptions.gridMenu.onBeforeMenuShow(e, args);
-                }
-            });
-            gridMenuControl.onColumnsChanged.subscribe((e, args) => {
-                this.areVisibleColumnDifferent = true;
-                if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onColumnsChanged === 'function') {
-                    this._gridOptions.gridMenu.onColumnsChanged(e, args);
-                }
-            });
-            gridMenuControl.onCommand.subscribe((e, args) => {
-                this.executeGridMenuInternalCustomCommands(e, args);
-                if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onCommand === 'function') {
-                    this._gridOptions.gridMenu.onCommand(e, args);
-                }
-            });
-            gridMenuControl.onMenuClose.subscribe((e, args) => {
-                if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onMenuClose === 'function') {
-                    this._gridOptions.gridMenu.onMenuClose(e, args);
-                }
-                // we also want to resize the columns if the user decided to hide certain column(s)
-                if (grid && typeof grid.autosizeColumns === 'function') {
-                    // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree)
-                    const /** @type {?} */ gridUid = grid.getUID();
-                    if (this.areVisibleColumnDifferent && gridUid && $(`.${gridUid}`).length > 0) {
-                        grid.autosizeColumns();
+        if (this._gridOptions && this._gridOptions.gridMenu) {
+            this._gridOptions.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), this._gridOptions.gridMenu);
+            // merge original user grid menu items with internal items
+            // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
+            this._gridOptions.gridMenu.customItems = [...this.userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
+            this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
+            const /** @type {?} */ gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
+            if (grid && this._gridOptions.gridMenu) {
+                gridMenuControl.onBeforeMenuShow.subscribe((e, args) => {
+                    if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onBeforeMenuShow === 'function') {
+                        this._gridOptions.gridMenu.onBeforeMenuShow(e, args);
                     }
-                }
-            });
+                });
+                gridMenuControl.onColumnsChanged.subscribe((e, args) => {
+                    this.areVisibleColumnDifferent = true;
+                    if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onColumnsChanged === 'function') {
+                        this._gridOptions.gridMenu.onColumnsChanged(e, args);
+                    }
+                });
+                gridMenuControl.onCommand.subscribe((e, args) => {
+                    this.executeGridMenuInternalCustomCommands(e, args);
+                    if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onCommand === 'function') {
+                        this._gridOptions.gridMenu.onCommand(e, args);
+                    }
+                });
+                gridMenuControl.onMenuClose.subscribe((e, args) => {
+                    if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onMenuClose === 'function') {
+                        this._gridOptions.gridMenu.onMenuClose(e, args);
+                    }
+                    // we also want to resize the columns if the user decided to hide certain column(s)
+                    if (grid && typeof grid.autosizeColumns === 'function') {
+                        // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree)
+                        const /** @type {?} */ gridUid = grid.getUID();
+                        if (this.areVisibleColumnDifferent && gridUid && $(`.${gridUid}`).length > 0) {
+                            grid.autosizeColumns();
+                            this.areVisibleColumnDifferent = false;
+                        }
+                    }
+                });
+            }
+            return gridMenuControl;
         }
-        return gridMenuControl;
+        return null;
     }
     /**
      * Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...)
@@ -3793,7 +3805,7 @@ class ControlAndPluginService {
         this._grid = null;
         this._dataView = null;
         this.visibleColumns = [];
-        // destroy the control/plugin if it has that method
+        // dispose of each control/plugin if it has a destroy method
         this.extensionList.forEach((item) => {
             if (item && item.service && item.service.destroy) {
                 item.service.destroy();
@@ -3803,15 +3815,15 @@ class ControlAndPluginService {
     }
     /**
      * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
-     * @param {?} grid
-     * @return {?} gridMenu
+     * @return {?}
      */
-    addGridMenuCustomCommands(grid) {
+    addGridMenuCustomCommands() {
         const /** @type {?} */ backendApi = this._gridOptions.backendServiceApi || null;
-        if (this._gridOptions.enableFiltering) {
+        const /** @type {?} */ gridMenuCustomItems = [];
+        if (this._gridOptions && this._gridOptions.enableFiltering) {
             // show grid menu: clear all filters
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item) => item.command === 'clear-filter').length === 0) {
-                this._gridOptions.gridMenu.customItems.push({
+            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand) {
+                gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
                     title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
                     disabled: false,
@@ -3820,8 +3832,8 @@ class ControlAndPluginService {
                 });
             }
             // show grid menu: toggle filter row
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideToggleFilterCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item) => item.command === 'toggle-filter').length === 0) {
-                this._gridOptions.gridMenu.customItems.push({
+            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideToggleFilterCommand) {
+                gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
                     title: this._gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
                     disabled: false,
@@ -3830,8 +3842,8 @@ class ControlAndPluginService {
                 });
             }
             // show grid menu: refresh dataset
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item) => item.command === 'refresh-dataset').length === 0) {
-                this._gridOptions.gridMenu.customItems.push({
+            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi) {
+                gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
                     title: this._gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
                     disabled: false,
@@ -3842,8 +3854,8 @@ class ControlAndPluginService {
         }
         if (this._gridOptions.enableSorting) {
             // show grid menu: clear all sorting
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllSortingCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item) => item.command === 'clear-sorting').length === 0) {
-                this._gridOptions.gridMenu.customItems.push({
+            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllSortingCommand) {
+                gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
                     title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
                     disabled: false,
@@ -3853,8 +3865,8 @@ class ControlAndPluginService {
             }
         }
         // show grid menu: export to file
-        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportCsvCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item) => item.command === 'export-csv').length === 0) {
-            this._gridOptions.gridMenu.customItems.push({
+        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportCsvCommand) {
+            gridMenuCustomItems.push({
                 iconCssClass: this._gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
                 title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
                 disabled: false,
@@ -3863,8 +3875,8 @@ class ControlAndPluginService {
             });
         }
         // show grid menu: export to text file as tab delimited
-        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportTextDelimitedCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item) => item.command === 'export-text-delimited').length === 0) {
-            this._gridOptions.gridMenu.customItems.push({
+        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportTextDelimitedCommand) {
+            gridMenuCustomItems.push({
                 iconCssClass: this._gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
                 title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
                 disabled: false,
@@ -3873,17 +3885,11 @@ class ControlAndPluginService {
             });
         }
         // add the custom "Commands" title if there are any commands
-        if (this._gridOptions && this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.length > 0) {
+        if (this._gridOptions && this._gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || this._gridOptions.gridMenu.customItems.length > 0)) {
             const /** @type {?} */ customTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('commands') : 'Commands';
             this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || customTitle;
-            // sort the custom items by their position in the list
-            this._gridOptions.gridMenu.customItems.sort((itemA, itemB) => {
-                if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
-                    return itemA.positionOrder - itemB.positionOrder;
-                }
-                return 0;
-            });
         }
+        return gridMenuCustomItems;
     }
     /**
      * Create Header Menu with Custom Commands if user has enabled Header Menu
@@ -4064,7 +4070,7 @@ class ControlAndPluginService {
     }
     /**
      * Remove a column from the grid by it's index in the grid
-     * @param {?} array
+     * @param {?} array input
      * @param {?} index
      * @return {?}
      */
@@ -4095,14 +4101,19 @@ class ControlAndPluginService {
         // we also need to call the control init so that it takes the new Grid object with latest values
         if (this._gridOptions && this._gridOptions.gridMenu) {
             this._gridOptions.gridMenu.customItems = [];
-            this._gridOptions.gridMenu.customTitle = '';
+            // merge original user grid menu items with internal items
+            // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
+            this._gridOptions.gridMenu.customTitle = this.userOriginalGridMenu && this.userOriginalGridMenu.customTitle || '';
+            this._gridOptions.gridMenu.customItems = [...this.userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
+            this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
             this._gridOptions.gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
             this._gridOptions.gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
             this._gridOptions.gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
             // translate all columns (including non-visible)
             this.translateHeaderKeys(this.allColumns);
-            // re-create the list of Custom Commands
-            this.addGridMenuCustomCommands(this._grid);
+            // re-initialize the Grid Menu, that will recreate all the menus & list
+            // and so will act like a translate
+            // we do this instead of recreating the Grid Menu control itself (because doing so would destroy any previous commands attached)
             this.gridMenuControl.init(this._grid);
         }
     }
@@ -4118,7 +4129,7 @@ class ControlAndPluginService {
     /**
      * Translate manually the header titles.
      * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
-     * @param {?=} locale locale to use
+     * @param {?=} locale to use
      * @param {?=} newColumnDefinitions
      * @return {?}
      */
@@ -4233,6 +4244,22 @@ class ControlAndPluginService {
                     });
                 }
             }
+        });
+    }
+    /**
+     * Sort items in an array by a property name
+     * \@params items array
+     * @param {?} items
+     * @param {?} propertyName
+     * @return {?} sorted array
+     */
+    sortItems(items, propertyName) {
+        // sort the custom items by their position in the list
+        items.sort((itemA, itemB) => {
+            if (itemA && itemB && itemA.hasOwnProperty(propertyName) && itemB.hasOwnProperty(propertyName)) {
+                return itemA[propertyName] - itemB[propertyName];
+            }
+            return 0;
         });
     }
     /**
@@ -4635,6 +4662,8 @@ class GraphqlService {
         if (event && (event.type === 'keyup' || event.type === 'keydown')) {
             debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
         }
+        // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
+        this._currentFilters = this.castFilterToColumnFilter(args.columnFilters);
         const /** @type {?} */ promise = new Promise((resolve, reject) => {
             if (!args || !args.grid) {
                 throw new Error('Something went wrong when trying create the GraphQL Backend Service, it seems that "args" is not populated correctly');
@@ -4681,8 +4710,6 @@ class GraphqlService {
      * @return {?}
      */
     updateFilters(columnFilters, isUpdatedByPreset) {
-        // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
-        this._currentFilters = this.castFilterToColumnFilter(columnFilters);
         const /** @type {?} */ searchByArray = [];
         let /** @type {?} */ searchValue;
         for (const /** @type {?} */ columnId in columnFilters) {
@@ -5252,6 +5279,8 @@ class GridOdataService {
         if (event && (event.type === 'keyup' || event.type === 'keydown')) {
             debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE$1;
         }
+        // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
+        this._currentFilters = this.castFilterToColumnFilter(args.columnFilters);
         const /** @type {?} */ promise = new Promise((resolve, reject) => {
             // reset Pagination, then build the OData query which we will use in the WebAPI callback
             // wait a minimum user typing inactivity before processing any query
@@ -5295,7 +5324,6 @@ class GridOdataService {
      * @return {?}
      */
     updateFilters(columnFilters, isUpdatedByPreset) {
-        this._currentFilters = this.castFilterToColumnFilter(columnFilters);
         let /** @type {?} */ searchBy = '';
         const /** @type {?} */ searchByArray = [];
         // loop through all columns to inspect filters
@@ -9144,7 +9172,7 @@ class AngularSlickgridComponent {
             if (gridColumns && Array.isArray(gridColumns) && gridColumns.length > 0) {
                 // make sure that the checkbox selector is also visible if it is enabled
                 if (gridOptions.enableCheckboxSelector) {
-                    const /** @type {?} */ checkboxColumn = (Array.isArray(this.columnDefinitions) && this.columnDefinitions.length > 0) ? this.columnDefinitions[0] : null;
+                    const /** @type {?} */ checkboxColumn = (Array.isArray(this._columnDefinitions) && this._columnDefinitions.length > 0) ? this._columnDefinitions[0] : null;
                     if (checkboxColumn && checkboxColumn.id === '_checkbox_selector' && gridColumns[0].id !== '_checkbox_selector') {
                         gridColumns.unshift(checkboxColumn);
                     }

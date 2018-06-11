@@ -1,4 +1,4 @@
-import { CustomGridMenu, Column, Extension, GridOption, HeaderMenuOnCommandArgs } from './../models/index';
+import { Column, Extension, GridMenu, GridMenuItem, GridOption, HeaderMenuOnCommandArgs } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
 import { FilterService } from './filter.service';
 import { ExportService } from './export.service';
@@ -14,16 +14,17 @@ export declare class ControlAndPluginService {
     visibleColumns: Column[];
     areVisibleColumnDifferent: boolean;
     extensionList: Extension[];
+    undoRedoBuffer: any;
+    userOriginalGridMenu: GridMenu;
     autoTooltipPlugin: any;
     cellExternalCopyManagerPlugin: any;
     checkboxSelectorPlugin: any;
     columnPickerControl: any;
+    gridMenuControl: any;
     groupItemMetaProviderPlugin: any;
     headerButtonsPlugin: any;
     headerMenuPlugin: any;
-    gridMenuControl: any;
     rowSelectionPlugin: any;
-    undoRedoBuffer: any;
     constructor(exportService: ExportService, filterService: FilterService, sortService: SortService, translate: TranslateService);
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly _gridOptions;
@@ -33,15 +34,20 @@ export declare class ControlAndPluginService {
     getAllColumns(): Column[];
     /** Get only visible columns */
     getVisibleColumns(): Column[];
+    /** Get all Extensions */
     getAllExtensions(): Extension[];
+    /**
+     * Get an Extension by it's name
+     *  @param name
+     */
     getExtensionByName(name: string): Extension | undefined;
     /** Auto-resize all the column in the grid to fit the grid width */
     autoResizeColumns(): void;
     /**
      * Attach/Create different Controls or Plugins after the Grid is created
      * @param grid
-     * @param options
      * @param dataView
+     * @param groupItemMetadataProvider
      */
     attachDifferentControlOrPlugins(grid: any, dataView: any, groupItemMetadataProvider: any): void;
     /**
@@ -57,21 +63,19 @@ export declare class ControlAndPluginService {
      * Create the Column Picker and expose all the available hooks that user can subscribe (onColumnsChanged)
      * @param grid
      * @param columnDefinitions
-     * @param gridOptions
      */
     createColumnPicker(grid: any, columnDefinitions: Column[]): any;
     /**
      * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)
      * @param grid
      * @param columnDefinitions
-     * @param _gridOptions
      */
     createGridMenu(grid: any, columnDefinitions: Column[]): any;
     /**
      * Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...)
      * @param grid
+     * @param dataView
      * @param columnDefinitions
-     * @param options
      */
     createHeaderMenu(grid: any, dataView: any, columnDefinitions: Column[]): any;
     /** Create an undo redo buffer used by the Excel like copy */
@@ -82,12 +86,8 @@ export declare class ControlAndPluginService {
     hookUndoShortcutKey(): void;
     /** Dispose of all the controls & plugins */
     dispose(): void;
-    /**
-     * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
-     * @param grid
-     * @return gridMenu
-     */
-    private addGridMenuCustomCommands(grid);
+    /** Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL) */
+    private addGridMenuCustomCommands();
     /**
      * Create Header Menu with Custom Commands if user has enabled Header Menu
      * @param grid
@@ -102,11 +102,17 @@ export declare class ControlAndPluginService {
     /**
      * Execute the Grid Menu Custom command callback that was triggered by the onCommand subscribe
      * These are the default internal custom commands
+     * @param event
+     * @param GridMenuItem args
      */
-    executeGridMenuInternalCustomCommands(e: Event, args: CustomGridMenu): void;
+    executeGridMenuInternalCustomCommands(e: Event, args: GridMenuItem): void;
     /** Refresh the dataset through the Backend Service */
     refreshBackendDataset(): void;
-    /** Remove a column from the grid by it's index in the grid */
+    /**
+     * Remove a column from the grid by it's index in the grid
+     * @param array input
+     * @param index
+     */
     removeColumnByIndex(array: any[], index: number): any[];
     /** Translate the Column Picker and it's last 2 checkboxes */
     translateColumnPicker(): void;
@@ -119,7 +125,8 @@ export declare class ControlAndPluginService {
     /**
      * Translate manually the header titles.
      * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
-     * @param locale locale to use
+     * @param locale to use
+     * @param new column definitions (optional)
      */
     translateColumnHeaders(locale?: boolean | string, newColumnDefinitions?: Column[]): void;
     /**
@@ -146,6 +153,13 @@ export declare class ControlAndPluginService {
      * @param grid menu object
      */
     private resetHeaderMenuTranslations(columnDefinitions);
+    /**
+     * Sort items in an array by a property name
+     * @params items array
+     * @param property name to sort with
+     * @return sorted array
+     */
+    private sortItems(items, propertyName);
     /**
      * Translate the columns headerKey
      * Note that this is done through pointers so we don't need to return anything to see them translated

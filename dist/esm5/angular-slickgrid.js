@@ -2418,8 +2418,8 @@ var ControlAndPluginService = /** @class */ (function () {
         var _this = this;
         this._grid = grid;
         this._dataView = dataView;
-        this.visibleColumns = this._columnDefinitions;
         this.allColumns = this._columnDefinitions;
+        this.visibleColumns = this._columnDefinitions;
         if (this._gridOptions.enableTranslate) {
             this.translateHeaderKeys(this.allColumns);
         }
@@ -2428,6 +2428,7 @@ var ControlAndPluginService = /** @class */ (function () {
             this.extensionList.push({ name: 'ColumnPicker', service: this.columnPickerControl });
         }
         if (this._gridOptions.enableGridMenu) {
+            this.userOriginalGridMenu = Object.assign({}, this._gridOptions.gridMenu);
             this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions);
             this.extensionList.push({ name: 'GridMenu', service: this.gridMenuControl });
         }
@@ -2554,40 +2555,45 @@ var ControlAndPluginService = /** @class */ (function () {
     };
     ControlAndPluginService.prototype.createGridMenu = function (grid, columnDefinitions) {
         var _this = this;
-        this._gridOptions.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), this._gridOptions.gridMenu);
-        this.addGridMenuCustomCommands(grid);
-        var gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
-        if (grid && this._gridOptions.gridMenu) {
-            gridMenuControl.onBeforeMenuShow.subscribe(function (e, args) {
-                if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onBeforeMenuShow === 'function') {
-                    _this._gridOptions.gridMenu.onBeforeMenuShow(e, args);
-                }
-            });
-            gridMenuControl.onColumnsChanged.subscribe(function (e, args) {
-                _this.areVisibleColumnDifferent = true;
-                if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onColumnsChanged === 'function') {
-                    _this._gridOptions.gridMenu.onColumnsChanged(e, args);
-                }
-            });
-            gridMenuControl.onCommand.subscribe(function (e, args) {
-                _this.executeGridMenuInternalCustomCommands(e, args);
-                if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onCommand === 'function') {
-                    _this._gridOptions.gridMenu.onCommand(e, args);
-                }
-            });
-            gridMenuControl.onMenuClose.subscribe(function (e, args) {
-                if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onMenuClose === 'function') {
-                    _this._gridOptions.gridMenu.onMenuClose(e, args);
-                }
-                if (grid && typeof grid.autosizeColumns === 'function') {
-                    var gridUid = grid.getUID();
-                    if (_this.areVisibleColumnDifferent && gridUid && $("." + gridUid).length > 0) {
-                        grid.autosizeColumns();
+        if (this._gridOptions && this._gridOptions.gridMenu) {
+            this._gridOptions.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), this._gridOptions.gridMenu);
+            this._gridOptions.gridMenu.customItems = __spread(this.userOriginalGridMenu.customItems || [], this.addGridMenuCustomCommands());
+            this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
+            var gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
+            if (grid && this._gridOptions.gridMenu) {
+                gridMenuControl.onBeforeMenuShow.subscribe(function (e, args) {
+                    if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onBeforeMenuShow === 'function') {
+                        _this._gridOptions.gridMenu.onBeforeMenuShow(e, args);
                     }
-                }
-            });
+                });
+                gridMenuControl.onColumnsChanged.subscribe(function (e, args) {
+                    _this.areVisibleColumnDifferent = true;
+                    if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onColumnsChanged === 'function') {
+                        _this._gridOptions.gridMenu.onColumnsChanged(e, args);
+                    }
+                });
+                gridMenuControl.onCommand.subscribe(function (e, args) {
+                    _this.executeGridMenuInternalCustomCommands(e, args);
+                    if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onCommand === 'function') {
+                        _this._gridOptions.gridMenu.onCommand(e, args);
+                    }
+                });
+                gridMenuControl.onMenuClose.subscribe(function (e, args) {
+                    if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onMenuClose === 'function') {
+                        _this._gridOptions.gridMenu.onMenuClose(e, args);
+                    }
+                    if (grid && typeof grid.autosizeColumns === 'function') {
+                        var gridUid = grid.getUID();
+                        if (_this.areVisibleColumnDifferent && gridUid && $("." + gridUid).length > 0) {
+                            grid.autosizeColumns();
+                            _this.areVisibleColumnDifferent = false;
+                        }
+                    }
+                });
+            }
+            return gridMenuControl;
         }
-        return gridMenuControl;
+        return null;
     };
     ControlAndPluginService.prototype.createHeaderMenu = function (grid, dataView, columnDefinitions) {
         var _this = this;
@@ -2672,11 +2678,12 @@ var ControlAndPluginService = /** @class */ (function () {
         });
         this.extensionList = [];
     };
-    ControlAndPluginService.prototype.addGridMenuCustomCommands = function (grid) {
+    ControlAndPluginService.prototype.addGridMenuCustomCommands = function () {
         var backendApi = this._gridOptions.backendServiceApi || null;
-        if (this._gridOptions.enableFiltering) {
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'clear-filter'; }).length === 0) {
-                this._gridOptions.gridMenu.customItems.push({
+        var gridMenuCustomItems = [];
+        if (this._gridOptions && this._gridOptions.enableFiltering) {
+            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand) {
+                gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
                     title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
                     disabled: false,
@@ -2684,8 +2691,8 @@ var ControlAndPluginService = /** @class */ (function () {
                     positionOrder: 50
                 });
             }
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideToggleFilterCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'toggle-filter'; }).length === 0) {
-                this._gridOptions.gridMenu.customItems.push({
+            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideToggleFilterCommand) {
+                gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
                     title: this._gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
                     disabled: false,
@@ -2693,8 +2700,8 @@ var ControlAndPluginService = /** @class */ (function () {
                     positionOrder: 52
                 });
             }
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'refresh-dataset'; }).length === 0) {
-                this._gridOptions.gridMenu.customItems.push({
+            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi) {
+                gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
                     title: this._gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
                     disabled: false,
@@ -2704,8 +2711,8 @@ var ControlAndPluginService = /** @class */ (function () {
             }
         }
         if (this._gridOptions.enableSorting) {
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllSortingCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'clear-sorting'; }).length === 0) {
-                this._gridOptions.gridMenu.customItems.push({
+            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllSortingCommand) {
+                gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
                     title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
                     disabled: false,
@@ -2714,8 +2721,8 @@ var ControlAndPluginService = /** @class */ (function () {
                 });
             }
         }
-        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportCsvCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'export-csv'; }).length === 0) {
-            this._gridOptions.gridMenu.customItems.push({
+        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportCsvCommand) {
+            gridMenuCustomItems.push({
                 iconCssClass: this._gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
                 title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
                 disabled: false,
@@ -2723,8 +2730,8 @@ var ControlAndPluginService = /** @class */ (function () {
                 positionOrder: 53
             });
         }
-        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportTextDelimitedCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter(function (item) { return item.command === 'export-text-delimited'; }).length === 0) {
-            this._gridOptions.gridMenu.customItems.push({
+        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportTextDelimitedCommand) {
+            gridMenuCustomItems.push({
                 iconCssClass: this._gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
                 title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
                 disabled: false,
@@ -2732,16 +2739,11 @@ var ControlAndPluginService = /** @class */ (function () {
                 positionOrder: 54
             });
         }
-        if (this._gridOptions && this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.length > 0) {
+        if (this._gridOptions && this._gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || this._gridOptions.gridMenu.customItems.length > 0)) {
             var customTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('commands') : 'Commands';
             this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || customTitle;
-            this._gridOptions.gridMenu.customItems.sort(function (itemA, itemB) {
-                if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
-                    return itemA.positionOrder - itemB.positionOrder;
-                }
-                return 0;
-            });
         }
+        return gridMenuCustomItems;
     };
     ControlAndPluginService.prototype.addHeaderMenuCustomCommands = function (grid, dataView, options, columnDefinitions) {
         var _this = this;
@@ -2902,12 +2904,13 @@ var ControlAndPluginService = /** @class */ (function () {
     ControlAndPluginService.prototype.translateGridMenu = function () {
         if (this._gridOptions && this._gridOptions.gridMenu) {
             this._gridOptions.gridMenu.customItems = [];
-            this._gridOptions.gridMenu.customTitle = '';
+            this._gridOptions.gridMenu.customTitle = this.userOriginalGridMenu && this.userOriginalGridMenu.customTitle || '';
+            this._gridOptions.gridMenu.customItems = __spread(this.userOriginalGridMenu.customItems || [], this.addGridMenuCustomCommands());
+            this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
             this._gridOptions.gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
             this._gridOptions.gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
             this._gridOptions.gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
             this.translateHeaderKeys(this.allColumns);
-            this.addGridMenuCustomCommands(this._grid);
             this.gridMenuControl.init(this._grid);
         }
     };
@@ -3000,6 +3003,14 @@ var ControlAndPluginService = /** @class */ (function () {
                     });
                 }
             }
+        });
+    };
+    ControlAndPluginService.prototype.sortItems = function (items, propertyName) {
+        items.sort(function (itemA, itemB) {
+            if (itemA && itemB && itemA.hasOwnProperty(propertyName) && itemB.hasOwnProperty(propertyName)) {
+                return itemA[propertyName] - itemB[propertyName];
+            }
+            return 0;
         });
     };
     ControlAndPluginService.prototype.translateHeaderKeys = function (columns) {
@@ -3329,6 +3340,7 @@ var GraphqlService = /** @class */ (function () {
         if (event && (event.type === 'keyup' || event.type === 'keydown')) {
             debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
         }
+        this._currentFilters = this.castFilterToColumnFilter(args.columnFilters);
         var promise = new Promise(function (resolve, reject) {
             if (!args || !args.grid) {
                 throw new Error('Something went wrong when trying create the GraphQL Backend Service, it seems that "args" is not populated correctly');
@@ -3353,7 +3365,6 @@ var GraphqlService = /** @class */ (function () {
         return this.buildQuery();
     };
     GraphqlService.prototype.updateFilters = function (columnFilters, isUpdatedByPreset) {
-        this._currentFilters = this.castFilterToColumnFilter(columnFilters);
         var searchByArray = [];
         var searchValue;
         var _loop_1 = function (columnId) {
@@ -3778,6 +3789,7 @@ var GridOdataService = /** @class */ (function () {
         if (event && (event.type === 'keyup' || event.type === 'keydown')) {
             debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE$1;
         }
+        this._currentFilters = this.castFilterToColumnFilter(args.columnFilters);
         var promise = new Promise(function (resolve, reject) {
             clearTimeout(timer$1);
             timer$1 = setTimeout(function () {
@@ -3799,7 +3811,6 @@ var GridOdataService = /** @class */ (function () {
         return this.odataService.buildQuery();
     };
     GridOdataService.prototype.updateFilters = function (columnFilters, isUpdatedByPreset) {
-        this._currentFilters = this.castFilterToColumnFilter(columnFilters);
         var searchBy = '';
         var searchByArray = [];
         var _loop_2 = function (columnId) {
@@ -6317,7 +6328,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
             var gridColumns = this.gridStateService.getAssociatedGridColumns(grid, gridOptions.presets.columns);
             if (gridColumns && Array.isArray(gridColumns) && gridColumns.length > 0) {
                 if (gridOptions.enableCheckboxSelector) {
-                    var checkboxColumn = (Array.isArray(this.columnDefinitions) && this.columnDefinitions.length > 0) ? this.columnDefinitions[0] : null;
+                    var checkboxColumn = (Array.isArray(this._columnDefinitions) && this._columnDefinitions.length > 0) ? this._columnDefinitions[0] : null;
                     if (checkboxColumn && checkboxColumn.id === '_checkbox_selector' && gridColumns[0].id !== '_checkbox_selector') {
                         gridColumns.unshift(checkboxColumn);
                     }
