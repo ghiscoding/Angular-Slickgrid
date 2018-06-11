@@ -133,6 +133,9 @@ export class GridOdataService implements BackendService {
       debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
     }
 
+    // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
+    this._currentFilters = this.castFilterToColumnFilter(args.columnFilters);
+
     const promise = new Promise<string>((resolve, reject) => {
       // reset Pagination, then build the OData query which we will use in the WebAPI callback
       // wait a minimum user typing inactivity before processing any query
@@ -178,7 +181,6 @@ export class GridOdataService implements BackendService {
    * @param columnFilters
    */
   updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset?: boolean) {
-    this._currentFilters = this.castFilterToColumnFilter(columnFilters);
     let searchBy = '';
     const searchByArray: string[] = [];
 

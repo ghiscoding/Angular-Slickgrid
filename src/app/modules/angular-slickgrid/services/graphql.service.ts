@@ -254,6 +254,9 @@ export class GraphqlService implements BackendService {
       debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
     }
 
+    // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
+    this._currentFilters = this.castFilterToColumnFilter(args.columnFilters);
+
     const promise = new Promise<string>((resolve, reject) => {
       if (!args || !args.grid) {
         throw new Error('Something went wrong when trying create the GraphQL Backend Service, it seems that "args" is not populated correctly');
@@ -328,9 +331,6 @@ export class GraphqlService implements BackendService {
    * @param columnFilters
    */
   updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset: boolean) {
-    // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
-    this._currentFilters = this.castFilterToColumnFilter(columnFilters);
-
     const searchByArray: GraphqlFilteringOption[] = [];
     let searchValue: string | string[];
 
