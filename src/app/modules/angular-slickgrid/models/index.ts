@@ -44,7 +44,7 @@ export * from './graphqlServiceOption.interface';
 export * from './graphqlSortingOption.interface';
 export * from './groupFormatter.interface';
 export * from './groupTotalsFormatter.interface';
-export * from './customGridMenu.interface';
+export * from './gridMenuItem.interface';
 export * from './gridMenu.interface';
 export * from './gridOption.interface';
 export * from './gridState.interface';

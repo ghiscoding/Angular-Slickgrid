@@ -1,8 +1,8 @@
-import { CustomGridMenu } from './customGridMenu.interface';
+import { GridMenuItem } from './gridMenuItem.interface';
 
 export interface GridMenu {
   /** Array of Custom Items (title, command, disabled, ...) */
-  customItems?: CustomGridMenu[];
+  customItems?: GridMenuItem[];
 
   /** Defaults to "Commands" which is the title that shows up over the custom commands list */
   customTitle?: string;

@@ -1,19 +1,11 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  CellArgs,
-  CustomGridMenu,
   Column,
-  DelimiterType,
   ExportOption,
   FileType,
   Formatter,
-  GraphqlResult,
-  GridMenu,
-  GridOption,
-  HeaderButtonOnCommandArgs,
-  HeaderMenuOnCommandArgs,
-  HeaderMenuOnBeforeMenuShowArgs
+  GridOption
 } from './../models/index';
 import { addWhiteSpaces, htmlEntityDecode, sanitizeHtmlToText } from './../services/utilities';
 import { Subject } from 'rxjs/Subject';

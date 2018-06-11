@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import {
   CellArgs,
   ColumnSort,
-  CustomGridMenu,
   Column,
   DelimiterType,
   Extension,
   FileType,
   GraphqlResult,
   GridMenu,
+  GridMenuItem,
   GridOption,
   HeaderButtonOnCommandArgs,
   HeaderMenu,
@@ -34,25 +34,26 @@ export class ControlAndPluginService {
   visibleColumns: Column[];
   areVisibleColumnDifferent = false;
   extensionList: Extension[] = [];
+  undoRedoBuffer: any;
+  userOriginalGridMenu: GridMenu;
 
   // controls & plugins
   autoTooltipPlugin: any;
   cellExternalCopyManagerPlugin: any;
   checkboxSelectorPlugin: any;
   columnPickerControl: any;
+  gridMenuControl: any;
   groupItemMetaProviderPlugin: any;
   headerButtonsPlugin: any;
   headerMenuPlugin: any;
-  gridMenuControl: any;
   rowSelectionPlugin: any;
-  undoRedoBuffer: any;
 
   constructor(
     private exportService: ExportService,
     private filterService: FilterService,
     private sortService: SortService,
-    private translate: TranslateService
-  ) {}
+    private translate: TranslateService,
+  ) { }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
@@ -74,10 +75,15 @@ export class ControlAndPluginService {
     return this.visibleColumns || [];
   }
 
+  /** Get all Extensions */
   getAllExtensions(): Extension[] {
     return this.extensionList;
   }
 
+  /**
+   * Get an Extension by it's name
+   *  @param name
+   */
   getExtensionByName(name: string): Extension | undefined {
     return this.extensionList.find((p) => p.name === name);
   }
@@ -90,14 +96,14 @@ export class ControlAndPluginService {
   /**
    * Attach/Create different Controls or Plugins after the Grid is created
    * @param grid
-   * @param options
    * @param dataView
+   * @param groupItemMetadataProvider
    */
   attachDifferentControlOrPlugins(grid: any, dataView: any, groupItemMetadataProvider: any) {
     this._grid = grid;
     this._dataView = dataView;
-    this.visibleColumns = this._columnDefinitions;
     this.allColumns = this._columnDefinitions;
+    this.visibleColumns = this._columnDefinitions;
 
     // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
     // this is to avoid having hidden columns not being translated on first load
@@ -113,6 +119,9 @@ export class ControlAndPluginService {
 
     // Grid Menu Control
     if (this._gridOptions.enableGridMenu) {
+      // keep original user grid menu, useful when switching locale to translate
+      this.userOriginalGridMenu = { ...this._gridOptions.gridMenu };
+
       this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions);
       this.extensionList.push({ name: 'GridMenu', service: this.gridMenuControl });
     }
@@ -219,10 +228,10 @@ export class ControlAndPluginService {
   createCellExternalCopyManagerPlugin(grid: any) {
     let newRowIds = 0;
     const pluginOptions = {
-      clipboardCommandHandler: (editCommand) => {
+      clipboardCommandHandler: (editCommand: any) => {
         this.undoRedoBuffer.queueAndExecuteCommand.call(this.undoRedoBuffer, editCommand);
       },
-      dataItemColumnValueExtractor: (item, columnDef) => {
+      dataItemColumnValueExtractor: (item: any, columnDef: Column) => {
         // when grid or cell is not editable, we will possibly evaluate the Formatter if it was passed
         // to decide if we evaluate the Formatter, we will use the same flag from Export which is "exportWithFormatter"
         if (!this._gridOptions.editable || !columnDef.editor) {
@@ -242,7 +251,7 @@ export class ControlAndPluginService {
       },
       readOnlyMode: false,
       includeHeaderWhenCopying: false,
-      newRowCreator: (count) => {
+      newRowCreator: (count: number) => {
         for (let i = 0; i < count; i++) {
           const item = {
             id: 'newRow_' + newRowIds++
@@ -262,7 +271,6 @@ export class ControlAndPluginService {
    * Create the Column Picker and expose all the available hooks that user can subscribe (onColumnsChanged)
    * @param grid
    * @param columnDefinitions
-   * @param gridOptions
    */
   createColumnPicker(grid: any, columnDefinitions: Column[]) {
     // localization support for the picker
@@ -289,55 +297,61 @@ export class ControlAndPluginService {
    * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)
    * @param grid
    * @param columnDefinitions
-   * @param _gridOptions
    */
   createGridMenu(grid: any, columnDefinitions: Column[]) {
-    this._gridOptions.gridMenu = { ...this.getDefaultGridMenuOptions(), ...this._gridOptions.gridMenu };
-    this.addGridMenuCustomCommands(grid);
+    if (this._gridOptions && this._gridOptions.gridMenu) {
+      this._gridOptions.gridMenu = { ...this.getDefaultGridMenuOptions(), ...this._gridOptions.gridMenu };
 
-    const gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
-    if (grid && this._gridOptions.gridMenu) {
-      gridMenuControl.onBeforeMenuShow.subscribe((e: Event, args: CellArgs) => {
-        if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onBeforeMenuShow === 'function') {
-          this._gridOptions.gridMenu.onBeforeMenuShow(e, args);
-        }
-      });
-      gridMenuControl.onColumnsChanged.subscribe((e: Event, args: CellArgs) => {
-        this.areVisibleColumnDifferent = true;
-        if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onColumnsChanged === 'function') {
-          this._gridOptions.gridMenu.onColumnsChanged(e, args);
-        }
-      });
-      gridMenuControl.onCommand.subscribe((e: Event, args: CustomGridMenu) => {
-        this.executeGridMenuInternalCustomCommands(e, args);
-        if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onCommand === 'function') {
-          this._gridOptions.gridMenu.onCommand(e, args);
-        }
-      });
-      gridMenuControl.onMenuClose.subscribe((e: Event, args: CellArgs) => {
-        if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onMenuClose === 'function') {
-          this._gridOptions.gridMenu.onMenuClose(e, args);
-        }
+      // merge original user grid menu items with internal items
+      // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
+      this._gridOptions.gridMenu.customItems = [...this.userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
+      this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
 
-        // we also want to resize the columns if the user decided to hide certain column(s)
-        if (grid && typeof grid.autosizeColumns === 'function') {
-          // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree)
-          const gridUid = grid.getUID();
-          if (this.areVisibleColumnDifferent && gridUid && $(`.${gridUid}`).length > 0) {
-            grid.autosizeColumns();
+      const gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
+      if (grid && this._gridOptions.gridMenu) {
+        gridMenuControl.onBeforeMenuShow.subscribe((e: Event, args: CellArgs) => {
+          if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onBeforeMenuShow === 'function') {
+            this._gridOptions.gridMenu.onBeforeMenuShow(e, args);
           }
-        }
-      });
-    }
+        });
+        gridMenuControl.onColumnsChanged.subscribe((e: Event, args: CellArgs) => {
+          this.areVisibleColumnDifferent = true;
+          if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onColumnsChanged === 'function') {
+            this._gridOptions.gridMenu.onColumnsChanged(e, args);
+          }
+        });
+        gridMenuControl.onCommand.subscribe((e: Event, args: GridMenuItem) => {
+          this.executeGridMenuInternalCustomCommands(e, args);
+          if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onCommand === 'function') {
+            this._gridOptions.gridMenu.onCommand(e, args);
+          }
+        });
+        gridMenuControl.onMenuClose.subscribe((e: Event, args: CellArgs) => {
+          if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onMenuClose === 'function') {
+            this._gridOptions.gridMenu.onMenuClose(e, args);
+          }
 
-    return gridMenuControl;
+          // we also want to resize the columns if the user decided to hide certain column(s)
+          if (grid && typeof grid.autosizeColumns === 'function') {
+            // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree)
+            const gridUid = grid.getUID();
+            if (this.areVisibleColumnDifferent && gridUid && $(`.${gridUid}`).length > 0) {
+              grid.autosizeColumns();
+              this.areVisibleColumnDifferent = false;
+            }
+          }
+        });
+      }
+      return gridMenuControl;
+    }
+    return null;
   }
 
   /**
    * Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...)
    * @param grid
+   * @param dataView
    * @param columnDefinitions
-   * @param options
    */
   createHeaderMenu(grid: any, dataView: any, columnDefinitions: Column[]) {
     this._gridOptions.headerMenu = { ...this.getDefaultHeaderMenuOptions(), ...this._gridOptions.headerMenu };
@@ -365,11 +379,11 @@ export class ControlAndPluginService {
 
   /** Create an undo redo buffer used by the Excel like copy */
   createUndoRedoBuffer() {
-    const commandQueue = [];
+    const commandQueue: any[] = [];
     let commandCtr = 0;
 
     this.undoRedoBuffer = {
-      queueAndExecuteCommand: (editCommand) => {
+      queueAndExecuteCommand: (editCommand: any) => {
         commandQueue[commandCtr] = editCommand;
         commandCtr++;
         editCommand.execute();
@@ -422,7 +436,7 @@ export class ControlAndPluginService {
     this._dataView = null;
     this.visibleColumns = [];
 
-    // destroy the control/plugin if it has that method
+    // dispose of each control/plugin if it has a destroy method
     this.extensionList.forEach((item) => {
       if (item && item.service && item.service.destroy) {
         item.service.destroy();
@@ -431,18 +445,15 @@ export class ControlAndPluginService {
     this.extensionList = [];
   }
 
-  /**
-   * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
-   * @param grid
-   * @return gridMenu
-   */
-  private addGridMenuCustomCommands(grid: any) {
+  /** Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL) */
+  private addGridMenuCustomCommands() {
     const backendApi = this._gridOptions.backendServiceApi || null;
+    const gridMenuCustomItems: GridMenuItem[] = [];
 
-    if (this._gridOptions.enableFiltering) {
+    if (this._gridOptions && this._gridOptions.enableFiltering) {
       // show grid menu: clear all filters
-      if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-filter').length === 0) {
-        this._gridOptions.gridMenu.customItems.push(
+      if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand) {
+        gridMenuCustomItems.push(
           {
             iconCssClass: this._gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
             title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
@@ -454,8 +465,8 @@ export class ControlAndPluginService {
       }
 
       // show grid menu: toggle filter row
-      if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideToggleFilterCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'toggle-filter').length === 0) {
-        this._gridOptions.gridMenu.customItems.push(
+      if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideToggleFilterCommand) {
+        gridMenuCustomItems.push(
           {
             iconCssClass: this._gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
             title: this._gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
@@ -467,8 +478,8 @@ export class ControlAndPluginService {
       }
 
       // show grid menu: refresh dataset
-      if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'refresh-dataset').length === 0) {
-        this._gridOptions.gridMenu.customItems.push(
+      if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi) {
+        gridMenuCustomItems.push(
           {
             iconCssClass: this._gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
             title: this._gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
@@ -482,8 +493,8 @@ export class ControlAndPluginService {
 
     if (this._gridOptions.enableSorting) {
       // show grid menu: clear all sorting
-      if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllSortingCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'clear-sorting').length === 0) {
-        this._gridOptions.gridMenu.customItems.push(
+      if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllSortingCommand) {
+        gridMenuCustomItems.push(
           {
             iconCssClass: this._gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
             title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
@@ -496,8 +507,8 @@ export class ControlAndPluginService {
     }
 
     // show grid menu: export to file
-    if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportCsvCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-csv').length === 0) {
-      this._gridOptions.gridMenu.customItems.push(
+    if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportCsvCommand) {
+      gridMenuCustomItems.push(
         {
           iconCssClass: this._gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
           title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
@@ -508,8 +519,8 @@ export class ControlAndPluginService {
       );
     }
     // show grid menu: export to text file as tab delimited
-    if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportTextDelimitedCommand && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.filter((item: CustomGridMenu) => item.command === 'export-text-delimited').length === 0) {
-      this._gridOptions.gridMenu.customItems.push(
+    if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportTextDelimitedCommand) {
+      gridMenuCustomItems.push(
         {
           iconCssClass: this._gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
           title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
@@ -521,18 +532,12 @@ export class ControlAndPluginService {
     }
 
     // add the custom "Commands" title if there are any commands
-    if (this._gridOptions && this._gridOptions.gridMenu && this._gridOptions.gridMenu.customItems && this._gridOptions.gridMenu.customItems.length > 0) {
+    if (this._gridOptions && this._gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || this._gridOptions.gridMenu.customItems.length > 0)) {
       const customTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('commands') : 'Commands';
       this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || customTitle;
-
-      // sort the custom items by their position in the list
-      this._gridOptions.gridMenu.customItems.sort((itemA, itemB) => {
-        if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
-          return itemA.positionOrder - itemB.positionOrder;
-        }
-        return 0;
-      });
     }
+
+    return gridMenuCustomItems;
   }
 
   /**
@@ -608,8 +613,8 @@ export class ControlAndPluginService {
     if (args && args.command) {
       switch (args.command) {
         case 'hide':
-        this.hideColumn(args.column);
-        this.autoResizeColumns();
+          this.hideColumn(args.column);
+          this.autoResizeColumns();
           break;
         case 'sort-asc':
         case 'sort-desc':
@@ -639,8 +644,10 @@ export class ControlAndPluginService {
   /**
    * Execute the Grid Menu Custom command callback that was triggered by the onCommand subscribe
    * These are the default internal custom commands
+   * @param event
+   * @param GridMenuItem args
    */
-  executeGridMenuInternalCustomCommands(e: Event, args: CustomGridMenu) {
+  executeGridMenuInternalCustomCommands(e: Event, args: GridMenuItem) {
     if (args && args.command) {
       switch (args.command) {
         case 'clear-filter':
@@ -717,7 +724,11 @@ export class ControlAndPluginService {
     }
   }
 
-  /** Remove a column from the grid by it's index in the grid */
+  /**
+   * Remove a column from the grid by it's index in the grid
+   * @param array input
+   * @param index
+   */
   removeColumnByIndex(array: any[], index: number) {
     return array.filter((el: any, i: number) => {
       return index !== i;
@@ -741,7 +752,13 @@ export class ControlAndPluginService {
     // we also need to call the control init so that it takes the new Grid object with latest values
     if (this._gridOptions && this._gridOptions.gridMenu) {
       this._gridOptions.gridMenu.customItems = [];
-      this._gridOptions.gridMenu.customTitle = '';
+
+      // merge original user grid menu items with internal items
+      // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
+      this._gridOptions.gridMenu.customTitle = this.userOriginalGridMenu && this.userOriginalGridMenu.customTitle || '';
+      this._gridOptions.gridMenu.customItems = [...this.userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
+      this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
+
       this._gridOptions.gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
       this._gridOptions.gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
       this._gridOptions.gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
@@ -749,8 +766,9 @@ export class ControlAndPluginService {
       // translate all columns (including non-visible)
       this.translateHeaderKeys(this.allColumns);
 
-      // re-create the list of Custom Commands
-      this.addGridMenuCustomCommands(this._grid);
+      // re-initialize the Grid Menu, that will recreate all the menus & list
+      // and so will act like a translate
+      // we do this instead of recreating the Grid Menu control itself (because doing so would destroy any previous commands attached)
       this.gridMenuControl.init(this._grid);
     }
   }
@@ -767,7 +785,8 @@ export class ControlAndPluginService {
   /**
    * Translate manually the header titles.
    * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
-   * @param locale locale to use
+   * @param locale to use
+   * @param new column definitions (optional)
    */
   translateColumnHeaders(locale?: boolean | string, newColumnDefinitions?: Column[]) {
     if (locale) {
@@ -884,6 +903,22 @@ export class ControlAndPluginService {
           });
         }
       }
+    });
+  }
+
+  /**
+   * Sort items in an array by a property name
+   * @params items array
+   * @param property name to sort with
+   * @return sorted array
+   */
+  private sortItems(items: any[], propertyName: string) {
+    // sort the custom items by their position in the list
+    items.sort((itemA, itemB) => {
+      if (itemA && itemB && itemA.hasOwnProperty(propertyName) && itemB.hasOwnProperty(propertyName)) {
+        return itemA[propertyName] - itemB[propertyName];
+      }
+      return 0;
     });
   }
 

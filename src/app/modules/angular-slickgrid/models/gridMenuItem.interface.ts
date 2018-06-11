@@ -1,4 +1,4 @@
-export interface CustomGridMenu {
+export interface GridMenuItem {
   /** Menu item text to show in the list. */
   title: string;
 
