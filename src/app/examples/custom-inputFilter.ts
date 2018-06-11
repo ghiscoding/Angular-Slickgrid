@@ -32,7 +32,16 @@ export class CustomInputFilter implements Filter {
     this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
 
     // step 3, subscribe to the keyup event and run the callback when that happens
-    this.$filterElm.keyup((e: any) => this.callback(e, { columnDef: this.columnDef }));
+    this.$filterElm.keyup((e: any) => {
+      const value = e && e.target && e.target.value || '';
+      if (!value || value === '') {
+        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+        this.$filterElm.removeClass('filled');
+      } else {
+        this.$filterElm.addClass('filled');
+        this.callback(e, { columnDef: this.columnDef, searchTerms: [value] });
+      }
+    });
   }
 
   /**
