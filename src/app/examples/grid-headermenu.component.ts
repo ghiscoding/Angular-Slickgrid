@@ -1,5 +1,6 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { AngularGridInstance, Column, ColumnSort, GridOption } from './../modules/angular-slickgrid';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   templateUrl: './grid-headermenu.component.html'
@@ -22,17 +23,20 @@ export class GridHeaderMenuComponent implements OnInit {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
-  gridObj: any;
-  dataviewObj: any;
+  selectedLanguage: string;
+
+  constructor(private translate: TranslateService) {
+    this.selectedLanguage = this.translate.getDefaultLang();
+  }
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'title' },
-      { id: 'duration', name: 'Duration', field: 'duration', sortable: true },
+      { id: 'title', name: 'Title', field: 'title', headerKey: 'TITLE' },
+      { id: 'duration', name: 'Duration', field: 'duration', headerKey: 'DURATION', sortable: true },
       { id: '%', name: '% Complete', field: 'percentComplete', sortable: true },
-      { id: 'start', name: 'Start', field: 'start' },
-      { id: 'finish', name: 'Finish', field: 'finish' },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven' }
+      { id: 'start', name: 'Start', field: 'start', headerKey: 'START' },
+      { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH' },
+      { id: 'effort-driven', name: 'Completed', field: 'effortDriven', headerKey: 'COMPLETED' }
     ];
 
     this.columnDefinitions.forEach((columnDef) => {
@@ -46,7 +50,7 @@ export class GridHeaderMenuComponent implements OnInit {
             {
               iconCssClass: 'fa fa-question-circle',
               disabled: (columnDef.id === 'effort-driven'), // you can disable a command with certain logic
-              title: 'Help',
+              titleKey: 'HELP', // use "title" as plain string OR "titleKey" when using a translation key
               command: 'help',
               positionOrder: 99
             }
@@ -72,7 +76,9 @@ export class GridHeaderMenuComponent implements OnInit {
             alert('Please help!!!');
           }
         }
-      }
+      },
+      enableTranslate: true,
+      i18n: this.translate
     };
 
     this.getData();
@@ -99,10 +105,8 @@ export class GridHeaderMenuComponent implements OnInit {
     this.angularGrid = angularGrid;
   }
 
-  gridReady(grid) {
-    this.gridObj = grid;
-  }
-  dataviewReady(dataview) {
-    this.dataviewObj = dataview;
+  switchLanguage() {
+    this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(this.selectedLanguage);
   }
 }

@@ -36,6 +36,7 @@
       "ZIP": "Billing Address Zip"
     }
   },
+  "CUSTOM_COMMANDS": "Custom Commands",
   "DURATION": "Duration",
   "COMPANY": "Company",
   "COMPLETED": "Completed",
@@ -43,6 +44,7 @@
   "FEMALE": "Female",
   "FINISH": "Finish",
   "GENDER": "Gender",
+  "HELP": "Help",
   "MALE": "Male",
   "NAME": "Name",
   "START": "Start",

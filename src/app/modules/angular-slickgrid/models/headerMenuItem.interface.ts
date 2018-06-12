@@ -15,7 +15,10 @@ export interface HeaderMenuItem {
   positionOrder?: number;
 
   /** Menu item text to show in the list. */
-  title: string;
+  title?: string;
+
+  /** Same as "title", except that it's a translation key which can be used on page load and/or when switching locale */
+  titleKey?: string;
 
   /** Item tooltip to show while hovering the command. */
   tooltip?: string;
