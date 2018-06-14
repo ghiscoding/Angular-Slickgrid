@@ -175,12 +175,13 @@ export class FilterService {
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
 
       let cellValue = item[columnDef.queryField || columnDef.queryFieldFilter || columnDef.field];
-      const searchTerms = (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null;
 
-      let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
-      if (typeof fieldSearchValue === 'undefined') {
-        fieldSearchValue = '';
-      }
+      // if we find searchTerms use them but make a deep copy so that we don't affect original array
+      // we might have to overwrite the value(s) locally that are returned
+      // e.g: we don't want to operator within the search value, since it will fail filter condition check trigger afterward
+      const searchValues = (columnFilter && columnFilter.searchTerms) ? [...columnFilter.searchTerms] : null;
+
+      let fieldSearchValue = (Array.isArray(searchValues) && searchValues.length === 1) ? searchValues[0] : '';
       fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
 
       const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
@@ -188,8 +189,8 @@ export class FilterService {
       const searchTerm = (!!matches) ? matches[2] : '';
       const lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
 
-      if (searchTerms && searchTerms.length > 1) {
-        fieldSearchValue = searchTerms.join(',');
+      if (searchValues && searchValues.length > 1) {
+        fieldSearchValue = searchValues.join(',');
       } else if (typeof fieldSearchValue === 'string') {
         // escaping the search value
         fieldSearchValue = fieldSearchValue.replace(`'`, `''`); // escape single quotes by doubling them
@@ -199,16 +200,22 @@ export class FilterService {
       }
 
       // no need to query if search value is empty
-      if (searchTerm === '' && !searchTerms) {
+      if (searchTerm === '' && !searchValues) {
         return true;
+      }
+
+      // if search value has a regex match we will only keep the value without the operator
+      // in this case we need to overwrite the returned search values to truncate operator from the string search
+      if (Array.isArray(matches) && matches.length >= 1 && (Array.isArray(searchValues) && searchValues.length === 1)) {
+        searchValues[0] = searchTerm;
       }
 
       // filter search terms should always be string type (even though we permit the end user to input numbers)
       // so make sure each term are strings, if user has some default search terms, we will cast them to string
-      if (searchTerms && Array.isArray(searchTerms)) {
-        for (let k = 0, ln = searchTerms.length; k < ln; k++) {
+      if (searchValues && Array.isArray(searchValues)) {
+        for (let k = 0, ln = searchValues.length; k < ln; k++) {
           // make sure all search terms are strings
-          searchTerms[k] = ((searchTerms[k] === undefined || searchTerms[k] === null) ? '' : searchTerms[k]) + '';
+          searchValues[k] = ((searchValues[k] === undefined || searchValues[k] === null) ? '' : searchValues[k]) + '';
         }
       }
 
@@ -225,7 +232,7 @@ export class FilterService {
 
       const conditionOptions = {
         fieldType,
-        searchTerms,
+        searchTerms: searchValues,
         cellValue,
         operator,
         cellValueLastChar: lastValueChar,
@@ -301,7 +308,7 @@ export class FilterService {
   callbackSearchEvent(e: Event | undefined, args: FilterCallbackArg) {
     if (args) {
       const searchTerm = ((e && e.target) ? (e.target as HTMLInputElement).value : undefined);
-      const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : searchTerm ? [searchTerm] : undefined;
+      const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : (searchTerm ? [searchTerm] : undefined);
       const columnDef = args.columnDef || null;
       const columnId = columnDef ? (columnDef.id || '') : '';
       const operator = args.operator || undefined;
