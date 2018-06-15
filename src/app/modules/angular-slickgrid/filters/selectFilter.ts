@@ -24,7 +24,7 @@ export class SelectFilter implements Filter {
   constructor(private translate: TranslateService) {}
 
   get operator(): OperatorType | OperatorString {
-    return OperatorType.equal;
+    return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
   }
 
   /**
@@ -57,7 +57,7 @@ export class SelectFilter implements Filter {
         this.$filterElm.removeClass('filled');
       } else {
         this.$filterElm.addClass('filled');
-        this.callback(e, { columnDef: this.columnDef, searchTerms: [value], operator: 'EQ' });
+        this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value] });
       }
     });
   }

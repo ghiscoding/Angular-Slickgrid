@@ -200,7 +200,7 @@ export class FilterService {
       }
 
       // no need to query if search value is empty
-      if (searchTerm === '' && !searchValues) {
+      if (searchTerm === '' && (!searchValues || (Array.isArray(searchValues) && searchValues.length === 0))) {
         return true;
       }
 

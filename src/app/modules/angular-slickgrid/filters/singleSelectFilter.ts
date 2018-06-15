@@ -49,13 +49,13 @@ export class SingleSelectFilter implements Filter {
           this.isFilled = false;
           this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
         }
-        this.callback(undefined, { columnDef: this.columnDef, operator: 'EQ', searchTerms: (selectedItem ? [selectedItem] : null) });
+        this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: (selectedItem ? [selectedItem] : null) });
       }
     };
   }
 
   get operator(): OperatorType | OperatorString {
-    return OperatorType.equal;
+    return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
   }
 
   /** Getter for the Grid Options pulled through the Grid Object */

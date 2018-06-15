@@ -63,6 +63,11 @@ export class GridEditorComponent implements OnInit {
     this.prepareGrid();
   }
 
+  angularGridReady(angularGrid: AngularGridInstance) {
+    this.angularGrid = angularGrid;
+    this.gridObj = angularGrid.slickGrid;
+  }
+
   prepareGrid() {
     this.columnDefinitions = [{
       id: 'edit',
@@ -254,14 +259,6 @@ export class GridEditorComponent implements OnInit {
       };
     }
     this.dataset = mockedDataset;
-  }
-
-  angularGridReady(angularGrid: AngularGridInstance) {
-    this.angularGrid = angularGrid;
-  }
-
-  gridReady(grid) {
-    this.gridObj = grid;
   }
 
   onCellChanged(e, args) {

@@ -15,6 +15,20 @@ export const testFilterCondition = (operator: string, value1: any, value2: any):
     case '==':
     case 'EQ': return (value1 === value2);
     case 'IN': return ((value2 && value2.includes) ? (value2.includes(value1)) : false);
-  }
-  return true;
+    case 'NIN':
+    case 'NOT_IN':
+      return ((value2 && value2.includes) ? (!value2.includes(value1)) : false);
+    case 'IN_CONTAINS':
+      if (value2 && Array.isArray(value2) && value2.findIndex) {
+        return ((value2.findIndex((val) => value1.indexOf(val) > -1)) > -1);
+      }
+      return false;
+    case 'NIN_CONTAINS':
+    case 'NOT_IN_CONTAINS':
+    if (value2 && Array.isArray(value2) && value2.findIndex) {
+      return !((value2.findIndex((val) => value1.indexOf(val) > -1)) > -1);
+    }
+    return false;
+}
+return true;
 };

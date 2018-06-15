@@ -37,7 +37,6 @@
     <div class="col-sm-12">
         <angular-slickgrid gridId="grid2"
             (onAngularGridCreated)="angularGridReady($event)"
-            (onGridCreated)="gridReady($event)"
             (sgOnCellChange)="onCellChanged($event.detail.eventData, $event.detail.args)"
             (sgOnClick)="onCellClicked($event.detail.eventData, $event.detail.args)"
             (sgOnValidationError)="onCellValidation($event.detail.eventData, $event.detail.args)"
