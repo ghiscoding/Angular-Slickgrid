@@ -90,13 +90,11 @@ export declare class ControlAndPluginService {
     private addGridMenuCustomCommands();
     /**
      * Create Header Menu with Custom Commands if user has enabled Header Menu
-     * @param grid
-     * @param dataView
      * @param options
      * @param columnDefinitions
      * @return header menu
      */
-    private addHeaderMenuCustomCommands(grid, dataView, options, columnDefinitions);
+    private addHeaderMenuCustomCommands(options, columnDefinitions);
     /** Execute the Header Menu Commands that was triggered by the onCommand subscribe */
     executeHeaderMenuInternalCommands(e: Event, args: HeaderMenuOnCommandArgs): void;
     /**
@@ -134,6 +132,7 @@ export declare class ControlAndPluginService {
      * calling setColumns() will trigger a grid re-render
      */
     renderColumnHeaders(newColumnDefinitions?: Column[]): void;
+    private emptyGridMenuTitles();
     /**
      * @return default Grid Menu options
      */
@@ -142,12 +141,13 @@ export declare class ControlAndPluginService {
      * @return default Header Menu options
      */
     private getDefaultHeaderMenuOptions();
-    private getDefaultTranslationByKey(key);
     /**
-     * Reset all the Grid Menu options which have text to translate
-     * @param grid menu object
+     * From a Grid Menu object property name, we will return the correct title output string following this order
+     * 1- if user provided a title, use it as the output title
+     * 2- else if user provided a title key, use it to translate the output title
+     * 3- else if nothing is provided use
      */
-    private resetGridMenuTranslations(gridMenu);
+    private getGridMenuTitleOutputString(propName);
     /**
      * Reset all the Grid Menu options which have text to translate
      * @param grid menu object
@@ -160,9 +160,6 @@ export declare class ControlAndPluginService {
      * @return sorted array
      */
     private sortItems(items, propertyName);
-    /**
-     * Translate the columns headerKey
-     * Note that this is done through pointers so we don't need to return anything to see them translated
-     */
-    private translateHeaderKeys(columns);
+    /** Translate the an array of items from an input key and assign to the output key */
+    private translateItems(items, inputKey, outputKey);
 }

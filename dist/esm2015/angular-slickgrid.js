@@ -196,18 +196,38 @@ KeyCode[KeyCode.UP] = "UP";
  */
 /** @enum {string} */
 const OperatorType = {
+    /** value is empty */
     empty: '',
+    /** value contains x */
     contains: 'Contains',
+    /** value less than x */
     lessThan: 'LT',
+    /** value less than or equal to x */
     lessThanOrEqual: 'LE',
+    /** value greater than x */
     greaterThan: 'GT',
+    /** value great than or equal to x */
     greaterThanOrEqual: 'GE',
+    /** value not equal to x */
     notEqual: 'NE',
+    /** value equal to x */
     equal: 'EQ',
+    /** String ends with value */
     endsWith: 'EndsWith',
+    /** String starts with value */
     startsWith: 'StartsWith',
+    /** Find an equal match inside a collection */
     in: 'IN',
-    notIn: 'NIN',
+    /** Inverse (Not In) of an equal match inside a collection */
+    notIn: 'NOT_IN',
+    /**
+       * Find a substring contained inside a collection
+       * For example, this condition would return True with "IN_CONTAINS":: value='Task2,Task3', collection=['Task2','Task3']
+       * This would have returned False with "IN" because 'Task2' does not equal 'Task2,Task3'. However 'Task2' is contained in 'Task2,Task3'
+       */
+    inContains: 'IN_CONTAINS',
+    /** Inversed (Not In) of substring contained inside a collection */
+    notInContains: 'NOT_IN_CONTAINS',
 };
 
 /**
@@ -905,6 +925,20 @@ const testFilterCondition = (operator, value1, value2) => {
         case '==':
         case 'EQ': return (value1 === value2);
         case 'IN': return ((value2 && value2.includes) ? (value2.includes(value1)) : false);
+        case 'NIN':
+        case 'NOT_IN':
+            return ((value2 && value2.includes) ? (!value2.includes(value1)) : false);
+        case 'IN_CONTAINS':
+            if (value2 && Array.isArray(value2) && value2.findIndex) {
+                return ((value2.findIndex((val) => value1.indexOf(val) > -1)) > -1);
+            }
+            return false;
+        case 'NIN_CONTAINS':
+        case 'NOT_IN_CONTAINS':
+            if (value2 && Array.isArray(value2) && value2.findIndex) {
+                return !((value2.findIndex((val) => value1.indexOf(val) > -1)) > -1);
+            }
+            return false;
     }
     return true;
 };
@@ -1052,7 +1086,8 @@ const stringFilterCondition = (options) => {
  */
 const executeMappedCondition = (options) => {
     // when using a multi-select ('IN' operator) we will not use the field type but instead go directly with a collection search
-    if (options && options.operator && options.operator.toUpperCase() === 'IN') {
+    const /** @type {?} */ operator = options.operator && options.operator.toUpperCase();
+    if (options && options.operator && (operator === 'IN' || operator === 'NIN' || operator === 'IN_CONTAINS' || operator === 'NIN_CONTAINS')) {
         return collectionSearchFilterCondition(options);
     }
     // execute the mapped type, or default to String condition check
@@ -1566,7 +1601,7 @@ class InputFilter {
      * @return {?}
      */
     get operator() {
-        return OperatorType.equal;
+        return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
     }
     /**
      * Initialize the Filter
@@ -1594,7 +1629,7 @@ class InputFilter {
             }
             else {
                 this.$filterElm.addClass('filled');
-                this.callback(e, { columnDef: this.columnDef, searchTerms: [value] });
+                this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value] });
             }
         });
     }
@@ -1702,7 +1737,7 @@ class MultipleSelectFilter {
                     this.isFilled = false;
                     this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                this.callback(undefined, { columnDef: this.columnDef, operator: 'IN', searchTerms: selectedItems });
+                this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems });
             }
         };
     }
@@ -1717,7 +1752,7 @@ class MultipleSelectFilter {
      * @return {?}
      */
     get operator() {
-        return OperatorType.in;
+        return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.in;
     }
     /**
      * Initialize the filter template
@@ -1874,7 +1909,7 @@ class SelectFilter {
      * @return {?}
      */
     get operator() {
-        return OperatorType.equal;
+        return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
     }
     /**
      * Initialize the Filter
@@ -1905,7 +1940,7 @@ class SelectFilter {
             }
             else {
                 this.$filterElm.addClass('filled');
-                this.callback(e, { columnDef: this.columnDef, searchTerms: [value], operator: 'EQ' });
+                this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value] });
             }
         });
     }
@@ -2022,7 +2057,7 @@ class SingleSelectFilter {
                     this.isFilled = false;
                     this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                this.callback(undefined, { columnDef: this.columnDef, operator: 'EQ', searchTerms: (selectedItem ? [selectedItem] : null) });
+                this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: (selectedItem ? [selectedItem] : null) });
             }
         };
     }
@@ -2030,7 +2065,7 @@ class SingleSelectFilter {
      * @return {?}
      */
     get operator() {
-        return OperatorType.equal;
+        return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
     }
     /**
      * Getter for the Grid Options pulled through the Grid Object
@@ -2540,18 +2575,18 @@ class FilterService {
             const /** @type {?} */ fieldType = columnDef.type || FieldType.string;
             const /** @type {?} */ filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
             let /** @type {?} */ cellValue = item[columnDef.queryField || columnDef.queryFieldFilter || columnDef.field];
-            const /** @type {?} */ searchTerms = (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null;
-            let /** @type {?} */ fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
-            if (typeof fieldSearchValue === 'undefined') {
-                fieldSearchValue = '';
-            }
+            // if we find searchTerms use them but make a deep copy so that we don't affect original array
+            // we might have to overwrite the value(s) locally that are returned
+            // e.g: we don't want to operator within the search value, since it will fail filter condition check trigger afterward
+            const /** @type {?} */ searchValues = (columnFilter && columnFilter.searchTerms) ? [...columnFilter.searchTerms] : null;
+            let /** @type {?} */ fieldSearchValue = (Array.isArray(searchValues) && searchValues.length === 1) ? searchValues[0] : '';
             fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
             const /** @type {?} */ matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
             let /** @type {?} */ operator = columnFilter.operator || ((matches) ? matches[1] : '');
             const /** @type {?} */ searchTerm = (!!matches) ? matches[2] : '';
             const /** @type {?} */ lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
-            if (searchTerms && searchTerms.length > 1) {
-                fieldSearchValue = searchTerms.join(',');
+            if (searchValues && searchValues.length > 1) {
+                fieldSearchValue = searchValues.join(',');
             }
             else if (typeof fieldSearchValue === 'string') {
                 // escaping the search value
@@ -2561,15 +2596,20 @@ class FilterService {
                 }
             }
             // no need to query if search value is empty
-            if (searchTerm === '' && !searchTerms) {
+            if (searchTerm === '' && (!searchValues || (Array.isArray(searchValues) && searchValues.length === 0))) {
                 return true;
+            }
+            // if search value has a regex match we will only keep the value without the operator
+            // in this case we need to overwrite the returned search values to truncate operator from the string search
+            if (Array.isArray(matches) && matches.length >= 1 && (Array.isArray(searchValues) && searchValues.length === 1)) {
+                searchValues[0] = searchTerm;
             }
             // filter search terms should always be string type (even though we permit the end user to input numbers)
             // so make sure each term are strings, if user has some default search terms, we will cast them to string
-            if (searchTerms && Array.isArray(searchTerms)) {
-                for (let /** @type {?} */ k = 0, /** @type {?} */ ln = searchTerms.length; k < ln; k++) {
+            if (searchValues && Array.isArray(searchValues)) {
+                for (let /** @type {?} */ k = 0, /** @type {?} */ ln = searchValues.length; k < ln; k++) {
                     // make sure all search terms are strings
-                    searchTerms[k] = ((searchTerms[k] === undefined || searchTerms[k] === null) ? '' : searchTerms[k]) + '';
+                    searchValues[k] = ((searchValues[k] === undefined || searchValues[k] === null) ? '' : searchValues[k]) + '';
                 }
             }
             // when using localization (i18n), we should use the formatter output to search as the new cell value
@@ -2583,7 +2623,7 @@ class FilterService {
             }
             const /** @type {?} */ conditionOptions = {
                 fieldType,
-                searchTerms,
+                searchTerms: searchValues,
                 cellValue,
                 operator,
                 cellValueLastChar: lastValueChar,
@@ -2663,7 +2703,7 @@ class FilterService {
     callbackSearchEvent(e, args) {
         if (args) {
             const /** @type {?} */ searchTerm = ((e && e.target) ? (/** @type {?} */ (e.target)).value : undefined);
-            const /** @type {?} */ searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : searchTerm ? [searchTerm] : undefined;
+            const /** @type {?} */ searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : (searchTerm ? [searchTerm] : undefined);
             const /** @type {?} */ columnDef = args.columnDef || null;
             const /** @type {?} */ columnId = columnDef ? (columnDef.id || '') : '';
             const /** @type {?} */ operator = args.operator || undefined;
@@ -3403,6 +3443,26 @@ class SortService {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+class Constants {
+}
+Constants.TEXT_CLEAR_ALL_FILTERS = 'Clear All Filters';
+Constants.TEXT_CLEAR_ALL_SORTING = 'Clear All Sorting';
+Constants.TEXT_COLUMNS = 'Columns';
+Constants.TEXT_COMMANDS = 'Commands';
+Constants.TEXT_EXPORT_IN_CSV_FORMAT = 'Export in CSV format';
+Constants.TEXT_EXPORT_IN_TEXT_FORMAT = 'Export in Text format (Tab delimited)';
+Constants.TEXT_FORCE_FIT_COLUMNS = 'Force fit columns';
+Constants.TEXT_HIDE_COLUMN = 'Hide Column';
+Constants.TEXT_REFRESH_DATASET = 'Refresh Dataset';
+Constants.TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';
+Constants.TEXT_SORT_ASCENDING = 'Sort Ascending';
+Constants.TEXT_SORT_DESCENDING = 'Sort Descending';
+Constants.TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 class ControlAndPluginService {
     /**
      * @param {?} exportService
@@ -3484,7 +3544,7 @@ class ControlAndPluginService {
         // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
         // this is to avoid having hidden columns not being translated on first load
         if (this._gridOptions.enableTranslate) {
-            this.translateHeaderKeys(this.allColumns);
+            this.translateItems(this.allColumns, 'headerKey', 'name');
         }
         // Column Picker Control
         if (this._gridOptions.enableColumnPicker) {
@@ -3639,8 +3699,8 @@ class ControlAndPluginService {
      */
     createColumnPicker(grid, columnDefinitions) {
         // localization support for the picker
-        const /** @type {?} */ forceFitTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('forcefit') : 'Force fit columns';
-        const /** @type {?} */ syncResizeTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('synch') : 'Synchronous resize';
+        const /** @type {?} */ forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
+        const /** @type {?} */ syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
         this._gridOptions.columnPicker = this._gridOptions.columnPicker || {};
         this._gridOptions.columnPicker.forceFitTitle = this._gridOptions.columnPicker.forceFitTitle || forceFitTitle;
         this._gridOptions.columnPicker.syncResizeTitle = this._gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
@@ -3666,6 +3726,7 @@ class ControlAndPluginService {
             // merge original user grid menu items with internal items
             // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
             this._gridOptions.gridMenu.customItems = [...this.userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
+            this.translateItems(this._gridOptions.gridMenu.customItems, 'titleKey', 'title');
             this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
             const /** @type {?} */ gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
             if (grid && this._gridOptions.gridMenu) {
@@ -3715,7 +3776,7 @@ class ControlAndPluginService {
     createHeaderMenu(grid, dataView, columnDefinitions) {
         this._gridOptions.headerMenu = Object.assign({}, this.getDefaultHeaderMenuOptions(), this._gridOptions.headerMenu);
         if (this._gridOptions.enableHeaderMenu) {
-            this._gridOptions.headerMenu = this.addHeaderMenuCustomCommands(grid, dataView, this._gridOptions, columnDefinitions);
+            this._gridOptions.headerMenu = this.addHeaderMenuCustomCommands(this._gridOptions, columnDefinitions);
         }
         const /** @type {?} */ headerMenuPlugin = new Slick.Plugins.HeaderMenu(this._gridOptions.headerMenu);
         grid.registerPlugin(headerMenuPlugin);
@@ -3825,7 +3886,7 @@ class ControlAndPluginService {
             if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand) {
                 gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
+                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : Constants.TEXT_CLEAR_ALL_FILTERS,
                     disabled: false,
                     command: 'clear-filter',
                     positionOrder: 50
@@ -3835,7 +3896,7 @@ class ControlAndPluginService {
             if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideToggleFilterCommand) {
                 gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
+                    title: this._gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : Constants.TEXT_TOGGLE_FILTER_ROW,
                     disabled: false,
                     command: 'toggle-filter',
                     positionOrder: 52
@@ -3845,7 +3906,7 @@ class ControlAndPluginService {
             if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi) {
                 gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
+                    title: this._gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : Constants.TEXT_REFRESH_DATASET,
                     disabled: false,
                     command: 'refresh-dataset',
                     positionOrder: 54
@@ -3857,7 +3918,7 @@ class ControlAndPluginService {
             if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllSortingCommand) {
                 gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
+                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : Constants.TEXT_CLEAR_ALL_SORTING,
                     disabled: false,
                     command: 'clear-sorting',
                     positionOrder: 51
@@ -3868,7 +3929,7 @@ class ControlAndPluginService {
         if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportCsvCommand) {
             gridMenuCustomItems.push({
                 iconCssClass: this._gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
-                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
+                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : Constants.TEXT_EXPORT_IN_CSV_FORMAT,
                 disabled: false,
                 command: 'export-csv',
                 positionOrder: 53
@@ -3878,7 +3939,7 @@ class ControlAndPluginService {
         if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportTextDelimitedCommand) {
             gridMenuCustomItems.push({
                 iconCssClass: this._gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
-                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
+                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : Constants.TEXT_EXPORT_IN_TEXT_FORMAT,
                 disabled: false,
                 command: 'export-text-delimited',
                 positionOrder: 54
@@ -3886,20 +3947,17 @@ class ControlAndPluginService {
         }
         // add the custom "Commands" title if there are any commands
         if (this._gridOptions && this._gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || this._gridOptions.gridMenu.customItems.length > 0)) {
-            const /** @type {?} */ customTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('commands') : 'Commands';
-            this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || customTitle;
+            this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || this.getGridMenuTitleOutputString('customTitle');
         }
         return gridMenuCustomItems;
     }
     /**
      * Create Header Menu with Custom Commands if user has enabled Header Menu
-     * @param {?} grid
-     * @param {?} dataView
      * @param {?} options
      * @param {?} columnDefinitions
      * @return {?} header menu
      */
-    addHeaderMenuCustomCommands(grid, dataView, options, columnDefinitions) {
+    addHeaderMenuCustomCommands(options, columnDefinitions) {
         const /** @type {?} */ headerMenuOptions = options.headerMenu;
         if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
             columnDefinitions.forEach((columnDef) => {
@@ -3917,7 +3975,7 @@ class ControlAndPluginService {
                         if (columnHeaderMenuItems.filter((item) => item.command === 'sort-asc').length === 0) {
                             columnHeaderMenuItems.push({
                                 iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
-                                title: options.enableTranslate ? this.translate.instant('SORT_ASCENDING') : 'Sort Ascending',
+                                title: options.enableTranslate ? this.translate.instant('SORT_ASCENDING') : Constants.TEXT_SORT_ASCENDING,
                                 command: 'sort-asc',
                                 positionOrder: 50
                             });
@@ -3925,7 +3983,7 @@ class ControlAndPluginService {
                         if (columnHeaderMenuItems.filter((item) => item.command === 'sort-desc').length === 0) {
                             columnHeaderMenuItems.push({
                                 iconCssClass: headerMenuOptions.iconSortDescCommand || 'fa fa-sort-desc',
-                                title: options.enableTranslate ? this.translate.instant('SORT_DESCENDING') : 'Sort Descending',
+                                title: options.enableTranslate ? this.translate.instant('SORT_DESCENDING') : Constants.TEXT_SORT_DESCENDING,
                                 command: 'sort-desc',
                                 positionOrder: 51
                             });
@@ -3935,11 +3993,12 @@ class ControlAndPluginService {
                     if (!headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter((item) => item.command === 'hide').length === 0) {
                         columnHeaderMenuItems.push({
                             iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
-                            title: options.enableTranslate ? this.translate.instant('HIDE_COLUMN') : 'Hide Column',
+                            title: options.enableTranslate ? this.translate.instant('HIDE_COLUMN') : Constants.TEXT_HIDE_COLUMN,
                             command: 'hide',
                             positionOrder: 52
                         });
                     }
+                    this.translateItems(columnHeaderMenuItems, 'titleKey', 'title');
                     // sort the custom items by their position in the list
                     columnHeaderMenuItems.sort((itemA, itemB) => {
                         if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
@@ -4086,11 +4145,11 @@ class ControlAndPluginService {
     translateColumnPicker() {
         // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
         if (this._gridOptions && this._gridOptions.columnPicker) {
-            this._gridOptions.columnPicker.columnTitle = this.getDefaultTranslationByKey('columns');
-            this._gridOptions.columnPicker.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
-            this._gridOptions.columnPicker.syncResizeTitle = this.getDefaultTranslationByKey('synch');
+            this._gridOptions.columnPicker.columnTitle = this.getGridMenuTitleOutputString('columnTitle');
+            this._gridOptions.columnPicker.forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
+            this._gridOptions.columnPicker.syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
         }
-        this.translateHeaderKeys(this.allColumns);
+        this.translateItems(this.allColumns, 'headerKey', 'name');
     }
     /**
      * Translate the Grid Menu titles and column picker
@@ -4101,16 +4160,17 @@ class ControlAndPluginService {
         // we also need to call the control init so that it takes the new Grid object with latest values
         if (this._gridOptions && this._gridOptions.gridMenu) {
             this._gridOptions.gridMenu.customItems = [];
+            this.emptyGridMenuTitles();
             // merge original user grid menu items with internal items
             // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
-            this._gridOptions.gridMenu.customTitle = this.userOriginalGridMenu && this.userOriginalGridMenu.customTitle || '';
             this._gridOptions.gridMenu.customItems = [...this.userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
+            this.translateItems(this._gridOptions.gridMenu.customItems, 'titleKey', 'title');
             this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
-            this._gridOptions.gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
-            this._gridOptions.gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
-            this._gridOptions.gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
+            this._gridOptions.gridMenu.columnTitle = this.getGridMenuTitleOutputString('columnTitle');
+            this._gridOptions.gridMenu.forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
+            this._gridOptions.gridMenu.syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
             // translate all columns (including non-visible)
-            this.translateHeaderKeys(this.allColumns);
+            this.translateItems(this.allColumns, 'headerKey', 'name');
             // re-initialize the Grid Menu, that will recreate all the menus & list
             // and so will act like a translate
             // we do this instead of recreating the Grid Menu control itself (because doing so would destroy any previous commands attached)
@@ -4138,8 +4198,8 @@ class ControlAndPluginService {
             this.translate.use(/** @type {?} */ (locale));
         }
         const /** @type {?} */ columnDefinitions = newColumnDefinitions || this._columnDefinitions;
-        this.translateHeaderKeys(columnDefinitions);
-        this.translateHeaderKeys(this.allColumns);
+        this.translateItems(columnDefinitions, 'headerKey', 'name');
+        this.translateItems(this.allColumns, 'headerKey', 'name');
         // re-render the column headers
         this.renderColumnHeaders(columnDefinitions);
     }
@@ -4156,20 +4216,29 @@ class ControlAndPluginService {
         }
     }
     /**
+     * @return {?}
+     */
+    emptyGridMenuTitles() {
+        this._gridOptions.gridMenu.customTitle = '';
+        this._gridOptions.gridMenu.columnTitle = '';
+        this._gridOptions.gridMenu.forceFitTitle = '';
+        this._gridOptions.gridMenu.syncResizeTitle = '';
+    }
+    /**
      * @return {?} default Grid Menu options
      */
     getDefaultGridMenuOptions() {
         return {
-            columnTitle: this.getDefaultTranslationByKey('columns'),
-            forceFitTitle: this.getDefaultTranslationByKey('forcefit'),
-            syncResizeTitle: this.getDefaultTranslationByKey('synch'),
+            customTitle: undefined,
+            columnTitle: this.getGridMenuTitleOutputString('columnTitle'),
+            forceFitTitle: this.getGridMenuTitleOutputString('forceFitTitle'),
+            syncResizeTitle: this.getGridMenuTitleOutputString('syncResizeTitle'),
             iconCssClass: 'fa fa-bars',
             menuWidth: 18,
-            customTitle: undefined,
             customItems: [],
             hideClearAllFiltersCommand: false,
             hideRefreshDatasetCommand: false,
-            hideToggleFilterCommand: false
+            hideToggleFilterCommand: false,
         };
     }
     /**
@@ -4180,44 +4249,47 @@ class ControlAndPluginService {
             autoAlignOffset: 12,
             minWidth: 140,
             hideColumnHideCommand: false,
-            hideSortCommands: false
+            hideSortCommands: false,
+            title: ''
         };
     }
     /**
-     * @param {?} key
+     * From a Grid Menu object property name, we will return the correct title output string following this order
+     * 1- if user provided a title, use it as the output title
+     * 2- else if user provided a title key, use it to translate the output title
+     * 3- else if nothing is provided use
+     * @param {?} propName
      * @return {?}
      */
-    getDefaultTranslationByKey(key) {
+    getGridMenuTitleOutputString(propName) {
         let /** @type {?} */ output = '';
-        switch (key) {
-            case 'commands':
-                output = this.translate.instant('COMMANDS') || 'Commands';
-                break;
-            case 'columns':
-                output = this.translate.instant('COLUMNS') || 'Columns';
-                break;
-            case 'forcefit':
-                output = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
-                break;
-            case 'synch':
-                output = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
-                break;
+        const /** @type {?} */ gridMenu = this._gridOptions && this._gridOptions.gridMenu || {};
+        const /** @type {?} */ enableTranslate = this._gridOptions && this._gridOptions.enableTranslate || false;
+        const /** @type {?} */ title = gridMenu && gridMenu[propName];
+        const /** @type {?} */ titleKey = gridMenu && gridMenu[`${propName}Key`];
+        if (titleKey) {
+            output = this.translate.instant(titleKey || ' ');
+        }
+        else {
+            switch (propName) {
+                case 'customTitle':
+                    output = title || (enableTranslate ? this.translate.instant('COMMANDS') : Constants.TEXT_COMMANDS);
+                    break;
+                case 'columnTitle':
+                    output = title || (enableTranslate ? this.translate.instant('COLUMNS') : Constants.TEXT_COLUMNS);
+                    break;
+                case 'forceFitTitle':
+                    output = title || (enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : Constants.TEXT_FORCE_FIT_COLUMNS);
+                    break;
+                case 'syncResizeTitle':
+                    output = title || (enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : Constants.TEXT_SYNCHRONOUS_RESIZE);
+                    break;
+                default:
+                    output = title;
+                    break;
+            }
         }
         return output;
-    }
-    /**
-     * Reset all the Grid Menu options which have text to translate
-     * @param {?} gridMenu
-     * @return {?}
-     */
-    resetGridMenuTranslations(gridMenu) {
-        // we will reset the custom items array since the commands title have to be translated too (no worries, we will re-create it later)
-        gridMenu.customItems = [];
-        delete gridMenu.customTitle;
-        gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
-        gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
-        gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
-        return gridMenu;
     }
     /**
      * Reset all the Grid Menu options which have text to translate
@@ -4232,14 +4304,18 @@ class ControlAndPluginService {
                     columnHeaderMenuItems.forEach((item) => {
                         switch (item.command) {
                             case 'sort-asc':
-                                item.title = this.translate.instant('SORT_ASCENDING') || 'Sort Ascending';
+                                item.title = this.translate.instant('SORT_ASCENDING') || Constants.TEXT_SORT_ASCENDING;
                                 break;
                             case 'sort-desc':
-                                item.title = this.translate.instant('SORT_DESCENDING') || 'Sort Ascending';
+                                item.title = this.translate.instant('SORT_DESCENDING') || Constants.TEXT_SORT_DESCENDING;
                                 break;
                             case 'hide':
-                                item.title = this.translate.instant('HIDE_COLUMN') || 'Sort Ascending';
+                                item.title = this.translate.instant('HIDE_COLUMN') || Constants.TEXT_HIDE_COLUMN;
                                 break;
+                        }
+                        // re-translate if there's a "titleKey"
+                        if (this._gridOptions && this._gridOptions.enableTranslate) {
+                            this.translateItems(columnHeaderMenuItems, 'titleKey', 'title');
                         }
                     });
                 }
@@ -4263,15 +4339,16 @@ class ControlAndPluginService {
         });
     }
     /**
-     * Translate the columns headerKey
-     * Note that this is done through pointers so we don't need to return anything to see them translated
-     * @param {?} columns
+     * Translate the an array of items from an input key and assign to the output key
+     * @param {?} items
+     * @param {?} inputKey
+     * @param {?} outputKey
      * @return {?}
      */
-    translateHeaderKeys(columns) {
-        for (const /** @type {?} */ column of columns) {
-            if (column.headerKey) {
-                column.name = this.translate.instant(column.headerKey);
+    translateItems(items, inputKey, outputKey) {
+        for (const /** @type {?} */ item of items) {
+            if (item[inputKey]) {
+                item[outputKey] = this.translate.instant(item[inputKey]);
             }
         }
     }

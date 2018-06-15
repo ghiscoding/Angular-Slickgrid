@@ -150,7 +150,9 @@ var OperatorType = {
     endsWith: 'EndsWith',
     startsWith: 'StartsWith',
     in: 'IN',
-    notIn: 'NIN',
+    notIn: 'NOT_IN',
+    inContains: 'IN_CONTAINS',
+    notInContains: 'NOT_IN_CONTAINS',
 };
 var SortDirection = {
     asc: 'asc',
@@ -611,6 +613,20 @@ var testFilterCondition = function (operator, value1, value2) {
         case '==':
         case 'EQ': return (value1 === value2);
         case 'IN': return ((value2 && value2.includes) ? (value2.includes(value1)) : false);
+        case 'NIN':
+        case 'NOT_IN':
+            return ((value2 && value2.includes) ? (!value2.includes(value1)) : false);
+        case 'IN_CONTAINS':
+            if (value2 && Array.isArray(value2) && value2.findIndex) {
+                return ((value2.findIndex(function (val) { return value1.indexOf(val) > -1; })) > -1);
+            }
+            return false;
+        case 'NIN_CONTAINS':
+        case 'NOT_IN_CONTAINS':
+            if (value2 && Array.isArray(value2) && value2.findIndex) {
+                return !((value2.findIndex(function (val) { return value1.indexOf(val) > -1; })) > -1);
+            }
+            return false;
     }
     return true;
 };
@@ -704,7 +720,8 @@ var stringFilterCondition = function (options) {
     return testFilterCondition(options.operator || '==', cellValue, searchTerm);
 };
 var executeMappedCondition = function (options) {
-    if (options && options.operator && options.operator.toUpperCase() === 'IN') {
+    var operator = options.operator && options.operator.toUpperCase();
+    if (options && options.operator && (operator === 'IN' || operator === 'NIN' || operator === 'IN_CONTAINS' || operator === 'NIN_CONTAINS')) {
         return collectionSearchFilterCondition(options);
     }
     switch (options.fieldType) {
@@ -1062,7 +1079,7 @@ var InputFilter = /** @class */ (function () {
     });
     Object.defineProperty(InputFilter.prototype, "operator", {
         get: function () {
-            return OperatorType.equal;
+            return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
         },
         enumerable: true,
         configurable: true
@@ -1084,7 +1101,7 @@ var InputFilter = /** @class */ (function () {
             }
             else {
                 _this.$filterElm.addClass('filled');
-                _this.callback(e, { columnDef: _this.columnDef, searchTerms: [value] });
+                _this.callback(e, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: [value] });
             }
         });
     };
@@ -1152,7 +1169,7 @@ var MultipleSelectFilter = /** @class */ (function () {
                     _this.isFilled = false;
                     _this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                _this.callback(undefined, { columnDef: _this.columnDef, operator: 'IN', searchTerms: selectedItems });
+                _this.callback(undefined, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: selectedItems });
             }
         };
     }
@@ -1165,7 +1182,7 @@ var MultipleSelectFilter = /** @class */ (function () {
     });
     Object.defineProperty(MultipleSelectFilter.prototype, "operator", {
         get: function () {
-            return OperatorType.in;
+            return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.in;
         },
         enumerable: true,
         configurable: true
@@ -1270,7 +1287,7 @@ var SelectFilter = /** @class */ (function () {
     }
     Object.defineProperty(SelectFilter.prototype, "operator", {
         get: function () {
-            return OperatorType.equal;
+            return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
         },
         enumerable: true,
         configurable: true
@@ -1295,7 +1312,7 @@ var SelectFilter = /** @class */ (function () {
             }
             else {
                 _this.$filterElm.addClass('filled');
-                _this.callback(e, { columnDef: _this.columnDef, searchTerms: [value], operator: 'EQ' });
+                _this.callback(e, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: [value] });
             }
         });
     };
@@ -1379,13 +1396,13 @@ var SingleSelectFilter = /** @class */ (function () {
                     _this.isFilled = false;
                     _this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                _this.callback(undefined, { columnDef: _this.columnDef, operator: 'EQ', searchTerms: (selectedItem ? [selectedItem] : null) });
+                _this.callback(undefined, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: (selectedItem ? [selectedItem] : null) });
             }
         };
     }
     Object.defineProperty(SingleSelectFilter.prototype, "operator", {
         get: function () {
-            return OperatorType.equal;
+            return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
         },
         enumerable: true,
         configurable: true
@@ -1742,18 +1759,15 @@ var FilterService = /** @class */ (function () {
                 var fieldType = columnDef.type || FieldType.string;
                 var filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
                 var cellValue = item[columnDef.queryField || columnDef.queryFieldFilter || columnDef.field];
-                var searchTerms = (columnFilter && columnFilter.searchTerms) ? columnFilter.searchTerms : null;
-                var fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
-                if (typeof fieldSearchValue === 'undefined') {
-                    fieldSearchValue = '';
-                }
+                var searchValues = (columnFilter && columnFilter.searchTerms) ? __spread(columnFilter.searchTerms) : null;
+                var fieldSearchValue = (Array.isArray(searchValues) && searchValues.length === 1) ? searchValues[0] : '';
                 fieldSearchValue = '' + fieldSearchValue;
                 var matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/);
                 var operator = columnFilter.operator || ((matches) ? matches[1] : '');
                 var searchTerm = (!!matches) ? matches[2] : '';
                 var lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
-                if (searchTerms && searchTerms.length > 1) {
-                    fieldSearchValue = searchTerms.join(',');
+                if (searchValues && searchValues.length > 1) {
+                    fieldSearchValue = searchValues.join(',');
                 }
                 else if (typeof fieldSearchValue === 'string') {
                     fieldSearchValue = fieldSearchValue.replace("'", "''");
@@ -1761,12 +1775,15 @@ var FilterService = /** @class */ (function () {
                         operator = (operator === '*' || operator === '*z') ? OperatorType.endsWith : OperatorType.startsWith;
                     }
                 }
-                if (searchTerm === '' && !searchTerms) {
+                if (searchTerm === '' && (!searchValues || (Array.isArray(searchValues) && searchValues.length === 0))) {
                     return true;
                 }
-                if (searchTerms && Array.isArray(searchTerms)) {
-                    for (var k = 0, ln = searchTerms.length; k < ln; k++) {
-                        searchTerms[k] = ((searchTerms[k] === undefined || searchTerms[k] === null) ? '' : searchTerms[k]) + '';
+                if (Array.isArray(matches) && matches.length >= 1 && (Array.isArray(searchValues) && searchValues.length === 1)) {
+                    searchValues[0] = searchTerm;
+                }
+                if (searchValues && Array.isArray(searchValues)) {
+                    for (var k = 0, ln = searchValues.length; k < ln; k++) {
+                        searchValues[k] = ((searchValues[k] === undefined || searchValues[k] === null) ? '' : searchValues[k]) + '';
                     }
                 }
                 if (columnDef && columnDef.params && columnDef.params.useFormatterOuputToFilter) {
@@ -1778,7 +1795,7 @@ var FilterService = /** @class */ (function () {
                 }
                 var conditionOptions = {
                     fieldType: fieldType,
-                    searchTerms: searchTerms,
+                    searchTerms: searchValues,
                     cellValue: cellValue,
                     operator: operator,
                     cellValueLastChar: lastValueChar,
@@ -1855,7 +1872,7 @@ var FilterService = /** @class */ (function () {
     FilterService.prototype.callbackSearchEvent = function (e, args) {
         if (args) {
             var searchTerm = ((e && e.target) ? ((e.target)).value : undefined);
-            var searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : searchTerm ? [searchTerm] : undefined;
+            var searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : (searchTerm ? [searchTerm] : undefined);
             var columnDef = args.columnDef || null;
             var columnId = columnDef ? (columnDef.id || '') : '';
             var operator = args.operator || undefined;
@@ -2376,6 +2393,24 @@ var SortService = /** @class */ (function () {
     };
     return SortService;
 }());
+var Constants = /** @class */ (function () {
+    function Constants() {
+    }
+    return Constants;
+}());
+Constants.TEXT_CLEAR_ALL_FILTERS = 'Clear All Filters';
+Constants.TEXT_CLEAR_ALL_SORTING = 'Clear All Sorting';
+Constants.TEXT_COLUMNS = 'Columns';
+Constants.TEXT_COMMANDS = 'Commands';
+Constants.TEXT_EXPORT_IN_CSV_FORMAT = 'Export in CSV format';
+Constants.TEXT_EXPORT_IN_TEXT_FORMAT = 'Export in Text format (Tab delimited)';
+Constants.TEXT_FORCE_FIT_COLUMNS = 'Force fit columns';
+Constants.TEXT_HIDE_COLUMN = 'Hide Column';
+Constants.TEXT_REFRESH_DATASET = 'Refresh Dataset';
+Constants.TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';
+Constants.TEXT_SORT_ASCENDING = 'Sort Ascending';
+Constants.TEXT_SORT_DESCENDING = 'Sort Descending';
+Constants.TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
 var ControlAndPluginService = /** @class */ (function () {
     function ControlAndPluginService(exportService, filterService, sortService, translate) {
         this.exportService = exportService;
@@ -2421,7 +2456,7 @@ var ControlAndPluginService = /** @class */ (function () {
         this.allColumns = this._columnDefinitions;
         this.visibleColumns = this._columnDefinitions;
         if (this._gridOptions.enableTranslate) {
-            this.translateHeaderKeys(this.allColumns);
+            this.translateItems(this.allColumns, 'headerKey', 'name');
         }
         if (this._gridOptions.enableColumnPicker) {
             this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions);
@@ -2538,8 +2573,8 @@ var ControlAndPluginService = /** @class */ (function () {
     };
     ControlAndPluginService.prototype.createColumnPicker = function (grid, columnDefinitions) {
         var _this = this;
-        var forceFitTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('forcefit') : 'Force fit columns';
-        var syncResizeTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('synch') : 'Synchronous resize';
+        var forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
+        var syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
         this._gridOptions.columnPicker = this._gridOptions.columnPicker || {};
         this._gridOptions.columnPicker.forceFitTitle = this._gridOptions.columnPicker.forceFitTitle || forceFitTitle;
         this._gridOptions.columnPicker.syncResizeTitle = this._gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
@@ -2558,6 +2593,7 @@ var ControlAndPluginService = /** @class */ (function () {
         if (this._gridOptions && this._gridOptions.gridMenu) {
             this._gridOptions.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), this._gridOptions.gridMenu);
             this._gridOptions.gridMenu.customItems = __spread(this.userOriginalGridMenu.customItems || [], this.addGridMenuCustomCommands());
+            this.translateItems(this._gridOptions.gridMenu.customItems, 'titleKey', 'title');
             this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
             var gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
             if (grid && this._gridOptions.gridMenu) {
@@ -2599,7 +2635,7 @@ var ControlAndPluginService = /** @class */ (function () {
         var _this = this;
         this._gridOptions.headerMenu = Object.assign({}, this.getDefaultHeaderMenuOptions(), this._gridOptions.headerMenu);
         if (this._gridOptions.enableHeaderMenu) {
-            this._gridOptions.headerMenu = this.addHeaderMenuCustomCommands(grid, dataView, this._gridOptions, columnDefinitions);
+            this._gridOptions.headerMenu = this.addHeaderMenuCustomCommands(this._gridOptions, columnDefinitions);
         }
         var headerMenuPlugin = new Slick.Plugins.HeaderMenu(this._gridOptions.headerMenu);
         grid.registerPlugin(headerMenuPlugin);
@@ -2685,7 +2721,7 @@ var ControlAndPluginService = /** @class */ (function () {
             if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand) {
                 gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : 'Clear All Filters',
+                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : Constants.TEXT_CLEAR_ALL_FILTERS,
                     disabled: false,
                     command: 'clear-filter',
                     positionOrder: 50
@@ -2694,7 +2730,7 @@ var ControlAndPluginService = /** @class */ (function () {
             if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideToggleFilterCommand) {
                 gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : 'Toggle Filter Row',
+                    title: this._gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : Constants.TEXT_TOGGLE_FILTER_ROW,
                     disabled: false,
                     command: 'toggle-filter',
                     positionOrder: 52
@@ -2703,7 +2739,7 @@ var ControlAndPluginService = /** @class */ (function () {
             if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi) {
                 gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : 'Refresh Dataset',
+                    title: this._gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : Constants.TEXT_REFRESH_DATASET,
                     disabled: false,
                     command: 'refresh-dataset',
                     positionOrder: 54
@@ -2714,7 +2750,7 @@ var ControlAndPluginService = /** @class */ (function () {
             if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllSortingCommand) {
                 gridMenuCustomItems.push({
                     iconCssClass: this._gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : 'Clear All Sorting',
+                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : Constants.TEXT_CLEAR_ALL_SORTING,
                     disabled: false,
                     command: 'clear-sorting',
                     positionOrder: 51
@@ -2724,7 +2760,7 @@ var ControlAndPluginService = /** @class */ (function () {
         if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportCsvCommand) {
             gridMenuCustomItems.push({
                 iconCssClass: this._gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
-                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : 'Export in CSV format',
+                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : Constants.TEXT_EXPORT_IN_CSV_FORMAT,
                 disabled: false,
                 command: 'export-csv',
                 positionOrder: 53
@@ -2733,19 +2769,18 @@ var ControlAndPluginService = /** @class */ (function () {
         if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportTextDelimitedCommand) {
             gridMenuCustomItems.push({
                 iconCssClass: this._gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
-                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : 'Export in Text format (Tab delimited)',
+                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : Constants.TEXT_EXPORT_IN_TEXT_FORMAT,
                 disabled: false,
                 command: 'export-text-delimited',
                 positionOrder: 54
             });
         }
         if (this._gridOptions && this._gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || this._gridOptions.gridMenu.customItems.length > 0)) {
-            var customTitle = this._gridOptions.enableTranslate ? this.getDefaultTranslationByKey('commands') : 'Commands';
-            this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || customTitle;
+            this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || this.getGridMenuTitleOutputString('customTitle');
         }
         return gridMenuCustomItems;
     };
-    ControlAndPluginService.prototype.addHeaderMenuCustomCommands = function (grid, dataView, options, columnDefinitions) {
+    ControlAndPluginService.prototype.addHeaderMenuCustomCommands = function (options, columnDefinitions) {
         var _this = this;
         var headerMenuOptions = options.headerMenu;
         if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
@@ -2763,7 +2798,7 @@ var ControlAndPluginService = /** @class */ (function () {
                         if (columnHeaderMenuItems.filter(function (item) { return item.command === 'sort-asc'; }).length === 0) {
                             columnHeaderMenuItems.push({
                                 iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
-                                title: options.enableTranslate ? _this.translate.instant('SORT_ASCENDING') : 'Sort Ascending',
+                                title: options.enableTranslate ? _this.translate.instant('SORT_ASCENDING') : Constants.TEXT_SORT_ASCENDING,
                                 command: 'sort-asc',
                                 positionOrder: 50
                             });
@@ -2771,7 +2806,7 @@ var ControlAndPluginService = /** @class */ (function () {
                         if (columnHeaderMenuItems.filter(function (item) { return item.command === 'sort-desc'; }).length === 0) {
                             columnHeaderMenuItems.push({
                                 iconCssClass: headerMenuOptions.iconSortDescCommand || 'fa fa-sort-desc',
-                                title: options.enableTranslate ? _this.translate.instant('SORT_DESCENDING') : 'Sort Descending',
+                                title: options.enableTranslate ? _this.translate.instant('SORT_DESCENDING') : Constants.TEXT_SORT_DESCENDING,
                                 command: 'sort-desc',
                                 positionOrder: 51
                             });
@@ -2780,11 +2815,12 @@ var ControlAndPluginService = /** @class */ (function () {
                     if (!headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter(function (item) { return item.command === 'hide'; }).length === 0) {
                         columnHeaderMenuItems.push({
                             iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
-                            title: options.enableTranslate ? _this.translate.instant('HIDE_COLUMN') : 'Hide Column',
+                            title: options.enableTranslate ? _this.translate.instant('HIDE_COLUMN') : Constants.TEXT_HIDE_COLUMN,
                             command: 'hide',
                             positionOrder: 52
                         });
                     }
+                    _this.translateItems(columnHeaderMenuItems, 'titleKey', 'title');
                     columnHeaderMenuItems.sort(function (itemA, itemB) {
                         if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
                             return itemA.positionOrder - itemB.positionOrder;
@@ -2895,22 +2931,23 @@ var ControlAndPluginService = /** @class */ (function () {
     };
     ControlAndPluginService.prototype.translateColumnPicker = function () {
         if (this._gridOptions && this._gridOptions.columnPicker) {
-            this._gridOptions.columnPicker.columnTitle = this.getDefaultTranslationByKey('columns');
-            this._gridOptions.columnPicker.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
-            this._gridOptions.columnPicker.syncResizeTitle = this.getDefaultTranslationByKey('synch');
+            this._gridOptions.columnPicker.columnTitle = this.getGridMenuTitleOutputString('columnTitle');
+            this._gridOptions.columnPicker.forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
+            this._gridOptions.columnPicker.syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
         }
-        this.translateHeaderKeys(this.allColumns);
+        this.translateItems(this.allColumns, 'headerKey', 'name');
     };
     ControlAndPluginService.prototype.translateGridMenu = function () {
         if (this._gridOptions && this._gridOptions.gridMenu) {
             this._gridOptions.gridMenu.customItems = [];
-            this._gridOptions.gridMenu.customTitle = this.userOriginalGridMenu && this.userOriginalGridMenu.customTitle || '';
+            this.emptyGridMenuTitles();
             this._gridOptions.gridMenu.customItems = __spread(this.userOriginalGridMenu.customItems || [], this.addGridMenuCustomCommands());
+            this.translateItems(this._gridOptions.gridMenu.customItems, 'titleKey', 'title');
             this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
-            this._gridOptions.gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
-            this._gridOptions.gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
-            this._gridOptions.gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
-            this.translateHeaderKeys(this.allColumns);
+            this._gridOptions.gridMenu.columnTitle = this.getGridMenuTitleOutputString('columnTitle');
+            this._gridOptions.gridMenu.forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
+            this._gridOptions.gridMenu.syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
+            this.translateItems(this.allColumns, 'headerKey', 'name');
             this.gridMenuControl.init(this._grid);
         }
     };
@@ -2924,8 +2961,8 @@ var ControlAndPluginService = /** @class */ (function () {
             this.translate.use((locale));
         }
         var columnDefinitions = newColumnDefinitions || this._columnDefinitions;
-        this.translateHeaderKeys(columnDefinitions);
-        this.translateHeaderKeys(this.allColumns);
+        this.translateItems(columnDefinitions, 'headerKey', 'name');
+        this.translateItems(this.allColumns, 'headerKey', 'name');
         this.renderColumnHeaders(columnDefinitions);
     };
     ControlAndPluginService.prototype.renderColumnHeaders = function (newColumnDefinitions) {
@@ -2934,18 +2971,24 @@ var ControlAndPluginService = /** @class */ (function () {
             this._grid.setColumns(collection);
         }
     };
+    ControlAndPluginService.prototype.emptyGridMenuTitles = function () {
+        this._gridOptions.gridMenu.customTitle = '';
+        this._gridOptions.gridMenu.columnTitle = '';
+        this._gridOptions.gridMenu.forceFitTitle = '';
+        this._gridOptions.gridMenu.syncResizeTitle = '';
+    };
     ControlAndPluginService.prototype.getDefaultGridMenuOptions = function () {
         return {
-            columnTitle: this.getDefaultTranslationByKey('columns'),
-            forceFitTitle: this.getDefaultTranslationByKey('forcefit'),
-            syncResizeTitle: this.getDefaultTranslationByKey('synch'),
+            customTitle: undefined,
+            columnTitle: this.getGridMenuTitleOutputString('columnTitle'),
+            forceFitTitle: this.getGridMenuTitleOutputString('forceFitTitle'),
+            syncResizeTitle: this.getGridMenuTitleOutputString('syncResizeTitle'),
             iconCssClass: 'fa fa-bars',
             menuWidth: 18,
-            customTitle: undefined,
             customItems: [],
             hideClearAllFiltersCommand: false,
             hideRefreshDatasetCommand: false,
-            hideToggleFilterCommand: false
+            hideToggleFilterCommand: false,
         };
     };
     ControlAndPluginService.prototype.getDefaultHeaderMenuOptions = function () {
@@ -2953,52 +2996,60 @@ var ControlAndPluginService = /** @class */ (function () {
             autoAlignOffset: 12,
             minWidth: 140,
             hideColumnHideCommand: false,
-            hideSortCommands: false
+            hideSortCommands: false,
+            title: ''
         };
     };
-    ControlAndPluginService.prototype.getDefaultTranslationByKey = function (key) {
+    ControlAndPluginService.prototype.getGridMenuTitleOutputString = function (propName) {
         var output = '';
-        switch (key) {
-            case 'commands':
-                output = this.translate.instant('COMMANDS') || 'Commands';
-                break;
-            case 'columns':
-                output = this.translate.instant('COLUMNS') || 'Columns';
-                break;
-            case 'forcefit':
-                output = this.translate.instant('FORCE_FIT_COLUMNS') || 'Force fit columns';
-                break;
-            case 'synch':
-                output = this.translate.instant('SYNCHRONOUS_RESIZE') || 'Synchronous resize';
-                break;
+        var gridMenu = this._gridOptions && this._gridOptions.gridMenu || {};
+        var enableTranslate = this._gridOptions && this._gridOptions.enableTranslate || false;
+        var title = gridMenu && gridMenu[propName];
+        var titleKey = gridMenu && gridMenu[propName + "Key"];
+        if (titleKey) {
+            output = this.translate.instant(titleKey || ' ');
+        }
+        else {
+            switch (propName) {
+                case 'customTitle':
+                    output = title || (enableTranslate ? this.translate.instant('COMMANDS') : Constants.TEXT_COMMANDS);
+                    break;
+                case 'columnTitle':
+                    output = title || (enableTranslate ? this.translate.instant('COLUMNS') : Constants.TEXT_COLUMNS);
+                    break;
+                case 'forceFitTitle':
+                    output = title || (enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : Constants.TEXT_FORCE_FIT_COLUMNS);
+                    break;
+                case 'syncResizeTitle':
+                    output = title || (enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : Constants.TEXT_SYNCHRONOUS_RESIZE);
+                    break;
+                default:
+                    output = title;
+                    break;
+            }
         }
         return output;
-    };
-    ControlAndPluginService.prototype.resetGridMenuTranslations = function (gridMenu) {
-        gridMenu.customItems = [];
-        delete gridMenu.customTitle;
-        gridMenu.columnTitle = this.getDefaultTranslationByKey('columns');
-        gridMenu.forceFitTitle = this.getDefaultTranslationByKey('forcefit');
-        gridMenu.syncResizeTitle = this.getDefaultTranslationByKey('synch');
-        return gridMenu;
     };
     ControlAndPluginService.prototype.resetHeaderMenuTranslations = function (columnDefinitions) {
         var _this = this;
         columnDefinitions.forEach(function (columnDef) {
             if (columnDef && columnDef.header && columnDef.header && columnDef.header.menu && columnDef.header.menu.items) {
                 if (!columnDef.excludeFromHeaderMenu) {
-                    var columnHeaderMenuItems = columnDef.header.menu.items || [];
-                    columnHeaderMenuItems.forEach(function (item) {
+                    var columnHeaderMenuItems_1 = columnDef.header.menu.items || [];
+                    columnHeaderMenuItems_1.forEach(function (item) {
                         switch (item.command) {
                             case 'sort-asc':
-                                item.title = _this.translate.instant('SORT_ASCENDING') || 'Sort Ascending';
+                                item.title = _this.translate.instant('SORT_ASCENDING') || Constants.TEXT_SORT_ASCENDING;
                                 break;
                             case 'sort-desc':
-                                item.title = _this.translate.instant('SORT_DESCENDING') || 'Sort Ascending';
+                                item.title = _this.translate.instant('SORT_DESCENDING') || Constants.TEXT_SORT_DESCENDING;
                                 break;
                             case 'hide':
-                                item.title = _this.translate.instant('HIDE_COLUMN') || 'Sort Ascending';
+                                item.title = _this.translate.instant('HIDE_COLUMN') || Constants.TEXT_HIDE_COLUMN;
                                 break;
+                        }
+                        if (_this._gridOptions && _this._gridOptions.enableTranslate) {
+                            _this.translateItems(columnHeaderMenuItems_1, 'titleKey', 'title');
                         }
                     });
                 }
@@ -3013,19 +3064,19 @@ var ControlAndPluginService = /** @class */ (function () {
             return 0;
         });
     };
-    ControlAndPluginService.prototype.translateHeaderKeys = function (columns) {
+    ControlAndPluginService.prototype.translateItems = function (items, inputKey, outputKey) {
         try {
-            for (var columns_1 = __values(columns), columns_1_1 = columns_1.next(); !columns_1_1.done; columns_1_1 = columns_1.next()) {
-                var column = columns_1_1.value;
-                if (column.headerKey) {
-                    column.name = this.translate.instant(column.headerKey);
+            for (var items_1 = __values(items), items_1_1 = items_1.next(); !items_1_1.done; items_1_1 = items_1.next()) {
+                var item = items_1_1.value;
+                if (item[inputKey]) {
+                    item[outputKey] = this.translate.instant(item[inputKey]);
                 }
             }
         }
         catch (e_3_1) { e_3 = { error: e_3_1 }; }
         finally {
             try {
-                if (columns_1_1 && !columns_1_1.done && (_a = columns_1.return)) _a.call(columns_1);
+                if (items_1_1 && !items_1_1.done && (_a = items_1.return)) _a.call(items_1);
             }
             finally { if (e_3) throw e_3.error; }
         }
