@@ -1,4 +1,3 @@
-import { Subscription } from 'rxjs/Subscription';
 import { CustomInputFilter } from './custom-inputFilter';
 import { Component, OnInit } from '@angular/core';
 import { AngularGridInstance, Column, FieldType, Filters, Formatters, GridOption, GridStateChange } from './../modules/angular-slickgrid';

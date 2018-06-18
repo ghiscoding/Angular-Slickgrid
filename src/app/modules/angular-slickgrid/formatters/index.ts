@@ -21,6 +21,7 @@ import { hyperlinkFormatter } from './hyperlinkFormatter';
 import { hyperlinkUriPrefixFormatter } from './hyperlinkUriPrefixFormatter';
 import { infoIconFormatter } from './infoIconFormatter';
 import { lowercaseFormatter } from './lowercaseFormatter';
+import { maskFormatter } from './maskFormatter';
 import { multipleFormatter } from './multipleFormatter';
 import { percentFormatter } from './percentFormatter';
 import { percentCompleteBarFormatter } from './percentCompleteBarFormatter';
@@ -111,6 +112,12 @@ export const Formatters = {
 
   /** Takes a value and displays it all lowercase */
   lowercase: lowercaseFormatter,
+
+  /**
+   * Takes a value display it according to a mask provided
+   * e.: 1234567890 with mask "(000) 000-0000" will display "(123) 456-7890"
+   */
+  mask: maskFormatter,
 
   /**
    * You can pipe multiple formatters (executed in sequence), use params to pass the list of formatters. For example::

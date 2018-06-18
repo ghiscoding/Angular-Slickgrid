@@ -4,7 +4,6 @@ import {
   Aggregators,
   Column,
   FieldType,
-  Formatter,
   Formatters,
   GridOption,
   GroupTotalFormatters,
