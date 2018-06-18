@@ -21,7 +21,7 @@ const NB_ITEMS = 500;
   templateUrl: './grid-state.component.html'
 })
 export class GridStateComponent implements OnInit {
-  title = 'Example 15: Grid State & Presets using Local Storage';
+  title = 'Example 16: Grid State & Presets using Local Storage';
   subTitle = `
     Grid State & Preset (<a href="https://github.com/ghiscoding/aurelia-slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki docs</a>)
     <br/>
@@ -100,7 +100,7 @@ export class GridStateComponent implements OnInit {
         filter: {
           collection: multiSelectFilterArray,
           model: Filters.multipleSelect,
-          searchTerms: [1, 33, 50], // default selection
+          searchTerms: [1, 33, 44, 50, 66], // default selection
           // we could add certain option(s) to the "multiple-select" plugin
           filterOptions: {
             maxHeight: 250,
@@ -109,8 +109,8 @@ export class GridStateComponent implements OnInit {
         }
       },
       {
-        id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 70, type: FieldType.number, sortable: true, width: 100,
-        filterable: true, filter: { model: Filters.compoundInput }
+        id: 'complete', name: '% Complete', field: 'percentComplete', minWidth: 70, type: FieldType.number, sortable: true, width: 100,
+        formatter: Formatters.percentCompleteBar, filterable: true, filter: { model: Filters.slider, operator: '>' }
       },
       {
         id: 'start', name: 'Start', field: 'start', headerKey: 'START', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true, width: 100,
