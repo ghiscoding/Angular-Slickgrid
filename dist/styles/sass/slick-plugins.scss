@@ -327,7 +327,142 @@ input.search-filter {
         font-family: $filter-placeholder-font-family;
     }
 }
+
+// ----------------------------------------------
+// Date Picker Filter
+// ----------------------------------------------
 .flatpickr-input {
     background-color: $flatpickr-bgcolor !important;
     font-family: $filter-placeholder-font-family;
+}
+
+// ----------------------------------------------
+// Input Range Filter (Slider)
+// ----------------------------------------------
+input.slider-editor-input[type=range],
+input.slider-filter-input[type=range] {
+  /*removes default webkit styles*/
+  -webkit-appearance: none;
+  height: $slider-filter-height;
+
+  padding: $slider-filter-runnable-track-padding !important;
+
+  /* change runnable track color while in focus on all browsers */
+  &:focus {
+    outline: none;
+
+    &::-webkit-slider-runnable-track {
+      background: $slider-filter-runnable-track-bgcolor;
+    }
+    &::-moz-range-track {
+      background: $slider-filter-runnable-track-bgcolor;
+    }
+    &::-ms-fill-lower {
+      background: $slider-filter-fill-focus-lower-color;
+    }
+    &::-ms-fill-upper {
+      background: $slider-filter-runnable-track-bgcolor;
+    }
+  }
+
+  /* WebKit specific (Opera/Chrome/Safari) */
+  &::-webkit-slider-runnable-track {
+    height: $slider-filter-runnable-track-height;
+    background: $slider-filter-bgcolor;
+    border: none;
+    border-radius: 3px;
+  }
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: $slider-filter-thumb-size;
+    width: $slider-filter-thumb-size;
+    border-radius: 50%;
+    border: $slider-filter-thumb-border;
+    background: $slider-filter-thumb-color;
+    margin-top: -4px;
+  }
+
+  /* Mozilla Firefox specific */
+
+  /*fix for FF unable to apply focus style bug */
+  border: $slider-filter-border;
+
+  &::-moz-range-track {
+    height: $slider-filter-runnable-track-height;
+    background: $slider-filter-bgcolor;
+    border: none;
+    border-radius: 3px;
+  }
+  &::-moz-range-thumb {
+    border: none;
+    height: $slider-filter-thumb-size;
+    width: $slider-filter-thumb-size;
+    border-radius: 50%;
+    border: $slider-filter-thumb-border;
+    background: $slider-filter-thumb-color;
+  }
+
+  /*hide the outline behind the border*/
+  &:-moz-focusring{
+    outline: 1px solid white;
+    outline-offset: -1px;
+  }
+
+  /* Microsoft IE specific */
+  &::-ms-track {
+    height: $slider-filter-runnable-track-height;
+
+    /*remove bg colour from the track, we'll use ms-fill-lower and ms-fill-upper instead */
+    background: transparent;
+
+    /*leave room for the larger thumb to overflow with a transparent border */
+    border-color: transparent;
+    border-width: 6px 0;
+
+    /*remove default tick marks*/
+    color: transparent;
+  }
+  &::-ms-fill-lower {
+    background: $slider-filter-fill-lower-color;
+    border-radius: 10px;
+  }
+  &::-ms-fill-upper {
+    background: $slider-filter-bgcolor;
+    border-radius: 10px;
+  }
+  &::-ms-thumb {
+    border: none;
+    height: $slider-filter-thumb-size;
+    width: $slider-filter-thumb-size;
+    border-radius: 50%;
+    border: $slider-filter-thumb-border;
+    background: $slider-filter-thumb-color;
+    margin-top: 2px;
+  }
+}
+.search-filter {
+  .slider-value {
+    padding: $slider-filter-number-padding !important;
+    font-size: $slider-filter-number-font-size !important;
+    height: $slider-filter-height;
+  }
+}
+input.slider-filter-input[type=range] {
+  padding: $slider-filter-runnable-track-padding !important;
+  height: $slider-filter-height !important;
+}
+
+/* Slider Editor */
+input.slider-editor-input[type=range] {
+  padding: $slider-editor-runnable-track-padding !important;
+  height: $slider-editor-height !important;
+}
+
+.slider-editor {
+  .slider-value {
+    padding: $slider-editor-number-padding !important;
+    font-size: $slider-filter-number-font-size !important;
+    height: $slider-editor-height;
+  }
 }

@@ -1,5 +1,6 @@
 {
   "ALL_SELECTED": "Tout sélectionnés",
+  "CANCEL": "Annuler",
   "CLEAR_ALL_FILTERS": "Effacer tous les filtres",
   "CLEAR_ALL_SORTING": "Effacer tous les tris",
   "COLUMNS": "Colonnes",
@@ -22,6 +23,7 @@
   "PAGE": "Page",
   "PAGE_X_OF_Y": "page {{x}} de {{y}}",
   "REFRESH_DATASET": "Rafraîchir les données",
+  "SAVE": "Sauvegarder",
   "SELECT_ALL": "Sélectionner tout",
   "SORT_ASCENDING": "Trier par ordre croissant",
   "SORT_DESCENDING": "Trier par ordre décroissant",

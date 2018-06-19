@@ -1067,6 +1067,163 @@ CompoundInputFilter.decorators = [
 CompoundInputFilter.ctorParameters = function () { return [
     { type: TranslateService, },
 ]; };
+var DEFAULT_MIN_VALUE = 0;
+var DEFAULT_MAX_VALUE = 100;
+var DEFAULT_STEP = 1;
+var CompoundSliderFilter = /** @class */ (function () {
+    function CompoundSliderFilter() {
+    }
+    Object.defineProperty(CompoundSliderFilter.prototype, "gridOptions", {
+        get: function () {
+            return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CompoundSliderFilter.prototype, "filterParams", {
+        get: function () {
+            return this.columnDef && this.columnDef.filter && this.columnDef.filter.params || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CompoundSliderFilter.prototype, "filterProperties", {
+        get: function () {
+            return this.columnDef && this.columnDef.filter || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CompoundSliderFilter.prototype, "operator", {
+        get: function () {
+            return this._operator || OperatorType.empty;
+        },
+        set: function (op) {
+            this._operator = op;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    CompoundSliderFilter.prototype.init = function (args) {
+        var _this = this;
+        if (args) {
+            this.grid = args.grid;
+            this.callback = args.callback;
+            this.columnDef = args.columnDef;
+            this.operator = args.operator || '';
+            this.searchTerms = args.searchTerms || [];
+            var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+            this.$filterElm = this.createDomElement(searchTerm);
+            this.$filterInputElm.change(function (e) {
+                _this.onTriggerEvent(e);
+            });
+            this.$selectOperatorElm.change(function (e) {
+                _this.onTriggerEvent(e);
+            });
+        }
+    };
+    CompoundSliderFilter.prototype.clear = function () {
+        if (this.$filterElm && this.$selectOperatorElm) {
+            var clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
+            this.$selectOperatorElm.val(0);
+            this.$filterInputElm.val(clearedValue);
+            if (!this.filterParams.hideSliderNumber) {
+                this.$containerInputGroupElm.children('span.input-group-addon').last().html(clearedValue);
+            }
+            this.onTriggerEvent(undefined, true);
+        }
+    };
+    CompoundSliderFilter.prototype.destroy = function () {
+        if (this.$filterElm) {
+            this.$filterElm.off('change').remove();
+        }
+    };
+    CompoundSliderFilter.prototype.setValues = function (values) {
+        if (values && Array.isArray(values)) {
+            this.$filterInputElm.val(values[0]);
+            this.$containerInputGroupElm.children('span.input-group-addon').last().html(values[0]);
+        }
+    };
+    CompoundSliderFilter.prototype.buildTemplateHtmlString = function () {
+        var minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
+        var maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE;
+        var defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
+        var step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP;
+        return "<input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "\"\n              name=\"rangeInput_" + this.columnDef.field + "\"\n              defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n              class=\"form-control slider-filter-input range compound-slider\"\n              onmousemove=\"$('#rangeOuput_" + this.columnDef.field + "').html(rangeInput_" + this.columnDef.field + ".value)\" />";
+    };
+    CompoundSliderFilter.prototype.buildTemplateSliderTextHtmlString = function () {
+        var minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
+        var defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
+        return "<span class=\"input-group-addon slider-value\" id=\"rangeOuput_" + this.columnDef.field + "\">" + defaultValue + "</span>";
+    };
+    CompoundSliderFilter.prototype.buildSelectOperatorHtmlString = function () {
+        var optionValues = this.getOptionValues();
+        var optionValueString = '';
+        optionValues.forEach(function (option) {
+            optionValueString += "<option value=\"" + option.operator + "\" title=\"" + option.description + "\">" + option.operator + "</option>";
+        });
+        return "<select class=\"form-control\">" + optionValueString + "</select>";
+    };
+    CompoundSliderFilter.prototype.getOptionValues = function () {
+        return [
+            { operator: (''), description: '' },
+            { operator: ('='), description: '' },
+            { operator: ('<'), description: '' },
+            { operator: ('<='), description: '' },
+            { operator: ('>'), description: '' },
+            { operator: ('>='), description: '' },
+            { operator: ('<>'), description: '' }
+        ];
+    };
+    CompoundSliderFilter.prototype.createDomElement = function (searchTerm) {
+        var searchTermInput = ((searchTerm || '0'));
+        var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        $($headerElm).empty();
+        this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
+        this.$filterInputElm = $(this.buildTemplateHtmlString());
+        var $filterContainerElm = $("<div class=\"form-group search-filter\"></div>");
+        this.$containerInputGroupElm = $("<div class=\"input-group search-filter\"></div>");
+        var $operatorInputGroupAddon = $("<span class=\"input-group-addon operator\"></span>");
+        $operatorInputGroupAddon.append(this.$selectOperatorElm);
+        this.$containerInputGroupElm.append($operatorInputGroupAddon);
+        this.$containerInputGroupElm.append(this.$filterInputElm);
+        if (!this.filterParams.hideSliderNumber) {
+            var $sliderTextInputAppendAddon = $(this.buildTemplateSliderTextHtmlString());
+            $sliderTextInputAppendAddon.html(searchTermInput);
+            this.$containerInputGroupElm.append($sliderTextInputAppendAddon);
+        }
+        $filterContainerElm.append(this.$containerInputGroupElm);
+        $filterContainerElm.attr('id', "filter-" + this.columnDef.field);
+        this.$filterInputElm.val(searchTermInput);
+        this.$filterInputElm.data('columnId', this.columnDef.field);
+        if (this.operator) {
+            this.$selectOperatorElm.val(this.operator);
+        }
+        if (searchTerm) {
+            $filterContainerElm.addClass('filled');
+        }
+        if ($filterContainerElm && typeof $filterContainerElm.appendTo === 'function') {
+            $filterContainerElm.appendTo($headerElm);
+        }
+        return $filterContainerElm;
+    };
+    CompoundSliderFilter.prototype.onTriggerEvent = function (e, clearFilterTriggered) {
+        if (clearFilterTriggered) {
+            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+        }
+        else {
+            var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
+            var value = this.$filterInputElm.val();
+            (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
+            this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '' });
+        }
+    };
+    return CompoundSliderFilter;
+}());
+CompoundSliderFilter.decorators = [
+    { type: Injectable },
+];
+CompoundSliderFilter.ctorParameters = function () { return []; };
 var InputFilter = /** @class */ (function () {
     function InputFilter() {
     }
@@ -1499,13 +1656,113 @@ SingleSelectFilter.ctorParameters = function () { return [
     { type: TranslateService, },
     { type: CollectionService, },
 ]; };
+var DEFAULT_MIN_VALUE$1 = 0;
+var DEFAULT_MAX_VALUE$1 = 100;
+var DEFAULT_STEP$1 = 1;
+var SliderFilter = /** @class */ (function () {
+    function SliderFilter() {
+    }
+    Object.defineProperty(SliderFilter.prototype, "filterParams", {
+        get: function () {
+            return this.columnDef && this.columnDef.filter && this.columnDef.filter.params || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderFilter.prototype, "filterProperties", {
+        get: function () {
+            return this.columnDef && this.columnDef.filter || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderFilter.prototype, "operator", {
+        get: function () {
+            return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SliderFilter.prototype.init = function (args) {
+        var _this = this;
+        if (!args) {
+            throw new Error('[Aurelia-SlickGrid] A filter must always have an "init()" with valid arguments.');
+        }
+        this.grid = args.grid;
+        this.callback = args.callback;
+        this.columnDef = args.columnDef;
+        this.searchTerms = args.searchTerms || [];
+        var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+        var filterTemplate = this.buildTemplateHtmlString();
+        this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
+        this.$filterElm.change(function (e) {
+            var value = e && e.target && e.target.value || '';
+            if (!value || value === '') {
+                _this.callback(e, { columnDef: _this.columnDef, clearFilterTriggered: true });
+                _this.$filterElm.removeClass('filled');
+            }
+            else {
+                _this.$filterElm.addClass('filled');
+                _this.callback(e, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: [value] });
+            }
+        });
+    };
+    SliderFilter.prototype.clear = function () {
+        if (this.$filterElm) {
+            var clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE$1;
+            this.$filterElm.children('input').val(clearedValue);
+            this.$filterElm.children('span.input-group-addon').html(clearedValue);
+            this.$filterElm.trigger('change');
+        }
+    };
+    SliderFilter.prototype.destroy = function () {
+        if (this.$filterElm) {
+            this.$filterElm.off('change').remove();
+        }
+    };
+    SliderFilter.prototype.setValues = function (values) {
+        if (values) {
+            this.$filterElm.val(values);
+        }
+    };
+    SliderFilter.prototype.buildTemplateHtmlString = function () {
+        var minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE$1;
+        var maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE$1;
+        var defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
+        var step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP$1;
+        if (this.filterParams.hideSliderNumber) {
+            return "\n      <div class=\"search-filter\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "\"\n          name=\"rangeInput_" + this.columnDef.field + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\" />\n      </div>";
+        }
+        return "\n      <div class=\"input-group search-filter\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "\"\n          name=\"rangeInput_" + this.columnDef.field + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\"\n          onmousemove=\"$('#rangeOuput_" + this.columnDef.field + "').html(rangeInput_" + this.columnDef.field + ".value)\" />\n        <span class=\"input-group-addon slider-value\" id=\"rangeOuput_" + this.columnDef.field + "\">" + defaultValue + "</span>\n      </div>";
+    };
+    SliderFilter.prototype.createDomElement = function (filterTemplate, searchTerm) {
+        var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        $($headerElm).empty();
+        var $filterElm = $(filterTemplate);
+        var searchTermInput = ((searchTerm || '0'));
+        $filterElm.children('input').val(searchTermInput);
+        $filterElm.children('span.input-group-addon').html(searchTermInput);
+        $filterElm.attr('id', "filter-" + this.columnDef.id);
+        $filterElm.data('columnId', this.columnDef.id);
+        if (searchTerm) {
+            $filterElm.addClass('filled');
+        }
+        if ($filterElm && typeof $filterElm.appendTo === 'function') {
+            $filterElm.appendTo($headerElm);
+        }
+        return $filterElm;
+    };
+    return SliderFilter;
+}());
 var Filters = {
-    input: InputFilter,
-    multipleSelect: MultipleSelectFilter,
-    singleSelect: SingleSelectFilter,
-    select: SelectFilter,
     compoundDate: CompoundDateFilter,
     compoundInput: CompoundInputFilter,
+    compoundSlider: CompoundSliderFilter,
+    input: InputFilter,
+    slider: SliderFilter,
+    multipleSelect: MultipleSelectFilter,
+    singleSelect: SingleSelectFilter,
+    select: SelectFilter
 };
 var GlobalGridOptions = {
     alwaysShowVerticalScroll: true,
@@ -2398,6 +2655,7 @@ var Constants = /** @class */ (function () {
     }
     return Constants;
 }());
+Constants.TEXT_CANCEL = 'Cancel';
 Constants.TEXT_CLEAR_ALL_FILTERS = 'Clear All Filters';
 Constants.TEXT_CLEAR_ALL_SORTING = 'Clear All Sorting';
 Constants.TEXT_COLUMNS = 'Columns';
@@ -2407,10 +2665,15 @@ Constants.TEXT_EXPORT_IN_TEXT_FORMAT = 'Export in Text format (Tab delimited)';
 Constants.TEXT_FORCE_FIT_COLUMNS = 'Force fit columns';
 Constants.TEXT_HIDE_COLUMN = 'Hide Column';
 Constants.TEXT_REFRESH_DATASET = 'Refresh Dataset';
+Constants.TEXT_SAVE = 'Save';
 Constants.TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';
 Constants.TEXT_SORT_ASCENDING = 'Sort Ascending';
 Constants.TEXT_SORT_DESCENDING = 'Sort Descending';
 Constants.TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
+Constants.VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
+Constants.VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
+Constants.VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
+Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN = 'Please enter a valid number with a maximum of {{maxDecimal}} decimals';
 var ControlAndPluginService = /** @class */ (function () {
     function ControlAndPluginService(exportService, filterService, sortService, translate) {
         this.exportService = exportService;
@@ -2573,9 +2836,11 @@ var ControlAndPluginService = /** @class */ (function () {
     };
     ControlAndPluginService.prototype.createColumnPicker = function (grid, columnDefinitions) {
         var _this = this;
-        var forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
-        var syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
+        var columnTitle = this.getPickerTitleOutputString('columnTitle', 'columnPicker');
+        var forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
+        var syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
         this._gridOptions.columnPicker = this._gridOptions.columnPicker || {};
+        this._gridOptions.columnPicker.columnTitle = this._gridOptions.columnPicker.columnTitle || columnTitle;
         this._gridOptions.columnPicker.forceFitTitle = this._gridOptions.columnPicker.forceFitTitle || forceFitTitle;
         this._gridOptions.columnPicker.syncResizeTitle = this._gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
         this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, this._gridOptions);
@@ -2776,7 +3041,7 @@ var ControlAndPluginService = /** @class */ (function () {
             });
         }
         if (this._gridOptions && this._gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || this._gridOptions.gridMenu.customItems.length > 0)) {
-            this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || this.getGridMenuTitleOutputString('customTitle');
+            this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || this.getPickerTitleOutputString('customTitle', 'gridMenu');
         }
         return gridMenuCustomItems;
     };
@@ -2931,11 +3196,15 @@ var ControlAndPluginService = /** @class */ (function () {
     };
     ControlAndPluginService.prototype.translateColumnPicker = function () {
         if (this._gridOptions && this._gridOptions.columnPicker) {
-            this._gridOptions.columnPicker.columnTitle = this.getGridMenuTitleOutputString('columnTitle');
-            this._gridOptions.columnPicker.forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
-            this._gridOptions.columnPicker.syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
+            this.emptyColumnPickerTitles();
+            this._gridOptions.columnPicker.columnTitle = this.getPickerTitleOutputString('columnTitle', 'columnPicker');
+            this._gridOptions.columnPicker.forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
+            this._gridOptions.columnPicker.syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
         }
         this.translateItems(this.allColumns, 'headerKey', 'name');
+        if (this.columnPickerControl.init) {
+            this.columnPickerControl.init(this._grid);
+        }
     };
     ControlAndPluginService.prototype.translateGridMenu = function () {
         if (this._gridOptions && this._gridOptions.gridMenu) {
@@ -2944,11 +3213,13 @@ var ControlAndPluginService = /** @class */ (function () {
             this._gridOptions.gridMenu.customItems = __spread(this.userOriginalGridMenu.customItems || [], this.addGridMenuCustomCommands());
             this.translateItems(this._gridOptions.gridMenu.customItems, 'titleKey', 'title');
             this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
-            this._gridOptions.gridMenu.columnTitle = this.getGridMenuTitleOutputString('columnTitle');
-            this._gridOptions.gridMenu.forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
-            this._gridOptions.gridMenu.syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
+            this._gridOptions.gridMenu.columnTitle = this.getPickerTitleOutputString('columnTitle', 'gridMenu');
+            this._gridOptions.gridMenu.forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'gridMenu');
+            this._gridOptions.gridMenu.syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'gridMenu');
             this.translateItems(this.allColumns, 'headerKey', 'name');
-            this.gridMenuControl.init(this._grid);
+            if (this.gridMenuControl.init) {
+                this.gridMenuControl.init(this._grid);
+            }
         }
     };
     ControlAndPluginService.prototype.translateHeaderMenu = function () {
@@ -2971,6 +3242,11 @@ var ControlAndPluginService = /** @class */ (function () {
             this._grid.setColumns(collection);
         }
     };
+    ControlAndPluginService.prototype.emptyColumnPickerTitles = function () {
+        this._gridOptions.columnPicker.columnTitle = '';
+        this._gridOptions.columnPicker.forceFitTitle = '';
+        this._gridOptions.columnPicker.syncResizeTitle = '';
+    };
     ControlAndPluginService.prototype.emptyGridMenuTitles = function () {
         this._gridOptions.gridMenu.customTitle = '';
         this._gridOptions.gridMenu.columnTitle = '';
@@ -2980,9 +3256,9 @@ var ControlAndPluginService = /** @class */ (function () {
     ControlAndPluginService.prototype.getDefaultGridMenuOptions = function () {
         return {
             customTitle: undefined,
-            columnTitle: this.getGridMenuTitleOutputString('columnTitle'),
-            forceFitTitle: this.getGridMenuTitleOutputString('forceFitTitle'),
-            syncResizeTitle: this.getGridMenuTitleOutputString('syncResizeTitle'),
+            columnTitle: this.getPickerTitleOutputString('columnTitle', 'gridMenu'),
+            forceFitTitle: this.getPickerTitleOutputString('forceFitTitle', 'gridMenu'),
+            syncResizeTitle: this.getPickerTitleOutputString('syncResizeTitle', 'gridMenu'),
             iconCssClass: 'fa fa-bars',
             menuWidth: 18,
             customItems: [],
@@ -3000,12 +3276,12 @@ var ControlAndPluginService = /** @class */ (function () {
             title: ''
         };
     };
-    ControlAndPluginService.prototype.getGridMenuTitleOutputString = function (propName) {
+    ControlAndPluginService.prototype.getPickerTitleOutputString = function (propName, pickerName) {
         var output = '';
-        var gridMenu = this._gridOptions && this._gridOptions.gridMenu || {};
+        var picker = this._gridOptions && this._gridOptions[pickerName] || {};
         var enableTranslate = this._gridOptions && this._gridOptions.enableTranslate || false;
-        var title = gridMenu && gridMenu[propName];
-        var titleKey = gridMenu && gridMenu[propName + "Key"];
+        var title = picker && picker[propName];
+        var titleKey = picker && picker[propName + "Key"];
         if (titleKey) {
             output = this.translate.instant(titleKey || ' ');
         }
@@ -4781,6 +5057,27 @@ var CheckboxEditor = /** @class */ (function () {
         this.args = args;
         this.init();
     }
+    Object.defineProperty(CheckboxEditor.prototype, "columnDef", {
+        get: function () {
+            return this.args && this.args.column || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CheckboxEditor.prototype, "columnEditor", {
+        get: function () {
+            return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CheckboxEditor.prototype, "validator", {
+        get: function () {
+            return this.columnEditor.validator || this.columnDef.validator;
+        },
+        enumerable: true,
+        configurable: true
+    });
     CheckboxEditor.prototype.init = function () {
         this.$input = $("<input type=\"checkbox\" value=\"true\" class=\"editor-checkbox\" />");
         this.$input.appendTo(this.args.container);
@@ -4799,7 +5096,7 @@ var CheckboxEditor = /** @class */ (function () {
         this.$input.show();
     };
     CheckboxEditor.prototype.loadValue = function (item) {
-        this.defaultValue = !!item[this.args.column.field];
+        this.defaultValue = !!item[this.columnDef.field];
         if (this.defaultValue) {
             this.$input.prop('checked', true);
         }
@@ -4814,15 +5111,14 @@ var CheckboxEditor = /** @class */ (function () {
         return this.$input.prop('checked');
     };
     CheckboxEditor.prototype.applyValue = function (item, state) {
-        item[this.args.column.field] = state;
+        item[this.columnDef.field] = state;
     };
     CheckboxEditor.prototype.isValueChanged = function () {
         return (this.serializeValue() !== this.defaultValue);
     };
     CheckboxEditor.prototype.validate = function () {
-        var column = ((this.args && this.args.column));
-        if (column.validator) {
-            var validationResults = column.validator(this.$input.val(), this.args);
+        if (this.validator) {
+            var validationResults = this.validator(this.$input.val());
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -4841,15 +5137,35 @@ var DateEditor = /** @class */ (function () {
         this.args = args;
         this.init();
     }
+    Object.defineProperty(DateEditor.prototype, "columnDef", {
+        get: function () {
+            return this.args && this.args.column || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DateEditor.prototype, "columnEditor", {
+        get: function () {
+            return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DateEditor.prototype, "validator", {
+        get: function () {
+            return this.columnEditor.validator || this.columnDef.validator;
+        },
+        enumerable: true,
+        configurable: true
+    });
     DateEditor.prototype.init = function () {
         var _this = this;
         if (this.args && this.args.column) {
-            var columnDef = this.args.column;
             var gridOptions = (this.args.grid.getOptions());
             this.defaultDate = (this.args.item) ? this.args.item[this.args.column.field] : null;
-            var inputFormat = mapFlatpickrDateFormatWithFieldType(columnDef.type || FieldType.dateIso);
-            var outputFormat = mapFlatpickrDateFormatWithFieldType(columnDef.outputType || FieldType.dateUtc);
-            var currentLocale = this.getCurrentLocale(columnDef, gridOptions);
+            var inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
+            var outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || FieldType.dateUtc);
+            var currentLocale = this.getCurrentLocale(this.columnDef, gridOptions);
             if (currentLocale.length > 2) {
                 currentLocale = currentLocale.substring(0, 2);
             }
@@ -4931,9 +5247,8 @@ var DateEditor = /** @class */ (function () {
         return (!(this.$input.val() === '' && this.defaultDate == null)) && (this.$input.val() !== this.defaultDate);
     };
     DateEditor.prototype.validate = function () {
-        var column = ((this.args && this.args.column));
-        if (column.validator) {
-            var validationResults = column.validator(this.$input.val(), this.args);
+        if (this.validator) {
+            var validationResults = this.validator(this.$input.val());
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -4951,6 +5266,27 @@ var FloatEditor = /** @class */ (function () {
         this.args = args;
         this.init();
     }
+    Object.defineProperty(FloatEditor.prototype, "columnDef", {
+        get: function () {
+            return this.args && this.args.column || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FloatEditor.prototype, "columnEditor", {
+        get: function () {
+            return this.columnDef && this.columnDef.internalColumnEditor || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FloatEditor.prototype, "validator", {
+        get: function () {
+            return this.columnEditor.validator || this.columnDef.validator;
+        },
+        enumerable: true,
+        configurable: true
+    });
     FloatEditor.prototype.init = function () {
         var _this = this;
         this.$input = $("<input type=\"number\" class=\"editor-text\" step=\"" + this.getInputDecimalSteps() + "\" />")
@@ -4974,8 +5310,7 @@ var FloatEditor = /** @class */ (function () {
         return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
     };
     FloatEditor.prototype.getDecimalPlaces = function () {
-        var columnEditor = this.getColumnEditor();
-        var rtn = (columnEditor && columnEditor.params && columnEditor.params.hasOwnProperty('decimalPlaces')) ? columnEditor.params.decimalPlaces : undefined;
+        var rtn = (this.columnEditor.params && this.columnEditor.params.hasOwnProperty('decimalPlaces')) ? this.columnEditor.params.decimalPlaces : undefined;
         if (rtn === undefined) {
             rtn = defaultDecimalPlaces;
         }
@@ -4993,7 +5328,7 @@ var FloatEditor = /** @class */ (function () {
         return '1';
     };
     FloatEditor.prototype.loadValue = function (item) {
-        this.defaultValue = item[this.args.column.field];
+        this.defaultValue = item[this.columnDef.field];
         var decPlaces = this.getDecimalPlaces();
         if (decPlaces !== null
             && (this.defaultValue || this.defaultValue === 0)
@@ -5015,20 +5350,26 @@ var FloatEditor = /** @class */ (function () {
         return rtn;
     };
     FloatEditor.prototype.applyValue = function (item, state) {
-        item[this.args.column.field] = state;
+        item[this.columnDef.field] = state;
     };
     FloatEditor.prototype.isValueChanged = function () {
         var elmValue = this.$input.val();
         return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
     };
     FloatEditor.prototype.validate = function () {
-        var column = ((this.args && this.args.column));
         var elmValue = this.$input.val();
-        var columnEditor = this.getColumnEditor();
         var decPlaces = this.getDecimalPlaces();
-        var errorMsg = columnEditor.params && columnEditor.params.validatorErrorMessage;
-        if (column.validator) {
-            var validationResults = column.validator(elmValue);
+        var minValue = this.columnEditor.minValue;
+        var maxValue = this.columnEditor.maxValue;
+        var errorMsg = this.columnEditor.errorMessage;
+        var mapValidation = {
+            '{{minValue}}': minValue,
+            '{{maxValue}}': maxValue,
+            '{{minDecimal}}': 0,
+            '{{maxDecimal}}': decPlaces
+        };
+        if (this.validator) {
+            var validationResults = this.validator(elmValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5036,13 +5377,23 @@ var FloatEditor = /** @class */ (function () {
         else if (isNaN((elmValue)) || (decPlaces === 0 && !/^(\d+(\.)?(\d)*)$/.test(elmValue))) {
             return {
                 valid: false,
-                msg: errorMsg || "Please enter a valid number"
+                msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER
             };
         }
-        else if (isNaN((elmValue)) || (decPlaces > 0 && !new RegExp("^(\\d+(\\.)?(\\d){0," + decPlaces + "})$").test(elmValue))) {
+        else if (minValue !== undefined && (elmValue < minValue || elmValue > maxValue)) {
             return {
                 valid: false,
-                msg: errorMsg || "Please enter a valid number between 0 and " + decPlaces + " decimals"
+                msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, function (matched) {
+                    return mapValidation[matched];
+                })
+            };
+        }
+        else if ((decPlaces > 0 && !new RegExp("^(\\d+(\\.)?(\\d){0," + decPlaces + "})$").test(elmValue))) {
+            return {
+                valid: false,
+                msg: errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, function (matched) {
+                    return mapValidation[matched];
+                })
             };
         }
         return {
@@ -5057,6 +5408,27 @@ var IntegerEditor = /** @class */ (function () {
         this.args = args;
         this.init();
     }
+    Object.defineProperty(IntegerEditor.prototype, "columnDef", {
+        get: function () {
+            return this.args && this.args.column || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(IntegerEditor.prototype, "columnEditor", {
+        get: function () {
+            return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(IntegerEditor.prototype, "validator", {
+        get: function () {
+            return this.columnEditor.validator || this.columnDef.validator;
+        },
+        enumerable: true,
+        configurable: true
+    });
     IntegerEditor.prototype.init = function () {
         var _this = this;
         this.$input = $("<input type=\"number\" class='editor-text' />")
@@ -5097,12 +5469,10 @@ var IntegerEditor = /** @class */ (function () {
         return (!(value === '' && this.defaultValue === null)) && (value !== this.defaultValue);
     };
     IntegerEditor.prototype.validate = function () {
-        var column = ((this.args && this.args.column));
-        var columnEditor = this.getColumnEditor();
-        var errorMsg = columnEditor.params && columnEditor.params.validatorErrorMessage;
         var elmValue = this.$input.val();
-        if (column.validator) {
-            var validationResults = column.validator(elmValue);
+        var errorMsg = this.columnEditor.params && this.columnEditor.errorMessage;
+        if (this.validator) {
+            var validationResults = this.validator(elmValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5110,7 +5480,7 @@ var IntegerEditor = /** @class */ (function () {
         else if (isNaN((elmValue)) || !/^[+-]?\d+$/.test(elmValue)) {
             return {
                 valid: false,
-                msg: errorMsg || 'Please enter a valid integer number'
+                msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_INTEGER
             };
         }
         return {
@@ -5123,14 +5493,40 @@ var IntegerEditor = /** @class */ (function () {
 var LongTextEditor = /** @class */ (function () {
     function LongTextEditor(args) {
         this.args = args;
+        this.gridOptions = (this.args.grid.getOptions());
+        var options = this.gridOptions || this.args.column.params || {};
+        this._translate = options.i18n;
         this.init();
     }
+    Object.defineProperty(LongTextEditor.prototype, "columnDef", {
+        get: function () {
+            return this.args && this.args.column || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LongTextEditor.prototype, "columnEditor", {
+        get: function () {
+            return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(LongTextEditor.prototype, "validator", {
+        get: function () {
+            return this.columnEditor.validator || this.columnDef.validator;
+        },
+        enumerable: true,
+        configurable: true
+    });
     LongTextEditor.prototype.init = function () {
         var _this = this;
+        var cancelText = this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
+        var saveText = this._translate.instant('SAVE') || Constants.TEXT_SAVE;
         var $container = $('body');
         this.$wrapper = $("<div class=\"slick-large-editor-text\" />").appendTo($container);
         this.$input = $("<textarea hidefocus rows=\"5\">").appendTo(this.$wrapper);
-        $("<div class=\"editor-footer\">\n        <button class=\"btn btn-primary btn-xs\">Save</button>\n        <button class=\"btn btn-default btn-xs\">Cancel</button>\n      </div>").appendTo(this.$wrapper);
+        $("<div class=\"editor-footer\">\n          <button class=\"btn btn-primary btn-xs\">" + saveText + "</button>\n          <button class=\"btn btn-default btn-xs\">" + cancelText + "</button>\n      </div>").appendTo(this.$wrapper);
         this.$wrapper.find('button:first').on('click', function (event) { return _this.save(); });
         this.$wrapper.find('button:last').on('click', function (event) { return _this.cancel(); });
         this.$input.on('keydown', this.handleKeyDown);
@@ -5182,22 +5578,21 @@ var LongTextEditor = /** @class */ (function () {
         return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
     };
     LongTextEditor.prototype.loadValue = function (item) {
-        this.$input.val(this.defaultValue = item[this.args.column.field]);
+        this.$input.val(this.defaultValue = item[this.columnDef.field]);
         this.$input.select();
     };
     LongTextEditor.prototype.serializeValue = function () {
         return this.$input.val();
     };
     LongTextEditor.prototype.applyValue = function (item, state) {
-        item[this.args.column.field] = state;
+        item[this.columnDef.field] = state;
     };
     LongTextEditor.prototype.isValueChanged = function () {
         return (!(this.$input.val() === '' && this.defaultValue == null)) && (this.$input.val() !== this.defaultValue);
     };
     LongTextEditor.prototype.validate = function () {
-        var column = ((this.args && this.args.column));
-        if (column.validator) {
-            var validationResults = column.validator(this.$input.val(), this.args);
+        if (this.validator) {
+            var validationResults = this.validator(this.$input.val());
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5236,6 +5631,20 @@ var MultipleSelectEditor = /** @class */ (function () {
         }
         this.init();
     }
+    Object.defineProperty(MultipleSelectEditor.prototype, "columnDef", {
+        get: function () {
+            return this.args && this.args.column || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(MultipleSelectEditor.prototype, "columnEditor", {
+        get: function () {
+            return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(MultipleSelectEditor.prototype, "currentValues", {
         get: function () {
             var _this = this;
@@ -5246,11 +5655,17 @@ var MultipleSelectEditor = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(MultipleSelectEditor.prototype, "validator", {
+        get: function () {
+            return this.columnEditor.validator || this.columnDef.validator;
+        },
+        enumerable: true,
+        configurable: true
+    });
     MultipleSelectEditor.prototype.init = function () {
         if (!this.args) {
             throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
-        this.columnDef = (this.args.column);
         if (!this.columnDef || !this.columnDef.internalColumnEditor || !this.columnDef.internalColumnEditor.collection) {
             throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" inside Column Definition Editor for the MultipleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { editor: { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } }");
         }
@@ -5272,7 +5687,7 @@ var MultipleSelectEditor = /** @class */ (function () {
         this.createDomElement(editorTemplate);
     };
     MultipleSelectEditor.prototype.applyValue = function (item, state) {
-        item[this.args.column.field] = state;
+        item[this.columnDef.field] = state;
     };
     MultipleSelectEditor.prototype.destroy = function () {
         this.$editorElm.remove();
@@ -5300,9 +5715,8 @@ var MultipleSelectEditor = /** @class */ (function () {
         return !arraysEqual(this.$editorElm.val(), this.defaultValue);
     };
     MultipleSelectEditor.prototype.validate = function () {
-        var column = ((this.args && this.args.column));
-        if (column.validator) {
-            var validationResults = column.validator(this.currentValues, this.args);
+        if (this.validator) {
+            var validationResults = this.validator(this.currentValues);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5394,6 +5808,20 @@ var SingleSelectEditor = /** @class */ (function () {
         };
         this.init();
     }
+    Object.defineProperty(SingleSelectEditor.prototype, "columnDef", {
+        get: function () {
+            return this.args && this.args.column || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SingleSelectEditor.prototype, "columnEditor", {
+        get: function () {
+            return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(SingleSelectEditor.prototype, "currentValue", {
         get: function () {
             var _this = this;
@@ -5402,11 +5830,17 @@ var SingleSelectEditor = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(SingleSelectEditor.prototype, "validator", {
+        get: function () {
+            return this.columnEditor.validator || this.columnDef.validator;
+        },
+        enumerable: true,
+        configurable: true
+    });
     SingleSelectEditor.prototype.init = function () {
         if (!this.args) {
             throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
-        this.columnDef = this.args.column;
         if (!this.columnDef || !this.columnDef.internalColumnEditor || !this.columnDef.internalColumnEditor.collection) {
             throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" inside Column Definition Editor for the SingleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { editor: { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } }");
         }
@@ -5428,7 +5862,7 @@ var SingleSelectEditor = /** @class */ (function () {
         this.createDomElement(editorTemplate);
     };
     SingleSelectEditor.prototype.applyValue = function (item, state) {
-        item[this.args.column.field] = state;
+        item[this.columnDef.field] = state;
     };
     SingleSelectEditor.prototype.destroy = function () {
         this.$editorElm.remove();
@@ -5456,9 +5890,8 @@ var SingleSelectEditor = /** @class */ (function () {
         return this.$editorElm.val() !== this.defaultValue;
     };
     SingleSelectEditor.prototype.validate = function () {
-        var column = ((this.args && this.args.column));
-        if (column.validator) {
-            var validationResults = column.validator(this.currentValue, this.args);
+        if (this.validator) {
+            var validationResults = this.validator(this.currentValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5532,11 +5965,156 @@ var SingleSelectEditor = /** @class */ (function () {
     };
     return SingleSelectEditor;
 }());
+SingleSelectEditor.decorators = [
+    { type: Injectable },
+];
+SingleSelectEditor.ctorParameters = function () { return [
+    null,
+]; };
+var DEFAULT_MIN_VALUE$2 = 0;
+var DEFAULT_MAX_VALUE$2 = 100;
+var DEFAULT_STEP$2 = 1;
+var SliderEditor = /** @class */ (function () {
+    function SliderEditor(args) {
+        this.args = args;
+        this.init();
+    }
+    Object.defineProperty(SliderEditor.prototype, "columnDef", {
+        get: function () {
+            return this.args && this.args.column || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderEditor.prototype, "columnEditor", {
+        get: function () {
+            return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderEditor.prototype, "editorParams", {
+        get: function () {
+            return this.columnEditor.params || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderEditor.prototype, "validator", {
+        get: function () {
+            return this.columnEditor.validator || this.columnDef.validator;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SliderEditor.prototype.init = function () {
+        var _this = this;
+        var container = this.args.container;
+        var editorTemplate = this.buildTemplateHtmlString();
+        this.$editorElm = $(editorTemplate);
+        this.$input = this.$editorElm.children('input');
+        this.$sliderNumber = this.$editorElm.children('span.input-group-addon');
+        this.$editorElm
+            .appendTo(this.args.container)
+            .on('change', function (event) { return _this.save(); });
+    };
+    SliderEditor.prototype.destroy = function () {
+        this.$editorElm.remove();
+    };
+    SliderEditor.prototype.focus = function () {
+        this.$editorElm.focus();
+    };
+    SliderEditor.prototype.save = function () {
+        this.args.commitChanges();
+    };
+    SliderEditor.prototype.cancel = function () {
+        this.$input.val(this.defaultValue);
+        this.args.cancelChanges();
+    };
+    SliderEditor.prototype.loadValue = function (item) {
+        this.defaultValue = item[this.columnDef.field];
+        this.$input.val(this.defaultValue);
+        this.$input[0].defaultValue = this.defaultValue;
+        this.$sliderNumber.html(this.defaultValue);
+    };
+    SliderEditor.prototype.serializeValue = function () {
+        return parseInt((this.$input.val()), 10) || 0;
+    };
+    SliderEditor.prototype.applyValue = function (item, state) {
+        item[this.columnDef.field] = state;
+    };
+    SliderEditor.prototype.isValueChanged = function () {
+        var elmValue = this.$input.val();
+        console.log(elmValue);
+        return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
+    };
+    SliderEditor.prototype.validate = function () {
+        var elmValue = this.$input.val();
+        var minValue = this.columnEditor.minValue;
+        var maxValue = this.columnEditor.maxValue;
+        var errorMsg = this.columnEditor.errorMessage;
+        var mapValidation = {
+            '{{minValue}}': minValue,
+            '{{maxValue}}': maxValue
+        };
+        if (this.validator) {
+            var validationResults = this.validator(elmValue);
+            if (!validationResults.valid) {
+                return validationResults;
+            }
+        }
+        else if (minValue !== undefined && (elmValue < minValue || elmValue > maxValue)) {
+            return {
+                valid: false,
+                msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, function (matched) {
+                    return mapValidation[matched];
+                })
+            };
+        }
+        return {
+            valid: true,
+            msg: null
+        };
+    };
+    SliderEditor.prototype.buildTemplateHtmlString = function () {
+        var minValue = this.columnEditor.hasOwnProperty('minValue') ? this.columnEditor.minValue : DEFAULT_MIN_VALUE$2;
+        var maxValue = this.columnEditor.hasOwnProperty('maxValue') ? this.columnEditor.maxValue : DEFAULT_MAX_VALUE$2;
+        var defaultValue = this.editorParams.hasOwnProperty('sliderStartValue') ? this.editorParams.sliderStartValue : minValue;
+        var step = this.columnEditor.hasOwnProperty('valueStep') ? this.columnEditor.valueStep : DEFAULT_STEP$2;
+        var itemId = this.args && this.args.item && this.args.item.id;
+        if (this.editorParams.hideSliderNumber) {
+            return "\n      <div class=\"slider-editor\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          name=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input range\" />\n      </div>";
+        }
+        return "\n      <div class=\"input-group slider-editor\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          name=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input range\"\n          onmousemove=\"$('#rangeOuput_" + this.columnDef.field + "_" + itemId + "').html(rangeInput_" + this.columnDef.field + "_" + itemId + ".value)\" />\n        <span class=\"input-group-addon slider-value\" id=\"rangeOuput_" + this.columnDef.field + "_" + itemId + "\">" + defaultValue + "</span>\n      </div>";
+    };
+    return SliderEditor;
+}());
 var TextEditor = /** @class */ (function () {
     function TextEditor(args) {
         this.args = args;
         this.init();
     }
+    Object.defineProperty(TextEditor.prototype, "columnDef", {
+        get: function () {
+            return this.args && this.args.column || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextEditor.prototype, "columnEditor", {
+        get: function () {
+            return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextEditor.prototype, "validator", {
+        get: function () {
+            return this.columnEditor.validator || this.columnDef.validator;
+        },
+        enumerable: true,
+        configurable: true
+    });
     TextEditor.prototype.init = function () {
         var _this = this;
         this.$input = $("<input type=\"text\" class=\"editor-text\" />")
@@ -5578,9 +6156,8 @@ var TextEditor = /** @class */ (function () {
         return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
     };
     TextEditor.prototype.validate = function () {
-        var column = ((this.args && this.args.column));
-        if (column.validator) {
-            var validationResults = column.validator(this.$input.val());
+        if (this.validator) {
+            var validationResults = this.validator(this.$input.val());
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5600,6 +6177,7 @@ var Editors = {
     longText: LongTextEditor,
     multipleSelect: MultipleSelectEditor,
     singleSelect: SingleSelectEditor,
+    slider: SliderEditor,
     text: TextEditor
 };
 var arrayToCsvFormatter = function (row, cell, value, columnDef, dataContext) {
@@ -5724,6 +6302,19 @@ var lowercaseFormatter = function (row, cell, value, columnDef, dataContext) {
         value = value + '';
     }
     return value ? value.toLowerCase() : '';
+};
+var maskFormatter = function (row, cell, value, columnDef, dataContext) {
+    var params = columnDef.params || {};
+    var mask = params.mask;
+    if (!mask) {
+        throw new Error("You must provide a \"mask\" via the generic \"params\" options (e.g.: { formatter: Formatters.mask, params: { mask: '000-000' }}");
+    }
+    if (value && mask) {
+        var i_1 = 0;
+        var v_1 = value.toString();
+        return mask.replace(/[09A]/g, function () { return v_1[i_1++] || ''; });
+    }
+    return '';
 };
 var multipleFormatter = function (row, cell, value, columnDef, dataContext, grid) {
     var params = columnDef.params || {};
@@ -5855,6 +6446,7 @@ var Formatters = {
     hyperlinkUriPrefix: hyperlinkUriPrefixFormatter,
     infoIcon: infoIconFormatter,
     lowercase: lowercaseFormatter,
+    mask: maskFormatter,
     multiple: multipleFormatter,
     percent: percentFormatter,
     percentComplete: percentCompleteFormatter,
@@ -6675,5 +7267,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵc, MaxAggregator as ɵe, MinAggregator as ɵd, SumAggregator as ɵf, CheckboxEditor as ɵg, DateEditor as ɵh, FloatEditor as ɵi, IntegerEditor as ɵj, LongTextEditor as ɵk, MultipleSelectEditor as ɵl, SingleSelectEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵbd, CompoundInputFilter as ɵbe, FilterFactory as ɵa, InputFilter as ɵz, MultipleSelectFilter as ɵba, SelectFilter as ɵbc, SingleSelectFilter as ɵbb, arrayToCsvFormatter as ɵbf, boldFormatter as ɵbg, checkboxFormatter as ɵbh, checkmarkFormatter as ɵbi, collectionEditorFormatter as ɵbl, collectionFormatter as ɵbk, complexObjectFormatter as ɵbj, dateIsoFormatter as ɵbm, dateTimeIsoAmPmFormatter as ɵbo, dateTimeIsoFormatter as ɵbn, dateTimeUsAmPmFormatter as ɵbr, dateTimeUsFormatter as ɵbq, dateUsFormatter as ɵbp, deleteIconFormatter as ɵbs, dollarColoredBoldFormatter as ɵbv, dollarColoredFormatter as ɵbu, dollarFormatter as ɵbt, editIconFormatter as ɵbw, hyperlinkFormatter as ɵbx, hyperlinkUriPrefixFormatter as ɵby, infoIconFormatter as ɵbz, lowercaseFormatter as ɵca, multipleFormatter as ɵcb, percentCompleteBarFormatter as ɵce, percentCompleteFormatter as ɵcd, percentFormatter as ɵcc, percentSymbolFormatter as ɵcf, progressBarFormatter as ɵcg, translateBooleanFormatter as ɵci, translateFormatter as ɵch, uppercaseFormatter as ɵcj, yesNoFormatter as ɵck, avgTotalsDollarFormatter as ɵcm, avgTotalsFormatter as ɵcl, avgTotalsPercentageFormatter as ɵcn, maxTotalsFormatter as ɵco, minTotalsFormatter as ɵcp, sumTotalsBoldFormatter as ɵcr, sumTotalsColoredFormatter as ɵcs, sumTotalsDollarBoldFormatter as ɵcu, sumTotalsDollarColoredBoldFormatter as ɵcw, sumTotalsDollarColoredFormatter as ɵcv, sumTotalsDollarFormatter as ɵct, sumTotalsFormatter as ɵcq, SlickgridConfig as ɵb, dateIsoSorter as ɵcy, dateSorter as ɵcx, dateUsShortSorter as ɵda, dateUsSorter as ɵcz, numericSorter as ɵdb, stringSorter as ɵdc };
+export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, SliderEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, CompoundSliderFilter as ɵba, InputFilter as ɵbb, MultipleSelectFilter as ɵbd, SelectFilter as ɵbf, SingleSelectFilter as ɵbe, SliderFilter as ɵbc, arrayToCsvFormatter as ɵbg, boldFormatter as ɵbh, checkboxFormatter as ɵbi, checkmarkFormatter as ɵbj, collectionEditorFormatter as ɵbm, collectionFormatter as ɵbl, complexObjectFormatter as ɵbk, dateIsoFormatter as ɵbn, dateTimeIsoAmPmFormatter as ɵbp, dateTimeIsoFormatter as ɵbo, dateTimeUsAmPmFormatter as ɵbs, dateTimeUsFormatter as ɵbr, dateUsFormatter as ɵbq, deleteIconFormatter as ɵbt, dollarColoredBoldFormatter as ɵbw, dollarColoredFormatter as ɵbv, dollarFormatter as ɵbu, editIconFormatter as ɵbx, hyperlinkFormatter as ɵby, hyperlinkUriPrefixFormatter as ɵbz, infoIconFormatter as ɵca, lowercaseFormatter as ɵcb, maskFormatter as ɵcc, multipleFormatter as ɵcd, percentCompleteBarFormatter as ɵcg, percentCompleteFormatter as ɵcf, percentFormatter as ɵce, percentSymbolFormatter as ɵch, progressBarFormatter as ɵci, translateBooleanFormatter as ɵck, translateFormatter as ɵcj, uppercaseFormatter as ɵcl, yesNoFormatter as ɵcm, avgTotalsDollarFormatter as ɵco, avgTotalsFormatter as ɵcn, avgTotalsPercentageFormatter as ɵcp, maxTotalsFormatter as ɵcq, minTotalsFormatter as ɵcr, sumTotalsBoldFormatter as ɵct, sumTotalsColoredFormatter as ɵcu, sumTotalsDollarBoldFormatter as ɵcw, sumTotalsDollarColoredBoldFormatter as ɵcy, sumTotalsDollarColoredFormatter as ɵcx, sumTotalsDollarFormatter as ɵcv, sumTotalsFormatter as ɵcs, dateIsoSorter as ɵda, dateSorter as ɵcz, dateUsShortSorter as ɵdc, dateUsSorter as ɵdb, numericSorter as ɵdd, stringSorter as ɵde };
 //# sourceMappingURL=angular-slickgrid.js.map

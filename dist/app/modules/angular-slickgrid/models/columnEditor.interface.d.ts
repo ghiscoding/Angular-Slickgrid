@@ -1,7 +1,5 @@
-import { CollectionFilterBy, CollectionSortBy, MultipleSelectOption } from './../models/index';
+import { CollectionFilterBy, CollectionSortBy, EditorValidator, MultipleSelectOption } from './../models/index';
 export interface ColumnEditor {
-    /** Custom Editor */
-    customEditor?: any;
     /** Any inline editor function that implements Editor for the cell */
     model?: any;
     collection?: any[];
@@ -13,6 +11,16 @@ export interface ColumnEditor {
     editorOptions?: MultipleSelectOption | any;
     /** Do we want the Editor to handle translation (localization)? */
     enableTranslateLabel?: boolean;
+    /** Error message to display when validation fails */
+    errorMessage?: string;
+    /** Maximum value of the filter, works only with Filters supporting it (text, number, float, slider) */
+    maxValue?: number | string;
+    /** Minimum value of the filter, works only with Filters supporting it (text, number, float, slider) */
+    minValue?: number | string;
+    /** Editor Validator */
+    validator?: EditorValidator;
+    /** Step value of the filter, works only with Filters supporting it (input text, number, float, range, slider) */
+    valueStep?: number | string;
     /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Editor */
     customStructure?: {
         label: string;

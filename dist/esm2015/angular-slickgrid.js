@@ -1588,6 +1588,235 @@ CompoundInputFilter.ctorParameters = () => [
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+const DEFAULT_MIN_VALUE = 0;
+const DEFAULT_MAX_VALUE = 100;
+const DEFAULT_STEP = 1;
+class CompoundSliderFilter {
+    constructor() { }
+    /**
+     * Getter for the Grid Options pulled through the Grid Object
+     * @return {?}
+     */
+    get gridOptions() {
+        return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+    }
+    /**
+     * Getter for the Filter Generic Params
+     * @return {?}
+     */
+    get filterParams() {
+        return this.columnDef && this.columnDef.filter && this.columnDef.filter.params || {};
+    }
+    /**
+     * Getter for the `filter` properties
+     * @return {?}
+     */
+    get filterProperties() {
+        return this.columnDef && this.columnDef.filter || {};
+    }
+    /**
+     * @param {?} op
+     * @return {?}
+     */
+    set operator(op) {
+        this._operator = op;
+    }
+    /**
+     * @return {?}
+     */
+    get operator() {
+        return this._operator || OperatorType.empty;
+    }
+    /**
+     * Initialize the Filter
+     * @param {?} args
+     * @return {?}
+     */
+    init(args) {
+        if (args) {
+            this.grid = args.grid;
+            this.callback = args.callback;
+            this.columnDef = args.columnDef;
+            this.operator = args.operator || '';
+            this.searchTerms = args.searchTerms || [];
+            // filter input can only have 1 search term, so we will use the 1st array index if it exist
+            const /** @type {?} */ searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+            // step 1, create the DOM Element of the filter which contain the compound Operator+Input
+            // and initialize it if searchTerm is filled
+            this.$filterElm = this.createDomElement(searchTerm);
+            // step 3, subscribe to the keyup event and run the callback when that happens
+            // also add/remove "filled" class for styling purposes
+            this.$filterInputElm.change((e) => {
+                this.onTriggerEvent(e);
+            });
+            this.$selectOperatorElm.change((e) => {
+                this.onTriggerEvent(e);
+            });
+        }
+    }
+    /**
+     * Clear the filter value
+     * @return {?}
+     */
+    clear() {
+        if (this.$filterElm && this.$selectOperatorElm) {
+            const /** @type {?} */ clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
+            this.$selectOperatorElm.val(0);
+            this.$filterInputElm.val(clearedValue);
+            if (!this.filterParams.hideSliderNumber) {
+                this.$containerInputGroupElm.children('span.input-group-addon').last().html(clearedValue);
+            }
+            this.onTriggerEvent(undefined, true);
+        }
+    }
+    /**
+     * destroy the filter
+     * @return {?}
+     */
+    destroy() {
+        if (this.$filterElm) {
+            this.$filterElm.off('change').remove();
+        }
+    }
+    /**
+     * Set value(s) on the DOM element
+     * @param {?} values
+     * @return {?}
+     */
+    setValues(values) {
+        if (values && Array.isArray(values)) {
+            this.$filterInputElm.val(values[0]);
+            this.$containerInputGroupElm.children('span.input-group-addon').last().html(values[0]);
+        }
+    }
+    /**
+     * Build HTML Template for the input range (slider)
+     * @return {?}
+     */
+    buildTemplateHtmlString() {
+        const /** @type {?} */ minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
+        const /** @type {?} */ maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE;
+        const /** @type {?} */ defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
+        const /** @type {?} */ step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP;
+        return `<input type="range" id="rangeInput_${this.columnDef.field}"
+              name="rangeInput_${this.columnDef.field}"
+              defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
+              class="form-control slider-filter-input range compound-slider"
+              onmousemove="$('#rangeOuput_${this.columnDef.field}').html(rangeInput_${this.columnDef.field}.value)" />`;
+    }
+    /**
+     * Build HTML Template for the text (number) that is shown appended to the slider
+     * @return {?}
+     */
+    buildTemplateSliderTextHtmlString() {
+        const /** @type {?} */ minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
+        const /** @type {?} */ defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
+        return `<span class="input-group-addon slider-value" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span>`;
+    }
+    /**
+     * Build HTML Template select dropdown (operator)
+     * @return {?}
+     */
+    buildSelectOperatorHtmlString() {
+        const /** @type {?} */ optionValues = this.getOptionValues();
+        let /** @type {?} */ optionValueString = '';
+        optionValues.forEach((option) => {
+            optionValueString += `<option value="${option.operator}" title="${option.description}">${option.operator}</option>`;
+        });
+        return `<select class="form-control">${optionValueString}</select>`;
+    }
+    /**
+     * Get the available operator option values
+     * @return {?}
+     */
+    getOptionValues() {
+        return [
+            { operator: /** @type {?} */ (''), description: '' },
+            { operator: /** @type {?} */ ('='), description: '' },
+            { operator: /** @type {?} */ ('<'), description: '' },
+            { operator: /** @type {?} */ ('<='), description: '' },
+            { operator: /** @type {?} */ ('>'), description: '' },
+            { operator: /** @type {?} */ ('>='), description: '' },
+            { operator: /** @type {?} */ ('<>'), description: '' }
+        ];
+    }
+    /**
+     * Create the DOM element
+     * @param {?=} searchTerm
+     * @return {?}
+     */
+    createDomElement(searchTerm) {
+        const /** @type {?} */ searchTermInput = /** @type {?} */ ((searchTerm || '0'));
+        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        $($headerElm).empty();
+        // create the DOM Select dropdown for the Operator
+        this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
+        this.$filterInputElm = $(this.buildTemplateHtmlString());
+        const /** @type {?} */ $filterContainerElm = $(`<div class="form-group search-filter"></div>`);
+        this.$containerInputGroupElm = $(`<div class="input-group search-filter"></div>`);
+        const /** @type {?} */ $operatorInputGroupAddon = $(`<span class="input-group-addon operator"></span>`);
+        /* the DOM element final structure will be
+              <div class="input-group">
+                <div class="input-group-addon operator">
+                  <select class="form-control"></select>
+                </div>
+                <input class="form-control" type="text" />
+                <span class="input-group-addon" id="rangeOuput_percentComplete">0</span>
+              </div>
+            */
+        $operatorInputGroupAddon.append(this.$selectOperatorElm);
+        this.$containerInputGroupElm.append($operatorInputGroupAddon);
+        this.$containerInputGroupElm.append(this.$filterInputElm);
+        if (!this.filterParams.hideSliderNumber) {
+            const /** @type {?} */ $sliderTextInputAppendAddon = $(this.buildTemplateSliderTextHtmlString());
+            $sliderTextInputAppendAddon.html(searchTermInput);
+            this.$containerInputGroupElm.append($sliderTextInputAppendAddon);
+        }
+        // create the DOM element & add an ID and filter class
+        $filterContainerElm.append(this.$containerInputGroupElm);
+        $filterContainerElm.attr('id', `filter-${this.columnDef.field}`);
+        this.$filterInputElm.val(searchTermInput);
+        this.$filterInputElm.data('columnId', this.columnDef.field);
+        if (this.operator) {
+            this.$selectOperatorElm.val(this.operator);
+        }
+        // if there's a search term, we will add the "filled" class for styling purposes
+        if (searchTerm) {
+            $filterContainerElm.addClass('filled');
+        }
+        // append the new DOM element to the header row
+        if ($filterContainerElm && typeof $filterContainerElm.appendTo === 'function') {
+            $filterContainerElm.appendTo($headerElm);
+        }
+        return $filterContainerElm;
+    }
+    /**
+     * @param {?} e
+     * @param {?=} clearFilterTriggered
+     * @return {?}
+     */
+    onTriggerEvent(e, clearFilterTriggered) {
+        if (clearFilterTriggered) {
+            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+        }
+        else {
+            const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
+            const /** @type {?} */ value = this.$filterInputElm.val();
+            (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
+            this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '' });
+        }
+    }
+}
+CompoundSliderFilter.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+CompoundSliderFilter.ctorParameters = () => [];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 class InputFilter {
     constructor() { }
     /**
@@ -2206,19 +2435,171 @@ SingleSelectFilter.ctorParameters = () => [
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+const DEFAULT_MIN_VALUE$1 = 0;
+const DEFAULT_MAX_VALUE$1 = 100;
+const DEFAULT_STEP$1 = 1;
+class SliderFilter {
+    /**
+     * Getter for the Filter Generic Params
+     * @return {?}
+     */
+    get filterParams() {
+        return this.columnDef && this.columnDef.filter && this.columnDef.filter.params || {};
+    }
+    /**
+     * Getter for the `filter` properties
+     * @return {?}
+     */
+    get filterProperties() {
+        return this.columnDef && this.columnDef.filter || {};
+    }
+    /**
+     * @return {?}
+     */
+    get operator() {
+        return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
+    }
+    /**
+     * Initialize the Filter
+     * @param {?} args
+     * @return {?}
+     */
+    init(args) {
+        if (!args) {
+            throw new Error('[Aurelia-SlickGrid] A filter must always have an "init()" with valid arguments.');
+        }
+        this.grid = args.grid;
+        this.callback = args.callback;
+        this.columnDef = args.columnDef;
+        this.searchTerms = args.searchTerms || [];
+        // filter input can only have 1 search term, so we will use the 1st array index if it exist
+        const /** @type {?} */ searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+        // step 1, create HTML string template
+        const /** @type {?} */ filterTemplate = this.buildTemplateHtmlString();
+        // step 2, create the DOM Element of the filter & initialize it if searchTerm is filled
+        this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
+        // step 3, subscribe to the change event and run the callback when that happens
+        // also add/remove "filled" class for styling purposes
+        this.$filterElm.change((e) => {
+            const /** @type {?} */ value = e && e.target && e.target.value || '';
+            if (!value || value === '') {
+                this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+                this.$filterElm.removeClass('filled');
+            }
+            else {
+                this.$filterElm.addClass('filled');
+                this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value] });
+            }
+        });
+    }
+    /**
+     * Clear the filter value
+     * @return {?}
+     */
+    clear() {
+        if (this.$filterElm) {
+            const /** @type {?} */ clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE$1;
+            this.$filterElm.children('input').val(clearedValue);
+            this.$filterElm.children('span.input-group-addon').html(clearedValue);
+            this.$filterElm.trigger('change');
+        }
+    }
+    /**
+     * destroy the filter
+     * @return {?}
+     */
+    destroy() {
+        if (this.$filterElm) {
+            this.$filterElm.off('change').remove();
+        }
+    }
+    /**
+     * Set value(s) on the DOM element
+     * @param {?} values
+     * @return {?}
+     */
+    setValues(values) {
+        if (values) {
+            this.$filterElm.val(values);
+        }
+    }
+    /**
+     * Create the HTML template as a string
+     * @return {?}
+     */
+    buildTemplateHtmlString() {
+        const /** @type {?} */ minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE$1;
+        const /** @type {?} */ maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE$1;
+        const /** @type {?} */ defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
+        const /** @type {?} */ step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP$1;
+        if (this.filterParams.hideSliderNumber) {
+            return `
+      <div class="search-filter">
+        <input type="range" id="rangeInput_${this.columnDef.field}"
+          name="rangeInput_${this.columnDef.field}"
+          defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
+          class="form-control slider-filter-input range" />
+      </div>`;
+        }
+        return `
+      <div class="input-group search-filter">
+        <input type="range" id="rangeInput_${this.columnDef.field}"
+          name="rangeInput_${this.columnDef.field}"
+          defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
+          class="form-control slider-filter-input range"
+          onmousemove="$('#rangeOuput_${this.columnDef.field}').html(rangeInput_${this.columnDef.field}.value)" />
+        <span class="input-group-addon slider-value" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span>
+      </div>`;
+    }
+    /**
+     * From the html template string, create a DOM element
+     * @param {?} filterTemplate
+     * @param {?=} searchTerm
+     * @return {?}
+     */
+    createDomElement(filterTemplate, searchTerm) {
+        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        $($headerElm).empty();
+        // create the DOM element & add an ID and filter class
+        const /** @type {?} */ $filterElm = $(filterTemplate);
+        const /** @type {?} */ searchTermInput = /** @type {?} */ ((searchTerm || '0'));
+        $filterElm.children('input').val(searchTermInput);
+        $filterElm.children('span.input-group-addon').html(searchTermInput);
+        $filterElm.attr('id', `filter-${this.columnDef.id}`);
+        $filterElm.data('columnId', this.columnDef.id);
+        // if there's a search term, we will add the "filled" class for styling purposes
+        if (searchTerm) {
+            $filterElm.addClass('filled');
+        }
+        // append the new DOM element to the header row
+        if ($filterElm && typeof $filterElm.appendTo === 'function') {
+            $filterElm.appendTo($headerElm);
+        }
+        return $filterElm;
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 const Filters = {
-    /** Default Filter, input type text filter with a magnifying glass placeholder */
+    /** Compound Date Filter (compound of Operator + Date picker) */
+    compoundDate: CompoundDateFilter,
+    /** Compound Input Filter (compound of Operator + Input) */
+    compoundInput: CompoundInputFilter,
+    /** Compound Slider Filter (compound of Operator + Slider) */
+    compoundSlider: CompoundSliderFilter,
+    /** Default Filter, input type text filter */
     input: InputFilter,
+    /** Slider Filter */
+    slider: SliderFilter,
     /** Multiple Select filter, which uses 3rd party lib "multiple-select.js" */
     multipleSelect: MultipleSelectFilter,
     /** Single Select filter, which uses 3rd party lib "multiple-select.js" */
     singleSelect: SingleSelectFilter,
     /** Select filter, which uses native DOM element select */
-    select: SelectFilter,
-    /** Compound Date Filter (compound of Operator + Date picker) */
-    compoundDate: CompoundDateFilter,
-    /** Compound Input Filter (compound of Operator + Input) */
-    compoundInput: CompoundInputFilter,
+    select: SelectFilter
 };
 
 /**
@@ -3445,6 +3826,7 @@ class SortService {
  */
 class Constants {
 }
+Constants.TEXT_CANCEL = 'Cancel';
 Constants.TEXT_CLEAR_ALL_FILTERS = 'Clear All Filters';
 Constants.TEXT_CLEAR_ALL_SORTING = 'Clear All Sorting';
 Constants.TEXT_COLUMNS = 'Columns';
@@ -3454,10 +3836,15 @@ Constants.TEXT_EXPORT_IN_TEXT_FORMAT = 'Export in Text format (Tab delimited)';
 Constants.TEXT_FORCE_FIT_COLUMNS = 'Force fit columns';
 Constants.TEXT_HIDE_COLUMN = 'Hide Column';
 Constants.TEXT_REFRESH_DATASET = 'Refresh Dataset';
+Constants.TEXT_SAVE = 'Save';
 Constants.TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';
 Constants.TEXT_SORT_ASCENDING = 'Sort Ascending';
 Constants.TEXT_SORT_DESCENDING = 'Sort Descending';
 Constants.TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
+Constants.VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
+Constants.VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
+Constants.VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
+Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN = 'Please enter a valid number with a maximum of {{maxDecimal}} decimals';
 
 /**
  * @fileoverview added by tsickle
@@ -3699,9 +4086,11 @@ class ControlAndPluginService {
      */
     createColumnPicker(grid, columnDefinitions) {
         // localization support for the picker
-        const /** @type {?} */ forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
-        const /** @type {?} */ syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
+        const /** @type {?} */ columnTitle = this.getPickerTitleOutputString('columnTitle', 'columnPicker');
+        const /** @type {?} */ forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
+        const /** @type {?} */ syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
         this._gridOptions.columnPicker = this._gridOptions.columnPicker || {};
+        this._gridOptions.columnPicker.columnTitle = this._gridOptions.columnPicker.columnTitle || columnTitle;
         this._gridOptions.columnPicker.forceFitTitle = this._gridOptions.columnPicker.forceFitTitle || forceFitTitle;
         this._gridOptions.columnPicker.syncResizeTitle = this._gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
         this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, this._gridOptions);
@@ -3947,7 +4336,7 @@ class ControlAndPluginService {
         }
         // add the custom "Commands" title if there are any commands
         if (this._gridOptions && this._gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || this._gridOptions.gridMenu.customItems.length > 0)) {
-            this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || this.getGridMenuTitleOutputString('customTitle');
+            this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || this.getPickerTitleOutputString('customTitle', 'gridMenu');
         }
         return gridMenuCustomItems;
     }
@@ -4145,11 +4534,18 @@ class ControlAndPluginService {
     translateColumnPicker() {
         // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
         if (this._gridOptions && this._gridOptions.columnPicker) {
-            this._gridOptions.columnPicker.columnTitle = this.getGridMenuTitleOutputString('columnTitle');
-            this._gridOptions.columnPicker.forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
-            this._gridOptions.columnPicker.syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
+            this.emptyColumnPickerTitles();
+            this._gridOptions.columnPicker.columnTitle = this.getPickerTitleOutputString('columnTitle', 'columnPicker');
+            this._gridOptions.columnPicker.forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
+            this._gridOptions.columnPicker.syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
         }
+        // translate all columns (including non-visible)
         this.translateItems(this.allColumns, 'headerKey', 'name');
+        // re-initialize the Column Picker, that will recreate all the list
+        // doing an "init()" won't drop any existing command attached
+        if (this.columnPickerControl.init) {
+            this.columnPickerControl.init(this._grid);
+        }
     }
     /**
      * Translate the Grid Menu titles and column picker
@@ -4166,15 +4562,16 @@ class ControlAndPluginService {
             this._gridOptions.gridMenu.customItems = [...this.userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
             this.translateItems(this._gridOptions.gridMenu.customItems, 'titleKey', 'title');
             this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
-            this._gridOptions.gridMenu.columnTitle = this.getGridMenuTitleOutputString('columnTitle');
-            this._gridOptions.gridMenu.forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
-            this._gridOptions.gridMenu.syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
+            this._gridOptions.gridMenu.columnTitle = this.getPickerTitleOutputString('columnTitle', 'gridMenu');
+            this._gridOptions.gridMenu.forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'gridMenu');
+            this._gridOptions.gridMenu.syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'gridMenu');
             // translate all columns (including non-visible)
             this.translateItems(this.allColumns, 'headerKey', 'name');
             // re-initialize the Grid Menu, that will recreate all the menus & list
-            // and so will act like a translate
-            // we do this instead of recreating the Grid Menu control itself (because doing so would destroy any previous commands attached)
-            this.gridMenuControl.init(this._grid);
+            // doing an "init()" won't drop any existing command attached
+            if (this.gridMenuControl.init) {
+                this.gridMenuControl.init(this._grid);
+            }
         }
     }
     /**
@@ -4218,6 +4615,14 @@ class ControlAndPluginService {
     /**
      * @return {?}
      */
+    emptyColumnPickerTitles() {
+        this._gridOptions.columnPicker.columnTitle = '';
+        this._gridOptions.columnPicker.forceFitTitle = '';
+        this._gridOptions.columnPicker.syncResizeTitle = '';
+    }
+    /**
+     * @return {?}
+     */
     emptyGridMenuTitles() {
         this._gridOptions.gridMenu.customTitle = '';
         this._gridOptions.gridMenu.columnTitle = '';
@@ -4230,9 +4635,9 @@ class ControlAndPluginService {
     getDefaultGridMenuOptions() {
         return {
             customTitle: undefined,
-            columnTitle: this.getGridMenuTitleOutputString('columnTitle'),
-            forceFitTitle: this.getGridMenuTitleOutputString('forceFitTitle'),
-            syncResizeTitle: this.getGridMenuTitleOutputString('syncResizeTitle'),
+            columnTitle: this.getPickerTitleOutputString('columnTitle', 'gridMenu'),
+            forceFitTitle: this.getPickerTitleOutputString('forceFitTitle', 'gridMenu'),
+            syncResizeTitle: this.getPickerTitleOutputString('syncResizeTitle', 'gridMenu'),
             iconCssClass: 'fa fa-bars',
             menuWidth: 18,
             customItems: [],
@@ -4259,14 +4664,15 @@ class ControlAndPluginService {
      * 2- else if user provided a title key, use it to translate the output title
      * 3- else if nothing is provided use
      * @param {?} propName
+     * @param {?} pickerName
      * @return {?}
      */
-    getGridMenuTitleOutputString(propName) {
+    getPickerTitleOutputString(propName, pickerName) {
         let /** @type {?} */ output = '';
-        const /** @type {?} */ gridMenu = this._gridOptions && this._gridOptions.gridMenu || {};
+        const /** @type {?} */ picker = this._gridOptions && this._gridOptions[pickerName] || {};
         const /** @type {?} */ enableTranslate = this._gridOptions && this._gridOptions.enableTranslate || false;
-        const /** @type {?} */ title = gridMenu && gridMenu[propName];
-        const /** @type {?} */ titleKey = gridMenu && gridMenu[`${propName}Key`];
+        const /** @type {?} */ title = picker && picker[propName];
+        const /** @type {?} */ titleKey = picker && picker[`${propName}Key`];
         if (titleKey) {
             output = this.translate.instant(titleKey || ' ');
         }
@@ -6722,6 +7128,27 @@ class CheckboxEditor {
         this.init();
     }
     /**
+     * Get Column Definition object
+     * @return {?}
+     */
+    get columnDef() {
+        return this.args && this.args.column || {};
+    }
+    /**
+     * Get Column Editor object
+     * @return {?}
+     */
+    get columnEditor() {
+        return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+    }
+    /**
+     * Get the Validator function, can be passed in Editor property or Column Definition
+     * @return {?}
+     */
+    get validator() {
+        return this.columnEditor.validator || this.columnDef.validator;
+    }
+    /**
      * @return {?}
      */
     init() {
@@ -6758,7 +7185,7 @@ class CheckboxEditor {
      * @return {?}
      */
     loadValue(item) {
-        this.defaultValue = !!item[this.args.column.field];
+        this.defaultValue = !!item[this.columnDef.field];
         if (this.defaultValue) {
             this.$input.prop('checked', true);
         }
@@ -6784,7 +7211,7 @@ class CheckboxEditor {
      * @return {?}
      */
     applyValue(item, state) {
-        item[this.args.column.field] = state;
+        item[this.columnDef.field] = state;
     }
     /**
      * @return {?}
@@ -6796,13 +7223,14 @@ class CheckboxEditor {
      * @return {?}
      */
     validate() {
-        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
-        if (column.validator) {
-            const /** @type {?} */ validationResults = column.validator(this.$input.val(), this.args);
+        if (this.validator) {
+            const /** @type {?} */ validationResults = this.validator(this.$input.val());
             if (!validationResults.valid) {
                 return validationResults;
             }
         }
+        // by default the editor is always valid
+        // if user want it to be a required checkbox, he would have to provide his own validator
         return {
             valid: true,
             msg: null
@@ -6825,16 +7253,36 @@ class DateEditor {
         this.init();
     }
     /**
+     * Get Column Definition object
+     * @return {?}
+     */
+    get columnDef() {
+        return this.args && this.args.column || {};
+    }
+    /**
+     * Get Column Editor object
+     * @return {?}
+     */
+    get columnEditor() {
+        return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+    }
+    /**
+     * Get the Validator function, can be passed in Editor property or Column Definition
+     * @return {?}
+     */
+    get validator() {
+        return this.columnEditor.validator || this.columnDef.validator;
+    }
+    /**
      * @return {?}
      */
     init() {
         if (this.args && this.args.column) {
-            const /** @type {?} */ columnDef = this.args.column;
             const /** @type {?} */ gridOptions = /** @type {?} */ (this.args.grid.getOptions());
             this.defaultDate = (this.args.item) ? this.args.item[this.args.column.field] : null;
-            const /** @type {?} */ inputFormat = mapFlatpickrDateFormatWithFieldType(columnDef.type || FieldType.dateIso);
-            const /** @type {?} */ outputFormat = mapFlatpickrDateFormatWithFieldType(columnDef.outputType || FieldType.dateUtc);
-            let /** @type {?} */ currentLocale = this.getCurrentLocale(columnDef, gridOptions);
+            const /** @type {?} */ inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
+            const /** @type {?} */ outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || FieldType.dateUtc);
+            let /** @type {?} */ currentLocale = this.getCurrentLocale(this.columnDef, gridOptions);
             if (currentLocale.length > 2) {
                 currentLocale = currentLocale.substring(0, 2);
             }
@@ -6963,13 +7411,14 @@ class DateEditor {
      * @return {?}
      */
     validate() {
-        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
-        if (column.validator) {
-            const /** @type {?} */ validationResults = column.validator(this.$input.val(), this.args);
+        if (this.validator) {
+            const /** @type {?} */ validationResults = this.validator(this.$input.val());
             if (!validationResults.valid) {
                 return validationResults;
             }
         }
+        // by default the editor is always valid
+        // if user want it to be a required checkbox, he would have to provide his own validator
         return {
             valid: true,
             msg: null
@@ -6989,6 +7438,27 @@ class FloatEditor {
     constructor(args) {
         this.args = args;
         this.init();
+    }
+    /**
+     * Get Column Definition object
+     * @return {?}
+     */
+    get columnDef() {
+        return this.args && this.args.column || {};
+    }
+    /**
+     * Get Column Editor object
+     * @return {?}
+     */
+    get columnEditor() {
+        return this.columnDef && this.columnDef.internalColumnEditor || {};
+    }
+    /**
+     * Get the Validator function, can be passed in Editor property or Column Definition
+     * @return {?}
+     */
+    get validator() {
+        return this.columnEditor.validator || this.columnDef.validator;
     }
     /**
      * @return {?}
@@ -7028,8 +7498,7 @@ class FloatEditor {
      */
     getDecimalPlaces() {
         // returns the number of fixed decimal places or null
-        const /** @type {?} */ columnEditor = this.getColumnEditor();
-        let /** @type {?} */ rtn = (columnEditor && columnEditor.params && columnEditor.params.hasOwnProperty('decimalPlaces')) ? columnEditor.params.decimalPlaces : undefined;
+        let /** @type {?} */ rtn = (this.columnEditor.params && this.columnEditor.params.hasOwnProperty('decimalPlaces')) ? this.columnEditor.params.decimalPlaces : undefined;
         if (rtn === undefined) {
             rtn = defaultDecimalPlaces;
         }
@@ -7054,7 +7523,7 @@ class FloatEditor {
      * @return {?}
      */
     loadValue(item) {
-        this.defaultValue = item[this.args.column.field];
+        this.defaultValue = item[this.columnDef.field];
         const /** @type {?} */ decPlaces = this.getDecimalPlaces();
         if (decPlaces !== null
             && (this.defaultValue || this.defaultValue === 0)
@@ -7084,7 +7553,7 @@ class FloatEditor {
      * @return {?}
      */
     applyValue(item, state) {
-        item[this.args.column.field] = state;
+        item[this.columnDef.field] = state;
     }
     /**
      * @return {?}
@@ -7097,13 +7566,19 @@ class FloatEditor {
      * @return {?}
      */
     validate() {
-        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
         const /** @type {?} */ elmValue = this.$input.val();
-        const /** @type {?} */ columnEditor = this.getColumnEditor();
         const /** @type {?} */ decPlaces = this.getDecimalPlaces();
-        const /** @type {?} */ errorMsg = columnEditor.params && columnEditor.params.validatorErrorMessage;
-        if (column.validator) {
-            const /** @type {?} */ validationResults = column.validator(elmValue);
+        const /** @type {?} */ minValue = this.columnEditor.minValue;
+        const /** @type {?} */ maxValue = this.columnEditor.maxValue;
+        const /** @type {?} */ errorMsg = this.columnEditor.errorMessage;
+        const /** @type {?} */ mapValidation = {
+            '{{minValue}}': minValue,
+            '{{maxValue}}': maxValue,
+            '{{minDecimal}}': 0,
+            '{{maxDecimal}}': decPlaces
+        };
+        if (this.validator) {
+            const /** @type {?} */ validationResults = this.validator(elmValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -7112,15 +7587,27 @@ class FloatEditor {
             // when decimal value is 0 (which is the default), we accept 0 or more decimal values
             return {
                 valid: false,
-                msg: errorMsg || `Please enter a valid number`
+                msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER
             };
         }
-        else if (isNaN(/** @type {?} */ (elmValue)) || (decPlaces > 0 && !new RegExp(`^(\\d+(\\.)?(\\d){0,${decPlaces}})$`).test(elmValue))) {
+        else if (minValue !== undefined && (elmValue < minValue || elmValue > maxValue)) {
             // when decimal value is bigger than 0, we only accept the decimal values as that value set
             // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
             return {
                 valid: false,
-                msg: errorMsg || `Please enter a valid number between 0 and ${decPlaces} decimals`
+                msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => {
+                    return mapValidation[matched];
+                })
+            };
+        }
+        else if ((decPlaces > 0 && !new RegExp(`^(\\d+(\\.)?(\\d){0,${decPlaces}})$`).test(elmValue))) {
+            // when decimal value is bigger than 0, we only accept the decimal values as that value set
+            // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
+            return {
+                valid: false,
+                msg: errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, (matched) => {
+                    return mapValidation[matched];
+                })
             };
         }
         return {
@@ -7141,6 +7628,27 @@ class IntegerEditor {
     constructor(args) {
         this.args = args;
         this.init();
+    }
+    /**
+     * Get Column Definition object
+     * @return {?}
+     */
+    get columnDef() {
+        return this.args && this.args.column || {};
+    }
+    /**
+     * Get Column Editor object
+     * @return {?}
+     */
+    get columnEditor() {
+        return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+    }
+    /**
+     * Get the Validator function, can be passed in Editor property or Column Definition
+     * @return {?}
+     */
+    get validator() {
+        return this.columnEditor.validator || this.columnDef.validator;
     }
     /**
      * @return {?}
@@ -7211,12 +7719,10 @@ class IntegerEditor {
      * @return {?}
      */
     validate() {
-        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
-        const /** @type {?} */ columnEditor = this.getColumnEditor();
-        const /** @type {?} */ errorMsg = columnEditor.params && columnEditor.params.validatorErrorMessage;
         const /** @type {?} */ elmValue = this.$input.val();
-        if (column.validator) {
-            const /** @type {?} */ validationResults = column.validator(elmValue);
+        const /** @type {?} */ errorMsg = this.columnEditor.params && this.columnEditor.errorMessage;
+        if (this.validator) {
+            const /** @type {?} */ validationResults = this.validator(elmValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -7224,7 +7730,7 @@ class IntegerEditor {
         else if (isNaN(/** @type {?} */ (elmValue)) || !/^[+-]?\d+$/.test(elmValue)) {
             return {
                 valid: false,
-                msg: errorMsg || 'Please enter a valid integer number'
+                msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_INTEGER
             };
         }
         return {
@@ -7244,18 +7750,44 @@ class LongTextEditor {
      */
     constructor(args) {
         this.args = args;
+        this.gridOptions = /** @type {?} */ (this.args.grid.getOptions());
+        const /** @type {?} */ options = this.gridOptions || this.args.column.params || {};
+        this._translate = options.i18n;
         this.init();
+    }
+    /**
+     * Get Column Definition object
+     * @return {?}
+     */
+    get columnDef() {
+        return this.args && this.args.column || {};
+    }
+    /**
+     * Get Column Editor object
+     * @return {?}
+     */
+    get columnEditor() {
+        return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+    }
+    /**
+     * Get the Validator function, can be passed in Editor property or Column Definition
+     * @return {?}
+     */
+    get validator() {
+        return this.columnEditor.validator || this.columnDef.validator;
     }
     /**
      * @return {?}
      */
     init() {
+        const /** @type {?} */ cancelText = this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
+        const /** @type {?} */ saveText = this._translate.instant('SAVE') || Constants.TEXT_SAVE;
         const /** @type {?} */ $container = $('body');
         this.$wrapper = $(`<div class="slick-large-editor-text" />`).appendTo($container);
         this.$input = $(`<textarea hidefocus rows="5">`).appendTo(this.$wrapper);
         $(`<div class="editor-footer">
-        <button class="btn btn-primary btn-xs">Save</button>
-        <button class="btn btn-default btn-xs">Cancel</button>
+          <button class="btn btn-primary btn-xs">${saveText}</button>
+          <button class="btn btn-default btn-xs">${cancelText}</button>
       </div>`).appendTo(this.$wrapper);
         this.$wrapper.find('button:first').on('click', (event) => this.save());
         this.$wrapper.find('button:last').on('click', (event) => this.cancel());
@@ -7341,7 +7873,7 @@ class LongTextEditor {
      * @return {?}
      */
     loadValue(item) {
-        this.$input.val(this.defaultValue = item[this.args.column.field]);
+        this.$input.val(this.defaultValue = item[this.columnDef.field]);
         this.$input.select();
     }
     /**
@@ -7356,7 +7888,7 @@ class LongTextEditor {
      * @return {?}
      */
     applyValue(item, state) {
-        item[this.args.column.field] = state;
+        item[this.columnDef.field] = state;
     }
     /**
      * @return {?}
@@ -7368,13 +7900,14 @@ class LongTextEditor {
      * @return {?}
      */
     validate() {
-        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
-        if (column.validator) {
-            const /** @type {?} */ validationResults = column.validator(this.$input.val(), this.args);
+        if (this.validator) {
+            const /** @type {?} */ validationResults = this.validator(this.$input.val());
             if (!validationResults.valid) {
                 return validationResults;
             }
         }
+        // by default the editor is always valid
+        // if user want it to be a required checkbox, he would have to provide his own validator
         return {
             valid: true,
             msg: null
@@ -7423,6 +7956,20 @@ class MultipleSelectEditor {
         this.init();
     }
     /**
+     * Get Column Definition object
+     * @return {?}
+     */
+    get columnDef() {
+        return this.args && this.args.column || {};
+    }
+    /**
+     * Get Column Editor object
+     * @return {?}
+     */
+    get columnEditor() {
+        return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+    }
+    /**
      * The current selected values from the collection
      * @return {?}
      */
@@ -7432,13 +7979,19 @@ class MultipleSelectEditor {
             .map(c => c[this.valueName]);
     }
     /**
+     * Get the Validator function, can be passed in Editor property or Column Definition
+     * @return {?}
+     */
+    get validator() {
+        return this.columnEditor.validator || this.columnDef.validator;
+    }
+    /**
      * @return {?}
      */
     init() {
         if (!this.args) {
             throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
-        this.columnDef = /** @type {?} */ (this.args.column);
         if (!this.columnDef || !this.columnDef.internalColumnEditor || !this.columnDef.internalColumnEditor.collection) {
             throw new Error(`[Angular-SlickGrid] You need to pass a "collection" inside Column Definition Editor for the MultipleSelect Editor to work correctly.
       Also each option should include a value/label pair (or value/labelKey when using Locale).
@@ -7469,7 +8022,7 @@ class MultipleSelectEditor {
      * @return {?}
      */
     applyValue(item, state) {
-        item[this.args.column.field] = state;
+        item[this.columnDef.field] = state;
     }
     /**
      * @return {?}
@@ -7516,13 +8069,14 @@ class MultipleSelectEditor {
      * @return {?}
      */
     validate() {
-        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
-        if (column.validator) {
-            const /** @type {?} */ validationResults = column.validator(this.currentValues, this.args);
+        if (this.validator) {
+            const /** @type {?} */ validationResults = this.validator(this.currentValues);
             if (!validationResults.valid) {
                 return validationResults;
             }
         }
+        // by default the editor is always valid
+        // if user want it to be a required checkbox, he would have to provide his own validator
         return {
             valid: true,
             msg: null
@@ -7645,11 +8199,32 @@ class SingleSelectEditor {
         this.init();
     }
     /**
+     * Get Column Definition object
+     * @return {?}
+     */
+    get columnDef() {
+        return this.args && this.args.column || {};
+    }
+    /**
+     * Get Column Editor object
+     * @return {?}
+     */
+    get columnEditor() {
+        return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+    }
+    /**
      * The current selected value from the collection
      * @return {?}
      */
     get currentValue() {
         return findOrDefault(this.collection, (c) => c[this.valueName].toString() === this.$editorElm.val())[this.valueName];
+    }
+    /**
+     * Get the Validator function, can be passed in Editor property or Column Definition
+     * @return {?}
+     */
+    get validator() {
+        return this.columnEditor.validator || this.columnDef.validator;
     }
     /**
      * @return {?}
@@ -7658,7 +8233,6 @@ class SingleSelectEditor {
         if (!this.args) {
             throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
-        this.columnDef = this.args.column;
         if (!this.columnDef || !this.columnDef.internalColumnEditor || !this.columnDef.internalColumnEditor.collection) {
             throw new Error(`[Angular-SlickGrid] You need to pass a "collection" inside Column Definition Editor for the SingleSelect Editor to work correctly.
       Also each option should include a value/label pair (or value/labelKey when using Locale).
@@ -7689,7 +8263,7 @@ class SingleSelectEditor {
      * @return {?}
      */
     applyValue(item, state) {
-        item[this.args.column.field] = state;
+        item[this.columnDef.field] = state;
     }
     /**
      * @return {?}
@@ -7737,13 +8311,14 @@ class SingleSelectEditor {
      * @return {?}
      */
     validate() {
-        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
-        if (column.validator) {
-            const /** @type {?} */ validationResults = column.validator(this.currentValue, this.args);
+        if (this.validator) {
+            const /** @type {?} */ validationResults = this.validator(this.currentValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
         }
+        // by default the editor is always valid
+        // if user want it to be a required checkbox, he would have to provide his own validator
         return {
             valid: true,
             msg: null
@@ -7833,6 +8408,193 @@ class SingleSelectEditor {
         }
     }
 }
+SingleSelectEditor.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+SingleSelectEditor.ctorParameters = () => [
+    null,
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+const DEFAULT_MIN_VALUE$2 = 0;
+const DEFAULT_MAX_VALUE$2 = 100;
+const DEFAULT_STEP$2 = 1;
+class SliderEditor {
+    /**
+     * @param {?} args
+     */
+    constructor(args) {
+        this.args = args;
+        this.init();
+    }
+    /**
+     * Get Column Definition object
+     * @return {?}
+     */
+    get columnDef() {
+        return this.args && this.args.column || {};
+    }
+    /**
+     * Get Column Editor object
+     * @return {?}
+     */
+    get columnEditor() {
+        return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+    }
+    /**
+     * Getter for the Editor Generic Params
+     * @return {?}
+     */
+    get editorParams() {
+        return this.columnEditor.params || {};
+    }
+    /**
+     * Get the Validator function, can be passed in Editor property or Column Definition
+     * @return {?}
+     */
+    get validator() {
+        return this.columnEditor.validator || this.columnDef.validator;
+    }
+    /**
+     * @return {?}
+     */
+    init() {
+        const /** @type {?} */ container = this.args.container;
+        // create HTML string template
+        const /** @type {?} */ editorTemplate = this.buildTemplateHtmlString();
+        this.$editorElm = $(editorTemplate);
+        this.$input = this.$editorElm.children('input');
+        this.$sliderNumber = this.$editorElm.children('span.input-group-addon');
+        // watch on change event
+        this.$editorElm
+            .appendTo(this.args.container)
+            .on('change', (event) => this.save());
+    }
+    /**
+     * @return {?}
+     */
+    destroy() {
+        this.$editorElm.remove();
+    }
+    /**
+     * @return {?}
+     */
+    focus() {
+        this.$editorElm.focus();
+    }
+    /**
+     * @return {?}
+     */
+    save() {
+        this.args.commitChanges();
+    }
+    /**
+     * @return {?}
+     */
+    cancel() {
+        this.$input.val(this.defaultValue);
+        this.args.cancelChanges();
+    }
+    /**
+     * @param {?} item
+     * @return {?}
+     */
+    loadValue(item) {
+        // this.$input.val(this.defaultValue = item[this.columnDef.field]);
+        this.defaultValue = item[this.columnDef.field];
+        this.$input.val(this.defaultValue);
+        this.$input[0].defaultValue = this.defaultValue;
+        this.$sliderNumber.html(this.defaultValue);
+    }
+    /**
+     * @return {?}
+     */
+    serializeValue() {
+        return parseInt(/** @type {?} */ (this.$input.val()), 10) || 0;
+    }
+    /**
+     * @param {?} item
+     * @param {?} state
+     * @return {?}
+     */
+    applyValue(item, state) {
+        item[this.columnDef.field] = state;
+    }
+    /**
+     * @return {?}
+     */
+    isValueChanged() {
+        const /** @type {?} */ elmValue = this.$input.val();
+        console.log(elmValue);
+        return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
+    }
+    /**
+     * @return {?}
+     */
+    validate() {
+        const /** @type {?} */ elmValue = this.$input.val();
+        const /** @type {?} */ minValue = this.columnEditor.minValue;
+        const /** @type {?} */ maxValue = this.columnEditor.maxValue;
+        const /** @type {?} */ errorMsg = this.columnEditor.errorMessage;
+        const /** @type {?} */ mapValidation = {
+            '{{minValue}}': minValue,
+            '{{maxValue}}': maxValue
+        };
+        if (this.validator) {
+            const /** @type {?} */ validationResults = this.validator(elmValue);
+            if (!validationResults.valid) {
+                return validationResults;
+            }
+        }
+        else if (minValue !== undefined && (elmValue < minValue || elmValue > maxValue)) {
+            // when decimal value is bigger than 0, we only accept the decimal values as that value set
+            // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
+            return {
+                valid: false,
+                msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => {
+                    return mapValidation[matched];
+                })
+            };
+        }
+        return {
+            valid: true,
+            msg: null
+        };
+    }
+    /**
+     * Create the HTML template as a string
+     * @return {?}
+     */
+    buildTemplateHtmlString() {
+        const /** @type {?} */ minValue = this.columnEditor.hasOwnProperty('minValue') ? this.columnEditor.minValue : DEFAULT_MIN_VALUE$2;
+        const /** @type {?} */ maxValue = this.columnEditor.hasOwnProperty('maxValue') ? this.columnEditor.maxValue : DEFAULT_MAX_VALUE$2;
+        const /** @type {?} */ defaultValue = this.editorParams.hasOwnProperty('sliderStartValue') ? this.editorParams.sliderStartValue : minValue;
+        const /** @type {?} */ step = this.columnEditor.hasOwnProperty('valueStep') ? this.columnEditor.valueStep : DEFAULT_STEP$2;
+        const /** @type {?} */ itemId = this.args && this.args.item && this.args.item.id;
+        if (this.editorParams.hideSliderNumber) {
+            return `
+      <div class="slider-editor">
+        <input type="range" id="rangeInput_${this.columnDef.field}_${itemId}"
+          name="rangeInput_${this.columnDef.field}_${itemId}"
+          defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
+          class="form-control slider-editor-input range" />
+      </div>`;
+        }
+        return `
+      <div class="input-group slider-editor">
+        <input type="range" id="rangeInput_${this.columnDef.field}_${itemId}"
+          name="rangeInput_${this.columnDef.field}_${itemId}"
+          defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
+          class="form-control slider-editor-input range"
+          onmousemove="$('#rangeOuput_${this.columnDef.field}_${itemId}').html(rangeInput_${this.columnDef.field}_${itemId}.value)" />
+        <span class="input-group-addon slider-value" id="rangeOuput_${this.columnDef.field}_${itemId}">${defaultValue}</span>
+      </div>`;
+    }
+}
 
 /**
  * @fileoverview added by tsickle
@@ -7845,6 +8607,27 @@ class TextEditor {
     constructor(args) {
         this.args = args;
         this.init();
+    }
+    /**
+     * Get Column Definition object
+     * @return {?}
+     */
+    get columnDef() {
+        return this.args && this.args.column || {};
+    }
+    /**
+     * Get Column Editor object
+     * @return {?}
+     */
+    get columnEditor() {
+        return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+    }
+    /**
+     * Get the Validator function, can be passed in Editor property or Column Definition
+     * @return {?}
+     */
+    get validator() {
+        return this.columnEditor.validator || this.columnDef.validator;
     }
     /**
      * @return {?}
@@ -7920,13 +8703,14 @@ class TextEditor {
      * @return {?}
      */
     validate() {
-        const /** @type {?} */ column = /** @type {?} */ ((this.args && this.args.column));
-        if (column.validator) {
-            const /** @type {?} */ validationResults = column.validator(this.$input.val());
+        if (this.validator) {
+            const /** @type {?} */ validationResults = this.validator(this.$input.val());
             if (!validationResults.valid) {
                 return validationResults;
             }
         }
+        // by default the editor is always valid
+        // if user want it to be a required checkbox, he would have to provide his own validator
         return {
             valid: true,
             msg: null
@@ -7939,13 +8723,23 @@ class TextEditor {
  * @suppress {checkTypes} checked by tsc
  */
 const Editors = {
+    /** Checkbox Editor (uses native checkbox DOM element) */
     checkbox: CheckboxEditor,
+    /** Date Picker Editor (which uses 3rd party lib "flatpickr") */
     date: DateEditor,
+    /** Float Number Editor */
     float: FloatEditor,
+    /** Integer Editor */
     integer: IntegerEditor,
+    /** Long Text Editor (uses a textarea) */
     longText: LongTextEditor,
+    /** Multiple Select editor (which uses 3rd party lib "multiple-select.js") */
     multipleSelect: MultipleSelectEditor,
+    /** Single Select editor (which uses 3rd party lib "multiple-select.js") */
     singleSelect: SingleSelectEditor,
+    /** Slider Editor */
+    slider: SliderEditor,
+    /** Text Editor */
     text: TextEditor
 };
 
@@ -8196,6 +8990,28 @@ const lowercaseFormatter = (row, cell, value, columnDef, dataContext) => {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+/**
+ * Takes a value display it according to a mask provided
+ * e.: 1234567890 with mask "(000) 000-0000" will display "(123) 456-7890"
+ */
+const maskFormatter = (row, cell, value, columnDef, dataContext) => {
+    const /** @type {?} */ params = columnDef.params || {};
+    const /** @type {?} */ mask = params.mask;
+    if (!mask) {
+        throw new Error(`You must provide a "mask" via the generic "params" options (e.g.: { formatter: Formatters.mask, params: { mask: '000-000' }}`);
+    }
+    if (value && mask) {
+        let /** @type {?} */ i = 0;
+        const /** @type {?} */ v = value.toString();
+        return mask.replace(/[09A]/g, () => v[i++] || '');
+    }
+    return '';
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 const multipleFormatter = (row, cell, value, columnDef, dataContext, grid) => {
     const /** @type {?} */ params = columnDef.params || {};
     if (!params.formatters || !Array.isArray(params.formatters)) {
@@ -8420,6 +9236,11 @@ const Formatters = {
     infoIcon: infoIconFormatter,
     /** Takes a value and displays it all lowercase */
     lowercase: lowercaseFormatter,
+    /**
+       * Takes a value display it according to a mask provided
+       * e.: 1234567890 with mask "(000) 000-0000" will display "(123) 456-7890"
+       */
+    mask: maskFormatter,
     /**
        * You can pipe multiple formatters (executed in sequence), use params to pass the list of formatters. For example::
        * { field: 'title', formatter: Formatters.multiple, params: { formatters: [ Formatters.lowercase, Formatters.uppercase ] }
@@ -9642,5 +10463,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵc, MaxAggregator as ɵe, MinAggregator as ɵd, SumAggregator as ɵf, CheckboxEditor as ɵg, DateEditor as ɵh, FloatEditor as ɵi, IntegerEditor as ɵj, LongTextEditor as ɵk, MultipleSelectEditor as ɵl, SingleSelectEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵbd, CompoundInputFilter as ɵbe, FilterFactory as ɵa, InputFilter as ɵz, MultipleSelectFilter as ɵba, SelectFilter as ɵbc, SingleSelectFilter as ɵbb, arrayToCsvFormatter as ɵbf, boldFormatter as ɵbg, checkboxFormatter as ɵbh, checkmarkFormatter as ɵbi, collectionEditorFormatter as ɵbl, collectionFormatter as ɵbk, complexObjectFormatter as ɵbj, dateIsoFormatter as ɵbm, dateTimeIsoAmPmFormatter as ɵbo, dateTimeIsoFormatter as ɵbn, dateTimeUsAmPmFormatter as ɵbr, dateTimeUsFormatter as ɵbq, dateUsFormatter as ɵbp, deleteIconFormatter as ɵbs, dollarColoredBoldFormatter as ɵbv, dollarColoredFormatter as ɵbu, dollarFormatter as ɵbt, editIconFormatter as ɵbw, hyperlinkFormatter as ɵbx, hyperlinkUriPrefixFormatter as ɵby, infoIconFormatter as ɵbz, lowercaseFormatter as ɵca, multipleFormatter as ɵcb, percentCompleteBarFormatter as ɵce, percentCompleteFormatter as ɵcd, percentFormatter as ɵcc, percentSymbolFormatter as ɵcf, progressBarFormatter as ɵcg, translateBooleanFormatter as ɵci, translateFormatter as ɵch, uppercaseFormatter as ɵcj, yesNoFormatter as ɵck, avgTotalsDollarFormatter as ɵcm, avgTotalsFormatter as ɵcl, avgTotalsPercentageFormatter as ɵcn, maxTotalsFormatter as ɵco, minTotalsFormatter as ɵcp, sumTotalsBoldFormatter as ɵcr, sumTotalsColoredFormatter as ɵcs, sumTotalsDollarBoldFormatter as ɵcu, sumTotalsDollarColoredBoldFormatter as ɵcw, sumTotalsDollarColoredFormatter as ɵcv, sumTotalsDollarFormatter as ɵct, sumTotalsFormatter as ɵcq, SlickgridConfig as ɵb, dateIsoSorter as ɵcy, dateSorter as ɵcx, dateUsShortSorter as ɵda, dateUsSorter as ɵcz, numericSorter as ɵdb, stringSorter as ɵdc };
+export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, SliderEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, CompoundSliderFilter as ɵba, InputFilter as ɵbb, MultipleSelectFilter as ɵbd, SelectFilter as ɵbf, SingleSelectFilter as ɵbe, SliderFilter as ɵbc, arrayToCsvFormatter as ɵbg, boldFormatter as ɵbh, checkboxFormatter as ɵbi, checkmarkFormatter as ɵbj, collectionEditorFormatter as ɵbm, collectionFormatter as ɵbl, complexObjectFormatter as ɵbk, dateIsoFormatter as ɵbn, dateTimeIsoAmPmFormatter as ɵbp, dateTimeIsoFormatter as ɵbo, dateTimeUsAmPmFormatter as ɵbs, dateTimeUsFormatter as ɵbr, dateUsFormatter as ɵbq, deleteIconFormatter as ɵbt, dollarColoredBoldFormatter as ɵbw, dollarColoredFormatter as ɵbv, dollarFormatter as ɵbu, editIconFormatter as ɵbx, hyperlinkFormatter as ɵby, hyperlinkUriPrefixFormatter as ɵbz, infoIconFormatter as ɵca, lowercaseFormatter as ɵcb, maskFormatter as ɵcc, multipleFormatter as ɵcd, percentCompleteBarFormatter as ɵcg, percentCompleteFormatter as ɵcf, percentFormatter as ɵce, percentSymbolFormatter as ɵch, progressBarFormatter as ɵci, translateBooleanFormatter as ɵck, translateFormatter as ɵcj, uppercaseFormatter as ɵcl, yesNoFormatter as ɵcm, avgTotalsDollarFormatter as ɵco, avgTotalsFormatter as ɵcn, avgTotalsPercentageFormatter as ɵcp, maxTotalsFormatter as ɵcq, minTotalsFormatter as ɵcr, sumTotalsBoldFormatter as ɵct, sumTotalsColoredFormatter as ɵcu, sumTotalsDollarBoldFormatter as ɵcw, sumTotalsDollarColoredBoldFormatter as ɵcy, sumTotalsDollarColoredFormatter as ɵcx, sumTotalsDollarFormatter as ɵcv, sumTotalsFormatter as ɵcs, dateIsoSorter as ɵda, dateSorter as ɵcz, dateUsShortSorter as ɵdc, dateUsSorter as ɵdb, numericSorter as ɵdd, stringSorter as ɵde };
 //# sourceMappingURL=angular-slickgrid.js.map

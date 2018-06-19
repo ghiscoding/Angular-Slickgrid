@@ -23,6 +23,7 @@ export declare const Formatters: {
     hyperlinkUriPrefix: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     infoIcon: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     lowercase: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    mask: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     multiple: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     percent: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     percentComplete: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;

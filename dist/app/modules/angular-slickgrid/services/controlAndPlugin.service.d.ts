@@ -132,6 +132,7 @@ export declare class ControlAndPluginService {
      * calling setColumns() will trigger a grid re-render
      */
     renderColumnHeaders(newColumnDefinitions?: Column[]): void;
+    private emptyColumnPickerTitles();
     private emptyGridMenuTitles();
     /**
      * @return default Grid Menu options
@@ -147,7 +148,7 @@ export declare class ControlAndPluginService {
      * 2- else if user provided a title key, use it to translate the output title
      * 3- else if nothing is provided use
      */
-    private getGridMenuTitleOutputString(propName);
+    private getPickerTitleOutputString(propName, pickerName);
     /**
      * Reset all the Grid Menu options which have text to translate
      * @param grid menu object
