@@ -8,7 +8,9 @@ import {
   OperatorString,
   SearchTerm,
 } from './../models/index';
-import * as $ from 'jquery';
+
+// using external non-typed js libraries
+declare var $: any;
 
 const DEFAULT_MIN_VALUE = 0;
 const DEFAULT_MAX_VALUE = 100;
