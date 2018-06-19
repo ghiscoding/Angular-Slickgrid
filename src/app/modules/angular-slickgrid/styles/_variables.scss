@@ -172,6 +172,19 @@ $compound-filter-text-color:            $primary-color !default;
 $compound-filter-text-font-size:        13px !default;
 $compound-filter-text-padding:          0 0 0 2px !default;
 
+/* Input Range Filter */
+$slider-filter-border:                   1px solid #ccc !default;
+$slider-filter-bgcolor:                  #eee !default;
+$slider-filter-runnable-track-bgcolor:   #ddd !default;
+$slider-filter-runnable-track-height:    4px !default;
+$slider-filter-fill-lower-color:         #ddd !default; /* ms only */
+$slider-filter-fill-focus-lower-color:   #aaa !default; /* ms only */
+$slider-filter-thumb-color:              rgb(201, 219, 203) !default;
+$slider-filter-thumb-size:               14px !default;
+$slider-filter-thumb-border:             1px solid darken($slider-filter-thumb-color, 15%) !default;
+$slider-filter-number-padding:           4px 8px !default;
+$slider-filter-number-font-size:         ($font-size-base-value - 1px) !default;
+
 /* Multiple-Select Filter */
 $multiselect-input-filter-border:       1px solid #ccc !default;
 $multiselect-input-filter-font-family:  "Helvetica Neue", Helvetica, Arial !default;

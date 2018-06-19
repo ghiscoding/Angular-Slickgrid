@@ -36,7 +36,12 @@ export class GridMenuComponent implements OnInit {
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', headerKey: 'TITLE', filterable: true, type: FieldType.string },
       { id: 'duration', name: 'Duration', field: 'duration', headerKey: 'DURATION', sortable: true, filterable: true, type: FieldType.string },
-      { id: '%', name: '% Complete', field: 'percentComplete', sortable: true, filterable: true, type: FieldType.number },
+      {
+        id: '%', name: '% Complete', field: 'percentComplete', sortable: true, filterable: true,
+        type: FieldType.number,
+        formatter: Formatters.percentCompleteBar,
+        filter: { model: Filters.compoundSlider, params: { hideSliderNumber: false } }
+      },
       { id: 'start', name: 'Start', field: 'start', headerKey: 'START', filterable: true, type: FieldType.string },
       { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', filterable: true, type: FieldType.string },
       {

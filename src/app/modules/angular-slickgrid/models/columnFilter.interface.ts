@@ -28,6 +28,12 @@ export interface ColumnFilter {
   /** Operator to use when filtering (>, >=, EQ, IN, ...) */
   operator?: OperatorType | OperatorString;
 
+  /** Maximum value of the filter, works only with Filters supporting it (text, number, float, slider) */
+  maxValue?: number | string;
+
+  /** Minimum value of the filter, works only with Filters supporting it (text, number, float, slider) */
+  minValue?: number | string;
+
   /** Filter to use (input, multipleSelect, singleSelect, select, custom) */
   model?: any;
 
@@ -58,4 +64,7 @@ export interface ColumnFilter {
    * params: { options: [{ value: true, label: 'True' }, { value: true, label: 'True'} ]}
    */
   params?: any;
+
+  /** Step value of the filter, works only with Filters supporting it (input text, number, float, range, slider) */
+  valueStep?: number | string;
 }
