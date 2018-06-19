@@ -1,5 +1,6 @@
 import { ColumnEditor } from './columnEditor.interface';
 import { ColumnFilter } from './columnFilter.interface';
+import { EditorValidator } from './editorValidator.interface';
 import { FieldType } from './fieldType.enum';
 import { Formatter } from './formatter.interface';
 import { GroupTotalsFormatter } from './groupTotalsFormatter.interface';
@@ -166,8 +167,8 @@ export interface Column {
   /** What is the Field Type, this can be used in the Formatters/Editors/... */
   type?: FieldType;
 
-  // validator?: Validator;
-  validator?: any;
+  /** Editor Validator */
+  validator?: EditorValidator;
 
   /** Width of the column in pixels (number only). */
   width?: number;

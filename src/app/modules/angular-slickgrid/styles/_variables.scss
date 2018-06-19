@@ -163,6 +163,9 @@ $text-editor-padding-bottom:            0 !default;
 $text-editor-padding-left:              2px !default;
 $text-editor-padding-right:             0 !default;
 $text-editor-padding-top:               0 !default;
+$slider-editor-height:                  24px !default;
+$slider-editor-runnable-track-padding:  5px 8px !default;
+$slider-editor-number-padding:          4px 6px !default;
 
 /* Compound Filters */
 $compound-filter-bgcolor:               #e4eacf !default;
@@ -177,8 +180,10 @@ $slider-filter-border:                   1px solid #ccc !default;
 $slider-filter-bgcolor:                  #eee !default;
 $slider-filter-runnable-track-bgcolor:   #ddd !default;
 $slider-filter-runnable-track-height:    4px !default;
+$slider-filter-runnable-track-padding:   6px 10px !default;
 $slider-filter-fill-lower-color:         #ddd !default; /* ms only */
 $slider-filter-fill-focus-lower-color:   #aaa !default; /* ms only */
+$slider-filter-height:                   $header-input-height !default;
 $slider-filter-thumb-color:              rgb(201, 219, 203) !default;
 $slider-filter-thumb-size:               14px !default;
 $slider-filter-thumb-border:             1px solid darken($slider-filter-thumb-color, 15%) !default;

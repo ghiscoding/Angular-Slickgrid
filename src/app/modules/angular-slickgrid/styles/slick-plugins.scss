@@ -337,11 +337,15 @@ input.search-filter {
 }
 
 // ----------------------------------------------
-// Input Range Filter
+// Input Range Filter (Slider)
 // ----------------------------------------------
-input.search-filter[type=range] {
+input.slider-editor-input[type=range],
+input.slider-filter-input[type=range] {
   /*removes default webkit styles*/
   -webkit-appearance: none;
+  height: $slider-filter-height;
+
+  padding: $slider-filter-runnable-track-padding !important;
 
   /* change runnable track color while in focus on all browsers */
   &:focus {
@@ -437,11 +441,28 @@ input.search-filter[type=range] {
     margin-top: 2px;
   }
 }
-
 .search-filter {
   .slider-value {
     padding: $slider-filter-number-padding !important;
     font-size: $slider-filter-number-font-size !important;
-    height: $header-input-height;
+    height: $slider-filter-height;
+  }
+}
+input.slider-filter-input[type=range] {
+  padding: $slider-filter-runnable-track-padding !important;
+  height: $slider-filter-height !important;
+}
+
+/* Slider Editor */
+input.slider-editor-input[type=range] {
+  padding: $slider-editor-runnable-track-padding !important;
+  height: $slider-editor-height !important;
+}
+
+.slider-editor {
+  .slider-value {
+    padding: $slider-editor-number-padding !important;
+    font-size: $slider-filter-number-font-size !important;
+    height: $slider-editor-height;
   }
 }

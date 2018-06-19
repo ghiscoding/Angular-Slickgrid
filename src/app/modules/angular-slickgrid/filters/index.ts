@@ -21,7 +21,7 @@ export const Filters = {
   /** Default Filter, input type text filter */
   input: InputFilter,
 
-  /** Default Filter, input type text filter */
+  /** Slider Filter */
   slider: SliderFilter,
 
   /** Multiple Select filter, which uses 3rd party lib "multiple-select.js" */

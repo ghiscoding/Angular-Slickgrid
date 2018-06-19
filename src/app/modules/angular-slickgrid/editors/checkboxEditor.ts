@@ -1,4 +1,4 @@
-import { Column, Editor } from './../models/index';
+import { Column, Editor, EditorValidator, EditorValidatorOutput } from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -13,6 +13,21 @@ export class CheckboxEditor implements Editor {
 
   constructor(private args: any) {
     this.init();
+  }
+
+  /** Get Column Definition object */
+  get columnDef(): Column {
+    return this.args && this.args.column || {};
+  }
+
+  /** Get Column Editor object */
+  get columnEditor(): any {
+    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+  }
+
+  /** Get the Validator function, can be passed in Editor property or Column Definition */
+  get validator(): EditorValidator {
+    return this.columnEditor.validator || this.columnDef.validator;
   }
 
   init(): void {
@@ -38,7 +53,7 @@ export class CheckboxEditor implements Editor {
   }
 
   loadValue(item: any) {
-    this.defaultValue = !!item[this.args.column.field];
+    this.defaultValue = !!item[this.columnDef.field];
     if (this.defaultValue) {
       this.$input.prop('checked', true);
     } else {
@@ -55,23 +70,23 @@ export class CheckboxEditor implements Editor {
   }
 
   applyValue(item: any, state: any) {
-    item[this.args.column.field] = state;
+    item[this.columnDef.field] = state;
   }
 
   isValueChanged() {
     return (this.serializeValue() !== this.defaultValue);
   }
 
-  validate() {
-    const column = (this.args && this.args.column) as Column;
-
-    if (column.validator) {
-      const validationResults = column.validator(this.$input.val(), this.args);
+  validate(): EditorValidatorOutput {
+    if (this.validator) {
+      const validationResults = this.validator(this.$input.val());
       if (!validationResults.valid) {
         return validationResults;
       }
     }
 
+    // by default the editor is always valid
+    // if user want it to be a required checkbox, he would have to provide his own validator
     return {
       valid: true,
       msg: null

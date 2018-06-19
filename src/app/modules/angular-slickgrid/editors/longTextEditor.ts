@@ -1,4 +1,14 @@
-import { Column, Editor, HtmlElementPosition, KeyCode } from './../models/index';
+import { TranslateService } from '@ngx-translate/core';
+import { Constants } from './../constants';
+import {
+  Column,
+  Editor,
+  EditorValidator,
+  EditorValidatorOutput,
+  GridOption,
+  HtmlElementPosition,
+  KeyCode
+} from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -13,19 +23,46 @@ export class LongTextEditor implements Editor {
   $wrapper: any;
   defaultValue: any;
 
+  /** Grid options */
+  gridOptions: GridOption;
+
+  /** The i18n aurelia library */
+  private _translate: TranslateService;
+
   constructor(private args: any) {
+    this.gridOptions = this.args.grid.getOptions() as GridOption;
+    const options = this.gridOptions || this.args.column.params || {};
+    this._translate = options.i18n;
+
     this.init();
   }
 
+  /** Get Column Definition object */
+  get columnDef(): Column {
+    return this.args && this.args.column || {};
+  }
+
+  /** Get Column Editor object */
+  get columnEditor(): any {
+    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+  }
+
+  /** Get the Validator function, can be passed in Editor property or Column Definition */
+  get validator(): EditorValidator {
+    return this.columnEditor.validator || this.columnDef.validator;
+  }
+
   init(): void {
+    const cancelText = this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
+    const saveText = this._translate.instant('SAVE') || Constants.TEXT_SAVE;
     const $container = $('body');
 
     this.$wrapper = $(`<div class="slick-large-editor-text" />`).appendTo($container);
     this.$input = $(`<textarea hidefocus rows="5">`).appendTo(this.$wrapper);
 
     $(`<div class="editor-footer">
-        <button class="btn btn-primary btn-xs">Save</button>
-        <button class="btn btn-default btn-xs">Cancel</button>
+          <button class="btn btn-primary btn-xs">${saveText}</button>
+          <button class="btn btn-default btn-xs">${cancelText}</button>
       </div>`).appendTo(this.$wrapper);
 
     this.$wrapper.find('button:first').on('click', (event: Event) => this.save());
@@ -87,7 +124,7 @@ export class LongTextEditor implements Editor {
   }
 
   loadValue(item: any) {
-    this.$input.val(this.defaultValue = item[this.args.column.field]);
+    this.$input.val(this.defaultValue = item[this.columnDef.field]);
     this.$input.select();
   }
 
@@ -96,23 +133,23 @@ export class LongTextEditor implements Editor {
   }
 
   applyValue(item: any, state: any) {
-    item[this.args.column.field] = state;
+    item[this.columnDef.field] = state;
   }
 
   isValueChanged() {
     return (!(this.$input.val() === '' && this.defaultValue == null)) && (this.$input.val() !== this.defaultValue);
   }
 
-  validate() {
-    const column = (this.args && this.args.column) as Column;
-
-    if (column.validator) {
-      const validationResults = column.validator(this.$input.val(), this.args);
+  validate(): EditorValidatorOutput {
+    if (this.validator) {
+      const validationResults = this.validator(this.$input.val());
       if (!validationResults.valid) {
         return validationResults;
       }
     }
 
+    // by default the editor is always valid
+    // if user want it to be a required checkbox, he would have to provide his own validator
     return {
       valid: true,
       msg: null
