@@ -275,10 +275,12 @@ export class ControlAndPluginService {
    */
   createColumnPicker(grid: any, columnDefinitions: Column[]) {
     // localization support for the picker
-    const forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
-    const syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
+    const columnTitle = this.getPickerTitleOutputString('columnTitle', 'columnPicker');
+    const forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
+    const syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
 
     this._gridOptions.columnPicker = this._gridOptions.columnPicker || {};
+    this._gridOptions.columnPicker.columnTitle = this._gridOptions.columnPicker.columnTitle || columnTitle;
     this._gridOptions.columnPicker.forceFitTitle = this._gridOptions.columnPicker.forceFitTitle || forceFitTitle;
     this._gridOptions.columnPicker.syncResizeTitle = this._gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
 
@@ -535,7 +537,7 @@ export class ControlAndPluginService {
 
     // add the custom "Commands" title if there are any commands
     if (this._gridOptions && this._gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || this._gridOptions.gridMenu.customItems.length > 0)) {
-      this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || this.getGridMenuTitleOutputString('customTitle');
+      this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || this.getPickerTitleOutputString('customTitle', 'gridMenu');
     }
 
     return gridMenuCustomItems;
@@ -740,11 +742,21 @@ export class ControlAndPluginService {
   translateColumnPicker() {
     // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
     if (this._gridOptions && this._gridOptions.columnPicker) {
-      this._gridOptions.columnPicker.columnTitle = this.getGridMenuTitleOutputString('columnTitle');
-      this._gridOptions.columnPicker.forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
-      this._gridOptions.columnPicker.syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
+      this.emptyColumnPickerTitles();
+
+      this._gridOptions.columnPicker.columnTitle = this.getPickerTitleOutputString('columnTitle', 'columnPicker');
+      this._gridOptions.columnPicker.forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
+      this._gridOptions.columnPicker.syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
     }
+
+    // translate all columns (including non-visible)
     this.translateItems(this.allColumns, 'headerKey', 'name');
+
+    // re-initialize the Column Picker, that will recreate all the list
+    // doing an "init()" won't drop any existing command attached
+    if (this.columnPickerControl.init) {
+      this.columnPickerControl.init(this._grid);
+    }
   }
 
   /** Translate the Grid Menu titles and column picker */
@@ -761,17 +773,18 @@ export class ControlAndPluginService {
       this.translateItems(this._gridOptions.gridMenu.customItems, 'titleKey', 'title');
       this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
 
-      this._gridOptions.gridMenu.columnTitle = this.getGridMenuTitleOutputString('columnTitle');
-      this._gridOptions.gridMenu.forceFitTitle = this.getGridMenuTitleOutputString('forceFitTitle');
-      this._gridOptions.gridMenu.syncResizeTitle = this.getGridMenuTitleOutputString('syncResizeTitle');
+      this._gridOptions.gridMenu.columnTitle = this.getPickerTitleOutputString('columnTitle', 'gridMenu');
+      this._gridOptions.gridMenu.forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'gridMenu');
+      this._gridOptions.gridMenu.syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'gridMenu');
 
       // translate all columns (including non-visible)
       this.translateItems(this.allColumns, 'headerKey', 'name');
 
       // re-initialize the Grid Menu, that will recreate all the menus & list
-      // and so will act like a translate
-      // we do this instead of recreating the Grid Menu control itself (because doing so would destroy any previous commands attached)
-      this.gridMenuControl.init(this._grid);
+      // doing an "init()" won't drop any existing command attached
+      if (this.gridMenuControl.init) {
+        this.gridMenuControl.init(this._grid);
+      }
     }
   }
 
@@ -815,6 +828,12 @@ export class ControlAndPluginService {
     }
   }
 
+  private emptyColumnPickerTitles() {
+    this._gridOptions.columnPicker.columnTitle = '';
+    this._gridOptions.columnPicker.forceFitTitle = '';
+    this._gridOptions.columnPicker.syncResizeTitle = '';
+  }
+
   private emptyGridMenuTitles() {
     this._gridOptions.gridMenu.customTitle = '';
     this._gridOptions.gridMenu.columnTitle = '';
@@ -828,9 +847,9 @@ export class ControlAndPluginService {
   private getDefaultGridMenuOptions(): GridMenu {
     return {
       customTitle: undefined,
-      columnTitle: this.getGridMenuTitleOutputString('columnTitle'),
-      forceFitTitle: this.getGridMenuTitleOutputString('forceFitTitle'),
-      syncResizeTitle: this.getGridMenuTitleOutputString('syncResizeTitle'),
+      columnTitle: this.getPickerTitleOutputString('columnTitle', 'gridMenu'),
+      forceFitTitle: this.getPickerTitleOutputString('forceFitTitle', 'gridMenu'),
+      syncResizeTitle: this.getPickerTitleOutputString('syncResizeTitle', 'gridMenu'),
       iconCssClass: 'fa fa-bars',
       menuWidth: 18,
       customItems: [],
@@ -859,13 +878,13 @@ export class ControlAndPluginService {
    * 2- else if user provided a title key, use it to translate the output title
    * 3- else if nothing is provided use
    */
-  private getGridMenuTitleOutputString(propName: string) {
+  private getPickerTitleOutputString(propName: string, pickerName: 'gridMenu' | 'columnPicker') {
     let output = '';
-    const gridMenu = this._gridOptions && this._gridOptions.gridMenu || {};
+    const picker = this._gridOptions && this._gridOptions[pickerName] || {};
     const enableTranslate = this._gridOptions && this._gridOptions.enableTranslate || false;
 
-    const title = gridMenu && gridMenu[propName];
-    const titleKey = gridMenu && gridMenu[`${propName}Key`];
+    const title = picker && picker[propName];
+    const titleKey = picker && picker[`${propName}Key`];
 
     if (titleKey) {
       output = this.translate.instant(titleKey || ' ');
