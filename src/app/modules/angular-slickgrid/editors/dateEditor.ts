@@ -1,5 +1,5 @@
 import { mapFlatpickrDateFormatWithFieldType, mapMomentDateFormatWithFieldType } from './../services/utilities';
-import { Column, Editor, FieldType, GridOption } from './../models/index';
+import { Column, Editor, EditorValidator, EditorValidatorOutput, FieldType, GridOption } from './../models/index';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
@@ -23,14 +23,28 @@ export class DateEditor implements Editor {
     this.init();
   }
 
+  /** Get Column Definition object */
+  get columnDef(): Column {
+    return this.args && this.args.column || {};
+  }
+
+  /** Get Column Editor object */
+  get columnEditor(): any {
+    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+  }
+
+  /** Get the Validator function, can be passed in Editor property or Column Definition */
+  get validator(): EditorValidator {
+    return this.columnEditor.validator || this.columnDef.validator;
+  }
+
   init(): void {
     if (this.args && this.args.column) {
-      const columnDef = this.args.column;
       const gridOptions = this.args.grid.getOptions() as GridOption;
       this.defaultDate = (this.args.item) ? this.args.item[this.args.column.field] : null;
-      const inputFormat = mapFlatpickrDateFormatWithFieldType(columnDef.type || FieldType.dateIso);
-      const outputFormat = mapFlatpickrDateFormatWithFieldType(columnDef.outputType || FieldType.dateUtc);
-      let currentLocale = this.getCurrentLocale(columnDef, gridOptions);
+      const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
+      const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || FieldType.dateUtc);
+      let currentLocale = this.getCurrentLocale(this.columnDef, gridOptions);
       if (currentLocale.length > 2) {
         currentLocale = currentLocale.substring(0, 2);
       }
@@ -127,7 +141,6 @@ export class DateEditor implements Editor {
     }
 
     const outputFormat = mapMomentDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
-
     item[this.args.column.field] = moment(state, outputFormat).toDate();
   }
 
@@ -135,16 +148,16 @@ export class DateEditor implements Editor {
     return (!(this.$input.val() === '' && this.defaultDate == null)) && (this.$input.val() !== this.defaultDate);
   }
 
-  validate() {
-    const column = (this.args && this.args.column) as Column;
-
-    if (column.validator) {
-      const validationResults = column.validator(this.$input.val(), this.args);
+  validate(): EditorValidatorOutput {
+    if (this.validator) {
+      const validationResults = this.validator(this.$input.val());
       if (!validationResults.valid) {
         return validationResults;
       }
     }
 
+    // by default the editor is always valid
+    // if user want it to be a required checkbox, he would have to provide his own validator
     return {
       valid: true,
       msg: null

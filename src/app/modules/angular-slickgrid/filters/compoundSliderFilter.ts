@@ -130,7 +130,7 @@ export class CompoundSliderFilter implements Filter {
     return `<input type="range" id="rangeInput_${this.columnDef.field}"
               name="rangeInput_${this.columnDef.field}"
               defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
-              class="form-control search-filter range compound-slider"
+              class="form-control slider-filter-input range compound-slider"
               onmousemove="$('#rangeOuput_${this.columnDef.field}').html(rangeInput_${this.columnDef.field}.value)" />`;
   }
 
@@ -178,7 +178,7 @@ export class CompoundSliderFilter implements Filter {
     this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
     this.$filterInputElm = $(this.buildTemplateHtmlString());
     const $filterContainerElm = $(`<div class="form-group search-filter"></div>`);
-    this.$containerInputGroupElm = $(`<div class="input-group"></div>`);
+    this.$containerInputGroupElm = $(`<div class="input-group search-filter"></div>`);
     const $operatorInputGroupAddon = $(`<span class="input-group-addon operator"></span>`);
 
     /* the DOM element final structure will be

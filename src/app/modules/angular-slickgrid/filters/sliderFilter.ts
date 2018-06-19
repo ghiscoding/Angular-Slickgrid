@@ -115,20 +115,20 @@ export class SliderFilter implements Filter {
 
     if (this.filterParams.hideSliderNumber) {
       return `
-      <div>
+      <div class="search-filter">
         <input type="range" id="rangeInput_${this.columnDef.field}"
           name="rangeInput_${this.columnDef.field}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
-          class="form-control search-filter range" />
+          class="form-control slider-filter-input range" />
       </div>`;
     }
 
     return `
-      <div class="input-group">
+      <div class="input-group search-filter">
         <input type="range" id="rangeInput_${this.columnDef.field}"
           name="rangeInput_${this.columnDef.field}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
-          class="form-control search-filter range"
+          class="form-control slider-filter-input range"
           onmousemove="$('#rangeOuput_${this.columnDef.field}').html(rangeInput_${this.columnDef.field}.value)" />
         <span class="input-group-addon slider-value" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span>
       </div>`;

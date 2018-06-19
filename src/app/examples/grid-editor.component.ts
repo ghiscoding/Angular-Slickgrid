@@ -3,9 +3,10 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
   Column,
-  CustomEditorValidator,
+  EditorValidator,
   Editors,
   FieldType,
+  Filters,
   Formatters,
   GridOption,
   OnEventArgs,
@@ -17,7 +18,7 @@ import { CustomInputEditor } from './custom-inputEditor';
 declare var Slick: any;
 
 // you can create custom validator to pass to an inline editor
-const myCustomTitleValidator: CustomEditorValidator = (value) => {
+const myCustomTitleValidator: EditorValidator = (value) => {
   if (value == null || value === undefined || !value.length) {
     return { valid: false, msg: 'This is a required field' };
   } else if (!/^Task\s\d+$/.test(value)) {
@@ -69,152 +70,186 @@ export class GridEditorComponent implements OnInit {
   }
 
   prepareGrid() {
-    this.columnDefinitions = [{
-      id: 'edit',
-      field: 'id',
-      excludeFromHeaderMenu: true,
-      formatter: Formatters.editIcon,
-      minWidth: 30,
-      maxWidth: 30,
-      // use column onCellClick OR (sgOnClick)="onCellClicked()" you can see down below
-      onCellClick: (e: Event, args: OnEventArgs) => {
-        console.log(args);
-        this.alertWarning = `Editing: ${args.dataContext.title}`;
-        this.angularGrid.gridService.highlightRow(args.row, 1500);
-        this.angularGrid.gridService.setSelectedRow(args.row);
-        // e.stopImmediatePropagation();
-      }
-    }, {
-      id: 'delete',
-      field: 'id',
-      excludeFromHeaderMenu: true,
-      formatter: Formatters.deleteIcon,
-      minWidth: 30,
-      maxWidth: 30,
-      // use column onCellClick OR (sgOnClick)="onCellClicked()" you can see down below
-      /*
-      onCellClick: (e: Event, args: OnEventArgs) => {
-        console.log(args);
-        this.alertWarning = `Deleting: ${args.dataContext.title}`;
-      }
-      */
-    }, {
-      id: 'title',
-      name: 'Title',
-      field: 'title',
-      sortable: true,
-      type: FieldType.string,
-      editor: {
-        model: Editors.longText,
-      },
-      validator: myCustomTitleValidator, // use a custom validator
-      minWidth: 100,
-      onCellChange: (e: Event, args: OnEventArgs) => {
-        console.log(args);
-        this.alertWarning = `Updated Title: ${args.dataContext.title}`;
-      }
-    }, {
-      id: 'title2',
-      name: 'Title, Custom Editor',
-      field: 'title',
-      sortable: true,
-      type: FieldType.string,
-      editor: {
-        model: CustomInputEditor
-      },
-      validator: myCustomTitleValidator, // use a custom validator
-      minWidth: 70
-    }, {
-      id: 'duration',
-      name: 'Duration (days)',
-      field: 'duration',
-      sortable: true,
-      type: FieldType.number,
-      editor: {
-        // default is 0 decimals, if no decimals is passed it will accept 0 or more decimals
-        // however if you pass the decimalPlaces, it will validate with that maximum
-        // the default validation error message is in English but you can override it by using validatorErrorMessage in params
-        model: Editors.float,
-        params: { decimalPlaces: 2, validatorErrorMessage: this.translate.instant('INVALID_FLOAT', { maxDecimal: 2 }) },
-      },
-      minWidth: 100
-    }, {
-      id: 'complete',
-      name: '% Complete',
-      field: 'percentComplete',
-      formatter: Formatters.multiple,
-      type: FieldType.number,
-      editor: {
-        model: Editors.singleSelect,
-        collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k })),
-        collectionFilterBy: {
-          property: 'value',
-          value: 0,
-          operator: OperatorType.notEqual
-        },
-        collectionSortBy: {
-          property: 'label',
-          sortDesc: true
+    this.columnDefinitions = [
+      {
+        id: 'edit',
+        field: 'id',
+        excludeFromHeaderMenu: true,
+        formatter: Formatters.editIcon,
+        minWidth: 30,
+        maxWidth: 30,
+        // use onCellClick OR grid.onClick.subscribe which you can see down below
+        onCellClick: (e: Event, args: OnEventArgs) => {
+          console.log(args);
+          this.alertWarning = `Editing: ${args.dataContext.title}`;
+          this.angularGrid.gridService.highlightRow(args.row, 1500);
+          this.angularGrid.gridService.setSelectedRow(args.row);
         }
-      },
-      minWidth: 100,
-      params: {
-        formatters: [ Formatters.collectionEditor, Formatters.percentCompleteBar ]
-      }
-    }, {
-      id: 'start',
-      name: 'Start',
-      field: 'start',
-      formatter: Formatters.dateIso,
-      sortable: true,
-      minWidth: 100,
-      type: FieldType.date,
-      editor: {
-        model: Editors.date
-      }
-    }, {
-      id: 'finish',
-      name: 'Finish',
-      field: 'finish',
-      formatter: Formatters.dateIso,
-      sortable: true,
-      minWidth: 100,
-      type: FieldType.date,
-      editor: {
-        model: Editors.date
-      }
-    }, {
-      id: 'effort-driven',
-      name: 'Effort Driven',
-      field: 'effortDriven',
-      formatter: Formatters.checkmark,
-      type: FieldType.number,
-      editor: {
-        model: Editors.checkbox
-      },
-      minWidth: 60
-    }, {
-      id: 'prerequisites',
-      name: 'Prerequisites',
-      field: 'prerequisites',
-      sortable: true,
-      type: FieldType.string,
-      editor: {
-        model: Editors.multipleSelect,
-        collection: Array.from(Array(12).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
-        collectionSortBy: {
-          property: 'label',
-          sortDesc: true
-        },
-        collectionFilterBy: {
-          property: 'label',
-          value: [ 'Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5', 'Task 6' ],
-          operator: OperatorType.contains
+      }, {
+        id: 'delete',
+        field: 'id',
+        excludeFromHeaderMenu: true,
+        formatter: Formatters.deleteIcon,
+        minWidth: 30,
+        maxWidth: 30,
+        // use onCellClick OR grid.onClick.subscribe which you can see down below
+        /*
+        onCellClick: (e: Event, args: OnEventArgs) => {
+          console.log(args);
+          this.alertWarning = `Deleting: ${args.dataContext.title}`;
         }
-      },
-      minWidth: 100
-    }
-  ];
+        */
+      }, {
+        id: 'title',
+        name: 'Title',
+        field: 'title',
+        filterable: true,
+        sortable: true,
+        type: FieldType.string,
+        editor: {
+          model: Editors.longText,
+          validator: myCustomTitleValidator, // use a custom validator
+        },
+        minWidth: 100,
+        onCellChange: (e: Event, args: OnEventArgs) => {
+          console.log(args);
+          this.alertWarning = `Updated Title: ${args.dataContext.title}`;
+        }
+      }, {
+        id: 'title2',
+        name: 'Title, Custom Editor',
+        field: 'title',
+        filterable: true,
+        sortable: true,
+        type: FieldType.string,
+        editor: {
+          model: CustomInputEditor,
+          validator: myCustomTitleValidator, // use a custom validator
+        },
+        minWidth: 70
+      }, {
+        id: 'duration',
+        name: 'Duration (days)',
+        field: 'duration',
+        filterable: true,
+        sortable: true,
+        type: FieldType.number,
+        filter: { model: Filters.slider, params: { hideSliderNumber: false } },
+        editor: {
+          model: Editors.slider,
+          minValue: 0,
+          maxValue: 100,
+          // params: { hideSliderNumber: true },
+        },
+        /*
+        editor: {
+          // default is 0 decimals, if no decimals is passed it will accept 0 or more decimals
+          // however if you pass the "decimalPlaces", it will validate with that maximum
+          model: Editors.float,
+          minValue: 0,
+          maxValue: 365,
+          // the default validation error message is in English but you can override it by using "errorMessage"
+          // errorMessage: this.i18n.tr('INVALID_FLOAT', { maxDecimal: 2 }),
+          params: { decimalPlaces: 2 },
+        },
+        */
+        minWidth: 100
+      }, {
+        id: 'complete',
+        name: '% Complete',
+        field: 'percentComplete',
+        filterable: true,
+        formatter: Formatters.multiple,
+        type: FieldType.number,
+        editor: {
+          model: Editors.singleSelect,
+          collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k })),
+          collectionSortBy: {
+            property: 'label',
+            sortDesc: true
+          },
+          collectionFilterBy: {
+            property: 'value',
+            value: 0,
+            operator: OperatorType.notEqual
+          }
+        },
+        minWidth: 100,
+        params: {
+          formatters: [Formatters.collectionEditor, Formatters.percentCompleteBar],
+        }
+      }, {
+        id: 'start',
+        name: 'Start',
+        field: 'start',
+        filterable: true,
+        filter: { model: Filters.compoundDate },
+        formatter: Formatters.dateIso,
+        sortable: true,
+        minWidth: 100,
+        type: FieldType.date,
+        editor: {
+          model: Editors.date
+        },
+      }, {
+        id: 'finish',
+        name: 'Finish',
+        field: 'finish',
+        filterable: true,
+        filter: { model: Filters.compoundDate },
+        formatter: Formatters.dateIso,
+        sortable: true,
+        minWidth: 100,
+        type: FieldType.date,
+        editor: {
+          model: Editors.date
+        },
+      }, {
+        id: 'effort-driven',
+        name: 'Effort Driven',
+        field: 'effortDriven',
+        filterable: true,
+        type: FieldType.boolean,
+        filter: {
+          model: Filters.singleSelect,
+          collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
+        },
+        formatter: Formatters.checkmark,
+        editor: {
+          model: Editors.checkbox,
+        },
+        minWidth: 70
+      }, {
+        id: 'prerequisites',
+        name: 'Prerequisites',
+        field: 'prerequisites',
+        filterable: true,
+        minWidth: 100,
+        sortable: true,
+        type: FieldType.string,
+        editor: {
+          model: Editors.multipleSelect,
+          collection: Array.from(Array(12).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
+          collectionSortBy: {
+            property: 'label',
+            sortDesc: true
+          },
+          collectionFilterBy: {
+            property: 'label',
+            value: ['Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5', 'Task 6'],
+            operator: OperatorType.contains
+          }
+        },
+        filter: {
+          model: Filters.multipleSelect,
+          filterOptions: {
+            autoDropWidth: true
+          },
+          operator: OperatorType.inContains,
+          collection: Array.from(Array(12).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
+        }
+      }
+    ];
 
     this.gridOptions = {
       asyncEditorLoading: false,
@@ -227,6 +262,7 @@ export class GridEditorComponent implements OnInit {
       enableCellNavigation: true,
       enableColumnPicker: true,
       enableExcelCopyBuffer: true,
+      enableFiltering: true,
       editCommandHandler: (item, column, editCommand) => {
         this._commandQueue.push(editCommand);
         editCommand.execute();
