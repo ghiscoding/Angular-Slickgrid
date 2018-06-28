@@ -133,9 +133,6 @@ export const Formatters = {
    */
   multiple: multipleFormatter,
 
-  /** alias of the decimal formatter */
-  number: decimalFormatter,
-
   /** Takes a cell value number (between 0.0-1.0) and displays a red (<50) or green (>=50) bar */
   percent: percentFormatter,
 
