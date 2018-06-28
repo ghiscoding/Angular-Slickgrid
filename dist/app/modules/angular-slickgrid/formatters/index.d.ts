@@ -15,6 +15,7 @@ export declare const Formatters: {
     dateTimeUs: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateTimeUsAmPm: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     deleteIcon: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    decimal: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dollar: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dollarColored: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dollarColoredBold: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;

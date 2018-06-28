@@ -1830,7 +1830,7 @@ class InputFilter {
      * @return {?}
      */
     get operator() {
-        return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
+        return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator);
     }
     /**
      * Initialize the Filter
@@ -8889,6 +8889,17 @@ const dateUsFormatter = (row, cell, value, columnDef, dataContext) => value ? mo
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+const decimalFormatter = (row, cell, value, columnDef, dataContext) => {
+    const /** @type {?} */ params = columnDef.params || {};
+    const /** @type {?} */ minDecimalPlaces = params.minDecimalPlaces || params.decimalPlaces || 2;
+    const /** @type {?} */ maxDecimalPlaces = params.maxDecimalPlaces || 2;
+    return isNaN(+value) ? value : `${decimalFormatted(value, minDecimalPlaces, maxDecimalPlaces)}`;
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 const deleteIconFormatter = (row, cell, value, columnDef, dataContext) => `<i class="fa fa-trash pointer delete-icon" aria-hidden="true"></i>`;
 
 /**
@@ -9220,6 +9231,12 @@ const Formatters = {
     dateTimeUsAmPm: dateTimeUsAmPmFormatter,
     /** Displays a Font-Awesome delete icon (fa-trash) */
     deleteIcon: deleteIconFormatter,
+    /**
+       * Display the value as x decimals formatted, defaults to 2 decimals.
+       * You can pass "decimalPlaces" or "minDecimalPlaces" and/or "maxDecimalPlaces" to the generic "params" property, example:: `{ formatter: Formatters.decimal, params: { decimalPlaces: 3 }}`
+       * The property "decimalPlaces" is an alias of "minDecimalPlaces"
+       */
+    decimal: decimalFormatter,
     /** Display the value as 2 decimals formatted with dollar sign '$' at the end of of the value */
     dollar: dollarFormatter,
     /** Display the value as 2 decimals formatted with dollar sign '$' at the end of of the value, change color of text to red/green on negative/positive value */
@@ -10463,5 +10480,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, SliderEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, CompoundSliderFilter as ɵba, InputFilter as ɵbb, MultipleSelectFilter as ɵbd, SelectFilter as ɵbf, SingleSelectFilter as ɵbe, SliderFilter as ɵbc, arrayToCsvFormatter as ɵbg, boldFormatter as ɵbh, checkboxFormatter as ɵbi, checkmarkFormatter as ɵbj, collectionEditorFormatter as ɵbm, collectionFormatter as ɵbl, complexObjectFormatter as ɵbk, dateIsoFormatter as ɵbn, dateTimeIsoAmPmFormatter as ɵbp, dateTimeIsoFormatter as ɵbo, dateTimeUsAmPmFormatter as ɵbs, dateTimeUsFormatter as ɵbr, dateUsFormatter as ɵbq, deleteIconFormatter as ɵbt, dollarColoredBoldFormatter as ɵbw, dollarColoredFormatter as ɵbv, dollarFormatter as ɵbu, editIconFormatter as ɵbx, hyperlinkFormatter as ɵby, hyperlinkUriPrefixFormatter as ɵbz, infoIconFormatter as ɵca, lowercaseFormatter as ɵcb, maskFormatter as ɵcc, multipleFormatter as ɵcd, percentCompleteBarFormatter as ɵcg, percentCompleteFormatter as ɵcf, percentFormatter as ɵce, percentSymbolFormatter as ɵch, progressBarFormatter as ɵci, translateBooleanFormatter as ɵck, translateFormatter as ɵcj, uppercaseFormatter as ɵcl, yesNoFormatter as ɵcm, avgTotalsDollarFormatter as ɵco, avgTotalsFormatter as ɵcn, avgTotalsPercentageFormatter as ɵcp, maxTotalsFormatter as ɵcq, minTotalsFormatter as ɵcr, sumTotalsBoldFormatter as ɵct, sumTotalsColoredFormatter as ɵcu, sumTotalsDollarBoldFormatter as ɵcw, sumTotalsDollarColoredBoldFormatter as ɵcy, sumTotalsDollarColoredFormatter as ɵcx, sumTotalsDollarFormatter as ɵcv, sumTotalsFormatter as ɵcs, dateIsoSorter as ɵda, dateSorter as ɵcz, dateUsShortSorter as ɵdc, dateUsSorter as ɵdb, numericSorter as ɵdd, stringSorter as ɵde };
+export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, SliderEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, CompoundSliderFilter as ɵba, InputFilter as ɵbb, MultipleSelectFilter as ɵbd, SelectFilter as ɵbf, SingleSelectFilter as ɵbe, SliderFilter as ɵbc, arrayToCsvFormatter as ɵbg, boldFormatter as ɵbh, checkboxFormatter as ɵbi, checkmarkFormatter as ɵbj, collectionEditorFormatter as ɵbm, collectionFormatter as ɵbl, complexObjectFormatter as ɵbk, dateIsoFormatter as ɵbn, dateTimeIsoAmPmFormatter as ɵbp, dateTimeIsoFormatter as ɵbo, dateTimeUsAmPmFormatter as ɵbs, dateTimeUsFormatter as ɵbr, dateUsFormatter as ɵbq, decimalFormatter as ɵbu, deleteIconFormatter as ɵbt, dollarColoredBoldFormatter as ɵbx, dollarColoredFormatter as ɵbw, dollarFormatter as ɵbv, editIconFormatter as ɵby, hyperlinkFormatter as ɵbz, hyperlinkUriPrefixFormatter as ɵca, infoIconFormatter as ɵcb, lowercaseFormatter as ɵcc, maskFormatter as ɵcd, multipleFormatter as ɵce, percentCompleteBarFormatter as ɵch, percentCompleteFormatter as ɵcg, percentFormatter as ɵcf, percentSymbolFormatter as ɵci, progressBarFormatter as ɵcj, translateBooleanFormatter as ɵcl, translateFormatter as ɵck, uppercaseFormatter as ɵcm, yesNoFormatter as ɵcn, avgTotalsDollarFormatter as ɵcp, avgTotalsFormatter as ɵco, avgTotalsPercentageFormatter as ɵcq, maxTotalsFormatter as ɵcr, minTotalsFormatter as ɵcs, sumTotalsBoldFormatter as ɵcu, sumTotalsColoredFormatter as ɵcv, sumTotalsDollarBoldFormatter as ɵcx, sumTotalsDollarColoredBoldFormatter as ɵcz, sumTotalsDollarColoredFormatter as ɵcy, sumTotalsDollarFormatter as ɵcw, sumTotalsFormatter as ɵct, dateIsoSorter as ɵdb, dateSorter as ɵda, dateUsShortSorter as ɵdd, dateUsSorter as ɵdc, numericSorter as ɵde, stringSorter as ɵdf };
 //# sourceMappingURL=angular-slickgrid.js.map

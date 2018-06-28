@@ -1298,7 +1298,7 @@ var InputFilter = /** @class */ (function () {
     });
     Object.defineProperty(InputFilter.prototype, "operator", {
         get: function () {
-            return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
+            return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator);
         },
         enumerable: true,
         configurable: true
@@ -6313,6 +6313,12 @@ var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { 
 var moment$14 = moment_;
 var FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
 var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$14(value).format(FORMAT$11) : ''; };
+var decimalFormatter = function (row, cell, value, columnDef, dataContext) {
+    var params = columnDef.params || {};
+    var minDecimalPlaces = params.minDecimalPlaces || params.decimalPlaces || 2;
+    var maxDecimalPlaces = params.maxDecimalPlaces || 2;
+    return isNaN(+value) ? value : "" + decimalFormatted(value, minDecimalPlaces, maxDecimalPlaces);
+};
 var deleteIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-trash pointer delete-icon\" aria-hidden=\"true\"></i>"; };
 var dollarColoredBoldFormatter = function (row, cell, value, columnDef, dataContext) {
     if (isNaN(+value)) {
@@ -6500,6 +6506,7 @@ var Formatters = {
     dateTimeUs: dateTimeUsFormatter,
     dateTimeUsAmPm: dateTimeUsAmPmFormatter,
     deleteIcon: deleteIconFormatter,
+    decimal: decimalFormatter,
     dollar: dollarFormatter,
     dollarColored: dollarColoredFormatter,
     dollarColoredBold: dollarColoredBoldFormatter,
@@ -7424,44 +7431,45 @@ exports.ɵbo = dateTimeIsoFormatter;
 exports.ɵbs = dateTimeUsAmPmFormatter;
 exports.ɵbr = dateTimeUsFormatter;
 exports.ɵbq = dateUsFormatter;
+exports.ɵbu = decimalFormatter;
 exports.ɵbt = deleteIconFormatter;
-exports.ɵbw = dollarColoredBoldFormatter;
-exports.ɵbv = dollarColoredFormatter;
-exports.ɵbu = dollarFormatter;
-exports.ɵbx = editIconFormatter;
-exports.ɵby = hyperlinkFormatter;
-exports.ɵbz = hyperlinkUriPrefixFormatter;
-exports.ɵca = infoIconFormatter;
-exports.ɵcb = lowercaseFormatter;
-exports.ɵcc = maskFormatter;
-exports.ɵcd = multipleFormatter;
-exports.ɵcg = percentCompleteBarFormatter;
-exports.ɵcf = percentCompleteFormatter;
-exports.ɵce = percentFormatter;
-exports.ɵch = percentSymbolFormatter;
-exports.ɵci = progressBarFormatter;
-exports.ɵck = translateBooleanFormatter;
-exports.ɵcj = translateFormatter;
-exports.ɵcl = uppercaseFormatter;
-exports.ɵcm = yesNoFormatter;
-exports.ɵco = avgTotalsDollarFormatter;
-exports.ɵcn = avgTotalsFormatter;
-exports.ɵcp = avgTotalsPercentageFormatter;
-exports.ɵcq = maxTotalsFormatter;
-exports.ɵcr = minTotalsFormatter;
-exports.ɵct = sumTotalsBoldFormatter;
-exports.ɵcu = sumTotalsColoredFormatter;
-exports.ɵcw = sumTotalsDollarBoldFormatter;
-exports.ɵcy = sumTotalsDollarColoredBoldFormatter;
-exports.ɵcx = sumTotalsDollarColoredFormatter;
-exports.ɵcv = sumTotalsDollarFormatter;
-exports.ɵcs = sumTotalsFormatter;
-exports.ɵda = dateIsoSorter;
-exports.ɵcz = dateSorter;
-exports.ɵdc = dateUsShortSorter;
-exports.ɵdb = dateUsSorter;
-exports.ɵdd = numericSorter;
-exports.ɵde = stringSorter;
+exports.ɵbx = dollarColoredBoldFormatter;
+exports.ɵbw = dollarColoredFormatter;
+exports.ɵbv = dollarFormatter;
+exports.ɵby = editIconFormatter;
+exports.ɵbz = hyperlinkFormatter;
+exports.ɵca = hyperlinkUriPrefixFormatter;
+exports.ɵcb = infoIconFormatter;
+exports.ɵcc = lowercaseFormatter;
+exports.ɵcd = maskFormatter;
+exports.ɵce = multipleFormatter;
+exports.ɵch = percentCompleteBarFormatter;
+exports.ɵcg = percentCompleteFormatter;
+exports.ɵcf = percentFormatter;
+exports.ɵci = percentSymbolFormatter;
+exports.ɵcj = progressBarFormatter;
+exports.ɵcl = translateBooleanFormatter;
+exports.ɵck = translateFormatter;
+exports.ɵcm = uppercaseFormatter;
+exports.ɵcn = yesNoFormatter;
+exports.ɵcp = avgTotalsDollarFormatter;
+exports.ɵco = avgTotalsFormatter;
+exports.ɵcq = avgTotalsPercentageFormatter;
+exports.ɵcr = maxTotalsFormatter;
+exports.ɵcs = minTotalsFormatter;
+exports.ɵcu = sumTotalsBoldFormatter;
+exports.ɵcv = sumTotalsColoredFormatter;
+exports.ɵcx = sumTotalsDollarBoldFormatter;
+exports.ɵcz = sumTotalsDollarColoredBoldFormatter;
+exports.ɵcy = sumTotalsDollarColoredFormatter;
+exports.ɵcw = sumTotalsDollarFormatter;
+exports.ɵct = sumTotalsFormatter;
+exports.ɵdb = dateIsoSorter;
+exports.ɵda = dateSorter;
+exports.ɵdd = dateUsShortSorter;
+exports.ɵdc = dateUsSorter;
+exports.ɵde = numericSorter;
+exports.ɵdf = stringSorter;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
