@@ -12,6 +12,7 @@ import { dateTimeIsoAmPmFormatter } from './dateTimeIsoAmPmFormatter';
 import { dateTimeUsAmPmFormatter } from './dateTimeUsAmPmFormatter';
 import { dateTimeUsFormatter } from './dateTimeUsFormatter';
 import { dateUsFormatter } from './dateUsFormatter';
+import { decimalFormatter } from './decimalFormatter';
 import { deleteIconFormatter } from './deleteIconFormatter';
 import { dollarColoredBoldFormatter } from './dollarColoredBoldFormatter';
 import { dollarColoredFormatter } from './dollarColoredFormatter';
@@ -89,6 +90,13 @@ export const Formatters = {
   /** Displays a Font-Awesome delete icon (fa-trash) */
   deleteIcon: deleteIconFormatter,
 
+  /**
+   * Display the value as x decimals formatted, defaults to 2 decimals.
+   * You can pass "decimalPlaces" or "minDecimalPlaces" and/or "maxDecimalPlaces" to the generic "params" property, example:: `{ formatter: Formatters.decimal, params: { decimalPlaces: 3 }}`
+   * The property "decimalPlaces" is an alias of "minDecimalPlaces"
+   */
+  decimal: decimalFormatter,
+
   /** Display the value as 2 decimals formatted with dollar sign '$' at the end of of the value */
   dollar: dollarFormatter,
 
@@ -124,6 +132,9 @@ export const Formatters = {
    * { field: 'title', formatter: Formatters.multiple, params: { formatters: [ Formatters.lowercase, Formatters.uppercase ] }
    */
   multiple: multipleFormatter,
+
+  /** alias of the decimal formatter */
+  number: decimalFormatter,
 
   /** Takes a cell value number (between 0.0-1.0) and displays a red (<50) or green (>=50) bar */
   percent: percentFormatter,
