@@ -404,8 +404,8 @@ input.slider-filter-input[type=range] {
   }
   &::-moz-range-thumb {
     border: none;
-    height: $slider-filter-thumb-size;
-    width: $slider-filter-thumb-size;
+    height: $slider-filter-thumb-size - 2px;
+    width: $slider-filter-thumb-size - 2px;
     border-radius: 50%;
     border: $slider-filter-thumb-border;
     background: $slider-filter-thumb-color;
@@ -441,16 +441,17 @@ input.slider-filter-input[type=range] {
   }
   &::-ms-thumb {
     border: none;
-    height: $slider-filter-thumb-size;
-    width: $slider-filter-thumb-size;
+    height: $slider-filter-thumb-size - 2px;
+    width: $slider-filter-thumb-size - 2px;
     border-radius: 50%;
     border: $slider-filter-thumb-border;
     background: $slider-filter-thumb-color;
-    margin-top: 2px;
+    margin-top: 1px;
   }
 }
 .search-filter {
   .slider-value {
+    padding: 0;
     .input-group-text {
       padding: $slider-filter-number-padding !important;
       font-size: $slider-filter-number-font-size !important;
@@ -471,6 +472,7 @@ input.slider-editor-input[type=range] {
 
 .slider-editor {
   .slider-value {
+    padding: 0;
     .input-group-text {
       padding: $slider-editor-number-padding !important;
       font-size: $slider-filter-number-font-size !important;
