@@ -178,8 +178,9 @@ export class GridService {
   /**
    * Add an item (data item) to the datagrid
    * @param object dataItem: item object holding all properties of that row
+   * @param shouldHighlightRow do we want to highlight the row after adding item
    */
-  addItemToDatagrid(item) {
+  addItemToDatagrid(item, shouldHighlightRow = true) {
     if (!this._grid || !this._gridOptions || !this._dataView) {
       throw new Error('We could not find SlickGrid Grid, DataView objects');
     }
@@ -190,7 +191,11 @@ export class GridService {
     const row = 0;
     this._dataView.insertItem(row, item);
     this._grid.scrollRowIntoView(0); // scroll to row 0
-    this.highlightRow(0, 1500);
+
+    // highlight the row we just added, if defined
+    if (shouldHighlightRow) {
+      this.highlightRow(0, 1500);
+    }
 
     // refresh dataview & grid
     this._dataView.refresh();
@@ -243,8 +248,9 @@ export class GridService {
    * Update an existing item in the datagrid by it's id and new properties
    * @param itemId: item unique id
    * @param object item: item object holding all properties of that row
+   * @param shouldHighlightRow do we want to highlight the row after update
    */
-  updateDataGridItemById(itemId: number | string, item: any) {
+  updateDataGridItemById(itemId: number | string, item: any, shouldHighlightRow = true) {
     if (itemId === undefined) {
       throw new Error(`Cannot update a row without a valid "id"`);
     }
@@ -259,8 +265,10 @@ export class GridService {
       // Update the item itself inside the dataView
       this._dataView.updateItem(itemId, item);
 
-      // highlight the row we just updated
-      this.highlightRow(row, 1500);
+      // highlight the row we just updated, if defined
+      if (shouldHighlightRow) {
+        this.highlightRow(row, 1500);
+      }
 
       // refresh dataview & grid
       this._dataView.refresh();
