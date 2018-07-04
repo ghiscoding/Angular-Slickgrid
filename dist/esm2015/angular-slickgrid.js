@@ -1256,7 +1256,7 @@ class CompoundDateFilter {
             pickerOptions.enableTime = true;
         }
         const /** @type {?} */ placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
-        const /** @type {?} */ $filterInputElm = $(`<div class=flatpickr><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
+        const /** @type {?} */ $filterInputElm = $(`<div class="flatpickr"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
         this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : null;
         return $filterInputElm;
     }
@@ -1298,10 +1298,10 @@ class CompoundDateFilter {
         this.$filterInputElm = this.buildDatePickerInput(searchTerm);
         const /** @type {?} */ $filterContainerElm = $(`<div class="form-group search-filter"></div>`);
         const /** @type {?} */ $containerInputGroup = $(`<div class="input-group flatpickr"></div>`);
-        const /** @type {?} */ $operatorInputGroupAddon = $(`<div class="input-group-addon operator"></div>`);
+        const /** @type {?} */ $operatorInputGroupAddon = $(`<div class="input-group-addon input-group-prepend operator"></div>`);
         /* the DOM element final structure will be
               <div class="input-group">
-                <div class="input-group-addon operator">
+                <div class="input-group-addon input-group-prepend operator">
                   <select class="form-control"></select>
                 </div>
                 <div class=flatpickr>
@@ -1529,10 +1529,10 @@ class CompoundInputFilter {
         this.$filterInputElm = $(this.buildInputHtmlString());
         const /** @type {?} */ $filterContainerElm = $(`<div class="form-group search-filter"></div>`);
         const /** @type {?} */ $containerInputGroup = $(`<div class="input-group"></div>`);
-        const /** @type {?} */ $operatorInputGroupAddon = $(`<div class="input-group-addon operator"></div>`);
+        const /** @type {?} */ $operatorInputGroupAddon = $(`<div class="input-group-addon input-group-prepend operator"></div>`);
         /* the DOM element final structure will be
               <div class="input-group">
-                <div class="input-group-addon operator">
+                <div class="input-group-addon input-group-prepend operator">
                   <select class="form-control"></select>
                 </div>
                 <input class="form-control" type="text" />
@@ -1664,7 +1664,7 @@ class CompoundSliderFilter {
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val(clearedValue);
             if (!this.filterParams.hideSliderNumber) {
-                this.$containerInputGroupElm.children('span.input-group-addon').last().html(clearedValue);
+                this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(clearedValue);
             }
             this.onTriggerEvent(undefined, true);
         }
@@ -1686,7 +1686,7 @@ class CompoundSliderFilter {
     setValues(values) {
         if (values && Array.isArray(values)) {
             this.$filterInputElm.val(values[0]);
-            this.$containerInputGroupElm.children('span.input-group-addon').last().html(values[0]);
+            this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(values[0]);
         }
     }
     /**
@@ -1702,7 +1702,7 @@ class CompoundSliderFilter {
               name="rangeInput_${this.columnDef.field}"
               defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
               class="form-control slider-filter-input range compound-slider"
-              onmousemove="$('#rangeOuput_${this.columnDef.field}').html(rangeInput_${this.columnDef.field}.value)" />`;
+              onmousemove="document.getElementById('rangeOuput_${this.columnDef.field}').innerHTML = rangeInput_${this.columnDef.field}.value" />`;
     }
     /**
      * Build HTML Template for the text (number) that is shown appended to the slider
@@ -1711,7 +1711,7 @@ class CompoundSliderFilter {
     buildTemplateSliderTextHtmlString() {
         const /** @type {?} */ minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
         const /** @type {?} */ defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
-        return `<span class="input-group-addon slider-value" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span>`;
+        return `<div class="input-group-addon input-group-append slider-value"><span class="input-group-text" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span></div>`;
     }
     /**
      * Build HTML Template select dropdown (operator)
@@ -1754,14 +1754,14 @@ class CompoundSliderFilter {
         this.$filterInputElm = $(this.buildTemplateHtmlString());
         const /** @type {?} */ $filterContainerElm = $(`<div class="form-group search-filter"></div>`);
         this.$containerInputGroupElm = $(`<div class="input-group search-filter"></div>`);
-        const /** @type {?} */ $operatorInputGroupAddon = $(`<span class="input-group-addon operator"></span>`);
+        const /** @type {?} */ $operatorInputGroupAddon = $(`<span class="input-group-addon input-group-prepend operator"></span>`);
         /* the DOM element final structure will be
               <div class="input-group">
-                <div class="input-group-addon operator">
+                <div class="input-group-addon input-group-prepend operator">
                   <select class="form-control"></select>
                 </div>
                 <input class="form-control" type="text" />
-                <span class="input-group-addon" id="rangeOuput_percentComplete">0</span>
+                <div class="input-group-addon input-group-prepend" id="rangeOuput_percentComplete"><span class="input-group-text">0</span></div>
               </div>
             */
         $operatorInputGroupAddon.append(this.$selectOperatorElm);
@@ -1769,7 +1769,7 @@ class CompoundSliderFilter {
         this.$containerInputGroupElm.append(this.$filterInputElm);
         if (!this.filterParams.hideSliderNumber) {
             const /** @type {?} */ $sliderTextInputAppendAddon = $(this.buildTemplateSliderTextHtmlString());
-            $sliderTextInputAppendAddon.html(searchTermInput);
+            $sliderTextInputAppendAddon.children().html(searchTermInput);
             this.$containerInputGroupElm.append($sliderTextInputAppendAddon);
         }
         // create the DOM element & add an ID and filter class
@@ -1830,7 +1830,7 @@ class InputFilter {
      * @return {?}
      */
     get operator() {
-        return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator);
+        return this.columnDef && this.columnDef.filter && this.columnDef.filter.operator || '';
     }
     /**
      * Initialize the Filter
@@ -2500,7 +2500,7 @@ class SliderFilter {
         if (this.$filterElm) {
             const /** @type {?} */ clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE$1;
             this.$filterElm.children('input').val(clearedValue);
-            this.$filterElm.children('span.input-group-addon').html(clearedValue);
+            this.$filterElm.children('div.input-group-addon.input-group-append').children().html(clearedValue);
             this.$filterElm.trigger('change');
         }
     }
@@ -2547,8 +2547,10 @@ class SliderFilter {
           name="rangeInput_${this.columnDef.field}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
           class="form-control slider-filter-input range"
-          onmousemove="$('#rangeOuput_${this.columnDef.field}').html(rangeInput_${this.columnDef.field}.value)" />
-        <span class="input-group-addon slider-value" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span>
+          onmousemove="document.getElementById('rangeOuput_${this.columnDef.field}').innerHTML = rangeInput_${this.columnDef.field}.value" />
+        <div class="input-group-addon input-group-append slider-value">
+          <span class="input-group-text" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span>
+        </div>
       </div>`;
     }
     /**
@@ -2564,7 +2566,7 @@ class SliderFilter {
         const /** @type {?} */ $filterElm = $(filterTemplate);
         const /** @type {?} */ searchTermInput = /** @type {?} */ ((searchTerm || '0'));
         $filterElm.children('input').val(searchTermInput);
-        $filterElm.children('span.input-group-addon').html(searchTermInput);
+        $filterElm.children('div.input-group-addon.input-group-append').children().html(searchTermInput);
         $filterElm.attr('id', `filter-${this.columnDef.id}`);
         $filterElm.data('columnId', this.columnDef.id);
         // if there's a search term, we will add the "filled" class for styling purposes
@@ -6581,9 +6583,10 @@ class GridService {
     /**
      * Add an item (data item) to the datagrid
      * @param {?} item
+     * @param {?=} shouldHighlightRow do we want to highlight the row after adding item
      * @return {?}
      */
-    addItemToDatagrid(item) {
+    addItemToDatagrid(item, shouldHighlightRow = true) {
         if (!this._grid || !this._gridOptions || !this._dataView) {
             throw new Error('We could not find SlickGrid Grid, DataView objects');
         }
@@ -6593,7 +6596,10 @@ class GridService {
         const /** @type {?} */ row = 0;
         this._dataView.insertItem(row, item);
         this._grid.scrollRowIntoView(0); // scroll to row 0
-        this.highlightRow(0, 1500);
+        // highlight the row we just added, if defined
+        if (shouldHighlightRow) {
+            this.highlightRow(0, 1500);
+        }
         // refresh dataview & grid
         this._dataView.refresh();
     }
@@ -6641,9 +6647,10 @@ class GridService {
      * Update an existing item in the datagrid by it's id and new properties
      * @param {?} itemId
      * @param {?} item
+     * @param {?=} shouldHighlightRow do we want to highlight the row after update
      * @return {?}
      */
-    updateDataGridItemById(itemId, item) {
+    updateDataGridItemById(itemId, item, shouldHighlightRow = true) {
         if (itemId === undefined) {
             throw new Error(`Cannot update a row without a valid "id"`);
         }
@@ -6655,8 +6662,10 @@ class GridService {
         if (gridIdx !== undefined) {
             // Update the item itself inside the dataView
             this._dataView.updateItem(itemId, item);
-            // highlight the row we just updated
-            this.highlightRow(row, 1500);
+            // highlight the row we just updated, if defined
+            if (shouldHighlightRow) {
+                this.highlightRow(row, 1500);
+            }
             // refresh dataview & grid
             this._dataView.refresh();
         }
@@ -8468,7 +8477,7 @@ class SliderEditor {
         const /** @type {?} */ editorTemplate = this.buildTemplateHtmlString();
         this.$editorElm = $(editorTemplate);
         this.$input = this.$editorElm.children('input');
-        this.$sliderNumber = this.$editorElm.children('span.input-group-addon');
+        this.$sliderNumber = this.$editorElm.children('div.input-group-addon.input-group-append').children();
         // watch on change event
         this.$editorElm
             .appendTo(this.args.container)
@@ -8590,8 +8599,8 @@ class SliderEditor {
           name="rangeInput_${this.columnDef.field}_${itemId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
           class="form-control slider-editor-input range"
-          onmousemove="$('#rangeOuput_${this.columnDef.field}_${itemId}').html(rangeInput_${this.columnDef.field}_${itemId}.value)" />
-        <span class="input-group-addon slider-value" id="rangeOuput_${this.columnDef.field}_${itemId}">${defaultValue}</span>
+          onmousemove="document.getElementById('rangeOuput_${this.columnDef.field}_${itemId}').innerHTML = rangeInput_${this.columnDef.field}_${itemId}.value" />
+        <div class="input-group-addon input-group-prepend slider-value"><span class="input-group-text" id="rangeOuput_${this.columnDef.field}_${itemId}">${defaultValue}</span></div>
       </div>`;
     }
 }
@@ -9115,7 +9124,7 @@ const progressBarFormatter = (row, cell, value, columnDef, dataContext) => {
         color = 'success';
     }
     return `<div class="progress">
-    <div class="progress-bar progress-bar-${color}" role="progressbar" aria-valuenow="${value}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ${value}%;">
+    <div class="progress-bar progress-bar-${color} bg-${color}" role="progressbar" aria-valuenow="${value}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ${value}%;">
     ${value}%
     </div>
   </div>`;

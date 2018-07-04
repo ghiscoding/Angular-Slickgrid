@@ -845,7 +845,7 @@ var CompoundDateFilter = /** @class */ (function () {
             pickerOptions.enableTime = true;
         }
         var placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
-        var $filterInputElm = $("<div class=flatpickr><input type=\"text\" class=\"form-control\" data-input placeholder=\"" + placeholder + "\"></div>");
+        var $filterInputElm = $("<div class=\"flatpickr\"><input type=\"text\" class=\"form-control\" data-input placeholder=\"" + placeholder + "\"></div>");
         this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : null;
         return $filterInputElm;
     };
@@ -875,7 +875,7 @@ var CompoundDateFilter = /** @class */ (function () {
         this.$filterInputElm = this.buildDatePickerInput(searchTerm);
         var $filterContainerElm = $("<div class=\"form-group search-filter\"></div>");
         var $containerInputGroup = $("<div class=\"input-group flatpickr\"></div>");
-        var $operatorInputGroupAddon = $("<div class=\"input-group-addon operator\"></div>");
+        var $operatorInputGroupAddon = $("<div class=\"input-group-addon input-group-prepend operator\"></div>");
         $operatorInputGroupAddon.append(this.$selectOperatorElm);
         $containerInputGroup.append($operatorInputGroupAddon);
         $containerInputGroup.append(this.$filterInputElm);
@@ -1029,7 +1029,7 @@ var CompoundInputFilter = /** @class */ (function () {
         this.$filterInputElm = $(this.buildInputHtmlString());
         var $filterContainerElm = $("<div class=\"form-group search-filter\"></div>");
         var $containerInputGroup = $("<div class=\"input-group\"></div>");
-        var $operatorInputGroupAddon = $("<div class=\"input-group-addon operator\"></div>");
+        var $operatorInputGroupAddon = $("<div class=\"input-group-addon input-group-prepend operator\"></div>");
         $operatorInputGroupAddon.append(this.$selectOperatorElm);
         $containerInputGroup.append($operatorInputGroupAddon);
         $containerInputGroup.append(this.$filterInputElm);
@@ -1128,7 +1128,7 @@ var CompoundSliderFilter = /** @class */ (function () {
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val(clearedValue);
             if (!this.filterParams.hideSliderNumber) {
-                this.$containerInputGroupElm.children('span.input-group-addon').last().html(clearedValue);
+                this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(clearedValue);
             }
             this.onTriggerEvent(undefined, true);
         }
@@ -1141,7 +1141,7 @@ var CompoundSliderFilter = /** @class */ (function () {
     CompoundSliderFilter.prototype.setValues = function (values) {
         if (values && Array.isArray(values)) {
             this.$filterInputElm.val(values[0]);
-            this.$containerInputGroupElm.children('span.input-group-addon').last().html(values[0]);
+            this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(values[0]);
         }
     };
     CompoundSliderFilter.prototype.buildTemplateHtmlString = function () {
@@ -1149,12 +1149,12 @@ var CompoundSliderFilter = /** @class */ (function () {
         var maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE;
         var defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
         var step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP;
-        return "<input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "\"\n              name=\"rangeInput_" + this.columnDef.field + "\"\n              defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n              class=\"form-control slider-filter-input range compound-slider\"\n              onmousemove=\"$('#rangeOuput_" + this.columnDef.field + "').html(rangeInput_" + this.columnDef.field + ".value)\" />";
+        return "<input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "\"\n              name=\"rangeInput_" + this.columnDef.field + "\"\n              defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n              class=\"form-control slider-filter-input range compound-slider\"\n              onmousemove=\"document.getElementById('rangeOuput_" + this.columnDef.field + "').innerHTML = rangeInput_" + this.columnDef.field + ".value\" />";
     };
     CompoundSliderFilter.prototype.buildTemplateSliderTextHtmlString = function () {
         var minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
         var defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
-        return "<span class=\"input-group-addon slider-value\" id=\"rangeOuput_" + this.columnDef.field + "\">" + defaultValue + "</span>";
+        return "<div class=\"input-group-addon input-group-append slider-value\"><span class=\"input-group-text\" id=\"rangeOuput_" + this.columnDef.field + "\">" + defaultValue + "</span></div>";
     };
     CompoundSliderFilter.prototype.buildSelectOperatorHtmlString = function () {
         var optionValues = this.getOptionValues();
@@ -1183,13 +1183,13 @@ var CompoundSliderFilter = /** @class */ (function () {
         this.$filterInputElm = $(this.buildTemplateHtmlString());
         var $filterContainerElm = $("<div class=\"form-group search-filter\"></div>");
         this.$containerInputGroupElm = $("<div class=\"input-group search-filter\"></div>");
-        var $operatorInputGroupAddon = $("<span class=\"input-group-addon operator\"></span>");
+        var $operatorInputGroupAddon = $("<span class=\"input-group-addon input-group-prepend operator\"></span>");
         $operatorInputGroupAddon.append(this.$selectOperatorElm);
         this.$containerInputGroupElm.append($operatorInputGroupAddon);
         this.$containerInputGroupElm.append(this.$filterInputElm);
         if (!this.filterParams.hideSliderNumber) {
             var $sliderTextInputAppendAddon = $(this.buildTemplateSliderTextHtmlString());
-            $sliderTextInputAppendAddon.html(searchTermInput);
+            $sliderTextInputAppendAddon.children().html(searchTermInput);
             this.$containerInputGroupElm.append($sliderTextInputAppendAddon);
         }
         $filterContainerElm.append(this.$containerInputGroupElm);
@@ -1236,7 +1236,7 @@ var InputFilter = /** @class */ (function () {
     });
     Object.defineProperty(InputFilter.prototype, "operator", {
         get: function () {
-            return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator);
+            return this.columnDef && this.columnDef.filter && this.columnDef.filter.operator || '';
         },
         enumerable: true,
         configurable: true
@@ -1711,7 +1711,7 @@ var SliderFilter = /** @class */ (function () {
         if (this.$filterElm) {
             var clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE$1;
             this.$filterElm.children('input').val(clearedValue);
-            this.$filterElm.children('span.input-group-addon').html(clearedValue);
+            this.$filterElm.children('div.input-group-addon.input-group-append').children().html(clearedValue);
             this.$filterElm.trigger('change');
         }
     };
@@ -1733,7 +1733,7 @@ var SliderFilter = /** @class */ (function () {
         if (this.filterParams.hideSliderNumber) {
             return "\n      <div class=\"search-filter\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "\"\n          name=\"rangeInput_" + this.columnDef.field + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\" />\n      </div>";
         }
-        return "\n      <div class=\"input-group search-filter\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "\"\n          name=\"rangeInput_" + this.columnDef.field + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\"\n          onmousemove=\"$('#rangeOuput_" + this.columnDef.field + "').html(rangeInput_" + this.columnDef.field + ".value)\" />\n        <span class=\"input-group-addon slider-value\" id=\"rangeOuput_" + this.columnDef.field + "\">" + defaultValue + "</span>\n      </div>";
+        return "\n      <div class=\"input-group search-filter\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "\"\n          name=\"rangeInput_" + this.columnDef.field + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\"\n          onmousemove=\"document.getElementById('rangeOuput_" + this.columnDef.field + "').innerHTML = rangeInput_" + this.columnDef.field + ".value\" />\n        <div class=\"input-group-addon input-group-append slider-value\">\n          <span class=\"input-group-text\" id=\"rangeOuput_" + this.columnDef.field + "\">" + defaultValue + "</span>\n        </div>\n      </div>";
     };
     SliderFilter.prototype.createDomElement = function (filterTemplate, searchTerm) {
         var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
@@ -1741,7 +1741,7 @@ var SliderFilter = /** @class */ (function () {
         var $filterElm = $(filterTemplate);
         var searchTermInput = ((searchTerm || '0'));
         $filterElm.children('input').val(searchTermInput);
-        $filterElm.children('span.input-group-addon').html(searchTermInput);
+        $filterElm.children('div.input-group-addon.input-group-append').children().html(searchTermInput);
         $filterElm.attr('id', "filter-" + this.columnDef.id);
         $filterElm.data('columnId', this.columnDef.id);
         if (searchTerm) {
@@ -4706,7 +4706,8 @@ var GridService = /** @class */ (function () {
             this.sortService.clearSorting();
         }
     };
-    GridService.prototype.addItemToDatagrid = function (item) {
+    GridService.prototype.addItemToDatagrid = function (item, shouldHighlightRow) {
+        if (shouldHighlightRow === void 0) { shouldHighlightRow = true; }
         if (!this._grid || !this._gridOptions || !this._dataView) {
             throw new Error('We could not find SlickGrid Grid, DataView objects');
         }
@@ -4716,7 +4717,9 @@ var GridService = /** @class */ (function () {
         var row = 0;
         this._dataView.insertItem(row, item);
         this._grid.scrollRowIntoView(0);
-        this.highlightRow(0, 1500);
+        if (shouldHighlightRow) {
+            this.highlightRow(0, 1500);
+        }
         this._dataView.refresh();
     };
     GridService.prototype.deleteDataGridItem = function (item) {
@@ -4743,7 +4746,8 @@ var GridService = /** @class */ (function () {
         }
         this.updateDataGridItemById(itemId, item);
     };
-    GridService.prototype.updateDataGridItemById = function (itemId, item) {
+    GridService.prototype.updateDataGridItemById = function (itemId, item, shouldHighlightRow) {
+        if (shouldHighlightRow === void 0) { shouldHighlightRow = true; }
         if (itemId === undefined) {
             throw new Error("Cannot update a row without a valid \"id\"");
         }
@@ -4754,7 +4758,9 @@ var GridService = /** @class */ (function () {
         var gridIdx = this._dataView.getIdxById(itemId);
         if (gridIdx !== undefined) {
             this._dataView.updateItem(itemId, item);
-            this.highlightRow(row, 1500);
+            if (shouldHighlightRow) {
+                this.highlightRow(row, 1500);
+            }
             this._dataView.refresh();
         }
     };
@@ -6013,7 +6019,7 @@ var SliderEditor = /** @class */ (function () {
         var editorTemplate = this.buildTemplateHtmlString();
         this.$editorElm = $(editorTemplate);
         this.$input = this.$editorElm.children('input');
-        this.$sliderNumber = this.$editorElm.children('span.input-group-addon');
+        this.$sliderNumber = this.$editorElm.children('div.input-group-addon.input-group-append').children();
         this.$editorElm
             .appendTo(this.args.container)
             .on('change', function (event) { return _this.save(); });
@@ -6085,7 +6091,7 @@ var SliderEditor = /** @class */ (function () {
         if (this.editorParams.hideSliderNumber) {
             return "\n      <div class=\"slider-editor\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          name=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input range\" />\n      </div>";
         }
-        return "\n      <div class=\"input-group slider-editor\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          name=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input range\"\n          onmousemove=\"$('#rangeOuput_" + this.columnDef.field + "_" + itemId + "').html(rangeInput_" + this.columnDef.field + "_" + itemId + ".value)\" />\n        <span class=\"input-group-addon slider-value\" id=\"rangeOuput_" + this.columnDef.field + "_" + itemId + "\">" + defaultValue + "</span>\n      </div>";
+        return "\n      <div class=\"input-group slider-editor\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          name=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input range\"\n          onmousemove=\"document.getElementById('rangeOuput_" + this.columnDef.field + "_" + itemId + "').innerHTML = rangeInput_" + this.columnDef.field + "_" + itemId + ".value\" />\n        <div class=\"input-group-addon input-group-prepend slider-value\"><span class=\"input-group-text\" id=\"rangeOuput_" + this.columnDef.field + "_" + itemId + "\">" + defaultValue + "</span></div>\n      </div>";
     };
     return SliderEditor;
 }());
@@ -6396,7 +6402,7 @@ var progressBarFormatter = function (row, cell, value, columnDef, dataContext) {
     else {
         color = 'success';
     }
-    return "<div class=\"progress\">\n    <div class=\"progress-bar progress-bar-" + color + "\" role=\"progressbar\" aria-valuenow=\"" + value + "\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width: 2em; width: " + value + "%;\">\n    " + value + "%\n    </div>\n  </div>";
+    return "<div class=\"progress\">\n    <div class=\"progress-bar progress-bar-" + color + " bg-" + color + "\" role=\"progressbar\" aria-valuenow=\"" + value + "\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width: 2em; width: " + value + "%;\">\n    " + value + "%\n    </div>\n  </div>";
 };
 var translateFormatter = function (row, cell, value, columnDef, dataContext, grid) {
     var gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};

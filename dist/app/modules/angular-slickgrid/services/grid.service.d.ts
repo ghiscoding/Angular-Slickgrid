@@ -56,8 +56,9 @@ export declare class GridService {
     /**
      * Add an item (data item) to the datagrid
      * @param object dataItem: item object holding all properties of that row
+     * @param shouldHighlightRow do we want to highlight the row after adding item
      */
-    addItemToDatagrid(item: any): void;
+    addItemToDatagrid(item: any, shouldHighlightRow?: boolean): void;
     /**
      * Delete an existing item from the datagrid (dataView)
      * @param object item: item object holding all properties of that row
@@ -77,6 +78,7 @@ export declare class GridService {
      * Update an existing item in the datagrid by it's id and new properties
      * @param itemId: item unique id
      * @param object item: item object holding all properties of that row
+     * @param shouldHighlightRow do we want to highlight the row after update
      */
-    updateDataGridItemById(itemId: number | string, item: any): void;
+    updateDataGridItemById(itemId: number | string, item: any, shouldHighlightRow?: boolean): void;
 }

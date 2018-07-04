@@ -59,7 +59,7 @@ $header-padding-right:                  4px !default;
 $header-padding-bottom:                 4px !default;
 $header-padding-left:                   4px !default;
 $header-input-height:                   27px !default;                        // height of the filter form element (input, textarea, select)
-$header-input-width:                    100% !default;                        // width of the filter form element (input, textarea, select)
+$header-input-width:                    none !default;                        // width of the filter form element (input, textarea, select)
 $header-input-padding:                  0 6px !default;                       // padding of the filter form element (input, textarea, select)
 $header-row-background-color:           #ffffff !default;
 $header-row-count:                      2 !default;                           // how many rows to display on the header
@@ -164,12 +164,13 @@ $text-editor-padding-left:              2px !default;
 $text-editor-padding-right:             0 !default;
 $text-editor-padding-top:               0 !default;
 $slider-editor-height:                  24px !default;
-$slider-editor-runnable-track-padding:  5px 8px !default;
+$slider-editor-runnable-track-padding:  0 6px !default;
 $slider-editor-number-padding:          4px 6px !default;
 
 /* Compound Filters */
 $compound-filter-bgcolor:               #e4eacf !default;
-$compound-filter-border-radius:         4px 0 0 4px !default;
+$compound-filter-operator-border-radius:4px 0 0 4px !default;
+$compound-filter-border-radius:         0 4px 4px 0 !default;
 $compound-filter-text-weight:           bold !default;
 $compound-filter-text-color:            $primary-color !default;
 $compound-filter-text-font-size:        13px !default;
@@ -180,7 +181,7 @@ $slider-filter-border:                   1px solid #ccc !default;
 $slider-filter-bgcolor:                  #eee !default;
 $slider-filter-runnable-track-bgcolor:   #ddd !default;
 $slider-filter-runnable-track-height:    4px !default;
-$slider-filter-runnable-track-padding:   6px 10px !default;
+$slider-filter-runnable-track-padding:   0 6px !default;
 $slider-filter-fill-lower-color:         #ddd !default; /* ms only */
 $slider-filter-fill-focus-lower-color:   #aaa !default; /* ms only */
 $slider-filter-height:                   $header-input-height !default;
