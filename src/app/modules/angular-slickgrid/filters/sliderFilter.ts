@@ -79,7 +79,7 @@ export class SliderFilter implements Filter {
     if (this.$filterElm) {
       const clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
       this.$filterElm.children('input').val(clearedValue);
-      this.$filterElm.children('span.input-group-addon').html(clearedValue);
+      this.$filterElm.children('div.input-group-addon.input-group-append').children().html(clearedValue);
       this.$filterElm.trigger('change');
     }
   }
@@ -131,8 +131,10 @@ export class SliderFilter implements Filter {
           name="rangeInput_${this.columnDef.field}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
           class="form-control slider-filter-input range"
-          onmousemove="$('#rangeOuput_${this.columnDef.field}').html(rangeInput_${this.columnDef.field}.value)" />
-        <span class="input-group-addon slider-value" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span>
+          onmousemove="document.getElementById('rangeOuput_${this.columnDef.field}').innerHTML = rangeInput_${this.columnDef.field}.value" />
+        <div class="input-group-addon input-group-append slider-value">
+          <span class="input-group-text" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span>
+        </div>
       </div>`;
   }
 
@@ -149,7 +151,7 @@ export class SliderFilter implements Filter {
     const searchTermInput = (searchTerm || '0') as string;
 
     $filterElm.children('input').val(searchTermInput);
-    $filterElm.children('span.input-group-addon').html(searchTermInput);
+    $filterElm.children('div.input-group-addon.input-group-append').children().html(searchTermInput);
     $filterElm.attr('id', `filter-${this.columnDef.id}`);
     $filterElm.data('columnId', this.columnDef.id);
 

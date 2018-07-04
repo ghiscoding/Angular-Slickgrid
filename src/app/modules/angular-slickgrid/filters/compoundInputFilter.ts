@@ -151,11 +151,11 @@ export class CompoundInputFilter implements Filter {
     this.$filterInputElm = $(this.buildInputHtmlString());
     const $filterContainerElm = $(`<div class="form-group search-filter"></div>`);
     const $containerInputGroup = $(`<div class="input-group"></div>`);
-    const $operatorInputGroupAddon = $(`<div class="input-group-addon operator"></div>`);
+    const $operatorInputGroupAddon = $(`<div class="input-group-addon input-group-prepend operator"></div>`);
 
     /* the DOM element final structure will be
       <div class="input-group">
-        <div class="input-group-addon operator">
+        <div class="input-group-addon input-group-prepend operator">
           <select class="form-control"></select>
         </div>
         <input class="form-control" type="text" />

@@ -59,7 +59,7 @@ $header-padding-right:                  4px !default;
 $header-padding-bottom:                 4px !default;
 $header-padding-left:                   4px !default;
 $header-input-height:                   27px !default;                        // height of the filter form element (input, textarea, select)
-$header-input-width:                    100% !default;                        // width of the filter form element (input, textarea, select)
+$header-input-width:                    none !default;                        // width of the filter form element (input, textarea, select)
 $header-input-padding:                  0 6px !default;                       // padding of the filter form element (input, textarea, select)
 $header-row-background-color:           #ffffff !default;
 $header-row-count:                      2 !default;                           // how many rows to display on the header
@@ -169,7 +169,8 @@ $slider-editor-number-padding:          4px 6px !default;
 
 /* Compound Filters */
 $compound-filter-bgcolor:               #e4eacf !default;
-$compound-filter-border-radius:         4px 0 0 4px !default;
+$compound-filter-operator-border-radius:4px 0 0 4px !default;
+$compound-filter-border-radius:         0 4px 4px 0 !default;
 $compound-filter-text-weight:           bold !default;
 $compound-filter-text-color:            $primary-color !default;
 $compound-filter-text-font-size:        13px !default;

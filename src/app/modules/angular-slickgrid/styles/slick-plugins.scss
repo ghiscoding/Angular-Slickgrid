@@ -306,7 +306,7 @@ label {
   }
 
   .form-control {
-    border-radius: $compound-filter-border-radius;
+    border-radius: $compound-filter-operator-border-radius;
     border-right: none;
     padding: $compound-filter-text-padding !important;
     font-size: $compound-filter-text-font-size;
@@ -331,9 +331,17 @@ input.search-filter {
 // ----------------------------------------------
 // Date Picker Filter
 // ----------------------------------------------
-.flatpickr-input {
-    background-color: $flatpickr-bgcolor !important;
-    font-family: $filter-placeholder-font-family;
+.input-group.flatpickr {
+  .flatpickr {
+    flex: 1;
+
+    .flatpickr-input.form-control {
+        background-color: $flatpickr-bgcolor !important;
+        font-family: $filter-placeholder-font-family;
+        font-size: $font-size-base;
+        border-radius: $compound-filter-border-radius;
+    }
+  }
 }
 
 // ----------------------------------------------
@@ -443,9 +451,11 @@ input.slider-filter-input[type=range] {
 }
 .search-filter {
   .slider-value {
-    padding: $slider-filter-number-padding !important;
-    font-size: $slider-filter-number-font-size !important;
-    height: $slider-filter-height;
+    .input-group-text {
+      padding: $slider-filter-number-padding !important;
+      font-size: $slider-filter-number-font-size !important;
+      height: $slider-filter-height;
+    }
   }
 }
 input.slider-filter-input[type=range] {
@@ -461,8 +471,10 @@ input.slider-editor-input[type=range] {
 
 .slider-editor {
   .slider-value {
-    padding: $slider-editor-number-padding !important;
-    font-size: $slider-filter-number-font-size !important;
-    height: $slider-editor-height;
+    .input-group-text {
+      padding: $slider-editor-number-padding !important;
+      font-size: $slider-filter-number-font-size !important;
+      height: $slider-editor-height;
+    }
   }
 }

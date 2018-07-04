@@ -49,7 +49,7 @@ export class SliderEditor implements Editor {
     const editorTemplate = this.buildTemplateHtmlString();
     this.$editorElm = $(editorTemplate);
     this.$input = this.$editorElm.children('input');
-    this.$sliderNumber = this.$editorElm.children('span.input-group-addon');
+    this.$sliderNumber = this.$editorElm.children('div.input-group-addon.input-group-append').children();
 
     // watch on change event
     this.$editorElm
@@ -158,8 +158,8 @@ export class SliderEditor implements Editor {
           name="rangeInput_${this.columnDef.field}_${itemId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
           class="form-control slider-editor-input range"
-          onmousemove="$('#rangeOuput_${this.columnDef.field}_${itemId}').html(rangeInput_${this.columnDef.field}_${itemId}.value)" />
-        <span class="input-group-addon slider-value" id="rangeOuput_${this.columnDef.field}_${itemId}">${defaultValue}</span>
+          onmousemove="document.getElementById('rangeOuput_${this.columnDef.field}_${itemId}').innerHTML = rangeInput_${this.columnDef.field}_${itemId}.value" />
+        <div class="input-group-addon input-group-prepend slider-value"><span class="input-group-text" id="rangeOuput_${this.columnDef.field}_${itemId}">${defaultValue}</span></div>
       </div>`;
   }
 }
