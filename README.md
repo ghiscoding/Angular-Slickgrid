@@ -16,6 +16,11 @@ The goal is of course to be able to run SlickGrid within Angular 4+ but also to 
 ### Installation
 Refer to the [Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)
 
+### Bootstrap 3 and 4 supported
+The creation of `Angular-Slickgrid` started with `Bootstrap 3` support and `Bootstrap 4` is now supported as well since version `1.2.0`
+- [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/Angular-Slickgrid/tree/master/src/app/examples)
+- [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-bs4-demo) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-bs4-demo/tree/master/src/app/examples)
+
 ## Wiki / Documentation
 The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Slickgrid - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with. You can also take a look at the [Demo page](https://ghiscoding.github.io/Angular-Slickgrid), it includes sample for most of the features and it keeps growing (so you might want to consult it whenever a new version comes out).
 
