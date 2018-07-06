@@ -1,5 +1,7 @@
 import { Column, Filter, FilterArguments, FilterCallback, OperatorString, OperatorType, SearchTerm } from './../models/index';
 export declare class CompoundSliderFilter implements Filter {
+    private _elementRangeInputId;
+    private _elementRangeOutputId;
     private _operator;
     private $containerInputGroupElm;
     private $filterElm;

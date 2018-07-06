@@ -1,6 +1,8 @@
 import { Column, Editor, EditorValidator, EditorValidatorOutput } from './../models/index';
 export declare class SliderEditor implements Editor {
     private args;
+    private _elementRangeInputId;
+    private _elementRangeOutputId;
     $editorElm: any;
     $input: any;
     $sliderNumber: any;

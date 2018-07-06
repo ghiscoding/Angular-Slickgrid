@@ -1639,6 +1639,9 @@ class CompoundSliderFilter {
             this.columnDef = args.columnDef;
             this.operator = args.operator || '';
             this.searchTerms = args.searchTerms || [];
+            // define the input & slider number IDs
+            this._elementRangeInputId = `rangeInput_${this.columnDef.field}`;
+            this._elementRangeOutputId = `rangeOutput_${this.columnDef.field}`;
             // filter input can only have 1 search term, so we will use the 1st array index if it exist
             const /** @type {?} */ searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
             // step 1, create the DOM Element of the filter which contain the compound Operator+Input
@@ -1652,6 +1655,16 @@ class CompoundSliderFilter {
             this.$selectOperatorElm.change((e) => {
                 this.onTriggerEvent(e);
             });
+            // if user chose to display the slider number on the right side, then update it every time it changes
+            // we need to use both "input" and "change" event to be all cross-browser
+            if (!this.filterParams.hideSliderNumber) {
+                this.$filterInputElm.on('input change', (e) => {
+                    const /** @type {?} */ value = e && e.target && e.target.value || '';
+                    if (value) {
+                        document.getElementById(this._elementRangeOutputId).innerHTML = value;
+                    }
+                });
+            }
         }
     }
     /**
@@ -1698,11 +1711,10 @@ class CompoundSliderFilter {
         const /** @type {?} */ maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE;
         const /** @type {?} */ defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
         const /** @type {?} */ step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP;
-        return `<input type="range" id="rangeInput_${this.columnDef.field}"
-              name="rangeInput_${this.columnDef.field}"
+        return `<input type="range" id="${this._elementRangeInputId}"
+              name="${this._elementRangeInputId}"
               defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
-              class="form-control slider-filter-input range compound-slider"
-              onmousemove="document.getElementById('rangeOuput_${this.columnDef.field}').innerHTML = rangeInput_${this.columnDef.field}.value" />`;
+              class="form-control slider-filter-input range compound-slider" />`;
     }
     /**
      * Build HTML Template for the text (number) that is shown appended to the slider
@@ -1711,7 +1723,7 @@ class CompoundSliderFilter {
     buildTemplateSliderTextHtmlString() {
         const /** @type {?} */ minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
         const /** @type {?} */ defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
-        return `<div class="input-group-addon input-group-append slider-value"><span class="input-group-text" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span></div>`;
+        return `<div class="input-group-addon input-group-append slider-value"><span class="input-group-text" id="${this._elementRangeOutputId}">${defaultValue}</span></div>`;
     }
     /**
      * Build HTML Template select dropdown (operator)
@@ -2472,6 +2484,9 @@ class SliderFilter {
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.searchTerms = args.searchTerms || [];
+        // define the input & slider number IDs
+        this._elementRangeInputId = `rangeInput_${this.columnDef.field}`;
+        this._elementRangeOutputId = `rangeOutput_${this.columnDef.field}`;
         // filter input can only have 1 search term, so we will use the 1st array index if it exist
         const /** @type {?} */ searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
         // step 1, create HTML string template
@@ -2491,6 +2506,16 @@ class SliderFilter {
                 this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value] });
             }
         });
+        // if user chose to display the slider number on the right side, then update it every time it changes
+        // we need to use both "input" and "change" event to be all cross-browser
+        if (!this.filterParams.hideSliderNumber) {
+            this.$filterElm.on('input change', (e) => {
+                const /** @type {?} */ value = e && e.target && e.target.value || '';
+                if (value) {
+                    document.getElementById(this._elementRangeOutputId).innerHTML = value;
+                }
+            });
+        }
     }
     /**
      * Clear the filter value
@@ -2535,21 +2560,20 @@ class SliderFilter {
         if (this.filterParams.hideSliderNumber) {
             return `
       <div class="search-filter">
-        <input type="range" id="rangeInput_${this.columnDef.field}"
-          name="rangeInput_${this.columnDef.field}"
+        <input type="range" id="${this._elementRangeInputId}"
+          name="${this._elementRangeInputId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
           class="form-control slider-filter-input range" />
       </div>`;
         }
         return `
       <div class="input-group search-filter">
-        <input type="range" id="rangeInput_${this.columnDef.field}"
-          name="rangeInput_${this.columnDef.field}"
+        <input type="range" id="${this._elementRangeInputId}"
+          name="${this._elementRangeInputId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
-          class="form-control slider-filter-input range"
-          onmousemove="document.getElementById('rangeOuput_${this.columnDef.field}').innerHTML = rangeInput_${this.columnDef.field}.value" />
+          class="form-control slider-filter-input range" />
         <div class="input-group-addon input-group-append slider-value">
-          <span class="input-group-text" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span>
+          <span class="input-group-text" id="${this._elementRangeOutputId}">${defaultValue}</span>
         </div>
       </div>`;
     }
@@ -8452,7 +8476,7 @@ class SliderEditor {
      * @return {?}
      */
     get columnEditor() {
-        return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+        return this.columnDef && this.columnDef.internalColumnEditor || {};
     }
     /**
      * Getter for the Editor Generic Params
@@ -8473,6 +8497,10 @@ class SliderEditor {
      */
     init() {
         const /** @type {?} */ container = this.args.container;
+        // define the input & slider number IDs
+        const /** @type {?} */ itemId = this.args && this.args.item && this.args.item.id;
+        this._elementRangeInputId = `rangeInput_${this.columnDef.field}_${itemId}`;
+        this._elementRangeOutputId = `rangeOutput_${this.columnDef.field}_${itemId}`;
         // create HTML string template
         const /** @type {?} */ editorTemplate = this.buildTemplateHtmlString();
         this.$editorElm = $(editorTemplate);
@@ -8481,7 +8509,17 @@ class SliderEditor {
         // watch on change event
         this.$editorElm
             .appendTo(this.args.container)
-            .on('change', (event) => this.save());
+            .on('mouseup', (event) => this.save());
+        // if user chose to display the slider number on the right side, then update it every time it changes
+        // we need to use both "input" and "change" event to be all cross-browser
+        if (!this.editorParams.hideSliderNumber) {
+            this.$editorElm.on('input change', (e) => {
+                const /** @type {?} */ value = e && e.target && e.target.value || '';
+                if (value) {
+                    document.getElementById(this._elementRangeOutputId).innerHTML = e.target.value;
+                }
+            });
+        }
     }
     /**
      * @return {?}
@@ -8538,7 +8576,6 @@ class SliderEditor {
      */
     isValueChanged() {
         const /** @type {?} */ elmValue = this.$input.val();
-        console.log(elmValue);
         return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
     }
     /**
@@ -8587,20 +8624,19 @@ class SliderEditor {
         if (this.editorParams.hideSliderNumber) {
             return `
       <div class="slider-editor">
-        <input type="range" id="rangeInput_${this.columnDef.field}_${itemId}"
-          name="rangeInput_${this.columnDef.field}_${itemId}"
+        <input type="range" id="${this._elementRangeInputId}"
+          name="${this._elementRangeInputId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
           class="form-control slider-editor-input range" />
       </div>`;
         }
         return `
       <div class="input-group slider-editor">
-        <input type="range" id="rangeInput_${this.columnDef.field}_${itemId}"
-          name="rangeInput_${this.columnDef.field}_${itemId}"
+        <input type="range" id="${this._elementRangeInputId}"
+          name="${this._elementRangeInputId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
-          class="form-control slider-editor-input range"
-          onmousemove="document.getElementById('rangeOuput_${this.columnDef.field}_${itemId}').innerHTML = rangeInput_${this.columnDef.field}_${itemId}.value" />
-        <div class="input-group-addon input-group-prepend slider-value"><span class="input-group-text" id="rangeOuput_${this.columnDef.field}_${itemId}">${defaultValue}</span></div>
+          class="form-control slider-editor-input range" />
+        <div class="input-group-addon input-group-append slider-value"><span class="input-group-text" id="${this._elementRangeOutputId}">${defaultValue}</span></div>
       </div>`;
     }
 }
@@ -8852,7 +8888,10 @@ const complexObjectFormatter = (row, cell, value, columnDef, dataContext) => {
  */
 const moment$9 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$6 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-const dateIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$9(value).format(FORMAT$6) : '';
+const dateIsoFormatter = (row, cell, value, columnDef, dataContext) => {
+    const /** @type {?} */ isDateValid = moment$9(value, FORMAT$6, true).isValid();
+    return (value && isDateValid) ? moment$9(value).format(FORMAT$6) : value;
+};
 
 /**
  * @fileoverview added by tsickle
@@ -8860,7 +8899,10 @@ const dateIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? m
  */
 const moment$10 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
-const dateTimeIsoFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$10(value).format(FORMAT$7) : '';
+const dateTimeIsoFormatter = (row, cell, value, columnDef, dataContext) => {
+    const /** @type {?} */ isDateValid = moment$10(value, FORMAT$7, true).isValid();
+    return (value && isDateValid) ? moment$10(value).format(FORMAT$7) : value;
+};
 
 /**
  * @fileoverview added by tsickle
@@ -8868,7 +8910,10 @@ const dateTimeIsoFormatter = (row, cell, value, columnDef, dataContext) => value
  */
 const moment$11 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
-const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$11(value).format(FORMAT$8) : '';
+const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => {
+    const /** @type {?} */ isDateValid = moment$11(value, FORMAT$8, true).isValid();
+    return (value && isDateValid) ? moment$11(value).format(FORMAT$8) : value;
+};
 
 /**
  * @fileoverview added by tsickle
@@ -8876,7 +8921,10 @@ const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => v
  */
 const moment$12 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
-const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$12(value).format(FORMAT$9) : '';
+const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => {
+    const /** @type {?} */ isDateValid = moment$12(value, FORMAT$9, true).isValid();
+    return (value && isDateValid) ? moment$12(value).format(FORMAT$9) : value;
+};
 
 /**
  * @fileoverview added by tsickle
@@ -8884,7 +8932,10 @@ const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => va
  */
 const moment$13 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
-const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$13(value).format(FORMAT$10) : '';
+const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => {
+    const /** @type {?} */ isDateValid = moment$13(value, FORMAT$10, true).isValid();
+    return (value && isDateValid) ? moment$13(value).format(FORMAT$10) : value;
+};
 
 /**
  * @fileoverview added by tsickle
@@ -8892,7 +8943,10 @@ const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => value 
  */
 const moment$14 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-const dateUsFormatter = (row, cell, value, columnDef, dataContext) => value ? moment$14(value).format(FORMAT$11) : '';
+const dateUsFormatter = (row, cell, value, columnDef, dataContext) => {
+    const /** @type {?} */ isDateValid = moment$14(value, FORMAT$11, true).isValid();
+    return (value && isDateValid) ? moment$14(value).format(FORMAT$11) : value;
+};
 
 /**
  * @fileoverview added by tsickle

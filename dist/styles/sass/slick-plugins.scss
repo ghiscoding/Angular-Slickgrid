@@ -448,6 +448,9 @@ input.slider-filter-input[type=range] {
     background: $slider-filter-thumb-color;
     margin-top: 1px;
   }
+  &::-ms-tooltip {
+    display: none;
+  }
 }
 .search-filter {
   .slider-value {

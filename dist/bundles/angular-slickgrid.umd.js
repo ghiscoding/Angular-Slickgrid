@@ -1174,6 +1174,8 @@ var CompoundSliderFilter = /** @class */ (function () {
             this.columnDef = args.columnDef;
             this.operator = args.operator || '';
             this.searchTerms = args.searchTerms || [];
+            this._elementRangeInputId = "rangeInput_" + this.columnDef.field;
+            this._elementRangeOutputId = "rangeOutput_" + this.columnDef.field;
             var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
             this.$filterElm = this.createDomElement(searchTerm);
             this.$filterInputElm.change(function (e) {
@@ -1182,6 +1184,14 @@ var CompoundSliderFilter = /** @class */ (function () {
             this.$selectOperatorElm.change(function (e) {
                 _this.onTriggerEvent(e);
             });
+            if (!this.filterParams.hideSliderNumber) {
+                this.$filterInputElm.on('input change', function (e) {
+                    var value = e && e.target && e.target.value || '';
+                    if (value) {
+                        document.getElementById(_this._elementRangeOutputId).innerHTML = value;
+                    }
+                });
+            }
         }
     };
     CompoundSliderFilter.prototype.clear = function () {
@@ -1211,12 +1221,12 @@ var CompoundSliderFilter = /** @class */ (function () {
         var maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE;
         var defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
         var step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP;
-        return "<input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "\"\n              name=\"rangeInput_" + this.columnDef.field + "\"\n              defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n              class=\"form-control slider-filter-input range compound-slider\"\n              onmousemove=\"document.getElementById('rangeOuput_" + this.columnDef.field + "').innerHTML = rangeInput_" + this.columnDef.field + ".value\" />";
+        return "<input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n              name=\"" + this._elementRangeInputId + "\"\n              defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n              class=\"form-control slider-filter-input range compound-slider\" />";
     };
     CompoundSliderFilter.prototype.buildTemplateSliderTextHtmlString = function () {
         var minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
         var defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
-        return "<div class=\"input-group-addon input-group-append slider-value\"><span class=\"input-group-text\" id=\"rangeOuput_" + this.columnDef.field + "\">" + defaultValue + "</span></div>";
+        return "<div class=\"input-group-addon input-group-append slider-value\"><span class=\"input-group-text\" id=\"" + this._elementRangeOutputId + "\">" + defaultValue + "</span></div>";
     };
     CompoundSliderFilter.prototype.buildSelectOperatorHtmlString = function () {
         var optionValues = this.getOptionValues();
@@ -1754,6 +1764,8 @@ var SliderFilter = /** @class */ (function () {
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.searchTerms = args.searchTerms || [];
+        this._elementRangeInputId = "rangeInput_" + this.columnDef.field;
+        this._elementRangeOutputId = "rangeOutput_" + this.columnDef.field;
         var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
         var filterTemplate = this.buildTemplateHtmlString();
         this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
@@ -1768,6 +1780,14 @@ var SliderFilter = /** @class */ (function () {
                 _this.callback(e, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: [value] });
             }
         });
+        if (!this.filterParams.hideSliderNumber) {
+            this.$filterElm.on('input change', function (e) {
+                var value = e && e.target && e.target.value || '';
+                if (value) {
+                    document.getElementById(_this._elementRangeOutputId).innerHTML = value;
+                }
+            });
+        }
     };
     SliderFilter.prototype.clear = function () {
         if (this.$filterElm) {
@@ -1793,9 +1813,9 @@ var SliderFilter = /** @class */ (function () {
         var defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
         var step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP$1;
         if (this.filterParams.hideSliderNumber) {
-            return "\n      <div class=\"search-filter\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "\"\n          name=\"rangeInput_" + this.columnDef.field + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\" />\n      </div>";
+            return "\n      <div class=\"search-filter\">\n        <input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n          name=\"" + this._elementRangeInputId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\" />\n      </div>";
         }
-        return "\n      <div class=\"input-group search-filter\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "\"\n          name=\"rangeInput_" + this.columnDef.field + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\"\n          onmousemove=\"document.getElementById('rangeOuput_" + this.columnDef.field + "').innerHTML = rangeInput_" + this.columnDef.field + ".value\" />\n        <div class=\"input-group-addon input-group-append slider-value\">\n          <span class=\"input-group-text\" id=\"rangeOuput_" + this.columnDef.field + "\">" + defaultValue + "</span>\n        </div>\n      </div>";
+        return "\n      <div class=\"input-group search-filter\">\n        <input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n          name=\"" + this._elementRangeInputId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\" />\n        <div class=\"input-group-addon input-group-append slider-value\">\n          <span class=\"input-group-text\" id=\"" + this._elementRangeOutputId + "\">" + defaultValue + "</span>\n        </div>\n      </div>";
     };
     SliderFilter.prototype.createDomElement = function (filterTemplate, searchTerm) {
         var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
@@ -6056,7 +6076,7 @@ var SliderEditor = /** @class */ (function () {
     });
     Object.defineProperty(SliderEditor.prototype, "columnEditor", {
         get: function () {
-            return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+            return this.columnDef && this.columnDef.internalColumnEditor || {};
         },
         enumerable: true,
         configurable: true
@@ -6078,13 +6098,24 @@ var SliderEditor = /** @class */ (function () {
     SliderEditor.prototype.init = function () {
         var _this = this;
         var container = this.args.container;
+        var itemId = this.args && this.args.item && this.args.item.id;
+        this._elementRangeInputId = "rangeInput_" + this.columnDef.field + "_" + itemId;
+        this._elementRangeOutputId = "rangeOutput_" + this.columnDef.field + "_" + itemId;
         var editorTemplate = this.buildTemplateHtmlString();
         this.$editorElm = $(editorTemplate);
         this.$input = this.$editorElm.children('input');
         this.$sliderNumber = this.$editorElm.children('div.input-group-addon.input-group-append').children();
         this.$editorElm
             .appendTo(this.args.container)
-            .on('change', function (event) { return _this.save(); });
+            .on('mouseup', function (event) { return _this.save(); });
+        if (!this.editorParams.hideSliderNumber) {
+            this.$editorElm.on('input change', function (e) {
+                var value = e && e.target && e.target.value || '';
+                if (value) {
+                    document.getElementById(_this._elementRangeOutputId).innerHTML = e.target.value;
+                }
+            });
+        }
     };
     SliderEditor.prototype.destroy = function () {
         this.$editorElm.remove();
@@ -6113,7 +6144,6 @@ var SliderEditor = /** @class */ (function () {
     };
     SliderEditor.prototype.isValueChanged = function () {
         var elmValue = this.$input.val();
-        console.log(elmValue);
         return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
     };
     SliderEditor.prototype.validate = function () {
@@ -6151,9 +6181,9 @@ var SliderEditor = /** @class */ (function () {
         var step = this.columnEditor.hasOwnProperty('valueStep') ? this.columnEditor.valueStep : DEFAULT_STEP$2;
         var itemId = this.args && this.args.item && this.args.item.id;
         if (this.editorParams.hideSliderNumber) {
-            return "\n      <div class=\"slider-editor\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          name=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input range\" />\n      </div>";
+            return "\n      <div class=\"slider-editor\">\n        <input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n          name=\"" + this._elementRangeInputId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input range\" />\n      </div>";
         }
-        return "\n      <div class=\"input-group slider-editor\">\n        <input type=\"range\" id=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          name=\"rangeInput_" + this.columnDef.field + "_" + itemId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input range\"\n          onmousemove=\"document.getElementById('rangeOuput_" + this.columnDef.field + "_" + itemId + "').innerHTML = rangeInput_" + this.columnDef.field + "_" + itemId + ".value\" />\n        <div class=\"input-group-addon input-group-prepend slider-value\"><span class=\"input-group-text\" id=\"rangeOuput_" + this.columnDef.field + "_" + itemId + "\">" + defaultValue + "</span></div>\n      </div>";
+        return "\n      <div class=\"input-group slider-editor\">\n        <input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n          name=\"" + this._elementRangeInputId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input range\" />\n        <div class=\"input-group-addon input-group-append slider-value\"><span class=\"input-group-text\" id=\"" + this._elementRangeOutputId + "\">" + defaultValue + "</span></div>\n      </div>";
     };
     return SliderEditor;
 }());
@@ -6303,22 +6333,40 @@ var complexObjectFormatter = function (row, cell, value, columnDef, dataContext)
 };
 var moment$9 = moment_;
 var FORMAT$6 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
-var dateIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$9(value).format(FORMAT$6) : ''; };
+var dateIsoFormatter = function (row, cell, value, columnDef, dataContext) {
+    var isDateValid = moment$9(value, FORMAT$6, true).isValid();
+    return (value && isDateValid) ? moment$9(value).format(FORMAT$6) : value;
+};
 var moment$10 = moment_;
 var FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
-var dateTimeIsoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$10(value).format(FORMAT$7) : ''; };
+var dateTimeIsoFormatter = function (row, cell, value, columnDef, dataContext) {
+    var isDateValid = moment$10(value, FORMAT$7, true).isValid();
+    return (value && isDateValid) ? moment$10(value).format(FORMAT$7) : value;
+};
 var moment$11 = moment_;
 var FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
-var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$11(value).format(FORMAT$8) : ''; };
+var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) {
+    var isDateValid = moment$11(value, FORMAT$8, true).isValid();
+    return (value && isDateValid) ? moment$11(value).format(FORMAT$8) : value;
+};
 var moment$12 = moment_;
 var FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
-var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$12(value).format(FORMAT$9) : ''; };
+var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) {
+    var isDateValid = moment$12(value, FORMAT$9, true).isValid();
+    return (value && isDateValid) ? moment$12(value).format(FORMAT$9) : value;
+};
 var moment$13 = moment_;
 var FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
-var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$13(value).format(FORMAT$10) : ''; };
+var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) {
+    var isDateValid = moment$13(value, FORMAT$10, true).isValid();
+    return (value && isDateValid) ? moment$13(value).format(FORMAT$10) : value;
+};
 var moment$14 = moment_;
 var FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-var dateUsFormatter = function (row, cell, value, columnDef, dataContext) { return value ? moment$14(value).format(FORMAT$11) : ''; };
+var dateUsFormatter = function (row, cell, value, columnDef, dataContext) {
+    var isDateValid = moment$14(value, FORMAT$11, true).isValid();
+    return (value && isDateValid) ? moment$14(value).format(FORMAT$11) : value;
+};
 var decimalFormatter = function (row, cell, value, columnDef, dataContext) {
     var params = columnDef.params || {};
     var minDecimalPlaces = params.minDecimalPlaces || params.decimalPlaces || 2;
