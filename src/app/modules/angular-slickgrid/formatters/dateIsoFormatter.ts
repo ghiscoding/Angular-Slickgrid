@@ -4,5 +4,7 @@ import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT = mapMomentDateFormatWithFieldType(FieldType.dateIso);
 
-export const dateIsoFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) =>
-  value ? moment(value).format(FORMAT) : '';
+export const dateIsoFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => {
+  const isDateValid = moment(value, FORMAT, true).isValid();
+  return (value && isDateValid) ? moment(value).format(FORMAT) : value;
+};
