@@ -20,6 +20,8 @@ const DEFAULT_STEP = 1;
 
 @Injectable()
 export class CompoundSliderFilter implements Filter {
+  private _elementRangeInputId: string;
+  private _elementRangeOutputId: string;
   private _operator: OperatorType | OperatorString;
   private $containerInputGroupElm: any;
   private $filterElm: any;
@@ -66,6 +68,10 @@ export class CompoundSliderFilter implements Filter {
       this.operator = args.operator || '';
       this.searchTerms = args.searchTerms || [];
 
+      // define the input & slider number IDs
+      this._elementRangeInputId = `rangeInput_${this.columnDef.field}`;
+      this._elementRangeOutputId = `rangeOutput_${this.columnDef.field}`;
+
       // filter input can only have 1 search term, so we will use the 1st array index if it exist
       const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
 
@@ -81,6 +87,17 @@ export class CompoundSliderFilter implements Filter {
       this.$selectOperatorElm.change((e: any) => {
         this.onTriggerEvent(e);
       });
+
+      // if user chose to display the slider number on the right side, then update it every time it changes
+      // we need to use both "input" and "change" event to be all cross-browser
+      if (!this.filterParams.hideSliderNumber) {
+        this.$filterInputElm.on('input change', (e: { target: HTMLInputElement }) => {
+          const value = e && e.target && e.target.value || '';
+          if (value) {
+            document.getElementById(this._elementRangeOutputId).innerHTML = value;
+          }
+        });
+      }
     }
   }
 
@@ -129,11 +146,10 @@ export class CompoundSliderFilter implements Filter {
     const defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
     const step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP;
 
-    return `<input type="range" id="rangeInput_${this.columnDef.field}"
-              name="rangeInput_${this.columnDef.field}"
+    return `<input type="range" id="${this._elementRangeInputId}"
+              name="${this._elementRangeInputId}"
               defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
-              class="form-control slider-filter-input range compound-slider"
-              onmousemove="document.getElementById('rangeOuput_${this.columnDef.field}').innerHTML = rangeInput_${this.columnDef.field}.value" />`;
+              class="form-control slider-filter-input range compound-slider" />`;
   }
 
   /** Build HTML Template for the text (number) that is shown appended to the slider */
@@ -141,7 +157,7 @@ export class CompoundSliderFilter implements Filter {
     const minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
     const defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
 
-    return `<div class="input-group-addon input-group-append slider-value"><span class="input-group-text" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span></div>`;
+    return `<div class="input-group-addon input-group-append slider-value"><span class="input-group-text" id="${this._elementRangeOutputId}">${defaultValue}</span></div>`;
   }
 
   /** Build HTML Template select dropdown (operator) */

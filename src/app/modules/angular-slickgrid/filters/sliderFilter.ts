@@ -17,6 +17,8 @@ const DEFAULT_MAX_VALUE = 100;
 const DEFAULT_STEP = 1;
 
 export class SliderFilter implements Filter {
+  private _elementRangeInputId: string;
+  private _elementRangeOutputId: string;
   private $filterElm: any;
   grid: any;
   searchTerms: SearchTerm[];
@@ -49,6 +51,10 @@ export class SliderFilter implements Filter {
     this.columnDef = args.columnDef;
     this.searchTerms = args.searchTerms || [];
 
+    // define the input & slider number IDs
+    this._elementRangeInputId = `rangeInput_${this.columnDef.field}`;
+    this._elementRangeOutputId = `rangeOutput_${this.columnDef.field}`;
+
     // filter input can only have 1 search term, so we will use the 1st array index if it exist
     const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
 
@@ -70,6 +76,17 @@ export class SliderFilter implements Filter {
         this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value] });
       }
     });
+
+    // if user chose to display the slider number on the right side, then update it every time it changes
+    // we need to use both "input" and "change" event to be all cross-browser
+    if (!this.filterParams.hideSliderNumber) {
+      this.$filterElm.on('input change', (e: { target: HTMLInputElement }) => {
+        const value = e && e.target && e.target.value || '';
+        if (value) {
+          document.getElementById(this._elementRangeOutputId).innerHTML = value;
+        }
+      });
+    }
   }
 
   /**
@@ -118,8 +135,8 @@ export class SliderFilter implements Filter {
     if (this.filterParams.hideSliderNumber) {
       return `
       <div class="search-filter">
-        <input type="range" id="rangeInput_${this.columnDef.field}"
-          name="rangeInput_${this.columnDef.field}"
+        <input type="range" id="${this._elementRangeInputId}"
+          name="${this._elementRangeInputId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
           class="form-control slider-filter-input range" />
       </div>`;
@@ -127,13 +144,12 @@ export class SliderFilter implements Filter {
 
     return `
       <div class="input-group search-filter">
-        <input type="range" id="rangeInput_${this.columnDef.field}"
-          name="rangeInput_${this.columnDef.field}"
+        <input type="range" id="${this._elementRangeInputId}"
+          name="${this._elementRangeInputId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
-          class="form-control slider-filter-input range"
-          onmousemove="document.getElementById('rangeOuput_${this.columnDef.field}').innerHTML = rangeInput_${this.columnDef.field}.value" />
+          class="form-control slider-filter-input range" />
         <div class="input-group-addon input-group-append slider-value">
-          <span class="input-group-text" id="rangeOuput_${this.columnDef.field}">${defaultValue}</span>
+          <span class="input-group-text" id="${this._elementRangeOutputId}">${defaultValue}</span>
         </div>
       </div>`;
   }
