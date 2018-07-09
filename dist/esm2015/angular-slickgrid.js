@@ -8889,7 +8889,7 @@ const complexObjectFormatter = (row, cell, value, columnDef, dataContext) => {
 const moment$9 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$6 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
 const dateIsoFormatter = (row, cell, value, columnDef, dataContext) => {
-    const /** @type {?} */ isDateValid = moment$9(value, FORMAT$6, true).isValid();
+    const /** @type {?} */ isDateValid = moment$9(value, FORMAT$6, false).isValid();
     return (value && isDateValid) ? moment$9(value).format(FORMAT$6) : value;
 };
 
@@ -8900,7 +8900,7 @@ const dateIsoFormatter = (row, cell, value, columnDef, dataContext) => {
 const moment$10 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
 const dateTimeIsoFormatter = (row, cell, value, columnDef, dataContext) => {
-    const /** @type {?} */ isDateValid = moment$10(value, FORMAT$7, true).isValid();
+    const /** @type {?} */ isDateValid = moment$10(value, FORMAT$7, false).isValid();
     return (value && isDateValid) ? moment$10(value).format(FORMAT$7) : value;
 };
 
@@ -8911,7 +8911,7 @@ const dateTimeIsoFormatter = (row, cell, value, columnDef, dataContext) => {
 const moment$11 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
 const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => {
-    const /** @type {?} */ isDateValid = moment$11(value, FORMAT$8, true).isValid();
+    const /** @type {?} */ isDateValid = moment$11(value, FORMAT$8, false).isValid();
     return (value && isDateValid) ? moment$11(value).format(FORMAT$8) : value;
 };
 
@@ -8922,7 +8922,7 @@ const dateTimeIsoAmPmFormatter = (row, cell, value, columnDef, dataContext) => {
 const moment$12 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
 const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => {
-    const /** @type {?} */ isDateValid = moment$12(value, FORMAT$9, true).isValid();
+    const /** @type {?} */ isDateValid = moment$12(value, FORMAT$9, false).isValid();
     return (value && isDateValid) ? moment$12(value).format(FORMAT$9) : value;
 };
 
@@ -8933,7 +8933,7 @@ const dateTimeUsAmPmFormatter = (row, cell, value, columnDef, dataContext) => {
 const moment$13 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
 const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => {
-    const /** @type {?} */ isDateValid = moment$13(value, FORMAT$10, true).isValid();
+    const /** @type {?} */ isDateValid = moment$13(value, FORMAT$10, false).isValid();
     return (value && isDateValid) ? moment$13(value).format(FORMAT$10) : value;
 };
 
@@ -8944,7 +8944,7 @@ const dateTimeUsFormatter = (row, cell, value, columnDef, dataContext) => {
 const moment$14 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
 const dateUsFormatter = (row, cell, value, columnDef, dataContext) => {
-    const /** @type {?} */ isDateValid = moment$14(value, FORMAT$11, true).isValid();
+    const /** @type {?} */ isDateValid = moment$14(value, FORMAT$11, false).isValid();
     return (value && isDateValid) ? moment$14(value).format(FORMAT$11) : value;
 };
 

@@ -6272,37 +6272,37 @@ var complexObjectFormatter = function (row, cell, value, columnDef, dataContext)
 var moment$9 = moment_;
 var FORMAT$6 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
 var dateIsoFormatter = function (row, cell, value, columnDef, dataContext) {
-    var isDateValid = moment$9(value, FORMAT$6, true).isValid();
+    var isDateValid = moment$9(value, FORMAT$6, false).isValid();
     return (value && isDateValid) ? moment$9(value).format(FORMAT$6) : value;
 };
 var moment$10 = moment_;
 var FORMAT$7 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
 var dateTimeIsoFormatter = function (row, cell, value, columnDef, dataContext) {
-    var isDateValid = moment$10(value, FORMAT$7, true).isValid();
+    var isDateValid = moment$10(value, FORMAT$7, false).isValid();
     return (value && isDateValid) ? moment$10(value).format(FORMAT$7) : value;
 };
 var moment$11 = moment_;
 var FORMAT$8 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
 var dateTimeIsoAmPmFormatter = function (row, cell, value, columnDef, dataContext) {
-    var isDateValid = moment$11(value, FORMAT$8, true).isValid();
+    var isDateValid = moment$11(value, FORMAT$8, false).isValid();
     return (value && isDateValid) ? moment$11(value).format(FORMAT$8) : value;
 };
 var moment$12 = moment_;
 var FORMAT$9 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
 var dateTimeUsAmPmFormatter = function (row, cell, value, columnDef, dataContext) {
-    var isDateValid = moment$12(value, FORMAT$9, true).isValid();
+    var isDateValid = moment$12(value, FORMAT$9, false).isValid();
     return (value && isDateValid) ? moment$12(value).format(FORMAT$9) : value;
 };
 var moment$13 = moment_;
 var FORMAT$10 = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
 var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) {
-    var isDateValid = moment$13(value, FORMAT$10, true).isValid();
+    var isDateValid = moment$13(value, FORMAT$10, false).isValid();
     return (value && isDateValid) ? moment$13(value).format(FORMAT$10) : value;
 };
 var moment$14 = moment_;
 var FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
 var dateUsFormatter = function (row, cell, value, columnDef, dataContext) {
-    var isDateValid = moment$14(value, FORMAT$11, true).isValid();
+    var isDateValid = moment$14(value, FORMAT$11, false).isValid();
     return (value && isDateValid) ? moment$14(value).format(FORMAT$11) : value;
 };
 var decimalFormatter = function (row, cell, value, columnDef, dataContext) {
