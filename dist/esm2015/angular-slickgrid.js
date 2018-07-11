@@ -1143,6 +1143,7 @@ class CompoundDateFilter {
      */
     constructor(translate) {
         this.translate = translate;
+        this._clearFilterTriggered = false;
     }
     /**
      * Getter for the Grid Options pulled through the Grid Object
@@ -1197,6 +1198,7 @@ class CompoundDateFilter {
      */
     clear() {
         if (this.flatInstance && this.$selectOperatorElm) {
+            this._clearFilterTriggered = true;
             this.$selectOperatorElm.val(0);
             this.flatInstance.clear();
         }
@@ -1244,10 +1246,10 @@ class CompoundDateFilter {
                 // when using the time picker, we can simulate a keyup event to avoid multiple backend request
                 // since backend request are only executed after user start typing, changing the time should be treated the same way
                 if (pickerOptions.enableTime) {
-                    this.onTriggerEvent(new CustomEvent('keyup'), dateStr === '');
+                    this.onTriggerEvent(new CustomEvent('keyup'));
                 }
                 else {
-                    this.onTriggerEvent(undefined, dateStr === '');
+                    this.onTriggerEvent(undefined);
                 }
             }
         };
@@ -1344,12 +1346,12 @@ class CompoundDateFilter {
     }
     /**
      * @param {?} e
-     * @param {?=} clearFilterTriggered
      * @return {?}
      */
-    onTriggerEvent(e, clearFilterTriggered) {
-        if (clearFilterTriggered) {
-            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+    onTriggerEvent(e) {
+        if (this._clearFilterTriggered) {
+            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+            this._clearFilterTriggered = false; // reset flag for next use
         }
         else {
             const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
@@ -1392,6 +1394,7 @@ class CompoundInputFilter {
      */
     constructor(translate) {
         this.translate = translate;
+        this._clearFilterTriggered = false;
     }
     /**
      * Getter for the Grid Options pulled through the Grid Object
@@ -1444,9 +1447,10 @@ class CompoundInputFilter {
      */
     clear() {
         if (this.$filterElm && this.$selectOperatorElm) {
+            this._clearFilterTriggered = true;
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val('');
-            this.onTriggerEvent(null, true);
+            this.onTriggerEvent(null);
         }
     }
     /**
@@ -1561,12 +1565,12 @@ class CompoundInputFilter {
     }
     /**
      * @param {?} e
-     * @param {?=} clearFilterTriggered
      * @return {?}
      */
-    onTriggerEvent(e, clearFilterTriggered) {
-        if (clearFilterTriggered) {
-            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+    onTriggerEvent(e) {
+        if (this._clearFilterTriggered) {
+            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+            this._clearFilterTriggered = false; // reset flag for next use
         }
         else {
             const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
@@ -1592,7 +1596,9 @@ const DEFAULT_MIN_VALUE = 0;
 const DEFAULT_MAX_VALUE = 100;
 const DEFAULT_STEP = 1;
 class CompoundSliderFilter {
-    constructor() { }
+    constructor() {
+        this._clearFilterTriggered = false;
+    }
     /**
      * Getter for the Grid Options pulled through the Grid Object
      * @return {?}
@@ -1673,13 +1679,14 @@ class CompoundSliderFilter {
      */
     clear() {
         if (this.$filterElm && this.$selectOperatorElm) {
+            this._clearFilterTriggered = true;
             const /** @type {?} */ clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val(clearedValue);
             if (!this.filterParams.hideSliderNumber) {
                 this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(clearedValue);
             }
-            this.onTriggerEvent(undefined, true);
+            this.onTriggerEvent(undefined);
         }
     }
     /**
@@ -1804,12 +1811,12 @@ class CompoundSliderFilter {
     }
     /**
      * @param {?} e
-     * @param {?=} clearFilterTriggered
      * @return {?}
      */
-    onTriggerEvent(e, clearFilterTriggered) {
-        if (clearFilterTriggered) {
-            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+    onTriggerEvent(e) {
+        if (this._clearFilterTriggered) {
+            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+            this._clearFilterTriggered = false; // reset flag for next use
         }
         else {
             const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
@@ -1830,7 +1837,9 @@ CompoundSliderFilter.ctorParameters = () => [];
  * @suppress {checkTypes} checked by tsc
  */
 class InputFilter {
-    constructor() { }
+    constructor() {
+        this._clearFilterTriggered = false;
+    }
     /**
      * Getter for the Grid Options pulled through the Grid Object
      * @return {?}
@@ -1864,8 +1873,9 @@ class InputFilter {
         // also add/remove "filled" class for styling purposes
         this.$filterElm.keyup((e) => {
             const /** @type {?} */ value = e && e.target && e.target.value || '';
-            if (!value || value === '') {
-                this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+            if (this._clearFilterTriggered) {
+                this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+                this._clearFilterTriggered = false; // reset flag for next use
                 this.$filterElm.removeClass('filled');
             }
             else {
@@ -1880,6 +1890,7 @@ class InputFilter {
      */
     clear() {
         if (this.$filterElm) {
+            this._clearFilterTriggered = true;
             this.$filterElm.val('');
             this.$filterElm.trigger('keyup');
         }
@@ -2035,7 +2046,6 @@ class MultipleSelectFilter {
     clear() {
         if (this.$filterElm && this.$filterElm.multipleSelect) {
             // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
-            // this.$filterElm = $(`#${this.$filterElm[0].id}`);
             this.$filterElm.multipleSelect('setSelects', []);
             this.$filterElm.removeClass('filled');
             this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
@@ -2145,6 +2155,7 @@ class SelectFilter {
      */
     constructor(translate) {
         this.translate = translate;
+        this._clearFilterTriggered = false;
     }
     /**
      * @return {?}
@@ -2175,8 +2186,9 @@ class SelectFilter {
         // also add/remove "filled" class for styling purposes
         this.$filterElm.change((e) => {
             const /** @type {?} */ value = e && e.target && e.target.value || '';
-            if (!value || value === '') {
-                this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+            if (this._clearFilterTriggered) {
+                this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+                this._clearFilterTriggered = false; // reset flag for next use
                 this.$filterElm.removeClass('filled');
             }
             else {
@@ -2191,6 +2203,7 @@ class SelectFilter {
      */
     clear() {
         if (this.$filterElm) {
+            this._clearFilterTriggered = true;
             this.$filterElm.val('');
             this.$filterElm.trigger('change');
         }
@@ -2360,8 +2373,8 @@ class SingleSelectFilter {
     clear() {
         if (this.$filterElm && this.$filterElm.multipleSelect) {
             // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
-            // this.$filterElm = $(`#${this.$filterElm[0].id}`);
             this.$filterElm.multipleSelect('setSelects', []);
+            this.$filterElm.removeClass('filled');
             this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
         }
     }
@@ -2451,6 +2464,9 @@ const DEFAULT_MIN_VALUE$1 = 0;
 const DEFAULT_MAX_VALUE$1 = 100;
 const DEFAULT_STEP$1 = 1;
 class SliderFilter {
+    constructor() {
+        this._clearFilterTriggered = false;
+    }
     /**
      * Getter for the Filter Generic Params
      * @return {?}
@@ -2497,8 +2513,9 @@ class SliderFilter {
         // also add/remove "filled" class for styling purposes
         this.$filterElm.change((e) => {
             const /** @type {?} */ value = e && e.target && e.target.value || '';
-            if (!value || value === '') {
-                this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+            if (this._clearFilterTriggered) {
+                this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+                this._clearFilterTriggered = false; // reset flag for next use
                 this.$filterElm.removeClass('filled');
             }
             else {
@@ -2523,6 +2540,7 @@ class SliderFilter {
      */
     clear() {
         if (this.$filterElm) {
+            this._clearFilterTriggered = true;
             const /** @type {?} */ clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE$1;
             this.$filterElm.children('input').val(clearedValue);
             this.$filterElm.children('div.input-group-addon.input-group-append').children().html(clearedValue);

@@ -2,6 +2,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Column, Filter, FilterArguments, FilterCallback, OperatorType, OperatorString, SearchTerm } from './../models/index';
 export declare class SelectFilter implements Filter {
     private translate;
+    private _clearFilterTriggered;
     $filterElm: any;
     grid: any;
     searchTerms: SearchTerm[];

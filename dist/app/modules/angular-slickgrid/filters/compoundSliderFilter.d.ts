@@ -1,5 +1,6 @@
 import { Column, Filter, FilterArguments, FilterCallback, OperatorString, OperatorType, SearchTerm } from './../models/index';
 export declare class CompoundSliderFilter implements Filter {
+    private _clearFilterTriggered;
     private _elementRangeInputId;
     private _elementRangeOutputId;
     private _operator;
@@ -47,5 +48,5 @@ export declare class CompoundSliderFilter implements Filter {
      * Create the DOM element
      */
     private createDomElement(searchTerm?);
-    private onTriggerEvent(e, clearFilterTriggered?);
+    private onTriggerEvent(e);
 }

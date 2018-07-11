@@ -1,5 +1,6 @@
 import { Column, Filter, FilterArguments, FilterCallback, OperatorType, OperatorString, SearchTerm } from './../models/index';
 export declare class SliderFilter implements Filter {
+    private _clearFilterTriggered;
     private _elementRangeInputId;
     private _elementRangeOutputId;
     private $filterElm;

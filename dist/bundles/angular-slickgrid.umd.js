@@ -825,6 +825,7 @@ require('flatpickr');
 var CompoundDateFilter = /** @class */ (function () {
     function CompoundDateFilter(translate) {
         this.translate = translate;
+        this._clearFilterTriggered = false;
     }
     Object.defineProperty(CompoundDateFilter.prototype, "gridOptions", {
         get: function () {
@@ -863,6 +864,7 @@ var CompoundDateFilter = /** @class */ (function () {
     };
     CompoundDateFilter.prototype.clear = function () {
         if (this.flatInstance && this.$selectOperatorElm) {
+            this._clearFilterTriggered = true;
             this.$selectOperatorElm.val(0);
             this.flatInstance.clear();
         }
@@ -896,10 +898,10 @@ var CompoundDateFilter = /** @class */ (function () {
             onChange: function (selectedDates, dateStr, instance) {
                 _this._currentValue = dateStr;
                 if (pickerOptions.enableTime) {
-                    _this.onTriggerEvent(new CustomEvent('keyup'), dateStr === '');
+                    _this.onTriggerEvent(new CustomEvent('keyup'));
                 }
                 else {
-                    _this.onTriggerEvent(undefined, dateStr === '');
+                    _this.onTriggerEvent(undefined);
                 }
             }
         };
@@ -963,9 +965,10 @@ var CompoundDateFilter = /** @class */ (function () {
         }
         return 'en';
     };
-    CompoundDateFilter.prototype.onTriggerEvent = function (e, clearFilterTriggered) {
-        if (clearFilterTriggered) {
-            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+    CompoundDateFilter.prototype.onTriggerEvent = function (e) {
+        if (this._clearFilterTriggered) {
+            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+            this._clearFilterTriggered = false;
         }
         else {
             var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
@@ -994,6 +997,7 @@ CompoundDateFilter.ctorParameters = function () { return [
 var CompoundInputFilter = /** @class */ (function () {
     function CompoundInputFilter(translate) {
         this.translate = translate;
+        this._clearFilterTriggered = false;
     }
     Object.defineProperty(CompoundInputFilter.prototype, "gridOptions", {
         get: function () {
@@ -1030,9 +1034,10 @@ var CompoundInputFilter = /** @class */ (function () {
     };
     CompoundInputFilter.prototype.clear = function () {
         if (this.$filterElm && this.$selectOperatorElm) {
+            this._clearFilterTriggered = true;
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val('');
-            this.onTriggerEvent(null, true);
+            this.onTriggerEvent(null);
         }
     };
     CompoundInputFilter.prototype.destroy = function () {
@@ -1110,9 +1115,10 @@ var CompoundInputFilter = /** @class */ (function () {
         }
         return $filterContainerElm;
     };
-    CompoundInputFilter.prototype.onTriggerEvent = function (e, clearFilterTriggered) {
-        if (clearFilterTriggered) {
-            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+    CompoundInputFilter.prototype.onTriggerEvent = function (e) {
+        if (this._clearFilterTriggered) {
+            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+            this._clearFilterTriggered = false;
         }
         else {
             var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
@@ -1134,6 +1140,7 @@ var DEFAULT_MAX_VALUE = 100;
 var DEFAULT_STEP = 1;
 var CompoundSliderFilter = /** @class */ (function () {
     function CompoundSliderFilter() {
+        this._clearFilterTriggered = false;
     }
     Object.defineProperty(CompoundSliderFilter.prototype, "gridOptions", {
         get: function () {
@@ -1196,13 +1203,14 @@ var CompoundSliderFilter = /** @class */ (function () {
     };
     CompoundSliderFilter.prototype.clear = function () {
         if (this.$filterElm && this.$selectOperatorElm) {
+            this._clearFilterTriggered = true;
             var clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val(clearedValue);
             if (!this.filterParams.hideSliderNumber) {
                 this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(clearedValue);
             }
-            this.onTriggerEvent(undefined, true);
+            this.onTriggerEvent(undefined);
         }
     };
     CompoundSliderFilter.prototype.destroy = function () {
@@ -1279,9 +1287,10 @@ var CompoundSliderFilter = /** @class */ (function () {
         }
         return $filterContainerElm;
     };
-    CompoundSliderFilter.prototype.onTriggerEvent = function (e, clearFilterTriggered) {
-        if (clearFilterTriggered) {
-            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+    CompoundSliderFilter.prototype.onTriggerEvent = function (e) {
+        if (this._clearFilterTriggered) {
+            this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+            this._clearFilterTriggered = false;
         }
         else {
             var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
@@ -1298,6 +1307,7 @@ CompoundSliderFilter.decorators = [
 CompoundSliderFilter.ctorParameters = function () { return []; };
 var InputFilter = /** @class */ (function () {
     function InputFilter() {
+        this._clearFilterTriggered = false;
     }
     Object.defineProperty(InputFilter.prototype, "gridOptions", {
         get: function () {
@@ -1324,8 +1334,9 @@ var InputFilter = /** @class */ (function () {
         this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
         this.$filterElm.keyup(function (e) {
             var value = e && e.target && e.target.value || '';
-            if (!value || value === '') {
-                _this.callback(e, { columnDef: _this.columnDef, clearFilterTriggered: true });
+            if (_this._clearFilterTriggered) {
+                _this.callback(e, { columnDef: _this.columnDef, clearFilterTriggered: _this._clearFilterTriggered });
+                _this._clearFilterTriggered = false;
                 _this.$filterElm.removeClass('filled');
             }
             else {
@@ -1336,6 +1347,7 @@ var InputFilter = /** @class */ (function () {
     };
     InputFilter.prototype.clear = function () {
         if (this.$filterElm) {
+            this._clearFilterTriggered = true;
             this.$filterElm.val('');
             this.$filterElm.trigger('keyup');
         }
@@ -1513,6 +1525,7 @@ MultipleSelectFilter.ctorParameters = function () { return [
 var SelectFilter = /** @class */ (function () {
     function SelectFilter(translate) {
         this.translate = translate;
+        this._clearFilterTriggered = false;
     }
     Object.defineProperty(SelectFilter.prototype, "operator", {
         get: function () {
@@ -1535,8 +1548,9 @@ var SelectFilter = /** @class */ (function () {
         this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
         this.$filterElm.change(function (e) {
             var value = e && e.target && e.target.value || '';
-            if (!value || value === '') {
-                _this.callback(e, { columnDef: _this.columnDef, clearFilterTriggered: true });
+            if (_this._clearFilterTriggered) {
+                _this.callback(e, { columnDef: _this.columnDef, clearFilterTriggered: _this._clearFilterTriggered });
+                _this._clearFilterTriggered = false;
                 _this.$filterElm.removeClass('filled');
             }
             else {
@@ -1547,6 +1561,7 @@ var SelectFilter = /** @class */ (function () {
     };
     SelectFilter.prototype.clear = function () {
         if (this.$filterElm) {
+            this._clearFilterTriggered = true;
             this.$filterElm.val('');
             this.$filterElm.trigger('change');
         }
@@ -1673,6 +1688,7 @@ var SingleSelectFilter = /** @class */ (function () {
     SingleSelectFilter.prototype.clear = function () {
         if (this.$filterElm && this.$filterElm.multipleSelect) {
             this.$filterElm.multipleSelect('setSelects', []);
+            this.$filterElm.removeClass('filled');
             this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
         }
     };
@@ -1733,6 +1749,7 @@ var DEFAULT_MAX_VALUE$1 = 100;
 var DEFAULT_STEP$1 = 1;
 var SliderFilter = /** @class */ (function () {
     function SliderFilter() {
+        this._clearFilterTriggered = false;
     }
     Object.defineProperty(SliderFilter.prototype, "filterParams", {
         get: function () {
@@ -1771,8 +1788,9 @@ var SliderFilter = /** @class */ (function () {
         this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
         this.$filterElm.change(function (e) {
             var value = e && e.target && e.target.value || '';
-            if (!value || value === '') {
-                _this.callback(e, { columnDef: _this.columnDef, clearFilterTriggered: true });
+            if (_this._clearFilterTriggered) {
+                _this.callback(e, { columnDef: _this.columnDef, clearFilterTriggered: _this._clearFilterTriggered });
+                _this._clearFilterTriggered = false;
                 _this.$filterElm.removeClass('filled');
             }
             else {
@@ -1791,6 +1809,7 @@ var SliderFilter = /** @class */ (function () {
     };
     SliderFilter.prototype.clear = function () {
         if (this.$filterElm) {
+            this._clearFilterTriggered = true;
             var clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE$1;
             this.$filterElm.children('input').val(clearedValue);
             this.$filterElm.children('div.input-group-addon.input-group-append').children().html(clearedValue);
