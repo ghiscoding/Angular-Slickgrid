@@ -12,6 +12,7 @@ declare var $: any;
 
 @Injectable()
 export class CompoundDateFilter implements Filter {
+  private _clearFilterTriggered = false;
   private $filterElm: any;
   private $filterInputElm: any;
   private $selectOperatorElm: any;
@@ -71,6 +72,7 @@ export class CompoundDateFilter implements Filter {
    */
   clear() {
     if (this.flatInstance && this.$selectOperatorElm) {
+      this._clearFilterTriggered = true;
       this.$selectOperatorElm.val(0);
       this.flatInstance.clear();
     }
@@ -119,9 +121,9 @@ export class CompoundDateFilter implements Filter {
         // when using the time picker, we can simulate a keyup event to avoid multiple backend request
         // since backend request are only executed after user start typing, changing the time should be treated the same way
         if (pickerOptions.enableTime) {
-          this.onTriggerEvent(new CustomEvent('keyup'), dateStr === '');
+          this.onTriggerEvent(new CustomEvent('keyup'));
         } else {
-          this.onTriggerEvent(undefined, dateStr === '');
+          this.onTriggerEvent(undefined);
         }
       }
     };
@@ -219,9 +221,10 @@ export class CompoundDateFilter implements Filter {
     return 'en';
   }
 
-  private onTriggerEvent(e: Event | undefined, clearFilterTriggered?: boolean) {
-    if (clearFilterTriggered) {
-      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+  private onTriggerEvent(e: Event | undefined) {
+    if (this._clearFilterTriggered) {
+      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+      this._clearFilterTriggered = false; // reset flag for next use
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');

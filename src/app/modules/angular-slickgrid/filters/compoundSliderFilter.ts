@@ -20,6 +20,7 @@ const DEFAULT_STEP = 1;
 
 @Injectable()
 export class CompoundSliderFilter implements Filter {
+  private _clearFilterTriggered = false;
   private _elementRangeInputId: string;
   private _elementRangeOutputId: string;
   private _operator: OperatorType | OperatorString;
@@ -106,13 +107,14 @@ export class CompoundSliderFilter implements Filter {
    */
   clear() {
     if (this.$filterElm && this.$selectOperatorElm) {
+      this._clearFilterTriggered = true;
       const clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
       this.$selectOperatorElm.val(0);
       this.$filterInputElm.val(clearedValue);
       if (!this.filterParams.hideSliderNumber) {
         this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(clearedValue);
       }
-      this.onTriggerEvent(undefined, true);
+      this.onTriggerEvent(undefined);
     }
   }
 
@@ -241,9 +243,10 @@ export class CompoundSliderFilter implements Filter {
     return $filterContainerElm;
   }
 
-  private onTriggerEvent(e: Event | undefined, clearFilterTriggered?: boolean) {
-    if (clearFilterTriggered) {
-      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+  private onTriggerEvent(e: Event | undefined) {
+    if (this._clearFilterTriggered) {
+      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+      this._clearFilterTriggered = false; // reset flag for next use
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       const value = this.$filterInputElm.val();

@@ -8,6 +8,7 @@ declare var $: any;
 
 @Inject(TranslateService)
 export class CompoundInputFilter implements Filter {
+  private _clearFilterTriggered = false;
   private $filterElm: any;
   private $filterInputElm: any;
   private $selectOperatorElm: any;
@@ -63,9 +64,10 @@ export class CompoundInputFilter implements Filter {
    */
   clear() {
     if (this.$filterElm && this.$selectOperatorElm) {
+      this._clearFilterTriggered = true;
       this.$selectOperatorElm.val(0);
       this.$filterInputElm.val('');
-      this.onTriggerEvent(null, true);
+      this.onTriggerEvent(null);
     }
   }
 
@@ -189,9 +191,10 @@ export class CompoundInputFilter implements Filter {
     return $filterContainerElm;
   }
 
-  private onTriggerEvent(e: Event | undefined, clearFilterTriggered?: boolean) {
-    if (clearFilterTriggered) {
-      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+  private onTriggerEvent(e: Event | undefined) {
+    if (this._clearFilterTriggered) {
+      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+      this._clearFilterTriggered = false; // reset flag for next use
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       const value = this.$filterInputElm.val();

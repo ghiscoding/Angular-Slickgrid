@@ -13,6 +13,7 @@ import {
 declare var $: any;
 
 export class InputFilter implements Filter {
+  private _clearFilterTriggered = false;
   private $filterElm: any;
   grid: any;
   searchTerms: SearchTerm[];
@@ -52,8 +53,9 @@ export class InputFilter implements Filter {
     // also add/remove "filled" class for styling purposes
     this.$filterElm.keyup((e: any) => {
       const value = e && e.target && e.target.value || '';
-      if (!value || value === '') {
-        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: true });
+      if (this._clearFilterTriggered) {
+        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+        this._clearFilterTriggered = false; // reset flag for next use
         this.$filterElm.removeClass('filled');
       } else {
         this.$filterElm.addClass('filled');
@@ -67,6 +69,7 @@ export class InputFilter implements Filter {
    */
   clear() {
     if (this.$filterElm) {
+      this._clearFilterTriggered = true;
       this.$filterElm.val('');
       this.$filterElm.trigger('keyup');
     }
