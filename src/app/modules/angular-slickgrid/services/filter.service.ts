@@ -312,8 +312,10 @@ export class FilterService {
       const columnDef = args.columnDef || null;
       const columnId = columnDef ? (columnDef.id || '') : '';
       const operator = args.operator || undefined;
+      const hasSearchTerms = searchTerms && Array.isArray(searchTerms);
+      const termsCount = hasSearchTerms && searchTerms.length;
 
-      if (!searchTerms || (Array.isArray(searchTerms) && searchTerms.length === 0)) {
+      if (!hasSearchTerms || termsCount === 0 || (termsCount === 1 && searchTerms[0] === '')) {
         // delete the property from the columnFilters when it becomes empty
         // without doing this, it would leave an incorrect state of the previous column filters when filtering on another column
         delete this._columnFilters[columnId];
