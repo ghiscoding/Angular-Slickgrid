@@ -2172,7 +2172,9 @@ var FilterService = /** @class */ (function () {
             var columnDef = args.columnDef || null;
             var columnId = columnDef ? (columnDef.id || '') : '';
             var operator = args.operator || undefined;
-            if (!searchTerms || (Array.isArray(searchTerms) && searchTerms.length === 0)) {
+            var hasSearchTerms = searchTerms && Array.isArray(searchTerms);
+            var termsCount = hasSearchTerms && searchTerms.length;
+            if (!hasSearchTerms || termsCount === 0 || (termsCount === 1 && searchTerms[0] === '')) {
                 delete this._columnFilters[columnId];
             }
             else {
