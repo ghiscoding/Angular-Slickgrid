@@ -10357,7 +10357,9 @@ class AngularSlickgridComponent {
     refreshGridData(dataset, totalCount) {
         if (dataset && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
             this._dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
-            this._dataView.reSort();
+            if (!this.gridOptions.backendServiceApi) {
+                this._dataView.reSort();
+            }
             // this.grid.setData(dataset);
             this.grid.invalidate();
             this.grid.render();

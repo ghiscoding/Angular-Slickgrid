@@ -7266,7 +7266,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
     AngularSlickgridComponent.prototype.refreshGridData = function (dataset, totalCount) {
         if (dataset && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
             this._dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
-            this._dataView.reSort();
+            if (!this.gridOptions.backendServiceApi) {
+                this._dataView.reSort();
+            }
             this.grid.invalidate();
             this.grid.render();
             if (this.gridOptions.enablePagination || this.gridOptions.backendServiceApi) {
