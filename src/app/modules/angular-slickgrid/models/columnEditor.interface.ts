@@ -4,11 +4,13 @@ import {
   EditorValidator,
   MultipleSelectOption,
 } from './../models/index';
+import { Observable } from 'rxjs/Observable';
 
 export interface ColumnEditor {
-  /** Any inline editor function that implements Editor for the cell */
-  model?: any;
+  /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Editor) */
+  asyncCollection?: Promise<any> | Observable<any>;
 
+  /** A collection of items/options (commonly used with a Select/Multi-Select Editor) */
   collection?: any[];
 
   /** We could filter some items from the collection */
@@ -31,6 +33,9 @@ export interface ColumnEditor {
 
   /** Minimum value of the filter, works only with Filters supporting it (text, number, float, slider) */
   minValue?: number | string;
+
+  /** Any inline editor function that implements Editor for the cell */
+  model?: any;
 
   /** Editor Validator */
   validator?: EditorValidator;

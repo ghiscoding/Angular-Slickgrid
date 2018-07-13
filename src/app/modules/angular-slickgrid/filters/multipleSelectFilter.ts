@@ -13,6 +13,8 @@ import {
   SearchTerm,
   SelectOption,
 } from './../models/index';
+import { Observable } from 'rxjs/Observable';
+import { castToPromise } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -80,8 +82,8 @@ export class MultipleSelectFilter implements Filter {
     this.columnDef = args.columnDef;
     this.searchTerms = args.searchTerms || [];
 
-    if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
+    if (!this.grid || !this.columnDef || !this.columnDef.filter || (!this.columnDef.filter.collection && !this.columnDef.filter.asyncCollection)) {
+      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" (or "asyncCollection") for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
 
     this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
@@ -89,18 +91,14 @@ export class MultipleSelectFilter implements Filter {
     this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
 
     let newCollection = this.columnDef.filter.collection || [];
+    const asyncCollection = this.columnDef.filter.asyncCollection;
 
-    // user might want to filter certain items of the collection
-    if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
-      const filterBy = this.columnDef.filter.collectionFilterBy;
-      newCollection = this.collectionService.filterCollection(newCollection, filterBy);
+    if (asyncCollection) {
+      this.renderOptions(asyncCollection);
     }
 
-    // user might want to sort the collection
-    if (this.columnDef.filter && this.columnDef.filter.collectionSortBy) {
-      const sortBy = this.columnDef.filter.collectionSortBy;
-      newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
-    }
+    // user might want to filter or sort certain items of the collection
+    newCollection = this.filterAndSortCollection(newCollection);
 
     // step 1, create HTML string template
     const filterTemplate = this.buildTemplateHtmlString(newCollection);
@@ -143,6 +141,42 @@ export class MultipleSelectFilter implements Filter {
   //
   // private functions
   // ------------------
+
+  /**
+   * user might want to filter and/or sort certain items of the collection
+   * @param inputCollection
+   * @return outputCollection filtered and/or sorted collection
+   */
+  private filterAndSortCollection(inputCollection) {
+    let outputCollection = [];
+
+    // user might want to filter certain items of the collection
+    if (this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionFilterBy) {
+      const filterBy = this.columnDef.filter.collectionFilterBy;
+      outputCollection = this.collectionService.filterCollection(inputCollection, filterBy);
+    }
+
+    // user might want to sort the collection
+    if (this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionSortBy) {
+      const sortBy = this.columnDef.filter.collectionSortBy;
+      outputCollection = this.collectionService.sortCollection(inputCollection, sortBy, this.enableTranslateLabel);
+    }
+
+    return outputCollection;
+  }
+
+  private async renderOptions(asyncCollection: Observable<any> | Promise<any>) {
+    let newCollection: any[] = await castToPromise(asyncCollection);
+
+    newCollection = this.filterAndSortCollection(newCollection);
+
+    // step 1, create HTML string template
+    const filterTemplate = this.buildTemplateHtmlString(newCollection);
+
+    // step 2, create the DOM Element of the filter & pre-load search terms
+    // also subscribe to the onClose event
+    this.createDomElement(filterTemplate);
+  }
 
   /**
    * Create the HTML template as a string

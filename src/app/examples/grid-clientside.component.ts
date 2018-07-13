@@ -41,12 +41,6 @@ export class GridClientSideComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // prepare a multiple-select array to filter with
-    const multiSelectFilterArray = [];
-    for (let i = 0; i < NB_ITEMS; i++) {
-      multiSelectFilterArray.push({ value: i, label: i });
-    }
-
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', sortable: true, minWidth: 55,
         type: FieldType.string, filterable: true, filter: { model: Filters.compoundInput }
@@ -61,7 +55,18 @@ export class GridClientSideComponent implements OnInit {
         minWidth: 55,
         filterable: true,
         filter: {
-          collection: multiSelectFilterArray,
+          asyncCollection: new Promise<any>((resolve) => {
+            // prepare a multiple-select array to filter with
+            const multiSelectFilterArray = [];
+            for (let i = 0; i < NB_ITEMS; i++) {
+              multiSelectFilterArray.push({ value: i, label: i });
+            }
+
+            // simulate async server load
+            setTimeout(() => {
+              resolve(multiSelectFilterArray);
+            }, 500);
+          }),
           collectionSortBy: {
             property: 'value',
             sortDesc: true,
