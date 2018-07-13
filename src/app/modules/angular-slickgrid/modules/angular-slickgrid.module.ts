@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { AngularSlickgridComponent } from './../components/angular-slickgrid.component';
 import { CollectionService } from './../services/collection.service';
+import { FilterFactory } from '../filters/filterFactory';
 import { GraphqlService } from './../services/graphql.service';
 import { GridOdataService } from './../services/grid-odata.service';
 import { GridOption } from './../models/gridOption.interface';
@@ -31,6 +32,7 @@ export class AngularSlickgridModule {
       providers: [
         { provide: 'config', useValue: config },
         CollectionService,
+        FilterFactory,
         GraphqlService,
         GridOdataService
       ]
