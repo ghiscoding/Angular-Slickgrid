@@ -94,14 +94,14 @@ export class MultipleSelectFilter implements Filter {
     const asyncCollection = this.columnDef.filter.asyncCollection;
 
     if (asyncCollection) {
-      this.renderOptions(asyncCollection);
+      this.renderOptionsAsync(asyncCollection);
     }
 
     // user might want to filter or sort certain items of the collection
     newCollection = this.filterAndSortCollection(newCollection);
 
     // step 1, create HTML string template
-    const filterTemplate = this.buildTemplateHtmlString(newCollection);
+    const filterTemplate = this.buildTemplateHtmlString(newCollection, this.searchTerms);
 
     // step 2, create the DOM Element of the filter & pre-load search terms
     // also subscribe to the onClose event
@@ -165,30 +165,33 @@ export class MultipleSelectFilter implements Filter {
     return outputCollection;
   }
 
-  private async renderOptions(asyncCollection: Observable<any> | Promise<any>) {
-    let newCollection: any[] = await castToPromise(asyncCollection);
+  private async renderOptionsAsync(asyncCollection: Observable<any> | Promise<any>) {
+    if (asyncCollection) {
+      let newCollection: any[] = await castToPromise(asyncCollection);
 
-    newCollection = this.filterAndSortCollection(newCollection);
+      // user might want to filter and/or sort certain items of the collection
+      newCollection = this.filterAndSortCollection(newCollection);
 
-    // step 1, create HTML string template
-    const filterTemplate = this.buildTemplateHtmlString(newCollection);
+      // step 1, create HTML string template
+      const filterTemplate = this.buildTemplateHtmlString(newCollection, this.searchTerms);
 
-    // step 2, create the DOM Element of the filter & pre-load search terms
-    // also subscribe to the onClose event
-    this.createDomElement(filterTemplate);
+      // step 2, create the DOM Element of the filter & pre-load search terms
+      // also subscribe to the onClose event
+      this.createDomElement(filterTemplate);
+    }
   }
 
   /**
    * Create the HTML template as a string
    */
-  private buildTemplateHtmlString(optionCollection: any[]) {
+  private buildTemplateHtmlString(optionCollection: any[], searchTerms: SearchTerm[]) {
     let options = '';
     optionCollection.forEach((option: SelectOption) => {
       if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
         throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
       }
       const labelKey = (option.labelKey || option[this.labelName]) as string;
-      const selected = (this.findValueInSearchTerms(option[this.valueName]) >= 0) ? 'selected' : '';
+      const selected = (searchTerms.findIndex((term) => term === option[this.valueName]) >= 0) ? 'selected' : '';
       const textLabel = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
 
       // html text of each select option
@@ -233,16 +236,5 @@ export class MultipleSelectFilter implements Filter {
     // merge options & attach multiSelect
     const options: MultipleSelectOption = { ...this.defaultOptions, ...this.columnDef.filter.filterOptions };
     this.$filterElm = this.$filterElm.multipleSelect(options);
-  }
-
-  private findValueInSearchTerms(value: number | string): number {
-    if (this.searchTerms && Array.isArray(this.searchTerms)) {
-      for (let i = 0; i < this.searchTerms.length; i++) {
-        if (this.searchTerms[i] && this.searchTerms[i] === value) {
-          return i;
-        }
-      }
-    }
-    return -1;
   }
 }

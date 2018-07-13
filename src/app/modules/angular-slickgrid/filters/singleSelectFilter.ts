@@ -186,6 +186,11 @@ export class SingleSelectFilter implements Filter {
     this.$filterElm.attr('id', `filter-${this.columnDef.id}`);
     this.$filterElm.data('columnId', this.columnDef.id);
 
+    // if there's a search term, we will add the "filled" class for styling purposes
+    if (this.isFilled) {
+      this.$filterElm.addClass('filled');
+    }
+
     // append the new DOM element to the header row
     if (this.$filterElm && typeof this.$filterElm.appendTo === 'function') {
       this.$filterElm.appendTo($headerElm);
