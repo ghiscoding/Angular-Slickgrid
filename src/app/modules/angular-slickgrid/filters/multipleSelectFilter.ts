@@ -14,7 +14,7 @@ import {
   SelectOption,
 } from './../models/index';
 import { Observable } from 'rxjs/Observable';
-import { castToPromise } from '../services/utilities';
+import { Subject } from 'rxjs/Subject';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -165,20 +165,59 @@ export class MultipleSelectFilter implements Filter {
     return outputCollection;
   }
 
-  private async renderOptionsAsync(asyncCollection: Observable<any> | Promise<any>) {
-    if (asyncCollection) {
-      let newCollection: any[] = await castToPromise(asyncCollection);
+  private async renderOptionsAsync(asyncCollection: Promise<any> | Observable<any> | Subject<any>) {
+    if (asyncCollection && asyncCollection instanceof Observable) {
+      asyncCollection.subscribe((collection) => {
+        console.log(collection);
+        if (Array.isArray(collection)) {
+          this.columnDef.filter.collection = collection;
 
-      // user might want to filter and/or sort certain items of the collection
-      newCollection = this.filterAndSortCollection(newCollection);
+          // recreate Multiple Select after getting async collection
+          this.renderDomElement(collection);
+        }
+      });
 
-      // step 1, create HTML string template
-      const filterTemplate = this.buildTemplateHtmlString(newCollection, this.searchTerms);
+/*
+      // wait for the "asyncCollection", once resolved we will save it into the "collection" for later reference
+      const awaitedCollection: any[] = await castToPromise(asyncCollection);
+      this.columnDef.filter.collection = awaitedCollection;
 
-      // step 2, create the DOM Element of the filter & pre-load search terms
-      // also subscribe to the onClose event
-      this.createDomElement(filterTemplate);
+      // recreate Multiple Select after getting async collection
+      this.renderDomElement(awaitedCollection);
+
+      const observer = Observable.of(this.columnDef.filter.collection);
+      observer.subscribe((col) => console.log(col));
+
+      const arr = new Proxy(awaitedCollection, {
+        get: (target, name) => {
+          console.log(target, name);
+          return target[name];
+        },
+        set: (obj, prop, value) => {
+          console.log(obj, prop, value);
+          return true;
+        }
+      });
+      setTimeout(() => {
+        console.log(this.columnDef.filter.collection);
+      }, 4000);
+      // subscribe to the "collection" property changes
+*/
     }
+  }
+
+  private renderDomElement(collection) {
+    let newCollection = collection;
+
+    // user might want to filter and/or sort certain items of the collection
+    newCollection = this.filterAndSortCollection(newCollection);
+
+    // step 1, create HTML string template
+    const filterTemplate = this.buildTemplateHtmlString(newCollection, this.searchTerms);
+
+    // step 2, create the DOM Element of the filter & pre-load search terms
+    // also subscribe to the onClose event
+    this.createDomElement(filterTemplate);
   }
 
   /**

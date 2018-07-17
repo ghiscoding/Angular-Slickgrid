@@ -2,6 +2,7 @@ import { CustomInputFilter } from './custom-inputFilter';
 import { Component, OnInit } from '@angular/core';
 import { AngularGridInstance, Column, FieldType, Filters, Formatters, GridOption, GridStateChange } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
+import { Subject } from 'rxjs/Subject';
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -41,6 +42,17 @@ export class GridClientSideComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // prepare a multiple-select array to filter the "Duration" column and wrap it inside a timer to simulate a backend call
+    const durationCollectionSubject = new Subject<any>();
+    setTimeout(() => {
+      const multiSelectFilterArray = [];
+      for (let i = 0; i < NB_ITEMS; i++) {
+        multiSelectFilterArray.push({ value: i, label: i });
+      }
+
+      durationCollectionSubject.next(multiSelectFilterArray);
+    }, 1000);
+
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', sortable: true, minWidth: 55,
         type: FieldType.string, filterable: true, filter: { model: Filters.compoundInput }
@@ -55,18 +67,7 @@ export class GridClientSideComponent implements OnInit {
         minWidth: 55,
         filterable: true,
         filter: {
-          asyncCollection: new Promise<any>((resolve) => {
-            // prepare a multiple-select array to filter with
-            const multiSelectFilterArray = [];
-            for (let i = 0; i < NB_ITEMS; i++) {
-              multiSelectFilterArray.push({ value: i, label: i });
-            }
-
-            // simulate async server load
-            setTimeout(() => {
-              resolve(multiSelectFilterArray);
-            }, 500);
-          }),
+          asyncCollection: durationCollectionSubject,
           collectionSortBy: {
             property: 'value',
             sortDesc: true,
@@ -108,6 +109,7 @@ export class GridClientSideComponent implements OnInit {
         }
       }
     ];
+
     this.gridOptions = {
       autoResize: {
         containerId: 'demo-container',
@@ -133,8 +135,39 @@ export class GridClientSideComponent implements OnInit {
     };
 
     // mock a dataset
-    this.dataset = [];
-    for (let i = 0; i < NB_ITEMS; i++) {
+    this.dataset = this.mockData(NB_ITEMS);
+  }
+
+  angularGridReady(angularGrid: any) {
+    this.angularGrid = angularGrid;
+  }
+
+  addItem() {
+    const lastRowIndex = this.dataset.length;
+    const newRows = this.mockData(1, lastRowIndex);
+
+    // simulate adding an item and refreshing the MultipleSelect Filter of the "Duration" column
+    setTimeout(() => {
+      const durationColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'duration');
+      if (durationColumnDef) {
+        const collection = durationColumnDef.filter.collection;
+        if (Array.isArray(collection)) {
+          this.angularGrid.gridService.addItemToDatagrid(newRows[0]);
+          collection.push({ value: lastRowIndex, label: lastRowIndex });
+
+          // trigger a change for the Observable/Subject
+          if (durationColumnDef.filter.asyncCollection instanceof Subject) {
+            durationColumnDef.filter.asyncCollection.next(collection);
+          }
+        }
+      }
+    }, 500);
+  }
+
+  mockData(itemCount, startingIndex = 0): any[] {
+    // mock a dataset
+    const tempDataset = [];
+    for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
       const randomDuration = Math.round(Math.random() * 100);
       const randomYear = randomBetween(2000, 2025);
       const randomYearShort = randomBetween(10, 25);
@@ -145,23 +178,21 @@ export class GridClientSideComponent implements OnInit {
       const randomHour = randomBetween(10, 23);
       const randomTime = randomBetween(10, 59);
 
-      this.dataset[i] = {
+      tempDataset.push({
         id: i,
         title: 'Task ' + i,
         description: (i % 5) ? 'desc ' + i : null, // also add some random to test NULL field
         duration: randomDuration,
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
-        start: (i % 3) ? null : new Date(randomYear, randomMonth, randomDay),          // provide a Date format
+        start: (i % 4) ? null : new Date(randomYear, randomMonth, randomDay),          // provide a Date format
         usDateShort: `${randomMonth}/${randomDay}/${randomYearShort}`, // provide a date US Short in the dataset
         utcDate: `${randomYear}-${randomMonthStr}-${randomDay}T${randomHour}:${randomTime}:${randomTime}Z`,
         effortDriven: (i % 3 === 0)
-      };
+      });
     }
-  }
 
-  angularGridReady(angularGrid: any) {
-    this.angularGrid = angularGrid;
+    return tempDataset;
   }
 
   /** Dispatched event of a Grid State Changed event */
