@@ -5104,8 +5104,8 @@ class GraphqlService {
         this._grid = grid;
         this.options = serviceOptions || {};
         this.pagination = pagination;
-        if (grid && grid.getColumns && grid.getOptions) {
-            this._columnDefinitions = grid.getColumns();
+        if (grid && grid.getColumns) {
+            this._columnDefinitions = serviceOptions.columnDefinitions || grid.getColumns();
         }
     }
     /**
@@ -5735,8 +5735,8 @@ class GridOdataService {
             pageNumber: 1,
             pageSize: this.odataService.options.top || this.defaultOptions.top
         };
-        if (grid && grid.getColumns && grid.getOptions) {
-            this._columnDefinitions = grid.getColumns() || options["columnDefinitions"];
+        if (grid && grid.getColumns) {
+            this._columnDefinitions = options["columnDefinitions"] || grid.getColumns();
             this._columnDefinitions = this._columnDefinitions.filter((column) => !column.excludeFromQuery);
         }
     }
@@ -6633,9 +6633,6 @@ class GridService {
     addItemToDatagrid(item, shouldHighlightRow = true) {
         if (!this._grid || !this._gridOptions || !this._dataView) {
             throw new Error('We could not find SlickGrid Grid, DataView objects');
-        }
-        if (!this._gridOptions || (!this._gridOptions.enableCheckboxSelector && !this._gridOptions.enableRowSelection)) {
-            throw new Error('addItemToDatagrid() requires to have a valid Slickgrid Selection Model. You can overcome this issue by enabling enableCheckboxSelector or enableRowSelection to True');
         }
         const /** @type {?} */ row = 0;
         this._dataView.insertItem(row, item);
@@ -10520,6 +10517,7 @@ class AngularSlickgridModule {
             providers: [
                 { provide: 'config', useValue: config },
                 CollectionService,
+                FilterFactory,
                 GraphqlService,
                 GridOdataService
             ]
