@@ -75,7 +75,7 @@ export class GridOdataService implements BackendService {
     };
 
     if (grid && grid.getColumns) {
-      this._columnDefinitions = options.columnDefinitions || grid.getColumns();
+      this._columnDefinitions = (options && options.columnDefinitions) || grid.getColumns();
       this._columnDefinitions = this._columnDefinitions.filter((column: Column) => !column.excludeFromQuery);
     }
   }
