@@ -17,7 +17,6 @@ import {
 // using external non-typed js libraries
 declare var $: any;
 
-@Injectable()
 export class MultipleSelectFilter implements Filter {
   $filterElm: any;
   grid: any;
