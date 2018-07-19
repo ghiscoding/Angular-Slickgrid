@@ -118,6 +118,7 @@ export class MultipleSelectFilter implements Filter {
       // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
       this.$filterElm.multipleSelect('setSelects', []);
       this.$filterElm.removeClass('filled');
+      this.searchTerms = [];
       this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
     }
   }

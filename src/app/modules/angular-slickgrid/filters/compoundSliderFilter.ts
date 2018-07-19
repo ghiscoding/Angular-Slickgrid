@@ -108,6 +108,7 @@ export class CompoundSliderFilter implements Filter {
   clear() {
     if (this.$filterElm && this.$selectOperatorElm) {
       this._clearFilterTriggered = true;
+      this.searchTerms = [];
       const clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
       this.$selectOperatorElm.val(0);
       this.$filterInputElm.val(clearedValue);

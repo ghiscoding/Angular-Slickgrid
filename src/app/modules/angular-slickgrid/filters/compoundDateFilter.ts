@@ -73,6 +73,7 @@ export class CompoundDateFilter implements Filter {
   clear() {
     if (this.flatInstance && this.$selectOperatorElm) {
       this._clearFilterTriggered = true;
+      this.searchTerms = [];
       this.$selectOperatorElm.val(0);
       this.flatInstance.clear();
     }
