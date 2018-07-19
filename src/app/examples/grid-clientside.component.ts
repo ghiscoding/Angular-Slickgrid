@@ -38,19 +38,19 @@ export class GridClientSideComponent implements OnInit {
   gridOptions: GridOption;
   dataset: any[];
 
-  constructor(private translate: TranslateService) {
-  }
+  constructor(private translate: TranslateService) {}
 
   ngOnInit(): void {
-    // prepare a multiple-select array to filter the "Duration" column and wrap it inside a timer to simulate a backend call
-    const durationCollectionSubject = new Subject<any>();
+    // prepare a multiple-select array to filter the "Duration" column
+    // wrap it inside a timer to simulate a backend call
+    const durationCollection$ = new Subject<any>();
     setTimeout(() => {
       const multiSelectFilterArray = [];
       for (let i = 0; i < NB_ITEMS; i++) {
         multiSelectFilterArray.push({ value: i, label: i });
       }
 
-      durationCollectionSubject.next(multiSelectFilterArray);
+      durationCollection$.next(multiSelectFilterArray);
     }, 1000);
 
     this.columnDefinitions = [
@@ -67,14 +67,13 @@ export class GridClientSideComponent implements OnInit {
         minWidth: 55,
         filterable: true,
         filter: {
-          asyncCollection: durationCollectionSubject,
+          asyncCollection: durationCollection$,
           collectionSortBy: {
             property: 'value',
             sortDesc: true,
             fieldType: FieldType.number
           },
           model: Filters.multipleSelect,
-          searchTerms: [1, 33, 50], // default selection
 
           // we could add certain option(s) to the "multiple-select" plugin
           filterOptions: {
@@ -143,25 +142,26 @@ export class GridClientSideComponent implements OnInit {
   }
 
   addItem() {
+    // add a new row to the grid
     const lastRowIndex = this.dataset.length;
     const newRows = this.mockData(1, lastRowIndex);
+    this.angularGrid.gridService.addItemToDatagrid(newRows[0]);
 
-    // simulate adding an item and refreshing the MultipleSelect Filter of the "Duration" column
-    setTimeout(() => {
-      const durationColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'duration');
-      if (durationColumnDef) {
-        const collection = durationColumnDef.filter.collection;
-        if (Array.isArray(collection)) {
-          this.angularGrid.gridService.addItemToDatagrid(newRows[0]);
-          collection.push({ value: lastRowIndex, label: lastRowIndex });
+    // refresh the MultipleSelect Filter of the "Duration" column
+    const durationColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'duration');
+    if (durationColumnDef) {
+      const asyncCollection = durationColumnDef.filter.asyncCollection;
+      const collection = durationColumnDef.filter.collection;
+      if (Array.isArray(collection)) {
+        // add the new value to the filter collection
+        collection.push({ value: lastRowIndex, label: lastRowIndex });
 
-          // trigger a change for the Observable/Subject
-          if (durationColumnDef.filter.asyncCollection instanceof Subject) {
-            durationColumnDef.filter.asyncCollection.next(collection);
-          }
+        // trigger a change for the Observable/Subject of the async collection
+        if (asyncCollection instanceof Subject) {
+          asyncCollection.next(collection);
         }
       }
-    }, 500);
+    }
   }
 
   mockData(itemCount, startingIndex = 0): any[] {
