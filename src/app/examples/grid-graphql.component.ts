@@ -199,6 +199,11 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           },
           totalCount: 100
         }
+      },
+      timestamps: {
+        startTime: new Date(),
+        endTime: new Date(),
+        executionTime: 150
       }
     };
 
