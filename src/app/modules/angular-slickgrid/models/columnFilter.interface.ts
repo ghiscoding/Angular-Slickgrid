@@ -39,7 +39,7 @@ export interface ColumnFilter {
   model?: any;
 
   /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Filter) */
-  asyncCollection?: Promise<any> | Observable<any>;
+  collectionAsync?: Promise<any> | Observable<any>;
 
   /** A collection of items/options (commonly used with a Select/Multi-Select Filter) */
   collection?: any[];

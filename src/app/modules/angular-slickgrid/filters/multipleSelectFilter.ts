@@ -82,8 +82,8 @@ export class MultipleSelectFilter implements Filter {
     this.columnDef = args.columnDef;
     this.searchTerms = args.searchTerms || [];
 
-    if (!this.grid || !this.columnDef || !this.columnDef.filter || (!this.columnDef.filter.collection && !this.columnDef.filter.asyncCollection)) {
-      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" (or "asyncCollection") for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
+    if (!this.grid || !this.columnDef || !this.columnDef.filter || (!this.columnDef.filter.collection && !this.columnDef.filter.collectionAsync)) {
+      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" (or "collectionAsync") for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
 
     this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
@@ -91,10 +91,10 @@ export class MultipleSelectFilter implements Filter {
     this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
 
     let newCollection = this.columnDef.filter.collection || [];
-    const asyncCollection = this.columnDef.filter.asyncCollection;
+    const collectionAsync = this.columnDef.filter.collectionAsync;
 
-    if (asyncCollection) {
-      this.renderOptionsAsync(asyncCollection);
+    if (collectionAsync) {
+      this.renderOptionsAsync(collectionAsync);
     }
 
     // user might want to filter or sort certain items of the collection
@@ -116,6 +116,7 @@ export class MultipleSelectFilter implements Filter {
       // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
       this.$filterElm.multipleSelect('setSelects', []);
       this.$filterElm.removeClass('filled');
+      this.searchTerms = [];
       this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
     }
   }
@@ -165,9 +166,9 @@ export class MultipleSelectFilter implements Filter {
     return outputCollection;
   }
 
-  private async renderOptionsAsync(asyncCollection: Promise<any> | Observable<any> | Subject<any>) {
-    if (asyncCollection && asyncCollection instanceof Observable) {
-      asyncCollection.subscribe((collection) => {
+  private async renderOptionsAsync(collectionAsync: Promise<any> | Observable<any> | Subject<any>) {
+    if (collectionAsync && collectionAsync instanceof Observable) {
+      collectionAsync.subscribe((collection) => {
         console.log(collection);
         if (Array.isArray(collection)) {
           this.columnDef.filter.collection = collection;
@@ -178,8 +179,8 @@ export class MultipleSelectFilter implements Filter {
       });
 
 /*
-      // wait for the "asyncCollection", once resolved we will save it into the "collection" for later reference
-      const awaitedCollection: any[] = await castToPromise(asyncCollection);
+      // wait for the "collectionAsync", once resolved we will save it into the "collection" for later reference
+      const awaitedCollection: any[] = await castToPromise(collectionAsync);
       this.columnDef.filter.collection = awaitedCollection;
 
       // recreate Multiple Select after getting async collection

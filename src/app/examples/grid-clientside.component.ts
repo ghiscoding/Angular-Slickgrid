@@ -67,7 +67,7 @@ export class GridClientSideComponent implements OnInit {
         minWidth: 55,
         filterable: true,
         filter: {
-          asyncCollection: durationCollection$,
+          collectionAsync: durationCollection$,
           collectionSortBy: {
             property: 'value',
             sortDesc: true,
@@ -150,15 +150,15 @@ export class GridClientSideComponent implements OnInit {
     // refresh the MultipleSelect Filter of the "Duration" column
     const durationColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'duration');
     if (durationColumnDef) {
-      const asyncCollection = durationColumnDef.filter.asyncCollection;
+      const collectionAsync = durationColumnDef.filter.collectionAsync;
       const collection = durationColumnDef.filter.collection;
       if (Array.isArray(collection)) {
         // add the new value to the filter collection
         collection.push({ value: lastRowIndex, label: lastRowIndex });
 
         // trigger a change for the Observable/Subject of the async collection
-        if (asyncCollection instanceof Subject) {
-          asyncCollection.next(collection);
+        if (collectionAsync instanceof Subject) {
+          collectionAsync.next(collection);
         }
       }
     }
