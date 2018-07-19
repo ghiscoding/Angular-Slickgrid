@@ -56,6 +56,7 @@ export class GridService {
     };
   }
 
+  /** Get data item by it's row index number */
   getDataItemByRowNumber(rowNumber: number) {
     if (!this._grid || typeof this._grid.getDataItem !== 'function') {
       throw new Error('We could not find SlickGrid Grid object');
@@ -126,9 +127,45 @@ export class GridService {
     }
   }
 
-  /** Get the currently selected rows */
+  /** Get the Data Item from a grid row index */
+  getDataItemByRowIndex(index: number) {
+    if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+      throw new Error('We could not find SlickGrid Grid object');
+    }
+
+    return this._grid.getDataItem(index);
+  }
+
+  /** Get the Data Item from an array of grid row indexes */
+  getDataItemByRowIndexes(indexes: number[]) {
+    if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+      throw new Error('We could not find SlickGrid Grid object');
+    }
+
+    const dataItems = [];
+
+    if (Array.isArray(indexes)) {
+      indexes.forEach((idx) => {
+        dataItems.push(this._grid.getDataItem(idx));
+      });
+    }
+
+    return dataItems;
+  }
+
+  /** Get the currently selected row indexes */
   getSelectedRows() {
     return this._grid.getSelectedRows();
+  }
+
+  /** Get the currently selected rows item data */
+  getSelectedRowsDataItem() {
+    if (!this._grid || typeof this._grid.getSelectedRows !== 'function') {
+      throw new Error('We could not find SlickGrid Grid object');
+    }
+
+    const selectedRowIndexes = this._grid.getSelectedRows();
+    return this.getDataItemByRowIndexes(selectedRowIndexes);
   }
 
   /** Select the selected row by a row index */
