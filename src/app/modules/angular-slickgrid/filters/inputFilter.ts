@@ -70,6 +70,7 @@ export class InputFilter implements Filter {
   clear() {
     if (this.$filterElm) {
       this._clearFilterTriggered = true;
+      this.searchTerms = [];
       this.$filterElm.val('');
       this.$filterElm.trigger('keyup');
     }

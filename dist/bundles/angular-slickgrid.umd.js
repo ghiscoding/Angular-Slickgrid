@@ -3718,8 +3718,8 @@ var GraphqlService = /** @class */ (function () {
         this._grid = grid;
         this.options = serviceOptions || {};
         this.pagination = pagination;
-        if (grid && grid.getColumns && grid.getOptions) {
-            this._columnDefinitions = grid.getColumns();
+        if (grid && grid.getColumns) {
+            this._columnDefinitions = serviceOptions.columnDefinitions || grid.getColumns();
         }
     };
     GraphqlService.prototype.getInitPaginationOptions = function () {
@@ -4180,8 +4180,8 @@ var GridOdataService = /** @class */ (function () {
             pageNumber: 1,
             pageSize: this.odataService.options.top || this.defaultOptions.top
         };
-        if (grid && grid.getColumns && grid.getOptions) {
-            this._columnDefinitions = grid.getColumns() || options["columnDefinitions"];
+        if (grid && grid.getColumns) {
+            this._columnDefinitions = options["columnDefinitions"] || grid.getColumns();
             this._columnDefinitions = this._columnDefinitions.filter(function (column) { return !column.excludeFromQuery; });
         }
     };
@@ -4813,9 +4813,6 @@ var GridService = /** @class */ (function () {
         if (shouldHighlightRow === void 0) { shouldHighlightRow = true; }
         if (!this._grid || !this._gridOptions || !this._dataView) {
             throw new Error('We could not find SlickGrid Grid, DataView objects');
-        }
-        if (!this._gridOptions || (!this._gridOptions.enableCheckboxSelector && !this._gridOptions.enableRowSelection)) {
-            throw new Error('addItemToDatagrid() requires to have a valid Slickgrid Selection Model. You can overcome this issue by enabling enableCheckboxSelector or enableRowSelection to True');
         }
         var row = 0;
         this._dataView.insertItem(row, item);
@@ -7387,6 +7384,7 @@ var AngularSlickgridModule = /** @class */ (function () {
             providers: [
                 { provide: 'config', useValue: config },
                 CollectionService,
+                FilterFactory,
                 GraphqlService,
                 GridOdataService
             ]

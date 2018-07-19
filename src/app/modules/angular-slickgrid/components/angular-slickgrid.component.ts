@@ -160,7 +160,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.onAfterGridDestroyed.emit(true);
   }
 
-  destroy() {
+  destroy(emptyDomElementContainer = false) {
     this._dataView = [];
     this.gridOptions = {};
     this._eventHandler.unsubscribeAll();
@@ -172,6 +172,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.resizer.dispose();
     this.sortService.dispose();
     this.grid.destroy();
+
+    if (emptyDomElementContainer) {
+      $(this.gridOptions.gridContainerId).empty();
+    }
 
     // also unsubscribe all RxJS subscriptions
     this.subscriptions.forEach((subscription: Subscription) => {
@@ -267,6 +271,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       // Slick Grid & DataView objects
       dataView: this._dataView,
       slickGrid: this.grid,
+
+      // public methods
+      destroy: this.destroy.bind(this),
 
       // return all available Services (non-singleton)
       backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
@@ -449,9 +456,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           backendApi.preProcess();
         }
 
+        // keep start time & end timestamps & return it after process execution
+        const startTime = new Date();
+
         // the process could be an Observable (like HttpClient) or a Promise
         // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
         const processResult = await castToPromise(observableOrPromise);
+
+        const endTime = new Date();
 
         // define what our internal Post Process callback, only available for GraphQL Service for now
         // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
@@ -461,6 +473,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
         // send the response process to the postProcess callback
         if (backendApi.postProcess) {
+          if (processResult instanceof Object) {
+            processResult.timestamps = {
+              startTime,
+              endTime,
+              executionTime: endTime.valueOf() - startTime.valueOf(),
+            };
+          }
           backendApi.postProcess(processResult);
         }
       });

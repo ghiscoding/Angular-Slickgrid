@@ -74,8 +74,8 @@ export class GridOdataService implements BackendService {
       pageSize: this.odataService.options.top || this.defaultOptions.top
     };
 
-    if (grid && grid.getColumns && grid.getOptions) {
-      this._columnDefinitions = grid.getColumns() || options.columnDefinitions;
+    if (grid && grid.getColumns) {
+      this._columnDefinitions = (options && options.columnDefinitions) || grid.getColumns();
       this._columnDefinitions = this._columnDefinitions.filter((column: Column) => !column.excludeFromQuery);
     }
   }

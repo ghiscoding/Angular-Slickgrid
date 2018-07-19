@@ -56,6 +56,7 @@ export class GridService {
     };
   }
 
+  /** Get data item by it's row index number */
   getDataItemByRowNumber(rowNumber: number) {
     if (!this._grid || typeof this._grid.getDataItem !== 'function') {
       throw new Error('We could not find SlickGrid Grid object');
@@ -126,9 +127,45 @@ export class GridService {
     }
   }
 
-  /** Get the currently selected rows */
+  /** Get the Data Item from a grid row index */
+  getDataItemByRowIndex(index: number) {
+    if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+      throw new Error('We could not find SlickGrid Grid object');
+    }
+
+    return this._grid.getDataItem(index);
+  }
+
+  /** Get the Data Item from an array of grid row indexes */
+  getDataItemByRowIndexes(indexes: number[]) {
+    if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+      throw new Error('We could not find SlickGrid Grid object');
+    }
+
+    const dataItems = [];
+
+    if (Array.isArray(indexes)) {
+      indexes.forEach((idx) => {
+        dataItems.push(this._grid.getDataItem(idx));
+      });
+    }
+
+    return dataItems;
+  }
+
+  /** Get the currently selected row indexes */
   getSelectedRows() {
     return this._grid.getSelectedRows();
+  }
+
+  /** Get the currently selected rows item data */
+  getSelectedRowsDataItem() {
+    if (!this._grid || typeof this._grid.getSelectedRows !== 'function') {
+      throw new Error('We could not find SlickGrid Grid object');
+    }
+
+    const selectedRowIndexes = this._grid.getSelectedRows();
+    return this.getDataItemByRowIndexes(selectedRowIndexes);
   }
 
   /** Select the selected row by a row index */
@@ -176,16 +213,13 @@ export class GridService {
   }
 
   /**
-   * Add an item (data item) to the datagrid
+   * Add an item (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
    * @param object dataItem: item object holding all properties of that row
    * @param shouldHighlightRow do we want to highlight the row after adding item
    */
-  addItemToDatagrid(item, shouldHighlightRow = true) {
+  addItemToDatagrid(item: any, shouldHighlightRow = true) {
     if (!this._grid || !this._gridOptions || !this._dataView) {
       throw new Error('We could not find SlickGrid Grid, DataView objects');
-    }
-    if (!this._gridOptions || (!this._gridOptions.enableCheckboxSelector && !this._gridOptions.enableRowSelection)) {
-      throw new Error('addItemToDatagrid() requires to have a valid Slickgrid Selection Model. You can overcome this issue by enabling enableCheckboxSelector or enableRowSelection to True');
     }
 
     const row = 0;
@@ -199,6 +233,17 @@ export class GridService {
 
     // refresh dataview & grid
     this._dataView.refresh();
+  }
+
+  /**
+   * Add item array (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
+   * @param dataItem array: item object holding all properties of that row
+   * @param shouldHighlightRow do we want to highlight the row after adding item
+   */
+  addItemsToDatagrid(items: any[], shouldHighlightRow = true) {
+    if (Array.isArray(items)) {
+      items.forEach((item: any) => this.addItemToDatagrid(item, shouldHighlightRow));
+    }
   }
 
   /**

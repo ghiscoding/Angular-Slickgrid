@@ -173,8 +173,8 @@ export class GraphqlService implements BackendService {
     this.options = serviceOptions || {};
     this.pagination = pagination;
 
-    if (grid && grid.getColumns && grid.getOptions) {
-      this._columnDefinitions = grid.getColumns();
+    if (grid && grid.getColumns) {
+      this._columnDefinitions = serviceOptions.columnDefinitions || grid.getColumns();
     }
   }
 
