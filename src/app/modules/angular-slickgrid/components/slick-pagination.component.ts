@@ -2,7 +2,7 @@ import { Pagination } from './../models/pagination.interface';
 import { AfterViewInit, Component, EventEmitter, Injectable, Input, OnDestroy, Output } from '@angular/core';
 import { castToPromise } from './../services/utilities';
 import { GridOption } from './../models/index';
-import { FilterService, SortService } from './../services/index';
+import { FilterService } from './../services/index';
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({
@@ -39,7 +39,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   fromToParams: any = { from: this.dataFrom, to: this.dataTo, totalItems: this.totalItems };
 
   /** Constructor */
-  constructor(private filterService: FilterService, private sortService: SortService) { }
+  constructor(private filterService: FilterService) { }
 
   ngOnDestroy() {
     this.dispose();
