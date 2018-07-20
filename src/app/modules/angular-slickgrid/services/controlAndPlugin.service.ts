@@ -61,6 +61,11 @@ export class ControlAndPluginService {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
   }
 
+  /** Getter for the Grid Options pulled through the Grid Object */
+  private set _gridOptions(gridOptions: GridOption) {
+    this._gridOptions = gridOptions;
+  }
+
   /** Getter for the Column Definitions pulled through the Grid Object */
   private get _columnDefinitions(): Column[] {
     return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
@@ -693,8 +698,14 @@ export class ControlAndPluginService {
   }
 
   /** Refresh the dataset through the Backend Service */
-  refreshBackendDataset() {
-    let query;
+  refreshBackendDataset(gridOptions?: GridOption) {
+    let query = '';
+
+    // user can pass new set of grid options which will override current ones
+    if (gridOptions) {
+      this._gridOptions = { ...this._gridOptions, ...gridOptions };
+    }
+
     const backendApi = this._gridOptions.backendServiceApi;
     if (!backendApi || !backendApi.service || !backendApi.process) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
