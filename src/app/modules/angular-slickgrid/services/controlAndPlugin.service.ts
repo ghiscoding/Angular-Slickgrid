@@ -716,6 +716,9 @@ export class ControlAndPluginService {
     }
 
     if (query && query !== '') {
+      // keep start time & end timestamps & return it after process execution
+      const startTime = new Date();
+
       if (backendApi.preProcess) {
         backendApi.preProcess();
       }
@@ -725,6 +728,8 @@ export class ControlAndPluginService {
       const observableOrPromise = backendApi.process(query);
 
       castToPromise(observableOrPromise).then((processResult: GraphqlResult | any) => {
+        const endTime = new Date();
+
         // from the result, call our internal post process to update the Dataset and Pagination info
         if (processResult && backendApi.internalPostProcess) {
           backendApi.internalPostProcess(processResult);
@@ -732,6 +737,14 @@ export class ControlAndPluginService {
 
         // send the response process to the postProcess callback
         if (backendApi.postProcess) {
+          if (processResult instanceof Object) {
+            processResult.statistics = {
+              startTime,
+              endTime,
+              executionTime: endTime.valueOf() - startTime.valueOf(),
+              totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+            };
+          }
           backendApi.postProcess(processResult);
         }
       });

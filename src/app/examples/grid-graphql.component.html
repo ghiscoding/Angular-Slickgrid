@@ -17,7 +17,10 @@
             <button class="btn btn-default btn-sm" (click)="switchLanguage()">Switch Language</button>
             <b>Locale:</b>
             <span style="font-style: italic">{{selectedLanguage + '.json'}}</span>
-
+            <br/>
+            <span *ngIf="statistics">
+                <b>Statistics:</b> {{statistics.endTime | date: 'yyyy-MM-dd HH:mm aaaaa\'m\''}} | {{statistics.executionTime}}ms | {{statistics.totalItemCount}} items
+            </span>
         </div>
         <div class="col-sm-8">
             <div class="alert alert-info">

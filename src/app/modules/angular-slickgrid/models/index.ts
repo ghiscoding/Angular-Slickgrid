@@ -76,3 +76,4 @@ export * from './sortDirection.enum';
 export * from './sortDirectionNumber.enum';
 export * from './sortDirectionString';
 export * from './sorter.interface';
+export * from './statistic.interface';
