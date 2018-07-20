@@ -20,7 +20,6 @@ declare var $: any;
 /**
  * Slickgrid editor class for single select lists
  */
-@Injectable()
 export class SingleSelectEditor implements Editor {
   /** The JQuery DOM element */
   $editorElm: any;
