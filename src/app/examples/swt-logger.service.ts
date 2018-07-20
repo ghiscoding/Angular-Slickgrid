@@ -11,9 +11,6 @@ import 'rxjs/add/operator/catch';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {isPlatformBrowser} from '@angular/common';
 
-
-
-@Injectable()
 export class Logger {
     private _clientLogLevel: LoggerLevel = LoggerLevel.INFO;
 
