@@ -74,7 +74,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     constructor(controlAndPluginService: ControlAndPluginService, exportService: ExportService, filterService: FilterService, gridService: GridService, gridEventService: GridEventService, gridStateService: GridStateService, groupingAndColspanService: GroupingAndColspanService, resizer: ResizerService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
     ngOnInit(): void;
     ngOnDestroy(): void;
-    destroy(): void;
+    destroy(emptyDomElementContainer?: boolean): void;
     ngAfterViewInit(): void;
     initialization(): void;
     /**

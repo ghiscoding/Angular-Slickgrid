@@ -3,7 +3,7 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
-import { Injectable, Inject, Injector, Component, EventEmitter, Input, Output, ElementRef, ViewChild, NgModule } from '@angular/core';
+import { Injectable, Component, EventEmitter, Input, Output, Inject, ElementRef, ViewChild, NgModule } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { __awaiter } from 'tslib';
 import { Subject } from 'rxjs/Subject';
@@ -1199,6 +1199,7 @@ class CompoundDateFilter {
     clear() {
         if (this.flatInstance && this.$selectOperatorElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             this.$selectOperatorElm.val(0);
             this.flatInstance.clear();
         }
@@ -1376,13 +1377,6 @@ class CompoundDateFilter {
         }
     }
 }
-CompoundDateFilter.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-CompoundDateFilter.ctorParameters = () => [
-    { type: TranslateService, },
-];
 
 /**
  * @fileoverview added by tsickle
@@ -1448,6 +1442,7 @@ class CompoundInputFilter {
     clear() {
         if (this.$filterElm && this.$selectOperatorElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val('');
             this.onTriggerEvent(null);
@@ -1580,13 +1575,6 @@ class CompoundInputFilter {
         }
     }
 }
-CompoundInputFilter.decorators = [
-    { type: Inject, args: [TranslateService,] },
-];
-/** @nocollapse */
-CompoundInputFilter.ctorParameters = () => [
-    { type: TranslateService, },
-];
 
 /**
  * @fileoverview added by tsickle
@@ -1680,6 +1668,7 @@ class CompoundSliderFilter {
     clear() {
         if (this.$filterElm && this.$selectOperatorElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             const /** @type {?} */ clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val(clearedValue);
@@ -1826,11 +1815,6 @@ class CompoundSliderFilter {
         }
     }
 }
-CompoundSliderFilter.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-CompoundSliderFilter.ctorParameters = () => [];
 
 /**
  * @fileoverview added by tsickle
@@ -1891,6 +1875,7 @@ class InputFilter {
     clear() {
         if (this.$filterElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             this.$filterElm.val('');
             this.$filterElm.trigger('keyup');
         }
@@ -2048,6 +2033,7 @@ class MultipleSelectFilter {
             // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
             this.$filterElm.multipleSelect('setSelects', []);
             this.$filterElm.removeClass('filled');
+            this.searchTerms = [];
             this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
         }
     }
@@ -2136,14 +2122,6 @@ class MultipleSelectFilter {
         return -1;
     }
 }
-MultipleSelectFilter.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-MultipleSelectFilter.ctorParameters = () => [
-    { type: TranslateService, },
-    { type: CollectionService, },
-];
 
 /**
  * @fileoverview added by tsickle
@@ -2204,6 +2182,7 @@ class SelectFilter {
     clear() {
         if (this.$filterElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             this.$filterElm.val('');
             this.$filterElm.trigger('change');
         }
@@ -2270,13 +2249,6 @@ class SelectFilter {
         return $filterElm;
     }
 }
-SelectFilter.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-SelectFilter.ctorParameters = () => [
-    { type: TranslateService, },
-];
 
 /**
  * @fileoverview added by tsickle
@@ -2375,6 +2347,7 @@ class SingleSelectFilter {
             // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
             this.$filterElm.multipleSelect('setSelects', []);
             this.$filterElm.removeClass('filled');
+            this.searchTerms = [];
             this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
         }
     }
@@ -2447,14 +2420,6 @@ class SingleSelectFilter {
         this.$filterElm = this.$filterElm.multipleSelect(options);
     }
 }
-SingleSelectFilter.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-SingleSelectFilter.ctorParameters = () => [
-    { type: TranslateService, },
-    { type: CollectionService, },
-];
 
 /**
  * @fileoverview added by tsickle
@@ -2541,6 +2506,7 @@ class SliderFilter {
     clear() {
         if (this.$filterElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             const /** @type {?} */ clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE$1;
             this.$filterElm.children('input').val(clearedValue);
             this.$filterElm.children('div.input-group-addon.input-group-append').children().html(clearedValue);
@@ -2758,13 +2724,11 @@ class SlickgridConfig {
  */
 class FilterFactory {
     /**
-     * @param {?} injector
      * @param {?} config
      * @param {?} translate
      * @param {?} collectionService
      */
-    constructor(injector, config, translate, collectionService) {
-        this.injector = injector;
+    constructor(config, translate, collectionService) {
         this.config = config;
         this.translate = translate;
         this.collectionService = collectionService;
@@ -2777,56 +2741,13 @@ class FilterFactory {
     createFilter(columnFilter) {
         let /** @type {?} */ filter;
         if (columnFilter && columnFilter.model) {
-            // the model either needs to be retrieved or is already instantiated
-            // filter = typeof columnFilter.model === 'function' ? this.injector.get(columnFilter.model) : columnFilter.model;
-            const /** @type {?} */ filterInstance = columnFilter.model;
-            const /** @type {?} */ filterName = typeof columnFilter.model === 'function' ? filterInstance.name : '';
-            /*
-                  if (filterName) {
-                    switch (filterName) {
-                      case 'InputFilter':
-                        filter = new Filters.input();
-                        break;
-                      case 'SelectFilter':
-                        filter = new Filters.select(this.translate);
-                        break;
-                      case 'MultipleSelectFilter':
-                        filter = new Filters.multipleSelect(this.translate, this.collectionService);
-                        break;
-                      case 'SingleSelectFilter':
-                        filter = new Filters.singleSelect(this.translate, this.collectionService);
-                        break;
-                      case 'CompoundDateFilter':
-                        filter = new Filters.compoundDate(this.translate);
-                        break;
-                      case 'CompoundInputFilter':
-                        filter = new Filters.compoundInput(this.translate);
-                        break;
-                      default:
-                        break;
-                    }
-                  } else {
-                    filter = columnFilter.model;
-                  }*/
-            // filter = typeof columnFilter.model === 'function' ? this.injector.get(this.translate, this.collectionService) : columnFilter.model;
             filter = typeof columnFilter.model === 'function' ? new columnFilter.model(this.translate, this.collectionService) : columnFilter.model;
         }
         // fallback to the default filter
         if (!filter && this._options.defaultFilter) {
-            // filter = this.injector.get(this._options.defaultFilter);
             filter = new this._options.defaultFilter(this.translate, this.collectionService);
         }
         return filter;
-    }
-    /**
-     * @param {?} service
-     * @return {?}
-     */
-    createInjector(service) {
-        const /** @type {?} */ injector = Injector.create([{ provide: service, deps: [TranslateService] }]);
-        // let injector = ReflectiveInjector.resolveAndCreate([service]);
-        // injector = injector.resolveAndCreateChild([service]);
-        return injector.get(service);
     }
 }
 FilterFactory.decorators = [
@@ -2834,7 +2755,6 @@ FilterFactory.decorators = [
 ];
 /** @nocollapse */
 FilterFactory.ctorParameters = () => [
-    { type: Injector, },
     { type: SlickgridConfig, },
     { type: TranslateService, },
     { type: CollectionService, },
@@ -5736,7 +5656,7 @@ class GridOdataService {
             pageSize: this.odataService.options.top || this.defaultOptions.top
         };
         if (grid && grid.getColumns) {
-            this._columnDefinitions = options["columnDefinitions"] || grid.getColumns();
+            this._columnDefinitions = (options && options["columnDefinitions"]) || grid.getColumns();
             this._columnDefinitions = this._columnDefinitions.filter((column) => !column.excludeFromQuery);
         }
     }
@@ -6495,6 +6415,7 @@ class GridService {
         };
     }
     /**
+     * Get data item by it's row index number
      * @param {?} rowNumber
      * @return {?}
      */
@@ -6565,11 +6486,50 @@ class GridService {
         }
     }
     /**
-     * Get the currently selected rows
+     * Get the Data Item from a grid row index
+     * @param {?} index
+     * @return {?}
+     */
+    getDataItemByRowIndex(index) {
+        if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+            throw new Error('We could not find SlickGrid Grid object');
+        }
+        return this._grid.getDataItem(index);
+    }
+    /**
+     * Get the Data Item from an array of grid row indexes
+     * @param {?} indexes
+     * @return {?}
+     */
+    getDataItemByRowIndexes(indexes) {
+        if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+            throw new Error('We could not find SlickGrid Grid object');
+        }
+        const /** @type {?} */ dataItems = [];
+        if (Array.isArray(indexes)) {
+            indexes.forEach((idx) => {
+                dataItems.push(this._grid.getDataItem(idx));
+            });
+        }
+        return dataItems;
+    }
+    /**
+     * Get the currently selected row indexes
      * @return {?}
      */
     getSelectedRows() {
         return this._grid.getSelectedRows();
+    }
+    /**
+     * Get the currently selected rows item data
+     * @return {?}
+     */
+    getSelectedRowsDataItem() {
+        if (!this._grid || typeof this._grid.getSelectedRows !== 'function') {
+            throw new Error('We could not find SlickGrid Grid object');
+        }
+        const /** @type {?} */ selectedRowIndexes = this._grid.getSelectedRows();
+        return this.getDataItemByRowIndexes(selectedRowIndexes);
     }
     /**
      * Select the selected row by a row index
@@ -6625,7 +6585,7 @@ class GridService {
         }
     }
     /**
-     * Add an item (data item) to the datagrid
+     * Add an item (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
      * @param {?} item
      * @param {?=} shouldHighlightRow do we want to highlight the row after adding item
      * @return {?}
@@ -6643,6 +6603,17 @@ class GridService {
         }
         // refresh dataview & grid
         this._dataView.refresh();
+    }
+    /**
+     * Add item array (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
+     * @param {?} items
+     * @param {?=} shouldHighlightRow do we want to highlight the row after adding item
+     * @return {?}
+     */
+    addItemsToDatagrid(items, shouldHighlightRow = true) {
+        if (Array.isArray(items)) {
+            items.forEach((item) => this.addItemToDatagrid(item, shouldHighlightRow));
+        }
     }
     /**
      * Delete an existing item from the datagrid (dataView)
@@ -8458,13 +8429,6 @@ class SingleSelectEditor {
         }
     }
 }
-SingleSelectEditor.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-SingleSelectEditor.ctorParameters = () => [
-    null,
-];
 
 /**
  * @fileoverview added by tsickle
@@ -10016,9 +9980,10 @@ class AngularSlickgridComponent {
         this.onAfterGridDestroyed.emit(true);
     }
     /**
+     * @param {?=} emptyDomElementContainer
      * @return {?}
      */
-    destroy() {
+    destroy(emptyDomElementContainer = false) {
         this._dataView = [];
         this.gridOptions = {};
         this._eventHandler.unsubscribeAll();
@@ -10030,6 +9995,9 @@ class AngularSlickgridComponent {
         this.resizer.dispose();
         this.sortService.dispose();
         this.grid.destroy();
+        if (emptyDomElementContainer) {
+            $(this.gridOptions.gridContainerId).empty();
+        }
         // also unsubscribe all RxJS subscriptions
         this.subscriptions.forEach((subscription) => {
             if (subscription && subscription.unsubscribe) {
@@ -10108,6 +10076,8 @@ class AngularSlickgridComponent {
             // Slick Grid & DataView objects
             dataView: this._dataView,
             slickGrid: this.grid,
+            // public methods
+            destroy: this.destroy.bind(this),
             // return all available Services (non-singleton)
             backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
             exportService: this.exportService,
@@ -10276,9 +10246,12 @@ class AngularSlickgridComponent {
                 if (backendApi.preProcess) {
                     backendApi.preProcess();
                 }
+                // keep start time & end timestamps & return it after process execution
+                const /** @type {?} */ startTime = new Date();
                 // the process could be an Observable (like HttpClient) or a Promise
                 // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
                 const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+                const /** @type {?} */ endTime = new Date();
                 // define what our internal Post Process callback, only available for GraphQL Service for now
                 // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
                 if (processResult && backendApi && backendApi.service instanceof GraphqlService && backendApi.internalPostProcess) {
@@ -10286,6 +10259,13 @@ class AngularSlickgridComponent {
                 }
                 // send the response process to the postProcess callback
                 if (backendApi.postProcess) {
+                    if (processResult instanceof Object) {
+                        processResult.timestamps = {
+                            startTime,
+                            endTime,
+                            executionTime: endTime.valueOf() - startTime.valueOf(),
+                        };
+                    }
                     backendApi.postProcess(processResult);
                 }
             }));
@@ -10449,12 +10429,6 @@ AngularSlickgridComponent.decorators = [
 </div>
 `,
                 providers: [
-                    CompoundDateFilter,
-                    CompoundInputFilter,
-                    InputFilter,
-                    MultipleSelectFilter,
-                    SingleSelectFilter,
-                    SelectFilter,
                     ControlAndPluginService,
                     ExportService,
                     FilterFactory,

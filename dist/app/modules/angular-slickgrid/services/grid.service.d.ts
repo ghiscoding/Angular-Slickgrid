@@ -27,6 +27,7 @@ export declare class GridService {
      * @return object with columnDef and dataContext
      */
     getColumnFromEventArguments(args: CellArgs): OnEventArgs;
+    /** Get data item by it's row index number */
     getDataItemByRowNumber(rowNumber: number): any;
     /** Chain the item Metadata with our implementation of Metadata at given row index */
     getItemRowMetadata(previousItemMetadata: any): (rowNumber: number) => {
@@ -39,8 +40,14 @@ export declare class GridService {
      * @param fadeDelay
      */
     highlightRow(rowNumber: number, fadeDelay?: number): void;
-    /** Get the currently selected rows */
+    /** Get the Data Item from a grid row index */
+    getDataItemByRowIndex(index: number): any;
+    /** Get the Data Item from an array of grid row indexes */
+    getDataItemByRowIndexes(indexes: number[]): any[];
+    /** Get the currently selected row indexes */
     getSelectedRows(): any;
+    /** Get the currently selected rows item data */
+    getSelectedRowsDataItem(): any[];
     /** Select the selected row by a row index */
     setSelectedRow(rowIndex: number): void;
     /** Set selected rows with provided array of row indexes */
@@ -54,11 +61,17 @@ export declare class GridService {
      */
     resetGrid(columnDefinitions?: Column[]): void;
     /**
-     * Add an item (data item) to the datagrid
+     * Add an item (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
      * @param object dataItem: item object holding all properties of that row
      * @param shouldHighlightRow do we want to highlight the row after adding item
      */
     addItemToDatagrid(item: any, shouldHighlightRow?: boolean): void;
+    /**
+     * Add item array (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
+     * @param dataItem array: item object holding all properties of that row
+     * @param shouldHighlightRow do we want to highlight the row after adding item
+     */
+    addItemsToDatagrid(items: any[], shouldHighlightRow?: boolean): void;
     /**
      * Delete an existing item from the datagrid (dataView)
      * @param object item: item object holding all properties of that row

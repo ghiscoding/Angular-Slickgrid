@@ -43,12 +43,6 @@ import { GroupingAndColspanService } from './../services/groupingAndColspan.serv
 import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
 import { Subscription } from 'rxjs/Subscription';
-import { CompoundDateFilter } from '../filters/compoundDateFilter';
-import { CompoundInputFilter } from '../filters/compoundInputFilter';
-import { InputFilter } from '../filters/inputFilter';
-import { MultipleSelectFilter } from '../filters/multipleSelectFilter';
-import { SingleSelectFilter } from '../filters/singleSelectFilter';
-import { SelectFilter } from '../filters/selectFilter';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
 
@@ -63,12 +57,6 @@ const slickgridEventPrefix = 'sg';
   selector: 'angular-slickgrid',
   templateUrl: './angular-slickgrid.component.html',
   providers: [
-    CompoundDateFilter,
-    CompoundInputFilter,
-    InputFilter,
-    MultipleSelectFilter,
-    SingleSelectFilter,
-    SelectFilter,
     ControlAndPluginService,
     ExportService,
     FilterFactory,
