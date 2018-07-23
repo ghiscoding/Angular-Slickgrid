@@ -27,7 +27,8 @@ export declare class ControlAndPluginService {
     rowSelectionPlugin: any;
     constructor(exportService: ExportService, filterService: FilterService, sortService: SortService, translate: TranslateService);
     /** Getter for the Grid Options pulled through the Grid Object */
-    private readonly _gridOptions;
+    /** Setter for the Grid Options pulled through the Grid Object */
+    private _gridOptions;
     /** Getter for the Column Definitions pulled through the Grid Object */
     private readonly _columnDefinitions;
     /** Get all columns (includes visible and non-visible) */
@@ -105,7 +106,7 @@ export declare class ControlAndPluginService {
      */
     executeGridMenuInternalCustomCommands(e: Event, args: GridMenuItem): void;
     /** Refresh the dataset through the Backend Service */
-    refreshBackendDataset(): void;
+    refreshBackendDataset(gridOptions?: GridOption): void;
     /**
      * Remove a column from the grid by it's index in the grid
      * @param array input

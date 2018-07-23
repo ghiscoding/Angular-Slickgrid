@@ -1933,7 +1933,7 @@ var FilterService = /** @class */ (function () {
     };
     FilterService.prototype.attachBackendOnFilterSubscribe = function (event, args) {
         return __awaiter(this, void 0, void 0, function () {
-            var backendApi, query, observableOrPromise, processResult;
+            var backendApi, startTime, query, observableOrPromise, processResult, endTime;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -1944,6 +1944,7 @@ var FilterService = /** @class */ (function () {
                         if (!backendApi || !backendApi.process || !backendApi.service) {
                             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
                         }
+                        startTime = new Date();
                         if (backendApi.preProcess) {
                             backendApi.preProcess();
                         }
@@ -1957,10 +1958,19 @@ var FilterService = /** @class */ (function () {
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 2:
                         processResult = _a.sent();
+                        endTime = new Date();
                         if (processResult && backendApi.internalPostProcess) {
                             backendApi.internalPostProcess(processResult);
                         }
                         if (backendApi.postProcess !== undefined) {
+                            if (processResult instanceof Object) {
+                                processResult.statistics = {
+                                    startTime: startTime,
+                                    endTime: endTime,
+                                    executionTime: endTime.valueOf() - startTime.valueOf(),
+                                    totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                                };
+                            }
                             backendApi.postProcess(processResult);
                         }
                         return [2 /*return*/];
@@ -2503,7 +2513,7 @@ var SortService = /** @class */ (function () {
     };
     SortService.prototype.onBackendSortChanged = function (event, args) {
         return __awaiter(this, void 0, void 0, function () {
-            var gridOptions, backendApi, query, observableOrPromise, processResult;
+            var gridOptions, backendApi, startTime, query, observableOrPromise, processResult, endTime;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -2515,6 +2525,7 @@ var SortService = /** @class */ (function () {
                         if (!backendApi || !backendApi.process || !backendApi.service) {
                             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
                         }
+                        startTime = new Date();
                         if (backendApi.preProcess) {
                             backendApi.preProcess();
                         }
@@ -2524,10 +2535,19 @@ var SortService = /** @class */ (function () {
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 1:
                         processResult = _a.sent();
+                        endTime = new Date();
                         if (processResult && backendApi.internalPostProcess) {
                             backendApi.internalPostProcess(processResult);
                         }
                         if (backendApi.postProcess) {
+                            if (processResult instanceof Object) {
+                                processResult.statistics = {
+                                    startTime: startTime,
+                                    endTime: endTime,
+                                    executionTime: endTime.valueOf() - startTime.valueOf(),
+                                    totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                                };
+                            }
                             backendApi.postProcess(processResult);
                         }
                         return [2 /*return*/];
@@ -2691,6 +2711,9 @@ var ControlAndPluginService = /** @class */ (function () {
     Object.defineProperty(ControlAndPluginService.prototype, "_gridOptions", {
         get: function () {
             return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+        },
+        set: function (gridOptions) {
+            this._gridOptions = gridOptions;
         },
         enumerable: true,
         configurable: true
@@ -3170,8 +3193,12 @@ var ControlAndPluginService = /** @class */ (function () {
             }
         }
     };
-    ControlAndPluginService.prototype.refreshBackendDataset = function () {
-        var query;
+    ControlAndPluginService.prototype.refreshBackendDataset = function (gridOptions) {
+        var _this = this;
+        var query = '';
+        if (gridOptions) {
+            this._gridOptions = Object.assign({}, this._gridOptions, gridOptions);
+        }
         var backendApi = this._gridOptions.backendServiceApi;
         if (!backendApi || !backendApi.service || !backendApi.process) {
             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
@@ -3180,15 +3207,25 @@ var ControlAndPluginService = /** @class */ (function () {
             query = backendApi.service.buildQuery();
         }
         if (query && query !== '') {
+            var startTime_1 = new Date();
             if (backendApi.preProcess) {
                 backendApi.preProcess();
             }
             var observableOrPromise = backendApi.process(query);
             castToPromise(observableOrPromise).then(function (processResult) {
+                var endTime = new Date();
                 if (processResult && backendApi.internalPostProcess) {
                     backendApi.internalPostProcess(processResult);
                 }
                 if (backendApi.postProcess) {
+                    if (processResult instanceof Object) {
+                        processResult.statistics = {
+                            startTime: startTime_1,
+                            endTime: endTime,
+                            executionTime: endTime.valueOf() - startTime_1.valueOf(),
+                            totalItemCount: _this._gridOptions && _this._gridOptions.pagination && _this._gridOptions.pagination.totalItems
+                        };
+                    }
                     backendApi.postProcess(processResult);
                 }
             });
@@ -4964,32 +5001,35 @@ var ResizerService = /** @class */ (function () {
         if (!this._grid || !this._gridOptions) {
             throw new Error("\n      Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined.\n      You can fix this by setting your gridOption to use \"enableAutoResize\" or create an instance of the ResizerService by calling attachAutoResizeDataGrid()");
         }
-        delay = delay || 0;
-        clearTimeout(timer$2);
-        timer$2 = setTimeout(function () {
-            var availableDimensions = _this.calculateGridNewDimensions(_this._gridOptions);
-            var gridElm = $("#" + _this._gridOptions.gridId) || {};
-            var gridContainerElm = $("#" + _this._gridOptions.gridContainerId) || {};
-            if ((newSizes || availableDimensions) && gridElm.length > 0) {
-                var newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
-                var newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
-                gridElm.height(newHeight);
-                gridElm.width(newWidth);
-                gridContainerElm.height(newHeight);
-                gridContainerElm.width(newWidth);
-                _this._lastDimensions = {
-                    height: newHeight,
-                    width: newWidth
-                };
-                if ((_this._gridOptions.enablePagination || _this._gridOptions.backendServiceApi)) {
-                    _this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
+        return new Promise(function (resolve) {
+            delay = delay || 0;
+            clearTimeout(timer$2);
+            timer$2 = setTimeout(function () {
+                var availableDimensions = _this.calculateGridNewDimensions(_this._gridOptions);
+                var gridElm = $("#" + _this._gridOptions.gridId) || {};
+                var gridContainerElm = $("#" + _this._gridOptions.gridContainerId) || {};
+                if ((newSizes || availableDimensions) && gridElm.length > 0) {
+                    var newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
+                    var newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
+                    gridElm.height(newHeight);
+                    gridElm.width(newWidth);
+                    gridContainerElm.height(newHeight);
+                    gridContainerElm.width(newWidth);
+                    if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && _this._grid) {
+                        _this._grid.resizeCanvas();
+                    }
+                    _this._grid.autosizeColumns();
+                    _this._lastDimensions = {
+                        height: newHeight,
+                        width: newWidth
+                    };
+                    if ((_this._gridOptions.enablePagination || _this._gridOptions.backendServiceApi)) {
+                        _this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
+                    }
+                    resolve(_this._lastDimensions);
                 }
-                if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && _this._grid) {
-                    _this._grid.resizeCanvas();
-                }
-                _this._grid.autosizeColumns();
-            }
-        }, delay);
+            }, delay);
+        });
     };
     return ResizerService;
 }());
@@ -6322,28 +6362,45 @@ var decimalFormatter = function (row, cell, value, columnDef, dataContext) {
 };
 var deleteIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-trash pointer delete-icon\" aria-hidden=\"true\"></i>"; };
 var dollarColoredBoldFormatter = function (row, cell, value, columnDef, dataContext) {
-    if (isNaN(+value)) {
+    var isNumber = !isNaN(+value);
+    var params = columnDef && columnDef.params || {};
+    var minDecimal = params.minDecimal || 2;
+    var maxDecimal = params.minDecimal || 4;
+    var outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+    if (!isNumber) {
         return '';
     }
     else if (value >= 0) {
-        return "<span style=\"color:green; font-weight: bold;\">$" + decimalFormatted(value, 2, 2) + "</span>";
+        return "<span style=\"color:green; font-weight: bold;\">$" + outputValue + "</span>";
     }
     else {
-        return "<span style=\"color:red; font-weight: bold;\">$" + decimalFormatted(value, 2, 2) + "</span>";
+        return "<span style=\"color:red; font-weight: bold;\">$" + outputValue + "</span>";
     }
 };
 var dollarColoredFormatter = function (row, cell, value, columnDef, dataContext) {
-    if (isNaN(+value)) {
+    var isNumber = !isNaN(+value);
+    var params = columnDef && columnDef.params || {};
+    var minDecimal = params.minDecimal || 2;
+    var maxDecimal = params.minDecimal || 4;
+    var outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+    if (!isNumber) {
         return '';
     }
     else if (value >= 0) {
-        return "<span style=\"color:green;\">$" + decimalFormatted(value, 2, 2) + "</span>";
+        return "<span style=\"color:green;\">$" + outputValue + "</span>";
     }
     else {
-        return "<span style=\"color:red;\">$" + decimalFormatted(value, 2, 2) + "</span>";
+        return "<span style=\"color:red;\">$" + outputValue + "</span>";
     }
 };
-var dollarFormatter = function (row, cell, value, columnDef, dataContext) { return isNaN(+value) ? '' : "$" + decimalFormatted(value, 2, 4); };
+var dollarFormatter = function (row, cell, value, columnDef, dataContext) {
+    var isNumber = !isNaN(+value);
+    var params = columnDef && columnDef.params || {};
+    var minDecimal = params.minDecimal || 2;
+    var maxDecimal = params.minDecimal || 4;
+    var outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+    return !isNumber ? '' : "$" + outputValue;
+};
 var editIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-pencil pointer edit-icon\" aria-hidden=\"true\"></i>"; };
 var hyperlinkFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value && typeof value === 'string') {
@@ -6678,9 +6735,8 @@ var GroupTotalFormatters = {
     sumTotalsDollarColoredBold: sumTotalsDollarColoredBoldFormatter,
 };
 var SlickPaginationComponent = /** @class */ (function () {
-    function SlickPaginationComponent(filterService, sortService) {
+    function SlickPaginationComponent(filterService) {
         this.filterService = filterService;
-        this.sortService = sortService;
         this._isFirstRender = true;
         this.onPaginationChanged = new EventEmitter();
         this.dataFrom = 1;
@@ -6797,7 +6853,7 @@ var SlickPaginationComponent = /** @class */ (function () {
     };
     SlickPaginationComponent.prototype.onPageChanged = function (event, pageNumber) {
         return __awaiter(this, void 0, void 0, function () {
-            var backendApi, itemsPerPage, query, observableOrPromise, processResult;
+            var backendApi, itemsPerPage, startTime, query, observableOrPromise, processResult, endTime;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -6814,6 +6870,7 @@ var SlickPaginationComponent = /** @class */ (function () {
                         }
                         if (!backendApi) return [3 /*break*/, 2];
                         itemsPerPage = +this.itemsPerPage;
+                        startTime = new Date();
                         if (backendApi.preProcess) {
                             backendApi.preProcess();
                         }
@@ -6822,10 +6879,20 @@ var SlickPaginationComponent = /** @class */ (function () {
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 1:
                         processResult = _a.sent();
+                        endTime = new Date();
                         if (processResult && backendApi.internalPostProcess) {
                             backendApi.internalPostProcess(processResult);
                         }
                         if (backendApi.postProcess) {
+                            if (processResult instanceof Object) {
+                                processResult.statistics = {
+                                    startTime: startTime,
+                                    endTime: endTime,
+                                    executionTime: endTime.valueOf() - startTime.valueOf(),
+                                    itemCount: this.totalItems,
+                                    totalItemCount: this.totalItems
+                                };
+                            }
                             backendApi.postProcess(processResult);
                         }
                         return [3 /*break*/, 3];
@@ -6857,7 +6924,6 @@ SlickPaginationComponent.decorators = [
 ];
 SlickPaginationComponent.ctorParameters = function () { return [
     { type: FilterService, },
-    { type: SortService, },
 ]; };
 SlickPaginationComponent.propDecorators = {
     "onPaginationChanged": [{ type: Output },],
@@ -7141,14 +7207,14 @@ var AngularSlickgridComponent = /** @class */ (function () {
             var query = (typeof backendApi.service.buildQuery === 'function') ? backendApi.service.buildQuery() : '';
             var observableOrPromise_1 = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
             setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
-                var startTime, processResult, endTime;
+                var startTime, processResult, endTime, datasetName;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
+                            startTime = new Date();
                             if (backendApi.preProcess) {
                                 backendApi.preProcess();
                             }
-                            startTime = new Date();
                             return [4 /*yield*/, castToPromise(observableOrPromise_1)];
                         case 1:
                             processResult = _a.sent();
@@ -7157,11 +7223,13 @@ var AngularSlickgridComponent = /** @class */ (function () {
                                 backendApi.internalPostProcess(processResult);
                             }
                             if (backendApi.postProcess) {
+                                datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
                                 if (processResult instanceof Object) {
-                                    processResult.timestamps = {
+                                    processResult.statistics = {
                                         startTime: startTime,
                                         endTime: endTime,
                                         executionTime: endTime.valueOf() - startTime.valueOf(),
+                                        totalItemCount: this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems
                                     };
                                 }
                                 backendApi.postProcess(processResult);
@@ -7200,6 +7268,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         return $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
     };
     AngularSlickgridComponent.prototype.paginationChanged = function (pagination) {
+        if (this.gridOptions.enableRowSelection) {
+            this.gridService.setSelectedRows([]);
+        }
         this.gridStateService.onGridStateChanged.next({
             change: { newValues: pagination, type: GridStateType.pagination },
             gridState: this.gridStateService.getCurrentGridState()

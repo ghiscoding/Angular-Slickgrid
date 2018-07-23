@@ -1,3 +1,4 @@
+import { Statistic } from './statistic.interface';
 export interface GraphqlResult {
     data: {
         [datasetName: string]: {
@@ -8,12 +9,5 @@ export interface GraphqlResult {
             totalCount: number;
         };
     };
-    timestamps: {
-        /** process start time */
-        startTime: Date;
-        /** process end time */
-        endTime: Date;
-        /** time it took to execute in millisecond */
-        executionTime: number;
-    };
+    statistics?: Statistic;
 }

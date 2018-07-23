@@ -21,12 +21,12 @@ export declare class ResizerService {
      * Calculate the datagrid new height/width from the available space, also consider that a % factor might be applied to calculation
      * object gridOptions
      */
-    calculateGridNewDimensions(gridOptions: GridOption): any;
+    calculateGridNewDimensions(gridOptions: GridOption): GridDimension | null;
     /**
      * Dispose function when element is destroyed
      */
     dispose(): void;
     getLastResizeDimensions(): GridDimension;
     /** Resize the datagrid to fit the browser height & width */
-    resizeGrid(delay?: number, newSizes?: GridDimension): void;
+    resizeGrid(delay?: number, newSizes?: GridDimension): Promise<GridDimension>;
 }

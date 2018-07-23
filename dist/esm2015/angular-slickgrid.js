@@ -2826,6 +2826,8 @@ class FilterService {
             if (!backendApi || !backendApi.process || !backendApi.service) {
                 throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
             }
+            // keep start time & end timestamps & return it after process execution
+            const /** @type {?} */ startTime = new Date();
             // run a preProcess callback if defined
             if (backendApi.preProcess) {
                 backendApi.preProcess();
@@ -2840,12 +2842,21 @@ class FilterService {
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
             const /** @type {?} */ observableOrPromise = backendApi.process(query);
             const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+            const /** @type {?} */ endTime = new Date();
             // from the result, call our internal post process to update the Dataset and Pagination info
             if (processResult && backendApi.internalPostProcess) {
                 backendApi.internalPostProcess(processResult);
             }
             // send the response process to the postProcess callback
             if (backendApi.postProcess !== undefined) {
+                if (processResult instanceof Object) {
+                    processResult.statistics = {
+                        startTime,
+                        endTime,
+                        executionTime: endTime.valueOf() - startTime.valueOf(),
+                        totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                    };
+                }
                 backendApi.postProcess(processResult);
             }
         });
@@ -3596,6 +3607,8 @@ class SortService {
             if (!backendApi || !backendApi.process || !backendApi.service) {
                 throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
             }
+            // keep start time & end timestamps & return it after process execution
+            const /** @type {?} */ startTime = new Date();
             if (backendApi.preProcess) {
                 backendApi.preProcess();
             }
@@ -3605,12 +3618,21 @@ class SortService {
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
             const /** @type {?} */ observableOrPromise = backendApi.process(query);
             const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+            const /** @type {?} */ endTime = new Date();
             // from the result, call our internal post process to update the Dataset and Pagination info
             if (processResult && backendApi.internalPostProcess) {
                 backendApi.internalPostProcess(processResult);
             }
             // send the response process to the postProcess callback
             if (backendApi.postProcess) {
+                if (processResult instanceof Object) {
+                    processResult.statistics = {
+                        startTime,
+                        endTime,
+                        executionTime: endTime.valueOf() - startTime.valueOf(),
+                        totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                    };
+                }
                 backendApi.postProcess(processResult);
             }
         });
@@ -3837,6 +3859,14 @@ class ControlAndPluginService {
      */
     get _gridOptions() {
         return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+    }
+    /**
+     * Setter for the Grid Options pulled through the Grid Object
+     * @param {?} gridOptions
+     * @return {?}
+     */
+    set _gridOptions(gridOptions) {
+        this._gridOptions = gridOptions;
     }
     /**
      * Getter for the Column Definitions pulled through the Grid Object
@@ -4452,10 +4482,15 @@ class ControlAndPluginService {
     }
     /**
      * Refresh the dataset through the Backend Service
+     * @param {?=} gridOptions
      * @return {?}
      */
-    refreshBackendDataset() {
-        let /** @type {?} */ query;
+    refreshBackendDataset(gridOptions) {
+        let /** @type {?} */ query = '';
+        // user can pass new set of grid options which will override current ones
+        if (gridOptions) {
+            this._gridOptions = Object.assign({}, this._gridOptions, gridOptions);
+        }
         const /** @type {?} */ backendApi = this._gridOptions.backendServiceApi;
         if (!backendApi || !backendApi.service || !backendApi.process) {
             throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
@@ -4464,6 +4499,8 @@ class ControlAndPluginService {
             query = backendApi.service.buildQuery();
         }
         if (query && query !== '') {
+            // keep start time & end timestamps & return it after process execution
+            const /** @type {?} */ startTime = new Date();
             if (backendApi.preProcess) {
                 backendApi.preProcess();
             }
@@ -4471,12 +4508,21 @@ class ControlAndPluginService {
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
             const /** @type {?} */ observableOrPromise = backendApi.process(query);
             castToPromise(observableOrPromise).then((processResult) => {
+                const /** @type {?} */ endTime = new Date();
                 // from the result, call our internal post process to update the Dataset and Pagination info
                 if (processResult && backendApi.internalPostProcess) {
                     backendApi.internalPostProcess(processResult);
                 }
                 // send the response process to the postProcess callback
                 if (backendApi.postProcess) {
+                    if (processResult instanceof Object) {
+                        processResult.statistics = {
+                            startTime,
+                            endTime,
+                            executionTime: endTime.valueOf() - startTime.valueOf(),
+                            totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                        };
+                    }
                     backendApi.postProcess(processResult);
                 }
             });
@@ -6911,43 +6957,46 @@ class ResizerService {
       Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined.
       You can fix this by setting your gridOption to use "enableAutoResize" or create an instance of the ResizerService by calling attachAutoResizeDataGrid()`);
         }
-        // because of the javascript async nature, we might want to delay the resize a little bit
-        delay = delay || 0;
-        clearTimeout(timer$2);
-        timer$2 = setTimeout(() => {
-            // calculate the available sizes with minimum height defined as a constant
-            const /** @type {?} */ availableDimensions = this.calculateGridNewDimensions(this._gridOptions);
-            const /** @type {?} */ gridElm = $(`#${this._gridOptions.gridId}`) || {};
-            const /** @type {?} */ gridContainerElm = $(`#${this._gridOptions.gridContainerId}`) || {};
-            if ((newSizes || availableDimensions) && gridElm.length > 0) {
-                // get the new sizes, if new sizes are passed (not 0), we will use them else use available space
-                // basically if user passes 1 of the dimension, let say he passes just the height,
-                // we will use the height as a fixed height but the width will be resized by it's available space
-                const /** @type {?} */ newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
-                const /** @type {?} */ newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
-                // apply these new height/width to the datagrid
-                gridElm.height(newHeight);
-                gridElm.width(newWidth);
-                gridContainerElm.height(newHeight);
-                gridContainerElm.width(newWidth);
-                // keep last resized dimensions
-                this._lastDimensions = {
-                    height: newHeight,
-                    width: newWidth
-                };
-                if ((this._gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
-                    this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
+        return new Promise((resolve) => {
+            // because of the javascript async nature, we might want to delay the resize a little bit
+            delay = delay || 0;
+            clearTimeout(timer$2);
+            timer$2 = setTimeout(() => {
+                // calculate the available sizes with minimum height defined as a constant
+                const /** @type {?} */ availableDimensions = this.calculateGridNewDimensions(this._gridOptions);
+                const /** @type {?} */ gridElm = $(`#${this._gridOptions.gridId}`) || {};
+                const /** @type {?} */ gridContainerElm = $(`#${this._gridOptions.gridContainerId}`) || {};
+                if ((newSizes || availableDimensions) && gridElm.length > 0) {
+                    // get the new sizes, if new sizes are passed (not 0), we will use them else use available space
+                    // basically if user passes 1 of the dimension, let say he passes just the height,
+                    // we will use the height as a fixed height but the width will be resized by it's available space
+                    const /** @type {?} */ newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
+                    const /** @type {?} */ newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
+                    // apply these new height/width to the datagrid
+                    gridElm.height(newHeight);
+                    gridElm.width(newWidth);
+                    gridContainerElm.height(newHeight);
+                    gridContainerElm.width(newWidth);
+                    // resize the slickgrid canvas on all browser except some IE versions
+                    // exclude all IE below IE11
+                    // IE11 wants to be a better standard (W3C) follower (finally) they even changed their appName output to also have 'Netscape'
+                    if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && this._grid) {
+                        this._grid.resizeCanvas();
+                    }
+                    // also call the grid auto-size columns so that it takes available when going bigger
+                    this._grid.autosizeColumns();
+                    // keep last resized dimensions & resolve them to the Promise
+                    this._lastDimensions = {
+                        height: newHeight,
+                        width: newWidth
+                    };
+                    if ((this._gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
+                        this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
+                    }
+                    resolve(this._lastDimensions);
                 }
-                // resize the slickgrid canvas on all browser except some IE versions
-                // exclude all IE below IE11
-                // IE11 wants to be a better standard (W3C) follower (finally) they even changed their appName output to also have 'Netscape'
-                if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && this._grid) {
-                    this._grid.resizeCanvas();
-                }
-                // also call the grid auto-size columns so that it takes available when going bigger
-                this._grid.autosizeColumns();
-            }
-        }, delay);
+            }, delay);
+        });
     }
 }
 
@@ -8951,14 +9000,19 @@ const deleteIconFormatter = (row, cell, value, columnDef, dataContext) => `<i cl
  * @suppress {checkTypes} checked by tsc
  */
 const dollarColoredBoldFormatter = (row, cell, value, columnDef, dataContext) => {
-    if (isNaN(+value)) {
+    const /** @type {?} */ isNumber = !isNaN(+value);
+    const /** @type {?} */ params = columnDef && columnDef.params || {};
+    const /** @type {?} */ minDecimal = params.minDecimal || 2;
+    const /** @type {?} */ maxDecimal = params.minDecimal || 4;
+    const /** @type {?} */ outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+    if (!isNumber) {
         return '';
     }
     else if (value >= 0) {
-        return `<span style="color:green; font-weight: bold;">$${decimalFormatted(value, 2, 2)}</span>`;
+        return `<span style="color:green; font-weight: bold;">$${outputValue}</span>`;
     }
     else {
-        return `<span style="color:red; font-weight: bold;">$${decimalFormatted(value, 2, 2)}</span>`;
+        return `<span style="color:red; font-weight: bold;">$${outputValue}</span>`;
     }
 };
 
@@ -8967,14 +9021,19 @@ const dollarColoredBoldFormatter = (row, cell, value, columnDef, dataContext) =>
  * @suppress {checkTypes} checked by tsc
  */
 const dollarColoredFormatter = (row, cell, value, columnDef, dataContext) => {
-    if (isNaN(+value)) {
+    const /** @type {?} */ isNumber = !isNaN(+value);
+    const /** @type {?} */ params = columnDef && columnDef.params || {};
+    const /** @type {?} */ minDecimal = params.minDecimal || 2;
+    const /** @type {?} */ maxDecimal = params.minDecimal || 4;
+    const /** @type {?} */ outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+    if (!isNumber) {
         return '';
     }
     else if (value >= 0) {
-        return `<span style="color:green;">$${decimalFormatted(value, 2, 2)}</span>`;
+        return `<span style="color:green;">$${outputValue}</span>`;
     }
     else {
-        return `<span style="color:red;">$${decimalFormatted(value, 2, 2)}</span>`;
+        return `<span style="color:red;">$${outputValue}</span>`;
     }
 };
 
@@ -8982,7 +9041,14 @@ const dollarColoredFormatter = (row, cell, value, columnDef, dataContext) => {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const dollarFormatter = (row, cell, value, columnDef, dataContext) => isNaN(+value) ? '' : `$${decimalFormatted(value, 2, 4)}`;
+const dollarFormatter = (row, cell, value, columnDef, dataContext) => {
+    const /** @type {?} */ isNumber = !isNaN(+value);
+    const /** @type {?} */ params = columnDef && columnDef.params || {};
+    const /** @type {?} */ minDecimal = params.minDecimal || 2;
+    const /** @type {?} */ maxDecimal = params.minDecimal || 4;
+    const /** @type {?} */ outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+    return !isNumber ? '' : `$${outputValue}`;
+};
 
 /**
  * @fileoverview added by tsickle
@@ -9600,11 +9666,9 @@ class SlickPaginationComponent {
     /**
      * Constructor
      * @param {?} filterService
-     * @param {?} sortService
      */
-    constructor(filterService, sortService) {
+    constructor(filterService) {
         this.filterService = filterService;
-        this.sortService = sortService;
         this._isFirstRender = true;
         this.onPaginationChanged = new EventEmitter();
         this.dataFrom = 1;
@@ -9787,6 +9851,8 @@ class SlickPaginationComponent {
             }
             if (backendApi) {
                 const /** @type {?} */ itemsPerPage = +this.itemsPerPage;
+                // keep start time & end timestamps & return it after process execution
+                const /** @type {?} */ startTime = new Date();
                 if (backendApi.preProcess) {
                     backendApi.preProcess();
                 }
@@ -9795,12 +9861,22 @@ class SlickPaginationComponent {
                 // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
                 const /** @type {?} */ observableOrPromise = backendApi.process(query);
                 const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+                const /** @type {?} */ endTime = new Date();
                 // from the result, call our internal post process to update the Dataset and Pagination info
                 if (processResult && backendApi.internalPostProcess) {
                     backendApi.internalPostProcess(processResult);
                 }
                 // send the response process to the postProcess callback
                 if (backendApi.postProcess) {
+                    if (processResult instanceof Object) {
+                        processResult.statistics = {
+                            startTime,
+                            endTime,
+                            executionTime: endTime.valueOf() - startTime.valueOf(),
+                            itemCount: this.totalItems,
+                            totalItemCount: this.totalItems
+                        };
+                    }
                     backendApi.postProcess(processResult);
                 }
             }
@@ -9876,7 +9952,6 @@ SlickPaginationComponent.decorators = [
 /** @nocollapse */
 SlickPaginationComponent.ctorParameters = () => [
     { type: FilterService, },
-    { type: SortService, },
 ];
 SlickPaginationComponent.propDecorators = {
     "onPaginationChanged": [{ type: Output },],
@@ -10243,11 +10318,11 @@ class AngularSlickgridComponent {
             const /** @type {?} */ observableOrPromise = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
             // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
             setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+                // keep start time & end timestamps & return it after process execution
+                const /** @type {?} */ startTime = new Date();
                 if (backendApi.preProcess) {
                     backendApi.preProcess();
                 }
-                // keep start time & end timestamps & return it after process execution
-                const /** @type {?} */ startTime = new Date();
                 // the process could be an Observable (like HttpClient) or a Promise
                 // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
                 const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
@@ -10259,11 +10334,13 @@ class AngularSlickgridComponent {
                 }
                 // send the response process to the postProcess callback
                 if (backendApi.postProcess) {
+                    const /** @type {?} */ datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
                     if (processResult instanceof Object) {
-                        processResult.timestamps = {
+                        processResult.statistics = {
                             startTime,
                             endTime,
                             executionTime: endTime.valueOf() - startTime.valueOf(),
+                            totalItemCount: this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems
                         };
                     }
                     backendApi.postProcess(processResult);
@@ -10318,10 +10395,15 @@ class AngularSlickgridComponent {
         return $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
     }
     /**
+     * On a Pagination changed, we will trigger a Grid State changed with the new pagination info
+     * Also if we use Row Selection, we need to reset them to nothing selected
      * @param {?} pagination
      * @return {?}
      */
     paginationChanged(pagination) {
+        if (this.gridOptions.enableRowSelection) {
+            this.gridService.setSelectedRows([]);
+        }
         this.gridStateService.onGridStateChanged.next({
             change: { newValues: pagination, type: GridStateType.pagination },
             gridState: this.gridStateService.getCurrentGridState()
@@ -10360,8 +10442,8 @@ class AngularSlickgridComponent {
                 }
                 this.gridPaginationOptions = this.mergeGridOptions(this.gridOptions);
             }
+            // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
             if (this.grid && this.gridOptions.enableAutoResize) {
-                // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
                 this.resizer.resizeGrid(10, { height: this.gridHeight, width: this.gridWidth });
             }
         }

@@ -87,6 +87,10 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     attachResizeHook(grid: any, options: GridOption): void;
     executeAfterDataviewCreated(grid: any, gridOptions: GridOption, dataView: any): void;
     mergeGridOptions(gridOptions: any): GridOption;
+    /**
+     * On a Pagination changed, we will trigger a Grid State changed with the new pagination info
+     * Also if we use Row Selection, we need to reset them to nothing selected
+     */
     paginationChanged(pagination: Pagination): void;
     /**
      * When dataset changes, we need to refresh the entire grid UI & possibly resize it as well
