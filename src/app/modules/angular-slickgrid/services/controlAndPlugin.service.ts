@@ -61,7 +61,7 @@ export class ControlAndPluginService {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
   }
 
-  /** Getter for the Grid Options pulled through the Grid Object */
+  /** Setter for the Grid Options pulled through the Grid Object */
   private set _gridOptions(gridOptions: GridOption) {
     this._gridOptions = gridOptions;
   }
