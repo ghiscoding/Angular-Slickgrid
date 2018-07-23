@@ -1,6 +1,6 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Column, FieldType, Filters, GridOdataService, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, Filters, GridOdataService, GridOption, Statistic } from './../modules/angular-slickgrid';
 
 const defaultPageSize = 20;
 const sampleDataRoot = 'assets/data';
@@ -28,6 +28,7 @@ export class GridOdataComponent implements OnInit {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset = [];
+  statistics: Statistic;
 
   odataQuery = '';
   processing = true;
@@ -72,6 +73,7 @@ export class GridOdataComponent implements OnInit {
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {
+          this.statistics = response.statistics;
           this.displaySpinner(false);
           this.getCustomerCallback(response);
         }
@@ -90,6 +92,9 @@ export class GridOdataComponent implements OnInit {
     // totalItems property needs to be filled for pagination to work correctly
     // however we need to force Angular to do a dirty check, doing a clone object will do just that
     this.gridOptions.pagination.totalItems = data['totalRecordCount'];
+    if (this.statistics) {
+      this.statistics.totalItemCount = data['totalRecordCount'];
+    }
     this.gridOptions = Object.assign({}, this.gridOptions);
 
     // once pagination totalItems is filled, we can update the dataset

@@ -27,10 +27,12 @@ import {
   AngularGridInstance,
   BackendServiceOption,
   Column,
+  GraphqlResult,
   GridOption,
   GridStateChange,
   GridStateType,
-  Pagination
+  Pagination,
+  Statistic
 } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
@@ -440,17 +442,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
       // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
       setTimeout(async () => {
+        // keep start time & end timestamps & return it after process execution
+        const startTime = new Date();
+
         if (backendApi.preProcess) {
           backendApi.preProcess();
         }
 
-        // keep start time & end timestamps & return it after process execution
-        const startTime = new Date();
-
         // the process could be an Observable (like HttpClient) or a Promise
         // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-        const processResult = await castToPromise(observableOrPromise);
-
+        const processResult: GraphqlResult | any = await castToPromise(observableOrPromise);
         const endTime = new Date();
 
         // define what our internal Post Process callback, only available for GraphQL Service for now
@@ -461,11 +462,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
         // send the response process to the postProcess callback
         if (backendApi.postProcess) {
+          const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
           if (processResult instanceof Object) {
-            processResult.timestamps = {
+            processResult.statistics = {
               startTime,
               endTime,
               executionTime: endTime.valueOf() - startTime.valueOf(),
+              totalItemCount: this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems
             };
           }
           backendApi.postProcess(processResult);
@@ -558,8 +561,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         }
         this.gridPaginationOptions = this.mergeGridOptions(this.gridOptions);
       }
+
+      // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
       if (this.grid &&  this.gridOptions.enableAutoResize) {
-        // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
         this.resizer.resizeGrid(10, { height: this.gridHeight, width: this.gridWidth });
       }
     }

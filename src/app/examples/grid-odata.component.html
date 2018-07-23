@@ -11,6 +11,9 @@
           <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
         </span>
       </div>
+      <span *ngIf="statistics">
+            <b>Statistics:</b> {{statistics.endTime | date: 'yyyy-MM-dd HH:mm aaaaa\'m\''}} | {{statistics.executionTime}}ms | {{statistics.totalItemCount}} items
+        </span>
     </div>
     <div class="col-sm-8">
       <div class="alert alert-info">
