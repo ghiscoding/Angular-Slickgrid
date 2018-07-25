@@ -74,7 +74,6 @@ const slickgridEventPrefix = 'sg';
   ]
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
-  @ViewChild('customElm', {read: ElementRef}) customElm: ElementRef;
   private _dataset: any[];
   private _columnDefinitions: Column[];
   private _dataView: any;
@@ -124,6 +123,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   constructor(
     private controlAndPluginService: ControlAndPluginService,
+    private elm: ElementRef,
     private exportService: ExportService,
     private filterService: FilterService,
     private gridService: GridService,
@@ -361,7 +361,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     for (const prop in grid) {
       if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
         this._eventHandler.subscribe(grid[prop], (e: any, args: any) => {
-          this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
+          return this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
         });
       }
     }
@@ -370,7 +370,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     for (const prop in dataView) {
       if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
         this._eventHandler.subscribe(dataView[prop], (e: any, args: any) => {
-          this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
+          return this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
         });
       }
     }
@@ -598,11 +598,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     return isShowing;
   }
 
-  private dispatchCustomEvent(eventName: string, data?: any, isBubbling: boolean = true) {
-    const eventInit: CustomEventInit = { bubbles: isBubbling };
+  private dispatchCustomEvent(eventName: string, data?: any, isBubbling: boolean = true, isCancelable: boolean = true) {
+    const eventInit: CustomEventInit = { bubbles: isBubbling, cancelable: isCancelable };
     if (data) {
       eventInit.detail = data;
     }
-    this.customElm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
+    return this.elm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
   }
 }
