@@ -265,6 +265,9 @@ export interface GridOption {
   rowSelectionOptions?: {
     /** do we want to select the active row? */
     selectActiveRow: boolean;
+
+    /** default to false, do we want to hide the "Select All" checkbox? */
+    hideSelectAllCheckbox?: boolean;
   };
 
   /** CSS class name used when cell is selected */

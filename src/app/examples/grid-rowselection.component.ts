@@ -66,7 +66,8 @@ export class GridRowSelectionComponent implements OnInit {
       enableCheckboxSelector: true,
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
-        selectActiveRow: true
+        selectActiveRow: true,
+        hideSelectAllCheckbox: true
       },
       enableRowSelection: true
     };
