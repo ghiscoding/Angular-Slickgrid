@@ -4,7 +4,7 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
-import { Injectable, Component, EventEmitter, Input, Output, Inject, ElementRef, ViewChild, NgModule } from '@angular/core';
+import { Injectable, Component, EventEmitter, Input, Output, Inject, ElementRef, NgModule } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Subject } from 'rxjs/Subject';
 import { TextEncoder } from 'text-encoding-utf-8';
@@ -6932,8 +6932,9 @@ SlickPaginationComponent.propDecorators = {
 };
 var slickgridEventPrefix = 'sg';
 var AngularSlickgridComponent = /** @class */ (function () {
-    function AngularSlickgridComponent(controlAndPluginService, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
+    function AngularSlickgridComponent(controlAndPluginService, elm, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
         this.controlAndPluginService = controlAndPluginService;
+        this.elm = elm;
         this.exportService = exportService;
         this.filterService = filterService;
         this.gridService = gridService;
@@ -7139,7 +7140,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         var _loop_3 = function (prop) {
             if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this_3._eventHandler.subscribe(grid[prop], function (e, args) {
-                    _this.dispatchCustomEvent("" + slickgridEventPrefix + titleCase(prop), { eventData: e, args: args });
+                    return _this.dispatchCustomEvent("" + slickgridEventPrefix + titleCase(prop), { eventData: e, args: args });
                 });
             }
         };
@@ -7150,7 +7151,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         var _loop_4 = function (prop) {
             if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this_4._eventHandler.subscribe(dataView[prop], function (e, args) {
-                    _this.dispatchCustomEvent("" + slickgridEventPrefix + titleCase(prop), { eventData: e, args: args });
+                    return _this.dispatchCustomEvent("" + slickgridEventPrefix + titleCase(prop), { eventData: e, args: args });
                 });
             }
         };
@@ -7321,13 +7322,14 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.grid.setHeaderRowVisibility(isShowing);
         return isShowing;
     };
-    AngularSlickgridComponent.prototype.dispatchCustomEvent = function (eventName, data, isBubbling) {
+    AngularSlickgridComponent.prototype.dispatchCustomEvent = function (eventName, data, isBubbling, isCancelable) {
         if (isBubbling === void 0) { isBubbling = true; }
-        var eventInit = { bubbles: isBubbling };
+        if (isCancelable === void 0) { isCancelable = true; }
+        var eventInit = { bubbles: isBubbling, cancelable: isCancelable };
         if (data) {
             eventInit.detail = data;
         }
-        this.customElm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
+        return this.elm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
     };
     return AngularSlickgridComponent;
 }());
@@ -7335,7 +7337,7 @@ AngularSlickgridComponent.decorators = [
     { type: Injectable },
     { type: Component, args: [{
                 selector: 'angular-slickgrid',
-                template: "<div id=\"slickGridContainer-{{gridId}}\" #customElm class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n",
+                template: "<div id=\"slickGridContainer-{{gridId}}\" class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n",
                 providers: [
                     ControlAndPluginService,
                     ExportService,
@@ -7354,6 +7356,7 @@ AngularSlickgridComponent.decorators = [
 ];
 AngularSlickgridComponent.ctorParameters = function () { return [
     { type: ControlAndPluginService, },
+    { type: ElementRef, },
     { type: ExportService, },
     { type: FilterService, },
     { type: GridService, },
@@ -7366,7 +7369,6 @@ AngularSlickgridComponent.ctorParameters = function () { return [
     { type: undefined, decorators: [{ type: Inject, args: ['config',] },] },
 ]; };
 AngularSlickgridComponent.propDecorators = {
-    "customElm": [{ type: ViewChild, args: ['customElm', { read: ElementRef },] },],
     "onAngularGridCreated": [{ type: Output },],
     "onDataviewCreated": [{ type: Output },],
     "onGridCreated": [{ type: Output },],

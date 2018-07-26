@@ -33,6 +33,7 @@ import { SortService } from './../services/sort.service';
 import { Subscription } from 'rxjs/Subscription';
 export declare class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
     private controlAndPluginService;
+    private elm;
     private exportService;
     private filterService;
     private gridService;
@@ -43,7 +44,6 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private sortService;
     private translate;
     private forRootConfig;
-    customElm: ElementRef;
     private _dataset;
     private _columnDefinitions;
     private _dataView;
@@ -71,7 +71,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     gridWidth: number;
     columnDefinitions: Column[];
     dataset: any[];
-    constructor(controlAndPluginService: ControlAndPluginService, exportService: ExportService, filterService: FilterService, gridService: GridService, gridEventService: GridEventService, gridStateService: GridStateService, groupingAndColspanService: GroupingAndColspanService, resizer: ResizerService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
+    constructor(controlAndPluginService: ControlAndPluginService, elm: ElementRef, exportService: ExportService, filterService: FilterService, gridService: GridService, gridEventService: GridEventService, gridStateService: GridStateService, groupingAndColspanService: GroupingAndColspanService, resizer: ResizerService, sortService: SortService, translate: TranslateService, forRootConfig: GridOption);
     ngOnInit(): void;
     ngOnDestroy(): void;
     destroy(emptyDomElementContainer?: boolean): void;
@@ -109,5 +109,5 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     showHeaderRow(isShowing: boolean): boolean;
     /** Toggle the filter row displayed on first row */
     toggleHeaderRow(): boolean;
-    private dispatchCustomEvent(eventName, data?, isBubbling?);
+    private dispatchCustomEvent(eventName, data?, isBubbling?, isCancelable?);
 }

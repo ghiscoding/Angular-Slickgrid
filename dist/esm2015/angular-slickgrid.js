@@ -3,7 +3,7 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
-import { Injectable, Component, EventEmitter, Input, Output, Inject, ElementRef, ViewChild, NgModule } from '@angular/core';
+import { Injectable, Component, EventEmitter, Input, Output, Inject, ElementRef, NgModule } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { __awaiter } from 'tslib';
 import { Subject } from 'rxjs/Subject';
@@ -9967,6 +9967,7 @@ const slickgridEventPrefix = 'sg';
 class AngularSlickgridComponent {
     /**
      * @param {?} controlAndPluginService
+     * @param {?} elm
      * @param {?} exportService
      * @param {?} filterService
      * @param {?} gridService
@@ -9978,8 +9979,9 @@ class AngularSlickgridComponent {
      * @param {?} translate
      * @param {?} forRootConfig
      */
-    constructor(controlAndPluginService, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
+    constructor(controlAndPluginService, elm, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
         this.controlAndPluginService = controlAndPluginService;
+        this.elm = elm;
         this.exportService = exportService;
         this.filterService = filterService;
         this.gridService = gridService;
@@ -10245,7 +10247,7 @@ class AngularSlickgridComponent {
         for (const /** @type {?} */ prop in grid) {
             if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this._eventHandler.subscribe(grid[prop], (e, args) => {
-                    this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
+                    return this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
                 });
             }
         }
@@ -10253,7 +10255,7 @@ class AngularSlickgridComponent {
         for (const /** @type {?} */ prop in dataView) {
             if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this._eventHandler.subscribe(dataView[prop], (e, args) => {
-                    this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
+                    return this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
                 });
             }
         }
@@ -10486,21 +10488,22 @@ class AngularSlickgridComponent {
      * @param {?} eventName
      * @param {?=} data
      * @param {?=} isBubbling
+     * @param {?=} isCancelable
      * @return {?}
      */
-    dispatchCustomEvent(eventName, data, isBubbling = true) {
-        const /** @type {?} */ eventInit = { bubbles: isBubbling };
+    dispatchCustomEvent(eventName, data, isBubbling = true, isCancelable = true) {
+        const /** @type {?} */ eventInit = { bubbles: isBubbling, cancelable: isCancelable };
         if (data) {
             eventInit.detail = data;
         }
-        this.customElm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
+        return this.elm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
     }
 }
 AngularSlickgridComponent.decorators = [
     { type: Injectable },
     { type: Component, args: [{
                 selector: 'angular-slickgrid',
-                template: `<div id="slickGridContainer-{{gridId}}" #customElm class="gridPane" [style.width]="gridWidthString">
+                template: `<div id="slickGridContainer-{{gridId}}" class="gridPane" [style.width]="gridWidthString">
     <div attr.id='{{gridId}}' class="slickgrid-container" style="width: 100%" [style.height]="gridHeightString">
     </div>
     <slick-pagination id="slickPagingContainer-{{gridId}}"
@@ -10529,6 +10532,7 @@ AngularSlickgridComponent.decorators = [
 /** @nocollapse */
 AngularSlickgridComponent.ctorParameters = () => [
     { type: ControlAndPluginService, },
+    { type: ElementRef, },
     { type: ExportService, },
     { type: FilterService, },
     { type: GridService, },
@@ -10541,7 +10545,6 @@ AngularSlickgridComponent.ctorParameters = () => [
     { type: undefined, decorators: [{ type: Inject, args: ['config',] },] },
 ];
 AngularSlickgridComponent.propDecorators = {
-    "customElm": [{ type: ViewChild, args: ['customElm', { read: ElementRef },] },],
     "onAngularGridCreated": [{ type: Output },],
     "onDataviewCreated": [{ type: Output },],
     "onGridCreated": [{ type: Output },],
