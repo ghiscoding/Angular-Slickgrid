@@ -1,13 +1,15 @@
-import { CustomInputFilter } from './custom-inputFilter';
 import { Component, OnInit } from '@angular/core';
-import { AngularGridInstance, Column, FieldType, Filters, Formatters, GridOption, GridStateChange, Statistic } from './../modules/angular-slickgrid';
+import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
+import { AngularGridInstance, Column, FieldType, Filters, Formatters, GridOption, GridStateChange, OperatorType, Statistic } from './../modules/angular-slickgrid';
+import { CustomInputFilter } from './custom-inputFilter';
 import { Subject } from 'rxjs/Subject';
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 const NB_ITEMS = 500;
+const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_500_numbers.json';
 
 @Component({
   templateUrl: './grid-clientside.component.html'
@@ -39,21 +41,9 @@ export class GridClientSideComponent implements OnInit {
   dataset: any[];
   statistics: Statistic;
 
-  constructor(private translate: TranslateService) {}
+  constructor(private http: HttpClient, private translate: TranslateService) {}
 
   ngOnInit(): void {
-    // prepare a multiple-select array to filter the "Duration" column
-    // wrap it inside a timer to simulate a backend call
-    const durationCollection$ = new Subject<any>();
-    setTimeout(() => {
-      const multiSelectFilterArray = [];
-      for (let i = 0; i < NB_ITEMS; i++) {
-        multiSelectFilterArray.push({ value: i, label: i });
-      }
-
-      durationCollection$.next(multiSelectFilterArray);
-    }, 1000);
-
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', sortable: true, minWidth: 55,
         type: FieldType.string, filterable: true, filter: { model: Filters.compoundInput }
@@ -68,7 +58,12 @@ export class GridClientSideComponent implements OnInit {
         minWidth: 55,
         filterable: true,
         filter: {
-          collectionAsync: durationCollection$,
+          collectionAsync: this.http.get<{ option: string; value: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
+          collectionFilterBy: {
+            property: 'value',
+            operator: OperatorType.notEqual,
+            value: 365
+          },
           collectionSortBy: {
             property: 'value',
             sortDesc: true,
@@ -142,22 +137,51 @@ export class GridClientSideComponent implements OnInit {
     this.angularGrid = angularGrid;
   }
 
+  /** Add a new row to the grid and refresh the Filter collection */
   addItem() {
-    // add a new row to the grid
     const lastRowIndex = this.dataset.length;
     const newRows = this.mockData(1, lastRowIndex);
-    this.angularGrid.gridService.addItemToDatagrid(newRows[0]);
 
-    // refresh the MultipleSelect Filter of the "Duration" column
+    // wrap into a timer to simulate a backend async call
+    setTimeout(() => {
+      const durationColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'duration');
+      if (durationColumnDef) {
+        const collectionAsync = durationColumnDef.filter.collectionAsync;
+        const collection = durationColumnDef.filter.collection;
+
+        if (Array.isArray(collection)) {
+          // add the new row to the grid
+          this.angularGrid.gridService.addItemToDatagrid(newRows[0]);
+
+          // then refresh the Filter "collection", we have 2 ways of doing it
+
+          // Push to the filter "collection"
+          collection.push({ value: lastRowIndex, label: lastRowIndex });
+
+          // or replace entire "collection"
+          // durationColumnDef.filter.collection = [...collection, ...[{ value: lastRowIndex, label: lastRowIndex }]];
+
+          // finally trigger a change for the Observable/Subject of the async collection
+          if (collectionAsync instanceof Subject) {
+            collectionAsync.next(collection);
+          }
+        }
+      }
+    }, 250);
+  }
+
+  /** Delete last inserted row */
+  deleteItem() {
     const durationColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'duration');
     if (durationColumnDef) {
       const collectionAsync = durationColumnDef.filter.collectionAsync;
       const collection = durationColumnDef.filter.collection;
-      if (Array.isArray(collection)) {
-        // add the new value to the filter collection
-        collection.push({ value: lastRowIndex, label: lastRowIndex });
 
-        // trigger a change for the Observable/Subject of the async collection
+      if (Array.isArray(collection)) {
+        const selectCollectionObj = collection.pop();
+        this.angularGrid.gridService.deleteDataGridItemById(selectCollectionObj.value + '');
+
+        // finally trigger a change for the Observable/Subject of the async collection
         if (collectionAsync instanceof Subject) {
           collectionAsync.next(collection);
         }

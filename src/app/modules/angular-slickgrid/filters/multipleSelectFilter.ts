@@ -15,6 +15,8 @@ import {
 } from './../models/index';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+import { Subscription } from 'rxjs/Subscription';
+import { castToPromise } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -30,6 +32,7 @@ export class MultipleSelectFilter implements Filter {
   labelName: string;
   valueName: string;
   enableTranslateLabel = false;
+  subscriptions: Subscription[] = [];
 
   /**
    * Initialize the Filter
@@ -75,7 +78,7 @@ export class MultipleSelectFilter implements Filter {
   /**
    * Initialize the filter template
    */
-  init(args: FilterArguments) {
+  async init(args: FilterArguments) {
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
@@ -89,22 +92,15 @@ export class MultipleSelectFilter implements Filter {
     this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
     this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
 
+    // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
+    // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
     let newCollection = this.columnDef.filter.collection || [];
+    this.renderDomElement(newCollection);
+
     const collectionAsync = this.columnDef.filter.collectionAsync;
-
     if (collectionAsync) {
-      this.renderOptionsAsync(collectionAsync);
+      newCollection = await this.renderOptionsAsync(collectionAsync);
     }
-
-    // user might want to filter or sort certain items of the collection
-    newCollection = this.filterAndSortCollection(newCollection);
-
-    // step 1, create HTML string template
-    const filterTemplate = this.buildTemplateHtmlString(newCollection, this.searchTerms);
-
-    // step 2, create the DOM Element of the filter & pre-load search terms
-    // also subscribe to the onClose event
-    this.createDomElement(filterTemplate);
   }
 
   /**
@@ -126,6 +122,14 @@ export class MultipleSelectFilter implements Filter {
   destroy() {
     if (this.$filterElm) {
       this.$filterElm.off().remove();
+
+      if (Array.isArray(this.subscriptions)) {
+        this.subscriptions.forEach((subscription: Subscription) => {
+          if (subscription && subscription.unsubscribe) {
+            subscription.unsubscribe();
+          }
+        });
+      }
     }
   }
 
@@ -148,62 +152,63 @@ export class MultipleSelectFilter implements Filter {
    * @return outputCollection filtered and/or sorted collection
    */
   private filterAndSortCollection(inputCollection) {
-    let outputCollection = [];
+    let outputCollection = inputCollection;
 
     // user might want to filter certain items of the collection
     if (this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionFilterBy) {
       const filterBy = this.columnDef.filter.collectionFilterBy;
-      outputCollection = this.collectionService.filterCollection(inputCollection, filterBy);
+      outputCollection = this.collectionService.filterCollection(outputCollection, filterBy);
     }
 
     // user might want to sort the collection
     if (this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionSortBy) {
       const sortBy = this.columnDef.filter.collectionSortBy;
-      outputCollection = this.collectionService.sortCollection(inputCollection, sortBy, this.enableTranslateLabel);
+      outputCollection = this.collectionService.sortCollection(outputCollection, sortBy, this.enableTranslateLabel);
     }
 
     return outputCollection;
   }
 
-  private async renderOptionsAsync(collectionAsync: Promise<any> | Observable<any> | Subject<any>) {
-    if (collectionAsync && collectionAsync instanceof Observable) {
-      collectionAsync.subscribe((collection) => {
-        console.log(collection);
-        if (Array.isArray(collection)) {
-          this.columnDef.filter.collection = collection;
+  private async renderOptionsAsync(collectionAsync: Promise<any> | Observable<any> | Subject<any>): Promise<any[]> {
+    let awaitedCollection: any = [];
 
-          // recreate Multiple Select after getting async collection
-          this.renderDomElement(collection);
-        }
-      });
+    if (collectionAsync) {
+      awaitedCollection = await castToPromise(collectionAsync);
+      this.renderDomElementFromCollectionAsync(awaitedCollection);
 
-/*
-      // wait for the "collectionAsync", once resolved we will save it into the "collection" for later reference
-      const awaitedCollection: any[] = await castToPromise(collectionAsync);
-      this.columnDef.filter.collection = awaitedCollection;
-
-      // recreate Multiple Select after getting async collection
-      this.renderDomElement(awaitedCollection);
-
-      const observer = Observable.of(this.columnDef.filter.collection);
-      observer.subscribe((col) => console.log(col));
-
-      const arr = new Proxy(awaitedCollection, {
-        get: (target, name) => {
-          console.log(target, name);
-          return target[name];
-        },
-        set: (obj, prop, value) => {
-          console.log(obj, prop, value);
-          return true;
-        }
-      });
-      setTimeout(() => {
-        console.log(this.columnDef.filter.collection);
-      }, 4000);
-      // subscribe to the "collection" property changes
-*/
+      // because we accept Promises & HttpClient Observable only execute once
+      // we will re-create an RxJs Subject which will replace the "collectionAsync" which got executed once anyway
+      // doing this provide the user a way to call a "collectionAsync.next()"
+      this.createNewCollectionAsyncObservable();
     }
+
+    return awaitedCollection;
+  }
+
+  /** Create or recreate an Observable Subject and reassign it to the "collectionAsync" object so user can call a "collectionAsync.next()" on it */
+  private createNewCollectionAsyncObservable() {
+    const newCollectionAsync = new Subject<any>();
+    this.columnDef.filter.collectionAsync = newCollectionAsync;
+    this.subscriptions.push(
+      newCollectionAsync.subscribe(collection => this.renderDomElementFromCollectionAsync(collection))
+    );
+  }
+
+  /**
+   * When user use a CollectionAsync we will use the returned collection to render the filter DOM element
+   * and reinitialize filter collection with this new collection
+   */
+  private renderDomElementFromCollectionAsync(collection) {
+    if (!Array.isArray(collection)) {
+      throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call');
+    }
+
+    // copy over the array received from the async call to the "collection" as the new collection to use
+    // this has to be BEFORE the `collectionObserver().subscribe` to avoid going into an infinite loop
+    this.columnDef.filter.collection = collection;
+
+    // recreate Multiple Select after getting async collection
+    this.renderDomElement(collection);
   }
 
   private renderDomElement(collection) {
