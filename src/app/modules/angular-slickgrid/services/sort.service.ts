@@ -63,9 +63,14 @@ export class SortService {
     if (!backendApi || !backendApi.process || !backendApi.service) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }
+
+    // keep start time & end timestamps & return it after process execution
+    const startTime = new Date();
+
     if (backendApi.preProcess) {
       backendApi.preProcess();
     }
+
     const query = backendApi.service.processOnSortChanged(event, args);
     this.emitSortChanged('remote');
 
@@ -73,6 +78,7 @@ export class SortService {
     // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
     const observableOrPromise = backendApi.process(query);
     const processResult = await castToPromise(observableOrPromise);
+    const endTime = new Date();
 
     // from the result, call our internal post process to update the Dataset and Pagination info
     if (processResult && backendApi.internalPostProcess) {
@@ -81,6 +87,14 @@ export class SortService {
 
     // send the response process to the postProcess callback
     if (backendApi.postProcess) {
+      if (processResult instanceof Object) {
+        processResult.statistics = {
+          startTime,
+          endTime,
+          executionTime: endTime.valueOf() - startTime.valueOf(),
+          totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+        };
+      }
       backendApi.postProcess(processResult);
     }
   }

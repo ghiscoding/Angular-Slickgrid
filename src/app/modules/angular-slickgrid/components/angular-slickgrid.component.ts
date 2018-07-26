@@ -27,10 +27,12 @@ import {
   AngularGridInstance,
   BackendServiceOption,
   Column,
+  GraphqlResult,
   GridOption,
   GridStateChange,
   GridStateType,
-  Pagination
+  Pagination,
+  Statistic
 } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
@@ -43,12 +45,6 @@ import { GroupingAndColspanService } from './../services/groupingAndColspan.serv
 import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
 import { Subscription } from 'rxjs/Subscription';
-import { CompoundDateFilter } from '../filters/compoundDateFilter';
-import { CompoundInputFilter } from '../filters/compoundInputFilter';
-import { InputFilter } from '../filters/inputFilter';
-import { MultipleSelectFilter } from '../filters/multipleSelectFilter';
-import { SingleSelectFilter } from '../filters/singleSelectFilter';
-import { SelectFilter } from '../filters/selectFilter';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
 
@@ -63,12 +59,6 @@ const slickgridEventPrefix = 'sg';
   selector: 'angular-slickgrid',
   templateUrl: './angular-slickgrid.component.html',
   providers: [
-    CompoundDateFilter,
-    CompoundInputFilter,
-    InputFilter,
-    MultipleSelectFilter,
-    SingleSelectFilter,
-    SelectFilter,
     ControlAndPluginService,
     ExportService,
     FilterFactory,
@@ -84,7 +74,6 @@ const slickgridEventPrefix = 'sg';
   ]
 })
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
-  @ViewChild('customElm', {read: ElementRef}) customElm: ElementRef;
   private _dataset: any[];
   private _columnDefinitions: Column[];
   private _dataView: any;
@@ -134,6 +123,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   constructor(
     private controlAndPluginService: ControlAndPluginService,
+    private elm: ElementRef,
     private exportService: ExportService,
     private filterService: FilterService,
     private gridService: GridService,
@@ -371,7 +361,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     for (const prop in grid) {
       if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
         this._eventHandler.subscribe(grid[prop], (e: any, args: any) => {
-          this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
+          return this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
         });
       }
     }
@@ -380,7 +370,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     for (const prop in dataView) {
       if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
         this._eventHandler.subscribe(dataView[prop], (e: any, args: any) => {
-          this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
+          return this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
         });
       }
     }
@@ -452,17 +442,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
       // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
       setTimeout(async () => {
+        // keep start time & end timestamps & return it after process execution
+        const startTime = new Date();
+
         if (backendApi.preProcess) {
           backendApi.preProcess();
         }
 
-        // keep start time & end timestamps & return it after process execution
-        const startTime = new Date();
-
         // the process could be an Observable (like HttpClient) or a Promise
         // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-        const processResult = await castToPromise(observableOrPromise);
-
+        const processResult: GraphqlResult | any = await castToPromise(observableOrPromise);
         const endTime = new Date();
 
         // define what our internal Post Process callback, only available for GraphQL Service for now
@@ -473,11 +462,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
         // send the response process to the postProcess callback
         if (backendApi.postProcess) {
+          const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
           if (processResult instanceof Object) {
-            processResult.timestamps = {
+            processResult.statistics = {
               startTime,
               endTime,
               executionTime: endTime.valueOf() - startTime.valueOf(),
+              totalItemCount: this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems
             };
           }
           backendApi.postProcess(processResult);
@@ -521,7 +512,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     return $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
   }
 
+  /**
+   * On a Pagination changed, we will trigger a Grid State changed with the new pagination info
+   * Also if we use Row Selection, we need to reset them to nothing selected
+   */
   paginationChanged(pagination: Pagination) {
+    if (this.gridOptions.enableRowSelection) {
+      this.gridService.setSelectedRows([]);
+    }
+
     this.gridStateService.onGridStateChanged.next({
       change: { newValues: pagination, type: GridStateType.pagination },
       gridState: this.gridStateService.getCurrentGridState()
@@ -562,8 +561,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         }
         this.gridPaginationOptions = this.mergeGridOptions(this.gridOptions);
       }
+
+      // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
       if (this.grid &&  this.gridOptions.enableAutoResize) {
-        // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
         this.resizer.resizeGrid(10, { height: this.gridHeight, width: this.gridWidth });
       }
     }
@@ -598,11 +598,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     return isShowing;
   }
 
-  private dispatchCustomEvent(eventName: string, data?: any, isBubbling: boolean = true) {
-    const eventInit: CustomEventInit = { bubbles: isBubbling };
+  private dispatchCustomEvent(eventName: string, data?: any, isBubbling: boolean = true, isCancelable: boolean = true) {
+    const eventInit: CustomEventInit = { bubbles: isBubbling, cancelable: isCancelable };
     if (data) {
       eventInit.detail = data;
     }
-    this.customElm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
+    return this.elm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
   }
 }

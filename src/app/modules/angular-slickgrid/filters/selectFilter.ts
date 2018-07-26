@@ -13,7 +13,6 @@ import { Injectable } from '@angular/core';
 // using external non-typed js libraries
 declare var $: any;
 
-@Injectable()
 export class SelectFilter implements Filter {
   private _clearFilterTriggered = false;
   $filterElm: any;

@@ -18,7 +18,6 @@ const DEFAULT_MIN_VALUE = 0;
 const DEFAULT_MAX_VALUE = 100;
 const DEFAULT_STEP = 1;
 
-@Injectable()
 export class CompoundSliderFilter implements Filter {
   private _clearFilterTriggered = false;
   private _elementRangeInputId: string;

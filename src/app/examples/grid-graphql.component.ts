@@ -13,7 +13,8 @@ import {
   GridOption,
   GridStateChange,
   OperatorType,
-  SortDirection
+  SortDirection,
+  Statistic
 } from './../modules/angular-slickgrid';
 
 const defaultPageSize = 20;
@@ -44,6 +45,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset = [];
+  statistics: Statistic;
 
   graphqlQuery = '';
   processing = true;
@@ -143,7 +145,10 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         // onInit: (query) => this.getCustomerApiCall(query)
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
-        postProcess: (result: GraphqlResult) => this.displaySpinner(false)
+        postProcess: (result: GraphqlResult) => {
+          this.statistics = result.statistics;
+          this.displaySpinner(false);
+        }
       }
     };
   }

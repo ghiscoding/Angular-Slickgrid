@@ -5,6 +5,8 @@ export interface AngularGridInstance {
     dataView: any;
     /** Slick Grid object */
     slickGrid: any;
+    /** Destroy the grid and optionally empty the DOM element grid container as well */
+    destroy: (emptyDomElementContainer?: boolean) => void;
     /** Backend Service, when available */
     backendService?: BackendService;
     /** Plugin (and Control) Service */

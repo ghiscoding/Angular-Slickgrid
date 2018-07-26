@@ -10,7 +10,6 @@ require('flatpickr');
 // using external non-typed js libraries
 declare var $: any;
 
-@Injectable()
 export class CompoundDateFilter implements Filter {
   private _clearFilterTriggered = false;
   private $filterElm: any;

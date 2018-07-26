@@ -1,6 +1,6 @@
 import { CustomInputFilter } from './custom-inputFilter';
 import { Component, OnInit } from '@angular/core';
-import { AngularGridInstance, Column, FieldType, Filters, Formatters, GridOption, GridStateChange } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, FieldType, Filters, Formatters, GridOption, GridStateChange, Statistic } from './../modules/angular-slickgrid';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs/Subject';
 
@@ -37,6 +37,7 @@ export class GridClientSideComponent implements OnInit {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
+  statistics: Statistic;
 
   constructor(private translate: TranslateService) {}
 
@@ -203,5 +204,17 @@ export class GridClientSideComponent implements OnInit {
   /** Save current Filters, Sorters in LocaleStorage or DB */
   saveCurrentGridState(grid) {
     console.log('Client sample, last Grid State:: ', this.angularGrid.gridStateService.getCurrentGridState());
+  }
+
+  refreshStatistics(e, args) {
+    if (args && args.current > 0) {
+      setTimeout(() => {
+        this.statistics = {
+          startTime: new Date(),
+          itemCount: args && args.current,
+          totalItemCount: this.dataset.length
+        };
+      });
+    }
   }
 }

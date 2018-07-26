@@ -3,7 +3,7 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
-import { Injectable, Inject, Injector, Component, EventEmitter, Input, Output, ElementRef, ViewChild, NgModule } from '@angular/core';
+import { Injectable, Component, EventEmitter, Input, Output, Inject, ElementRef, NgModule } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { __awaiter } from 'tslib';
 import { Subject } from 'rxjs/Subject';
@@ -1199,6 +1199,7 @@ class CompoundDateFilter {
     clear() {
         if (this.flatInstance && this.$selectOperatorElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             this.$selectOperatorElm.val(0);
             this.flatInstance.clear();
         }
@@ -1376,13 +1377,6 @@ class CompoundDateFilter {
         }
     }
 }
-CompoundDateFilter.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-CompoundDateFilter.ctorParameters = () => [
-    { type: TranslateService, },
-];
 
 /**
  * @fileoverview added by tsickle
@@ -1448,6 +1442,7 @@ class CompoundInputFilter {
     clear() {
         if (this.$filterElm && this.$selectOperatorElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val('');
             this.onTriggerEvent(null);
@@ -1580,13 +1575,6 @@ class CompoundInputFilter {
         }
     }
 }
-CompoundInputFilter.decorators = [
-    { type: Inject, args: [TranslateService,] },
-];
-/** @nocollapse */
-CompoundInputFilter.ctorParameters = () => [
-    { type: TranslateService, },
-];
 
 /**
  * @fileoverview added by tsickle
@@ -1680,6 +1668,7 @@ class CompoundSliderFilter {
     clear() {
         if (this.$filterElm && this.$selectOperatorElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             const /** @type {?} */ clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val(clearedValue);
@@ -1826,11 +1815,6 @@ class CompoundSliderFilter {
         }
     }
 }
-CompoundSliderFilter.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-CompoundSliderFilter.ctorParameters = () => [];
 
 /**
  * @fileoverview added by tsickle
@@ -1891,6 +1875,7 @@ class InputFilter {
     clear() {
         if (this.$filterElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             this.$filterElm.val('');
             this.$filterElm.trigger('keyup');
         }
@@ -2048,6 +2033,7 @@ class MultipleSelectFilter {
             // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
             this.$filterElm.multipleSelect('setSelects', []);
             this.$filterElm.removeClass('filled');
+            this.searchTerms = [];
             this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
         }
     }
@@ -2136,14 +2122,6 @@ class MultipleSelectFilter {
         return -1;
     }
 }
-MultipleSelectFilter.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-MultipleSelectFilter.ctorParameters = () => [
-    { type: TranslateService, },
-    { type: CollectionService, },
-];
 
 /**
  * @fileoverview added by tsickle
@@ -2204,6 +2182,7 @@ class SelectFilter {
     clear() {
         if (this.$filterElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             this.$filterElm.val('');
             this.$filterElm.trigger('change');
         }
@@ -2270,13 +2249,6 @@ class SelectFilter {
         return $filterElm;
     }
 }
-SelectFilter.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-SelectFilter.ctorParameters = () => [
-    { type: TranslateService, },
-];
 
 /**
  * @fileoverview added by tsickle
@@ -2375,6 +2347,7 @@ class SingleSelectFilter {
             // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
             this.$filterElm.multipleSelect('setSelects', []);
             this.$filterElm.removeClass('filled');
+            this.searchTerms = [];
             this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
         }
     }
@@ -2447,14 +2420,6 @@ class SingleSelectFilter {
         this.$filterElm = this.$filterElm.multipleSelect(options);
     }
 }
-SingleSelectFilter.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-SingleSelectFilter.ctorParameters = () => [
-    { type: TranslateService, },
-    { type: CollectionService, },
-];
 
 /**
  * @fileoverview added by tsickle
@@ -2541,6 +2506,7 @@ class SliderFilter {
     clear() {
         if (this.$filterElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             const /** @type {?} */ clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE$1;
             this.$filterElm.children('input').val(clearedValue);
             this.$filterElm.children('div.input-group-addon.input-group-append').children().html(clearedValue);
@@ -2758,13 +2724,11 @@ class SlickgridConfig {
  */
 class FilterFactory {
     /**
-     * @param {?} injector
      * @param {?} config
      * @param {?} translate
      * @param {?} collectionService
      */
-    constructor(injector, config, translate, collectionService) {
-        this.injector = injector;
+    constructor(config, translate, collectionService) {
         this.config = config;
         this.translate = translate;
         this.collectionService = collectionService;
@@ -2777,56 +2741,13 @@ class FilterFactory {
     createFilter(columnFilter) {
         let /** @type {?} */ filter;
         if (columnFilter && columnFilter.model) {
-            // the model either needs to be retrieved or is already instantiated
-            // filter = typeof columnFilter.model === 'function' ? this.injector.get(columnFilter.model) : columnFilter.model;
-            const /** @type {?} */ filterInstance = columnFilter.model;
-            const /** @type {?} */ filterName = typeof columnFilter.model === 'function' ? filterInstance.name : '';
-            /*
-                  if (filterName) {
-                    switch (filterName) {
-                      case 'InputFilter':
-                        filter = new Filters.input();
-                        break;
-                      case 'SelectFilter':
-                        filter = new Filters.select(this.translate);
-                        break;
-                      case 'MultipleSelectFilter':
-                        filter = new Filters.multipleSelect(this.translate, this.collectionService);
-                        break;
-                      case 'SingleSelectFilter':
-                        filter = new Filters.singleSelect(this.translate, this.collectionService);
-                        break;
-                      case 'CompoundDateFilter':
-                        filter = new Filters.compoundDate(this.translate);
-                        break;
-                      case 'CompoundInputFilter':
-                        filter = new Filters.compoundInput(this.translate);
-                        break;
-                      default:
-                        break;
-                    }
-                  } else {
-                    filter = columnFilter.model;
-                  }*/
-            // filter = typeof columnFilter.model === 'function' ? this.injector.get(this.translate, this.collectionService) : columnFilter.model;
             filter = typeof columnFilter.model === 'function' ? new columnFilter.model(this.translate, this.collectionService) : columnFilter.model;
         }
         // fallback to the default filter
         if (!filter && this._options.defaultFilter) {
-            // filter = this.injector.get(this._options.defaultFilter);
             filter = new this._options.defaultFilter(this.translate, this.collectionService);
         }
         return filter;
-    }
-    /**
-     * @param {?} service
-     * @return {?}
-     */
-    createInjector(service) {
-        const /** @type {?} */ injector = Injector.create([{ provide: service, deps: [TranslateService] }]);
-        // let injector = ReflectiveInjector.resolveAndCreate([service]);
-        // injector = injector.resolveAndCreateChild([service]);
-        return injector.get(service);
     }
 }
 FilterFactory.decorators = [
@@ -2834,7 +2755,6 @@ FilterFactory.decorators = [
 ];
 /** @nocollapse */
 FilterFactory.ctorParameters = () => [
-    { type: Injector, },
     { type: SlickgridConfig, },
     { type: TranslateService, },
     { type: CollectionService, },
@@ -2906,6 +2826,8 @@ class FilterService {
             if (!backendApi || !backendApi.process || !backendApi.service) {
                 throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
             }
+            // keep start time & end timestamps & return it after process execution
+            const /** @type {?} */ startTime = new Date();
             // run a preProcess callback if defined
             if (backendApi.preProcess) {
                 backendApi.preProcess();
@@ -2920,12 +2842,21 @@ class FilterService {
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
             const /** @type {?} */ observableOrPromise = backendApi.process(query);
             const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+            const /** @type {?} */ endTime = new Date();
             // from the result, call our internal post process to update the Dataset and Pagination info
             if (processResult && backendApi.internalPostProcess) {
                 backendApi.internalPostProcess(processResult);
             }
             // send the response process to the postProcess callback
             if (backendApi.postProcess !== undefined) {
+                if (processResult instanceof Object) {
+                    processResult.statistics = {
+                        startTime,
+                        endTime,
+                        executionTime: endTime.valueOf() - startTime.valueOf(),
+                        totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                    };
+                }
                 backendApi.postProcess(processResult);
             }
         });
@@ -3676,6 +3607,8 @@ class SortService {
             if (!backendApi || !backendApi.process || !backendApi.service) {
                 throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
             }
+            // keep start time & end timestamps & return it after process execution
+            const /** @type {?} */ startTime = new Date();
             if (backendApi.preProcess) {
                 backendApi.preProcess();
             }
@@ -3685,12 +3618,21 @@ class SortService {
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
             const /** @type {?} */ observableOrPromise = backendApi.process(query);
             const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+            const /** @type {?} */ endTime = new Date();
             // from the result, call our internal post process to update the Dataset and Pagination info
             if (processResult && backendApi.internalPostProcess) {
                 backendApi.internalPostProcess(processResult);
             }
             // send the response process to the postProcess callback
             if (backendApi.postProcess) {
+                if (processResult instanceof Object) {
+                    processResult.statistics = {
+                        startTime,
+                        endTime,
+                        executionTime: endTime.valueOf() - startTime.valueOf(),
+                        totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                    };
+                }
                 backendApi.postProcess(processResult);
             }
         });
@@ -3917,6 +3859,14 @@ class ControlAndPluginService {
      */
     get _gridOptions() {
         return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+    }
+    /**
+     * Setter for the Grid Options pulled through the Grid Object
+     * @param {?} gridOptions
+     * @return {?}
+     */
+    set _gridOptions(gridOptions) {
+        this._gridOptions = gridOptions;
     }
     /**
      * Getter for the Column Definitions pulled through the Grid Object
@@ -4532,10 +4482,15 @@ class ControlAndPluginService {
     }
     /**
      * Refresh the dataset through the Backend Service
+     * @param {?=} gridOptions
      * @return {?}
      */
-    refreshBackendDataset() {
-        let /** @type {?} */ query;
+    refreshBackendDataset(gridOptions) {
+        let /** @type {?} */ query = '';
+        // user can pass new set of grid options which will override current ones
+        if (gridOptions) {
+            this._gridOptions = Object.assign({}, this._gridOptions, gridOptions);
+        }
         const /** @type {?} */ backendApi = this._gridOptions.backendServiceApi;
         if (!backendApi || !backendApi.service || !backendApi.process) {
             throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
@@ -4544,6 +4499,8 @@ class ControlAndPluginService {
             query = backendApi.service.buildQuery();
         }
         if (query && query !== '') {
+            // keep start time & end timestamps & return it after process execution
+            const /** @type {?} */ startTime = new Date();
             if (backendApi.preProcess) {
                 backendApi.preProcess();
             }
@@ -4551,12 +4508,21 @@ class ControlAndPluginService {
             // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
             const /** @type {?} */ observableOrPromise = backendApi.process(query);
             castToPromise(observableOrPromise).then((processResult) => {
+                const /** @type {?} */ endTime = new Date();
                 // from the result, call our internal post process to update the Dataset and Pagination info
                 if (processResult && backendApi.internalPostProcess) {
                     backendApi.internalPostProcess(processResult);
                 }
                 // send the response process to the postProcess callback
                 if (backendApi.postProcess) {
+                    if (processResult instanceof Object) {
+                        processResult.statistics = {
+                            startTime,
+                            endTime,
+                            executionTime: endTime.valueOf() - startTime.valueOf(),
+                            totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                        };
+                    }
                     backendApi.postProcess(processResult);
                 }
             });
@@ -5736,7 +5702,7 @@ class GridOdataService {
             pageSize: this.odataService.options.top || this.defaultOptions.top
         };
         if (grid && grid.getColumns) {
-            this._columnDefinitions = options["columnDefinitions"] || grid.getColumns();
+            this._columnDefinitions = (options && options["columnDefinitions"]) || grid.getColumns();
             this._columnDefinitions = this._columnDefinitions.filter((column) => !column.excludeFromQuery);
         }
     }
@@ -6495,6 +6461,7 @@ class GridService {
         };
     }
     /**
+     * Get data item by it's row index number
      * @param {?} rowNumber
      * @return {?}
      */
@@ -6565,11 +6532,50 @@ class GridService {
         }
     }
     /**
-     * Get the currently selected rows
+     * Get the Data Item from a grid row index
+     * @param {?} index
+     * @return {?}
+     */
+    getDataItemByRowIndex(index) {
+        if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+            throw new Error('We could not find SlickGrid Grid object');
+        }
+        return this._grid.getDataItem(index);
+    }
+    /**
+     * Get the Data Item from an array of grid row indexes
+     * @param {?} indexes
+     * @return {?}
+     */
+    getDataItemByRowIndexes(indexes) {
+        if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+            throw new Error('We could not find SlickGrid Grid object');
+        }
+        const /** @type {?} */ dataItems = [];
+        if (Array.isArray(indexes)) {
+            indexes.forEach((idx) => {
+                dataItems.push(this._grid.getDataItem(idx));
+            });
+        }
+        return dataItems;
+    }
+    /**
+     * Get the currently selected row indexes
      * @return {?}
      */
     getSelectedRows() {
         return this._grid.getSelectedRows();
+    }
+    /**
+     * Get the currently selected rows item data
+     * @return {?}
+     */
+    getSelectedRowsDataItem() {
+        if (!this._grid || typeof this._grid.getSelectedRows !== 'function') {
+            throw new Error('We could not find SlickGrid Grid object');
+        }
+        const /** @type {?} */ selectedRowIndexes = this._grid.getSelectedRows();
+        return this.getDataItemByRowIndexes(selectedRowIndexes);
     }
     /**
      * Select the selected row by a row index
@@ -6625,7 +6631,7 @@ class GridService {
         }
     }
     /**
-     * Add an item (data item) to the datagrid
+     * Add an item (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
      * @param {?} item
      * @param {?=} shouldHighlightRow do we want to highlight the row after adding item
      * @return {?}
@@ -6643,6 +6649,17 @@ class GridService {
         }
         // refresh dataview & grid
         this._dataView.refresh();
+    }
+    /**
+     * Add item array (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
+     * @param {?} items
+     * @param {?=} shouldHighlightRow do we want to highlight the row after adding item
+     * @return {?}
+     */
+    addItemsToDatagrid(items, shouldHighlightRow = true) {
+        if (Array.isArray(items)) {
+            items.forEach((item) => this.addItemToDatagrid(item, shouldHighlightRow));
+        }
     }
     /**
      * Delete an existing item from the datagrid (dataView)
@@ -6940,43 +6957,46 @@ class ResizerService {
       Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined.
       You can fix this by setting your gridOption to use "enableAutoResize" or create an instance of the ResizerService by calling attachAutoResizeDataGrid()`);
         }
-        // because of the javascript async nature, we might want to delay the resize a little bit
-        delay = delay || 0;
-        clearTimeout(timer$2);
-        timer$2 = setTimeout(() => {
-            // calculate the available sizes with minimum height defined as a constant
-            const /** @type {?} */ availableDimensions = this.calculateGridNewDimensions(this._gridOptions);
-            const /** @type {?} */ gridElm = $(`#${this._gridOptions.gridId}`) || {};
-            const /** @type {?} */ gridContainerElm = $(`#${this._gridOptions.gridContainerId}`) || {};
-            if ((newSizes || availableDimensions) && gridElm.length > 0) {
-                // get the new sizes, if new sizes are passed (not 0), we will use them else use available space
-                // basically if user passes 1 of the dimension, let say he passes just the height,
-                // we will use the height as a fixed height but the width will be resized by it's available space
-                const /** @type {?} */ newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
-                const /** @type {?} */ newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
-                // apply these new height/width to the datagrid
-                gridElm.height(newHeight);
-                gridElm.width(newWidth);
-                gridContainerElm.height(newHeight);
-                gridContainerElm.width(newWidth);
-                // keep last resized dimensions
-                this._lastDimensions = {
-                    height: newHeight,
-                    width: newWidth
-                };
-                if ((this._gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
-                    this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
+        return new Promise((resolve) => {
+            // because of the javascript async nature, we might want to delay the resize a little bit
+            delay = delay || 0;
+            clearTimeout(timer$2);
+            timer$2 = setTimeout(() => {
+                // calculate the available sizes with minimum height defined as a constant
+                const /** @type {?} */ availableDimensions = this.calculateGridNewDimensions(this._gridOptions);
+                const /** @type {?} */ gridElm = $(`#${this._gridOptions.gridId}`) || {};
+                const /** @type {?} */ gridContainerElm = $(`#${this._gridOptions.gridContainerId}`) || {};
+                if ((newSizes || availableDimensions) && gridElm.length > 0) {
+                    // get the new sizes, if new sizes are passed (not 0), we will use them else use available space
+                    // basically if user passes 1 of the dimension, let say he passes just the height,
+                    // we will use the height as a fixed height but the width will be resized by it's available space
+                    const /** @type {?} */ newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
+                    const /** @type {?} */ newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
+                    // apply these new height/width to the datagrid
+                    gridElm.height(newHeight);
+                    gridElm.width(newWidth);
+                    gridContainerElm.height(newHeight);
+                    gridContainerElm.width(newWidth);
+                    // resize the slickgrid canvas on all browser except some IE versions
+                    // exclude all IE below IE11
+                    // IE11 wants to be a better standard (W3C) follower (finally) they even changed their appName output to also have 'Netscape'
+                    if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && this._grid) {
+                        this._grid.resizeCanvas();
+                    }
+                    // also call the grid auto-size columns so that it takes available when going bigger
+                    this._grid.autosizeColumns();
+                    // keep last resized dimensions & resolve them to the Promise
+                    this._lastDimensions = {
+                        height: newHeight,
+                        width: newWidth
+                    };
+                    if ((this._gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
+                        this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
+                    }
+                    resolve(this._lastDimensions);
                 }
-                // resize the slickgrid canvas on all browser except some IE versions
-                // exclude all IE below IE11
-                // IE11 wants to be a better standard (W3C) follower (finally) they even changed their appName output to also have 'Netscape'
-                if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && this._grid) {
-                    this._grid.resizeCanvas();
-                }
-                // also call the grid auto-size columns so that it takes available when going bigger
-                this._grid.autosizeColumns();
-            }
-        }, delay);
+            }, delay);
+        });
     }
 }
 
@@ -8458,13 +8478,6 @@ class SingleSelectEditor {
         }
     }
 }
-SingleSelectEditor.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-SingleSelectEditor.ctorParameters = () => [
-    null,
-];
 
 /**
  * @fileoverview added by tsickle
@@ -8987,14 +9000,19 @@ const deleteIconFormatter = (row, cell, value, columnDef, dataContext) => `<i cl
  * @suppress {checkTypes} checked by tsc
  */
 const dollarColoredBoldFormatter = (row, cell, value, columnDef, dataContext) => {
-    if (isNaN(+value)) {
+    const /** @type {?} */ isNumber = !isNaN(+value);
+    const /** @type {?} */ params = columnDef && columnDef.params || {};
+    const /** @type {?} */ minDecimal = params.minDecimal || 2;
+    const /** @type {?} */ maxDecimal = params.minDecimal || 4;
+    const /** @type {?} */ outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+    if (!isNumber) {
         return '';
     }
     else if (value >= 0) {
-        return `<span style="color:green; font-weight: bold;">$${decimalFormatted(value, 2, 2)}</span>`;
+        return `<span style="color:green; font-weight: bold;">$${outputValue}</span>`;
     }
     else {
-        return `<span style="color:red; font-weight: bold;">$${decimalFormatted(value, 2, 2)}</span>`;
+        return `<span style="color:red; font-weight: bold;">$${outputValue}</span>`;
     }
 };
 
@@ -9003,14 +9021,19 @@ const dollarColoredBoldFormatter = (row, cell, value, columnDef, dataContext) =>
  * @suppress {checkTypes} checked by tsc
  */
 const dollarColoredFormatter = (row, cell, value, columnDef, dataContext) => {
-    if (isNaN(+value)) {
+    const /** @type {?} */ isNumber = !isNaN(+value);
+    const /** @type {?} */ params = columnDef && columnDef.params || {};
+    const /** @type {?} */ minDecimal = params.minDecimal || 2;
+    const /** @type {?} */ maxDecimal = params.minDecimal || 4;
+    const /** @type {?} */ outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+    if (!isNumber) {
         return '';
     }
     else if (value >= 0) {
-        return `<span style="color:green;">$${decimalFormatted(value, 2, 2)}</span>`;
+        return `<span style="color:green;">$${outputValue}</span>`;
     }
     else {
-        return `<span style="color:red;">$${decimalFormatted(value, 2, 2)}</span>`;
+        return `<span style="color:red;">$${outputValue}</span>`;
     }
 };
 
@@ -9018,7 +9041,14 @@ const dollarColoredFormatter = (row, cell, value, columnDef, dataContext) => {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const dollarFormatter = (row, cell, value, columnDef, dataContext) => isNaN(+value) ? '' : `$${decimalFormatted(value, 2, 4)}`;
+const dollarFormatter = (row, cell, value, columnDef, dataContext) => {
+    const /** @type {?} */ isNumber = !isNaN(+value);
+    const /** @type {?} */ params = columnDef && columnDef.params || {};
+    const /** @type {?} */ minDecimal = params.minDecimal || 2;
+    const /** @type {?} */ maxDecimal = params.minDecimal || 4;
+    const /** @type {?} */ outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+    return !isNumber ? '' : `$${outputValue}`;
+};
 
 /**
  * @fileoverview added by tsickle
@@ -9636,11 +9666,9 @@ class SlickPaginationComponent {
     /**
      * Constructor
      * @param {?} filterService
-     * @param {?} sortService
      */
-    constructor(filterService, sortService) {
+    constructor(filterService) {
         this.filterService = filterService;
-        this.sortService = sortService;
         this._isFirstRender = true;
         this.onPaginationChanged = new EventEmitter();
         this.dataFrom = 1;
@@ -9823,6 +9851,8 @@ class SlickPaginationComponent {
             }
             if (backendApi) {
                 const /** @type {?} */ itemsPerPage = +this.itemsPerPage;
+                // keep start time & end timestamps & return it after process execution
+                const /** @type {?} */ startTime = new Date();
                 if (backendApi.preProcess) {
                     backendApi.preProcess();
                 }
@@ -9831,12 +9861,22 @@ class SlickPaginationComponent {
                 // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
                 const /** @type {?} */ observableOrPromise = backendApi.process(query);
                 const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+                const /** @type {?} */ endTime = new Date();
                 // from the result, call our internal post process to update the Dataset and Pagination info
                 if (processResult && backendApi.internalPostProcess) {
                     backendApi.internalPostProcess(processResult);
                 }
                 // send the response process to the postProcess callback
                 if (backendApi.postProcess) {
+                    if (processResult instanceof Object) {
+                        processResult.statistics = {
+                            startTime,
+                            endTime,
+                            executionTime: endTime.valueOf() - startTime.valueOf(),
+                            itemCount: this.totalItems,
+                            totalItemCount: this.totalItems
+                        };
+                    }
                     backendApi.postProcess(processResult);
                 }
             }
@@ -9912,7 +9952,6 @@ SlickPaginationComponent.decorators = [
 /** @nocollapse */
 SlickPaginationComponent.ctorParameters = () => [
     { type: FilterService, },
-    { type: SortService, },
 ];
 SlickPaginationComponent.propDecorators = {
     "onPaginationChanged": [{ type: Output },],
@@ -9928,6 +9967,7 @@ const slickgridEventPrefix = 'sg';
 class AngularSlickgridComponent {
     /**
      * @param {?} controlAndPluginService
+     * @param {?} elm
      * @param {?} exportService
      * @param {?} filterService
      * @param {?} gridService
@@ -9939,8 +9979,9 @@ class AngularSlickgridComponent {
      * @param {?} translate
      * @param {?} forRootConfig
      */
-    constructor(controlAndPluginService, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
+    constructor(controlAndPluginService, elm, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
         this.controlAndPluginService = controlAndPluginService;
+        this.elm = elm;
         this.exportService = exportService;
         this.filterService = filterService;
         this.gridService = gridService;
@@ -10016,9 +10057,10 @@ class AngularSlickgridComponent {
         this.onAfterGridDestroyed.emit(true);
     }
     /**
+     * @param {?=} emptyDomElementContainer
      * @return {?}
      */
-    destroy() {
+    destroy(emptyDomElementContainer = false) {
         this._dataView = [];
         this.gridOptions = {};
         this._eventHandler.unsubscribeAll();
@@ -10030,6 +10072,9 @@ class AngularSlickgridComponent {
         this.resizer.dispose();
         this.sortService.dispose();
         this.grid.destroy();
+        if (emptyDomElementContainer) {
+            $(this.gridOptions.gridContainerId).empty();
+        }
         // also unsubscribe all RxJS subscriptions
         this.subscriptions.forEach((subscription) => {
             if (subscription && subscription.unsubscribe) {
@@ -10108,6 +10153,8 @@ class AngularSlickgridComponent {
             // Slick Grid & DataView objects
             dataView: this._dataView,
             slickGrid: this.grid,
+            // public methods
+            destroy: this.destroy.bind(this),
             // return all available Services (non-singleton)
             backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
             exportService: this.exportService,
@@ -10200,7 +10247,7 @@ class AngularSlickgridComponent {
         for (const /** @type {?} */ prop in grid) {
             if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this._eventHandler.subscribe(grid[prop], (e, args) => {
-                    this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
+                    return this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
                 });
             }
         }
@@ -10208,7 +10255,7 @@ class AngularSlickgridComponent {
         for (const /** @type {?} */ prop in dataView) {
             if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this._eventHandler.subscribe(dataView[prop], (e, args) => {
-                    this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
+                    return this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
                 });
             }
         }
@@ -10273,12 +10320,15 @@ class AngularSlickgridComponent {
             const /** @type {?} */ observableOrPromise = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
             // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
             setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+                // keep start time & end timestamps & return it after process execution
+                const /** @type {?} */ startTime = new Date();
                 if (backendApi.preProcess) {
                     backendApi.preProcess();
                 }
                 // the process could be an Observable (like HttpClient) or a Promise
                 // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
                 const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+                const /** @type {?} */ endTime = new Date();
                 // define what our internal Post Process callback, only available for GraphQL Service for now
                 // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
                 if (processResult && backendApi && backendApi.service instanceof GraphqlService && backendApi.internalPostProcess) {
@@ -10286,6 +10336,15 @@ class AngularSlickgridComponent {
                 }
                 // send the response process to the postProcess callback
                 if (backendApi.postProcess) {
+                    const /** @type {?} */ datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
+                    if (processResult instanceof Object) {
+                        processResult.statistics = {
+                            startTime,
+                            endTime,
+                            executionTime: endTime.valueOf() - startTime.valueOf(),
+                            totalItemCount: this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems
+                        };
+                    }
                     backendApi.postProcess(processResult);
                 }
             }));
@@ -10338,10 +10397,15 @@ class AngularSlickgridComponent {
         return $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
     }
     /**
+     * On a Pagination changed, we will trigger a Grid State changed with the new pagination info
+     * Also if we use Row Selection, we need to reset them to nothing selected
      * @param {?} pagination
      * @return {?}
      */
     paginationChanged(pagination) {
+        if (this.gridOptions.enableRowSelection) {
+            this.gridService.setSelectedRows([]);
+        }
         this.gridStateService.onGridStateChanged.next({
             change: { newValues: pagination, type: GridStateType.pagination },
             gridState: this.gridStateService.getCurrentGridState()
@@ -10380,8 +10444,8 @@ class AngularSlickgridComponent {
                 }
                 this.gridPaginationOptions = this.mergeGridOptions(this.gridOptions);
             }
+            // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
             if (this.grid && this.gridOptions.enableAutoResize) {
-                // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
                 this.resizer.resizeGrid(10, { height: this.gridHeight, width: this.gridWidth });
             }
         }
@@ -10424,21 +10488,22 @@ class AngularSlickgridComponent {
      * @param {?} eventName
      * @param {?=} data
      * @param {?=} isBubbling
+     * @param {?=} isCancelable
      * @return {?}
      */
-    dispatchCustomEvent(eventName, data, isBubbling = true) {
-        const /** @type {?} */ eventInit = { bubbles: isBubbling };
+    dispatchCustomEvent(eventName, data, isBubbling = true, isCancelable = true) {
+        const /** @type {?} */ eventInit = { bubbles: isBubbling, cancelable: isCancelable };
         if (data) {
             eventInit.detail = data;
         }
-        this.customElm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
+        return this.elm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
     }
 }
 AngularSlickgridComponent.decorators = [
     { type: Injectable },
     { type: Component, args: [{
                 selector: 'angular-slickgrid',
-                template: `<div id="slickGridContainer-{{gridId}}" #customElm class="gridPane" [style.width]="gridWidthString">
+                template: `<div id="slickGridContainer-{{gridId}}" class="gridPane" [style.width]="gridWidthString">
     <div attr.id='{{gridId}}' class="slickgrid-container" style="width: 100%" [style.height]="gridHeightString">
     </div>
     <slick-pagination id="slickPagingContainer-{{gridId}}"
@@ -10449,12 +10514,6 @@ AngularSlickgridComponent.decorators = [
 </div>
 `,
                 providers: [
-                    CompoundDateFilter,
-                    CompoundInputFilter,
-                    InputFilter,
-                    MultipleSelectFilter,
-                    SingleSelectFilter,
-                    SelectFilter,
                     ControlAndPluginService,
                     ExportService,
                     FilterFactory,
@@ -10473,6 +10532,7 @@ AngularSlickgridComponent.decorators = [
 /** @nocollapse */
 AngularSlickgridComponent.ctorParameters = () => [
     { type: ControlAndPluginService, },
+    { type: ElementRef, },
     { type: ExportService, },
     { type: FilterService, },
     { type: GridService, },
@@ -10485,7 +10545,6 @@ AngularSlickgridComponent.ctorParameters = () => [
     { type: undefined, decorators: [{ type: Inject, args: ['config',] },] },
 ];
 AngularSlickgridComponent.propDecorators = {
-    "customElm": [{ type: ViewChild, args: ['customElm', { read: ElementRef },] },],
     "onAngularGridCreated": [{ type: Output },],
     "onDataviewCreated": [{ type: Output },],
     "onGridCreated": [{ type: Output },],

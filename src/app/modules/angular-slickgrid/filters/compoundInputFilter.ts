@@ -6,7 +6,6 @@ import { Column, Filter, FilterArguments, FilterCallback, GridOption, OperatorSt
 // using external non-typed js libraries
 declare var $: any;
 
-@Inject(TranslateService)
 export class CompoundInputFilter implements Filter {
   private _clearFilterTriggered = false;
   private $filterElm: any;

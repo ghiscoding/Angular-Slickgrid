@@ -865,6 +865,7 @@ var CompoundDateFilter = /** @class */ (function () {
     CompoundDateFilter.prototype.clear = function () {
         if (this.flatInstance && this.$selectOperatorElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             this.$selectOperatorElm.val(0);
             this.flatInstance.clear();
         }
@@ -988,12 +989,6 @@ var CompoundDateFilter = /** @class */ (function () {
     };
     return CompoundDateFilter;
 }());
-CompoundDateFilter.decorators = [
-    { type: core.Injectable },
-];
-CompoundDateFilter.ctorParameters = function () { return [
-    { type: core$1.TranslateService, },
-]; };
 var CompoundInputFilter = /** @class */ (function () {
     function CompoundInputFilter(translate) {
         this.translate = translate;
@@ -1035,6 +1030,7 @@ var CompoundInputFilter = /** @class */ (function () {
     CompoundInputFilter.prototype.clear = function () {
         if (this.$filterElm && this.$selectOperatorElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val('');
             this.onTriggerEvent(null);
@@ -1129,12 +1125,6 @@ var CompoundInputFilter = /** @class */ (function () {
     };
     return CompoundInputFilter;
 }());
-CompoundInputFilter.decorators = [
-    { type: core.Inject, args: [core$1.TranslateService,] },
-];
-CompoundInputFilter.ctorParameters = function () { return [
-    { type: core$1.TranslateService, },
-]; };
 var DEFAULT_MIN_VALUE = 0;
 var DEFAULT_MAX_VALUE = 100;
 var DEFAULT_STEP = 1;
@@ -1204,6 +1194,7 @@ var CompoundSliderFilter = /** @class */ (function () {
     CompoundSliderFilter.prototype.clear = function () {
         if (this.$filterElm && this.$selectOperatorElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             var clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
             this.$selectOperatorElm.val(0);
             this.$filterInputElm.val(clearedValue);
@@ -1301,10 +1292,6 @@ var CompoundSliderFilter = /** @class */ (function () {
     };
     return CompoundSliderFilter;
 }());
-CompoundSliderFilter.decorators = [
-    { type: core.Injectable },
-];
-CompoundSliderFilter.ctorParameters = function () { return []; };
 var InputFilter = /** @class */ (function () {
     function InputFilter() {
         this._clearFilterTriggered = false;
@@ -1348,6 +1335,7 @@ var InputFilter = /** @class */ (function () {
     InputFilter.prototype.clear = function () {
         if (this.$filterElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             this.$filterElm.val('');
             this.$filterElm.trigger('keyup');
         }
@@ -1455,6 +1443,7 @@ var MultipleSelectFilter = /** @class */ (function () {
         if (this.$filterElm && this.$filterElm.multipleSelect) {
             this.$filterElm.multipleSelect('setSelects', []);
             this.$filterElm.removeClass('filled');
+            this.searchTerms = [];
             this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
         }
     };
@@ -1515,13 +1504,6 @@ var MultipleSelectFilter = /** @class */ (function () {
     };
     return MultipleSelectFilter;
 }());
-MultipleSelectFilter.decorators = [
-    { type: core.Injectable },
-];
-MultipleSelectFilter.ctorParameters = function () { return [
-    { type: core$1.TranslateService, },
-    { type: CollectionService, },
-]; };
 var SelectFilter = /** @class */ (function () {
     function SelectFilter(translate) {
         this.translate = translate;
@@ -1562,6 +1544,7 @@ var SelectFilter = /** @class */ (function () {
     SelectFilter.prototype.clear = function () {
         if (this.$filterElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             this.$filterElm.val('');
             this.$filterElm.trigger('change');
         }
@@ -1610,12 +1593,6 @@ var SelectFilter = /** @class */ (function () {
     };
     return SelectFilter;
 }());
-SelectFilter.decorators = [
-    { type: core.Injectable },
-];
-SelectFilter.ctorParameters = function () { return [
-    { type: core$1.TranslateService, },
-]; };
 var SingleSelectFilter = /** @class */ (function () {
     function SingleSelectFilter(translate, collectionService) {
         var _this = this;
@@ -1689,6 +1666,7 @@ var SingleSelectFilter = /** @class */ (function () {
         if (this.$filterElm && this.$filterElm.multipleSelect) {
             this.$filterElm.multipleSelect('setSelects', []);
             this.$filterElm.removeClass('filled');
+            this.searchTerms = [];
             this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
         }
     };
@@ -1737,13 +1715,6 @@ var SingleSelectFilter = /** @class */ (function () {
     };
     return SingleSelectFilter;
 }());
-SingleSelectFilter.decorators = [
-    { type: core.Injectable },
-];
-SingleSelectFilter.ctorParameters = function () { return [
-    { type: core$1.TranslateService, },
-    { type: CollectionService, },
-]; };
 var DEFAULT_MIN_VALUE$1 = 0;
 var DEFAULT_MAX_VALUE$1 = 100;
 var DEFAULT_STEP$1 = 1;
@@ -1810,6 +1781,7 @@ var SliderFilter = /** @class */ (function () {
     SliderFilter.prototype.clear = function () {
         if (this.$filterElm) {
             this._clearFilterTriggered = true;
+            this.searchTerms = [];
             var clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE$1;
             this.$filterElm.children('input').val(clearedValue);
             this.$filterElm.children('div.input-group-addon.input-group-append').children().html(clearedValue);
@@ -1960,8 +1932,7 @@ var SlickgridConfig = /** @class */ (function () {
     return SlickgridConfig;
 }());
 var FilterFactory = /** @class */ (function () {
-    function FilterFactory(injector, config, translate, collectionService) {
-        this.injector = injector;
+    function FilterFactory(config, translate, collectionService) {
         this.config = config;
         this.translate = translate;
         this.collectionService = collectionService;
@@ -1970,8 +1941,6 @@ var FilterFactory = /** @class */ (function () {
     FilterFactory.prototype.createFilter = function (columnFilter) {
         var filter;
         if (columnFilter && columnFilter.model) {
-            var filterInstance = columnFilter.model;
-            var filterName = typeof columnFilter.model === 'function' ? filterInstance.name : '';
             filter = typeof columnFilter.model === 'function' ? new columnFilter.model(this.translate, this.collectionService) : columnFilter.model;
         }
         if (!filter && this._options.defaultFilter) {
@@ -1979,17 +1948,12 @@ var FilterFactory = /** @class */ (function () {
         }
         return filter;
     };
-    FilterFactory.prototype.createInjector = function (service) {
-        var injector = core.Injector.create([{ provide: service, deps: [core$1.TranslateService] }]);
-        return injector.get(service);
-    };
     return FilterFactory;
 }());
 FilterFactory.decorators = [
     { type: core.Injectable },
 ];
 FilterFactory.ctorParameters = function () { return [
-    { type: core.Injector, },
     { type: SlickgridConfig, },
     { type: core$1.TranslateService, },
     { type: CollectionService, },
@@ -2031,7 +1995,7 @@ var FilterService = /** @class */ (function () {
     };
     FilterService.prototype.attachBackendOnFilterSubscribe = function (event, args) {
         return __awaiter(this, void 0, void 0, function () {
-            var backendApi, query, observableOrPromise, processResult;
+            var backendApi, startTime, query, observableOrPromise, processResult, endTime;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -2042,6 +2006,7 @@ var FilterService = /** @class */ (function () {
                         if (!backendApi || !backendApi.process || !backendApi.service) {
                             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
                         }
+                        startTime = new Date();
                         if (backendApi.preProcess) {
                             backendApi.preProcess();
                         }
@@ -2055,10 +2020,19 @@ var FilterService = /** @class */ (function () {
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 2:
                         processResult = _a.sent();
+                        endTime = new Date();
                         if (processResult && backendApi.internalPostProcess) {
                             backendApi.internalPostProcess(processResult);
                         }
                         if (backendApi.postProcess !== undefined) {
+                            if (processResult instanceof Object) {
+                                processResult.statistics = {
+                                    startTime: startTime,
+                                    endTime: endTime,
+                                    executionTime: endTime.valueOf() - startTime.valueOf(),
+                                    totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                                };
+                            }
                             backendApi.postProcess(processResult);
                         }
                         return [2 /*return*/];
@@ -2601,7 +2575,7 @@ var SortService = /** @class */ (function () {
     };
     SortService.prototype.onBackendSortChanged = function (event, args) {
         return __awaiter(this, void 0, void 0, function () {
-            var gridOptions, backendApi, query, observableOrPromise, processResult;
+            var gridOptions, backendApi, startTime, query, observableOrPromise, processResult, endTime;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -2613,6 +2587,7 @@ var SortService = /** @class */ (function () {
                         if (!backendApi || !backendApi.process || !backendApi.service) {
                             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
                         }
+                        startTime = new Date();
                         if (backendApi.preProcess) {
                             backendApi.preProcess();
                         }
@@ -2622,10 +2597,19 @@ var SortService = /** @class */ (function () {
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 1:
                         processResult = _a.sent();
+                        endTime = new Date();
                         if (processResult && backendApi.internalPostProcess) {
                             backendApi.internalPostProcess(processResult);
                         }
                         if (backendApi.postProcess) {
+                            if (processResult instanceof Object) {
+                                processResult.statistics = {
+                                    startTime: startTime,
+                                    endTime: endTime,
+                                    executionTime: endTime.valueOf() - startTime.valueOf(),
+                                    totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                                };
+                            }
                             backendApi.postProcess(processResult);
                         }
                         return [2 /*return*/];
@@ -2789,6 +2773,9 @@ var ControlAndPluginService = /** @class */ (function () {
     Object.defineProperty(ControlAndPluginService.prototype, "_gridOptions", {
         get: function () {
             return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+        },
+        set: function (gridOptions) {
+            this._gridOptions = gridOptions;
         },
         enumerable: true,
         configurable: true
@@ -3268,8 +3255,12 @@ var ControlAndPluginService = /** @class */ (function () {
             }
         }
     };
-    ControlAndPluginService.prototype.refreshBackendDataset = function () {
-        var query;
+    ControlAndPluginService.prototype.refreshBackendDataset = function (gridOptions) {
+        var _this = this;
+        var query = '';
+        if (gridOptions) {
+            this._gridOptions = Object.assign({}, this._gridOptions, gridOptions);
+        }
         var backendApi = this._gridOptions.backendServiceApi;
         if (!backendApi || !backendApi.service || !backendApi.process) {
             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
@@ -3278,15 +3269,25 @@ var ControlAndPluginService = /** @class */ (function () {
             query = backendApi.service.buildQuery();
         }
         if (query && query !== '') {
+            var startTime_1 = new Date();
             if (backendApi.preProcess) {
                 backendApi.preProcess();
             }
             var observableOrPromise = backendApi.process(query);
             castToPromise(observableOrPromise).then(function (processResult) {
+                var endTime = new Date();
                 if (processResult && backendApi.internalPostProcess) {
                     backendApi.internalPostProcess(processResult);
                 }
                 if (backendApi.postProcess) {
+                    if (processResult instanceof Object) {
+                        processResult.statistics = {
+                            startTime: startTime_1,
+                            endTime: endTime,
+                            executionTime: endTime.valueOf() - startTime_1.valueOf(),
+                            totalItemCount: _this._gridOptions && _this._gridOptions.pagination && _this._gridOptions.pagination.totalItems
+                        };
+                    }
                     backendApi.postProcess(processResult);
                 }
             });
@@ -4181,7 +4182,7 @@ var GridOdataService = /** @class */ (function () {
             pageSize: this.odataService.options.top || this.defaultOptions.top
         };
         if (grid && grid.getColumns) {
-            this._columnDefinitions = options["columnDefinitions"] || grid.getColumns();
+            this._columnDefinitions = (options && options["columnDefinitions"]) || grid.getColumns();
             this._columnDefinitions = this._columnDefinitions.filter(function (column) { return !column.excludeFromQuery; });
         }
     };
@@ -4777,8 +4778,34 @@ var GridService = /** @class */ (function () {
             }, fadeDelay + 10);
         }
     };
+    GridService.prototype.getDataItemByRowIndex = function (index) {
+        if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+            throw new Error('We could not find SlickGrid Grid object');
+        }
+        return this._grid.getDataItem(index);
+    };
+    GridService.prototype.getDataItemByRowIndexes = function (indexes) {
+        var _this = this;
+        if (!this._grid || typeof this._grid.getDataItem !== 'function') {
+            throw new Error('We could not find SlickGrid Grid object');
+        }
+        var dataItems = [];
+        if (Array.isArray(indexes)) {
+            indexes.forEach(function (idx) {
+                dataItems.push(_this._grid.getDataItem(idx));
+            });
+        }
+        return dataItems;
+    };
     GridService.prototype.getSelectedRows = function () {
         return this._grid.getSelectedRows();
+    };
+    GridService.prototype.getSelectedRowsDataItem = function () {
+        if (!this._grid || typeof this._grid.getSelectedRows !== 'function') {
+            throw new Error('We could not find SlickGrid Grid object');
+        }
+        var selectedRowIndexes = this._grid.getSelectedRows();
+        return this.getDataItemByRowIndexes(selectedRowIndexes);
     };
     GridService.prototype.setSelectedRow = function (rowIndex) {
         this._grid.setSelectedRows([rowIndex]);
@@ -4821,6 +4848,13 @@ var GridService = /** @class */ (function () {
             this.highlightRow(0, 1500);
         }
         this._dataView.refresh();
+    };
+    GridService.prototype.addItemsToDatagrid = function (items, shouldHighlightRow) {
+        var _this = this;
+        if (shouldHighlightRow === void 0) { shouldHighlightRow = true; }
+        if (Array.isArray(items)) {
+            items.forEach(function (item) { return _this.addItemToDatagrid(item, shouldHighlightRow); });
+        }
     };
     GridService.prototype.deleteDataGridItem = function (item) {
         if (!item || !item.hasOwnProperty('id')) {
@@ -5029,32 +5063,35 @@ var ResizerService = /** @class */ (function () {
         if (!this._grid || !this._gridOptions) {
             throw new Error("\n      Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined.\n      You can fix this by setting your gridOption to use \"enableAutoResize\" or create an instance of the ResizerService by calling attachAutoResizeDataGrid()");
         }
-        delay = delay || 0;
-        clearTimeout(timer$2);
-        timer$2 = setTimeout(function () {
-            var availableDimensions = _this.calculateGridNewDimensions(_this._gridOptions);
-            var gridElm = $("#" + _this._gridOptions.gridId) || {};
-            var gridContainerElm = $("#" + _this._gridOptions.gridContainerId) || {};
-            if ((newSizes || availableDimensions) && gridElm.length > 0) {
-                var newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
-                var newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
-                gridElm.height(newHeight);
-                gridElm.width(newWidth);
-                gridContainerElm.height(newHeight);
-                gridContainerElm.width(newWidth);
-                _this._lastDimensions = {
-                    height: newHeight,
-                    width: newWidth
-                };
-                if ((_this._gridOptions.enablePagination || _this._gridOptions.backendServiceApi)) {
-                    _this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
+        return new Promise(function (resolve) {
+            delay = delay || 0;
+            clearTimeout(timer$2);
+            timer$2 = setTimeout(function () {
+                var availableDimensions = _this.calculateGridNewDimensions(_this._gridOptions);
+                var gridElm = $("#" + _this._gridOptions.gridId) || {};
+                var gridContainerElm = $("#" + _this._gridOptions.gridContainerId) || {};
+                if ((newSizes || availableDimensions) && gridElm.length > 0) {
+                    var newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
+                    var newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
+                    gridElm.height(newHeight);
+                    gridElm.width(newWidth);
+                    gridContainerElm.height(newHeight);
+                    gridContainerElm.width(newWidth);
+                    if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && _this._grid) {
+                        _this._grid.resizeCanvas();
+                    }
+                    _this._grid.autosizeColumns();
+                    _this._lastDimensions = {
+                        height: newHeight,
+                        width: newWidth
+                    };
+                    if ((_this._gridOptions.enablePagination || _this._gridOptions.backendServiceApi)) {
+                        _this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
+                    }
+                    resolve(_this._lastDimensions);
                 }
-                if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && _this._grid) {
-                    _this._grid.resizeCanvas();
-                }
-                _this._grid.autosizeColumns();
-            }
-        }, delay);
+            }, delay);
+        });
     };
     return ResizerService;
 }());
@@ -6071,12 +6108,6 @@ var SingleSelectEditor = /** @class */ (function () {
     };
     return SingleSelectEditor;
 }());
-SingleSelectEditor.decorators = [
-    { type: core.Injectable },
-];
-SingleSelectEditor.ctorParameters = function () { return [
-    null,
-]; };
 var DEFAULT_MIN_VALUE$2 = 0;
 var DEFAULT_MAX_VALUE$2 = 100;
 var DEFAULT_STEP$2 = 1;
@@ -6393,28 +6424,45 @@ var decimalFormatter = function (row, cell, value, columnDef, dataContext) {
 };
 var deleteIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-trash pointer delete-icon\" aria-hidden=\"true\"></i>"; };
 var dollarColoredBoldFormatter = function (row, cell, value, columnDef, dataContext) {
-    if (isNaN(+value)) {
+    var isNumber = !isNaN(+value);
+    var params = columnDef && columnDef.params || {};
+    var minDecimal = params.minDecimal || 2;
+    var maxDecimal = params.minDecimal || 4;
+    var outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+    if (!isNumber) {
         return '';
     }
     else if (value >= 0) {
-        return "<span style=\"color:green; font-weight: bold;\">$" + decimalFormatted(value, 2, 2) + "</span>";
+        return "<span style=\"color:green; font-weight: bold;\">$" + outputValue + "</span>";
     }
     else {
-        return "<span style=\"color:red; font-weight: bold;\">$" + decimalFormatted(value, 2, 2) + "</span>";
+        return "<span style=\"color:red; font-weight: bold;\">$" + outputValue + "</span>";
     }
 };
 var dollarColoredFormatter = function (row, cell, value, columnDef, dataContext) {
-    if (isNaN(+value)) {
+    var isNumber = !isNaN(+value);
+    var params = columnDef && columnDef.params || {};
+    var minDecimal = params.minDecimal || 2;
+    var maxDecimal = params.minDecimal || 4;
+    var outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+    if (!isNumber) {
         return '';
     }
     else if (value >= 0) {
-        return "<span style=\"color:green;\">$" + decimalFormatted(value, 2, 2) + "</span>";
+        return "<span style=\"color:green;\">$" + outputValue + "</span>";
     }
     else {
-        return "<span style=\"color:red;\">$" + decimalFormatted(value, 2, 2) + "</span>";
+        return "<span style=\"color:red;\">$" + outputValue + "</span>";
     }
 };
-var dollarFormatter = function (row, cell, value, columnDef, dataContext) { return isNaN(+value) ? '' : "$" + decimalFormatted(value, 2, 4); };
+var dollarFormatter = function (row, cell, value, columnDef, dataContext) {
+    var isNumber = !isNaN(+value);
+    var params = columnDef && columnDef.params || {};
+    var minDecimal = params.minDecimal || 2;
+    var maxDecimal = params.minDecimal || 4;
+    var outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+    return !isNumber ? '' : "$" + outputValue;
+};
 var editIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-pencil pointer edit-icon\" aria-hidden=\"true\"></i>"; };
 var hyperlinkFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value && typeof value === 'string') {
@@ -6749,9 +6797,8 @@ var GroupTotalFormatters = {
     sumTotalsDollarColoredBold: sumTotalsDollarColoredBoldFormatter,
 };
 var SlickPaginationComponent = /** @class */ (function () {
-    function SlickPaginationComponent(filterService, sortService) {
+    function SlickPaginationComponent(filterService) {
         this.filterService = filterService;
-        this.sortService = sortService;
         this._isFirstRender = true;
         this.onPaginationChanged = new core.EventEmitter();
         this.dataFrom = 1;
@@ -6868,7 +6915,7 @@ var SlickPaginationComponent = /** @class */ (function () {
     };
     SlickPaginationComponent.prototype.onPageChanged = function (event, pageNumber) {
         return __awaiter(this, void 0, void 0, function () {
-            var backendApi, itemsPerPage, query, observableOrPromise, processResult;
+            var backendApi, itemsPerPage, startTime, query, observableOrPromise, processResult, endTime;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -6885,6 +6932,7 @@ var SlickPaginationComponent = /** @class */ (function () {
                         }
                         if (!backendApi) return [3 /*break*/, 2];
                         itemsPerPage = +this.itemsPerPage;
+                        startTime = new Date();
                         if (backendApi.preProcess) {
                             backendApi.preProcess();
                         }
@@ -6893,10 +6941,20 @@ var SlickPaginationComponent = /** @class */ (function () {
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
                     case 1:
                         processResult = _a.sent();
+                        endTime = new Date();
                         if (processResult && backendApi.internalPostProcess) {
                             backendApi.internalPostProcess(processResult);
                         }
                         if (backendApi.postProcess) {
+                            if (processResult instanceof Object) {
+                                processResult.statistics = {
+                                    startTime: startTime,
+                                    endTime: endTime,
+                                    executionTime: endTime.valueOf() - startTime.valueOf(),
+                                    itemCount: this.totalItems,
+                                    totalItemCount: this.totalItems
+                                };
+                            }
                             backendApi.postProcess(processResult);
                         }
                         return [3 /*break*/, 3];
@@ -6928,7 +6986,6 @@ SlickPaginationComponent.decorators = [
 ];
 SlickPaginationComponent.ctorParameters = function () { return [
     { type: FilterService, },
-    { type: SortService, },
 ]; };
 SlickPaginationComponent.propDecorators = {
     "onPaginationChanged": [{ type: core.Output },],
@@ -6937,8 +6994,9 @@ SlickPaginationComponent.propDecorators = {
 };
 var slickgridEventPrefix = 'sg';
 var AngularSlickgridComponent = /** @class */ (function () {
-    function AngularSlickgridComponent(controlAndPluginService, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
+    function AngularSlickgridComponent(controlAndPluginService, elm, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
         this.controlAndPluginService = controlAndPluginService;
+        this.elm = elm;
         this.exportService = exportService;
         this.filterService = filterService;
         this.gridService = gridService;
@@ -7001,7 +7059,8 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.destroy();
         this.onAfterGridDestroyed.emit(true);
     };
-    AngularSlickgridComponent.prototype.destroy = function () {
+    AngularSlickgridComponent.prototype.destroy = function (emptyDomElementContainer) {
+        if (emptyDomElementContainer === void 0) { emptyDomElementContainer = false; }
         this._dataView = [];
         this.gridOptions = {};
         this._eventHandler.unsubscribeAll();
@@ -7013,6 +7072,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.resizer.dispose();
         this.sortService.dispose();
         this.grid.destroy();
+        if (emptyDomElementContainer) {
+            $(this.gridOptions.gridContainerId).empty();
+        }
         this.subscriptions.forEach(function (subscription) {
             if (subscription && subscription.unsubscribe) {
                 subscription.unsubscribe();
@@ -7068,6 +7130,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.onAngularGridCreated.emit({
             dataView: this._dataView,
             slickGrid: this.grid,
+            destroy: this.destroy.bind(this),
             backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
             exportService: this.exportService,
             filterService: this.filterService,
@@ -7139,7 +7202,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         var _loop_3 = function (prop) {
             if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this_3._eventHandler.subscribe(grid[prop], function (e, args) {
-                    _this.dispatchCustomEvent("" + slickgridEventPrefix + titleCase(prop), { eventData: e, args: args });
+                    return _this.dispatchCustomEvent("" + slickgridEventPrefix + titleCase(prop), { eventData: e, args: args });
                 });
             }
         };
@@ -7150,7 +7213,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         var _loop_4 = function (prop) {
             if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
                 this_4._eventHandler.subscribe(dataView[prop], function (e, args) {
-                    _this.dispatchCustomEvent("" + slickgridEventPrefix + titleCase(prop), { eventData: e, args: args });
+                    return _this.dispatchCustomEvent("" + slickgridEventPrefix + titleCase(prop), { eventData: e, args: args });
                 });
             }
         };
@@ -7207,20 +7270,31 @@ var AngularSlickgridComponent = /** @class */ (function () {
             var query = (typeof backendApi.service.buildQuery === 'function') ? backendApi.service.buildQuery() : '';
             var observableOrPromise_1 = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
             setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
-                var processResult;
+                var startTime, processResult, endTime, datasetName;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
+                            startTime = new Date();
                             if (backendApi.preProcess) {
                                 backendApi.preProcess();
                             }
                             return [4 /*yield*/, castToPromise(observableOrPromise_1)];
                         case 1:
                             processResult = _a.sent();
+                            endTime = new Date();
                             if (processResult && backendApi && backendApi.service instanceof GraphqlService && backendApi.internalPostProcess) {
                                 backendApi.internalPostProcess(processResult);
                             }
                             if (backendApi.postProcess) {
+                                datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
+                                if (processResult instanceof Object) {
+                                    processResult.statistics = {
+                                        startTime: startTime,
+                                        endTime: endTime,
+                                        executionTime: endTime.valueOf() - startTime.valueOf(),
+                                        totalItemCount: this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems
+                                    };
+                                }
                                 backendApi.postProcess(processResult);
                             }
                             return [2 /*return*/];
@@ -7257,6 +7331,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         return $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
     };
     AngularSlickgridComponent.prototype.paginationChanged = function (pagination) {
+        if (this.gridOptions.enableRowSelection) {
+            this.gridService.setSelectedRows([]);
+        }
         this.gridStateService.onGridStateChanged.next({
             change: { newValues: pagination, type: GridStateType.pagination },
             gridState: this.gridStateService.getCurrentGridState()
@@ -7307,13 +7384,14 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.grid.setHeaderRowVisibility(isShowing);
         return isShowing;
     };
-    AngularSlickgridComponent.prototype.dispatchCustomEvent = function (eventName, data, isBubbling) {
+    AngularSlickgridComponent.prototype.dispatchCustomEvent = function (eventName, data, isBubbling, isCancelable) {
         if (isBubbling === void 0) { isBubbling = true; }
-        var eventInit = { bubbles: isBubbling };
+        if (isCancelable === void 0) { isCancelable = true; }
+        var eventInit = { bubbles: isBubbling, cancelable: isCancelable };
         if (data) {
             eventInit.detail = data;
         }
-        this.customElm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
+        return this.elm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
     };
     return AngularSlickgridComponent;
 }());
@@ -7321,14 +7399,8 @@ AngularSlickgridComponent.decorators = [
     { type: core.Injectable },
     { type: core.Component, args: [{
                 selector: 'angular-slickgrid',
-                template: "<div id=\"slickGridContainer-{{gridId}}\" #customElm class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n",
+                template: "<div id=\"slickGridContainer-{{gridId}}\" class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n",
                 providers: [
-                    CompoundDateFilter,
-                    CompoundInputFilter,
-                    InputFilter,
-                    MultipleSelectFilter,
-                    SingleSelectFilter,
-                    SelectFilter,
                     ControlAndPluginService,
                     ExportService,
                     FilterFactory,
@@ -7346,6 +7418,7 @@ AngularSlickgridComponent.decorators = [
 ];
 AngularSlickgridComponent.ctorParameters = function () { return [
     { type: ControlAndPluginService, },
+    { type: core.ElementRef, },
     { type: ExportService, },
     { type: FilterService, },
     { type: GridService, },
@@ -7358,7 +7431,6 @@ AngularSlickgridComponent.ctorParameters = function () { return [
     { type: undefined, decorators: [{ type: core.Inject, args: ['config',] },] },
 ]; };
 AngularSlickgridComponent.propDecorators = {
-    "customElm": [{ type: core.ViewChild, args: ['customElm', { read: core.ElementRef },] },],
     "onAngularGridCreated": [{ type: core.Output },],
     "onDataviewCreated": [{ type: core.Output },],
     "onGridCreated": [{ type: core.Output },],

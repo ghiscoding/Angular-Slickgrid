@@ -64,6 +64,10 @@ export class GridRowSelectionComponent implements OnInit {
       enableAutoResize: false,
       enableCellNavigation: true,
       enableCheckboxSelector: true,
+      checkboxSelector: {
+        // remove the unnecessary "Select All" checkbox in header when in single selection mode
+        hideSelectAllCheckbox: true
+      },
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
         selectActiveRow: true
