@@ -1,6 +1,4 @@
-import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CollectionService } from './../services/collection.service';
 import {
   Column,
   Filter,
@@ -13,6 +11,8 @@ import {
   SearchTerm,
   SelectOption,
 } from './../models/index';
+import { CollectionService } from './../services/collection.service';
+import { isArrayEqual } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -56,7 +56,10 @@ export class MultipleSelectFilter implements Filter {
           this.isFilled = false;
           this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
         }
-        this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems });
+
+        if (!isArrayEqual(selectedItems, this.searchTerms)) {
+          this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems });
+        }
       }
     };
   }
