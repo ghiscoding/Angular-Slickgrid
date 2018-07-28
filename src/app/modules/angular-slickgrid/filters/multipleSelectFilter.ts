@@ -26,6 +26,8 @@ export class MultipleSelectFilter implements Filter {
   defaultOptions: MultipleSelectOption;
   isFilled = false;
   labelName: string;
+  labelPrefixName: string;
+  labelSuffixName: string;
   valueName: string;
   enableTranslateLabel = false;
 
@@ -88,6 +90,8 @@ export class MultipleSelectFilter implements Filter {
 
     this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
     this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+    this.labelPrefixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelPrefix : 'labelPrefix';
+    this.labelSuffixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelSuffix : 'labelSuffix';
     this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
 
     let newCollection = this.columnDef.filter.collection || [];
@@ -158,10 +162,13 @@ export class MultipleSelectFilter implements Filter {
       }
       const labelKey = (option.labelKey || option[this.labelName]) as string;
       const selected = (this.findValueInSearchTerms(option[this.valueName]) >= 0) ? 'selected' : '';
-      const textLabel = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+      const labelText = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+      const prefixText = option[this.labelPrefixName] || '';
+      const suffixText = option[this.labelSuffixName] || '';
+      const outputText = prefixText + labelText + suffixText;
 
       // html text of each select option
-      options += `<option value="${option[this.valueName]}" ${selected}>${textLabel}</option>`;
+      options += `<option value="${option[this.valueName]}" ${selected}>${outputText}</option>`;
 
       // if there's a search term, we will add the "filled" class for styling purposes
       if (selected) {
