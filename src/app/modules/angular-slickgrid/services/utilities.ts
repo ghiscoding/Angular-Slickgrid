@@ -6,6 +6,9 @@ import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
+// using external non-typed js libraries
+declare var $: any;
+
 /** Simple function to which will loop and create as demanded the number of white spaces,
  * this will be used in the Excel export
  * @param int nbSpaces: number of white spaces to create
@@ -17,6 +20,18 @@ export function addWhiteSpaces(nbSpaces): string {
     result += ' ';
   }
   return result;
+}
+
+/** HTML encode using jQuery */
+export function htmlEncode(value) {
+  // create a in-memory div, set it's inner text(which jQuery automatically encodes)
+  // then grab the encoded contents back out.  The div never exists on the page.
+  return $('<div/>').text(value).html();
+}
+
+/** HTML decode using jQuery */
+export function htmlDecode(value) {
+  return $('<div/>').html(value).text();
 }
 
 /** decode text into html entity

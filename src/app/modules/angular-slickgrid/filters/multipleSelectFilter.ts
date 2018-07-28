@@ -12,7 +12,7 @@ import {
   SelectOption,
 } from './../models/index';
 import { CollectionService } from './../services/collection.service';
-import { isArrayEqual } from '../services/utilities';
+import { isArrayEqual, htmlEncode } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -46,10 +46,14 @@ export class MultipleSelectFilter implements Filter {
       allSelected: this.translate.instant('ALL_SELECTED'),
       selectAllText: this.translate.instant('SELECT_ALL'),
       selectAllDelimiter: ['', ''], // remove default square brackets of default text "[Select All]" => "Select All"
-
-      // we will subscribe to the onClose event for triggering our callback
-      // also add/remove "filled" class for styling purposes
+      textTemplate: ($elm) => {
+        // render HTML code or not, by default it is sanitized and won't be rendered
+        const renderHtml = this.columnDef && this.columnDef.filter && this.columnDef.filter.renderHtml || false;
+        return renderHtml ? $elm.text() : $elm.html();
+      },
       onClose: () => {
+        // we will subscribe to the onClose event for triggering our callback
+        // also add/remove "filled" class for styling purposes
         const selectedItems = this.$filterElm.multipleSelect('getSelects');
         if (Array.isArray(selectedItems) && selectedItems.length > 0) {
           this.isFilled = true;
@@ -156,6 +160,8 @@ export class MultipleSelectFilter implements Filter {
    */
   private buildTemplateHtmlString(optionCollection: any[]) {
     let options = '';
+    const renderHtml = this.columnDef && this.columnDef.filter && this.columnDef.filter.renderHtml || false;
+
     optionCollection.forEach((option: SelectOption) => {
       if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
         throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
@@ -165,7 +171,13 @@ export class MultipleSelectFilter implements Filter {
       const labelText = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
       const prefixText = option[this.labelPrefixName] || '';
       const suffixText = option[this.labelSuffixName] || '';
-      const outputText = prefixText + labelText + suffixText;
+      let outputText = prefixText + labelText + suffixText;
+
+      // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
+      // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
+      if (renderHtml) {
+        outputText = htmlEncode(outputText);
+      }
 
       // html text of each select option
       options += `<option value="${option[this.valueName]}" ${selected}>${outputText}</option>`;

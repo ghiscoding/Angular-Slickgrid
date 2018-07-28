@@ -44,7 +44,7 @@ export class GridClientSideComponent implements OnInit {
     // prepare a multiple-select array to filter with
     const multiSelectFilterArray = [];
     for (let i = 0; i < NB_ITEMS; i++) {
-      multiSelectFilterArray.push({ value: i, label: i });
+      multiSelectFilterArray.push({ value: i, label: i, labelSuffix: ' days' });
     }
 
     this.columnDefinitions = [
@@ -93,6 +93,9 @@ export class GridClientSideComponent implements OnInit {
         sortable: true,
         filterable: true,
         filter: {
+          // We can also add HTML text to be rendered but we have to opt-in, else it will be sanitized
+          // collection: [ { value: '', label: '' }, { value: true, label: 'True', labelPrefix: `<i class="fa fa-check"></i>` }, { value: false, label: 'False' } ],
+          // renderHtml: true,
           collection: [ { value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' } ],
           model: Filters.singleSelect,
 

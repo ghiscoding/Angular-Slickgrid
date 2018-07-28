@@ -22,6 +22,12 @@ export interface ColumnFilter {
   /** Custom Filter */
   customFilter?: Filter;
 
+  /**
+   * Defaults to false, when set it will render any HTML code instead of removing it
+   * So far only used in the MultipleSelect & SingleSelect Filters will support it
+   */
+  renderHtml?: boolean;
+
   /** Search terms (collection) */
   searchTerms?: SearchTerm[];
 
@@ -56,6 +62,8 @@ export interface ColumnFilter {
   customStructure?: {
     label: string;
     value: string;
+    labelPrefix?: string;
+    labelSuffix?: string;
   };
 
   /**
