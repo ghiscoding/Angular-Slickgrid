@@ -155,34 +155,6 @@ export function decimalFormatted(input: number | string, minDecimal?: number, ma
 }
 
 /**
-* Are 2 provided arrays equal
-* @param arrayA
-* @param arrayB
-* @return boolean is equal
-*/
-export function isArrayEqual(a, b) {
-  if (a === b) {
-    return true;
-  }
-  if (a == null || b == null) {
-    return false;
-  }
-  if (a.length !== b.length) {
-    return false;
-  }
-
-  // If you don't care about the order of the elements inside
-  // the array, you should sort both arrays here.
-  for (let i = 0; i < a.length; ++i) {
-    if (a[i] !== b[i]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-/**
  * From a Date FieldType, return it's equivalent moment.js format
  * refer to moment.js for the format standard used: https://momentjs.com/docs/#/parsing/string-format/
  * @param fieldType
