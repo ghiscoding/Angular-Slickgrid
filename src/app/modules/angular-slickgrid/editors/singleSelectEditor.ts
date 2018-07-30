@@ -197,6 +197,7 @@ export class SingleSelectEditor implements Editor {
   private buildTemplateHtmlString(collection: any[]) {
     let options = '';
     const isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
+    const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
 
     collection.forEach((option: SelectOption) => {
       if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
@@ -215,8 +216,8 @@ export class SingleSelectEditor implements Editor {
       if (isRenderHtmlEnabled) {
         // sanitize any unauthorized html tags like script and others
         // for the remaining allowed tags we'll permit all attributes
-        const sanitizedOption = sanitizeHtml(optionText, { allowedAttributes: { '*': ['*'] } });
-        optionText = htmlEncode(sanitizedOption);
+        const sanitizeText = sanitizeHtml(optionText, sanitizedOptions);
+        optionText = htmlEncode(sanitizeText);
       }
 
       options += `<option value="${option[this.valueName]}">${optionText}</option>`;

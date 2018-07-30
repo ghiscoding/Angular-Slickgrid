@@ -267,6 +267,14 @@ export interface GridOption {
     selectActiveRow: boolean;
   };
 
+  /**
+   * Optionally pass some options to the 3rd party lib "sanitize-html" used in some Filters.
+   * For this to work, "enableRenderHtml" as to be enabled.
+   * Angular-Slickgrid uses the default options with 2 slight differences (1- allow all attributes with "*", 2- add "<span>" to the allowed tags).
+   * You can view the default allowed tags on their GitHub site:: https://github.com/punkave/sanitize-html#what-are-the-default-options
+   */
+  sanitizeHtmlOptions?: any;
+
   /** CSS class name used when cell is selected */
   selectedCellCssClass?: string;
 
