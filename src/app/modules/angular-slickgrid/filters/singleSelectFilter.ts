@@ -13,7 +13,8 @@ import {
 } from './../models/index';
 import { CollectionService } from './../services/collection.service';
 import { arraysEqual, htmlEncode } from '../services/utilities';
-import * as sanitizeHtml from 'sanitize-html';
+import * as sanitizeHtml_ from 'sanitize-html';
+const sanitizeHtml = sanitizeHtml_; // patch to fix rollup to work
 
 // using external non-typed js libraries
 declare var $: any;

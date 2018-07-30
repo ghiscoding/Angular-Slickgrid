@@ -9,7 +9,8 @@ import {
   SelectOption
 } from './../models/index';
 import { findOrDefault, CollectionService, htmlEncode } from '../services/index';
-import * as sanitizeHtml from 'sanitize-html';
+import * as sanitizeHtml_ from 'sanitize-html';
+const sanitizeHtml = sanitizeHtml_; // patch to fix rollup to work
 
 // height in pixel of the multiple-select DOM element
 const SELECT_ELEMENT_HEIGHT = 26;
