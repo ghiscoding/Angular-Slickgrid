@@ -2093,6 +2093,7 @@ class MultipleSelectFilter {
     buildTemplateHtmlString(optionCollection) {
         let /** @type {?} */ options = '';
         const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+        const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
@@ -2108,8 +2109,8 @@ class MultipleSelectFilter {
             if (isRenderHtmlEnabled) {
                 // sanitize any unauthorized html tags like script and others
                 // for the remaining allowed tags we'll permit all attributes
-                const /** @type {?} */ sanitizedOption = sanitizeHtml(optionText, { allowedAttributes: { '*': ['*'] } });
-                optionText = htmlEncode(sanitizedOption);
+                const /** @type {?} */ sanitizedText = sanitizeHtml(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizedText);
             }
             // html text of each select option
             options += `<option value="${option[this.valueName]}" ${selected}>${optionText}</option>`;
@@ -2433,6 +2434,7 @@ class SingleSelectFilter {
     buildTemplateHtmlString(optionCollection, searchTerm) {
         let /** @type {?} */ options = '';
         const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+        const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.singleSelect, collection: [ { value: '1', label: 'One' } ]')`);
@@ -2448,8 +2450,8 @@ class SingleSelectFilter {
             if (isRenderHtmlEnabled) {
                 // sanitize any unauthorized html tags like script and others
                 // for the remaining allowed tags we'll permit all attributes
-                const /** @type {?} */ sanitizedOption = sanitizeHtml$1(optionText, { allowedAttributes: { '*': ['*'] } });
-                optionText = htmlEncode(sanitizedOption);
+                const /** @type {?} */ sanitizeText = sanitizeHtml$1(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizeText);
             }
             // html text of each select option
             options += `<option value="${option[this.valueName]}" ${selected}>${optionText}</option>`;
@@ -2761,6 +2763,12 @@ const GlobalGridOptions = {
     multiColumnSort: true,
     numberedMultiColumnSort: true,
     tristateMultiColumnSort: false,
+    sanitizeHtmlOptions: {
+        allowedTags: ['h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
+            'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+            'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe', 'span'],
+        allowedAttributes: { '*': ['*'] }
+    },
     sortColNumberInSeparateSpan: true,
     suppressActiveCellChangeOnEdit: true,
     pagination: {
@@ -8240,6 +8248,7 @@ class MultipleSelectEditor {
     buildTemplateHtmlString(collection) {
         let /** @type {?} */ options = '';
         const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
+        const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
@@ -8254,8 +8263,8 @@ class MultipleSelectEditor {
             if (isRenderHtmlEnabled) {
                 // sanitize any unauthorized html tags like script and others
                 // for the remaining allowed tags we'll permit all attributes
-                const /** @type {?} */ sanitizedOption = sanitizeHtml$2(optionText, { allowedAttributes: { '*': ['*'] } });
-                optionText = htmlEncode(sanitizedOption);
+                const /** @type {?} */ sanitizeText = sanitizeHtml$2(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizeText);
             }
             options += `<option value="${option[this.valueName]}">${optionText}</option>`;
         });
@@ -8502,6 +8511,7 @@ class SingleSelectEditor {
     buildTemplateHtmlString(collection) {
         let /** @type {?} */ options = '';
         const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
+        const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error('A collection with value/label (or value/labelKey when using ' +
@@ -8518,8 +8528,8 @@ class SingleSelectEditor {
             if (isRenderHtmlEnabled) {
                 // sanitize any unauthorized html tags like script and others
                 // for the remaining allowed tags we'll permit all attributes
-                const /** @type {?} */ sanitizedOption = sanitizeHtml$3(optionText, { allowedAttributes: { '*': ['*'] } });
-                optionText = htmlEncode(sanitizedOption);
+                const /** @type {?} */ sanitizeText = sanitizeHtml$3(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizeText);
             }
             options += `<option value="${option[this.valueName]}">${optionText}</option>`;
         });

@@ -1476,6 +1476,7 @@ var MultipleSelectFilter = /** @class */ (function () {
         var _this = this;
         var options = '';
         var isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+        var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')");
@@ -1487,8 +1488,8 @@ var MultipleSelectFilter = /** @class */ (function () {
             var suffixText = option[_this.labelSuffixName] || '';
             var optionText = prefixText + labelText + suffixText;
             if (isRenderHtmlEnabled) {
-                var sanitizedOption = sanitizeHtml(optionText, { allowedAttributes: { '*': ['*'] } });
-                optionText = htmlEncode(sanitizedOption);
+                var sanitizedText = sanitizeHtml(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizedText);
             }
             options += "<option value=\"" + option[_this.valueName] + "\" " + selected + ">" + optionText + "</option>";
             if (selected) {
@@ -1717,6 +1718,7 @@ var SingleSelectFilter = /** @class */ (function () {
         var _this = this;
         var options = '';
         var isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+        var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.singleSelect, collection: [ { value: '1', label: 'One' } ]')");
@@ -1728,8 +1730,8 @@ var SingleSelectFilter = /** @class */ (function () {
             var suffixText = option[_this.labelSuffixName] || '';
             var optionText = prefixText + labelText + suffixText;
             if (isRenderHtmlEnabled) {
-                var sanitizedOption = sanitizeHtml$1(optionText, { allowedAttributes: { '*': ['*'] } });
-                optionText = htmlEncode(sanitizedOption);
+                var sanitizeText = sanitizeHtml$1(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizeText);
             }
             options += "<option value=\"" + option[_this.valueName] + "\" " + selected + ">" + optionText + "</option>";
             if (selected) {
@@ -1954,6 +1956,12 @@ var GlobalGridOptions = {
     multiColumnSort: true,
     numberedMultiColumnSort: true,
     tristateMultiColumnSort: false,
+    sanitizeHtmlOptions: {
+        allowedTags: ['h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
+            'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+            'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe', 'span'],
+        allowedAttributes: { '*': ['*'] }
+    },
     sortColNumberInSeparateSpan: true,
     suppressActiveCellChangeOnEdit: true,
     pagination: {
@@ -5926,6 +5934,7 @@ var MultipleSelectEditor = /** @class */ (function () {
         var _this = this;
         var options = '';
         var isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
+        var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])");
@@ -5936,8 +5945,8 @@ var MultipleSelectEditor = /** @class */ (function () {
             var suffixText = option[_this.labelSuffixName] || '';
             var optionText = prefixText + labelText + suffixText;
             if (isRenderHtmlEnabled) {
-                var sanitizedOption = sanitizeHtml$2(optionText, { allowedAttributes: { '*': ['*'] } });
-                optionText = htmlEncode(sanitizedOption);
+                var sanitizeText = sanitizeHtml$2(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizeText);
             }
             options += "<option value=\"" + option[_this.valueName] + "\">" + optionText + "</option>";
         });
@@ -6116,6 +6125,7 @@ var SingleSelectEditor = /** @class */ (function () {
         var _this = this;
         var options = '';
         var isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
+        var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error('A collection with value/label (or value/labelKey when using ' +
@@ -6128,8 +6138,8 @@ var SingleSelectEditor = /** @class */ (function () {
             var suffixText = option[_this.labelSuffixName] || '';
             var optionText = prefixText + labelText + suffixText;
             if (isRenderHtmlEnabled) {
-                var sanitizedOption = sanitizeHtml$3(optionText, { allowedAttributes: { '*': ['*'] } });
-                optionText = htmlEncode(sanitizedOption);
+                var sanitizeText = sanitizeHtml$3(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizeText);
             }
             options += "<option value=\"" + option[_this.valueName] + "\">" + optionText + "</option>";
         });
