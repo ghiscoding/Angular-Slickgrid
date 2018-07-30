@@ -26,12 +26,19 @@ export interface ColumnFilter {
     collectionSortBy?: CollectionSortBy;
     /** Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250} */
     filterOptions?: MultipleSelectOption | any;
+    /**
+     * Defaults to false, when set it will render any HTML code instead of removing it
+     * So far only used in the MultipleSelect & SingleSelect Filters will support it
+     */
+    enableRenderHtml?: boolean;
     /** Do we want the Filter to handle translation (localization)? */
     enableTranslateLabel?: boolean;
     /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Filter */
     customStructure?: {
         label: string;
         value: string;
+        labelPrefix?: string;
+        labelSuffix?: string;
     };
     /**
      * Use "params" to pass any type of arguments to your Custom Filter

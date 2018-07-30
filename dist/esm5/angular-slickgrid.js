@@ -6,6 +6,7 @@ import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
 import { Injectable, Component, EventEmitter, Input, Output, Inject, ElementRef, NgModule } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import * as sanitizeHtml_ from 'sanitize-html';
 import { Subject } from 'rxjs/Subject';
 import { TextEncoder } from 'text-encoding-utf-8';
 import 'jquery-ui-dist/jquery-ui';
@@ -175,6 +176,12 @@ function addWhiteSpaces(nbSpaces) {
         result += ' ';
     }
     return result;
+}
+function htmlEncode(value) {
+    return $('<div/>').text(value).html();
+}
+function htmlDecode(value) {
+    return $('<div/>').html(value).text();
 }
 function htmlEntityDecode(input) {
     return input.replace(/&#(\d+);/g, function (match, dec) {
@@ -1309,6 +1316,7 @@ var InputFilter = /** @class */ (function () {
     };
     return InputFilter;
 }());
+var sanitizeHtml = sanitizeHtml_;
 var MultipleSelectFilter = /** @class */ (function () {
     function MultipleSelectFilter(translate, collectionService) {
         var _this = this;
@@ -1326,6 +1334,10 @@ var MultipleSelectFilter = /** @class */ (function () {
             allSelected: this.translate.instant('ALL_SELECTED'),
             selectAllText: this.translate.instant('SELECT_ALL'),
             selectAllDelimiter: ['', ''],
+            textTemplate: function ($elm) {
+                var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.filter && _this.columnDef.filter.enableRenderHtml || false;
+                return isRenderHtmlEnabled ? $elm.text() : $elm.html();
+            },
             onClose: function () {
                 var selectedItems = _this.$filterElm.multipleSelect('getSelects');
                 if (Array.isArray(selectedItems) && selectedItems.length > 0) {
@@ -1336,7 +1348,9 @@ var MultipleSelectFilter = /** @class */ (function () {
                     _this.isFilled = false;
                     _this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                _this.callback(undefined, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: selectedItems });
+                if (!arraysEqual(selectedItems, _this.searchTerms)) {
+                    _this.callback(undefined, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: selectedItems });
+                }
             }
         };
     }
@@ -1364,6 +1378,8 @@ var MultipleSelectFilter = /** @class */ (function () {
         }
         this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
         this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+        this.labelPrefixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelPrefix : 'labelPrefix';
+        this.labelSuffixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelSuffix : 'labelSuffix';
         this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         var newCollection = this.columnDef.filter.collection || [];
         if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
@@ -1398,14 +1414,22 @@ var MultipleSelectFilter = /** @class */ (function () {
     MultipleSelectFilter.prototype.buildTemplateHtmlString = function (optionCollection) {
         var _this = this;
         var options = '';
+        var isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
         optionCollection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')");
             }
             var labelKey = ((option.labelKey || option[_this.labelName]));
             var selected = (_this.findValueInSearchTerms(option[_this.valueName]) >= 0) ? 'selected' : '';
-            var textLabel = ((option.labelKey || _this.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
-            options += "<option value=\"" + option[_this.valueName] + "\" " + selected + ">" + textLabel + "</option>";
+            var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
+            var prefixText = option[_this.labelPrefixName] || '';
+            var suffixText = option[_this.labelSuffixName] || '';
+            var optionText = prefixText + labelText + suffixText;
+            if (isRenderHtmlEnabled) {
+                var sanitizedOption = sanitizeHtml(optionText, { allowedAttributes: { '*': ['*'] } });
+                optionText = htmlEncode(sanitizedOption);
+            }
+            options += "<option value=\"" + option[_this.valueName] + "\" " + selected + ">" + optionText + "</option>";
             if (selected) {
                 _this.isFilled = true;
             }
@@ -1531,6 +1555,7 @@ var SelectFilter = /** @class */ (function () {
     };
     return SelectFilter;
 }());
+var sanitizeHtml$1 = sanitizeHtml_;
 var SingleSelectFilter = /** @class */ (function () {
     function SingleSelectFilter(translate, collectionService) {
         var _this = this;
@@ -1543,6 +1568,10 @@ var SingleSelectFilter = /** @class */ (function () {
             filter: false,
             maxHeight: 200,
             single: true,
+            textTemplate: function ($elm) {
+                var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.filter && _this.columnDef.filter.enableRenderHtml || false;
+                return isRenderHtmlEnabled ? $elm.text() : $elm.html();
+            },
             onClose: function () {
                 var selectedItems = _this.$filterElm.multipleSelect('getSelects');
                 var selectedItem = '';
@@ -1555,7 +1584,9 @@ var SingleSelectFilter = /** @class */ (function () {
                     _this.isFilled = false;
                     _this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                _this.callback(undefined, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: (selectedItem ? [selectedItem] : null) });
+                if (!arraysEqual(selectedItems, _this.searchTerms)) {
+                    _this.callback(undefined, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: (selectedItem ? [selectedItem] : null) });
+                }
             }
         };
     }
@@ -1583,6 +1614,8 @@ var SingleSelectFilter = /** @class */ (function () {
         }
         this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
         this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+        this.labelPrefixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelPrefix : 'labelPrefix';
+        this.labelSuffixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelSuffix : 'labelSuffix';
         this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         var newCollection = this.columnDef.filter.collection || [];
         if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
@@ -1622,14 +1655,22 @@ var SingleSelectFilter = /** @class */ (function () {
     SingleSelectFilter.prototype.buildTemplateHtmlString = function (optionCollection, searchTerm) {
         var _this = this;
         var options = '';
+        var isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
         optionCollection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.singleSelect, collection: [ { value: '1', label: 'One' } ]')");
             }
             var labelKey = ((option.labelKey || option[_this.labelName]));
             var selected = (option[_this.valueName] === searchTerm) ? 'selected' : '';
-            var textLabel = ((option.labelKey || _this.columnDef.filter.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
-            options += "<option value=\"" + option[_this.valueName] + "\" " + selected + ">" + textLabel + "</option>";
+            var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
+            var prefixText = option[_this.labelPrefixName] || '';
+            var suffixText = option[_this.labelSuffixName] || '';
+            var optionText = prefixText + labelText + suffixText;
+            if (isRenderHtmlEnabled) {
+                var sanitizedOption = sanitizeHtml$1(optionText, { allowedAttributes: { '*': ['*'] } });
+                optionText = htmlEncode(sanitizedOption);
+            }
+            options += "<option value=\"" + option[_this.valueName] + "\" " + selected + ">" + optionText + "</option>";
             if (selected) {
                 _this.isFilled = true;
             }
@@ -4604,9 +4645,15 @@ var GridStateService = /** @class */ (function () {
     GridStateService.prototype.subscribeToAllGridChanges = function (grid) {
         var _this = this;
         this.subscriptions.push(this.filterService.onFilterChanged.subscribe(function (currentFilters) {
+            if (_this._gridOptions.enableRowSelection || _this._gridOptions.enableCheckboxSelector) {
+                _this._grid.setSelectedRows([]);
+            }
             _this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: _this.getCurrentGridState() });
         }));
         this.subscriptions.push(this.filterService.onFilterCleared.subscribe(function () {
+            if (_this._gridOptions.enableRowSelection || _this._gridOptions.enableCheckboxSelector) {
+                _this._grid.setSelectedRows([]);
+            }
             _this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.filter }, gridState: _this.getCurrentGridState() });
         }));
         this.subscriptions.push(this.sortService.onSortChanged.subscribe(function (currentSorters) {
@@ -5685,6 +5732,7 @@ var LongTextEditor = /** @class */ (function () {
     };
     return LongTextEditor;
 }());
+var sanitizeHtml$2 = sanitizeHtml_;
 var SELECT_ELEMENT_HEIGHT = 26;
 var MultipleSelectEditor = /** @class */ (function () {
     function MultipleSelectEditor(args) {
@@ -5704,6 +5752,10 @@ var MultipleSelectEditor = /** @class */ (function () {
             width: 150,
             offsetLeft: 20,
             onOpen: function () { return _this.autoAdjustDropPosition(_this.$editorElm, _this.editorElmOptions); },
+            textTemplate: function ($elm) {
+                var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.internalColumnEditor && _this.columnDef.internalColumnEditor.enableRenderHtml || false;
+                return isRenderHtmlEnabled ? $elm.text() : $elm.html();
+            },
         };
         if (this._translate) {
             this.defaultOptions.countSelected = this._translate.instant('X_OF_Y_SELECTED');
@@ -5754,6 +5806,8 @@ var MultipleSelectEditor = /** @class */ (function () {
         this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
         var newCollection = this.columnDef.internalColumnEditor.collection || [];
         this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
+        this.labelPrefixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelPrefix : 'labelPrefix';
+        this.labelSuffixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelSuffix : 'labelSuffix';
         this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
         if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
             var filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
@@ -5810,13 +5864,21 @@ var MultipleSelectEditor = /** @class */ (function () {
     MultipleSelectEditor.prototype.buildTemplateHtmlString = function (collection) {
         var _this = this;
         var options = '';
+        var isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
         collection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])");
             }
             var labelKey = ((option.labelKey || option[_this.labelName]));
-            var textLabel = ((option.labelKey || _this.enableTranslateLabel) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
-            options += "<option value=\"" + option[_this.valueName] + "\">" + textLabel + "</option>";
+            var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
+            var prefixText = option[_this.labelPrefixName] || '';
+            var suffixText = option[_this.labelSuffixName] || '';
+            var optionText = prefixText + labelText + suffixText;
+            if (isRenderHtmlEnabled) {
+                var sanitizedOption = sanitizeHtml$2(optionText, { allowedAttributes: { '*': ['*'] } });
+                optionText = htmlEncode(sanitizedOption);
+            }
+            options += "<option value=\"" + option[_this.valueName] + "\">" + optionText + "</option>";
         });
         return "<select class=\"ms-filter search-filter\" multiple=\"multiple\">" + options + "</select>";
     };
@@ -5869,6 +5931,7 @@ var MultipleSelectEditor = /** @class */ (function () {
     };
     return MultipleSelectEditor;
 }());
+var sanitizeHtml$3 = sanitizeHtml_;
 var SELECT_ELEMENT_HEIGHT$1 = 26;
 var SingleSelectEditor = /** @class */ (function () {
     function SingleSelectEditor(args) {
@@ -5886,6 +5949,10 @@ var SingleSelectEditor = /** @class */ (function () {
             offsetLeft: 20,
             single: true,
             onOpen: function () { return _this.autoAdjustDropPosition(_this.$editorElm, _this.editorElmOptions); },
+            textTemplate: function ($elm) {
+                var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.internalColumnEditor && _this.columnDef.internalColumnEditor.enableRenderHtml || false;
+                return isRenderHtmlEnabled ? $elm.text() : $elm.html();
+            },
         };
         this.init();
     }
@@ -5929,6 +5996,8 @@ var SingleSelectEditor = /** @class */ (function () {
         this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
         var newCollection = this.columnDef.internalColumnEditor.collection || [];
         this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
+        this.labelPrefixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelPrefix : 'labelPrefix';
+        this.labelSuffixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelSuffix : 'labelSuffix';
         this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
         if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionFilterBy) {
             var filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
@@ -5985,6 +6054,7 @@ var SingleSelectEditor = /** @class */ (function () {
     SingleSelectEditor.prototype.buildTemplateHtmlString = function (collection) {
         var _this = this;
         var options = '';
+        var isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
         collection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error('A collection with value/label (or value/labelKey when using ' +
@@ -5992,8 +6062,15 @@ var SingleSelectEditor = /** @class */ (function () {
                     '{ collection: [ { value: \'1\', label: \'One\' } ] } } }');
             }
             var labelKey = ((option.labelKey || option[_this.labelName]));
-            var textLabel = ((option.labelKey || _this.enableTranslateLabel) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
-            options += "<option value=\"" + option[_this.valueName] + "\">" + textLabel + "</option>";
+            var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
+            var prefixText = option[_this.labelPrefixName] || '';
+            var suffixText = option[_this.labelSuffixName] || '';
+            var optionText = prefixText + labelText + suffixText;
+            if (isRenderHtmlEnabled) {
+                var sanitizedOption = sanitizeHtml$3(optionText, { allowedAttributes: { '*': ['*'] } });
+                optionText = htmlEncode(sanitizedOption);
+            }
+            options += "<option value=\"" + option[_this.valueName] + "\">" + optionText + "</option>";
         });
         return "<select class=\"ms-filter search-filter\">" + options + "</select>";
     };
@@ -7269,7 +7346,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         return $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
     };
     AngularSlickgridComponent.prototype.paginationChanged = function (pagination) {
-        if (this.gridOptions.enableRowSelection) {
+        if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
             this.gridService.setSelectedRows([]);
         }
         this.gridStateService.onGridStateChanged.next({
@@ -7421,5 +7498,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, SliderEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, CompoundSliderFilter as ɵba, InputFilter as ɵbb, MultipleSelectFilter as ɵbd, SelectFilter as ɵbf, SingleSelectFilter as ɵbe, SliderFilter as ɵbc, arrayToCsvFormatter as ɵbg, boldFormatter as ɵbh, checkboxFormatter as ɵbi, checkmarkFormatter as ɵbj, collectionEditorFormatter as ɵbm, collectionFormatter as ɵbl, complexObjectFormatter as ɵbk, dateIsoFormatter as ɵbn, dateTimeIsoAmPmFormatter as ɵbp, dateTimeIsoFormatter as ɵbo, dateTimeUsAmPmFormatter as ɵbs, dateTimeUsFormatter as ɵbr, dateUsFormatter as ɵbq, decimalFormatter as ɵbu, deleteIconFormatter as ɵbt, dollarColoredBoldFormatter as ɵbx, dollarColoredFormatter as ɵbw, dollarFormatter as ɵbv, editIconFormatter as ɵby, hyperlinkFormatter as ɵbz, hyperlinkUriPrefixFormatter as ɵca, infoIconFormatter as ɵcb, lowercaseFormatter as ɵcc, maskFormatter as ɵcd, multipleFormatter as ɵce, percentCompleteBarFormatter as ɵch, percentCompleteFormatter as ɵcg, percentFormatter as ɵcf, percentSymbolFormatter as ɵci, progressBarFormatter as ɵcj, translateBooleanFormatter as ɵcl, translateFormatter as ɵck, uppercaseFormatter as ɵcm, yesNoFormatter as ɵcn, avgTotalsDollarFormatter as ɵcp, avgTotalsFormatter as ɵco, avgTotalsPercentageFormatter as ɵcq, maxTotalsFormatter as ɵcr, minTotalsFormatter as ɵcs, sumTotalsBoldFormatter as ɵcu, sumTotalsColoredFormatter as ɵcv, sumTotalsDollarBoldFormatter as ɵcx, sumTotalsDollarColoredBoldFormatter as ɵcz, sumTotalsDollarColoredFormatter as ɵcy, sumTotalsDollarFormatter as ɵcw, sumTotalsFormatter as ɵct, dateIsoSorter as ɵdb, dateSorter as ɵda, dateUsShortSorter as ɵdd, dateUsSorter as ɵdc, numericSorter as ɵde, stringSorter as ɵdf };
+export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, SliderEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, CompoundSliderFilter as ɵba, InputFilter as ɵbb, MultipleSelectFilter as ɵbd, SelectFilter as ɵbf, SingleSelectFilter as ɵbe, SliderFilter as ɵbc, arrayToCsvFormatter as ɵbg, boldFormatter as ɵbh, checkboxFormatter as ɵbi, checkmarkFormatter as ɵbj, collectionEditorFormatter as ɵbm, collectionFormatter as ɵbl, complexObjectFormatter as ɵbk, dateIsoFormatter as ɵbn, dateTimeIsoAmPmFormatter as ɵbp, dateTimeIsoFormatter as ɵbo, dateTimeUsAmPmFormatter as ɵbs, dateTimeUsFormatter as ɵbr, dateUsFormatter as ɵbq, decimalFormatter as ɵbu, deleteIconFormatter as ɵbt, dollarColoredBoldFormatter as ɵbx, dollarColoredFormatter as ɵbw, dollarFormatter as ɵbv, editIconFormatter as ɵby, hyperlinkFormatter as ɵbz, hyperlinkUriPrefixFormatter as ɵca, infoIconFormatter as ɵcb, lowercaseFormatter as ɵcc, maskFormatter as ɵcd, multipleFormatter as ɵce, percentCompleteBarFormatter as ɵch, percentCompleteFormatter as ɵcg, percentFormatter as ɵcf, percentSymbolFormatter as ɵci, progressBarFormatter as ɵcj, translateBooleanFormatter as ɵcl, translateFormatter as ɵck, uppercaseFormatter as ɵcm, yesNoFormatter as ɵcn, avgTotalsDollarFormatter as ɵcp, avgTotalsFormatter as ɵco, avgTotalsPercentageFormatter as ɵcq, maxTotalsFormatter as ɵcr, minTotalsFormatter as ɵcs, sumTotalsBoldFormatter as ɵcu, sumTotalsColoredFormatter as ɵcv, sumTotalsDollarBoldFormatter as ɵcx, sumTotalsDollarColoredBoldFormatter as ɵcz, sumTotalsDollarColoredFormatter as ɵcy, sumTotalsDollarFormatter as ɵcw, sumTotalsFormatter as ɵct, dateIsoSorter as ɵdb, dateSorter as ɵda, dateUsShortSorter as ɵdd, dateUsSorter as ɵdc, numericSorter as ɵde, stringSorter as ɵdf };
 //# sourceMappingURL=angular-slickgrid.js.map
