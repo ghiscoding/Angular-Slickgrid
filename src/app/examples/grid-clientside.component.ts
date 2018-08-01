@@ -44,12 +44,6 @@ export class GridClientSideComponent implements OnInit {
   constructor(private http: HttpClient, private translate: TranslateService) {}
 
   ngOnInit(): void {
-    // prepare a multiple-select array to filter with
-    const multiSelectFilterArray = [];
-    for (let i = 0; i < NB_ITEMS; i++) {
-      multiSelectFilterArray.push({ value: i, label: i, labelSuffix: ' days' });
-    }
-
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', sortable: true, minWidth: 55,
         type: FieldType.string, filterable: true, filter: { model: Filters.compoundInput }
@@ -74,6 +68,12 @@ export class GridClientSideComponent implements OnInit {
             property: 'value',
             sortDesc: true,
             fieldType: FieldType.number
+          },
+          customStructure: {
+            value: 'value',
+            label: 'label',
+            labelSuffix: 'text',
+            addSpaceBetweenLabels: true
           },
           model: Filters.multipleSelect,
 

@@ -69,6 +69,7 @@ export interface ColumnFilter {
     value: string;
     labelPrefix?: string;
     labelSuffix?: string;
+    addSpaceBetweenLabels?: boolean;
   };
 
   /**
