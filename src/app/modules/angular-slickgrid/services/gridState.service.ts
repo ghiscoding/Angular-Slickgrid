@@ -247,12 +247,20 @@ export class GridStateService {
     // Subscribe to Event Emitter of Filter changed
     this.subscriptions.push(
       this.filterService.onFilterChanged.subscribe((currentFilters: CurrentFilter[]) => {
+        // if we use Row Selection or the Checkbox Selector, we need to reset any selection
+        if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
+          this._grid.setSelectedRows([]);
+        }
         this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: this.getCurrentGridState() });
       })
     );
     // Subscribe to Event Emitter of Filter cleared
       this.subscriptions.push(
         this.filterService.onFilterCleared.subscribe(() => {
+          // if we use Row Selection or the Checkbox Selector, we need to reset any selection
+          if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
+            this._grid.setSelectedRows([]);
+          }
           this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.filter }, gridState: this.getCurrentGridState() });
         })
       );

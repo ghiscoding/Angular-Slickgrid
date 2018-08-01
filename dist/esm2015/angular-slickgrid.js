@@ -5,6 +5,7 @@ import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
 import { Injectable, Component, EventEmitter, Input, Output, Inject, ElementRef, NgModule } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import * as sanitizeHtml_ from 'sanitize-html';
 import { __awaiter } from 'tslib';
 import { Subject } from 'rxjs/Subject';
 import { TextEncoder } from 'text-encoding-utf-8';
@@ -265,7 +266,7 @@ SortDirectionNumber[SortDirectionNumber.neutral] = "neutral";
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const moment = moment_;
+const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 /**
  * Simple function to which will loop and create as demanded the number of white spaces,
  * this will be used in the Excel export
@@ -278,6 +279,24 @@ function addWhiteSpaces(nbSpaces) {
         result += ' ';
     }
     return result;
+}
+/**
+ * HTML encode using jQuery
+ * @param {?} value
+ * @return {?}
+ */
+function htmlEncode(value) {
+    // create a in-memory div, set it's inner text(which jQuery automatically encodes)
+    // then grab the encoded contents back out.  The div never exists on the page.
+    return $('<div/>').text(value).html();
+}
+/**
+ * HTML decode using jQuery
+ * @param {?} value
+ * @return {?}
+ */
+function htmlDecode(value) {
+    return $('<div/>').html(value).text();
 }
 /**
  * decode text into html entity
@@ -1937,6 +1956,7 @@ class InputFilter {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+const sanitizeHtml = sanitizeHtml_; // patch to fix rollup to work
 class MultipleSelectFilter {
     /**
      * Initialize the Filter
@@ -1962,9 +1982,14 @@ class MultipleSelectFilter {
             selectAllText: this.translate.instant('SELECT_ALL'),
             selectAllDelimiter: ['', ''],
             // remove default square brackets of default text "[Select All]" => "Select All"
-            // we will subscribe to the onClose event for triggering our callback
-            // also add/remove "filled" class for styling purposes
+            textTemplate: ($elm) => {
+                // render HTML code or not, by default it is sanitized and won't be rendered
+                const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+                return isRenderHtmlEnabled ? $elm.text() : $elm.html();
+            },
             onClose: () => {
+                // we will subscribe to the onClose event for triggering our callback
+                // also add/remove "filled" class for styling purposes
                 const /** @type {?} */ selectedItems = this.$filterElm.multipleSelect('getSelects');
                 if (Array.isArray(selectedItems) && selectedItems.length > 0) {
                     this.isFilled = true;
@@ -1974,7 +1999,9 @@ class MultipleSelectFilter {
                     this.isFilled = false;
                     this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems });
+                if (!arraysEqual(selectedItems, this.searchTerms)) {
+                    this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems });
+                }
             }
         };
     }
@@ -2006,6 +2033,8 @@ class MultipleSelectFilter {
         }
         this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
         this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+        this.labelPrefixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelPrefix : 'labelPrefix';
+        this.labelSuffixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelSuffix : 'labelSuffix';
         this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         let /** @type {?} */ newCollection = this.columnDef.filter.collection || [];
         // user might want to filter certain items of the collection
@@ -2063,15 +2092,28 @@ class MultipleSelectFilter {
      */
     buildTemplateHtmlString(optionCollection) {
         let /** @type {?} */ options = '';
+        const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+        const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
             }
             const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
             const /** @type {?} */ selected = (this.findValueInSearchTerms(option[this.valueName]) >= 0) ? 'selected' : '';
-            const /** @type {?} */ textLabel = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+            const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+            const /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
+            const /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
+            let /** @type {?} */ optionText = prefixText + labelText + suffixText;
+            // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
+            // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
+            if (isRenderHtmlEnabled) {
+                // sanitize any unauthorized html tags like script and others
+                // for the remaining allowed tags we'll permit all attributes
+                const /** @type {?} */ sanitizedText = sanitizeHtml(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizedText);
+            }
             // html text of each select option
-            options += `<option value="${option[this.valueName]}" ${selected}>${textLabel}</option>`;
+            options += `<option value="${option[this.valueName]}" ${selected}>${optionText}</option>`;
             // if there's a search term, we will add the "filled" class for styling purposes
             if (selected) {
                 this.isFilled = true;
@@ -2254,6 +2296,7 @@ class SelectFilter {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+const sanitizeHtml$1 = sanitizeHtml_; // patch to fix rollup to work
 class SingleSelectFilter {
     /**
      * @param {?} translate
@@ -2271,7 +2314,14 @@ class SingleSelectFilter {
             // input search term on top of the select option list
             maxHeight: 200,
             single: true,
+            textTemplate: ($elm) => {
+                // render HTML code or not, by default it is sanitized and won't be rendered
+                const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+                return isRenderHtmlEnabled ? $elm.text() : $elm.html();
+            },
             onClose: () => {
+                // we will subscribe to the onClose event for triggering our callback
+                // also add/remove "filled" class for styling purposes
                 const /** @type {?} */ selectedItems = this.$filterElm.multipleSelect('getSelects');
                 let /** @type {?} */ selectedItem = '';
                 if (Array.isArray(selectedItems) && selectedItems.length > 0) {
@@ -2283,7 +2333,9 @@ class SingleSelectFilter {
                     this.isFilled = false;
                     this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: (selectedItem ? [selectedItem] : null) });
+                if (!arraysEqual(selectedItems, this.searchTerms)) {
+                    this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: (selectedItem ? [selectedItem] : null) });
+                }
             }
         };
     }
@@ -2315,6 +2367,8 @@ class SingleSelectFilter {
         }
         this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
         this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+        this.labelPrefixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelPrefix : 'labelPrefix';
+        this.labelSuffixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelSuffix : 'labelSuffix';
         this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         let /** @type {?} */ newCollection = this.columnDef.filter.collection || [];
         // user might want to filter certain items of the collection
@@ -2379,15 +2433,28 @@ class SingleSelectFilter {
      */
     buildTemplateHtmlString(optionCollection, searchTerm) {
         let /** @type {?} */ options = '';
+        const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+        const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.singleSelect, collection: [ { value: '1', label: 'One' } ]')`);
             }
             const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
             const /** @type {?} */ selected = (option[this.valueName] === searchTerm) ? 'selected' : '';
-            const /** @type {?} */ textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+            const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+            const /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
+            const /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
+            let /** @type {?} */ optionText = prefixText + labelText + suffixText;
+            // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
+            // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
+            if (isRenderHtmlEnabled) {
+                // sanitize any unauthorized html tags like script and others
+                // for the remaining allowed tags we'll permit all attributes
+                const /** @type {?} */ sanitizeText = sanitizeHtml$1(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizeText);
+            }
             // html text of each select option
-            options += `<option value="${option[this.valueName]}" ${selected}>${textLabel}</option>`;
+            options += `<option value="${option[this.valueName]}" ${selected}>${optionText}</option>`;
             // if there's a search term, we will add the "filled" class for styling purposes
             if (selected) {
                 this.isFilled = true;
@@ -2696,6 +2763,12 @@ const GlobalGridOptions = {
     multiColumnSort: true,
     numberedMultiColumnSort: true,
     tristateMultiColumnSort: false,
+    sanitizeHtmlOptions: {
+        allowedTags: ['h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
+            'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+            'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe', 'span'],
+        allowedAttributes: { '*': ['*'] }
+    },
     sortColNumberInSeparateSpan: true,
     suppressActiveCellChangeOnEdit: true,
     pagination: {
@@ -6373,10 +6446,18 @@ class GridStateService {
     subscribeToAllGridChanges(grid) {
         // Subscribe to Event Emitter of Filter changed
         this.subscriptions.push(this.filterService.onFilterChanged.subscribe((currentFilters) => {
+            // if we use Row Selection or the Checkbox Selector, we need to reset any selection
+            if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
+                this._grid.setSelectedRows([]);
+            }
             this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: this.getCurrentGridState() });
         }));
         // Subscribe to Event Emitter of Filter cleared
         this.subscriptions.push(this.filterService.onFilterCleared.subscribe(() => {
+            // if we use Row Selection or the Checkbox Selector, we need to reset any selection
+            if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
+                this._grid.setSelectedRows([]);
+            }
             this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.filter }, gridState: this.getCurrentGridState() });
         }));
         // Subscribe to Event Emitter of Sort changed
@@ -7989,6 +8070,7 @@ class LongTextEditor {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+const sanitizeHtml$2 = sanitizeHtml_; // patch to fix rollup to work
 // height in pixel of the multiple-select DOM element
 const SELECT_ELEMENT_HEIGHT = 26;
 /**
@@ -8017,6 +8099,11 @@ class MultipleSelectEditor {
             width: 150,
             offsetLeft: 20,
             onOpen: () => this.autoAdjustDropPosition(this.$editorElm, this.editorElmOptions),
+            textTemplate: ($elm) => {
+                // render HTML code or not, by default it is sanitized and won't be rendered
+                const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
+                return isRenderHtmlEnabled ? $elm.text() : $elm.html();
+            },
         };
         if (this._translate) {
             this.defaultOptions.countSelected = this._translate.instant('X_OF_Y_SELECTED');
@@ -8071,6 +8158,8 @@ class MultipleSelectEditor {
         this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
         let /** @type {?} */ newCollection = this.columnDef.internalColumnEditor.collection || [];
         this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
+        this.labelPrefixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelPrefix : 'labelPrefix';
+        this.labelSuffixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelSuffix : 'labelSuffix';
         this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
         // user might want to filter certain items of the collection
         if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
@@ -8158,13 +8247,26 @@ class MultipleSelectEditor {
      */
     buildTemplateHtmlString(collection) {
         let /** @type {?} */ options = '';
+        const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
+        const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
             }
             const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
-            const /** @type {?} */ textLabel = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
-            options += `<option value="${option[this.valueName]}">${textLabel}</option>`;
+            const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
+            const /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
+            const /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
+            let /** @type {?} */ optionText = prefixText + labelText + suffixText;
+            // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
+            // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
+            if (isRenderHtmlEnabled) {
+                // sanitize any unauthorized html tags like script and others
+                // for the remaining allowed tags we'll permit all attributes
+                const /** @type {?} */ sanitizeText = sanitizeHtml$2(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizeText);
+            }
+            options += `<option value="${option[this.valueName]}">${optionText}</option>`;
         });
         return `<select class="ms-filter search-filter" multiple="multiple">${options}</select>`;
     }
@@ -8239,6 +8341,7 @@ class MultipleSelectEditor {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+const sanitizeHtml$3 = sanitizeHtml_; // patch to fix rollup to work
 // height in pixel of the multiple-select DOM element
 const SELECT_ELEMENT_HEIGHT$1 = 26;
 /**
@@ -8265,6 +8368,11 @@ class SingleSelectEditor {
             offsetLeft: 20,
             single: true,
             onOpen: () => this.autoAdjustDropPosition(this.$editorElm, this.editorElmOptions),
+            textTemplate: ($elm) => {
+                // render HTML code or not, by default it is sanitized and won't be rendered
+                const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
+                return isRenderHtmlEnabled ? $elm.text() : $elm.html();
+            },
         };
         this.init();
     }
@@ -8312,6 +8420,8 @@ class SingleSelectEditor {
         this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
         let /** @type {?} */ newCollection = this.columnDef.internalColumnEditor.collection || [];
         this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
+        this.labelPrefixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelPrefix : 'labelPrefix';
+        this.labelSuffixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelSuffix : 'labelSuffix';
         this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
         // user might want to filter certain items of the collection
         if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionFilterBy) {
@@ -8400,6 +8510,8 @@ class SingleSelectEditor {
      */
     buildTemplateHtmlString(collection) {
         let /** @type {?} */ options = '';
+        const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
+        const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error('A collection with value/label (or value/labelKey when using ' +
@@ -8407,8 +8519,19 @@ class SingleSelectEditor {
                     '{ collection: [ { value: \'1\', label: \'One\' } ] } } }');
             }
             const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
-            const /** @type {?} */ textLabel = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
-            options += `<option value="${option[this.valueName]}">${textLabel}</option>`;
+            const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
+            const /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
+            const /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
+            let /** @type {?} */ optionText = prefixText + labelText + suffixText;
+            // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
+            // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
+            if (isRenderHtmlEnabled) {
+                // sanitize any unauthorized html tags like script and others
+                // for the remaining allowed tags we'll permit all attributes
+                const /** @type {?} */ sanitizeText = sanitizeHtml$3(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizeText);
+            }
+            options += `<option value="${option[this.valueName]}">${optionText}</option>`;
         });
         return `<select class="ms-filter search-filter">${options}</select>`;
     }
@@ -10398,12 +10521,12 @@ class AngularSlickgridComponent {
     }
     /**
      * On a Pagination changed, we will trigger a Grid State changed with the new pagination info
-     * Also if we use Row Selection, we need to reset them to nothing selected
+     * Also if we use Row Selection or the Checkbox Selector, we need to reset any selection
      * @param {?} pagination
      * @return {?}
      */
     paginationChanged(pagination) {
-        if (this.gridOptions.enableRowSelection) {
+        if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
             this.gridService.setSelectedRows([]);
         }
         this.gridStateService.onGridStateChanged.next({
@@ -10622,5 +10745,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, SliderEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, CompoundSliderFilter as ɵba, InputFilter as ɵbb, MultipleSelectFilter as ɵbd, SelectFilter as ɵbf, SingleSelectFilter as ɵbe, SliderFilter as ɵbc, arrayToCsvFormatter as ɵbg, boldFormatter as ɵbh, checkboxFormatter as ɵbi, checkmarkFormatter as ɵbj, collectionEditorFormatter as ɵbm, collectionFormatter as ɵbl, complexObjectFormatter as ɵbk, dateIsoFormatter as ɵbn, dateTimeIsoAmPmFormatter as ɵbp, dateTimeIsoFormatter as ɵbo, dateTimeUsAmPmFormatter as ɵbs, dateTimeUsFormatter as ɵbr, dateUsFormatter as ɵbq, decimalFormatter as ɵbu, deleteIconFormatter as ɵbt, dollarColoredBoldFormatter as ɵbx, dollarColoredFormatter as ɵbw, dollarFormatter as ɵbv, editIconFormatter as ɵby, hyperlinkFormatter as ɵbz, hyperlinkUriPrefixFormatter as ɵca, infoIconFormatter as ɵcb, lowercaseFormatter as ɵcc, maskFormatter as ɵcd, multipleFormatter as ɵce, percentCompleteBarFormatter as ɵch, percentCompleteFormatter as ɵcg, percentFormatter as ɵcf, percentSymbolFormatter as ɵci, progressBarFormatter as ɵcj, translateBooleanFormatter as ɵcl, translateFormatter as ɵck, uppercaseFormatter as ɵcm, yesNoFormatter as ɵcn, avgTotalsDollarFormatter as ɵcp, avgTotalsFormatter as ɵco, avgTotalsPercentageFormatter as ɵcq, maxTotalsFormatter as ɵcr, minTotalsFormatter as ɵcs, sumTotalsBoldFormatter as ɵcu, sumTotalsColoredFormatter as ɵcv, sumTotalsDollarBoldFormatter as ɵcx, sumTotalsDollarColoredBoldFormatter as ɵcz, sumTotalsDollarColoredFormatter as ɵcy, sumTotalsDollarFormatter as ɵcw, sumTotalsFormatter as ɵct, dateIsoSorter as ɵdb, dateSorter as ɵda, dateUsShortSorter as ɵdd, dateUsSorter as ɵdc, numericSorter as ɵde, stringSorter as ɵdf };
+export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, SliderEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, CompoundSliderFilter as ɵba, InputFilter as ɵbb, MultipleSelectFilter as ɵbd, SelectFilter as ɵbf, SingleSelectFilter as ɵbe, SliderFilter as ɵbc, arrayToCsvFormatter as ɵbg, boldFormatter as ɵbh, checkboxFormatter as ɵbi, checkmarkFormatter as ɵbj, collectionEditorFormatter as ɵbm, collectionFormatter as ɵbl, complexObjectFormatter as ɵbk, dateIsoFormatter as ɵbn, dateTimeIsoAmPmFormatter as ɵbp, dateTimeIsoFormatter as ɵbo, dateTimeUsAmPmFormatter as ɵbs, dateTimeUsFormatter as ɵbr, dateUsFormatter as ɵbq, decimalFormatter as ɵbu, deleteIconFormatter as ɵbt, dollarColoredBoldFormatter as ɵbx, dollarColoredFormatter as ɵbw, dollarFormatter as ɵbv, editIconFormatter as ɵby, hyperlinkFormatter as ɵbz, hyperlinkUriPrefixFormatter as ɵca, infoIconFormatter as ɵcb, lowercaseFormatter as ɵcc, maskFormatter as ɵcd, multipleFormatter as ɵce, percentCompleteBarFormatter as ɵch, percentCompleteFormatter as ɵcg, percentFormatter as ɵcf, percentSymbolFormatter as ɵci, progressBarFormatter as ɵcj, translateBooleanFormatter as ɵcl, translateFormatter as ɵck, uppercaseFormatter as ɵcm, yesNoFormatter as ɵcn, avgTotalsDollarFormatter as ɵcp, avgTotalsFormatter as ɵco, avgTotalsPercentageFormatter as ɵcq, maxTotalsFormatter as ɵcr, minTotalsFormatter as ɵcs, sumTotalsBoldFormatter as ɵcu, sumTotalsColoredFormatter as ɵcv, sumTotalsDollarBoldFormatter as ɵcx, sumTotalsDollarColoredBoldFormatter as ɵcz, sumTotalsDollarColoredFormatter as ɵcy, sumTotalsDollarFormatter as ɵcw, sumTotalsFormatter as ɵct, dateIsoSorter as ɵdb, dateSorter as ɵda, dateUsShortSorter as ɵdd, dateUsSorter as ɵdc, numericSorter as ɵde, stringSorter as ɵdf };
 //# sourceMappingURL=angular-slickgrid.js.map

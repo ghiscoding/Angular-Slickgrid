@@ -18,6 +18,10 @@ export declare class MultipleSelectEditor implements Editor {
     valueName: string;
     /** The property name for labels in the collection */
     labelName: string;
+    /** The property name for a prefix that can be added to the labels in the collection */
+    labelPrefixName: string;
+    /** The property name for a suffix that can be added to the labels in the collection */
+    labelSuffixName: string;
     /** Grid options */
     gridOptions: GridOption;
     /** Do we translate the label? */

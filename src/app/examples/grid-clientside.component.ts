@@ -44,6 +44,12 @@ export class GridClientSideComponent implements OnInit {
   constructor(private http: HttpClient, private translate: TranslateService) {}
 
   ngOnInit(): void {
+    // prepare a multiple-select array to filter with
+    const multiSelectFilterArray = [];
+    for (let i = 0; i < NB_ITEMS; i++) {
+      multiSelectFilterArray.push({ value: i, label: i, labelSuffix: ' days' });
+    }
+
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', sortable: true, minWidth: 55,
         type: FieldType.string, filterable: true, filter: { model: Filters.compoundInput }
@@ -94,6 +100,10 @@ export class GridClientSideComponent implements OnInit {
         sortable: true,
         filterable: true,
         filter: {
+          // We can also add HTML text to be rendered (any bad script will be sanitized) but we have to opt-in, else it will be sanitized
+          // enableRenderHtml: true,
+          // collection: [{ value: '', label: '' }, { value: true, label: 'True', labelPrefix: `<i class="fa fa-check"></i> ` }, { value: false, label: 'False' }],
+
           collection: [ { value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' } ],
           model: Filters.singleSelect,
 

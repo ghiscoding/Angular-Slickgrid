@@ -514,10 +514,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   /**
    * On a Pagination changed, we will trigger a Grid State changed with the new pagination info
-   * Also if we use Row Selection, we need to reset them to nothing selected
+   * Also if we use Row Selection or the Checkbox Selector, we need to reset any selection
    */
   paginationChanged(pagination: Pagination) {
-    if (this.gridOptions.enableRowSelection) {
+    if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
       this.gridService.setSelectedRows([]);
     }
 

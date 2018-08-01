@@ -8,8 +8,9 @@ import {
   MultipleSelectOption,
   SelectOption
 } from './../models/index';
-import { findOrDefault, CollectionService } from '../services/index';
-import { Injectable } from '@angular/core';
+import { findOrDefault, CollectionService, htmlEncode } from '../services/index';
+import * as sanitizeHtml_ from 'sanitize-html';
+const sanitizeHtml = sanitizeHtml_; // patch to fix rollup to work
 
 // height in pixel of the multiple-select DOM element
 const SELECT_ELEMENT_HEIGHT = 26;
@@ -42,6 +43,12 @@ export class SingleSelectEditor implements Editor {
   /** The property name for labels in the collection */
   labelName: string;
 
+  /** The property name for a prefix that can be added to the labels in the collection */
+  labelPrefixName: string;
+
+   /** The property name for a suffix that can be added to the labels in the collection */
+  labelSuffixName: string;
+
   /** Grid options */
   gridOptions: GridOption;
 
@@ -64,6 +71,11 @@ export class SingleSelectEditor implements Editor {
       offsetLeft: 20,
       single: true,
       onOpen: () => this.autoAdjustDropPosition(this.$editorElm, this.editorElmOptions),
+      textTemplate: ($elm) => {
+        // render HTML code or not, by default it is sanitized and won't be rendered
+        const isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
+        return isRenderHtmlEnabled ? $elm.text() : $elm.html();
+      },
     };
 
     this.init();
@@ -107,6 +119,8 @@ export class SingleSelectEditor implements Editor {
     this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
     let newCollection =  this.columnDef.internalColumnEditor.collection || [];
     this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
+    this.labelPrefixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelPrefix : 'labelPrefix';
+    this.labelSuffixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelSuffix : 'labelSuffix';
     this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
 
     // user might want to filter certain items of the collection
@@ -182,6 +196,9 @@ export class SingleSelectEditor implements Editor {
 
   private buildTemplateHtmlString(collection: any[]) {
     let options = '';
+    const isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
+    const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
+
     collection.forEach((option: SelectOption) => {
       if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
         throw new Error('A collection with value/label (or value/labelKey when using ' +
@@ -189,9 +206,21 @@ export class SingleSelectEditor implements Editor {
           '{ collection: [ { value: \'1\', label: \'One\' } ] } } }');
       }
       const labelKey = (option.labelKey || option[this.labelName]) as string;
-      const textLabel = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
+      const labelText = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
+      const prefixText = option[this.labelPrefixName] || '';
+      const suffixText = option[this.labelSuffixName] || '';
+      let optionText = prefixText + labelText + suffixText;
 
-      options += `<option value="${option[this.valueName]}">${textLabel}</option>`;
+      // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
+      // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
+      if (isRenderHtmlEnabled) {
+        // sanitize any unauthorized html tags like script and others
+        // for the remaining allowed tags we'll permit all attributes
+        const sanitizeText = sanitizeHtml(optionText, sanitizedOptions);
+        optionText = htmlEncode(sanitizeText);
+      }
+
+      options += `<option value="${option[this.valueName]}">${optionText}</option>`;
     });
 
     return `<select class="ms-filter search-filter">${options}</select>`;

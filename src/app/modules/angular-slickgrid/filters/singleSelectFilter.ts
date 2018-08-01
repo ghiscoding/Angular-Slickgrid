@@ -1,6 +1,4 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Injectable } from '@angular/core';
-import { CollectionService } from './../services/collection.service';
 import {
   Column,
   Filter,
@@ -13,6 +11,10 @@ import {
   SearchTerm,
   SelectOption,
 } from './../models/index';
+import { CollectionService } from './../services/collection.service';
+import { arraysEqual, htmlEncode } from '../services/utilities';
+import * as sanitizeHtml_ from 'sanitize-html';
+const sanitizeHtml = sanitizeHtml_; // patch to fix rollup to work
 
 // using external non-typed js libraries
 declare var $: any;
@@ -26,6 +28,8 @@ export class SingleSelectFilter implements Filter {
   defaultOptions: MultipleSelectOption;
   isFilled = false;
   labelName: string;
+  labelPrefixName: string;
+  labelSuffixName: string;
   valueName: string;
   enableTranslateLabel = false;
 
@@ -36,7 +40,14 @@ export class SingleSelectFilter implements Filter {
       filter: false,  // input search term on top of the select option list
       maxHeight: 200,
       single: true,
+      textTemplate: ($elm) => {
+        // render HTML code or not, by default it is sanitized and won't be rendered
+        const isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+        return isRenderHtmlEnabled ? $elm.text() : $elm.html();
+      },
       onClose: () => {
+        // we will subscribe to the onClose event for triggering our callback
+        // also add/remove "filled" class for styling purposes
         const selectedItems = this.$filterElm.multipleSelect('getSelects');
         let selectedItem = '';
 
@@ -48,7 +59,10 @@ export class SingleSelectFilter implements Filter {
           this.isFilled = false;
           this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
         }
-        this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: (selectedItem ? [selectedItem] : null) });
+
+        if (!arraysEqual(selectedItems, this.searchTerms)) {
+          this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: (selectedItem ? [selectedItem] : null) });
+        }
       }
     };
   }
@@ -77,6 +91,8 @@ export class SingleSelectFilter implements Filter {
 
     this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
     this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+    this.labelPrefixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelPrefix : 'labelPrefix';
+    this.labelSuffixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelSuffix : 'labelSuffix';
     this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
 
     let newCollection = this.columnDef.filter.collection || [];
@@ -148,6 +164,9 @@ export class SingleSelectFilter implements Filter {
    */
   private buildTemplateHtmlString(optionCollection: any[], searchTerm?: SearchTerm) {
     let options = '';
+    const isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+    const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
+
     optionCollection.forEach((option: SelectOption) => {
       if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
         throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.singleSelect, collection: [ { value: '1', label: 'One' } ]')`);
@@ -155,10 +174,22 @@ export class SingleSelectFilter implements Filter {
 
       const labelKey = (option.labelKey || option[this.labelName]) as string;
       const selected = (option[this.valueName] === searchTerm) ? 'selected' : '';
-      const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+      const labelText = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+      const prefixText = option[this.labelPrefixName] || '';
+      const suffixText = option[this.labelSuffixName] || '';
+      let optionText = prefixText + labelText + suffixText;
+
+      // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
+      // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
+      if (isRenderHtmlEnabled) {
+        // sanitize any unauthorized html tags like script and others
+        // for the remaining allowed tags we'll permit all attributes
+        const sanitizeText = sanitizeHtml(optionText, sanitizedOptions);
+        optionText = htmlEncode(sanitizeText);
+      }
 
       // html text of each select option
-      options += `<option value="${option[this.valueName]}" ${selected}>${textLabel}</option>`;
+      options += `<option value="${option[this.valueName]}" ${selected}>${optionText}</option>`;
 
       // if there's a search term, we will add the "filled" class for styling purposes
       if (selected) {

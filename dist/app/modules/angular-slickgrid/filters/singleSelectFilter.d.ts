@@ -1,6 +1,6 @@
 import { TranslateService } from '@ngx-translate/core';
-import { CollectionService } from './../services/collection.service';
 import { Column, Filter, FilterArguments, FilterCallback, MultipleSelectOption, OperatorType, OperatorString, SearchTerm } from './../models/index';
+import { CollectionService } from './../services/collection.service';
 export declare class SingleSelectFilter implements Filter {
     private translate;
     private collectionService;
@@ -12,6 +12,8 @@ export declare class SingleSelectFilter implements Filter {
     defaultOptions: MultipleSelectOption;
     isFilled: boolean;
     labelName: string;
+    labelPrefixName: string;
+    labelSuffixName: string;
     valueName: string;
     enableTranslateLabel: boolean;
     constructor(translate: TranslateService, collectionService: CollectionService);

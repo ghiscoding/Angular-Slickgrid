@@ -22,6 +22,12 @@ export interface ColumnEditor {
   /** Options that could be provided to the Editor, example: { container: 'body', maxHeight: 250} */
   editorOptions?: MultipleSelectOption | any;
 
+  /**
+   * Defaults to false, when set it will render any HTML code instead of removing it (sanitized)
+   * Only used so far in the MultipleSelect & SingleSelect Filters will support it
+   */
+  enableRenderHtml?: boolean;
+
   /** Do we want the Editor to handle translation (localization)? */
   enableTranslateLabel?: boolean;
 
@@ -47,6 +53,8 @@ export interface ColumnEditor {
   customStructure?: {
     label: string;
     value: string;
+    labelPrefix?: string;
+    labelSuffix?: string;
   };
 
   /** DOM element extra options */

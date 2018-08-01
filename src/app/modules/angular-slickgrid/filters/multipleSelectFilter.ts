@@ -1,6 +1,4 @@
-import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CollectionService } from './../services/collection.service';
 import {
   Column,
   Filter,
@@ -17,6 +15,10 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import { castToPromise } from '../services/utilities';
+import { CollectionService } from './../services/collection.service';
+import { arraysEqual, htmlEncode } from '../services/utilities';
+import * as sanitizeHtml_ from 'sanitize-html';
+const sanitizeHtml = sanitizeHtml_; // patch to fix rollup to work
 
 // using external non-typed js libraries
 declare var $: any;
@@ -30,6 +32,8 @@ export class MultipleSelectFilter implements Filter {
   defaultOptions: MultipleSelectOption;
   isFilled = false;
   labelName: string;
+  labelPrefixName: string;
+  labelSuffixName: string;
   valueName: string;
   enableTranslateLabel = false;
   subscriptions: Subscription[] = [];
@@ -49,10 +53,14 @@ export class MultipleSelectFilter implements Filter {
       allSelected: this.translate.instant('ALL_SELECTED'),
       selectAllText: this.translate.instant('SELECT_ALL'),
       selectAllDelimiter: ['', ''], // remove default square brackets of default text "[Select All]" => "Select All"
-
-      // we will subscribe to the onClose event for triggering our callback
-      // also add/remove "filled" class for styling purposes
+      textTemplate: ($elm) => {
+        // render HTML code or not, by default it is sanitized and won't be rendered
+        const isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+        return isRenderHtmlEnabled ? $elm.text() : $elm.html();
+      },
       onClose: () => {
+        // we will subscribe to the onClose event for triggering our callback
+        // also add/remove "filled" class for styling purposes
         const selectedItems = this.$filterElm.multipleSelect('getSelects');
         if (Array.isArray(selectedItems) && selectedItems.length > 0) {
           this.isFilled = true;
@@ -61,7 +69,10 @@ export class MultipleSelectFilter implements Filter {
           this.isFilled = false;
           this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
         }
-        this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems });
+
+        if (!arraysEqual(selectedItems, this.searchTerms)) {
+          this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems });
+        }
       }
     };
   }
@@ -90,6 +101,8 @@ export class MultipleSelectFilter implements Filter {
 
     this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
     this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
+    this.labelPrefixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelPrefix : 'labelPrefix';
+    this.labelSuffixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelSuffix : 'labelSuffix';
     this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
 
     // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
@@ -230,16 +243,31 @@ export class MultipleSelectFilter implements Filter {
    */
   private buildTemplateHtmlString(optionCollection: any[], searchTerms: SearchTerm[]) {
     let options = '';
+    const isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+    const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
+
     optionCollection.forEach((option: SelectOption) => {
       if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
         throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
       }
       const labelKey = (option.labelKey || option[this.labelName]) as string;
       const selected = (searchTerms.findIndex((term) => term === option[this.valueName]) >= 0) ? 'selected' : '';
-      const textLabel = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+      const labelText = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+      const prefixText = option[this.labelPrefixName] || '';
+      const suffixText = option[this.labelSuffixName] || '';
+      let optionText = prefixText + labelText + suffixText;
+
+      // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
+      // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
+      if (isRenderHtmlEnabled) {
+        // sanitize any unauthorized html tags like script and others
+        // for the remaining allowed tags we'll permit all attributes
+        const sanitizedText = sanitizeHtml(optionText, sanitizedOptions);
+        optionText = htmlEncode(sanitizedText);
+      }
 
       // html text of each select option
-      options += `<option value="${option[this.valueName]}" ${selected}>${textLabel}</option>`;
+      options += `<option value="${option[this.valueName]}" ${selected}>${optionText}</option>`;
 
       // if there's a search term, we will add the "filled" class for styling purposes
       if (selected) {

@@ -8,6 +8,10 @@ import 'rxjs/add/operator/toPromise';
  * @param int nbSpaces: number of white spaces to create
  */
 export declare function addWhiteSpaces(nbSpaces: any): string;
+/** HTML encode using jQuery */
+export declare function htmlEncode(value: any): any;
+/** HTML decode using jQuery */
+export declare function htmlDecode(value: any): any;
 /** decode text into html entity
  * @param string text: input text
  * @param string text: output text

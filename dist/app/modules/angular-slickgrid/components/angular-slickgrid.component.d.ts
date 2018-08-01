@@ -89,7 +89,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     mergeGridOptions(gridOptions: any): GridOption;
     /**
      * On a Pagination changed, we will trigger a Grid State changed with the new pagination info
-     * Also if we use Row Selection, we need to reset them to nothing selected
+     * Also if we use Row Selection or the Checkbox Selector, we need to reset any selection
      */
     paginationChanged(pagination: Pagination): void;
     /**

@@ -163,7 +163,12 @@ export class GridEditorComponent implements OnInit {
         type: FieldType.number,
         editor: {
           model: Editors.singleSelect,
-          collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k })),
+
+          // We can also add HTML text to be rendered (any bad script will be sanitized) but we have to opt-in, else it will be sanitized
+          enableRenderHtml: true,
+          collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, labelSuffix: '<i class="fa fa-percent" style="color:cadetblue"></i>' })),
+
+          // collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, labelSuffix: '%' })),
           collectionSortBy: {
             property: 'label',
             sortDesc: true
