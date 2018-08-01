@@ -164,6 +164,7 @@ export class SingleSelectFilter implements Filter {
    */
   private buildTemplateHtmlString(optionCollection: any[], searchTerm?: SearchTerm) {
     let options = '';
+    const isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure && this.columnDef.filter.customStructure.addSpaceBetweenLabels || false;
     const isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
     const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
 
@@ -177,7 +178,7 @@ export class SingleSelectFilter implements Filter {
       const labelText = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
       const prefixText = option[this.labelPrefixName] || '';
       const suffixText = option[this.labelSuffixName] || '';
-      let optionText = prefixText + labelText + suffixText;
+      let optionText = isAddingSpaceBetweenLabels ? `${prefixText} ${labelText} ${suffixText}` : (prefixText + labelText + suffixText);
 
       // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
       // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
