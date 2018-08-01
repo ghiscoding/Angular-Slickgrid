@@ -257,6 +257,9 @@
       font-weight: normal;
       padding: 5px 8px;
       color: $multiselect-select-all-text-color;
+      &:hover {
+        color: $multiselect-select-all-text-hover-color;
+      }
     }
   }
   .ms-ok-button {
@@ -274,6 +277,7 @@
     background-color: $multiselect-ok-button-bg-color;
     &:hover {
       background-color: $multiselect-ok-button-bg-hover-color;
+      color: $multiselect-ok-button-text-hover-color;
     }
   }
 }
