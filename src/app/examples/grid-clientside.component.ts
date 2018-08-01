@@ -166,7 +166,7 @@ export class GridClientSideComponent implements OnInit {
           // then refresh the Filter "collection", we have 2 ways of doing it
 
           // Push to the filter "collection"
-          collection.push({ value: lastRowIndex, label: lastRowIndex });
+          collection.push({ value: lastRowIndex, label: lastRowIndex, text: 'days' });
 
           // or replace entire "collection"
           // durationColumnDef.filter.collection = [...collection, ...[{ value: lastRowIndex, label: lastRowIndex }]];
