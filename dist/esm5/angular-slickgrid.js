@@ -177,6 +177,11 @@ function addWhiteSpaces(nbSpaces) {
     }
     return result;
 }
+function objectsDeepEqual(x, y) {
+    var ok = Object.keys, tx = typeof x, ty = typeof y;
+    return x && y && tx === 'object' && tx === ty ? (ok(x).length === ok(y).length &&
+        ok(x).every(function (key) { return objectsDeepEqual(x[key], y[key]); })) : (x === y);
+}
 function htmlEncode(value) {
     return $('<div/>').text(value).html();
 }
@@ -200,7 +205,7 @@ function arraysEqual(a, b, orderMatters) {
     if (a === b) {
         return true;
     }
-    if (a === null || b === null) {
+    if (!a || !b) {
         return false;
     }
     if (a.length !== b.length) {
@@ -1348,9 +1353,7 @@ var MultipleSelectFilter = /** @class */ (function () {
                     _this.isFilled = false;
                     _this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                if (!arraysEqual(selectedItems, _this.searchTerms)) {
-                    _this.callback(undefined, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: selectedItems });
-                }
+                _this.callback(undefined, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: selectedItems });
             }
         };
     }
@@ -1414,6 +1417,7 @@ var MultipleSelectFilter = /** @class */ (function () {
     MultipleSelectFilter.prototype.buildTemplateHtmlString = function (optionCollection) {
         var _this = this;
         var options = '';
+        var isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure && this.columnDef.filter.customStructure.addSpaceBetweenLabels || false;
         var isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach(function (option) {
@@ -1425,7 +1429,7 @@ var MultipleSelectFilter = /** @class */ (function () {
             var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
             var prefixText = option[_this.labelPrefixName] || '';
             var suffixText = option[_this.labelSuffixName] || '';
-            var optionText = prefixText + labelText + suffixText;
+            var optionText = isAddingSpaceBetweenLabels ? prefixText + " " + labelText + " " + suffixText : (prefixText + labelText + suffixText);
             if (isRenderHtmlEnabled) {
                 var sanitizedText = sanitizeHtml(optionText, sanitizedOptions);
                 optionText = htmlEncode(sanitizedText);
@@ -1585,9 +1589,7 @@ var SingleSelectFilter = /** @class */ (function () {
                     _this.isFilled = false;
                     _this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
                 }
-                if (!arraysEqual(selectedItems, _this.searchTerms)) {
-                    _this.callback(undefined, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: (selectedItem ? [selectedItem] : null) });
-                }
+                _this.callback(undefined, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: (selectedItem ? [selectedItem] : null) });
             }
         };
     }
@@ -1656,6 +1658,7 @@ var SingleSelectFilter = /** @class */ (function () {
     SingleSelectFilter.prototype.buildTemplateHtmlString = function (optionCollection, searchTerm) {
         var _this = this;
         var options = '';
+        var isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure && this.columnDef.filter.customStructure.addSpaceBetweenLabels || false;
         var isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach(function (option) {
@@ -1667,7 +1670,7 @@ var SingleSelectFilter = /** @class */ (function () {
             var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
             var prefixText = option[_this.labelPrefixName] || '';
             var suffixText = option[_this.labelSuffixName] || '';
-            var optionText = prefixText + labelText + suffixText;
+            var optionText = isAddingSpaceBetweenLabels ? prefixText + " " + labelText + " " + suffixText : (prefixText + labelText + suffixText);
             if (isRenderHtmlEnabled) {
                 var sanitizeText = sanitizeHtml$1(optionText, sanitizedOptions);
                 optionText = htmlEncode(sanitizeText);
@@ -2197,6 +2200,7 @@ var FilterService = /** @class */ (function () {
             var operator = args.operator || undefined;
             var hasSearchTerms = searchTerms && Array.isArray(searchTerms);
             var termsCount = hasSearchTerms && searchTerms.length;
+            var oldColumnFilters = Object.assign({}, this._columnFilters);
             if (!hasSearchTerms || termsCount === 0 || (termsCount === 1 && searchTerms[0] === '')) {
                 delete this._columnFilters[columnId];
             }
@@ -2212,16 +2216,18 @@ var FilterService = /** @class */ (function () {
                 }
                 this._columnFilters[colId] = colFilter;
             }
-            this.triggerEvent(this._slickSubscriber, {
-                clearFilterTriggered: args && args.clearFilterTriggered,
-                columnId: columnId,
-                columnDef: args.columnDef || null,
-                columnFilters: this._columnFilters,
-                operator: operator,
-                searchTerms: searchTerms,
-                serviceOptions: this._onFilterChangedOptions,
-                grid: this._grid
-            }, e);
+            if (!objectsDeepEqual(oldColumnFilters, this._columnFilters)) {
+                this.triggerEvent(this._slickSubscriber, {
+                    clearFilterTriggered: args && args.clearFilterTriggered,
+                    columnId: columnId,
+                    columnDef: args.columnDef || null,
+                    columnFilters: this._columnFilters,
+                    operator: operator,
+                    searchTerms: searchTerms,
+                    serviceOptions: this._onFilterChangedOptions,
+                    grid: this._grid
+                }, e);
+            }
         }
     };
     FilterService.prototype.addFilterTemplateToHeaderRow = function (args) {
@@ -5872,6 +5878,7 @@ var MultipleSelectEditor = /** @class */ (function () {
     MultipleSelectEditor.prototype.buildTemplateHtmlString = function (collection) {
         var _this = this;
         var options = '';
+        var isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure && this.columnDef.internalColumnEditor.customStructure.addSpaceBetweenLabels || false;
         var isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach(function (option) {
@@ -5882,7 +5889,7 @@ var MultipleSelectEditor = /** @class */ (function () {
             var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
             var prefixText = option[_this.labelPrefixName] || '';
             var suffixText = option[_this.labelSuffixName] || '';
-            var optionText = prefixText + labelText + suffixText;
+            var optionText = isAddingSpaceBetweenLabels ? prefixText + " " + labelText + " " + suffixText : (prefixText + labelText + suffixText);
             if (isRenderHtmlEnabled) {
                 var sanitizeText = sanitizeHtml$2(optionText, sanitizedOptions);
                 optionText = htmlEncode(sanitizeText);
@@ -6063,6 +6070,7 @@ var SingleSelectEditor = /** @class */ (function () {
     SingleSelectEditor.prototype.buildTemplateHtmlString = function (collection) {
         var _this = this;
         var options = '';
+        var isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure && this.columnDef.internalColumnEditor.customStructure.addSpaceBetweenLabels || false;
         var isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach(function (option) {
@@ -6075,7 +6083,7 @@ var SingleSelectEditor = /** @class */ (function () {
             var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
             var prefixText = option[_this.labelPrefixName] || '';
             var suffixText = option[_this.labelSuffixName] || '';
-            var optionText = prefixText + labelText + suffixText;
+            var optionText = isAddingSpaceBetweenLabels ? prefixText + " " + labelText + " " + suffixText : (prefixText + labelText + suffixText);
             if (isRenderHtmlEnabled) {
                 var sanitizeText = sanitizeHtml$3(optionText, sanitizedOptions);
                 optionText = htmlEncode(sanitizeText);
@@ -7508,5 +7516,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, SliderEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, CompoundSliderFilter as ɵba, InputFilter as ɵbb, MultipleSelectFilter as ɵbd, SelectFilter as ɵbf, SingleSelectFilter as ɵbe, SliderFilter as ɵbc, arrayToCsvFormatter as ɵbg, boldFormatter as ɵbh, checkboxFormatter as ɵbi, checkmarkFormatter as ɵbj, collectionEditorFormatter as ɵbm, collectionFormatter as ɵbl, complexObjectFormatter as ɵbk, dateIsoFormatter as ɵbn, dateTimeIsoAmPmFormatter as ɵbp, dateTimeIsoFormatter as ɵbo, dateTimeUsAmPmFormatter as ɵbs, dateTimeUsFormatter as ɵbr, dateUsFormatter as ɵbq, decimalFormatter as ɵbu, deleteIconFormatter as ɵbt, dollarColoredBoldFormatter as ɵbx, dollarColoredFormatter as ɵbw, dollarFormatter as ɵbv, editIconFormatter as ɵby, hyperlinkFormatter as ɵbz, hyperlinkUriPrefixFormatter as ɵca, infoIconFormatter as ɵcb, lowercaseFormatter as ɵcc, maskFormatter as ɵcd, multipleFormatter as ɵce, percentCompleteBarFormatter as ɵch, percentCompleteFormatter as ɵcg, percentFormatter as ɵcf, percentSymbolFormatter as ɵci, progressBarFormatter as ɵcj, translateBooleanFormatter as ɵcl, translateFormatter as ɵck, uppercaseFormatter as ɵcm, yesNoFormatter as ɵcn, avgTotalsDollarFormatter as ɵcp, avgTotalsFormatter as ɵco, avgTotalsPercentageFormatter as ɵcq, maxTotalsFormatter as ɵcr, minTotalsFormatter as ɵcs, sumTotalsBoldFormatter as ɵcu, sumTotalsColoredFormatter as ɵcv, sumTotalsDollarBoldFormatter as ɵcx, sumTotalsDollarColoredBoldFormatter as ɵcz, sumTotalsDollarColoredFormatter as ɵcy, sumTotalsDollarFormatter as ɵcw, sumTotalsFormatter as ɵct, dateIsoSorter as ɵdb, dateSorter as ɵda, dateUsShortSorter as ɵdd, dateUsSorter as ɵdc, numericSorter as ɵde, stringSorter as ɵdf };
+export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, objectsDeepEqual, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SingleSelectEditor as ɵk, SliderEditor as ɵl, TextEditor as ɵm, booleanFilterCondition as ɵo, collectionSearchFilterCondition as ɵp, dateFilterCondition as ɵq, dateIsoFilterCondition as ɵr, dateUsFilterCondition as ɵt, dateUsShortFilterCondition as ɵu, dateUtcFilterCondition as ɵs, executeMappedCondition as ɵn, testFilterCondition as ɵx, numberFilterCondition as ɵv, stringFilterCondition as ɵw, CompoundDateFilter as ɵy, CompoundInputFilter as ɵz, CompoundSliderFilter as ɵba, InputFilter as ɵbb, MultipleSelectFilter as ɵbd, SelectFilter as ɵbf, SingleSelectFilter as ɵbe, SliderFilter as ɵbc, arrayToCsvFormatter as ɵbg, boldFormatter as ɵbh, checkboxFormatter as ɵbi, checkmarkFormatter as ɵbj, collectionEditorFormatter as ɵbm, collectionFormatter as ɵbl, complexObjectFormatter as ɵbk, dateIsoFormatter as ɵbn, dateTimeIsoAmPmFormatter as ɵbp, dateTimeIsoFormatter as ɵbo, dateTimeUsAmPmFormatter as ɵbs, dateTimeUsFormatter as ɵbr, dateUsFormatter as ɵbq, decimalFormatter as ɵbu, deleteIconFormatter as ɵbt, dollarColoredBoldFormatter as ɵbx, dollarColoredFormatter as ɵbw, dollarFormatter as ɵbv, editIconFormatter as ɵby, hyperlinkFormatter as ɵbz, hyperlinkUriPrefixFormatter as ɵca, infoIconFormatter as ɵcb, lowercaseFormatter as ɵcc, maskFormatter as ɵcd, multipleFormatter as ɵce, percentCompleteBarFormatter as ɵch, percentCompleteFormatter as ɵcg, percentFormatter as ɵcf, percentSymbolFormatter as ɵci, progressBarFormatter as ɵcj, translateBooleanFormatter as ɵcl, translateFormatter as ɵck, uppercaseFormatter as ɵcm, yesNoFormatter as ɵcn, avgTotalsDollarFormatter as ɵcp, avgTotalsFormatter as ɵco, avgTotalsPercentageFormatter as ɵcq, maxTotalsFormatter as ɵcr, minTotalsFormatter as ɵcs, sumTotalsBoldFormatter as ɵcu, sumTotalsColoredFormatter as ɵcv, sumTotalsDollarBoldFormatter as ɵcx, sumTotalsDollarColoredBoldFormatter as ɵcz, sumTotalsDollarColoredFormatter as ɵcy, sumTotalsDollarFormatter as ɵcw, sumTotalsFormatter as ɵct, dateIsoSorter as ɵdb, dateSorter as ɵda, dateUsShortSorter as ɵdd, dateUsSorter as ɵdc, numericSorter as ɵde, stringSorter as ɵdf };
 //# sourceMappingURL=angular-slickgrid.js.map

@@ -8,6 +8,12 @@ import 'rxjs/add/operator/toPromise';
  * @param int nbSpaces: number of white spaces to create
  */
 export declare function addWhiteSpaces(nbSpaces: any): string;
+/**
+ * Compares two objects to determine if all the properties are equal
+ * We will do a deep check recursively to make sure all properties really are the same
+ * @param x first object
+ * @param y second object to compare with a  */
+export declare function objectsDeepEqual(x: any, y: any): any;
 /** HTML encode using jQuery */
 export declare function htmlEncode(value: any): any;
 /** HTML decode using jQuery */
