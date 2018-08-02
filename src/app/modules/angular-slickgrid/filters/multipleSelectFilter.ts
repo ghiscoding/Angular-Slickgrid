@@ -12,7 +12,7 @@ import {
   SelectOption,
 } from './../models/index';
 import { CollectionService } from './../services/collection.service';
-import { arraysEqual, htmlEncode } from '../services/utilities';
+import { htmlEncode } from '../services/utilities';
 import * as sanitizeHtml_ from 'sanitize-html';
 const sanitizeHtml = sanitizeHtml_; // patch to fix rollup to work
 
@@ -65,9 +65,7 @@ export class MultipleSelectFilter implements Filter {
           this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
         }
 
-        if (!arraysEqual(selectedItems, this.searchTerms)) {
-          this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems });
-        }
+        this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems });
       }
     };
   }
