@@ -542,7 +542,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.grid.invalidate();
       this.grid.render();
 
-      if (this.gridOptions.enablePagination || this.gridOptions.backendServiceApi) {
+      if (this.gridOptions.backendServiceApi) {
         // do we want to show pagination?
         // if we have a backendServiceApi and the enablePagination is undefined, we'll assume that we do want to see it, else get that defined value
         this.showPagination = ((this.gridOptions.backendServiceApi && this.gridOptions.enablePagination === undefined) ? true : this.gridOptions.enablePagination) || false;
