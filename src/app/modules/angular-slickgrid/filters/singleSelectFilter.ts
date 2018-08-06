@@ -13,8 +13,8 @@ import {
 } from './../models/index';
 import { CollectionService } from './../services/collection.service';
 import { htmlEncode } from '../services/utilities';
-import * as sanitizeHtml_ from 'sanitize-html';
-const sanitizeHtml = sanitizeHtml_; // patch to fix rollup to work
+import * as DOMPurify_ from 'dompurify';
+const DOMPurify = DOMPurify_; // patch to fix rollup to work
 
 // using external non-typed js libraries
 declare var $: any;
@@ -183,8 +183,8 @@ export class SingleSelectFilter implements Filter {
       if (isRenderHtmlEnabled) {
         // sanitize any unauthorized html tags like script and others
         // for the remaining allowed tags we'll permit all attributes
-        const sanitizeText = sanitizeHtml(optionText, sanitizedOptions);
-        optionText = htmlEncode(sanitizeText);
+        const sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
+        optionText = htmlEncode(sanitizedText);
       }
 
       // html text of each select option
