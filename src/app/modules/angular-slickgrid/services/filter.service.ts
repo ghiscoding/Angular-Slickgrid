@@ -1,5 +1,4 @@
-import { Component, Injectable } from '@angular/core';
-import { castToPromise, objectsDeepEqual } from './utilities';
+import { Injectable } from '@angular/core';
 import { FilterConditions } from './../filter-conditions';
 import {
   Column,
@@ -16,8 +15,10 @@ import {
   SlickEvent,
   OperatorString
 } from './../models/index';
+import { castToPromise } from './utilities';
 import { FilterFactory } from '../filters/filterFactory';
 import { Subject } from 'rxjs/Subject';
+import * as isequal from 'lodash.isequal';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -346,7 +347,7 @@ export class FilterService {
       }
 
       // trigger an event only if Filters changed
-      if (!objectsDeepEqual(oldColumnFilters, this._columnFilters)) {
+      if (!isequal(oldColumnFilters, this._columnFilters)) {
         this.triggerEvent(this._slickSubscriber, {
           clearFilterTriggered: args && args.clearFilterTriggered,
           columnId,
