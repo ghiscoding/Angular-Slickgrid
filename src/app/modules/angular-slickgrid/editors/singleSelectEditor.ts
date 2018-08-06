@@ -9,8 +9,8 @@ import {
   SelectOption
 } from './../models/index';
 import { findOrDefault, CollectionService, htmlEncode } from '../services/index';
-import * as sanitizeHtml_ from 'sanitize-html';
-const sanitizeHtml = sanitizeHtml_; // patch to fix rollup to work
+import * as DOMPurify_ from 'dompurify';
+const DOMPurify = DOMPurify_; // patch to fix rollup to work
 
 // height in pixel of the multiple-select DOM element
 const SELECT_ELEMENT_HEIGHT = 26;
@@ -217,8 +217,8 @@ export class SingleSelectEditor implements Editor {
       if (isRenderHtmlEnabled) {
         // sanitize any unauthorized html tags like script and others
         // for the remaining allowed tags we'll permit all attributes
-        const sanitizeText = sanitizeHtml(optionText, sanitizedOptions);
-        optionText = htmlEncode(sanitizeText);
+        const sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
+        optionText = htmlEncode(sanitizedText);
       }
 
       options += `<option value="${option[this.valueName]}">${optionText}</option>`;

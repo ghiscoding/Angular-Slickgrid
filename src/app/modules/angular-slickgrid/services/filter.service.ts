@@ -1,5 +1,5 @@
 import { Component, Injectable } from '@angular/core';
-import { castToPromise } from './utilities';
+import { castToPromise, objectsDeepEqual } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import {
   Column,
@@ -326,6 +326,7 @@ export class FilterService {
       const operator = args.operator || undefined;
       const hasSearchTerms = searchTerms && Array.isArray(searchTerms);
       const termsCount = hasSearchTerms && searchTerms.length;
+      const oldColumnFilters = { ...this._columnFilters };
 
       if (!hasSearchTerms || termsCount === 0 || (termsCount === 1 && searchTerms[0] === '')) {
         // delete the property from the columnFilters when it becomes empty
@@ -344,16 +345,19 @@ export class FilterService {
         this._columnFilters[colId] = colFilter;
       }
 
-      this.triggerEvent(this._slickSubscriber, {
-        clearFilterTriggered: args && args.clearFilterTriggered,
-        columnId,
-        columnDef: args.columnDef || null,
-        columnFilters: this._columnFilters,
-        operator,
-        searchTerms,
-        serviceOptions: this._onFilterChangedOptions,
-        grid: this._grid
-      }, e);
+      // trigger an event only if Filters changed
+      if (!objectsDeepEqual(oldColumnFilters, this._columnFilters)) {
+        this.triggerEvent(this._slickSubscriber, {
+          clearFilterTriggered: args && args.clearFilterTriggered,
+          columnId,
+          columnDef: args.columnDef || null,
+          columnFilters: this._columnFilters,
+          operator,
+          searchTerms,
+          serviceOptions: this._onFilterChangedOptions,
+          grid: this._grid
+        }, e);
+      }
     }
   }
 

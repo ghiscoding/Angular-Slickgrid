@@ -16,9 +16,9 @@ import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import { castToPromise } from '../services/utilities';
 import { CollectionService } from './../services/collection.service';
-import { arraysEqual, htmlEncode } from '../services/utilities';
-import * as sanitizeHtml_ from 'sanitize-html';
-const sanitizeHtml = sanitizeHtml_; // patch to fix rollup to work
+import { htmlEncode } from '../services/utilities';
+import * as DOMPurify_ from 'dompurify';
+const DOMPurify = DOMPurify_; // patch to fix rollup to work
 
 // using external non-typed js libraries
 declare var $: any;
@@ -70,9 +70,7 @@ export class MultipleSelectFilter implements Filter {
           this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
         }
 
-        if (!arraysEqual(selectedItems, this.searchTerms)) {
-          this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems });
-        }
+        this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems });
       }
     };
   }
@@ -263,7 +261,7 @@ export class MultipleSelectFilter implements Filter {
       if (isRenderHtmlEnabled) {
         // sanitize any unauthorized html tags like script and others
         // for the remaining allowed tags we'll permit all attributes
-        const sanitizedText = sanitizeHtml(optionText, sanitizedOptions);
+        const sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
         optionText = htmlEncode(sanitizedText);
       }
 
