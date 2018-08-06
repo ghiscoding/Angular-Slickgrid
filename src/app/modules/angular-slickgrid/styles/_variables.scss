@@ -197,6 +197,7 @@ $multiselect-input-filter-font-family:    "Helvetica Neue", Helvetica, Arial !de
 $multiselect-input-filter-font-size:      12px !default;
 $multiselect-dropdown-border:             1px solid #bbb !default;
 $multiselect-dropdown-max-width:          250px !default;
+$multiselect-dropdown-z-index:            9999 !default;
 $multiselect-checkbox-margin-left:        4px !default;
 $multiselect-checkbox-hover-bg-color:     $row-mouse-hover-color !default;
 $multiselect-select-all-border-bottom:    1px solid #ddd !default;
