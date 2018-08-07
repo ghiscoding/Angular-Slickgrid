@@ -31,7 +31,7 @@ import {
   GridOption,
   GridStateChange,
   GridStateType,
-  Pagination
+  Pagination,
 } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
@@ -197,11 +197,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // however "editor" is used internally by SlickGrid for it's Editor Factory
     // so in our lib we will swap "editor" and copy it into "internalColumnEditor"
     // then take back "editor.model" and make it the new "editor" so that SlickGrid Editor Factory still works
-    this._columnDefinitions = this._columnDefinitions.map((c: Column | any, index: number) => {
-      if (c.editor && c.editor.collectionAsync) {
-        this.loadEditorAsyncCollection(c.editor, index);
+    this._columnDefinitions = this._columnDefinitions.map((column: Column | any) => {
+      if (column.editor && column.editor.collectionAsync) {
+        this.loadEditorAsyncCollection(column);
+        this.createNewCollectionAsyncObservable(column);
       }
-      return { ...c, editor: c.editor && c.editor.model, internalColumnEditor: { ...c.editor  }};
+      return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor  }};
     });
 
     this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
@@ -599,20 +600,49 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   // private functions
   // ------------------
 
-  private loadEditorAsyncCollection(internalEditor: any, columnIndex: number): any[] {
-    if (internalEditor && internalEditor.collectionAsync) {
-      internalEditor.collectionAsync.subscribe((awaitedCollection) => {
-        internalEditor.collection = awaitedCollection;
-
-        const columns = this.grid.getColumns();
-        if (columns && columns[columnIndex]) {
-          columns[columnIndex].internalColumnEditor = internalEditor;
-        }
-      });
+  /**
+   * Create or recreate an Observable/Subject and reassign it to the "collectionAsync" object so user can call a "collectionAsync.next()" on it
+   * The reason we create a new Subject is because the HttpClient Observable is a one-time Observable
+   */
+  protected createNewCollectionAsyncObservable(column: Column) {
+    if (column && column.editor) {
+      // create new Subject, then reassign as the new collectionAsync and finally watch for changes on it
+      const newCollectionAsync = new Subject<any>();
+      column.editor.collectionAsync = newCollectionAsync;
+      this.subscriptions.push(
+        newCollectionAsync.subscribe(updatedCollection => this.updateInternalEditorCollection(column, updatedCollection))
+      );
     }
-    return [];
   }
 
+  /** Load the Editor Collection asynchronously and replace the "collection" property when Observable resolves */
+  private loadEditorAsyncCollection(column: Column) {
+    const collectionAsync = column && column.editor && column.editor.collectionAsync;
+    if (collectionAsync instanceof Observable) {
+      this.subscriptions.push(
+        collectionAsync.subscribe((resolvedCollection) => this.updateInternalEditorCollection(column, resolvedCollection))
+      );
+    }
+  }
+
+  /**
+   * Update the "internalColumnEditor.collection" property.
+   * Since this is called after the async call resolves, the pointer will not be the same as the "column" argument passed.
+   * Once we found the new pointer, we will reassign the "editor" and "collection" to the "internalColumnEditor" so it has newest collection
+   */
+  private updateInternalEditorCollection(column: Column, newCollection: any[]) {
+    column.editor.collection = newCollection;
+    column.internalColumnEditor = column.editor;
+
+    // find the new column reference pointer
+    const columns = this.grid.getColumns();
+    if (Array.isArray(columns)) {
+      const columnRef: Column = columns.find((col: Column) => col.id === column.id);
+      columnRef.internalColumnEditor = column.editor;
+    }
+  }
+
+  /** Dispatch of Custom Event, which by default will bubble & is cancelable */
   private dispatchCustomEvent(eventName: string, data?: any, isBubbling: boolean = true, isCancelable: boolean = true) {
     const eventInit: CustomEventInit = { bubbles: isBubbling, cancelable: isCancelable };
     if (data) {

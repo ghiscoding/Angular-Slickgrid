@@ -170,7 +170,7 @@ export class SelectEditor implements Editor {
     return this.columnEditor.validator || this.columnDef.validator;
   }
 
-  async init() {
+  init() {
     if (!this.args) {
       throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
     }
@@ -190,8 +190,7 @@ export class SelectEditor implements Editor {
 
     // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
     // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
-    const collection =  this.collection || [];
-    this.renderDomElement(collection);
+    this.renderDomElement(this.collection);
   }
 
   applyValue(item: any, state: any): void {
@@ -307,34 +306,8 @@ export class SelectEditor implements Editor {
     return outputCollection;
   }
 
-  /** Create or recreate an Observable Subject and reassign it to the "collectionAsync" object so user can call a "collectionAsync.next()" on it */
-  protected createNewCollectionAsyncObservable() {
-    const newCollectionAsync = new Subject<any>();
-    this.columnDef.internalColumnEditor.collectionAsync = newCollectionAsync;
-    this._subscriptions.push(
-      newCollectionAsync.subscribe(collection => this.renderDomElementFromCollectionAsync(collection))
-    );
-  }
-
-  /**
-   * When user use a CollectionAsync we will use the returned collection to render the filter DOM element
-   * and reinitialize filter collection with this new collection
-   */
-  protected renderDomElementFromCollectionAsync(collection) {
-    if (!Array.isArray(collection)) {
-      throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call');
-    }
-
-    // copy over the array received from the async call to the "collection" as the new collection to use
-    // this has to be BEFORE the `collectionObserver().subscribe` to avoid going into an infinite loop
-    this.columnDef.internalColumnEditor.collection = collection;
-
-    // recreate Multiple Select after getting async collection
-    this.renderDomElement(collection);
-  }
-
-  protected renderDomElement(collection) {
-    let newCollection = collection;
+  protected renderDomElement(collection: any[]) {
+    let newCollection = collection || [];
 
     // user might want to filter and/or sort certain items of the collection
     newCollection = this.filterCollection(newCollection);

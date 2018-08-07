@@ -19,7 +19,7 @@ import { Subject } from 'rxjs/Subject';
 // using external non-typed js libraries
 declare var Slick: any;
 
-const NB_ITEMS = 500;
+const NB_ITEMS = 100;
 const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_100_numbers.json';
 
 // you can create custom validator to pass to an inline editor
@@ -247,6 +247,8 @@ export class GridEditorComponent implements OnInit {
         editor: {
           model: Editors.multipleSelect,
           collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
+
+          // OR a regular collection load
           // collection: Array.from(Array(12).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
           collectionSortBy: {
             property: 'label',
@@ -266,7 +268,17 @@ export class GridEditorComponent implements OnInit {
             autoDropWidth: true
           },
           operator: OperatorType.inContains,
-          collection: Array.from(Array(12).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
+          collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
+          collectionSortBy: {
+            property: 'label',
+            sortDesc: true
+          },
+          customStructure: {
+            label: 'label',
+            value: 'value',
+            labelPrefix: 'prefix',
+            addSpaceBetweenLabels: true
+          }
         }
       }
     ];
@@ -290,7 +302,7 @@ export class GridEditorComponent implements OnInit {
       i18n: this.translate
     };
 
-    this.mockData(NB_ITEMS);
+    this.dataset = this.mockData(NB_ITEMS);
   }
 
   /** Add a new row to the grid and refresh the Filter collection */
@@ -300,26 +312,30 @@ export class GridEditorComponent implements OnInit {
 
     // wrap into a timer to simulate a backend async call
     setTimeout(() => {
-      const durationColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'duration');
-      if (durationColumnDef) {
-        const collectionAsync = durationColumnDef.filter.collectionAsync;
-        const collection = durationColumnDef.filter.collection;
+      const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites');
+      if (requisiteColumnDef) {
+        const collectionEditorAsync = requisiteColumnDef.editor.collectionAsync;
+        const collectionFilterAsync = requisiteColumnDef.filter.collectionAsync;
+        const collection = requisiteColumnDef.editor.collection;
 
         if (Array.isArray(collection)) {
           // add the new row to the grid
           this.angularGrid.gridService.addItemToDatagrid(newRows[0]);
 
-          // then refresh the Filter "collection", we have 2 ways of doing it
+          // then refresh the Editor "collection", we have 2 ways of doing it
 
-          // Push to the filter "collection"
-          collection.push({ value: lastRowIndex, label: lastRowIndex, text: 'days' });
+          // Push to the Editor "collection"
+          collection.push({ value: lastRowIndex, label: lastRowIndex, prefix: 'Task' });
 
           // or replace entire "collection"
-          // durationColumnDef.filter.collection = [...collection, ...[{ value: lastRowIndex, label: lastRowIndex }]];
+          // durationColumnDef.editor.collection = [...collection, ...[{ value: lastRowIndex, label: lastRowIndex }]];
 
           // finally trigger a change for the Observable/Subject of the async collection
-          if (collectionAsync instanceof Subject) {
-            collectionAsync.next(collection);
+          if (collectionEditorAsync instanceof Subject) {
+            collectionEditorAsync.next(collection);
+          }
+          if (collectionFilterAsync instanceof Subject) {
+            collectionFilterAsync.next(collection);
           }
         }
       }
@@ -328,18 +344,23 @@ export class GridEditorComponent implements OnInit {
 
   /** Delete last inserted row */
   deleteItem() {
-    const durationColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'duration');
-    if (durationColumnDef) {
-      const collectionAsync = durationColumnDef.filter.collectionAsync;
-      const collection = durationColumnDef.filter.collection;
+    const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites');
+    if (requisiteColumnDef) {
+      const collectionEditorAsync = requisiteColumnDef.filter.collectionAsync;
+      const collectionFilterAsync = requisiteColumnDef.filter.collectionAsync;
+      let collection = requisiteColumnDef.filter.collection;
 
       if (Array.isArray(collection)) {
+        collection = collection.sort((item1, item2) => item1.value - item2.value); // order descending
         const selectCollectionObj = collection.pop();
-        this.angularGrid.gridService.deleteDataGridItemById(selectCollectionObj.value + '');
+        this.angularGrid.gridService.deleteDataGridItemById(selectCollectionObj.value);
 
         // finally trigger a change for the Observable/Subject of the async collection
-        if (collectionAsync instanceof Subject) {
-          collectionAsync.next(collection);
+        if (collectionEditorAsync instanceof Subject) {
+          collectionEditorAsync.next(collection);
+        }
+        if (collectionFilterAsync instanceof Subject) {
+          collectionFilterAsync.next(collection);
         }
       }
     }
@@ -354,7 +375,7 @@ export class GridEditorComponent implements OnInit {
       const randomDay = Math.floor((Math.random() * 29));
       const randomPercent = Math.round(Math.random() * 100);
 
-      tempDataset[i] = {
+      tempDataset.push({
         id: i,
         title: 'Task ' + i,
         duration: Math.round(Math.random() * 100) + '',
@@ -364,9 +385,9 @@ export class GridEditorComponent implements OnInit {
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
         effortDriven: (i % 5 === 0),
         prerequisites: (i % 2 === 0) && i !== 0 && i < 12 ? [`Task ${i}`, `Task ${i - 1}`] : []
-      };
+      });
     }
-    this.dataset = tempDataset;
+    return tempDataset;
   }
 
   onCellChanged(e, args) {
