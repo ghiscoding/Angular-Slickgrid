@@ -1,4 +1,5 @@
 import { Component, Injectable, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
@@ -13,9 +14,13 @@ import {
   OperatorType
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
+import { Subject } from 'rxjs/Subject';
 
 // using external non-typed js libraries
 declare var Slick: any;
+
+const NB_ITEMS = 500;
+const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_100_numbers.json';
 
 // you can create custom validator to pass to an inline editor
 const myCustomTitleValidator: EditorValidator = (value) => {
@@ -44,6 +49,7 @@ export class GridEditorComponent implements OnInit {
         Support Excel Copy Buffer (SlickGrid Copy Manager Plugin), you can use it by simply enabling "enableExcelCopyBuffer" flag.
         Note that it will only evaluate Formatter when the "exportWithFormatter" flag is enabled (through "ExportOptions" or the column definition)
     </li>
+    <li>Support of "collectionAsync" is possible, click on "Clear Filters/Sorting" then add/delete item(s) and look at "Prerequisites" Select Filter</li>
   </ul>
   `;
 
@@ -58,7 +64,7 @@ export class GridEditorComponent implements OnInit {
   updatedObject: any;
   selectedLanguage = 'en';
 
-  constructor(private translate: TranslateService) {}
+  constructor(private http: HttpClient, private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -240,15 +246,18 @@ export class GridEditorComponent implements OnInit {
         type: FieldType.string,
         editor: {
           model: Editors.multipleSelect,
-          collection: Array.from(Array(12).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
+          collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
+          // collection: Array.from(Array(12).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
           collectionSortBy: {
             property: 'label',
             sortDesc: true
           },
-          collectionFilterBy: {
-            property: 'label',
-            value: ['Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5', 'Task 6'],
-            operator: OperatorType.contains
+          customStructure: {
+            label: 'label',
+            value: 'value',
+            labelPrefix: 'prefix',
+            addSpaceBetweenLabels: true,
+            includePrefixSuffixToSelectedValues: true
           }
         },
         filter: {
@@ -281,19 +290,71 @@ export class GridEditorComponent implements OnInit {
       i18n: this.translate
     };
 
-    this.getData();
+    this.mockData(NB_ITEMS);
   }
 
-  getData() {
+  /** Add a new row to the grid and refresh the Filter collection */
+  addItem() {
+    const lastRowIndex = this.dataset.length;
+    const newRows = this.mockData(1, lastRowIndex);
+
+    // wrap into a timer to simulate a backend async call
+    setTimeout(() => {
+      const durationColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'duration');
+      if (durationColumnDef) {
+        const collectionAsync = durationColumnDef.filter.collectionAsync;
+        const collection = durationColumnDef.filter.collection;
+
+        if (Array.isArray(collection)) {
+          // add the new row to the grid
+          this.angularGrid.gridService.addItemToDatagrid(newRows[0]);
+
+          // then refresh the Filter "collection", we have 2 ways of doing it
+
+          // Push to the filter "collection"
+          collection.push({ value: lastRowIndex, label: lastRowIndex, text: 'days' });
+
+          // or replace entire "collection"
+          // durationColumnDef.filter.collection = [...collection, ...[{ value: lastRowIndex, label: lastRowIndex }]];
+
+          // finally trigger a change for the Observable/Subject of the async collection
+          if (collectionAsync instanceof Subject) {
+            collectionAsync.next(collection);
+          }
+        }
+      }
+    }, 250);
+  }
+
+  /** Delete last inserted row */
+  deleteItem() {
+    const durationColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'duration');
+    if (durationColumnDef) {
+      const collectionAsync = durationColumnDef.filter.collectionAsync;
+      const collection = durationColumnDef.filter.collection;
+
+      if (Array.isArray(collection)) {
+        const selectCollectionObj = collection.pop();
+        this.angularGrid.gridService.deleteDataGridItemById(selectCollectionObj.value + '');
+
+        // finally trigger a change for the Observable/Subject of the async collection
+        if (collectionAsync instanceof Subject) {
+          collectionAsync.next(collection);
+        }
+      }
+    }
+  }
+
+  mockData(itemCount, startingIndex = 0) {
     // mock a dataset
-    const mockedDataset = [];
-    for (let i = 0; i < 1000; i++) {
+    const tempDataset = [];
+    for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
       const randomPercent = Math.round(Math.random() * 100);
 
-      mockedDataset[i] = {
+      tempDataset[i] = {
         id: i,
         title: 'Task ' + i,
         duration: Math.round(Math.random() * 100) + '',
@@ -305,7 +366,7 @@ export class GridEditorComponent implements OnInit {
         prerequisites: (i % 2 === 0) && i !== 0 && i < 12 ? [`Task ${i}`, `Task ${i - 1}`] : []
       };
     }
-    this.dataset = mockedDataset;
+    this.dataset = tempDataset;
   }
 
   onCellChanged(e, args) {

@@ -21,7 +21,7 @@ import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { castToPromise, titleCase } from './../services/utilities';
+import { castToPromise, titleCase, unsubscribeAllObservables } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
 import {
   AngularGridInstance,
@@ -31,8 +31,7 @@ import {
   GridOption,
   GridStateChange,
   GridStateType,
-  Pagination,
-  Statistic
+  Pagination
 } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
@@ -44,9 +43,11 @@ import { GridStateService } from './../services/gridState.service';
 import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
 import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
-import { Subscription } from 'rxjs/Subscription';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
+import { Subscription } from 'rxjs/Subscription';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -168,12 +169,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // also unsubscribe all RxJS subscriptions
-    this.subscriptions.forEach((subscription: Subscription) => {
-      if (subscription && subscription.unsubscribe) {
-        subscription.unsubscribe();
-      }
-    });
-    this.subscriptions = [];
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
   }
 
   ngAfterViewInit() {
@@ -201,11 +197,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // however "editor" is used internally by SlickGrid for it's Editor Factory
     // so in our lib we will swap "editor" and copy it into "internalColumnEditor"
     // then take back "editor.model" and make it the new "editor" so that SlickGrid Editor Factory still works
-    this._columnDefinitions = this._columnDefinitions.map((c: Column | any) => ({
-      ...c,
-      editor: c.editor && c.editor.model,
-      internalColumnEditor: { ...c.editor }
-    })),
+    this._columnDefinitions = this._columnDefinitions.map((c: Column | any, index: number) => {
+      if (c.editor && c.editor.collectionAsync) {
+        this.loadEditorAsyncCollection(c.editor, index);
+      }
+      return { ...c, editor: c.editor && c.editor.model, internalColumnEditor: { ...c.editor  }};
+    });
 
     this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
@@ -596,6 +593,24 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     const isShowing = !this.grid.getOptions().showHeaderRow;
     this.grid.setHeaderRowVisibility(isShowing);
     return isShowing;
+  }
+
+  //
+  // private functions
+  // ------------------
+
+  private loadEditorAsyncCollection(internalEditor: any, columnIndex: number): any[] {
+    if (internalEditor && internalEditor.collectionAsync) {
+      internalEditor.collectionAsync.subscribe((awaitedCollection) => {
+        internalEditor.collection = awaitedCollection;
+
+        const columns = this.grid.getColumns();
+        if (columns && columns[columnIndex]) {
+          columns[columnIndex].internalColumnEditor = internalEditor;
+        }
+      });
+    }
+    return [];
   }
 
   private dispatchCustomEvent(eventName: string, data?: any, isBubbling: boolean = true, isCancelable: boolean = true) {

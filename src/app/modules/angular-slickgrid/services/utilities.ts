@@ -125,7 +125,7 @@ export function castToPromise<T>(input: Promise<T> | Observable<T>, fromServiceN
  * @param any[] array the array to filter
  * @param function logic the logic to find the item
  * @param any [defaultVal={}] the default value to return
- * @return object the found object or deafult value
+ * @return object the found object or default value
  */
 export function findOrDefault(array: any[], logic: (item: any) => boolean, defaultVal = {}): any {
   return array.find(logic) || defaultVal;

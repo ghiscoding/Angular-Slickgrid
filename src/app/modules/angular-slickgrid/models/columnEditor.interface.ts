@@ -65,6 +65,9 @@ export interface ColumnEditor {
 
     /** defaults to false, when using label with prefix/suffix, do we want to add spaces between each? */
     addSpaceBetweenLabels?: boolean;
+
+    /** defaults to false, should the selected value include the prefix/suffix in the output format */
+    includePrefixSuffixToSelectedValues?: boolean;
   };
 
   /** DOM element extra options */
