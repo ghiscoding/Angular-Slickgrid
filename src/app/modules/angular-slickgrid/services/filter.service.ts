@@ -18,7 +18,8 @@ import {
 import { castToPromise } from './utilities';
 import { FilterFactory } from '../filters/filterFactory';
 import { Subject } from 'rxjs/Subject';
-import * as isequal from 'lodash.isequal';
+import * as isequal_ from 'lodash.isequal';
+const isequal = isequal_; // patch to fix rollup to work
 
 // using external non-typed js libraries
 declare var Slick: any;

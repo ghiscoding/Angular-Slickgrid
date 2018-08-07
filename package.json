@@ -51,6 +51,7 @@
         "@ngx-translate/core/index": "ngx-translate-core",
         "dompurify": "dompurify",
         "flatpickr": "flatpickr",
+        "lodash.isequal": "lodash.isequal",
         "moment-mini": "moment",
         "text-encoding-utf-8": "textEncodingUtf8"
       }

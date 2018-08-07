@@ -11,12 +11,11 @@ import {
   SearchTerm,
   SelectOption,
 } from './../models/index';
+import { CollectionService } from './../services/collection.service';
+import { castToPromise, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
-import { castToPromise } from '../services/utilities';
-import { CollectionService } from './../services/collection.service';
-import { htmlEncode } from '../services/utilities';
 import * as DOMPurify_ from 'dompurify';
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
 
@@ -141,15 +140,8 @@ export class SelectFilter implements Filter {
   destroy() {
     if (this.$filterElm) {
       this.$filterElm.off().remove();
-
-      if (Array.isArray(this.subscriptions)) {
-        this.subscriptions.forEach((subscription: Subscription) => {
-          if (subscription && subscription.unsubscribe) {
-            subscription.unsubscribe();
-          }
-        });
-      }
     }
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
   }
 
   /**
@@ -167,11 +159,11 @@ export class SelectFilter implements Filter {
   // ------------------
 
   /**
-   * user might want to filter and/or sort certain items of the collection
+   * user might want to filter certain items of the collection
    * @param inputCollection
    * @return outputCollection filtered and/or sorted collection
    */
-  protected filterAndSortCollection(inputCollection) {
+  protected filterCollection(inputCollection) {
     let outputCollection = inputCollection;
 
     // user might want to filter certain items of the collection
@@ -179,6 +171,17 @@ export class SelectFilter implements Filter {
       const filterBy = this.columnDef.filter.collectionFilterBy;
       outputCollection = this.collectionService.filterCollection(outputCollection, filterBy);
     }
+
+    return outputCollection;
+  }
+
+  /**
+   * user might want to sort the collection in a certain way
+   * @param inputCollection
+   * @return outputCollection filtered and/or sorted collection
+   */
+  protected sortCollection(inputCollection) {
+    let outputCollection = inputCollection;
 
     // user might want to sort the collection
     if (this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionSortBy) {
@@ -235,7 +238,8 @@ export class SelectFilter implements Filter {
     let newCollection = collection;
 
     // user might want to filter and/or sort certain items of the collection
-    newCollection = this.filterAndSortCollection(newCollection);
+    newCollection = this.filterCollection(newCollection);
+    newCollection = this.sortCollection(newCollection);
 
     // step 1, create HTML string template
     const filterTemplate = this.buildTemplateHtmlString(newCollection, this.searchTerms);
