@@ -194,13 +194,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // for convenience, we provide the property "editor" as an Angular-Slickgrid editor complex object
-    // however "editor" is used internally by SlickGrid for it's Editor Factory
-    // so in our lib we will swap "editor" and copy it into "internalColumnEditor"
+    // however "editor" is used internally by SlickGrid for it's own Editor Factory
+    // so in our lib we will swap "editor" and copy it into a new property called "internalColumnEditor"
     // then take back "editor.model" and make it the new "editor" so that SlickGrid Editor Factory still works
     this._columnDefinitions = this._columnDefinitions.map((column: Column | any) => {
+      // on every Editor which have a "collection" or a "collectionAsync"
+      // we will add (or replace) a Subject to the "collectionAsync" property so that user has possibility to change the collection
+      // if "collectionAsync" is already set by the user, it will resolve it first then after it will replace it with a Subject
       if (column.editor && column.editor.collectionAsync) {
-        this.loadEditorAsyncCollection(column);
-        this.createNewCollectionAsyncObservable(column);
+        this.loadEditorCollectionAsync(column); // create Subject after resolve (createCollectionAsyncSubject)
+      } else if (column.editor && column.editor.collection) {
+        this.createCollectionAsyncSubject(column);
       }
       return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor  }};
     });
@@ -604,7 +608,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * Create or recreate an Observable/Subject and reassign it to the "collectionAsync" object so user can call a "collectionAsync.next()" on it
    * The reason we create a new Subject is because the HttpClient Observable is a one-time Observable
    */
-  protected createNewCollectionAsyncObservable(column: Column) {
+  protected createCollectionAsyncSubject(column: Column) {
     if (column && column.editor) {
       // create new Subject, then reassign as the new collectionAsync and finally watch for changes on it
       const newCollectionAsync = new Subject<any>();
@@ -616,12 +620,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   /** Load the Editor Collection asynchronously and replace the "collection" property when Observable resolves */
-  private loadEditorAsyncCollection(column: Column) {
+  private loadEditorCollectionAsync(column: Column) {
     const collectionAsync = column && column.editor && column.editor.collectionAsync;
     if (collectionAsync instanceof Observable) {
-      this.subscriptions.push(
-        collectionAsync.subscribe((resolvedCollection) => this.updateInternalEditorCollection(column, resolvedCollection))
-      );
+      const asyncSubscriber = collectionAsync.subscribe((resolvedCollection) => {
+        this.updateInternalEditorCollection(column, resolvedCollection);
+
+        // we're done resolving the data, we can unsubscribe the original collectionAsync subscriber
+        // and replace it with a new Subject (inside "collectionAsync") we do this because the original subscriber is a one-time sub
+        asyncSubscriber.unsubscribe();
+        this.createCollectionAsyncSubject(column);
+      });
     }
   }
 

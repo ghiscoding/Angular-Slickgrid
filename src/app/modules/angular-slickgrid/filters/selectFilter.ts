@@ -1,6 +1,7 @@
 import { TranslateService } from '@ngx-translate/core';
 import {
   Column,
+  ColumnFilter,
   Filter,
   FilterArguments,
   FilterCallback,
@@ -87,6 +88,17 @@ export class SelectFilter implements Filter {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
+  /** Getter for the Column Filter itself */
+  protected get columnFilter(): ColumnFilter {
+    return this.columnDef && this.columnDef.filter;
+  }
+
+  /** Getter for the Custom Structure if exist */
+  protected get customStructure(): any {
+    return this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure;
+  }
+
+  /** Getter for the filter operator */
   get operator(): OperatorType | OperatorString {
     return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.in;
   }
@@ -94,30 +106,35 @@ export class SelectFilter implements Filter {
   /**
    * Initialize the filter template
    */
-  async init(args: FilterArguments) {
+  init(args: FilterArguments) {
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
     this.searchTerms = args.searchTerms || [];
 
-    if (!this.grid || !this.columnDef || !this.columnDef.filter || (!this.columnDef.filter.collection && !this.columnDef.filter.collectionAsync)) {
+    if (!this.grid || !this.columnDef || !this.columnFilter || (!this.columnFilter.collection && !this.columnFilter.collectionAsync)) {
       throw new Error(`[Angular-SlickGrid] You need to pass a "collection" (or "collectionAsync") for the MultipleSelect/SingleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
 
-    this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
-    this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
-    this.labelPrefixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelPrefix : 'labelPrefix';
-    this.labelSuffixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelSuffix : 'labelSuffix';
-    this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
+    this.enableTranslateLabel = this.columnFilter.enableTranslateLabel;
+    this.labelName = (this.customStructure) ? this.customStructure.label : 'label';
+    this.labelPrefixName = (this.customStructure) ? this.customStructure.labelPrefix : 'labelPrefix';
+    this.labelSuffixName = (this.customStructure) ? this.customStructure.labelSuffix : 'labelSuffix';
+    this.valueName = (this.customStructure) ? this.customStructure.value : 'value';
 
     // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
     // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
-    let newCollection = this.columnDef.filter.collection || [];
+    const newCollection = this.columnFilter.collection || [];
     this.renderDomElement(newCollection);
 
-    const collectionAsync = this.columnDef.filter.collectionAsync;
+    // on every Filter which have a "collection" or a "collectionAsync"
+    // we will add (or replace) a Subject to the "collectionAsync" property so that user has possibility to change the collection
+    // if "collectionAsync" is already set by the user, it will resolve it first then after it will replace it with a Subject
+    const collectionAsync = this.columnFilter && this.columnFilter.collectionAsync;
     if (collectionAsync) {
-      newCollection = await this.renderOptionsAsync(collectionAsync);
+      this.renderOptionsAsync(collectionAsync); // create Subject after resolve (createCollectionAsyncSubject)
+    } else if (this.columnFilter && this.columnFilter.collection) {
+      this.createCollectionAsyncSubject();
     }
   }
 
@@ -167,8 +184,8 @@ export class SelectFilter implements Filter {
     let outputCollection = inputCollection;
 
     // user might want to filter certain items of the collection
-    if (this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionFilterBy) {
-      const filterBy = this.columnDef.filter.collectionFilterBy;
+    if (this.columnDef && this.columnFilter && this.columnFilter.collectionFilterBy) {
+      const filterBy = this.columnFilter.collectionFilterBy;
       outputCollection = this.collectionService.filterCollection(outputCollection, filterBy);
     }
 
@@ -184,15 +201,15 @@ export class SelectFilter implements Filter {
     let outputCollection = inputCollection;
 
     // user might want to sort the collection
-    if (this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionSortBy) {
-      const sortBy = this.columnDef.filter.collectionSortBy;
+    if (this.columnDef && this.columnFilter && this.columnFilter.collectionSortBy) {
+      const sortBy = this.columnFilter.collectionSortBy;
       outputCollection = this.collectionService.sortCollection(outputCollection, sortBy, this.enableTranslateLabel);
     }
 
     return outputCollection;
   }
 
-  protected async renderOptionsAsync(collectionAsync: Promise<any> | Observable<any> | Subject<any>): Promise<any[]> {
+  protected async renderOptionsAsync(collectionAsync: Promise<any> | Observable<any> | Subject<any>) {
     let awaitedCollection: any = [];
 
     if (collectionAsync) {
@@ -202,16 +219,14 @@ export class SelectFilter implements Filter {
       // because we accept Promises & HttpClient Observable only execute once
       // we will re-create an RxJs Subject which will replace the "collectionAsync" which got executed once anyway
       // doing this provide the user a way to call a "collectionAsync.next()"
-      this.createNewCollectionAsyncObservable();
+      this.createCollectionAsyncSubject();
     }
-
-    return awaitedCollection;
   }
 
   /** Create or recreate an Observable Subject and reassign it to the "collectionAsync" object so user can call a "collectionAsync.next()" on it */
-  protected createNewCollectionAsyncObservable() {
+  protected createCollectionAsyncSubject() {
     const newCollectionAsync = new Subject<any>();
-    this.columnDef.filter.collectionAsync = newCollectionAsync;
+    this.columnFilter.collectionAsync = newCollectionAsync;
     this.subscriptions.push(
       newCollectionAsync.subscribe(collection => this.renderDomElementFromCollectionAsync(collection))
     );
@@ -228,7 +243,7 @@ export class SelectFilter implements Filter {
 
     // copy over the array received from the async call to the "collection" as the new collection to use
     // this has to be BEFORE the `collectionObserver().subscribe` to avoid going into an infinite loop
-    this.columnDef.filter.collection = collection;
+    this.columnFilter.collection = collection;
 
     // recreate Multiple Select after getting async collection
     this.renderDomElement(collection);
@@ -254,8 +269,8 @@ export class SelectFilter implements Filter {
    */
   protected buildTemplateHtmlString(optionCollection: any[], searchTerms: SearchTerm[]) {
     let options = '';
-    const isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure && this.columnDef.filter.customStructure.addSpaceBetweenLabels || false;
-    const isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+    const isAddingSpaceBetweenLabels = this.customStructure && this.customStructure.addSpaceBetweenLabels || false;
+    const isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
     const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
 
     optionCollection.forEach((option: SelectOption) => {
@@ -318,7 +333,7 @@ export class SelectFilter implements Filter {
     }
 
     // merge options & attach multiSelect
-    const options: MultipleSelectOption = { ...this.defaultOptions, ...this.columnDef.filter.filterOptions };
+    const options: MultipleSelectOption = { ...this.defaultOptions, ...this.columnFilter.filterOptions };
     this.$filterElm = this.$filterElm.multipleSelect(options);
   }
 }

@@ -245,11 +245,9 @@ export class GridEditorComponent implements OnInit {
         sortable: true,
         type: FieldType.string,
         editor: {
-          model: Editors.multipleSelect,
           collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
-
           // OR a regular collection load
-          // collection: Array.from(Array(12).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
+          // collection: Array.from(Array(100).keys()).map(k => ({ value: k, prefix: 'Task', label: k })),
           collectionSortBy: {
             property: 'label',
             sortDesc: true
@@ -260,15 +258,13 @@ export class GridEditorComponent implements OnInit {
             labelPrefix: 'prefix',
             addSpaceBetweenLabels: true,
             includePrefixSuffixToSelectedValues: true
-          }
+          },
+          model: Editors.multipleSelect,
         },
         filter: {
-          model: Filters.multipleSelect,
-          filterOptions: {
-            autoDropWidth: true
-          },
-          operator: OperatorType.inContains,
           collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
+          // OR a regular collection load
+          // collection: Array.from(Array(100).keys()).map(k => ({ value: k, prefix: 'Task', label: k })),
           collectionSortBy: {
             property: 'label',
             sortDesc: true
@@ -278,7 +274,12 @@ export class GridEditorComponent implements OnInit {
             value: 'value',
             labelPrefix: 'prefix',
             addSpaceBetweenLabels: true
-          }
+          },
+          model: Filters.multipleSelect,
+          filterOptions: {
+            autoDropWidth: true
+          },
+          operator: OperatorType.inContains,
         }
       }
     ];

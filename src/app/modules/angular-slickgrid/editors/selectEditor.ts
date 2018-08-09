@@ -9,9 +9,7 @@ import {
   SelectOption,
 } from './../models/index';
 import { CollectionService } from '../services/index';
-import { arraysEqual, castToPromise, findOrDefault, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { arraysEqual, findOrDefault, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
 import { Subscription } from 'rxjs/Subscription';
 import * as DOMPurify_ from 'dompurify';
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
@@ -119,12 +117,17 @@ export class SelectEditor implements Editor {
     return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
   }
 
+  /** Getter for the Custom Structure if exist */
+  protected get customStructure(): any {
+    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure;
+  }
+
   /**
    * The current selected values (multiple select) from the collection
    */
   get currentValues() {
-    const isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure && this.columnDef.internalColumnEditor.customStructure.addSpaceBetweenLabels || false;
-    const isIncludingPrefixSuffix = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure && this.columnDef.internalColumnEditor.customStructure.includePrefixSuffixToSelectedValues || false;
+    const isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.internalColumnEditor && this.customStructure && this.customStructure.addSpaceBetweenLabels || false;
+    const isIncludingPrefixSuffix = this.columnDef && this.columnDef.internalColumnEditor && this.customStructure && this.customStructure.includePrefixSuffixToSelectedValues || false;
 
     return this.collection
       .filter(c => this.$editorElm.val().indexOf(c[this.valueName].toString()) !== -1)
@@ -145,8 +148,8 @@ export class SelectEditor implements Editor {
    * The current selected values (single select) from the collection
    */
   get currentValue() {
-    const isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure && this.columnDef.internalColumnEditor.customStructure.addSpaceBetweenLabels || false;
-    const isIncludingPrefixSuffix = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure && this.columnDef.internalColumnEditor.customStructure.includePrefixSuffixToSelectedValues || false;
+    const isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.internalColumnEditor && this.customStructure && this.customStructure.addSpaceBetweenLabels || false;
+    const isIncludingPrefixSuffix = this.columnDef && this.columnDef.internalColumnEditor && this.customStructure && this.customStructure.includePrefixSuffixToSelectedValues || false;
     const itemFound = findOrDefault(this.collection, (c: any) => c[this.valueName].toString() === this.$editorElm.val());
 
     if (itemFound) {
@@ -183,10 +186,10 @@ export class SelectEditor implements Editor {
 
     this._collectionService = new CollectionService(this._translate);
     this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
-    this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
-    this.labelPrefixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelPrefix : 'labelPrefix';
-    this.labelSuffixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelSuffix : 'labelSuffix';
-    this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
+    this.labelName = (this.customStructure) ? this.customStructure.label : 'label';
+    this.labelPrefixName = (this.customStructure) ? this.customStructure.labelPrefix : 'labelPrefix';
+    this.labelSuffixName = (this.customStructure) ? this.customStructure.labelSuffix : 'labelSuffix';
+    this.valueName = (this.customStructure) ? this.customStructure.value : 'value';
 
     // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
     // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
@@ -323,7 +326,7 @@ export class SelectEditor implements Editor {
 
   protected buildTemplateHtmlString(collection: any[]) {
     let options = '';
-    const isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure && this.columnDef.internalColumnEditor.customStructure.addSpaceBetweenLabels || false;
+    const isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.internalColumnEditor && this.customStructure && this.customStructure.addSpaceBetweenLabels || false;
     const isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
     const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
 
