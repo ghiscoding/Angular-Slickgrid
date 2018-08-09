@@ -5,6 +5,7 @@ import {
   Filter,
   FilterArguments,
   FilterCallback,
+  FilterCustomStructure,
   GridOption,
   MultipleSelectOption,
   OperatorType,
@@ -94,7 +95,7 @@ export class SelectFilter implements Filter {
   }
 
   /** Getter for the Custom Structure if exist */
-  protected get customStructure(): any {
+  protected get customStructure(): FilterCustomStructure {
     return this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure;
   }
 
@@ -269,7 +270,7 @@ export class SelectFilter implements Filter {
    */
   protected buildTemplateHtmlString(optionCollection: any[], searchTerms: SearchTerm[]) {
     let options = '';
-    const isAddingSpaceBetweenLabels = this.customStructure && this.customStructure.addSpaceBetweenLabels || false;
+    const separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
     const isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
     const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
 
@@ -282,7 +283,7 @@ export class SelectFilter implements Filter {
       const labelText = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
       const prefixText = option[this.labelPrefixName] || '';
       const suffixText = option[this.labelSuffixName] || '';
-      let optionText = isAddingSpaceBetweenLabels ? `${prefixText} ${labelText} ${suffixText}` : (prefixText + labelText + suffixText);
+      let optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
 
       // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
       // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
