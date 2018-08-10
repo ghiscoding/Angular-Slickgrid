@@ -49,7 +49,11 @@ export class GridEditorComponent implements OnInit {
         Support Excel Copy Buffer (SlickGrid Copy Manager Plugin), you can use it by simply enabling "enableExcelCopyBuffer" flag.
         Note that it will only evaluate Formatter when the "exportWithFormatter" flag is enabled (through "ExportOptions" or the column definition)
     </li>
-    <li>Support of "collectionAsync" is possible, click on "Clear Filters/Sorting" then add/delete item(s) and look at "Prerequisites" Select Filter</li>
+    <li>MultipleSelect & SingeSelect Editors & Filters can use a regular "collection" or "collectionAsync" to load it asynchronously</li>
+    <ul>
+      <li>Click on "Add Item" and see the Editor/Filter or the "Prerequesites" column change</li>
+      <li>Any Editor/Filter with a "collection" can be changed dynamically later in the future</li>
+    </ul>
   </ul>
   `;
 
@@ -176,8 +180,7 @@ export class GridEditorComponent implements OnInit {
           customStructure: {
             value: 'value',
             label: 'label',
-            labelSuffix: 'symbol',
-            addSpaceBetweenLabels: false
+            labelSuffix: 'symbol'
           },
 
           // collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, labelSuffix: '%' })),
@@ -256,7 +259,7 @@ export class GridEditorComponent implements OnInit {
             label: 'label',
             value: 'value',
             labelPrefix: 'prefix',
-            addSpaceBetweenLabels: true,
+            separatorBetweenTextLabels: ' ',
             includePrefixSuffixToSelectedValues: true
           },
           model: Editors.multipleSelect,
@@ -273,7 +276,7 @@ export class GridEditorComponent implements OnInit {
             label: 'label',
             value: 'value',
             labelPrefix: 'prefix',
-            addSpaceBetweenLabels: true
+            separatorBetweenTextLabels: ' '
           },
           model: Filters.multipleSelect,
           filterOptions: {

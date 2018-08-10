@@ -32,7 +32,7 @@ export class GridClientSideComponent implements OnInit {
       </ul>
       <li>On String filters, (*) can be used as startsWith (Hello* => matches "Hello Word") ... endsWith (*Doe => matches: "John Doe")</li>
       <li>Custom Filter are now possible, "Description" column below, is a customized InputFilter with different placeholder. See <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Custom-Filter" target="_blank">Wiki - Custom Filter</a>
-      <li>Support of "collectionAsync" is possible, click on "Clear Filters/Sorting" then add/delete item(s) and look at "Duration" Select Filter</li>
+      <li>MultipleSelect & SingeSelect Filters can use a regular "collection" or "collectionAsync" to load it asynchronously</li>
     </ul>
   `;
 
@@ -74,7 +74,7 @@ export class GridClientSideComponent implements OnInit {
             value: 'value',
             label: 'label',
             labelSuffix: 'text',
-            addSpaceBetweenLabels: true
+            separatorBetweenTextLabels: ' '
           },
           model: Filters.multipleSelect,
 
@@ -146,58 +146,6 @@ export class GridClientSideComponent implements OnInit {
 
   angularGridReady(angularGrid: any) {
     this.angularGrid = angularGrid;
-  }
-
-  /** Add a new row to the grid and refresh the Filter collection */
-  addItem() {
-    const lastRowIndex = this.dataset.length;
-    const newRows = this.mockData(1, lastRowIndex);
-
-    // wrap into a timer to simulate a backend async call
-    setTimeout(() => {
-      const durationColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'duration');
-      if (durationColumnDef) {
-        const collectionAsync = durationColumnDef.filter.collectionAsync;
-        const collection = durationColumnDef.filter.collection;
-
-        if (Array.isArray(collection)) {
-          // add the new row to the grid
-          this.angularGrid.gridService.addItemToDatagrid(newRows[0]);
-
-          // then refresh the Filter "collection", we have 2 ways of doing it
-
-          // Push to the filter "collection"
-          collection.push({ value: lastRowIndex, label: lastRowIndex, text: 'days' });
-
-          // or replace entire "collection"
-          // durationColumnDef.filter.collection = [...collection, ...[{ value: lastRowIndex, label: lastRowIndex }]];
-
-          // finally trigger a change for the Observable/Subject of the async collection
-          if (collectionAsync instanceof Subject) {
-            collectionAsync.next(collection);
-          }
-        }
-      }
-    }, 250);
-  }
-
-  /** Delete last inserted row */
-  deleteItem() {
-    const durationColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'duration');
-    if (durationColumnDef) {
-      const collectionAsync = durationColumnDef.filter.collectionAsync;
-      const collection = durationColumnDef.filter.collection;
-
-      if (Array.isArray(collection)) {
-        const selectCollectionObj = collection.pop();
-        this.angularGrid.gridService.deleteDataGridItemById(selectCollectionObj.value + '');
-
-        // finally trigger a change for the Observable/Subject of the async collection
-        if (collectionAsync instanceof Subject) {
-          collectionAsync.next(collection);
-        }
-      }
-    }
   }
 
   mockData(itemCount, startingIndex = 0): any[] {
