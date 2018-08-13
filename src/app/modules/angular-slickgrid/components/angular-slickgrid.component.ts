@@ -46,7 +46,6 @@ import { SortService } from './../services/sort.service';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 
 // using external non-typed js libraries
@@ -198,13 +197,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // so in our lib we will swap "editor" and copy it into a new property called "internalColumnEditor"
     // then take back "editor.model" and make it the new "editor" so that SlickGrid Editor Factory still works
     this._columnDefinitions = this._columnDefinitions.map((column: Column | any) => {
-      // on every Editor which have a "collection" or a "collectionAsync"
-      // we will add (or replace) a Subject to the "collectionAsync" property so that user has possibility to change the collection
-      // if "collectionAsync" is already set by the user, it will resolve it first then after it will replace it with a Subject
+      // on every Editor that have a "collectionAsync", resolve the data and assign it to the "collection" property
       if (column.editor && column.editor.collectionAsync) {
-        this.loadEditorCollectionAsync(column); // create Subject after resolve (createCollectionAsyncSubject)
-      } else if (column.editor && column.editor.collection) {
-        this.createCollectionAsyncSubject(column);
+        this.loadEditorCollectionAsync(column);
       }
       return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor  }};
     });
@@ -604,53 +599,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   // private functions
   // ------------------
 
-  /**
-   * Create or recreate an Observable/Subject and reassign it to the "collectionAsync" object so user can call a "collectionAsync.next()" on it
-   * The reason we create a new Subject is because the HttpClient Observable is a one-time Observable
-   */
-  protected createCollectionAsyncSubject(column: Column) {
-    if (column && column.editor) {
-      // create new Subject, then reassign as the new collectionAsync and finally watch for changes on it
-      const newCollectionAsync = new Subject<any>();
-      column.editor.collectionAsync = newCollectionAsync;
-      this.subscriptions.push(
-        newCollectionAsync.subscribe(updatedCollection => this.updateInternalEditorCollection(column, updatedCollection))
-      );
-    }
-  }
-
-  /** Load the Editor Collection asynchronously and replace the "collection" property when Observable resolves */
-  private loadEditorCollectionAsync(column: Column) {
-    const collectionAsync = column && column.editor && column.editor.collectionAsync;
-    if (collectionAsync instanceof Observable) {
-      const asyncSubscriber = collectionAsync.subscribe((resolvedCollection) => {
-        this.updateInternalEditorCollection(column, resolvedCollection);
-
-        // we're done resolving the data, we can unsubscribe the original collectionAsync subscriber
-        // and replace it with a new Subject (inside "collectionAsync") we do this because the original subscriber is a one-time sub
-        asyncSubscriber.unsubscribe();
-        this.createCollectionAsyncSubject(column);
-      });
-    }
-  }
-
-  /**
-   * Update the "internalColumnEditor.collection" property.
-   * Since this is called after the async call resolves, the pointer will not be the same as the "column" argument passed.
-   * Once we found the new pointer, we will reassign the "editor" and "collection" to the "internalColumnEditor" so it has newest collection
-   */
-  private updateInternalEditorCollection(column: Column, newCollection: any[]) {
-    column.editor.collection = newCollection;
-    column.internalColumnEditor = column.editor;
-
-    // find the new column reference pointer
-    const columns = this.grid.getColumns();
-    if (Array.isArray(columns)) {
-      const columnRef: Column = columns.find((col: Column) => col.id === column.id);
-      columnRef.internalColumnEditor = column.editor;
-    }
-  }
-
   /** Dispatch of Custom Event, which by default will bubble & is cancelable */
   private dispatchCustomEvent(eventName: string, data?: any, isBubbling: boolean = true, isCancelable: boolean = true) {
     const eventInit: CustomEventInit = { bubbles: isBubbling, cancelable: isCancelable };
@@ -658,5 +606,31 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       eventInit.detail = data;
     }
     return this.elm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
+  }
+
+  /** Load the Editor Collection asynchronously and replace the "collection" property when Observable resolves */
+  private loadEditorCollectionAsync(column: Column) {
+    const collectionAsync = column && column.editor && column.editor.collectionAsync;
+    if (collectionAsync instanceof Observable) {
+      this.subscriptions.push(
+        collectionAsync.subscribe((resolvedCollection) => this.updateEditorCollection(column, resolvedCollection))
+      );
+    }
+  }
+
+  /**
+   * Update the Editor "collection" property from an async call resolved
+   * Since this is called after the async call resolves, the pointer will not be the same as the "column" argument passed.
+   * Once we found the new pointer, we will reassign the "editor" and "collection" to the "internalColumnEditor" so it has newest collection
+   */
+  private updateEditorCollection(column: Column, newCollection: any[]) {
+    column.editor.collection = newCollection;
+
+    // find the new column reference pointer
+    const columns = this.grid.getColumns();
+    if (Array.isArray(columns)) {
+      const columnRef: Column = columns.find((col: Column) => col.id === column.id);
+      columnRef.internalColumnEditor = column.editor;
+    }
   }
 }

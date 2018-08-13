@@ -318,7 +318,6 @@ export class GridEditorComponent implements OnInit {
     setTimeout(() => {
       const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites');
       if (requisiteColumnDef) {
-        const collectionEditorAsync = requisiteColumnDef.editor.collectionAsync;
         const collectionFilterAsync = requisiteColumnDef.filter.collectionAsync;
         const collection = requisiteColumnDef.editor.collection;
 
@@ -334,10 +333,8 @@ export class GridEditorComponent implements OnInit {
           // or replace entire "collection"
           // durationColumnDef.editor.collection = [...collection, ...[{ value: lastRowIndex, label: lastRowIndex }]];
 
-          // finally trigger a change for the Observable/Subject of the async collection
-          if (collectionEditorAsync instanceof Subject) {
-            collectionEditorAsync.next(collection);
-          }
+          // for the Filter only, we have a trigger an RxJS/Subject change with the new collection
+          // we do this because Filter(s) are shown at all time, while on Editor it's unnecessary since they are only shown when opening them
           if (collectionFilterAsync instanceof Subject) {
             collectionFilterAsync.next(collection);
           }
