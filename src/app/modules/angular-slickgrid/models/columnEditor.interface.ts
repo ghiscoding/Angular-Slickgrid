@@ -1,14 +1,17 @@
 import {
   CollectionFilterBy,
   CollectionSortBy,
+  EditorCustomStructure,
   EditorValidator,
   MultipleSelectOption,
 } from './../models/index';
+import { Observable } from 'rxjs/Observable';
 
 export interface ColumnEditor {
-  /** Any inline editor function that implements Editor for the cell */
-  model?: any;
+  /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Editor) */
+  collectionAsync?: Promise<any> | Observable<any>;
 
+  /** A collection of items/options (commonly used with a Select/Multi-Select Editor) */
   collection?: any[];
 
   /** We could filter some items from the collection */
@@ -38,6 +41,9 @@ export interface ColumnEditor {
   /** Minimum value of the filter, works only with Filters supporting it (text, number, float, slider) */
   minValue?: number | string;
 
+  /** Any inline editor function that implements Editor for the cell */
+  model?: any;
+
   /** Editor Validator */
   validator?: EditorValidator;
 
@@ -45,22 +51,7 @@ export interface ColumnEditor {
   valueStep?: number | string;
 
   /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Editor */
-  customStructure?: {
-    /** your custom property name to for the "label" (text displayed in the select dropdown UI) */
-    label: string;
-
-    /** your custom property name to use for the "value" (equals of the "option" in a select dropdown) */
-    value: string;
-
-    /** an optional prefix that will be prepended before the label text */
-    labelPrefix?: string;
-
-    /** an optional suffix that will be appended to the label text */
-    labelSuffix?: string;
-
-    /** defaults to false, when using label with prefix/suffix, do we want to add spaces between each? */
-    addSpaceBetweenLabels?: boolean;
-  };
+  customStructure?: EditorCustomStructure;
 
   /** DOM element extra options */
   elementOptions?: any;

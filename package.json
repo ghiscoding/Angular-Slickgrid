@@ -51,6 +51,7 @@
         "@ngx-translate/core/index": "ngx-translate-core",
         "dompurify": "dompurify",
         "flatpickr": "flatpickr",
+        "lodash.isequal": "lodash.isequal",
         "moment-mini": "moment",
         "text-encoding-utf-8": "textEncodingUtf8"
       }
@@ -66,6 +67,7 @@
     "font-awesome": "^4.7.0",
     "jquery": ">=3.2.1",
     "jquery-ui-dist": "^1.12.1",
+    "lodash.isequal": "^4.5.0",
     "moment-mini": "^2.19.4",
     "rxjs": "^5.5.8",
     "slickgrid": "~2.3.21",

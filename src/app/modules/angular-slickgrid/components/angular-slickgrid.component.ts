@@ -21,7 +21,7 @@ import 'slickgrid/plugins/slick.rowmovemanager';
 import 'slickgrid/plugins/slick.rowselectionmodel';
 import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { castToPromise, titleCase } from './../services/utilities';
+import { castToPromise, titleCase, unsubscribeAllObservables } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
 import {
   AngularGridInstance,
@@ -32,7 +32,6 @@ import {
   GridStateChange,
   GridStateType,
   Pagination,
-  Statistic
 } from './../models/index';
 import { ControlAndPluginService } from './../services/controlAndPlugin.service';
 import { ExportService } from './../services/export.service';
@@ -44,9 +43,10 @@ import { GridStateService } from './../services/gridState.service';
 import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
 import { ResizerService } from './../services/resizer.service';
 import { SortService } from './../services/sort.service';
-import { Subscription } from 'rxjs/Subscription';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
+import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -168,12 +168,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // also unsubscribe all RxJS subscriptions
-    this.subscriptions.forEach((subscription: Subscription) => {
-      if (subscription && subscription.unsubscribe) {
-        subscription.unsubscribe();
-      }
-    });
-    this.subscriptions = [];
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
   }
 
   ngAfterViewInit() {
@@ -198,14 +193,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // for convenience, we provide the property "editor" as an Angular-Slickgrid editor complex object
-    // however "editor" is used internally by SlickGrid for it's Editor Factory
-    // so in our lib we will swap "editor" and copy it into "internalColumnEditor"
+    // however "editor" is used internally by SlickGrid for it's own Editor Factory
+    // so in our lib we will swap "editor" and copy it into a new property called "internalColumnEditor"
     // then take back "editor.model" and make it the new "editor" so that SlickGrid Editor Factory still works
-    this._columnDefinitions = this._columnDefinitions.map((c: Column | any) => ({
-      ...c,
-      editor: c.editor && c.editor.model,
-      internalColumnEditor: { ...c.editor }
-    })),
+    this._columnDefinitions = this._columnDefinitions.map((column: Column | any) => {
+      // on every Editor that have a "collectionAsync", resolve the data and assign it to the "collection" property
+      if (column.editor && column.editor.collectionAsync) {
+        this.loadEditorCollectionAsync(column);
+      }
+      return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor  }};
+    });
 
     this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
@@ -598,11 +595,42 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     return isShowing;
   }
 
+  //
+  // private functions
+  // ------------------
+
+  /** Dispatch of Custom Event, which by default will bubble & is cancelable */
   private dispatchCustomEvent(eventName: string, data?: any, isBubbling: boolean = true, isCancelable: boolean = true) {
     const eventInit: CustomEventInit = { bubbles: isBubbling, cancelable: isCancelable };
     if (data) {
       eventInit.detail = data;
     }
     return this.elm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
+  }
+
+  /** Load the Editor Collection asynchronously and replace the "collection" property when Observable resolves */
+  private loadEditorCollectionAsync(column: Column) {
+    const collectionAsync = column && column.editor && column.editor.collectionAsync;
+    if (collectionAsync instanceof Observable) {
+      this.subscriptions.push(
+        collectionAsync.subscribe((resolvedCollection) => this.updateEditorCollection(column, resolvedCollection))
+      );
+    }
+  }
+
+  /**
+   * Update the Editor "collection" property from an async call resolved
+   * Since this is called after the async call resolves, the pointer will not be the same as the "column" argument passed.
+   * Once we found the new pointer, we will reassign the "editor" and "collection" to the "internalColumnEditor" so it has newest collection
+   */
+  private updateEditorCollection(column: Column, newCollection: any[]) {
+    column.editor.collection = newCollection;
+
+    // find the new column reference pointer
+    const columns = this.grid.getColumns();
+    if (Array.isArray(columns)) {
+      const columnRef: Column = columns.find((col: Column) => col.id === column.id);
+      columnRef.internalColumnEditor = column.editor;
+    }
   }
 }

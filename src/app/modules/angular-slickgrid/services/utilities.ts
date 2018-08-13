@@ -1,5 +1,6 @@
 import { FieldType, OperatorType } from '../models/index';
 import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
@@ -20,19 +21,6 @@ export function addWhiteSpaces(nbSpaces): string {
     result += ' ';
   }
   return result;
-}
-
-/**
- * Compares two objects to determine if all the properties are equal
- * We will do a deep check recursively to make sure all properties really are the same
- * @param x first object
- * @param y second object to compare with a  */
-export function objectsDeepEqual(x, y) {
-  const ok = Object.keys, tx = typeof x, ty = typeof y;
-  return x && y && tx === 'object' && tx === ty ? (
-    ok(x).length === ok(y).length &&
-      ok(x).every(key => objectsDeepEqual(x[key], y[key]))
-  ) : (x === y);
 }
 
 /** HTML encode using jQuery */
@@ -137,7 +125,7 @@ export function castToPromise<T>(input: Promise<T> | Observable<T>, fromServiceN
  * @param any[] array the array to filter
  * @param function logic the logic to find the item
  * @param any [defaultVal={}] the default value to return
- * @return object the found object or deafult value
+ * @return object the found object or default value
  */
 export function findOrDefault(array: any[], logic: (item: any) => boolean, defaultVal = {}): any {
   return array.find(logic) || defaultVal;
@@ -179,6 +167,9 @@ export function mapMomentDateFormatWithFieldType(fieldType: FieldType): string {
     case FieldType.dateTimeIso:
       map = 'YYYY-MM-DD HH:mm:ss';
       break;
+    case FieldType.dateTimeShortIso:
+      map = 'YYYY-MM-DD HH:mm';
+      break;
     case FieldType.dateTimeIsoAmPm:
       map = 'YYYY-MM-DD hh:mm:ss a';
       break;
@@ -193,6 +184,9 @@ export function mapMomentDateFormatWithFieldType(fieldType: FieldType): string {
       break;
     case FieldType.dateTimeUs:
       map = 'MM/DD/YYYY HH:mm:ss';
+      break;
+    case FieldType.dateTimeShortUs:
+      map = 'MM/DD/YYYY HH:mm';
       break;
     case FieldType.dateTimeUsAmPm:
       map = 'MM/DD/YYYY hh:mm:ss a';
@@ -453,4 +447,22 @@ export function toCamelCase(str: string): string {
  */
 export function toKebabCase(str: string): string {
   return toCamelCase(str).replace(/([A-Z])/g, '-$1').toLowerCase();
+}
+
+/**
+ * Unsubscribe all Observables Subscriptions
+ * It will return an empty array if it all went well
+ * @param subscriptions
+ */
+export function unsubscribeAllObservables(subscriptions: Subscription[]): Subscription[] {
+  if (Array.isArray(subscriptions)) {
+    subscriptions.forEach((subscription: Subscription) => {
+      if (subscription && subscription.unsubscribe) {
+        subscription.unsubscribe();
+      }
+    });
+    subscriptions = [];
+  }
+
+  return subscriptions;
 }

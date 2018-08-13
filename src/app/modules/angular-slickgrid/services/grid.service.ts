@@ -266,9 +266,6 @@ export class GridService {
     if (itemId === undefined) {
       throw new Error(`Cannot delete a row without a valid "id"`);
     }
-    if (this._dataView.getRowById(itemId) === undefined) {
-      throw new Error(`Could not find the item in the grid by it's associated "id"`);
-    }
 
     // delete the item from the dataView
     this._dataView.deleteItem(itemId);

@@ -1,4 +1,5 @@
 import { Component, Injectable, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
@@ -13,9 +14,13 @@ import {
   OperatorType
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
+import { Subject } from 'rxjs/Subject';
 
 // using external non-typed js libraries
 declare var Slick: any;
+
+const NB_ITEMS = 100;
+const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_100_numbers.json';
 
 // you can create custom validator to pass to an inline editor
 const myCustomTitleValidator: EditorValidator = (value) => {
@@ -44,6 +49,11 @@ export class GridEditorComponent implements OnInit {
         Support Excel Copy Buffer (SlickGrid Copy Manager Plugin), you can use it by simply enabling "enableExcelCopyBuffer" flag.
         Note that it will only evaluate Formatter when the "exportWithFormatter" flag is enabled (through "ExportOptions" or the column definition)
     </li>
+    <li>MultipleSelect & SingeSelect Editors & Filters can use a regular "collection" or "collectionAsync" to load it asynchronously</li>
+    <ul>
+      <li>Click on "Add Item" and see the Editor/Filter or the "Prerequesites" column change</li>
+      <li>Any Editor/Filter with a "collection" can be changed dynamically later in the future</li>
+    </ul>
   </ul>
   `;
 
@@ -58,7 +68,7 @@ export class GridEditorComponent implements OnInit {
   updatedObject: any;
   selectedLanguage = 'en';
 
-  constructor(private translate: TranslateService) {}
+  constructor(private http: HttpClient, private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -170,8 +180,7 @@ export class GridEditorComponent implements OnInit {
           customStructure: {
             value: 'value',
             label: 'label',
-            labelSuffix: 'symbol',
-            addSpaceBetweenLabels: false
+            labelSuffix: 'symbol'
           },
 
           // collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, labelSuffix: '%' })),
@@ -239,25 +248,41 @@ export class GridEditorComponent implements OnInit {
         sortable: true,
         type: FieldType.string,
         editor: {
-          model: Editors.multipleSelect,
-          collection: Array.from(Array(12).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
+          collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
+          // OR a regular collection load
+          // collection: Array.from(Array(100).keys()).map(k => ({ value: k, prefix: 'Task', label: k })),
           collectionSortBy: {
             property: 'label',
             sortDesc: true
           },
-          collectionFilterBy: {
-            property: 'label',
-            value: ['Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5', 'Task 6'],
-            operator: OperatorType.contains
-          }
+          customStructure: {
+            label: 'label',
+            value: 'value',
+            labelPrefix: 'prefix',
+            separatorBetweenTextLabels: ' ',
+            includePrefixSuffixToSelectedValues: true
+          },
+          model: Editors.multipleSelect,
         },
         filter: {
+          collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
+          // OR a regular collection load
+          // collection: Array.from(Array(100).keys()).map(k => ({ value: k, prefix: 'Task', label: k })),
+          collectionSortBy: {
+            property: 'label',
+            sortDesc: true
+          },
+          customStructure: {
+            label: 'label',
+            value: 'value',
+            labelPrefix: 'prefix',
+            separatorBetweenTextLabels: ' '
+          },
           model: Filters.multipleSelect,
           filterOptions: {
             autoDropWidth: true
           },
           operator: OperatorType.inContains,
-          collection: Array.from(Array(12).keys()).map(k => ({ value: `Task ${k}`, label: `Task ${k}` })),
         }
       }
     ];
@@ -281,19 +306,89 @@ export class GridEditorComponent implements OnInit {
       i18n: this.translate
     };
 
-    this.getData();
+    this.dataset = this.mockData(NB_ITEMS);
   }
 
-  getData() {
+  /** Add a new row to the grid and refresh the Filter collection.
+   * Note that because Filter elements are always displayed on the screen, we need to tell the Filter,
+   * we do this via a Subject .next(), that it's collection got changed
+   * as for the Editor, there's nothing to do since the element is not shown and it will have latest collection next time it shows up
+   */
+  addItem() {
+    const lastRowIndex = this.dataset.length;
+    const newRows = this.mockData(1, lastRowIndex);
+
+    // wrap into a timer to simulate a backend async call
+    setTimeout(() => {
+      const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites');
+      if (requisiteColumnDef) {
+        const collectionFilterAsync = requisiteColumnDef.filter.collectionAsync;
+        const collection = requisiteColumnDef.editor.collection;
+
+        if (Array.isArray(collection)) {
+          // add the new row to the grid
+          this.angularGrid.gridService.addItemToDatagrid(newRows[0]);
+
+          // then refresh the Editor "collection", we have 2 ways of doing it
+
+          // Push to the Editor "collection"
+          collection.push({ value: lastRowIndex, label: lastRowIndex, prefix: 'Task' });
+
+          // or replace entire "collection"
+          // durationColumnDef.editor.collection = [...collection, ...[{ value: lastRowIndex, label: lastRowIndex }]];
+
+          // for the Filter only, we have a trigger an RxJS/Subject change with the new collection
+          // we do this because Filter(s) are shown at all time, while on Editor it's unnecessary since they are only shown when opening them
+          if (collectionFilterAsync instanceof Subject) {
+            collectionFilterAsync.next(collection);
+          }
+        }
+      }
+    }, 250);
+  }
+
+  /**
+   * Delete last inserted row.
+   * Note that because Filter elements are always displayed on the screen, we need to tell the Filter,
+   * we do this via a Subject .next(), that it's collection got changed
+   * as for the Editor, there's nothing to do since the element is not shown and it will have latest collection next time it shows up
+   */
+  deleteItem() {
+    const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites');
+    if (requisiteColumnDef) {
+      const filterCollectionAsync = requisiteColumnDef.filter.collectionAsync;
+      const filterCollection = requisiteColumnDef.filter.collection;
+
+      if (Array.isArray(filterCollection)) {
+        // sort collection in descending order and take out last collection option
+        const selectCollectionObj = this.sortCollectionDescending(filterCollection).pop();
+
+        // then we will delete that item from the grid
+        this.angularGrid.gridService.deleteDataGridItemById(selectCollectionObj.value);
+
+        // for the Filter only, we have a trigger an RxJS/Subject change with the new collection
+        // we do this because Filter(s) are shown at all time, while on Editor it's unnecessary since they are only shown when opening them
+        if (filterCollectionAsync instanceof Subject) {
+          filterCollectionAsync.next(filterCollection);
+        }
+      }
+    }
+  }
+
+  sortCollectionDescending(collection) {
+    return collection.sort((item1, item2) => item1.value - item2.value);
+  }
+
+  mockData(itemCount, startingIndex = 0) {
     // mock a dataset
-    const mockedDataset = [];
-    for (let i = 0; i < 1000; i++) {
+    const tempDataset = [];
+    for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
       const randomPercent = Math.round(Math.random() * 100);
 
-      mockedDataset[i] = {
+      tempDataset.push({
         id: i,
         title: 'Task ' + i,
         duration: Math.round(Math.random() * 100) + '',
@@ -303,9 +398,9 @@ export class GridEditorComponent implements OnInit {
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
         effortDriven: (i % 5 === 0),
         prerequisites: (i % 2 === 0) && i !== 0 && i < 12 ? [`Task ${i}`, `Task ${i - 1}`] : []
-      };
+      });
     }
-    this.dataset = mockedDataset;
+    return tempDataset;
   }
 
   onCellChanged(e, args) {
