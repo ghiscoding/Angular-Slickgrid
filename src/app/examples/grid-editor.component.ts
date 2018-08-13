@@ -309,7 +309,11 @@ export class GridEditorComponent implements OnInit {
     this.dataset = this.mockData(NB_ITEMS);
   }
 
-  /** Add a new row to the grid and refresh the Filter collection */
+  /** Add a new row to the grid and refresh the Filter collection.
+   * Note that because Filter elements are always displayed on the screen, we need to tell the Filter,
+   * we do this via a Subject .next(), that it's collection got changed
+   * as for the Editor, there's nothing to do since the element is not shown and it will have latest collection next time it shows up
+   */
   addItem() {
     const lastRowIndex = this.dataset.length;
     const newRows = this.mockData(1, lastRowIndex);
@@ -343,28 +347,36 @@ export class GridEditorComponent implements OnInit {
     }, 250);
   }
 
-  /** Delete last inserted row */
+  /**
+   * Delete last inserted row.
+   * Note that because Filter elements are always displayed on the screen, we need to tell the Filter,
+   * we do this via a Subject .next(), that it's collection got changed
+   * as for the Editor, there's nothing to do since the element is not shown and it will have latest collection next time it shows up
+   */
   deleteItem() {
     const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites');
     if (requisiteColumnDef) {
-      const collectionEditorAsync = requisiteColumnDef.filter.collectionAsync;
-      const collectionFilterAsync = requisiteColumnDef.filter.collectionAsync;
-      let collection = requisiteColumnDef.filter.collection;
+      const filterCollectionAsync = requisiteColumnDef.filter.collectionAsync;
+      const filterCollection = requisiteColumnDef.filter.collection;
 
-      if (Array.isArray(collection)) {
-        collection = collection.sort((item1, item2) => item1.value - item2.value); // order descending
-        const selectCollectionObj = collection.pop();
+      if (Array.isArray(filterCollection)) {
+        // sort collection in descending order and take out last collection option
+        const selectCollectionObj = this.sortCollectionDescending(filterCollection).pop();
+
+        // then we will delete that item from the grid
         this.angularGrid.gridService.deleteDataGridItemById(selectCollectionObj.value);
 
-        // finally trigger a change for the Observable/Subject of the async collection
-        if (collectionEditorAsync instanceof Subject) {
-          collectionEditorAsync.next(collection);
-        }
-        if (collectionFilterAsync instanceof Subject) {
-          collectionFilterAsync.next(collection);
+        // for the Filter only, we have a trigger an RxJS/Subject change with the new collection
+        // we do this because Filter(s) are shown at all time, while on Editor it's unnecessary since they are only shown when opening them
+        if (filterCollectionAsync instanceof Subject) {
+          filterCollectionAsync.next(filterCollection);
         }
       }
     }
+  }
+
+  sortCollectionDescending(collection) {
+    return collection.sort((item1, item2) => item1.value - item2.value);
   }
 
   mockData(itemCount, startingIndex = 0) {
