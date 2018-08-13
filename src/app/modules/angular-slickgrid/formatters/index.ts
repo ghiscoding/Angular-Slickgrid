@@ -12,6 +12,8 @@ import { dateTimeIsoFormatter } from './dateTimeIsoFormatter';
 import { dateTimeIsoAmPmFormatter } from './dateTimeIsoAmPmFormatter';
 import { dateTimeUsAmPmFormatter } from './dateTimeUsAmPmFormatter';
 import { dateTimeUsFormatter } from './dateTimeUsFormatter';
+import { dateTimeShortIsoFormatter } from './dateTimeShortIsoFormatter';
+import { dateTimeShortUsFormatter } from './dateTimeShortUsFormatter';
 import { dateUsFormatter } from './dateUsFormatter';
 import { decimalFormatter } from './decimalFormatter';
 import { deleteIconFormatter } from './deleteIconFormatter';
@@ -84,6 +86,9 @@ export const Formatters = {
   /** Takes a Date object and displays it as an ISO Date+Time format */
   dateTimeIso: dateTimeIsoFormatter,
 
+  /** Takes a Date object and displays it as an ISO Date+Time (without seconds) format */
+  dateTimeShortIso: dateTimeShortIsoFormatter,
+
   /** Takes a Date object and displays it as an ISO Date+Time+(am/pm) format */
   dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
 
@@ -92,6 +97,9 @@ export const Formatters = {
 
   /** Takes a Date object and displays it as an US Date+Time format */
   dateTimeUs: dateTimeUsFormatter,
+
+  /** Takes a Date object and displays it as an US Date+Time (without seconds) format */
+  dateTimeShortUs: dateTimeShortUsFormatter,
 
   /** Takes a Date object and displays it as an US Date+Time+(am/pm) format */
   dateTimeUsAmPm: dateTimeUsAmPmFormatter,

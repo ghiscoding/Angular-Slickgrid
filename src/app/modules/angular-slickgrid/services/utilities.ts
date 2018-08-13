@@ -167,6 +167,9 @@ export function mapMomentDateFormatWithFieldType(fieldType: FieldType): string {
     case FieldType.dateTimeIso:
       map = 'YYYY-MM-DD HH:mm:ss';
       break;
+    case FieldType.dateTimeShortIso:
+      map = 'YYYY-MM-DD HH:mm';
+      break;
     case FieldType.dateTimeIsoAmPm:
       map = 'YYYY-MM-DD hh:mm:ss a';
       break;
@@ -181,6 +184,9 @@ export function mapMomentDateFormatWithFieldType(fieldType: FieldType): string {
       break;
     case FieldType.dateTimeUs:
       map = 'MM/DD/YYYY HH:mm:ss';
+      break;
+    case FieldType.dateTimeShortUs:
+      map = 'MM/DD/YYYY HH:mm';
       break;
     case FieldType.dateTimeUsAmPm:
       map = 'MM/DD/YYYY hh:mm:ss a';

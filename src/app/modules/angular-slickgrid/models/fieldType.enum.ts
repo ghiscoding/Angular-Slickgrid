@@ -29,11 +29,17 @@ export enum FieldType {
   /** Format: 'YYYY-MM-DD h:mm:ss A' => 2001-01-01 11:01:01 PM */
   dateTimeIsoAM_PM,
 
+  /** Format: 'YYYY-MM-DD HH:mm' => 2001-01-01 14:01 */
+  dateTimeShortIso,
+
   /** Format: 'MM/DD/YYYY' => 02/28/2001 */
   dateUs,
 
   /** Format: 'M/D/YY' => 2/28/12 */
   dateUsShort,
+
+  /** Format: 'MM/DD/YYYY HH:mm' => 02/28/2001 13:01 */
+  dateTimeShortUs,
 
   /** Format: 'MM/DD/YYYY HH:mm:ss' => 02/28/2001 13:01:01 */
   dateTimeUs,
