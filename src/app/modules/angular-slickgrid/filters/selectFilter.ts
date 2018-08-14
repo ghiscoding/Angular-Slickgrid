@@ -14,7 +14,7 @@ import {
   SelectOption,
 } from './../models/index';
 import { CollectionService } from './../services/collection.service';
-import { castToPromise, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
+import { castToPromise, getDescendantProperty, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
@@ -238,8 +238,11 @@ export class SelectFilter implements Filter {
    * and reinitialize filter collection with this new collection
    */
   protected renderDomElementFromCollectionAsync(collection) {
+    if (this.customStructure && this.customStructure.collectionInObjectProperty) {
+      collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+    }
     if (!Array.isArray(collection)) {
-      throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call');
+      throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call in the Select Filter, the collection is not a valid array.');
     }
 
     // copy over the array received from the async call to the "collection" as the new collection to use
@@ -251,6 +254,13 @@ export class SelectFilter implements Filter {
   }
 
   protected renderDomElement(collection) {
+    if (!Array.isArray(collection) && this.customStructure && this.customStructure.collectionInObjectProperty) {
+      collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+    }
+    if (!Array.isArray(collection)) {
+      throw new Error('The "collection" passed to the Select Filter is not a valid array');
+    }
+
     let newCollection = collection;
 
     // user might want to filter and/or sort certain items of the collection

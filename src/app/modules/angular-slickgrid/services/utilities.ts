@@ -155,6 +155,11 @@ export function decimalFormatted(input: number | string, minDecimal?: number, ma
   return amount;
 }
 
+/** From a dot (.) notation find and return a property within an object given a path */
+export function getDescendantProperty(obj: any, path: string) {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+}
+
 /**
  * From a Date FieldType, return it's equivalent moment.js format
  * refer to moment.js for the format standard used: https://momentjs.com/docs/#/parsing/string-format/
