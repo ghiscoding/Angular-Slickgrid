@@ -261,6 +261,11 @@ export class SelectFilter implements Filter {
       throw new Error('The "collection" passed to the Select Filter is not a valid array');
     }
 
+    // user can optionally add a blank entry at the beginning of the collection
+    if (this.customStructure && this.customStructure.addBlankEntry) {
+      collection.unshift(this.createBlankEntry());
+    }
+
     let newCollection = collection;
 
     // user might want to filter and/or sort certain items of the collection
@@ -314,6 +319,21 @@ export class SelectFilter implements Filter {
     });
 
     return `<select class="ms-filter search-filter" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
+  }
+
+  /** Create a blank entry that can be added to the collection. It will also reuse the same customStructure if need be */
+  protected createBlankEntry() {
+    const blankEntry = {
+      [this.labelName]: '',
+      [this.valueName]: ''
+    };
+    if (this.labelPrefixName) {
+      blankEntry[this.labelPrefixName] = '';
+    }
+    if (this.labelSuffixName) {
+      blankEntry[this.labelSuffixName] = '';
+    }
+    return blankEntry;
   }
 
   /**
