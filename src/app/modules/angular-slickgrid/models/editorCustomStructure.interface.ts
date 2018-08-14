@@ -12,6 +12,12 @@ export interface EditorCustomStructure {
   labelSuffix?: string;
 
   /**
+   * Optionally add a blank entry to the beginning of the collection.
+   * Useful when we want to return all data by setting an empty filter that might not exist in the original collection
+   */
+  addBlankEntry?: boolean;
+
+  /**
    * When the collection is inside an object descendant property
    * we can optionally pass a dot (.) notation string to pull the collection from an object property.
    * For example if our output data is:
