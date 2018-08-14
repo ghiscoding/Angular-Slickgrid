@@ -10,7 +10,7 @@ import {
   SelectOption,
 } from './../models/index';
 import { CollectionService } from '../services/index';
-import { arraysEqual, findOrDefault, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
+import { arraysEqual, findOrDefault, getDescendantProperty, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
 import { Subscription } from 'rxjs/Subscription';
 import * as DOMPurify_ from 'dompurify';
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
@@ -311,6 +311,13 @@ export class SelectEditor implements Editor {
   }
 
   protected renderDomElement(collection: any[]) {
+    if (!Array.isArray(collection) && this.customStructure && this.customStructure.collectionInObjectProperty) {
+      collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+    }
+    if (!Array.isArray(collection)) {
+      throw new Error('The "collection" passed to the Select Editor is not a valid array');
+    }
+
     let newCollection = collection || [];
 
     // user might want to filter and/or sort certain items of the collection
