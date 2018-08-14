@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { AngularGridInstance, Column, FieldType, Filters, Formatters, GridOption, GridStateChange, OperatorType, Statistic } from './../modules/angular-slickgrid';
 import { CustomInputFilter } from './custom-inputFilter';
-import { Subject } from 'rxjs/Subject';
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);

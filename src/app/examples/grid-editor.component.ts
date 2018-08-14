@@ -322,25 +322,25 @@ export class GridEditorComponent implements OnInit {
     setTimeout(() => {
       const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites');
       if (requisiteColumnDef) {
-        const collectionFilterAsync = requisiteColumnDef.filter.collectionAsync;
-        const collection = requisiteColumnDef.editor.collection;
+        const filterCollectionAsync = requisiteColumnDef.filter.collectionAsync;
+        const editorCollection = requisiteColumnDef.editor.collection;
 
-        if (Array.isArray(collection)) {
+        if (Array.isArray(editorCollection)) {
           // add the new row to the grid
           this.angularGrid.gridService.addItemToDatagrid(newRows[0]);
 
           // then refresh the Editor "collection", we have 2 ways of doing it
 
           // Push to the Editor "collection"
-          collection.push({ value: lastRowIndex, label: lastRowIndex, prefix: 'Task' });
+          editorCollection.push({ value: lastRowIndex, label: lastRowIndex, prefix: 'Task' });
 
           // or replace entire "collection"
           // durationColumnDef.editor.collection = [...collection, ...[{ value: lastRowIndex, label: lastRowIndex }]];
 
           // for the Filter only, we have a trigger an RxJS/Subject change with the new collection
           // we do this because Filter(s) are shown at all time, while on Editor it's unnecessary since they are only shown when opening them
-          if (collectionFilterAsync instanceof Subject) {
-            collectionFilterAsync.next(collection);
+          if (filterCollectionAsync instanceof Subject) {
+            filterCollectionAsync.next(editorCollection);
           }
         }
       }

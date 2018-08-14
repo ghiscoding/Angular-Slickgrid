@@ -296,7 +296,7 @@ export class SelectEditor implements Editor {
   /**
    * user might want to sort the collection in a certain way
    * @param inputCollection
-   * @return outputCollection filtered and/or sorted collection
+   * @return outputCollection sorted collection
    */
   protected sortCollection(inputCollection) {
     let outputCollection = inputCollection;
