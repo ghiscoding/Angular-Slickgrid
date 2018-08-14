@@ -197,6 +197,7 @@ $multiselect-input-filter-font-family:    "Helvetica Neue", Helvetica, Arial !de
 $multiselect-input-filter-font-size:      12px !default;
 $multiselect-dropdown-border:             1px solid #bbb !default;
 $multiselect-dropdown-max-width:          250px !default;
+$multiselect-dropdown-z-index:            9999 !default;
 $multiselect-checkbox-margin-left:        4px !default;
 $multiselect-checkbox-hover-bg-color:     $row-mouse-hover-color !default;
 $multiselect-select-all-border-bottom:    1px solid #ddd !default;
@@ -205,8 +206,8 @@ $multiselect-select-all-text-hover-color: darken($primary-color, 10%) !default;
 $multiselect-icon-color:                  $primary-color !default;
 $multiselect-icon-checked:                "\f14a" !default;
 $multiselect-icon-unchecked:              "\f096" !default;
-$multiselect-icon-radio-checked:          "\f058" !default;
-$multiselect-icon-radio-unchecked:        "\f1db" !default;
+$multiselect-icon-radio-checked:          "\f192" !default;
+$multiselect-icon-radio-unchecked:        "\f10c" !default;
 $multiselect-icon-font-size:              16px !default;
 $multiselect-unchecked-opacity:           0.5 !default;
 $multiselect-ok-button-bg-color:          #fff !default;

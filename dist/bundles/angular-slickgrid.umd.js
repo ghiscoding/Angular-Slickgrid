@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('moment-mini'), require('@angular/core'), require('@ngx-translate/core'), require('sanitize-html'), require('rxjs/Subject'), require('text-encoding-utf-8'), require('jquery-ui-dist/jquery-ui'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.dataview'), require('slickgrid/slick.grid'), require('slickgrid/slick.groupitemmetadataprovider'), require('slickgrid/controls/slick.columnpicker'), require('slickgrid/controls/slick.gridmenu'), require('slickgrid/controls/slick.pager'), require('slickgrid/plugins/slick.autotooltips'), require('slickgrid/plugins/slick.cellexternalcopymanager'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('slickgrid/plugins/slick.checkboxselectcolumn'), require('slickgrid/plugins/slick.headerbuttons'), require('slickgrid/plugins/slick.headermenu'), require('slickgrid/plugins/slick.rowmovemanager'), require('slickgrid/plugins/slick.rowselectionmodel'), require('@angular/common')) :
-	typeof define === 'function' && define.amd ? define('angular-slickgrid', ['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'moment-mini', '@angular/core', '@ngx-translate/core', 'sanitize-html', 'rxjs/Subject', 'text-encoding-utf-8', 'jquery-ui-dist/jquery-ui', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.dataview', 'slickgrid/slick.grid', 'slickgrid/slick.groupitemmetadataprovider', 'slickgrid/controls/slick.columnpicker', 'slickgrid/controls/slick.gridmenu', 'slickgrid/controls/slick.pager', 'slickgrid/plugins/slick.autotooltips', 'slickgrid/plugins/slick.cellexternalcopymanager', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'slickgrid/plugins/slick.checkboxselectcolumn', 'slickgrid/plugins/slick.headerbuttons', 'slickgrid/plugins/slick.headermenu', 'slickgrid/plugins/slick.rowmovemanager', 'slickgrid/plugins/slick.rowselectionmodel', '@angular/common'], factory) :
-	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.moment,global.ng.core,global['ngx-translate-core'],global.sanitizeHtml_,global.Rx,global.textEncodingUtf8,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,global.ng.common));
-}(this, (function (exports,Observable,first,take,toPromise,moment_,core,core$1,sanitizeHtml_,Subject,textEncodingUtf8,jqueryUi,jquery_event_drag2_3_0,slick_core,slick_dataview,slick_grid,slick_groupitemmetadataprovider,slick_columnpicker,slick_gridmenu,slick_pager,slick_autotooltips,slick_cellexternalcopymanager,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,slick_checkboxselectcolumn,slick_headerbuttons,slick_headermenu,slick_rowmovemanager,slick_rowselectionmodel,common) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('moment-mini'), require('@angular/core'), require('@ngx-translate/core'), require('rxjs/Subject'), require('dompurify'), require('lodash.isequal'), require('text-encoding-utf-8'), require('jquery-ui-dist/jquery-ui'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.dataview'), require('slickgrid/slick.grid'), require('slickgrid/slick.groupitemmetadataprovider'), require('slickgrid/controls/slick.columnpicker'), require('slickgrid/controls/slick.gridmenu'), require('slickgrid/controls/slick.pager'), require('slickgrid/plugins/slick.autotooltips'), require('slickgrid/plugins/slick.cellexternalcopymanager'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('slickgrid/plugins/slick.checkboxselectcolumn'), require('slickgrid/plugins/slick.headerbuttons'), require('slickgrid/plugins/slick.headermenu'), require('slickgrid/plugins/slick.rowmovemanager'), require('slickgrid/plugins/slick.rowselectionmodel'), require('@angular/common')) :
+	typeof define === 'function' && define.amd ? define('angular-slickgrid', ['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'moment-mini', '@angular/core', '@ngx-translate/core', 'rxjs/Subject', 'dompurify', 'lodash.isequal', 'text-encoding-utf-8', 'jquery-ui-dist/jquery-ui', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.dataview', 'slickgrid/slick.grid', 'slickgrid/slick.groupitemmetadataprovider', 'slickgrid/controls/slick.columnpicker', 'slickgrid/controls/slick.gridmenu', 'slickgrid/controls/slick.pager', 'slickgrid/plugins/slick.autotooltips', 'slickgrid/plugins/slick.cellexternalcopymanager', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'slickgrid/plugins/slick.checkboxselectcolumn', 'slickgrid/plugins/slick.headerbuttons', 'slickgrid/plugins/slick.headermenu', 'slickgrid/plugins/slick.rowmovemanager', 'slickgrid/plugins/slick.rowselectionmodel', '@angular/common'], factory) :
+	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.moment,global.ng.core,global['ngx-translate-core'],global.Rx,global.dompurify,global.lodash.isequal,global.textEncodingUtf8,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,global.ng.common));
+}(this, (function (exports,Observable,first,take,toPromise,moment_,core,core$1,Subject,DOMPurify_,isequal_,textEncodingUtf8,jqueryUi,jquery_event_drag2_3_0,slick_core,slick_dataview,slick_grid,slick_groupitemmetadataprovider,slick_columnpicker,slick_gridmenu,slick_pager,slick_autotooltips,slick_cellexternalcopymanager,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,slick_checkboxselectcolumn,slick_headerbuttons,slick_headermenu,slick_rowmovemanager,slick_rowselectionmodel,common) { 'use strict';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -17,7 +17,14 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
-
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+function __extends(d, b) {
+    extendStatics(d, b);
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
 
 
 
@@ -125,14 +132,16 @@ var FieldType = {
     dateTimeIso: 10,
     dateTimeIsoAmPm: 11,
     dateTimeIsoAM_PM: 12,
-    dateUs: 13,
-    dateUsShort: 14,
-    dateTimeUs: 15,
-    dateTimeUsAmPm: 16,
-    dateTimeUsAM_PM: 17,
-    dateTimeUsShort: 18,
-    dateTimeUsShortAmPm: 19,
-    dateTimeUsShortAM_PM: 20,
+    dateTimeShortIso: 13,
+    dateUs: 14,
+    dateUsShort: 15,
+    dateTimeShortUs: 16,
+    dateTimeUs: 17,
+    dateTimeUsAmPm: 18,
+    dateTimeUsAM_PM: 19,
+    dateTimeUsShort: 20,
+    dateTimeUsShortAmPm: 21,
+    dateTimeUsShortAM_PM: 22,
 };
 FieldType[FieldType.unknown] = "unknown";
 FieldType[FieldType.string] = "string";
@@ -147,8 +156,10 @@ FieldType[FieldType.dateTime] = "dateTime";
 FieldType[FieldType.dateTimeIso] = "dateTimeIso";
 FieldType[FieldType.dateTimeIsoAmPm] = "dateTimeIsoAmPm";
 FieldType[FieldType.dateTimeIsoAM_PM] = "dateTimeIsoAM_PM";
+FieldType[FieldType.dateTimeShortIso] = "dateTimeShortIso";
 FieldType[FieldType.dateUs] = "dateUs";
 FieldType[FieldType.dateUsShort] = "dateUsShort";
+FieldType[FieldType.dateTimeShortUs] = "dateTimeShortUs";
 FieldType[FieldType.dateTimeUs] = "dateTimeUs";
 FieldType[FieldType.dateTimeUsAmPm] = "dateTimeUsAmPm";
 FieldType[FieldType.dateTimeUsAM_PM] = "dateTimeUsAM_PM";
@@ -238,11 +249,6 @@ function addWhiteSpaces(nbSpaces) {
     }
     return result;
 }
-function objectsDeepEqual(x, y) {
-    var ok = Object.keys, tx = typeof x, ty = typeof y;
-    return x && y && tx === 'object' && tx === ty ? (ok(x).length === ok(y).length &&
-        ok(x).every(function (key) { return objectsDeepEqual(x[key], y[key]); })) : (x === y);
-}
 function htmlEncode(value) {
     return $('<div/>').text(value).html();
 }
@@ -319,12 +325,18 @@ function decimalFormatted(input, minDecimal, maxDecimal) {
     }
     return amount;
 }
+function getDescendantProperty(obj, path) {
+    return path.split('.').reduce(function (acc, part) { return acc && acc[part]; }, obj);
+}
 function mapMomentDateFormatWithFieldType(fieldType) {
     var map;
     switch (fieldType) {
         case FieldType.dateTime:
         case FieldType.dateTimeIso:
             map = 'YYYY-MM-DD HH:mm:ss';
+            break;
+        case FieldType.dateTimeShortIso:
+            map = 'YYYY-MM-DD HH:mm';
             break;
         case FieldType.dateTimeIsoAmPm:
             map = 'YYYY-MM-DD hh:mm:ss a';
@@ -340,6 +352,9 @@ function mapMomentDateFormatWithFieldType(fieldType) {
             break;
         case FieldType.dateTimeUs:
             map = 'MM/DD/YYYY HH:mm:ss';
+            break;
+        case FieldType.dateTimeShortUs:
+            map = 'MM/DD/YYYY HH:mm';
             break;
         case FieldType.dateTimeUsAmPm:
             map = 'MM/DD/YYYY hh:mm:ss a';
@@ -520,6 +535,17 @@ function toCamelCase(str) {
 }
 function toKebabCase(str) {
     return toCamelCase(str).replace(/([A-Z])/g, '-$1').toLowerCase();
+}
+function unsubscribeAllObservables(subscriptions) {
+    if (Array.isArray(subscriptions)) {
+        subscriptions.forEach(function (subscription) {
+            if (subscription && subscription.unsubscribe) {
+                subscription.unsubscribe();
+            }
+        });
+        subscriptions = [];
+    }
+    return subscriptions;
 }
 var moment$1 = moment_;
 function compareDates(value1, value2, format, sortDirection, strict) {
@@ -1382,24 +1408,22 @@ var InputFilter = /** @class */ (function () {
     };
     return InputFilter;
 }());
-var sanitizeHtml = sanitizeHtml_;
-var MultipleSelectFilter = /** @class */ (function () {
-    function MultipleSelectFilter(translate, collectionService) {
+var DOMPurify = DOMPurify_;
+var SelectFilter = /** @class */ (function () {
+    function SelectFilter(translate, collectionService, isMultipleSelect) {
+        if (isMultipleSelect === void 0) { isMultipleSelect = true; }
         var _this = this;
         this.translate = translate;
         this.collectionService = collectionService;
+        this.isMultipleSelect = isMultipleSelect;
         this.isFilled = false;
         this.enableTranslateLabel = false;
-        this.defaultOptions = {
+        this.subscriptions = [];
+        var options = {
             container: 'body',
             filter: false,
             maxHeight: 200,
-            okButton: true,
-            addTitle: true,
-            countSelected: this.translate.instant('X_OF_Y_SELECTED'),
-            allSelected: this.translate.instant('ALL_SELECTED'),
-            selectAllText: this.translate.instant('SELECT_ALL'),
-            selectAllDelimiter: ['', ''],
+            single: true,
             textTemplate: function ($elm) {
                 var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.filter && _this.columnDef.filter.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
@@ -1417,47 +1441,69 @@ var MultipleSelectFilter = /** @class */ (function () {
                 _this.callback(undefined, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: selectedItems });
             }
         };
+        if (this.isMultipleSelect) {
+            options.single = false;
+            options.okButton = true;
+            options.addTitle = true;
+            options.countSelected = this.translate.instant('X_OF_Y_SELECTED');
+            options.allSelected = this.translate.instant('ALL_SELECTED');
+            options.selectAllText = this.translate.instant('SELECT_ALL');
+            options.selectAllDelimiter = ['', ''];
+        }
+        this.defaultOptions = options;
     }
-    Object.defineProperty(MultipleSelectFilter.prototype, "gridOptions", {
+    Object.defineProperty(SelectFilter.prototype, "gridOptions", {
         get: function () {
             return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(MultipleSelectFilter.prototype, "operator", {
+    Object.defineProperty(SelectFilter.prototype, "columnFilter", {
+        get: function () {
+            return this.columnDef && this.columnDef.filter;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SelectFilter.prototype, "customStructure", {
+        get: function () {
+            return this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SelectFilter.prototype, "operator", {
         get: function () {
             return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.in;
         },
         enumerable: true,
         configurable: true
     });
-    MultipleSelectFilter.prototype.init = function (args) {
+    SelectFilter.prototype.init = function (args) {
         this.grid = args.grid;
         this.callback = args.callback;
         this.columnDef = args.columnDef;
         this.searchTerms = args.searchTerms || [];
-        if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
+        if (!this.grid || !this.columnDef || !this.columnFilter || (!this.columnFilter.collection && !this.columnFilter.collectionAsync)) {
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" (or \"collectionAsync\") for the MultipleSelect/SingleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
         }
-        this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
-        this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
-        this.labelPrefixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelPrefix : 'labelPrefix';
-        this.labelSuffixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelSuffix : 'labelSuffix';
-        this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
-        var newCollection = this.columnDef.filter.collection || [];
-        if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
-            var filterBy = this.columnDef.filter.collectionFilterBy;
-            newCollection = this.collectionService.filterCollection(newCollection, filterBy);
+        this.enableTranslateLabel = this.columnFilter.enableTranslateLabel;
+        this.labelName = (this.customStructure) ? this.customStructure.label : 'label';
+        this.labelPrefixName = (this.customStructure) ? this.customStructure.labelPrefix : 'labelPrefix';
+        this.labelSuffixName = (this.customStructure) ? this.customStructure.labelSuffix : 'labelSuffix';
+        this.valueName = (this.customStructure) ? this.customStructure.value : 'value';
+        var newCollection = this.columnFilter.collection || [];
+        this.renderDomElement(newCollection);
+        var collectionAsync = this.columnFilter && this.columnFilter.collectionAsync;
+        if (collectionAsync) {
+            this.renderOptionsAsync(collectionAsync);
         }
-        if (this.columnDef.filter && this.columnDef.filter.collectionSortBy) {
-            var sortBy = this.columnDef.filter.collectionSortBy;
-            newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
+        else if (this.columnFilter && this.columnFilter.collection) {
+            this.createCollectionAsyncSubject();
         }
-        var filterTemplate = this.buildTemplateHtmlString(newCollection);
-        this.createDomElement(filterTemplate);
     };
-    MultipleSelectFilter.prototype.clear = function () {
+    SelectFilter.prototype.clear = function () {
         if (this.$filterElm && this.$filterElm.multipleSelect) {
             this.$filterElm.multipleSelect('setSelects', []);
             this.$filterElm.removeClass('filled');
@@ -1465,34 +1511,103 @@ var MultipleSelectFilter = /** @class */ (function () {
             this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
         }
     };
-    MultipleSelectFilter.prototype.destroy = function () {
+    SelectFilter.prototype.destroy = function () {
         if (this.$filterElm) {
             this.$filterElm.off().remove();
         }
+        this.subscriptions = unsubscribeAllObservables(this.subscriptions);
     };
-    MultipleSelectFilter.prototype.setValues = function (values) {
+    SelectFilter.prototype.setValues = function (values) {
         if (values) {
+            values = Array.isArray(values) ? values : [values];
             this.$filterElm.multipleSelect('setSelects', values);
         }
     };
-    MultipleSelectFilter.prototype.buildTemplateHtmlString = function (optionCollection) {
+    SelectFilter.prototype.filterCollection = function (inputCollection) {
+        var outputCollection = inputCollection;
+        if (this.columnDef && this.columnFilter && this.columnFilter.collectionFilterBy) {
+            var filterBy = this.columnFilter.collectionFilterBy;
+            outputCollection = this.collectionService.filterCollection(outputCollection, filterBy);
+        }
+        return outputCollection;
+    };
+    SelectFilter.prototype.sortCollection = function (inputCollection) {
+        var outputCollection = inputCollection;
+        if (this.columnDef && this.columnFilter && this.columnFilter.collectionSortBy) {
+            var sortBy = this.columnFilter.collectionSortBy;
+            outputCollection = this.collectionService.sortCollection(outputCollection, sortBy, this.enableTranslateLabel);
+        }
+        return outputCollection;
+    };
+    SelectFilter.prototype.renderOptionsAsync = function (collectionAsync) {
+        return __awaiter(this, void 0, void 0, function () {
+            var awaitedCollection;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        awaitedCollection = [];
+                        if (!collectionAsync) return [3 /*break*/, 2];
+                        return [4 /*yield*/, castToPromise(collectionAsync)];
+                    case 1:
+                        awaitedCollection = _a.sent();
+                        this.renderDomElementFromCollectionAsync(awaitedCollection);
+                        this.createCollectionAsyncSubject();
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    SelectFilter.prototype.createCollectionAsyncSubject = function () {
+        var _this = this;
+        var newCollectionAsync = new Subject.Subject();
+        this.columnFilter.collectionAsync = newCollectionAsync;
+        this.subscriptions.push(newCollectionAsync.subscribe(function (collection) { return _this.renderDomElementFromCollectionAsync(collection); }));
+    };
+    SelectFilter.prototype.renderDomElementFromCollectionAsync = function (collection) {
+        if (this.customStructure && this.customStructure.collectionInObjectProperty) {
+            collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+        }
+        if (!Array.isArray(collection)) {
+            throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call in the Select Filter, the collection is not a valid array.');
+        }
+        this.columnFilter.collection = collection;
+        this.renderDomElement(collection);
+    };
+    SelectFilter.prototype.renderDomElement = function (collection) {
+        if (!Array.isArray(collection) && this.customStructure && this.customStructure.collectionInObjectProperty) {
+            collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+        }
+        if (!Array.isArray(collection)) {
+            throw new Error('The "collection" passed to the Select Filter is not a valid array');
+        }
+        if (this.customStructure && this.customStructure.addBlankEntry) {
+            collection.unshift(this.createBlankEntry());
+        }
+        var newCollection = collection;
+        newCollection = this.filterCollection(newCollection);
+        newCollection = this.sortCollection(newCollection);
+        var filterTemplate = this.buildTemplateHtmlString(newCollection, this.searchTerms);
+        this.createDomElement(filterTemplate);
+    };
+    SelectFilter.prototype.buildTemplateHtmlString = function (optionCollection, searchTerms) {
         var _this = this;
         var options = '';
-        var isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure && this.columnDef.filter.customStructure.addSpaceBetweenLabels || false;
-        var isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+        var separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
+        var isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
                 throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')");
             }
             var labelKey = ((option.labelKey || option[_this.labelName]));
-            var selected = (_this.findValueInSearchTerms(option[_this.valueName]) >= 0) ? 'selected' : '';
+            var selected = (searchTerms.findIndex(function (term) { return term === option[_this.valueName]; }) >= 0) ? 'selected' : '';
             var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
             var prefixText = option[_this.labelPrefixName] || '';
             var suffixText = option[_this.labelSuffixName] || '';
-            var optionText = isAddingSpaceBetweenLabels ? prefixText + " " + labelText + " " + suffixText : (prefixText + labelText + suffixText);
+            var optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
             if (isRenderHtmlEnabled) {
-                var sanitizedText = sanitizeHtml(optionText, sanitizedOptions);
+                var sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
                 optionText = htmlEncode(sanitizedText);
             }
             options += "<option value=\"" + option[_this.valueName] + "\" " + selected + ">" + optionText + "</option>";
@@ -1500,9 +1615,20 @@ var MultipleSelectFilter = /** @class */ (function () {
                 _this.isFilled = true;
             }
         });
-        return "<select class=\"ms-filter search-filter\" multiple=\"multiple\">" + options + "</select>";
+        return "<select class=\"ms-filter search-filter\" " + (this.isMultipleSelect ? 'multiple="multiple"' : '') + ">" + options + "</select>";
     };
-    MultipleSelectFilter.prototype.createDomElement = function (filterTemplate) {
+    SelectFilter.prototype.createBlankEntry = function () {
+        var blankEntry = (_a = {}, _a[this.labelName] = '', _a[this.valueName] = '', _a);
+        if (this.labelPrefixName) {
+            blankEntry[this.labelPrefixName] = '';
+        }
+        if (this.labelSuffixName) {
+            blankEntry[this.labelSuffixName] = '';
+        }
+        return blankEntry;
+        var _a;
+    };
+    SelectFilter.prototype.createDomElement = function (filterTemplate) {
         var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
         this.$filterElm = $(filterTemplate);
@@ -1517,34 +1643,34 @@ var MultipleSelectFilter = /** @class */ (function () {
         if (this.$filterElm && typeof this.$filterElm.appendTo === 'function') {
             this.$filterElm.appendTo($headerElm);
         }
-        var options = Object.assign({}, this.defaultOptions, this.columnDef.filter.filterOptions);
+        var options = Object.assign({}, this.defaultOptions, this.columnFilter.filterOptions);
         this.$filterElm = this.$filterElm.multipleSelect(options);
     };
-    MultipleSelectFilter.prototype.findValueInSearchTerms = function (value) {
-        if (this.searchTerms && Array.isArray(this.searchTerms)) {
-            for (var i = 0; i < this.searchTerms.length; i++) {
-                if (this.searchTerms[i] && this.searchTerms[i] === value) {
-                    return i;
-                }
-            }
-        }
-        return -1;
-    };
-    return MultipleSelectFilter;
+    return SelectFilter;
 }());
-var SelectFilter = /** @class */ (function () {
-    function SelectFilter(translate) {
+var MultipleSelectFilter = /** @class */ (function (_super) {
+    __extends(MultipleSelectFilter, _super);
+    function MultipleSelectFilter(translate, collectionService) {
+        var _this = _super.call(this, translate, collectionService, true) || this;
+        _this.translate = translate;
+        _this.collectionService = collectionService;
+        return _this;
+    }
+    return MultipleSelectFilter;
+}(SelectFilter));
+var NativeSelectFilter = /** @class */ (function () {
+    function NativeSelectFilter(translate) {
         this.translate = translate;
         this._clearFilterTriggered = false;
     }
-    Object.defineProperty(SelectFilter.prototype, "operator", {
+    Object.defineProperty(NativeSelectFilter.prototype, "operator", {
         get: function () {
             return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
         },
         enumerable: true,
         configurable: true
     });
-    SelectFilter.prototype.init = function (args) {
+    NativeSelectFilter.prototype.init = function (args) {
         var _this = this;
         this.grid = args.grid;
         this.callback = args.callback;
@@ -1569,7 +1695,7 @@ var SelectFilter = /** @class */ (function () {
             }
         });
     };
-    SelectFilter.prototype.clear = function () {
+    NativeSelectFilter.prototype.clear = function () {
         if (this.$filterElm) {
             this._clearFilterTriggered = true;
             this.searchTerms = [];
@@ -1577,17 +1703,17 @@ var SelectFilter = /** @class */ (function () {
             this.$filterElm.trigger('change');
         }
     };
-    SelectFilter.prototype.destroy = function () {
+    NativeSelectFilter.prototype.destroy = function () {
         if (this.$filterElm) {
             this.$filterElm.off('change').remove();
         }
     };
-    SelectFilter.prototype.setValues = function (values) {
+    NativeSelectFilter.prototype.setValues = function (values) {
         if (values) {
             this.$filterElm.val(values);
         }
     };
-    SelectFilter.prototype.buildTemplateHtmlString = function () {
+    NativeSelectFilter.prototype.buildTemplateHtmlString = function () {
         var _this = this;
         if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
             throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
@@ -1606,7 +1732,7 @@ var SelectFilter = /** @class */ (function () {
         });
         return "<select class=\"form-control search-filter\">" + options + "</select>";
     };
-    SelectFilter.prototype.createDomElement = function (filterTemplate, searchTerm) {
+    NativeSelectFilter.prototype.createDomElement = function (filterTemplate, searchTerm) {
         var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
         var $filterElm = $(filterTemplate);
@@ -1619,147 +1745,18 @@ var SelectFilter = /** @class */ (function () {
         }
         return $filterElm;
     };
-    return SelectFilter;
+    return NativeSelectFilter;
 }());
-var sanitizeHtml$1 = sanitizeHtml_;
-var SingleSelectFilter = /** @class */ (function () {
+var SingleSelectFilter = /** @class */ (function (_super) {
+    __extends(SingleSelectFilter, _super);
     function SingleSelectFilter(translate, collectionService) {
-        var _this = this;
-        this.translate = translate;
-        this.collectionService = collectionService;
-        this.isFilled = false;
-        this.enableTranslateLabel = false;
-        this.defaultOptions = {
-            container: 'body',
-            filter: false,
-            maxHeight: 200,
-            single: true,
-            textTemplate: function ($elm) {
-                var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.filter && _this.columnDef.filter.enableRenderHtml || false;
-                return isRenderHtmlEnabled ? $elm.text() : $elm.html();
-            },
-            onClose: function () {
-                var selectedItems = _this.$filterElm.multipleSelect('getSelects');
-                var selectedItem = '';
-                if (Array.isArray(selectedItems) && selectedItems.length > 0) {
-                    selectedItem = selectedItems[0] || null;
-                    _this.isFilled = true;
-                    _this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
-                }
-                else {
-                    _this.isFilled = false;
-                    _this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
-                }
-                _this.callback(undefined, { columnDef: _this.columnDef, operator: _this.operator, searchTerms: (selectedItem ? [selectedItem] : null) });
-            }
-        };
+        var _this = _super.call(this, translate, collectionService, false) || this;
+        _this.translate = translate;
+        _this.collectionService = collectionService;
+        return _this;
     }
-    Object.defineProperty(SingleSelectFilter.prototype, "operator", {
-        get: function () {
-            return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SingleSelectFilter.prototype, "gridOptions", {
-        get: function () {
-            return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
-        },
-        enumerable: true,
-        configurable: true
-    });
-    SingleSelectFilter.prototype.init = function (args) {
-        this.grid = args.grid;
-        this.callback = args.callback;
-        this.columnDef = args.columnDef;
-        this.searchTerms = args.searchTerms;
-        if (!this.grid || !this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
-            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
-        }
-        this.enableTranslateLabel = this.columnDef.filter.enableTranslateLabel;
-        this.labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
-        this.labelPrefixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelPrefix : 'labelPrefix';
-        this.labelSuffixName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.labelSuffix : 'labelSuffix';
-        this.valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
-        var newCollection = this.columnDef.filter.collection || [];
-        if (this.gridOptions.params && this.columnDef.filter.collectionFilterBy) {
-            var filterBy = this.columnDef.filter.collectionFilterBy;
-            newCollection = this.collectionService.filterCollection(newCollection, filterBy);
-        }
-        if (this.columnDef.filter && this.columnDef.filter.collectionSortBy) {
-            var sortBy = this.columnDef.filter.collectionSortBy;
-            newCollection = this.collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
-        }
-        var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
-        if (typeof searchTerm === 'boolean' || typeof searchTerm === 'number') {
-            searchTerm = "" + searchTerm;
-        }
-        var filterTemplate = this.buildTemplateHtmlString(newCollection || [], searchTerm);
-        this.createDomElement(filterTemplate);
-    };
-    SingleSelectFilter.prototype.clear = function () {
-        if (this.$filterElm && this.$filterElm.multipleSelect) {
-            this.$filterElm.multipleSelect('setSelects', []);
-            this.$filterElm.removeClass('filled');
-            this.searchTerms = [];
-            this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
-        }
-    };
-    SingleSelectFilter.prototype.destroy = function () {
-        if (this.$filterElm) {
-            this.$filterElm.off().remove();
-        }
-    };
-    SingleSelectFilter.prototype.setValues = function (values) {
-        if (values) {
-            values = Array.isArray(values) ? values : [values];
-            this.$filterElm.multipleSelect('setSelects', values);
-        }
-    };
-    SingleSelectFilter.prototype.buildTemplateHtmlString = function (optionCollection, searchTerm) {
-        var _this = this;
-        var options = '';
-        var isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure && this.columnDef.filter.customStructure.addSpaceBetweenLabels || false;
-        var isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
-        var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
-        optionCollection.forEach(function (option) {
-            if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.singleSelect, collection: [ { value: '1', label: 'One' } ]')");
-            }
-            var labelKey = ((option.labelKey || option[_this.labelName]));
-            var selected = (option[_this.valueName] === searchTerm) ? 'selected' : '';
-            var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
-            var prefixText = option[_this.labelPrefixName] || '';
-            var suffixText = option[_this.labelSuffixName] || '';
-            var optionText = isAddingSpaceBetweenLabels ? prefixText + " " + labelText + " " + suffixText : (prefixText + labelText + suffixText);
-            if (isRenderHtmlEnabled) {
-                var sanitizeText = sanitizeHtml$1(optionText, sanitizedOptions);
-                optionText = htmlEncode(sanitizeText);
-            }
-            options += "<option value=\"" + option[_this.valueName] + "\" " + selected + ">" + optionText + "</option>";
-            if (selected) {
-                _this.isFilled = true;
-            }
-        });
-        return "<select class=\"ms-filter search-filter\">" + options + "</select>";
-    };
-    SingleSelectFilter.prototype.createDomElement = function (filterTemplate) {
-        var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
-        $($headerElm).empty();
-        this.$filterElm = $(filterTemplate);
-        if (typeof this.$filterElm.multipleSelect !== 'function') {
-            throw new Error("multiple-select.js was not found, make sure to modify your \"angular-cli.json\" file and include \"../node_modules/angular-slickgrid/lib/multiple-select/multiple-select.js\" and it's css or SASS file");
-        }
-        this.$filterElm.attr('id', "filter-" + this.columnDef.id);
-        this.$filterElm.data('columnId', this.columnDef.id);
-        if (this.$filterElm && typeof this.$filterElm.appendTo === 'function') {
-            this.$filterElm.appendTo($headerElm);
-        }
-        var options = Object.assign({}, this.defaultOptions, this.columnDef.filter.filterOptions);
-        this.$filterElm = this.$filterElm.multipleSelect(options);
-    };
     return SingleSelectFilter;
-}());
+}(SelectFilter));
 var DEFAULT_MIN_VALUE$1 = 0;
 var DEFAULT_MAX_VALUE$1 = 100;
 var DEFAULT_STEP$1 = 1;
@@ -1880,7 +1877,7 @@ var Filters = {
     slider: SliderFilter,
     multipleSelect: MultipleSelectFilter,
     singleSelect: SingleSelectFilter,
-    select: SelectFilter
+    select: NativeSelectFilter
 };
 var GlobalGridOptions = {
     alwaysShowVerticalScroll: true,
@@ -1959,12 +1956,6 @@ var GlobalGridOptions = {
     multiColumnSort: true,
     numberedMultiColumnSort: true,
     tristateMultiColumnSort: false,
-    sanitizeHtmlOptions: {
-        allowedTags: ['h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
-            'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-            'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe', 'span'],
-        allowedAttributes: { '*': ['*'] }
-    },
     sortColNumberInSeparateSpan: true,
     suppressActiveCellChangeOnEdit: true,
     pagination: {
@@ -2009,6 +2000,7 @@ FilterFactory.ctorParameters = function () { return [
     { type: core$1.TranslateService, },
     { type: CollectionService, },
 ]; };
+var isequal = isequal_;
 var FilterService = /** @class */ (function () {
     function FilterService(filterFactory) {
         this.filterFactory = filterFactory;
@@ -2277,7 +2269,7 @@ var FilterService = /** @class */ (function () {
                 }
                 this._columnFilters[colId] = colFilter;
             }
-            if (!objectsDeepEqual(oldColumnFilters, this._columnFilters)) {
+            if (!isequal(oldColumnFilters, this._columnFilters)) {
                 this.triggerEvent(this._slickSubscriber, {
                     clearFilterTriggered: args && args.clearFilterTriggered,
                     columnId: columnId,
@@ -4717,24 +4709,27 @@ var GridStateService = /** @class */ (function () {
         var currentColumns = this.getAssociatedCurrentColumns(columns);
         this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
     };
+    GridStateService.prototype.resetRowSelection = function () {
+        if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
+            this._grid.setSelectedRows([]);
+        }
+    };
     GridStateService.prototype.subscribeToAllGridChanges = function (grid) {
         var _this = this;
         this.subscriptions.push(this.filterService.onFilterChanged.subscribe(function (currentFilters) {
-            if (_this._gridOptions.enableRowSelection || _this._gridOptions.enableCheckboxSelector) {
-                _this._grid.setSelectedRows([]);
-            }
+            _this.resetRowSelection();
             _this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: _this.getCurrentGridState() });
         }));
         this.subscriptions.push(this.filterService.onFilterCleared.subscribe(function () {
-            if (_this._gridOptions.enableRowSelection || _this._gridOptions.enableCheckboxSelector) {
-                _this._grid.setSelectedRows([]);
-            }
+            _this.resetRowSelection();
             _this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.filter }, gridState: _this.getCurrentGridState() });
         }));
         this.subscriptions.push(this.sortService.onSortChanged.subscribe(function (currentSorters) {
+            _this.resetRowSelection();
             _this.onGridStateChanged.next({ change: { newValues: currentSorters, type: GridStateType.sorter }, gridState: _this.getCurrentGridState() });
         }));
         this.subscriptions.push(this.sortService.onSortCleared.subscribe(function () {
+            _this.resetRowSelection();
             _this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.sorter }, gridState: _this.getCurrentGridState() });
         }));
         this.hookExtensionEventToGridStateChange('ColumnPicker', 'onColumnsChanged');
@@ -4926,9 +4921,6 @@ var GridService = /** @class */ (function () {
     GridService.prototype.deleteDataGridItemById = function (itemId) {
         if (itemId === undefined) {
             throw new Error("Cannot delete a row without a valid \"id\"");
-        }
-        if (this._dataView.getRowById(itemId) === undefined) {
-            throw new Error("Could not find the item in the grid by it's associated \"id\"");
         }
         this._dataView.deleteItem(itemId);
         this._dataView.refresh();
@@ -5807,126 +5799,188 @@ var LongTextEditor = /** @class */ (function () {
     };
     return LongTextEditor;
 }());
-var sanitizeHtml$2 = sanitizeHtml_;
+var DOMPurify$1 = DOMPurify_;
 var SELECT_ELEMENT_HEIGHT = 26;
-var MultipleSelectEditor = /** @class */ (function () {
-    function MultipleSelectEditor(args) {
+var SelectEditor = /** @class */ (function () {
+    function SelectEditor(args, isMultipleSelect) {
         var _this = this;
         this.args = args;
-        this.collection = [];
+        this.isMultipleSelect = isMultipleSelect;
+        this._subscriptions = [];
         this.gridOptions = (this.args.grid.getOptions());
-        var options = this.gridOptions || this.args.column.params || {};
-        this._translate = options.i18n;
-        this.defaultOptions = {
+        var gridOptions = this.gridOptions || this.args.column.params || {};
+        this._translate = gridOptions.i18n;
+        var libOptions = {
             container: 'body',
             filter: false,
             maxHeight: 200,
-            addTitle: true,
-            okButton: true,
-            selectAllDelimiter: ['', ''],
             width: 150,
             offsetLeft: 20,
+            single: true,
             onOpen: function () { return _this.autoAdjustDropPosition(_this.$editorElm, _this.editorElmOptions); },
             textTemplate: function ($elm) {
                 var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.internalColumnEditor && _this.columnDef.internalColumnEditor.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
         };
-        if (this._translate) {
-            this.defaultOptions.countSelected = this._translate.instant('X_OF_Y_SELECTED');
-            this.defaultOptions.allSelected = this._translate.instant('ALL_SELECTED');
-            this.defaultOptions.selectAllText = this._translate.instant('SELECT_ALL');
+        if (isMultipleSelect) {
+            libOptions.single = false;
+            libOptions.addTitle = true;
+            libOptions.okButton = true;
+            libOptions.selectAllDelimiter = ['', ''];
+            if (this._translate) {
+                libOptions.countSelected = this._translate.instant('X_OF_Y_SELECTED');
+                libOptions.allSelected = this._translate.instant('ALL_SELECTED');
+                libOptions.selectAllText = this._translate.instant('SELECT_ALL');
+            }
         }
+        this.defaultOptions = libOptions;
         this.init();
     }
-    Object.defineProperty(MultipleSelectEditor.prototype, "columnDef", {
+    Object.defineProperty(SelectEditor.prototype, "collection", {
+        get: function () {
+            return this.columnDef && this.columnDef && this.columnDef.internalColumnEditor.collection || [];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SelectEditor.prototype, "columnDef", {
         get: function () {
             return this.args && this.args.column || {};
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(MultipleSelectEditor.prototype, "columnEditor", {
+    Object.defineProperty(SelectEditor.prototype, "columnEditor", {
         get: function () {
             return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(MultipleSelectEditor.prototype, "currentValues", {
+    Object.defineProperty(SelectEditor.prototype, "customStructure", {
         get: function () {
-            var _this = this;
-            return this.collection
-                .filter(function (c) { return _this.$editorElm.val().indexOf(c[_this.valueName].toString()) !== -1; })
-                .map(function (c) { return c[_this.valueName]; });
+            return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(MultipleSelectEditor.prototype, "validator", {
+    Object.defineProperty(SelectEditor.prototype, "currentValues", {
+        get: function () {
+            var _this = this;
+            var separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
+            var isIncludingPrefixSuffix = this.customStructure && this.customStructure.includePrefixSuffixToSelectedValues || false;
+            return this.collection
+                .filter(function (c) { return _this.$editorElm.val().indexOf(c[_this.valueName].toString()) !== -1; })
+                .map(function (c) {
+                var labelText = c[_this.valueName];
+                var prefixText = c[_this.labelPrefixName] || '';
+                var suffixText = c[_this.labelSuffixName] || '';
+                if (isIncludingPrefixSuffix) {
+                    return (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+                }
+                return labelText;
+            });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SelectEditor.prototype, "currentValue", {
+        get: function () {
+            var _this = this;
+            var separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
+            var isIncludingPrefixSuffix = this.customStructure && this.customStructure.includePrefixSuffixToSelectedValues || false;
+            var itemFound = findOrDefault(this.collection, function (c) { return c[_this.valueName].toString() === _this.$editorElm.val(); });
+            if (itemFound) {
+                var labelText = itemFound[this.valueName];
+                if (isIncludingPrefixSuffix) {
+                    var prefixText = itemFound[this.labelPrefixName] || '';
+                    var suffixText = itemFound[this.labelSuffixName] || '';
+                    return (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+                }
+                return labelText;
+            }
+            return '';
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SelectEditor.prototype, "validator", {
         get: function () {
             return this.columnEditor.validator || this.columnDef.validator;
         },
         enumerable: true,
         configurable: true
     });
-    MultipleSelectEditor.prototype.init = function () {
+    SelectEditor.prototype.init = function () {
         if (!this.args) {
             throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
         }
-        if (!this.columnDef || !this.columnDef.internalColumnEditor || !this.columnDef.internalColumnEditor.collection) {
-            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" inside Column Definition Editor for the MultipleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { editor: { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } }");
+        if (!this.columnDef || !this.columnDef.internalColumnEditor || (!this.columnDef.internalColumnEditor.collection && !this.columnDef.internalColumnEditor.collectionAsync)) {
+            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" (or \"collectionAsync\") inside Column Definition Editor for the MultipleSelect/SingleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { editor: { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } }");
         }
-        var collectionService = new CollectionService(this._translate);
+        this._collectionService = new CollectionService(this._translate);
         this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
-        var newCollection = this.columnDef.internalColumnEditor.collection || [];
-        this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
-        this.labelPrefixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelPrefix : 'labelPrefix';
-        this.labelSuffixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelSuffix : 'labelSuffix';
-        this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
-        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
-            var filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
-            newCollection = collectionService.filterCollection(newCollection, filterBy);
-        }
-        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
-            var sortBy = this.columnDef.internalColumnEditor.collectionSortBy;
-            newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
-        }
-        this.collection = newCollection;
-        var editorTemplate = this.buildTemplateHtmlString(newCollection);
-        this.createDomElement(editorTemplate);
+        this.labelName = (this.customStructure) ? this.customStructure.label : 'label';
+        this.labelPrefixName = (this.customStructure) ? this.customStructure.labelPrefix : 'labelPrefix';
+        this.labelSuffixName = (this.customStructure) ? this.customStructure.labelSuffix : 'labelSuffix';
+        this.valueName = (this.customStructure) ? this.customStructure.value : 'value';
+        this.renderDomElement(this.collection);
     };
-    MultipleSelectEditor.prototype.applyValue = function (item, state) {
+    SelectEditor.prototype.applyValue = function (item, state) {
         item[this.columnDef.field] = state;
     };
-    MultipleSelectEditor.prototype.destroy = function () {
-        this.$editorElm.remove();
+    SelectEditor.prototype.destroy = function () {
+        if (this.$editorElm) {
+            this.$editorElm.remove();
+        }
+        this._subscriptions = unsubscribeAllObservables(this._subscriptions);
     };
-    MultipleSelectEditor.prototype.loadValue = function (item) {
+    SelectEditor.prototype.loadValue = function (item) {
         var _this = this;
-        this.defaultValue = item[this.columnDef.field].map(function (i) { return i.toString(); });
+        if (this.isMultipleSelect) {
+            this.defaultValue = item[this.columnDef.field].map(function (i) { return i.toString(); });
+            this.$editorElm.find('option').each(function (i, $e) {
+                if (_this.defaultValue.indexOf($e.value) !== -1) {
+                    $e.selected = true;
+                }
+                else {
+                    $e.selected = false;
+                }
+            });
+        }
+        else {
+            this.loadSingleValue(item);
+        }
+        this.refresh();
+    };
+    SelectEditor.prototype.loadSingleValue = function (item) {
+        var _this = this;
+        this.defaultValue = item[this.columnDef.field] && item[this.columnDef.field].toString();
         this.$editorElm.find('option').each(function (i, $e) {
-            if (_this.defaultValue.indexOf($e.value) !== -1) {
+            if (_this.defaultValue === $e.value) {
                 $e.selected = true;
             }
             else {
                 $e.selected = false;
             }
         });
-        this.refresh();
     };
-    MultipleSelectEditor.prototype.serializeValue = function () {
-        return this.currentValues;
+    SelectEditor.prototype.serializeValue = function () {
+        return (this.isMultipleSelect) ? this.currentValues : this.currentValue;
     };
-    MultipleSelectEditor.prototype.focus = function () {
+    SelectEditor.prototype.focus = function () {
         this.$editorElm.focus();
     };
-    MultipleSelectEditor.prototype.isValueChanged = function () {
-        return !arraysEqual(this.$editorElm.val(), this.defaultValue);
+    SelectEditor.prototype.isValueChanged = function () {
+        if (this.isMultipleSelect) {
+            return !arraysEqual(this.$editorElm.val(), this.defaultValue);
+        }
+        return this.$editorElm.val() !== this.defaultValue;
     };
-    MultipleSelectEditor.prototype.validate = function () {
+    SelectEditor.prototype.validate = function () {
         if (this.validator) {
-            var validationResults = this.validator(this.currentValues);
+            var validationResults = this.validator(this.isMultipleSelect ? this.currentValues : this.currentValue);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5936,11 +5990,43 @@ var MultipleSelectEditor = /** @class */ (function () {
             msg: null
         };
     };
-    MultipleSelectEditor.prototype.buildTemplateHtmlString = function (collection) {
+    SelectEditor.prototype.filterCollection = function (inputCollection) {
+        var outputCollection = inputCollection;
+        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionFilterBy) {
+            var filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
+            outputCollection = this._collectionService.filterCollection(outputCollection, filterBy);
+        }
+        return outputCollection;
+    };
+    SelectEditor.prototype.sortCollection = function (inputCollection) {
+        var outputCollection = inputCollection;
+        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
+            var sortBy = this.columnDef.internalColumnEditor.collectionSortBy;
+            outputCollection = this._collectionService.sortCollection(outputCollection, sortBy, this.enableTranslateLabel);
+        }
+        return outputCollection;
+    };
+    SelectEditor.prototype.renderDomElement = function (collection) {
+        if (!Array.isArray(collection) && this.customStructure && this.customStructure.collectionInObjectProperty) {
+            collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+        }
+        if (!Array.isArray(collection)) {
+            throw new Error('The "collection" passed to the Select Editor is not a valid array');
+        }
+        if (this.customStructure && this.customStructure.addBlankEntry) {
+            collection.unshift(this.createBlankEntry());
+        }
+        var newCollection = collection || [];
+        newCollection = this.filterCollection(newCollection);
+        newCollection = this.sortCollection(newCollection);
+        var editorTemplate = this.buildTemplateHtmlString(newCollection);
+        this.createDomElement(editorTemplate);
+    };
+    SelectEditor.prototype.buildTemplateHtmlString = function (collection) {
         var _this = this;
         var options = '';
-        var isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure && this.columnDef.internalColumnEditor.customStructure.addSpaceBetweenLabels || false;
-        var isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
+        var separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
+        var isRenderHtmlEnabled = this.columnDef.internalColumnEditor.enableRenderHtml || false;
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
@@ -5950,16 +6036,16 @@ var MultipleSelectEditor = /** @class */ (function () {
             var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
             var prefixText = option[_this.labelPrefixName] || '';
             var suffixText = option[_this.labelSuffixName] || '';
-            var optionText = isAddingSpaceBetweenLabels ? prefixText + " " + labelText + " " + suffixText : (prefixText + labelText + suffixText);
+            var optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
             if (isRenderHtmlEnabled) {
-                var sanitizeText = sanitizeHtml$2(optionText, sanitizedOptions);
-                optionText = htmlEncode(sanitizeText);
+                var sanitizedText = DOMPurify$1.sanitize(optionText, sanitizedOptions);
+                optionText = htmlEncode(sanitizedText);
             }
             options += "<option value=\"" + option[_this.valueName] + "\">" + optionText + "</option>";
         });
-        return "<select class=\"ms-filter search-filter\" multiple=\"multiple\">" + options + "</select>";
+        return "<select class=\"ms-filter search-filter\" " + (this.isMultipleSelect ? 'multiple="multiple"' : '') + ">" + options + "</select>";
     };
-    MultipleSelectEditor.prototype.autoAdjustDropPosition = function (multipleSelectDomElement, multipleSelectOptions) {
+    SelectEditor.prototype.autoAdjustDropPosition = function (multipleSelectDomElement, multipleSelectOptions) {
         var selectElmHeight = SELECT_ELEMENT_HEIGHT;
         var windowHeight = $(window).innerHeight() || 300;
         var pageScroll = $('body').scrollTop() || 0;
@@ -5985,7 +6071,18 @@ var MultipleSelectEditor = /** @class */ (function () {
             $msDrop.removeClass('top');
         }
     };
-    MultipleSelectEditor.prototype.createDomElement = function (editorTemplate) {
+    SelectEditor.prototype.createBlankEntry = function () {
+        var blankEntry = (_a = {}, _a[this.labelName] = '', _a[this.valueName] = '', _a);
+        if (this.labelPrefixName) {
+            blankEntry[this.labelPrefixName] = '';
+        }
+        if (this.labelSuffixName) {
+            blankEntry[this.labelSuffixName] = '';
+        }
+        return blankEntry;
+        var _a;
+    };
+    SelectEditor.prototype.createDomElement = function (editorTemplate) {
         var _this = this;
         this.$editorElm = $(editorTemplate);
         if (this.$editorElm && typeof this.$editorElm.appendTo === 'function') {
@@ -6001,207 +6098,31 @@ var MultipleSelectEditor = /** @class */ (function () {
             setTimeout(function () { return _this.$editorElm.multipleSelect('open'); });
         }
     };
-    MultipleSelectEditor.prototype.refresh = function () {
+    SelectEditor.prototype.refresh = function () {
         if (typeof this.$editorElm.multipleSelect === 'function') {
             this.$editorElm.multipleSelect('refresh');
         }
     };
-    return MultipleSelectEditor;
+    return SelectEditor;
 }());
-var sanitizeHtml$3 = sanitizeHtml_;
-var SELECT_ELEMENT_HEIGHT$1 = 26;
-var SingleSelectEditor = /** @class */ (function () {
-    function SingleSelectEditor(args) {
-        var _this = this;
-        this.args = args;
-        this.collection = [];
-        this.gridOptions = (this.args.grid.getOptions());
-        var options = this.gridOptions || this.args.column.params || {};
-        this._translate = options.i18n;
-        this.defaultOptions = {
-            container: 'body',
-            filter: false,
-            maxHeight: 200,
-            width: 150,
-            offsetLeft: 20,
-            single: true,
-            onOpen: function () { return _this.autoAdjustDropPosition(_this.$editorElm, _this.editorElmOptions); },
-            textTemplate: function ($elm) {
-                var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.internalColumnEditor && _this.columnDef.internalColumnEditor.enableRenderHtml || false;
-                return isRenderHtmlEnabled ? $elm.text() : $elm.html();
-            },
-        };
-        this.init();
+var MultipleSelectEditor = /** @class */ (function (_super) {
+    __extends(MultipleSelectEditor, _super);
+    function MultipleSelectEditor(args) {
+        var _this = _super.call(this, args, true) || this;
+        _this.args = args;
+        return _this;
     }
-    Object.defineProperty(SingleSelectEditor.prototype, "columnDef", {
-        get: function () {
-            return this.args && this.args.column || {};
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SingleSelectEditor.prototype, "columnEditor", {
-        get: function () {
-            return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SingleSelectEditor.prototype, "currentValue", {
-        get: function () {
-            var _this = this;
-            return findOrDefault(this.collection, function (c) { return c[_this.valueName].toString() === _this.$editorElm.val(); })[this.valueName];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SingleSelectEditor.prototype, "validator", {
-        get: function () {
-            return this.columnEditor.validator || this.columnDef.validator;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    SingleSelectEditor.prototype.init = function () {
-        if (!this.args) {
-            throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
-        }
-        if (!this.columnDef || !this.columnDef.internalColumnEditor || !this.columnDef.internalColumnEditor.collection) {
-            throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" inside Column Definition Editor for the SingleSelect Editor to work correctly.\n      Also each option should include a value/label pair (or value/labelKey when using Locale).\n      For example: { editor: { collection: [{ value: true, label: 'True' },{ value: false, label: 'False'}] } }");
-        }
-        var collectionService = new CollectionService(this._translate);
-        this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
-        var newCollection = this.columnDef.internalColumnEditor.collection || [];
-        this.labelName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.label : 'label';
-        this.labelPrefixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelPrefix : 'labelPrefix';
-        this.labelSuffixName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.labelSuffix : 'labelSuffix';
-        this.valueName = (this.columnDef.internalColumnEditor.customStructure) ? this.columnDef.internalColumnEditor.customStructure.value : 'value';
-        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionFilterBy) {
-            var filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
-            newCollection = collectionService.filterCollection(newCollection, filterBy);
-        }
-        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
-            var sortBy = this.columnDef.internalColumnEditor.collectionSortBy;
-            newCollection = collectionService.sortCollection(newCollection, sortBy, this.enableTranslateLabel);
-        }
-        this.collection = newCollection;
-        var editorTemplate = this.buildTemplateHtmlString(newCollection);
-        this.createDomElement(editorTemplate);
-    };
-    SingleSelectEditor.prototype.applyValue = function (item, state) {
-        item[this.columnDef.field] = state;
-    };
-    SingleSelectEditor.prototype.destroy = function () {
-        this.$editorElm.remove();
-    };
-    SingleSelectEditor.prototype.loadValue = function (item) {
-        var _this = this;
-        this.defaultValue = item[this.columnDef.field] && item[this.columnDef.field].toString();
-        this.$editorElm.find('option').each(function (i, $e) {
-            if (_this.defaultValue === $e.value) {
-                $e.selected = true;
-            }
-            else {
-                $e.selected = false;
-            }
-        });
-        this.refresh();
-    };
-    SingleSelectEditor.prototype.serializeValue = function () {
-        return this.currentValue;
-    };
-    SingleSelectEditor.prototype.focus = function () {
-        this.$editorElm.focus();
-    };
-    SingleSelectEditor.prototype.isValueChanged = function () {
-        return this.$editorElm.val() !== this.defaultValue;
-    };
-    SingleSelectEditor.prototype.validate = function () {
-        if (this.validator) {
-            var validationResults = this.validator(this.currentValue);
-            if (!validationResults.valid) {
-                return validationResults;
-            }
-        }
-        return {
-            valid: true,
-            msg: null
-        };
-    };
-    SingleSelectEditor.prototype.buildTemplateHtmlString = function (collection) {
-        var _this = this;
-        var options = '';
-        var isAddingSpaceBetweenLabels = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure && this.columnDef.internalColumnEditor.customStructure.addSpaceBetweenLabels || false;
-        var isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
-        var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
-        collection.forEach(function (option) {
-            if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error('A collection with value/label (or value/labelKey when using ' +
-                    'Locale) is required to populate the Select list, for example: { params: { ' +
-                    '{ collection: [ { value: \'1\', label: \'One\' } ] } } }');
-            }
-            var labelKey = ((option.labelKey || option[_this.labelName]));
-            var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
-            var prefixText = option[_this.labelPrefixName] || '';
-            var suffixText = option[_this.labelSuffixName] || '';
-            var optionText = isAddingSpaceBetweenLabels ? prefixText + " " + labelText + " " + suffixText : (prefixText + labelText + suffixText);
-            if (isRenderHtmlEnabled) {
-                var sanitizeText = sanitizeHtml$3(optionText, sanitizedOptions);
-                optionText = htmlEncode(sanitizeText);
-            }
-            options += "<option value=\"" + option[_this.valueName] + "\">" + optionText + "</option>";
-        });
-        return "<select class=\"ms-filter search-filter\">" + options + "</select>";
-    };
-    SingleSelectEditor.prototype.autoAdjustDropPosition = function (multipleSelectDomElement, multipleSelectOptions) {
-        var selectElmHeight = SELECT_ELEMENT_HEIGHT$1;
-        var windowHeight = $(window).innerHeight() || 300;
-        var pageScroll = $('body').scrollTop() || 0;
-        var $msDropContainer = multipleSelectOptions.container ? $(multipleSelectOptions.container) : multipleSelectDomElement;
-        var $msDrop = $msDropContainer.find('.ms-drop');
-        var msDropHeight = $msDrop.height() || 0;
-        var msDropOffsetTop = $msDrop.offset().top;
-        var space = windowHeight - (msDropOffsetTop - pageScroll);
-        if (space < msDropHeight) {
-            if (multipleSelectOptions.container) {
-                var newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
-                if (newOffsetTop > 0) {
-                    $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
-                }
-            }
-            else {
-                $msDrop.addClass('top');
-            }
-            $msDrop.removeClass('bottom');
-        }
-        else {
-            $msDrop.addClass('bottom');
-            $msDrop.removeClass('top');
-        }
-    };
-    SingleSelectEditor.prototype.createDomElement = function (editorTemplate) {
-        var _this = this;
-        this.$editorElm = $(editorTemplate);
-        if (this.$editorElm && typeof this.$editorElm.appendTo === 'function') {
-            this.$editorElm.appendTo(this.args.container);
-        }
-        if (typeof this.$editorElm.multipleSelect !== 'function') {
-            this.$editorElm.addClass('form-control');
-        }
-        else {
-            var elementOptions = (this.columnDef.params) ? this.columnDef.params.elementOptions : {};
-            this.editorElmOptions = Object.assign({}, this.defaultOptions, elementOptions);
-            this.$editorElm = this.$editorElm.multipleSelect(this.editorElmOptions);
-            setTimeout(function () { return _this.$editorElm.multipleSelect('open'); });
-        }
-    };
-    SingleSelectEditor.prototype.refresh = function () {
-        if (typeof this.$editorElm.multipleSelect === 'function') {
-            this.$editorElm.multipleSelect('refresh');
-        }
-    };
+    return MultipleSelectEditor;
+}(SelectEditor));
+var SingleSelectEditor = /** @class */ (function (_super) {
+    __extends(SingleSelectEditor, _super);
+    function SingleSelectEditor(args) {
+        var _this = _super.call(this, args, false) || this;
+        _this.args = args;
+        return _this;
+    }
     return SingleSelectEditor;
-}());
+}(SelectEditor));
 var DEFAULT_MIN_VALUE$2 = 0;
 var DEFAULT_MAX_VALUE$2 = 100;
 var DEFAULT_STEP$2 = 1;
@@ -6421,6 +6342,28 @@ var Editors = {
     slider: SliderEditor,
     text: TextEditor
 };
+var arrayObjectToCsvFormatter = function (row, cell, value, columnDef, dataContext) {
+    var propertyNames = columnDef && columnDef.params && columnDef.params.propertyNames;
+    var parentObjectKeyName = columnDef && columnDef.field && columnDef.field.split('.')[0];
+    if (!propertyNames || !Array.isArray(propertyNames) || !parentObjectKeyName) {
+        throw new Error("Formatters.arrayObjectToCsv requires you to pass an array of \"propertyNames\" (declared in \"params\") that you want to pull the data from.\n      For example, if we have an array of user objects that have the property of firstName & lastName then we need to pass in your column definition:: { params: { propertyNames: ['firtName'] }}");
+    }
+    if (dataContext[parentObjectKeyName] && Array.isArray(dataContext[parentObjectKeyName])) {
+        if (Array.isArray(dataContext[parentObjectKeyName])) {
+            var outputStrings_1 = [];
+            dataContext[parentObjectKeyName].forEach(function (data) {
+                var strings = [];
+                propertyNames.forEach(function (prop) {
+                    strings.push(data[prop]);
+                });
+                outputStrings_1.push(strings.join(' '));
+            });
+            var output = outputStrings_1.join(', ');
+            return "<span title=\"" + output + "\">" + output + "</span>";
+        }
+    }
+    return '';
+};
 var arrayToCsvFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value && Array.isArray(value)) {
         var values = value.join(', ');
@@ -6505,10 +6448,22 @@ var dateTimeUsFormatter = function (row, cell, value, columnDef, dataContext) {
     return (value && isDateValid) ? moment$13(value).format(FORMAT$10) : value;
 };
 var moment$14 = moment_;
-var FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
-var dateUsFormatter = function (row, cell, value, columnDef, dataContext) {
+var FORMAT$11 = mapMomentDateFormatWithFieldType(FieldType.dateTimeShortIso);
+var dateTimeShortIsoFormatter = function (row, cell, value, columnDef, dataContext) {
     var isDateValid = moment$14(value, FORMAT$11, false).isValid();
     return (value && isDateValid) ? moment$14(value).format(FORMAT$11) : value;
+};
+var moment$15 = moment_;
+var FORMAT$12 = mapMomentDateFormatWithFieldType(FieldType.dateTimeShortUs);
+var dateTimeShortUsFormatter = function (row, cell, value, columnDef, dataContext) {
+    var isDateValid = moment$15(value, FORMAT$12, false).isValid();
+    return (value && isDateValid) ? moment$15(value).format(FORMAT$12) : value;
+};
+var moment$16 = moment_;
+var FORMAT$13 = mapMomentDateFormatWithFieldType(FieldType.dateUs);
+var dateUsFormatter = function (row, cell, value, columnDef, dataContext) {
+    var isDateValid = moment$16(value, FORMAT$13, false).isValid();
+    return (value && isDateValid) ? moment$16(value).format(FORMAT$13) : value;
 };
 var decimalFormatter = function (row, cell, value, columnDef, dataContext) {
     var params = columnDef.params || {};
@@ -6706,6 +6661,7 @@ var uppercaseFormatter = function (row, cell, value, columnDef, dataContext) {
 };
 var yesNoFormatter = function (row, cell, value, columnDef, dataContext) { return value ? 'Yes' : 'No'; };
 var Formatters = {
+    arrayObjectToCsv: arrayObjectToCsvFormatter,
     arrayToCsv: arrayToCsvFormatter,
     bold: boldFormatter,
     checkbox: checkboxFormatter,
@@ -6715,9 +6671,11 @@ var Formatters = {
     collectionEditor: collectionEditorFormatter,
     dateIso: dateIsoFormatter,
     dateTimeIso: dateTimeIsoFormatter,
+    dateTimeShortIso: dateTimeShortIsoFormatter,
     dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
     dateUs: dateUsFormatter,
     dateTimeUs: dateTimeUsFormatter,
+    dateTimeShortUs: dateTimeShortUsFormatter,
     dateTimeUsAmPm: dateTimeUsAmPmFormatter,
     deleteIcon: deleteIconFormatter,
     decimal: decimalFormatter,
@@ -7169,18 +7127,14 @@ var AngularSlickgridComponent = /** @class */ (function () {
         if (emptyDomElementContainer) {
             $(this.gridOptions.gridContainerId).empty();
         }
-        this.subscriptions.forEach(function (subscription) {
-            if (subscription && subscription.unsubscribe) {
-                subscription.unsubscribe();
-            }
-        });
-        this.subscriptions = [];
+        this.subscriptions = unsubscribeAllObservables(this.subscriptions);
     };
     AngularSlickgridComponent.prototype.ngAfterViewInit = function () {
         this.initialization();
         this.isGridInitialized = true;
     };
     AngularSlickgridComponent.prototype.initialization = function () {
+        var _this = this;
         this._dataset = this._dataset || [];
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
@@ -7194,7 +7148,13 @@ var AngularSlickgridComponent = /** @class */ (function () {
         else {
             this._dataView = new Slick.Data.DataView();
         }
-        this._columnDefinitions = this._columnDefinitions.map(function (c) { return (Object.assign({}, c, { editor: c.editor && c.editor.model, internalColumnEditor: Object.assign({}, c.editor) })); }), this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+        this._columnDefinitions = this._columnDefinitions.map(function (column) {
+            if (column.editor && column.editor.collectionAsync) {
+                _this.loadEditorCollectionAsync(column);
+            }
+            return Object.assign({}, column, { editor: column.editor && column.editor.model, internalColumnEditor: Object.assign({}, column.editor) });
+        });
+        this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
         this.grid = new Slick.Grid("#" + this.gridId, this._dataView, this._columnDefinitions, this.gridOptions);
         this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._dataView, this.groupItemMetadataProvider);
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
@@ -7441,7 +7401,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
             }
             this.grid.invalidate();
             this.grid.render();
-            if (this.gridOptions.enablePagination || this.gridOptions.backendServiceApi) {
+            if (this.gridOptions.backendServiceApi) {
                 this.showPagination = ((this.gridOptions.backendServiceApi && this.gridOptions.enablePagination === undefined) ? true : this.gridOptions.enablePagination) || false;
                 if (!this.gridOptions.pagination) {
                     this.gridOptions.pagination = (this.gridOptions.pagination) ? this.gridOptions.pagination : undefined;
@@ -7486,6 +7446,21 @@ var AngularSlickgridComponent = /** @class */ (function () {
             eventInit.detail = data;
         }
         return this.elm.nativeElement.dispatchEvent(new CustomEvent(eventName, eventInit));
+    };
+    AngularSlickgridComponent.prototype.loadEditorCollectionAsync = function (column) {
+        var _this = this;
+        var collectionAsync = column && column.editor && column.editor.collectionAsync;
+        if (collectionAsync instanceof Observable.Observable) {
+            this.subscriptions.push(collectionAsync.subscribe(function (resolvedCollection) { return _this.updateEditorCollection(column, resolvedCollection); }));
+        }
+    };
+    AngularSlickgridComponent.prototype.updateEditorCollection = function (column, newCollection) {
+        column.editor.collection = newCollection;
+        var columns = this.grid.getColumns();
+        if (Array.isArray(columns)) {
+            var columnRef = columns.find(function (col) { return col.id === column.id; });
+            columnRef.internalColumnEditor = column.editor;
+        }
     };
     return AngularSlickgridComponent;
 }());
@@ -7604,7 +7579,6 @@ exports.OdataService = OdataService;
 exports.ResizerService = ResizerService;
 exports.SortService = SortService;
 exports.addWhiteSpaces = addWhiteSpaces;
-exports.objectsDeepEqual = objectsDeepEqual;
 exports.htmlEncode = htmlEncode;
 exports.htmlDecode = htmlDecode;
 exports.htmlEntityDecode = htmlEntityDecode;
@@ -7613,6 +7587,7 @@ exports.arraysEqual = arraysEqual;
 exports.castToPromise = castToPromise;
 exports.findOrDefault = findOrDefault;
 exports.decimalFormatted = decimalFormatted;
+exports.getDescendantProperty = getDescendantProperty;
 exports.mapMomentDateFormatWithFieldType = mapMomentDateFormatWithFieldType;
 exports.mapFlatpickrDateFormatWithFieldType = mapFlatpickrDateFormatWithFieldType;
 exports.mapOperatorType = mapOperatorType;
@@ -7622,6 +7597,7 @@ exports.sanitizeHtmlToText = sanitizeHtmlToText;
 exports.titleCase = titleCase;
 exports.toCamelCase = toCamelCase;
 exports.toKebabCase = toKebabCase;
+exports.unsubscribeAllObservables = unsubscribeAllObservables;
 exports.Aggregators = Aggregators;
 exports.Editors = Editors;
 exports.FilterConditions = FilterConditions;
@@ -7640,80 +7616,85 @@ exports.ɵg = FloatEditor;
 exports.ɵh = IntegerEditor;
 exports.ɵi = LongTextEditor;
 exports.ɵj = MultipleSelectEditor;
-exports.ɵk = SingleSelectEditor;
-exports.ɵl = SliderEditor;
-exports.ɵm = TextEditor;
-exports.ɵo = booleanFilterCondition;
-exports.ɵp = collectionSearchFilterCondition;
-exports.ɵq = dateFilterCondition;
-exports.ɵr = dateIsoFilterCondition;
-exports.ɵt = dateUsFilterCondition;
-exports.ɵu = dateUsShortFilterCondition;
-exports.ɵs = dateUtcFilterCondition;
-exports.ɵn = executeMappedCondition;
-exports.ɵx = testFilterCondition;
-exports.ɵv = numberFilterCondition;
-exports.ɵw = stringFilterCondition;
-exports.ɵy = CompoundDateFilter;
-exports.ɵz = CompoundInputFilter;
-exports.ɵba = CompoundSliderFilter;
-exports.ɵbb = InputFilter;
-exports.ɵbd = MultipleSelectFilter;
+exports.ɵk = SelectEditor;
+exports.ɵl = SingleSelectEditor;
+exports.ɵm = SliderEditor;
+exports.ɵn = TextEditor;
+exports.ɵp = booleanFilterCondition;
+exports.ɵq = collectionSearchFilterCondition;
+exports.ɵr = dateFilterCondition;
+exports.ɵs = dateIsoFilterCondition;
+exports.ɵu = dateUsFilterCondition;
+exports.ɵv = dateUsShortFilterCondition;
+exports.ɵt = dateUtcFilterCondition;
+exports.ɵo = executeMappedCondition;
+exports.ɵy = testFilterCondition;
+exports.ɵw = numberFilterCondition;
+exports.ɵx = stringFilterCondition;
+exports.ɵz = CompoundDateFilter;
+exports.ɵba = CompoundInputFilter;
+exports.ɵbb = CompoundSliderFilter;
+exports.ɵbc = InputFilter;
+exports.ɵbe = MultipleSelectFilter;
+exports.ɵbh = NativeSelectFilter;
 exports.ɵbf = SelectFilter;
-exports.ɵbe = SingleSelectFilter;
-exports.ɵbc = SliderFilter;
-exports.ɵbg = arrayToCsvFormatter;
-exports.ɵbh = boldFormatter;
-exports.ɵbi = checkboxFormatter;
-exports.ɵbj = checkmarkFormatter;
-exports.ɵbm = collectionEditorFormatter;
-exports.ɵbl = collectionFormatter;
-exports.ɵbk = complexObjectFormatter;
-exports.ɵbn = dateIsoFormatter;
-exports.ɵbp = dateTimeIsoAmPmFormatter;
-exports.ɵbo = dateTimeIsoFormatter;
-exports.ɵbs = dateTimeUsAmPmFormatter;
-exports.ɵbr = dateTimeUsFormatter;
-exports.ɵbq = dateUsFormatter;
-exports.ɵbu = decimalFormatter;
-exports.ɵbt = deleteIconFormatter;
-exports.ɵbx = dollarColoredBoldFormatter;
-exports.ɵbw = dollarColoredFormatter;
-exports.ɵbv = dollarFormatter;
-exports.ɵby = editIconFormatter;
-exports.ɵbz = hyperlinkFormatter;
-exports.ɵca = hyperlinkUriPrefixFormatter;
-exports.ɵcb = infoIconFormatter;
-exports.ɵcc = lowercaseFormatter;
-exports.ɵcd = maskFormatter;
-exports.ɵce = multipleFormatter;
-exports.ɵch = percentCompleteBarFormatter;
-exports.ɵcg = percentCompleteFormatter;
-exports.ɵcf = percentFormatter;
-exports.ɵci = percentSymbolFormatter;
-exports.ɵcj = progressBarFormatter;
-exports.ɵcl = translateBooleanFormatter;
-exports.ɵck = translateFormatter;
-exports.ɵcm = uppercaseFormatter;
-exports.ɵcn = yesNoFormatter;
-exports.ɵcp = avgTotalsDollarFormatter;
-exports.ɵco = avgTotalsFormatter;
-exports.ɵcq = avgTotalsPercentageFormatter;
-exports.ɵcr = maxTotalsFormatter;
-exports.ɵcs = minTotalsFormatter;
-exports.ɵcu = sumTotalsBoldFormatter;
-exports.ɵcv = sumTotalsColoredFormatter;
-exports.ɵcx = sumTotalsDollarBoldFormatter;
-exports.ɵcz = sumTotalsDollarColoredBoldFormatter;
-exports.ɵcy = sumTotalsDollarColoredFormatter;
-exports.ɵcw = sumTotalsDollarFormatter;
-exports.ɵct = sumTotalsFormatter;
-exports.ɵdb = dateIsoSorter;
-exports.ɵda = dateSorter;
-exports.ɵdd = dateUsShortSorter;
-exports.ɵdc = dateUsSorter;
-exports.ɵde = numericSorter;
-exports.ɵdf = stringSorter;
+exports.ɵbg = SingleSelectFilter;
+exports.ɵbd = SliderFilter;
+exports.ɵbi = arrayObjectToCsvFormatter;
+exports.ɵbj = arrayToCsvFormatter;
+exports.ɵbk = boldFormatter;
+exports.ɵbl = checkboxFormatter;
+exports.ɵbm = checkmarkFormatter;
+exports.ɵbp = collectionEditorFormatter;
+exports.ɵbo = collectionFormatter;
+exports.ɵbn = complexObjectFormatter;
+exports.ɵbq = dateIsoFormatter;
+exports.ɵbt = dateTimeIsoAmPmFormatter;
+exports.ɵbr = dateTimeIsoFormatter;
+exports.ɵbs = dateTimeShortIsoFormatter;
+exports.ɵbw = dateTimeShortUsFormatter;
+exports.ɵbx = dateTimeUsAmPmFormatter;
+exports.ɵbv = dateTimeUsFormatter;
+exports.ɵbu = dateUsFormatter;
+exports.ɵbz = decimalFormatter;
+exports.ɵby = deleteIconFormatter;
+exports.ɵcc = dollarColoredBoldFormatter;
+exports.ɵcb = dollarColoredFormatter;
+exports.ɵca = dollarFormatter;
+exports.ɵcd = editIconFormatter;
+exports.ɵce = hyperlinkFormatter;
+exports.ɵcf = hyperlinkUriPrefixFormatter;
+exports.ɵcg = infoIconFormatter;
+exports.ɵch = lowercaseFormatter;
+exports.ɵci = maskFormatter;
+exports.ɵcj = multipleFormatter;
+exports.ɵcm = percentCompleteBarFormatter;
+exports.ɵcl = percentCompleteFormatter;
+exports.ɵck = percentFormatter;
+exports.ɵcn = percentSymbolFormatter;
+exports.ɵco = progressBarFormatter;
+exports.ɵcq = translateBooleanFormatter;
+exports.ɵcp = translateFormatter;
+exports.ɵcr = uppercaseFormatter;
+exports.ɵcs = yesNoFormatter;
+exports.ɵcu = avgTotalsDollarFormatter;
+exports.ɵct = avgTotalsFormatter;
+exports.ɵcv = avgTotalsPercentageFormatter;
+exports.ɵcw = maxTotalsFormatter;
+exports.ɵcx = minTotalsFormatter;
+exports.ɵcz = sumTotalsBoldFormatter;
+exports.ɵda = sumTotalsColoredFormatter;
+exports.ɵdc = sumTotalsDollarBoldFormatter;
+exports.ɵde = sumTotalsDollarColoredBoldFormatter;
+exports.ɵdd = sumTotalsDollarColoredFormatter;
+exports.ɵdb = sumTotalsDollarFormatter;
+exports.ɵcy = sumTotalsFormatter;
+exports.ɵdg = dateIsoSorter;
+exports.ɵdf = dateSorter;
+exports.ɵdi = dateUsShortSorter;
+exports.ɵdh = dateUsSorter;
+exports.ɵdj = numericSorter;
+exports.ɵdk = stringSorter;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

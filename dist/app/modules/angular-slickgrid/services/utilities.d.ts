@@ -1,5 +1,6 @@
 import { FieldType, OperatorType } from '../models/index';
 import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
@@ -8,12 +9,6 @@ import 'rxjs/add/operator/toPromise';
  * @param int nbSpaces: number of white spaces to create
  */
 export declare function addWhiteSpaces(nbSpaces: any): string;
-/**
- * Compares two objects to determine if all the properties are equal
- * We will do a deep check recursively to make sure all properties really are the same
- * @param x first object
- * @param y second object to compare with a  */
-export declare function objectsDeepEqual(x: any, y: any): any;
 /** HTML encode using jQuery */
 export declare function htmlEncode(value: any): any;
 /** HTML decode using jQuery */
@@ -48,7 +43,7 @@ export declare function castToPromise<T>(input: Promise<T> | Observable<T>, from
  * @param any[] array the array to filter
  * @param function logic the logic to find the item
  * @param any [defaultVal={}] the default value to return
- * @return object the found object or deafult value
+ * @return object the found object or default value
  */
 export declare function findOrDefault(array: any[], logic: (item: any) => boolean, defaultVal?: {}): any;
 /**
@@ -58,6 +53,8 @@ export declare function findOrDefault(array: any[], logic: (item: any) => boolea
   * @param maxDecimal
   */
 export declare function decimalFormatted(input: number | string, minDecimal?: number, maxDecimal?: number): string | number;
+/** From a dot (.) notation find and return a property within an object given a path */
+export declare function getDescendantProperty(obj: any, path: string): any;
 /**
  * From a Date FieldType, return it's equivalent moment.js format
  * refer to moment.js for the format standard used: https://momentjs.com/docs/#/parsing/string-format/
@@ -114,3 +111,9 @@ export declare function toCamelCase(str: string): string;
  * @return the string in kebab case
  */
 export declare function toKebabCase(str: string): string;
+/**
+ * Unsubscribe all Observables Subscriptions
+ * It will return an empty array if it all went well
+ * @param subscriptions
+ */
+export declare function unsubscribeAllObservables(subscriptions: Subscription[]): Subscription[];

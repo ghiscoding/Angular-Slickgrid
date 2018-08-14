@@ -77,6 +77,8 @@ export declare class GridStateService {
      */
     hookSlickGridEventToGridStateChange(eventName: string, grid: any): void;
     resetColumns(columnDefinitions?: Column[]): void;
+    /** if we use Row Selection or the Checkbox Selector, we need to reset any selection */
+    resetRowSelection(): void;
     /**
      * Subscribe to all necessary SlickGrid or Service Events that deals with a Grid change,
      * when triggered, we will publish a Grid State Event with current Grid State

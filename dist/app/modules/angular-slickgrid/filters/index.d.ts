@@ -3,7 +3,7 @@ import { CompoundInputFilter } from './compoundInputFilter';
 import { CompoundSliderFilter } from './compoundSliderFilter';
 import { InputFilter } from './inputFilter';
 import { MultipleSelectFilter } from './multipleSelectFilter';
-import { SelectFilter } from './selectFilter';
+import { NativeSelectFilter } from './nativeSelectFilter';
 import { SingleSelectFilter } from './singleSelectFilter';
 import { SliderFilter } from './sliderFilter';
 export declare const Filters: {
@@ -14,5 +14,5 @@ export declare const Filters: {
     slider: typeof SliderFilter;
     multipleSelect: typeof MultipleSelectFilter;
     singleSelect: typeof SingleSelectFilter;
-    select: typeof SelectFilter;
+    select: typeof NativeSelectFilter;
 };

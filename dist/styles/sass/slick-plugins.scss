@@ -207,6 +207,7 @@
 .ms-drop {
   max-width: $multiselect-dropdown-max-width;
   border: $multiselect-dropdown-border;
+  z-index: $multiselect-dropdown-z-index;
 
   input[type="checkbox"],
   input[type="radio"] {

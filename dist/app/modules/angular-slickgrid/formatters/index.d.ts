@@ -1,6 +1,7 @@
 import { Column } from './../models/index';
 /** Provides a list of different Formatters that will change the cell value displayed in the UI */
 export declare const Formatters: {
+    arrayObjectToCsv: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     arrayToCsv: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     bold: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     checkbox: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
@@ -10,9 +11,11 @@ export declare const Formatters: {
     collectionEditor: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateIso: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateTimeIso: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    dateTimeShortIso: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateTimeIsoAmPm: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateUs: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateTimeUs: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
+    dateTimeShortUs: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     dateTimeUsAmPm: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     deleteIcon: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
     decimal: (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid?: any) => string;
