@@ -239,6 +239,13 @@ export class GridStateService {
     this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
   }
 
+  /** if we use Row Selection or the Checkbox Selector, we need to reset any selection */
+  resetRowSelection() {
+    if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
+      this._grid.setSelectedRows([]);
+    }
+  }
+
   /**
    * Subscribe to all necessary SlickGrid or Service Events that deals with a Grid change,
    * when triggered, we will publish a Grid State Event with current Grid State
@@ -247,20 +254,14 @@ export class GridStateService {
     // Subscribe to Event Emitter of Filter changed
     this.subscriptions.push(
       this.filterService.onFilterChanged.subscribe((currentFilters: CurrentFilter[]) => {
-        // if we use Row Selection or the Checkbox Selector, we need to reset any selection
-        if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
-          this._grid.setSelectedRows([]);
-        }
+        this.resetRowSelection();
         this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: this.getCurrentGridState() });
       })
     );
     // Subscribe to Event Emitter of Filter cleared
       this.subscriptions.push(
         this.filterService.onFilterCleared.subscribe(() => {
-          // if we use Row Selection or the Checkbox Selector, we need to reset any selection
-          if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
-            this._grid.setSelectedRows([]);
-          }
+          this.resetRowSelection();
           this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.filter }, gridState: this.getCurrentGridState() });
         })
       );
@@ -268,6 +269,7 @@ export class GridStateService {
     // Subscribe to Event Emitter of Sort changed
     this.subscriptions.push(
       this.sortService.onSortChanged.subscribe((currentSorters: CurrentSorter[]) => {
+        this.resetRowSelection();
         this.onGridStateChanged.next({ change: { newValues: currentSorters, type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
       })
     );
@@ -275,6 +277,7 @@ export class GridStateService {
     // Subscribe to Event Emitter of Sort cleared
     this.subscriptions.push(
       this.sortService.onSortCleared.subscribe(() => {
+        this.resetRowSelection();
         this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
       })
     );
