@@ -4,6 +4,7 @@ import {
   Aggregators,
   Column,
   FieldType,
+  Filters,
   Formatters,
   GridOption,
   GroupTotalFormatters,
@@ -51,6 +52,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
         id: 'sel', name: '#', field: 'num', width: 40,
         maxWidth: 70,
         resizable: true,
+        filterable: true,
         selectable: false,
         focusable: false
       },
@@ -59,11 +61,14 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
         width: 50,
         minWidth: 50,
         cssClass: 'cell-title',
+        filterable: true,
         sortable: true
       },
       {
         id: 'duration', name: 'Duration', field: 'duration',
         minWidth: 50, width: 60,
+        filterable: true,
+        filter: { model: Filters.slider, operator: '>=' },
         sortable: true,
         type: FieldType.number,
         groupTotalsFormatter: GroupTotalFormatters.sumTotals,
@@ -73,6 +78,8 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
         id: '%', name: '% Complete', field: 'percentComplete',
         minWidth: 70, width: 90,
         formatter: Formatters.percentCompleteBar,
+        filterable: true,
+        filter: { model: Filters.compoundSlider },
         sortable: true,
         groupTotalsFormatter: GroupTotalFormatters.avgTotalsPercentage,
         params: { groupFormatterPrefix: '<i>Avg</i>: ' }
@@ -80,14 +87,20 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
       {
         id: 'start', name: 'Start', field: 'start',
         minWidth: 60,
+        filterable: true,
+        filter: { model: Filters.compoundDate },
         sortable: true,
+        type: FieldType.dateIso,
         formatter: Formatters.dateIso,
         exportWithFormatter: true
       },
       {
         id: 'finish', name: 'Finish', field: 'finish',
         minWidth: 60,
+        filterable: true,
+        filter: { model: Filters.compoundDate },
         sortable: true,
+        type: FieldType.dateIso,
         formatter: Formatters.dateIso,
         exportWithFormatter: true
       },
@@ -95,18 +108,32 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
         id: 'cost', name: 'Cost', field: 'cost',
         minWidth: 70,
         width: 100,
+        filterable: true,
+        filter: { model: Filters.compoundInput },
+        type: FieldType.number,
         sortable: true,
         exportWithFormatter: true,
         formatter: Formatters.dollar,
-        groupTotalsFormatter: GroupTotalFormatters.sumTotals,
-        params: { groupFormatterPrefix: '<b>Total</b>: $' /*, groupFormatterSuffix: ' USD'*/ }
+        groupTotalsFormatter: GroupTotalFormatters.sumTotalsDollar,
+        params: { groupFormatterPrefix: '<b>Total</b>: ' /*, groupFormatterSuffix: ' USD'*/ }
       },
       {
         id: 'effort-driven', name: 'Effort Driven',
         minWidth: 20, width: 80, maxWidth: 80,
         cssClass: 'cell-effort-driven',
         field: 'effortDriven',
-        formatter: Formatters.checkmark, sortable: true
+        formatter: Formatters.checkmark,
+        sortable: true,
+        filterable: true,
+        filter: {
+          collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
+          model: Filters.singleSelect,
+
+          // we could add certain option(s) to the "multiple-select" plugin
+          filterOptions: {
+            autoDropWidth: true
+          },
+        }
       }
     ];
 
@@ -115,6 +142,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
         containerId: 'demo-container',
         sidePadding: 15
       },
+      enableFiltering: true,
       enableGrouping: true,
       exportOptions: {
         sanitizeDataExport: true
