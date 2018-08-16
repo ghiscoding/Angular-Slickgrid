@@ -1,7 +1,6 @@
 import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
-import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.groupitemmetadataprovider';
@@ -79,7 +78,7 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     initialization(): void;
     /**
      * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
-     * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+     * For now, this is GraphQL Service only feature and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
      */
     createBackendApiInternalPostProcessCallback(gridOptions: GridOption): void;
     attachDifferentHooks(grid: any, gridOptions: GridOption, dataView: any): void;

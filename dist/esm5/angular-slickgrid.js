@@ -13,8 +13,8 @@ import { TextEncoder } from 'text-encoding-utf-8';
 import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
-import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.grid';
+import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.groupitemmetadataprovider';
 import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.gridmenu';
@@ -5649,8 +5649,8 @@ var LongTextEditor = /** @class */ (function () {
     });
     LongTextEditor.prototype.init = function () {
         var _this = this;
-        var cancelText = this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
-        var saveText = this._translate.instant('SAVE') || Constants.TEXT_SAVE;
+        var cancelText = this._translate && this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
+        var saveText = this._translate && this._translate.instant('SAVE') || Constants.TEXT_SAVE;
         var $container = $('body');
         this.$wrapper = $("<div class=\"slick-large-editor-text\" />").appendTo($container);
         this.$input = $("<textarea hidefocus rows=\"5\">").appendTo(this.$wrapper);
@@ -7073,10 +7073,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
         if (this.gridOptions.enableGrouping) {
             this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
-            this._dataView = new Slick.Data.DataView({
-                groupItemMetadataProvider: this.groupItemMetadataProvider,
-                inlineFilters: true
-            });
+            this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
         }
         else {
             this._dataView = new Slick.Data.DataView();

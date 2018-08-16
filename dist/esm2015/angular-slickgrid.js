@@ -13,8 +13,8 @@ import { TextEncoder } from 'text-encoding-utf-8';
 import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
-import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.grid';
+import 'slickgrid/slick.dataview';
 import 'slickgrid/slick.groupitemmetadataprovider';
 import 'slickgrid/controls/slick.columnpicker';
 import 'slickgrid/controls/slick.gridmenu';
@@ -7931,8 +7931,8 @@ class LongTextEditor {
      * @return {?}
      */
     init() {
-        const /** @type {?} */ cancelText = this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
-        const /** @type {?} */ saveText = this._translate.instant('SAVE') || Constants.TEXT_SAVE;
+        const /** @type {?} */ cancelText = this._translate && this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
+        const /** @type {?} */ saveText = this._translate && this._translate.instant('SAVE') || Constants.TEXT_SAVE;
         const /** @type {?} */ $container = $('body');
         this.$wrapper = $(`<div class="slick-large-editor-text" />`).appendTo($container);
         this.$input = $(`<textarea hidefocus rows="5">`).appendTo(this.$wrapper);
@@ -10192,10 +10192,7 @@ class AngularSlickgridComponent {
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
         if (this.gridOptions.enableGrouping) {
             this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
-            this._dataView = new Slick.Data.DataView({
-                groupItemMetadataProvider: this.groupItemMetadataProvider,
-                inlineFilters: true
-            });
+            this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
         }
         else {
             this._dataView = new Slick.Data.DataView();
@@ -10269,7 +10266,7 @@ class AngularSlickgridComponent {
     }
     /**
      * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
-     * For now, this is GraphQL Service only feautre and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+     * For now, this is GraphQL Service only feature and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
      * @param {?} gridOptions
      * @return {?}
      */
