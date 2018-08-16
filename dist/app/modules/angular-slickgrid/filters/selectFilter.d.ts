@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Column, ColumnFilter, Filter, FilterArguments, FilterCallback, FilterCustomStructure, GridOption, MultipleSelectOption, OperatorType, OperatorString, SearchTerm } from './../models/index';
+import { CollectionCustomStructure, CollectionOption, Column, ColumnFilter, Filter, FilterArguments, FilterCallback, GridOption, MultipleSelectOption, OperatorType, OperatorString, SearchTerm } from './../models/index';
 import { CollectionService } from './../services/collection.service';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -25,12 +25,14 @@ export declare class SelectFilter implements Filter {
      * Initialize the Filter
      */
     constructor(translate: TranslateService, collectionService: CollectionService, isMultipleSelect?: boolean);
-    /** Getter for the Grid Options pulled through the Grid Object */
-    protected readonly gridOptions: GridOption;
     /** Getter for the Column Filter itself */
     protected readonly columnFilter: ColumnFilter;
+    /** Getter for the Collection Options */
+    protected readonly collectionOptions: CollectionOption;
     /** Getter for the Custom Structure if exist */
-    protected readonly customStructure: FilterCustomStructure;
+    protected readonly customStructure: CollectionCustomStructure;
+    /** Getter for the Grid Options pulled through the Grid Object */
+    protected readonly gridOptions: GridOption;
     /** Getter for the filter operator */
     readonly operator: OperatorType | OperatorString;
     /**

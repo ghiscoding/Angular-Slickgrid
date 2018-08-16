@@ -1664,7 +1664,7 @@ class CompoundSliderFilter {
      * @return {?}
      */
     get filterProperties() {
-        return this.columnDef && this.columnDef.filter || {};
+        return this.columnDef && this.columnDef.filter;
     }
     /**
      * @param {?} op
@@ -2049,13 +2049,6 @@ class SelectFilter {
         this.defaultOptions = options;
     }
     /**
-     * Getter for the Grid Options pulled through the Grid Object
-     * @return {?}
-     */
-    get gridOptions() {
-        return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
-    }
-    /**
      * Getter for the Column Filter itself
      * @return {?}
      */
@@ -2063,11 +2056,25 @@ class SelectFilter {
         return this.columnDef && this.columnDef.filter;
     }
     /**
+     * Getter for the Collection Options
+     * @return {?}
+     */
+    get collectionOptions() {
+        return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions;
+    }
+    /**
      * Getter for the Custom Structure if exist
      * @return {?}
      */
     get customStructure() {
         return this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure;
+    }
+    /**
+     * Getter for the Grid Options pulled through the Grid Object
+     * @return {?}
+     */
+    get gridOptions() {
+        return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
     }
     /**
      * Getter for the filter operator
@@ -2204,8 +2211,8 @@ class SelectFilter {
      * @return {?}
      */
     renderDomElementFromCollectionAsync(collection) {
-        if (this.customStructure && this.customStructure.collectionInObjectProperty) {
-            collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+        if (this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
+            collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
         }
         if (!Array.isArray(collection)) {
             throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call in the Select Filter, the collection is not a valid array.');
@@ -2221,14 +2228,14 @@ class SelectFilter {
      * @return {?}
      */
     renderDomElement(collection) {
-        if (!Array.isArray(collection) && this.customStructure && this.customStructure.collectionInObjectProperty) {
-            collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+        if (!Array.isArray(collection) && this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
+            collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
         }
         if (!Array.isArray(collection)) {
             throw new Error('The "collection" passed to the Select Filter is not a valid array');
         }
         // user can optionally add a blank entry at the beginning of the collection
-        if (this.customStructure && this.customStructure.addBlankEntry) {
+        if (this.collectionOptions && this.collectionOptions.addBlankEntry) {
             collection.unshift(this.createBlankEntry());
         }
         let /** @type {?} */ newCollection = collection;
@@ -2249,7 +2256,7 @@ class SelectFilter {
      */
     buildTemplateHtmlString(optionCollection, searchTerms) {
         let /** @type {?} */ options = '';
-        const /** @type {?} */ separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
+        const /** @type {?} */ separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         const /** @type {?} */ isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
         const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach((option) => {
@@ -2510,7 +2517,7 @@ class SliderFilter {
      * @return {?}
      */
     get filterProperties() {
-        return this.columnDef && this.columnDef.filter || {};
+        return this.columnDef && this.columnDef.filter;
     }
     /**
      * @return {?}
@@ -8128,6 +8135,13 @@ class SelectEditor {
         return this.columnDef && this.columnDef && this.columnDef.internalColumnEditor.collection || [];
     }
     /**
+     * Getter for the Collection Options
+     * @return {?}
+     */
+    get collectionOptions() {
+        return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions;
+    }
+    /**
      * Get Column Definition object
      * @return {?}
      */
@@ -8153,8 +8167,8 @@ class SelectEditor {
      * @return {?}
      */
     get currentValues() {
-        const /** @type {?} */ separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
-        const /** @type {?} */ isIncludingPrefixSuffix = this.customStructure && this.customStructure.includePrefixSuffixToSelectedValues || false;
+        const /** @type {?} */ separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
+        const /** @type {?} */ isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
         return this.collection
             .filter(c => this.$editorElm.val().indexOf(c[this.valueName].toString()) !== -1)
             .map(c => {
@@ -8172,8 +8186,8 @@ class SelectEditor {
      * @return {?}
      */
     get currentValue() {
-        const /** @type {?} */ separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
-        const /** @type {?} */ isIncludingPrefixSuffix = this.customStructure && this.customStructure.includePrefixSuffixToSelectedValues || false;
+        const /** @type {?} */ separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
+        const /** @type {?} */ isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
         const /** @type {?} */ itemFound = findOrDefault(this.collection, (c) => c[this.valueName].toString() === this.$editorElm.val());
         if (itemFound) {
             const /** @type {?} */ labelText = itemFound[this.valueName];
@@ -8342,14 +8356,14 @@ class SelectEditor {
      * @return {?}
      */
     renderDomElement(collection) {
-        if (!Array.isArray(collection) && this.customStructure && this.customStructure.collectionInObjectProperty) {
-            collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+        if (!Array.isArray(collection) && this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
+            collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
         }
         if (!Array.isArray(collection)) {
             throw new Error('The "collection" passed to the Select Editor is not a valid array');
         }
         // user can optionally add a blank entry at the beginning of the collection
-        if (this.customStructure && this.customStructure.addBlankEntry) {
+        if (this.collectionOptions && this.collectionOptions.addBlankEntry) {
             collection.unshift(this.createBlankEntry());
         }
         let /** @type {?} */ newCollection = collection || [];
@@ -8368,7 +8382,7 @@ class SelectEditor {
      */
     buildTemplateHtmlString(collection) {
         let /** @type {?} */ options = '';
-        const /** @type {?} */ separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
+        const /** @type {?} */ separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         const /** @type {?} */ isRenderHtmlEnabled = this.columnDef.internalColumnEditor.enableRenderHtml || false;
         const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach((option) => {

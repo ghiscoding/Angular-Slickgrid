@@ -1,4 +1,4 @@
-import { CollectionFilterBy, CollectionSortBy, Column, Filter, FilterCustomStructure, MultipleSelectOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
+import { CollectionCustomStructure, CollectionFilterBy, CollectionOption, CollectionSortBy, Column, Filter, MultipleSelectOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 export interface ColumnFilter {
@@ -24,10 +24,14 @@ export interface ColumnFilter {
     collectionAsync?: Promise<any> | Observable<any> | Subject<any>;
     /** A collection of items/options (commonly used with a Select/Multi-Select Filter) */
     collection?: any[];
+    /** Options to change the behavior of the "collection" */
+    collectionOptions?: CollectionOption;
     /** We could filter some items from the collection */
     collectionFilterBy?: CollectionFilterBy;
     /** We could sort the collection by their value, or by translated value when enableTranslateLabel is True */
     collectionSortBy?: CollectionSortBy;
+    /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Filter */
+    customStructure?: CollectionCustomStructure;
     /** Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250} */
     filterOptions?: MultipleSelectOption | any;
     /**
@@ -37,8 +41,6 @@ export interface ColumnFilter {
     enableRenderHtml?: boolean;
     /** Do we want the Filter to handle translation (localization)? */
     enableTranslateLabel?: boolean;
-    /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Filter */
-    customStructure?: FilterCustomStructure;
     /**
      * Use "params" to pass any type of arguments to your Custom Filter
      * for example, to pass a second collection to a select Filter we can type this:

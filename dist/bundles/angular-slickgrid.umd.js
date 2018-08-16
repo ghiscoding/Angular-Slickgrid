@@ -1185,7 +1185,7 @@ var CompoundSliderFilter = /** @class */ (function () {
     });
     Object.defineProperty(CompoundSliderFilter.prototype, "filterProperties", {
         get: function () {
-            return this.columnDef && this.columnDef.filter || {};
+            return this.columnDef && this.columnDef.filter;
         },
         enumerable: true,
         configurable: true
@@ -1452,13 +1452,6 @@ var SelectFilter = /** @class */ (function () {
         }
         this.defaultOptions = options;
     }
-    Object.defineProperty(SelectFilter.prototype, "gridOptions", {
-        get: function () {
-            return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(SelectFilter.prototype, "columnFilter", {
         get: function () {
             return this.columnDef && this.columnDef.filter;
@@ -1466,9 +1459,23 @@ var SelectFilter = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(SelectFilter.prototype, "collectionOptions", {
+        get: function () {
+            return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(SelectFilter.prototype, "customStructure", {
         get: function () {
             return this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SelectFilter.prototype, "gridOptions", {
+        get: function () {
+            return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
         },
         enumerable: true,
         configurable: true
@@ -1565,8 +1572,8 @@ var SelectFilter = /** @class */ (function () {
         this.subscriptions.push(newCollectionAsync.subscribe(function (collection) { return _this.renderDomElementFromCollectionAsync(collection); }));
     };
     SelectFilter.prototype.renderDomElementFromCollectionAsync = function (collection) {
-        if (this.customStructure && this.customStructure.collectionInObjectProperty) {
-            collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+        if (this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
+            collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
         }
         if (!Array.isArray(collection)) {
             throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call in the Select Filter, the collection is not a valid array.');
@@ -1575,13 +1582,13 @@ var SelectFilter = /** @class */ (function () {
         this.renderDomElement(collection);
     };
     SelectFilter.prototype.renderDomElement = function (collection) {
-        if (!Array.isArray(collection) && this.customStructure && this.customStructure.collectionInObjectProperty) {
-            collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+        if (!Array.isArray(collection) && this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
+            collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
         }
         if (!Array.isArray(collection)) {
             throw new Error('The "collection" passed to the Select Filter is not a valid array');
         }
-        if (this.customStructure && this.customStructure.addBlankEntry) {
+        if (this.collectionOptions && this.collectionOptions.addBlankEntry) {
             collection.unshift(this.createBlankEntry());
         }
         var newCollection = collection;
@@ -1593,7 +1600,7 @@ var SelectFilter = /** @class */ (function () {
     SelectFilter.prototype.buildTemplateHtmlString = function (optionCollection, searchTerms) {
         var _this = this;
         var options = '';
-        var separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
+        var separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         var isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach(function (option) {
@@ -1773,7 +1780,7 @@ var SliderFilter = /** @class */ (function () {
     });
     Object.defineProperty(SliderFilter.prototype, "filterProperties", {
         get: function () {
-            return this.columnDef && this.columnDef.filter || {};
+            return this.columnDef && this.columnDef.filter;
         },
         enumerable: true,
         configurable: true
@@ -5844,6 +5851,13 @@ var SelectEditor = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(SelectEditor.prototype, "collectionOptions", {
+        get: function () {
+            return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(SelectEditor.prototype, "columnDef", {
         get: function () {
             return this.args && this.args.column || {};
@@ -5868,8 +5882,8 @@ var SelectEditor = /** @class */ (function () {
     Object.defineProperty(SelectEditor.prototype, "currentValues", {
         get: function () {
             var _this = this;
-            var separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
-            var isIncludingPrefixSuffix = this.customStructure && this.customStructure.includePrefixSuffixToSelectedValues || false;
+            var separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
+            var isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
             return this.collection
                 .filter(function (c) { return _this.$editorElm.val().indexOf(c[_this.valueName].toString()) !== -1; })
                 .map(function (c) {
@@ -5888,8 +5902,8 @@ var SelectEditor = /** @class */ (function () {
     Object.defineProperty(SelectEditor.prototype, "currentValue", {
         get: function () {
             var _this = this;
-            var separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
-            var isIncludingPrefixSuffix = this.customStructure && this.customStructure.includePrefixSuffixToSelectedValues || false;
+            var separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
+            var isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
             var itemFound = findOrDefault(this.collection, function (c) { return c[_this.valueName].toString() === _this.$editorElm.val(); });
             if (itemFound) {
                 var labelText = itemFound[this.valueName];
@@ -6007,13 +6021,13 @@ var SelectEditor = /** @class */ (function () {
         return outputCollection;
     };
     SelectEditor.prototype.renderDomElement = function (collection) {
-        if (!Array.isArray(collection) && this.customStructure && this.customStructure.collectionInObjectProperty) {
-            collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+        if (!Array.isArray(collection) && this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
+            collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
         }
         if (!Array.isArray(collection)) {
             throw new Error('The "collection" passed to the Select Editor is not a valid array');
         }
-        if (this.customStructure && this.customStructure.addBlankEntry) {
+        if (this.collectionOptions && this.collectionOptions.addBlankEntry) {
             collection.unshift(this.createBlankEntry());
         }
         var newCollection = collection || [];
@@ -6025,7 +6039,7 @@ var SelectEditor = /** @class */ (function () {
     SelectEditor.prototype.buildTemplateHtmlString = function (collection) {
         var _this = this;
         var options = '';
-        var separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
+        var separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         var isRenderHtmlEnabled = this.columnDef.internalColumnEditor.enableRenderHtml || false;
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach(function (option) {

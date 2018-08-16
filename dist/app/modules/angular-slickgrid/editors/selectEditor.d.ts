@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { Column, Editor, EditorCustomStructure, EditorValidator, EditorValidatorOutput, GridOption, MultipleSelectOption } from './../models/index';
+import { CollectionCustomStructure, CollectionOption, Column, Editor, EditorValidator, EditorValidatorOutput, GridOption, MultipleSelectOption } from './../models/index';
 import { CollectionService } from '../services/index';
 import { Subscription } from 'rxjs/Subscription';
 /**
@@ -37,12 +37,14 @@ export declare class SelectEditor implements Editor {
     constructor(args: any, isMultipleSelect: any);
     /** Get the Collection */
     readonly collection: any[];
+    /** Getter for the Collection Options */
+    readonly collectionOptions: CollectionOption;
     /** Get Column Definition object */
     readonly columnDef: Column;
     /** Get Column Editor object */
     readonly columnEditor: any;
     /** Getter for the Custom Structure if exist */
-    protected readonly customStructure: EditorCustomStructure;
+    protected readonly customStructure: CollectionCustomStructure;
     /**
      * The current selected values (multiple select) from the collection
      */
