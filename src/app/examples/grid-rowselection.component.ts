@@ -1,5 +1,5 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { AngularGridInstance, Column, FieldType, Formatters, GridOption } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-rowselection.component.html'
@@ -45,22 +45,24 @@ export class GridRowSelectionComponent implements OnInit {
 
   prepareGrid() {
     this.columnDefinitions1 = [
-      {id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string},
-      {id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number},
-      {id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, sortable: true},
-      {id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.dateIso, exportWithFormatter: true },
-      {id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, exportWithFormatter: true },
-      {id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, sortable: true}
+      { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, editor: { model: Editors.longText } },
+      { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, editor: { model: Editors.integer } },
+      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, sortable: true },
+      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.dateIso, editor: { model: Editors.date } },
+      { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, editor: { model: Editors.date }, exportWithFormatter: true },
+      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, sortable: true }
     ];
     this.columnDefinitions2 = [
-      {id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string},
-      {id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number},
-      {id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, sortable: true},
-      {id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.dateIso, exportWithFormatter: true },
-      {id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, exportWithFormatter: true },
-      {id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, sortable: true}
+      { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string },
+      { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number },
+      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, sortable: true },
+      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.dateIso, exportWithFormatter: true  },
+      { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, exportWithFormatter: true },
+      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, sortable: true }
     ];
     this.gridOptions1 = {
+      editable: true,
+      autoEdit: true,
       enableAutoResize: false,
       enableCellNavigation: true,
       enableCheckboxSelector: true,
