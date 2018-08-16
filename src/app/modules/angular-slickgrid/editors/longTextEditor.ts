@@ -53,8 +53,8 @@ export class LongTextEditor implements Editor {
   }
 
   init(): void {
-    const cancelText = this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
-    const saveText = this._translate.instant('SAVE') || Constants.TEXT_SAVE;
+    const cancelText = this._translate && this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
+    const saveText = this._translate && this._translate.instant('SAVE') || Constants.TEXT_SAVE;
     const $container = $('body');
 
     this.$wrapper = $(`<div class="slick-large-editor-text" />`).appendTo($container);
