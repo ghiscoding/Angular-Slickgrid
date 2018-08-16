@@ -1,8 +1,9 @@
 import { TranslateService } from '@ngx-translate/core';
 import {
+  CollectionCustomStructure,
+  CollectionOption,
   Column,
   Editor,
-  EditorCustomStructure,
   EditorValidator,
   EditorValidatorOutput,
   GridOption,
@@ -108,6 +109,11 @@ export class SelectEditor implements Editor {
     return this.columnDef && this.columnDef && this.columnDef.internalColumnEditor.collection || [];
   }
 
+  /** Getter for the Collection Options */
+  get collectionOptions(): CollectionOption {
+    return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions;
+  }
+
   /** Get Column Definition object */
   get columnDef(): Column {
     return this.args && this.args.column || {};
@@ -119,7 +125,7 @@ export class SelectEditor implements Editor {
   }
 
   /** Getter for the Custom Structure if exist */
-  protected get customStructure(): EditorCustomStructure {
+  protected get customStructure(): CollectionCustomStructure {
     return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure;
   }
 
@@ -127,8 +133,8 @@ export class SelectEditor implements Editor {
    * The current selected values (multiple select) from the collection
    */
   get currentValues() {
-    const separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
-    const isIncludingPrefixSuffix = this.customStructure && this.customStructure.includePrefixSuffixToSelectedValues || false;
+    const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
+    const isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
 
     return this.collection
       .filter(c => this.$editorElm.val().indexOf(c[this.valueName].toString()) !== -1)
@@ -149,8 +155,8 @@ export class SelectEditor implements Editor {
    * The current selected values (single select) from the collection
    */
   get currentValue() {
-    const separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
-    const isIncludingPrefixSuffix = this.customStructure && this.customStructure.includePrefixSuffixToSelectedValues || false;
+    const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
+    const isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
     const itemFound = findOrDefault(this.collection, (c: any) => c[this.valueName].toString() === this.$editorElm.val());
 
     if (itemFound) {
@@ -311,15 +317,15 @@ export class SelectEditor implements Editor {
   }
 
   protected renderDomElement(collection: any[]) {
-    if (!Array.isArray(collection) && this.customStructure && this.customStructure.collectionInObjectProperty) {
-      collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+    if (!Array.isArray(collection) && this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
+      collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
     }
     if (!Array.isArray(collection)) {
       throw new Error('The "collection" passed to the Select Editor is not a valid array');
     }
 
     // user can optionally add a blank entry at the beginning of the collection
-    if (this.customStructure && this.customStructure.addBlankEntry) {
+    if (this.collectionOptions && this.collectionOptions.addBlankEntry) {
       collection.unshift(this.createBlankEntry());
     }
 
@@ -339,7 +345,7 @@ export class SelectEditor implements Editor {
 
   protected buildTemplateHtmlString(collection: any[]) {
     let options = '';
-    const separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
+    const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
     const isRenderHtmlEnabled = this.columnDef.internalColumnEditor.enableRenderHtml || false;
     const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
 

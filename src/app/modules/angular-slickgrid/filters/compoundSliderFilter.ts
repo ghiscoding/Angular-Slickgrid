@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
   Column,
   ColumnFilter,
@@ -46,7 +45,7 @@ export class CompoundSliderFilter implements Filter {
 
   /** Getter for the `filter` properties */
   private get filterProperties(): ColumnFilter {
-    return this.columnDef && this.columnDef.filter || {};
+    return this.columnDef && this.columnDef.filter;
   }
 
   set operator(op: OperatorType | OperatorString) {

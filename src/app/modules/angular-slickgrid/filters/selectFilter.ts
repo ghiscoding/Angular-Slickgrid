@@ -1,11 +1,12 @@
 import { TranslateService } from '@ngx-translate/core';
 import {
+  CollectionCustomStructure,
+  CollectionOption,
   Column,
   ColumnFilter,
   Filter,
   FilterArguments,
   FilterCallback,
-  FilterCustomStructure,
   GridOption,
   MultipleSelectOption,
   OperatorType,
@@ -84,19 +85,24 @@ export class SelectFilter implements Filter {
     this.defaultOptions = options;
   }
 
-  /** Getter for the Grid Options pulled through the Grid Object */
-  protected get gridOptions(): GridOption {
-    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
-  }
-
   /** Getter for the Column Filter itself */
   protected get columnFilter(): ColumnFilter {
     return this.columnDef && this.columnDef.filter;
   }
 
+  /** Getter for the Collection Options */
+  protected get collectionOptions(): CollectionOption {
+    return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions;
+  }
+
   /** Getter for the Custom Structure if exist */
-  protected get customStructure(): FilterCustomStructure {
+  protected get customStructure(): CollectionCustomStructure {
     return this.columnDef && this.columnDef.filter && this.columnDef.filter.customStructure;
+  }
+
+  /** Getter for the Grid Options pulled through the Grid Object */
+  protected get gridOptions(): GridOption {
+    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
   /** Getter for the filter operator */
@@ -238,8 +244,8 @@ export class SelectFilter implements Filter {
    * and reinitialize filter collection with this new collection
    */
   protected renderDomElementFromCollectionAsync(collection) {
-    if (this.customStructure && this.customStructure.collectionInObjectProperty) {
-      collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+    if (this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
+      collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
     }
     if (!Array.isArray(collection)) {
       throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call in the Select Filter, the collection is not a valid array.');
@@ -254,15 +260,15 @@ export class SelectFilter implements Filter {
   }
 
   protected renderDomElement(collection) {
-    if (!Array.isArray(collection) && this.customStructure && this.customStructure.collectionInObjectProperty) {
-      collection = getDescendantProperty(collection, this.customStructure.collectionInObjectProperty);
+    if (!Array.isArray(collection) && this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
+      collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
     }
     if (!Array.isArray(collection)) {
       throw new Error('The "collection" passed to the Select Filter is not a valid array');
     }
 
     // user can optionally add a blank entry at the beginning of the collection
-    if (this.customStructure && this.customStructure.addBlankEntry) {
+    if (this.collectionOptions && this.collectionOptions.addBlankEntry) {
       collection.unshift(this.createBlankEntry());
     }
 
@@ -285,7 +291,7 @@ export class SelectFilter implements Filter {
    */
   protected buildTemplateHtmlString(optionCollection: any[], searchTerms: SearchTerm[]) {
     let options = '';
-    const separatorBetweenLabels = this.customStructure && this.customStructure.separatorBetweenTextLabels || '';
+    const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
     const isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
     const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
 

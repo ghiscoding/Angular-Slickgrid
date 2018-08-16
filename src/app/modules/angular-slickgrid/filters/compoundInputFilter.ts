@@ -1,4 +1,3 @@
-import { Inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FieldType } from './../models/index';
 import { Column, Filter, FilterArguments, FilterCallback, GridOption, OperatorString, OperatorType, SearchTerm } from './../models/index';

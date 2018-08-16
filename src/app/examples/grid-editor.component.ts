@@ -259,6 +259,8 @@ export class GridEditorComponent implements OnInit {
             label: 'label',
             value: 'value',
             labelPrefix: 'prefix',
+          },
+          collectionOptions: {
             separatorBetweenTextLabels: ' ',
             includePrefixSuffixToSelectedValues: true
           },
@@ -276,6 +278,8 @@ export class GridEditorComponent implements OnInit {
             label: 'label',
             value: 'value',
             labelPrefix: 'prefix',
+          },
+          collectionOptions: {
             separatorBetweenTextLabels: ' '
           },
           model: Filters.multipleSelect,

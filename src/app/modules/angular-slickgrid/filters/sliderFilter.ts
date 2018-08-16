@@ -33,7 +33,7 @@ export class SliderFilter implements Filter {
 
   /** Getter for the `filter` properties */
   private get filterProperties(): ColumnFilter {
-    return this.columnDef && this.columnDef.filter || {};
+    return this.columnDef && this.columnDef.filter;
   }
 
   get operator(): OperatorType | OperatorString {

@@ -73,6 +73,8 @@ export class GridClientSideComponent implements OnInit {
             value: 'value',
             label: 'label',
             labelSuffix: 'text',
+          },
+          collectionOptions: {
             separatorBetweenTextLabels: ' '
           },
           model: Filters.multipleSelect,
