@@ -178,7 +178,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
-        cost: Math.round(Math.random() * 10000) / 100,
+        cost: (i % 33 === 0) ? null : Math.round(Math.random() * 10000) / 100,
         effortDriven: (i % 5 === 0)
       };
     }

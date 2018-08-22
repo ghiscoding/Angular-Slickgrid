@@ -57,7 +57,7 @@ export class GridFormatterComponent implements OnInit {
         id: i,
         title: 'Task ' + i,
         phone: this.generatePhoneNumber(),
-        duration: Math.random() * 100 + '',
+        duration: (i % 33 === 0) ? null : Math.random() * 100 + '',
         percentComplete: randomPercent,
         percentComplete2: randomPercent,
         percentCompleteNumber: randomPercent,
