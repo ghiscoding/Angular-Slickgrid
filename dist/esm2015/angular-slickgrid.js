@@ -1996,6 +1996,8 @@ class InputFilter {
  * @suppress {checkTypes} checked by tsc
  */
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
+// height in pixel of the multiple-select DOM element
+const SELECT_ELEMENT_HEIGHT = 26;
 class SelectFilter {
     /**
      * Initialize the Filter
@@ -2022,6 +2024,7 @@ class SelectFilter {
                 const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
+            onOpen: () => this.autoAdjustDropPosition(this.filterElmOptions),
             onClose: () => {
                 // we will subscribe to the onClose event for triggering our callback
                 // also add/remove "filled" class for styling purposes
@@ -2148,6 +2151,40 @@ class SelectFilter {
         if (values) {
             values = Array.isArray(values) ? values : [values];
             this.$filterElm.multipleSelect('setSelects', values);
+        }
+    }
+    /**
+     * Automatically adjust the multiple-select dropup or dropdown by available space
+     * @param {?} multipleSelectOptions
+     * @return {?}
+     */
+    autoAdjustDropPosition(multipleSelectOptions) {
+        // height in pixel of the multiple-select element
+        const /** @type {?} */ selectElmHeight = SELECT_ELEMENT_HEIGHT;
+        const /** @type {?} */ windowHeight = $(window).innerHeight() || 300;
+        const /** @type {?} */ pageScroll = $('body').scrollTop() || 0;
+        const /** @type {?} */ $msDrop = $(`[name="${this.elementName}"].ms-drop`);
+        const /** @type {?} */ msDropHeight = $msDrop.height() || 0;
+        const /** @type {?} */ msDropOffsetTop = $msDrop.offset().top;
+        const /** @type {?} */ space = windowHeight - (msDropOffsetTop - pageScroll);
+        if (space < msDropHeight) {
+            if (multipleSelectOptions.container) {
+                // when using a container, we need to offset the drop ourself
+                // and also make sure there's space available on top before doing so
+                const /** @type {?} */ newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
+                if (newOffsetTop > 0) {
+                    $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
+                }
+            }
+            else {
+                // without container, we simply need to add the "top" class to the drop
+                $msDrop.addClass('top');
+            }
+            $msDrop.removeClass('bottom');
+        }
+        else {
+            $msDrop.addClass('bottom');
+            $msDrop.removeClass('top');
         }
     }
     /**
@@ -2310,6 +2347,10 @@ class SelectFilter {
      * @return {?}
      */
     createDomElement(filterTemplate) {
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
+        // provide the name attribute to the DOM element which will be needed to auto-adjust drop position (dropup / dropdown)
+        this.elementName = `filter_${fieldId}`;
+        this.defaultOptions.name = this.elementName;
         const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
         // create the DOM element & add an ID and filter class
@@ -2317,8 +2358,8 @@ class SelectFilter {
         if (typeof this.$filterElm.multipleSelect !== 'function') {
             throw new Error(`multiple-select.js was not found, make sure to modify your "angular-cli.json" file and include "../node_modules/angular-slickgrid/lib/multiple-select/multiple-select.js" and it's css or SASS file`);
         }
-        this.$filterElm.attr('id', `filter-${this.columnDef.id}`);
-        this.$filterElm.data('columnId', this.columnDef.id);
+        this.$filterElm.attr('id', this.elementName);
+        this.$filterElm.data('columnId', fieldId);
         // if there's a search term, we will add the "filled" class for styling purposes
         if (this.isFilled) {
             this.$filterElm.addClass('filled');
@@ -2328,8 +2369,9 @@ class SelectFilter {
             this.$filterElm.appendTo($headerElm);
         }
         // merge options & attach multiSelect
-        const /** @type {?} */ options = Object.assign({}, this.defaultOptions, this.columnFilter.filterOptions);
-        this.$filterElm = this.$filterElm.multipleSelect(options);
+        const /** @type {?} */ elementOptions = Object.assign({}, this.defaultOptions, this.columnFilter.filterOptions);
+        this.filterElmOptions = Object.assign({}, this.defaultOptions, elementOptions);
+        this.$filterElm = this.$filterElm.multipleSelect(this.filterElmOptions);
     }
 }
 
@@ -8079,7 +8121,7 @@ class LongTextEditor {
  */
 const DOMPurify$1 = DOMPurify_; // patch to fix rollup to work
 // height in pixel of the multiple-select DOM element
-const SELECT_ELEMENT_HEIGHT = 26;
+const SELECT_ELEMENT_HEIGHT$1 = 26;
 /**
  * Slickgrid editor class for multiple/single select lists
  */
@@ -8098,14 +8140,18 @@ class SelectEditor {
         this.gridOptions = /** @type {?} */ (this.args.grid.getOptions());
         const /** @type {?} */ gridOptions = this.gridOptions || this.args.column.params || {};
         this._translate = gridOptions.i18n;
+        // provide the name attribute to the DOM element which will be needed to auto-adjust drop position (dropup / dropdown)
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
+        this.elementName = `editor_${fieldId}`;
         const /** @type {?} */ libOptions = {
             container: 'body',
             filter: false,
             maxHeight: 200,
+            name: this.elementName,
             width: 150,
             offsetLeft: 20,
             single: true,
-            onOpen: () => this.autoAdjustDropPosition(this.$editorElm, this.editorElmOptions),
+            onOpen: () => this.autoAdjustDropPosition(this.editorElmOptions),
             textTemplate: ($elm) => {
                 // render HTML code or not, by default it is sanitized and won't be rendered
                 const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
@@ -8404,21 +8450,19 @@ class SelectEditor {
             }
             options += `<option value="${option[this.valueName]}">${optionText}</option>`;
         });
-        return `<select class="ms-filter search-filter" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
+        return `<select id="${this.elementName}" class="ms-filter search-filter" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
     }
     /**
      * Automatically adjust the multiple-select dropup or dropdown by available space
-     * @param {?} multipleSelectDomElement
      * @param {?} multipleSelectOptions
      * @return {?}
      */
-    autoAdjustDropPosition(multipleSelectDomElement, multipleSelectOptions) {
+    autoAdjustDropPosition(multipleSelectOptions) {
         // height in pixel of the multiple-select element
-        const /** @type {?} */ selectElmHeight = SELECT_ELEMENT_HEIGHT;
+        const /** @type {?} */ selectElmHeight = SELECT_ELEMENT_HEIGHT$1;
         const /** @type {?} */ windowHeight = $(window).innerHeight() || 300;
         const /** @type {?} */ pageScroll = $('body').scrollTop() || 0;
-        const /** @type {?} */ $msDropContainer = multipleSelectOptions.container ? $(multipleSelectOptions.container) : multipleSelectDomElement;
-        const /** @type {?} */ $msDrop = $msDropContainer.find('.ms-drop');
+        const /** @type {?} */ $msDrop = $(`[name="${this.elementName}"].ms-drop`);
         const /** @type {?} */ msDropHeight = $msDrop.height() || 0;
         const /** @type {?} */ msDropOffsetTop = $msDrop.offset().top;
         const /** @type {?} */ space = windowHeight - (msDropOffsetTop - pageScroll);
@@ -8910,7 +8954,8 @@ const arrayToCsvFormatter = (row, cell, value, columnDef, dataContext) => {
  * @suppress {checkTypes} checked by tsc
  */
 const boldFormatter = (row, cell, value, columnDef, dataContext) => {
-    if (!isNaN(+value)) {
+    const /** @type {?} */ isNumber = (value === null || value === undefined) ? false : !isNaN(+value);
+    if (!isNumber) {
         return '';
     }
     else if (value >= 0) {
@@ -9083,7 +9128,8 @@ const decimalFormatter = (row, cell, value, columnDef, dataContext) => {
     const /** @type {?} */ params = columnDef.params || {};
     const /** @type {?} */ minDecimalPlaces = params.minDecimalPlaces || params.decimalPlaces || 2;
     const /** @type {?} */ maxDecimalPlaces = params.maxDecimalPlaces || 2;
-    return isNaN(+value) ? value : `${decimalFormatted(value, minDecimalPlaces, maxDecimalPlaces)}`;
+    const /** @type {?} */ isNumber = (value === null || value === undefined) ? false : !isNaN(+value);
+    return !isNumber ? value : `${decimalFormatted(value, minDecimalPlaces, maxDecimalPlaces)}`;
 };
 
 /**
@@ -9097,7 +9143,7 @@ const deleteIconFormatter = (row, cell, value, columnDef, dataContext) => `<i cl
  * @suppress {checkTypes} checked by tsc
  */
 const dollarColoredBoldFormatter = (row, cell, value, columnDef, dataContext) => {
-    const /** @type {?} */ isNumber = !isNaN(+value);
+    const /** @type {?} */ isNumber = (value === null || value === undefined) ? false : !isNaN(+value);
     const /** @type {?} */ params = columnDef && columnDef.params || {};
     const /** @type {?} */ minDecimal = params.minDecimal || 2;
     const /** @type {?} */ maxDecimal = params.minDecimal || 4;
@@ -9118,7 +9164,7 @@ const dollarColoredBoldFormatter = (row, cell, value, columnDef, dataContext) =>
  * @suppress {checkTypes} checked by tsc
  */
 const dollarColoredFormatter = (row, cell, value, columnDef, dataContext) => {
-    const /** @type {?} */ isNumber = !isNaN(+value);
+    const /** @type {?} */ isNumber = (value === null || value === undefined) ? false : !isNaN(+value);
     const /** @type {?} */ params = columnDef && columnDef.params || {};
     const /** @type {?} */ minDecimal = params.minDecimal || 2;
     const /** @type {?} */ maxDecimal = params.minDecimal || 4;
@@ -9139,7 +9185,7 @@ const dollarColoredFormatter = (row, cell, value, columnDef, dataContext) => {
  * @suppress {checkTypes} checked by tsc
  */
 const dollarFormatter = (row, cell, value, columnDef, dataContext) => {
-    const /** @type {?} */ isNumber = !isNaN(+value);
+    const /** @type {?} */ isNumber = (value === null || value === undefined) ? false : !isNaN(+value);
     const /** @type {?} */ params = columnDef && columnDef.params || {};
     const /** @type {?} */ minDecimal = params.minDecimal || 2;
     const /** @type {?} */ maxDecimal = params.minDecimal || 4;

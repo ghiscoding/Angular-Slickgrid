@@ -165,7 +165,8 @@
             this.options.placeholder));
 
         // default position is bottom
-        this.$drop = $(sprintf('<div class="ms-drop %s"%s></div>',
+        this.$drop = $(sprintf('<div name="%s" class="ms-drop %s"%s></div>',
+            $el.attr('name') || options.name || '',
             this.options.position,
             sprintf(' style="width: %s"', this.options.dropWidth)));
 

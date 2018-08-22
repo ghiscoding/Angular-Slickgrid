@@ -8,6 +8,11 @@ export declare class SelectFilter implements Filter {
     protected translate: TranslateService;
     protected collectionService: CollectionService;
     protected isMultipleSelect: boolean;
+    /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
+    elementName: string;
+    /** Filter Multiple-Select options */
+    filterElmOptions: MultipleSelectOption;
+    /** The JQuery DOM element */
     $filterElm: any;
     grid: any;
     searchTerms: SearchTerm[];
@@ -51,6 +56,10 @@ export declare class SelectFilter implements Filter {
      * Set value(s) on the DOM element
      */
     setValues(values: SearchTerm | SearchTerm[]): void;
+    /**
+     * Automatically adjust the multiple-select dropup or dropdown by available space
+     */
+    protected autoAdjustDropPosition(multipleSelectOptions: MultipleSelectOption): void;
     /**
      * user might want to filter certain items of the collection
      * @param inputCollection

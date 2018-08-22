@@ -1342,6 +1342,7 @@ var InputFilter = /** @class */ (function () {
     return InputFilter;
 }());
 var DOMPurify = DOMPurify_;
+var SELECT_ELEMENT_HEIGHT = 26;
 var SelectFilter = /** @class */ (function () {
     function SelectFilter(translate, collectionService, isMultipleSelect) {
         if (isMultipleSelect === void 0) { isMultipleSelect = true; }
@@ -1361,6 +1362,7 @@ var SelectFilter = /** @class */ (function () {
                 var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.filter && _this.columnDef.filter.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
+            onOpen: function () { return _this.autoAdjustDropPosition(_this.filterElmOptions); },
             onClose: function () {
                 var selectedItems = _this.$filterElm.multipleSelect('getSelects');
                 if (Array.isArray(selectedItems) && selectedItems.length > 0) {
@@ -1461,6 +1463,31 @@ var SelectFilter = /** @class */ (function () {
         if (values) {
             values = Array.isArray(values) ? values : [values];
             this.$filterElm.multipleSelect('setSelects', values);
+        }
+    };
+    SelectFilter.prototype.autoAdjustDropPosition = function (multipleSelectOptions) {
+        var selectElmHeight = SELECT_ELEMENT_HEIGHT;
+        var windowHeight = $(window).innerHeight() || 300;
+        var pageScroll = $('body').scrollTop() || 0;
+        var $msDrop = $("[name=\"" + this.elementName + "\"].ms-drop");
+        var msDropHeight = $msDrop.height() || 0;
+        var msDropOffsetTop = $msDrop.offset().top;
+        var space = windowHeight - (msDropOffsetTop - pageScroll);
+        if (space < msDropHeight) {
+            if (multipleSelectOptions.container) {
+                var newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
+                if (newOffsetTop > 0) {
+                    $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
+                }
+            }
+            else {
+                $msDrop.addClass('top');
+            }
+            $msDrop.removeClass('bottom');
+        }
+        else {
+            $msDrop.addClass('bottom');
+            $msDrop.removeClass('top');
         }
     };
     SelectFilter.prototype.filterCollection = function (inputCollection) {
@@ -1569,22 +1596,26 @@ var SelectFilter = /** @class */ (function () {
         var _a;
     };
     SelectFilter.prototype.createDomElement = function (filterTemplate) {
+        var fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
+        this.elementName = "filter_" + fieldId;
+        this.defaultOptions.name = this.elementName;
         var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
         this.$filterElm = $(filterTemplate);
         if (typeof this.$filterElm.multipleSelect !== 'function') {
             throw new Error("multiple-select.js was not found, make sure to modify your \"angular-cli.json\" file and include \"../node_modules/angular-slickgrid/lib/multiple-select/multiple-select.js\" and it's css or SASS file");
         }
-        this.$filterElm.attr('id', "filter-" + this.columnDef.id);
-        this.$filterElm.data('columnId', this.columnDef.id);
+        this.$filterElm.attr('id', this.elementName);
+        this.$filterElm.data('columnId', fieldId);
         if (this.isFilled) {
             this.$filterElm.addClass('filled');
         }
         if (this.$filterElm && typeof this.$filterElm.appendTo === 'function') {
             this.$filterElm.appendTo($headerElm);
         }
-        var options = Object.assign({}, this.defaultOptions, this.columnFilter.filterOptions);
-        this.$filterElm = this.$filterElm.multipleSelect(options);
+        var elementOptions = Object.assign({}, this.defaultOptions, this.columnFilter.filterOptions);
+        this.filterElmOptions = Object.assign({}, this.defaultOptions, elementOptions);
+        this.$filterElm = this.$filterElm.multipleSelect(this.filterElmOptions);
     };
     return SelectFilter;
 }());
@@ -5740,7 +5771,7 @@ var LongTextEditor = /** @class */ (function () {
     return LongTextEditor;
 }());
 var DOMPurify$1 = DOMPurify_;
-var SELECT_ELEMENT_HEIGHT = 26;
+var SELECT_ELEMENT_HEIGHT$1 = 26;
 var SelectEditor = /** @class */ (function () {
     function SelectEditor(args, isMultipleSelect) {
         var _this = this;
@@ -5750,14 +5781,17 @@ var SelectEditor = /** @class */ (function () {
         this.gridOptions = (this.args.grid.getOptions());
         var gridOptions = this.gridOptions || this.args.column.params || {};
         this._translate = gridOptions.i18n;
+        var fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
+        this.elementName = "editor_" + fieldId;
         var libOptions = {
             container: 'body',
             filter: false,
             maxHeight: 200,
+            name: this.elementName,
             width: 150,
             offsetLeft: 20,
             single: true,
-            onOpen: function () { return _this.autoAdjustDropPosition(_this.$editorElm, _this.editorElmOptions); },
+            onOpen: function () { return _this.autoAdjustDropPosition(_this.editorElmOptions); },
             textTemplate: function ($elm) {
                 var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.internalColumnEditor && _this.columnDef.internalColumnEditor.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
@@ -5990,14 +6024,13 @@ var SelectEditor = /** @class */ (function () {
             }
             options += "<option value=\"" + option[_this.valueName] + "\">" + optionText + "</option>";
         });
-        return "<select class=\"ms-filter search-filter\" " + (this.isMultipleSelect ? 'multiple="multiple"' : '') + ">" + options + "</select>";
+        return "<select id=\"" + this.elementName + "\" class=\"ms-filter search-filter\" " + (this.isMultipleSelect ? 'multiple="multiple"' : '') + ">" + options + "</select>";
     };
-    SelectEditor.prototype.autoAdjustDropPosition = function (multipleSelectDomElement, multipleSelectOptions) {
-        var selectElmHeight = SELECT_ELEMENT_HEIGHT;
+    SelectEditor.prototype.autoAdjustDropPosition = function (multipleSelectOptions) {
+        var selectElmHeight = SELECT_ELEMENT_HEIGHT$1;
         var windowHeight = $(window).innerHeight() || 300;
         var pageScroll = $('body').scrollTop() || 0;
-        var $msDropContainer = multipleSelectOptions.container ? $(multipleSelectOptions.container) : multipleSelectDomElement;
-        var $msDrop = $msDropContainer.find('.ms-drop');
+        var $msDrop = $("[name=\"" + this.elementName + "\"].ms-drop");
         var msDropHeight = $msDrop.height() || 0;
         var msDropOffsetTop = $msDrop.offset().top;
         var space = windowHeight - (msDropOffsetTop - pageScroll);
@@ -6319,7 +6352,8 @@ var arrayToCsvFormatter = function (row, cell, value, columnDef, dataContext) {
     return '';
 };
 var boldFormatter = function (row, cell, value, columnDef, dataContext) {
-    if (!isNaN(+value)) {
+    var isNumber = (value === null || value === undefined) ? false : !isNaN(+value);
+    if (!isNumber) {
         return '';
     }
     else if (value >= 0) {
@@ -6416,11 +6450,12 @@ var decimalFormatter = function (row, cell, value, columnDef, dataContext) {
     var params = columnDef.params || {};
     var minDecimalPlaces = params.minDecimalPlaces || params.decimalPlaces || 2;
     var maxDecimalPlaces = params.maxDecimalPlaces || 2;
-    return isNaN(+value) ? value : "" + decimalFormatted(value, minDecimalPlaces, maxDecimalPlaces);
+    var isNumber = (value === null || value === undefined) ? false : !isNaN(+value);
+    return !isNumber ? value : "" + decimalFormatted(value, minDecimalPlaces, maxDecimalPlaces);
 };
 var deleteIconFormatter = function (row, cell, value, columnDef, dataContext) { return "<i class=\"fa fa-trash pointer delete-icon\" aria-hidden=\"true\"></i>"; };
 var dollarColoredBoldFormatter = function (row, cell, value, columnDef, dataContext) {
-    var isNumber = !isNaN(+value);
+    var isNumber = (value === null || value === undefined) ? false : !isNaN(+value);
     var params = columnDef && columnDef.params || {};
     var minDecimal = params.minDecimal || 2;
     var maxDecimal = params.minDecimal || 4;
@@ -6436,7 +6471,7 @@ var dollarColoredBoldFormatter = function (row, cell, value, columnDef, dataCont
     }
 };
 var dollarColoredFormatter = function (row, cell, value, columnDef, dataContext) {
-    var isNumber = !isNaN(+value);
+    var isNumber = (value === null || value === undefined) ? false : !isNaN(+value);
     var params = columnDef && columnDef.params || {};
     var minDecimal = params.minDecimal || 2;
     var maxDecimal = params.minDecimal || 4;
@@ -6452,7 +6487,7 @@ var dollarColoredFormatter = function (row, cell, value, columnDef, dataContext)
     }
 };
 var dollarFormatter = function (row, cell, value, columnDef, dataContext) {
-    var isNumber = !isNaN(+value);
+    var isNumber = (value === null || value === undefined) ? false : !isNaN(+value);
     var params = columnDef && columnDef.params || {};
     var minDecimal = params.minDecimal || 2;
     var maxDecimal = params.minDecimal || 4;

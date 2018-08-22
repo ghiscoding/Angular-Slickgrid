@@ -12,6 +12,8 @@ export declare class SelectEditor implements Editor {
     $editorElm: any;
     /** Editor Multiple-Select options */
     editorElmOptions: MultipleSelectOption;
+    /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
+    elementName: string;
     /** The multiple-select options for a multiple select list */
     defaultOptions: MultipleSelectOption;
     /** The default item values that are set */
@@ -81,7 +83,7 @@ export declare class SelectEditor implements Editor {
     /**
      * Automatically adjust the multiple-select dropup or dropdown by available space
      */
-    protected autoAdjustDropPosition(multipleSelectDomElement: any, multipleSelectOptions: MultipleSelectOption): void;
+    protected autoAdjustDropPosition(multipleSelectOptions: MultipleSelectOption): void;
     /** Create a blank entry that can be added to the collection. It will also reuse the same customStructure if need be */
     protected createBlankEntry(): {
         [x: string]: string;
