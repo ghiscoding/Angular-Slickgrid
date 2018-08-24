@@ -498,11 +498,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   mergeGridOptions(gridOptions): GridOption {
     gridOptions.gridId = this.gridId;
     gridOptions.gridContainerId = `slickGridContainer-${this.gridId}`;
-    if (gridOptions.enableFiltering || this.forRootConfig.enableFiltering) {
-      gridOptions.showHeaderRow = true;
+
+    // use jquery extend to deep merge & copy to avoid immutable properties being changed in GlobalGridOptions after a route change
+    const options = $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
+
+    // also make sure to show the header row if user have enabled filtering
+    if (options.enableFiltering && !options.showHeaderRow) {
+      options.showHeaderRow = true;
     }
-    // use jquery extend to deep merge and avoid immutable properties changed in GlobalGridOptions after route change
-    return $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
+    return options;
   }
 
   /**
