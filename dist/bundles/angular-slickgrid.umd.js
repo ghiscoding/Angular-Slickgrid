@@ -7425,10 +7425,11 @@ var AngularSlickgridComponent = /** @class */ (function () {
     AngularSlickgridComponent.prototype.mergeGridOptions = function (gridOptions) {
         gridOptions.gridId = this.gridId;
         gridOptions.gridContainerId = "slickGridContainer-" + this.gridId;
-        if (gridOptions.enableFiltering || this.forRootConfig.enableFiltering) {
-            gridOptions.showHeaderRow = true;
+        var options = $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
+        if (options.enableFiltering && !options.showHeaderRow) {
+            options.showHeaderRow = true;
         }
-        return $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
+        return options;
     };
     AngularSlickgridComponent.prototype.paginationChanged = function (pagination) {
         if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
