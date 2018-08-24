@@ -7463,7 +7463,8 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 this.gridPaginationOptions = this.mergeGridOptions(this.gridOptions);
             }
             if (this.grid && this.gridOptions.enableAutoResize) {
-                this.resizer.resizeGrid(10, { height: this.gridHeight, width: this.gridWidth });
+                var delay = this.gridOptions.autoResize && this.gridOptions.autoResize.delay;
+                this.resizer.resizeGrid(delay || 10, { height: this.gridHeight, width: this.gridWidth });
             }
         }
     };

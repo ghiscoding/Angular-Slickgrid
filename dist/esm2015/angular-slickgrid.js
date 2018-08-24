@@ -10604,7 +10604,8 @@ class AngularSlickgridComponent {
             }
             // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
             if (this.grid && this.gridOptions.enableAutoResize) {
-                this.resizer.resizeGrid(10, { height: this.gridHeight, width: this.gridWidth });
+                const /** @type {?} */ delay = this.gridOptions.autoResize && this.gridOptions.autoResize.delay;
+                this.resizer.resizeGrid(delay || 10, { height: this.gridHeight, width: this.gridWidth });
             }
         }
     }
