@@ -560,7 +560,6 @@
       var selectAllHeight = this.options.single ? 0 : this.options.domElmSelectAllHeight;
       var msDropMinimalHeight = filterHeight + okButtonHeight + selectAllHeight + 5;
 
-      var msDropHeight = this.$drop.outerHeight() || 0;
       var spaceBottom = this.availableSpaceBottom();
       var spaceTop = this.availableSpaceTop();
 
