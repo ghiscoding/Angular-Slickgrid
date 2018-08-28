@@ -273,8 +273,8 @@
         /* like TH  */
         background: $table-background;
         font-family: $font-family;
-        color: $text-color;
-        font-weight: bold;
+        color: $header-text-color;
+        font-weight: $header-font-weight;
         a, a:visited {
           color: $text-color;
         }
