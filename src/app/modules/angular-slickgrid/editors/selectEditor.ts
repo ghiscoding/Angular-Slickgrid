@@ -75,12 +75,11 @@ export class SelectEditor implements Editor {
     this.elementName = `editor_${fieldId}`;
 
     const libOptions: MultipleSelectOption = {
-      autoDropHeight: true,
-      autoDropPosition: true,
-      autoDropWidthByTextSize: true,
+      autoAdjustDropHeight: true,
+      autoAdjustDropPosition: true,
+      autoAdjustDropWidthByTextSize: true,
       container: 'body',
       filter: false,
-      maxHeight: 200,
       name: this.elementName,
       single: true,
       textTemplate: ($elm) => {

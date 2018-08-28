@@ -9,16 +9,16 @@ export interface MultipleSelectOption {
   allSelected?: boolean | string;
 
   /** Auto-adjust the Drop menu height to fit with available space */
-  autoDropHeight?: boolean;
+  autoAdjustDropHeight?: boolean;
 
    /** Auto-adjust the Drop position on the side with the most available space (dropup / dropdown) */
-  autoDropPosition?: boolean;
+  autoAdjustDropPosition?: boolean;
 
    /** Drop menu to automatically set same width as the input select element */
   autoDropWidth?: boolean;
 
    /** Drop menu to automatically set it's width as the maximum available width of text */
-  autoDropWidthByTextSize?: boolean;
+  autoAdjustDropWidthByTextSize?: boolean;
 
   /** HTML container to use for the drop menu, e.g. 'body' */
   container?: string;
@@ -56,10 +56,10 @@ export interface MultipleSelectOption {
   /** Defaults to 250, define the maximum height property of the dropdown list. */
   maxHeight?: number;
 
-  /** Defaults to 500, define the maximum width of the drop when using the "autoDropWidthByTextSize: true" flag. */
+  /** Defaults to 500, define the maximum width of the drop when using the "autoAdjustDropWidthByTextSize: true" flag. */
   maxWidth?: number;
 
-  /** Define the minimum width of the drop when using the "autoDropWidthByTextSize: true" flag. */
+  /** Define the minimum width of the drop when using the "autoAdjustDropWidthByTextSize: true" flag. */
   minWidth?: number;
 
   /** countSelected will be shown only if more than X items where selected.By default this option is set to 3. */
