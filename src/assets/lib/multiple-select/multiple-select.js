@@ -503,14 +503,22 @@
       }
 
       var newPosition = this.options.position;
-      if (this.options.autoAdjustDropPosition) {
-        newPosition = this.adjustDropPosition(this.options.autoAdjustDropHeight);
-      }
       if (this.options.autoAdjustDropHeight) {
-        if (this.adjustDropHeight(newPosition)) {
-          // we adjusted the height, we might need to reposition the drop
-          this.adjustDropPosition(this.options.autoAdjustDropHeight);
+        // if autoAdjustDropPosition is enable, we 1st need to see what position the drop will be located
+        // without necessary toggling it's position just yet, we just want to know the future position for calculation
+        if (this.options.autoAdjustDropPosition) {
+          var spaceBottom = this.availableSpaceBottom();
+          var spaceTop = this.availableSpaceTop();
+          var msDropHeight = this.$drop.outerHeight() || 0;
+          newPosition = (spaceBottom < msDropHeight && spaceTop > spaceBottom) ? 'top' : 'bottom';
         }
+
+        // now that we know which drop position will be used, let's adjust the drop height
+        this.adjustDropHeight(newPosition);
+      }
+
+      if (this.options.autoAdjustDropPosition) {
+        this.adjustDropPosition(this.options.autoAdjustDropHeight);
       }
 
       this.options.onOpen();
@@ -558,15 +566,12 @@
 
       var newHeight = this.options.maxHeight;
       if (isDropPositionBottom) {
-        newHeight = spaceBottom - msDropMinimalHeight;
+        newHeight = spaceBottom - msDropMinimalHeight - this.options.adjustHeightPadding;
       } else {
-        newHeight = spaceTop - msDropMinimalHeight;
+        newHeight = spaceTop - msDropMinimalHeight - this.options.adjustHeightPadding;
       }
 
       if (!this.options.maxHeight || (this.options.maxHeight && newHeight < this.options.maxHeight)) {
-        if ((isDropPositionBottom && spaceBottom > msDropHeight) || (!isDropPositionBottom && spaceTop > msDropHeight)) {
-          newHeight = newHeight - this.options.adjustHeightPadding;
-        }
         this.$drop.find('ul').css('max-height', (newHeight + 'px'));
         return true; // return true, we adjusted the height
       }
@@ -590,6 +595,9 @@
           // when using a container, we need to offset the drop ourself
           // and also make sure there's space available on top before doing so
           var newOffsetTop = selectOffsetTop - msDropHeight;
+          if (newOffsetTop < 0) {
+            newOffsetTop = 0;
+          }
 
           if (newOffsetTop > 0 || forceToggle) {
             position = 'top';
@@ -647,13 +655,15 @@
 
     availableSpaceBottom: function () {
       var windowHeight = $(window).innerHeight() || this.options.maxHeight;
-      var pageScroll = $('body').scrollTop() || 0;
+      var pageScroll = $(window).scrollTop() || 0;
       var msDropOffsetTop = this.$drop.offset().top;
       return windowHeight - (msDropOffsetTop - pageScroll);
     },
 
     availableSpaceTop: function () {
-      return this.$parent.offset().top;
+	    var pageScroll = $(window).scrollTop() || 0;
+      var msDropOffsetTop = this.$parent.offset().top;
+      return msDropOffsetTop - pageScroll;
     },
 
     update: function (isInit) {
