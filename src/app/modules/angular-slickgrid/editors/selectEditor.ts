@@ -16,9 +16,6 @@ import { Subscription } from 'rxjs/Subscription';
 import * as DOMPurify_ from 'dompurify';
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
 
-// height in pixel of the multiple-select DOM element
-const SELECT_ELEMENT_HEIGHT = 26;
-
 // using external non-typed js libraries
 declare var $: any;
 
@@ -78,14 +75,14 @@ export class SelectEditor implements Editor {
     this.elementName = `editor_${fieldId}`;
 
     const libOptions: MultipleSelectOption = {
+      autoDropHeight: true,
+      autoDropPosition: true,
+      autoDropWidthByTextSize: true,
       container: 'body',
       filter: false,
       maxHeight: 200,
       name: this.elementName,
-      width: 150,
-      offsetLeft: 20,
       single: true,
-      onOpen: () => this.autoAdjustDropPosition(this.editorElmOptions),
       textTemplate: ($elm) => {
         // render HTML code or not, by default it is sanitized and won't be rendered
         const isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
@@ -380,39 +377,6 @@ export class SelectEditor implements Editor {
     });
 
     return `<select id="${this.elementName}" class="ms-filter search-filter" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
-  }
-
-  /**
-   * Automatically adjust the multiple-select dropup or dropdown by available space
-   */
-  protected autoAdjustDropPosition(multipleSelectOptions: MultipleSelectOption) {
-    // height in pixel of the multiple-select element
-    const selectElmHeight = SELECT_ELEMENT_HEIGHT;
-
-    const windowHeight = $(window).innerHeight() || 300;
-    const pageScroll = $('body').scrollTop() || 0;
-    const $msDrop = $(`[name="${this.elementName}"].ms-drop`);
-    const msDropHeight = $msDrop.height() || 0;
-    const msDropOffsetTop = $msDrop.offset().top;
-    const space = windowHeight - (msDropOffsetTop - pageScroll);
-
-    if (space < msDropHeight) {
-      if (multipleSelectOptions.container) {
-        // when using a container, we need to offset the drop ourself
-        // and also make sure there's space available on top before doing so
-        const newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
-        if (newOffsetTop > 0) {
-          $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
-        }
-      } else {
-        // without container, we simply need to add the "top" class to the drop
-        $msDrop.addClass('top');
-      }
-      $msDrop.removeClass('bottom');
-    } else {
-      $msDrop.addClass('bottom');
-      $msDrop.removeClass('top');
-    }
   }
 
   /** Create a blank entry that can be added to the collection. It will also reuse the same customStructure if need be */

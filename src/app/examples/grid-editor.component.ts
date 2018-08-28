@@ -283,9 +283,6 @@ export class GridEditorComponent implements OnInit {
             separatorBetweenTextLabels: ' '
           },
           model: Filters.multipleSelect,
-          filterOptions: {
-            autoDropWidth: true
-          },
           operator: OperatorType.inContains,
         }
       }
