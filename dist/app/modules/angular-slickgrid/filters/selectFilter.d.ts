@@ -57,10 +57,6 @@ export declare class SelectFilter implements Filter {
      */
     setValues(values: SearchTerm | SearchTerm[]): void;
     /**
-     * Automatically adjust the multiple-select dropup or dropdown by available space
-     */
-    protected autoAdjustDropPosition(multipleSelectOptions: MultipleSelectOption): void;
-    /**
      * user might want to filter certain items of the collection
      * @param inputCollection
      * @return outputCollection filtered and/or sorted collection

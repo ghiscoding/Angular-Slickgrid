@@ -1996,8 +1996,6 @@ class InputFilter {
  * @suppress {checkTypes} checked by tsc
  */
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
-// height in pixel of the multiple-select DOM element
-const SELECT_ELEMENT_HEIGHT = 26;
 class SelectFilter {
     /**
      * Initialize the Filter
@@ -2014,17 +2012,19 @@ class SelectFilter {
         this.subscriptions = [];
         // default options used by this Filter, user can overwrite any of these by passing "otions"
         const /** @type {?} */ options = {
+            autoAdjustDropHeight: true,
+            autoAdjustDropPosition: true,
+            autoAdjustDropWidthByTextSize: true,
             container: 'body',
             filter: false,
             // input search term on top of the select option list
-            maxHeight: 200,
+            maxHeight: 275,
             single: true,
             textTemplate: ($elm) => {
                 // render HTML code or not, by default it is sanitized and won't be rendered
                 const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
-            onOpen: () => this.autoAdjustDropPosition(this.filterElmOptions),
             onClose: () => {
                 // we will subscribe to the onClose event for triggering our callback
                 // also add/remove "filled" class for styling purposes
@@ -2151,40 +2151,6 @@ class SelectFilter {
         if (values) {
             values = Array.isArray(values) ? values : [values];
             this.$filterElm.multipleSelect('setSelects', values);
-        }
-    }
-    /**
-     * Automatically adjust the multiple-select dropup or dropdown by available space
-     * @param {?} multipleSelectOptions
-     * @return {?}
-     */
-    autoAdjustDropPosition(multipleSelectOptions) {
-        // height in pixel of the multiple-select element
-        const /** @type {?} */ selectElmHeight = SELECT_ELEMENT_HEIGHT;
-        const /** @type {?} */ windowHeight = $(window).innerHeight() || 300;
-        const /** @type {?} */ pageScroll = $('body').scrollTop() || 0;
-        const /** @type {?} */ $msDrop = $(`[name="${this.elementName}"].ms-drop`);
-        const /** @type {?} */ msDropHeight = $msDrop.height() || 0;
-        const /** @type {?} */ msDropOffsetTop = $msDrop.offset().top;
-        const /** @type {?} */ space = windowHeight - (msDropOffsetTop - pageScroll);
-        if (space < msDropHeight) {
-            if (multipleSelectOptions.container) {
-                // when using a container, we need to offset the drop ourself
-                // and also make sure there's space available on top before doing so
-                const /** @type {?} */ newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
-                if (newOffsetTop > 0) {
-                    $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
-                }
-            }
-            else {
-                // without container, we simply need to add the "top" class to the drop
-                $msDrop.addClass('top');
-            }
-            $msDrop.removeClass('bottom');
-        }
-        else {
-            $msDrop.addClass('bottom');
-            $msDrop.removeClass('top');
         }
     }
     /**
@@ -2758,6 +2724,7 @@ const GlobalGridOptions = {
     defaultFilter: Filters.input,
     editable: false,
     enableAutoResize: true,
+    enableAutoSizeColumns: true,
     enableCellNavigation: false,
     enableColumnPicker: true,
     enableColumnReorder: true,
@@ -4261,7 +4228,9 @@ class ControlAndPluginService {
                         // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree)
                         const /** @type {?} */ gridUid = grid.getUID();
                         if (this.areVisibleColumnDifferent && gridUid && $(`.${gridUid}`).length > 0) {
-                            grid.autosizeColumns();
+                            if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
+                                grid.autosizeColumns();
+                            }
                             this.areVisibleColumnDifferent = false;
                         }
                     }
@@ -6752,7 +6721,9 @@ class GridService {
                 // set the grid columns to it's original column definitions
                 this._grid.setColumns(originalColumns);
                 this._dataView.refresh();
-                this._grid.autosizeColumns();
+                if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
+                    this._grid.autosizeColumns();
+                }
                 this.gridStateService.resetColumns(columnDefinitions);
             }
         }
@@ -7114,7 +7085,9 @@ class ResizerService {
                         this._grid.resizeCanvas();
                     }
                     // also call the grid auto-size columns so that it takes available when going bigger
-                    this._grid.autosizeColumns();
+                    if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
+                        this._grid.autosizeColumns();
+                    }
                     // keep last resized dimensions & resolve them to the Promise
                     this._lastDimensions = {
                         height: newHeight,
@@ -8120,8 +8093,6 @@ class LongTextEditor {
  * @suppress {checkTypes} checked by tsc
  */
 const DOMPurify$1 = DOMPurify_; // patch to fix rollup to work
-// height in pixel of the multiple-select DOM element
-const SELECT_ELEMENT_HEIGHT$1 = 26;
 /**
  * Slickgrid editor class for multiple/single select lists
  */
@@ -8144,14 +8115,14 @@ class SelectEditor {
         const /** @type {?} */ fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
         this.elementName = `editor_${fieldId}`;
         const /** @type {?} */ libOptions = {
+            autoAdjustDropHeight: true,
+            autoAdjustDropPosition: true,
+            autoAdjustDropWidthByTextSize: true,
             container: 'body',
             filter: false,
-            maxHeight: 200,
+            maxHeight: 275,
             name: this.elementName,
-            width: 150,
-            offsetLeft: 20,
             single: true,
-            onOpen: () => this.autoAdjustDropPosition(this.editorElmOptions),
             textTemplate: ($elm) => {
                 // render HTML code or not, by default it is sanitized and won't be rendered
                 const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
@@ -8451,40 +8422,6 @@ class SelectEditor {
             options += `<option value="${option[this.valueName]}">${optionText}</option>`;
         });
         return `<select id="${this.elementName}" class="ms-filter search-filter" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
-    }
-    /**
-     * Automatically adjust the multiple-select dropup or dropdown by available space
-     * @param {?} multipleSelectOptions
-     * @return {?}
-     */
-    autoAdjustDropPosition(multipleSelectOptions) {
-        // height in pixel of the multiple-select element
-        const /** @type {?} */ selectElmHeight = SELECT_ELEMENT_HEIGHT$1;
-        const /** @type {?} */ windowHeight = $(window).innerHeight() || 300;
-        const /** @type {?} */ pageScroll = $('body').scrollTop() || 0;
-        const /** @type {?} */ $msDrop = $(`[name="${this.elementName}"].ms-drop`);
-        const /** @type {?} */ msDropHeight = $msDrop.height() || 0;
-        const /** @type {?} */ msDropOffsetTop = $msDrop.offset().top;
-        const /** @type {?} */ space = windowHeight - (msDropOffsetTop - pageScroll);
-        if (space < msDropHeight) {
-            if (multipleSelectOptions.container) {
-                // when using a container, we need to offset the drop ourself
-                // and also make sure there's space available on top before doing so
-                const /** @type {?} */ newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
-                if (newOffsetTop > 0) {
-                    $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
-                }
-            }
-            else {
-                // without container, we simply need to add the "top" class to the drop
-                $msDrop.addClass('top');
-            }
-            $msDrop.removeClass('bottom');
-        }
-        else {
-            $msDrop.addClass('bottom');
-            $msDrop.removeClass('top');
-        }
     }
     /**
      * Create a blank entry that can be added to the collection. It will also reuse the same customStructure if need be
@@ -10513,14 +10450,14 @@ class AngularSlickgridComponent {
      */
     attachResizeHook(grid, options) {
         // expand/autofit columns on first page load
-        if (grid && options.autoFitColumnsOnFirstLoad) {
+        if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
             grid.autosizeColumns();
         }
         // auto-resize grid on browser resize
         this.resizer.init(grid);
         if (options.enableAutoResize) {
             this.resizer.attachAutoResizeDataGrid({ height: this.gridHeight, width: this.gridWidth });
-            if (grid && options.autoFitColumnsOnFirstLoad) {
+            if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
                 grid.autosizeColumns();
             }
         }
@@ -10623,7 +10560,9 @@ class AngularSlickgridComponent {
         else {
             this.controlAndPluginService.renderColumnHeaders(newColumnDefinitions);
         }
-        this.grid.autosizeColumns();
+        if (this.gridOptions && this.gridOptions.enableAutoSizeColumns) {
+            this.grid.autosizeColumns();
+        }
     }
     /**
      * Toggle the filter row displayed on first row

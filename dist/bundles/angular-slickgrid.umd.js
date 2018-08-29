@@ -1409,7 +1409,6 @@ var InputFilter = /** @class */ (function () {
     return InputFilter;
 }());
 var DOMPurify = DOMPurify_;
-var SELECT_ELEMENT_HEIGHT = 26;
 var SelectFilter = /** @class */ (function () {
     function SelectFilter(translate, collectionService, isMultipleSelect) {
         if (isMultipleSelect === void 0) { isMultipleSelect = true; }
@@ -1421,15 +1420,17 @@ var SelectFilter = /** @class */ (function () {
         this.enableTranslateLabel = false;
         this.subscriptions = [];
         var options = {
+            autoAdjustDropHeight: true,
+            autoAdjustDropPosition: true,
+            autoAdjustDropWidthByTextSize: true,
             container: 'body',
             filter: false,
-            maxHeight: 200,
+            maxHeight: 275,
             single: true,
             textTemplate: function ($elm) {
                 var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.filter && _this.columnDef.filter.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
-            onOpen: function () { return _this.autoAdjustDropPosition(_this.filterElmOptions); },
             onClose: function () {
                 var selectedItems = _this.$filterElm.multipleSelect('getSelects');
                 if (Array.isArray(selectedItems) && selectedItems.length > 0) {
@@ -1530,31 +1531,6 @@ var SelectFilter = /** @class */ (function () {
         if (values) {
             values = Array.isArray(values) ? values : [values];
             this.$filterElm.multipleSelect('setSelects', values);
-        }
-    };
-    SelectFilter.prototype.autoAdjustDropPosition = function (multipleSelectOptions) {
-        var selectElmHeight = SELECT_ELEMENT_HEIGHT;
-        var windowHeight = $(window).innerHeight() || 300;
-        var pageScroll = $('body').scrollTop() || 0;
-        var $msDrop = $("[name=\"" + this.elementName + "\"].ms-drop");
-        var msDropHeight = $msDrop.height() || 0;
-        var msDropOffsetTop = $msDrop.offset().top;
-        var space = windowHeight - (msDropOffsetTop - pageScroll);
-        if (space < msDropHeight) {
-            if (multipleSelectOptions.container) {
-                var newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
-                if (newOffsetTop > 0) {
-                    $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
-                }
-            }
-            else {
-                $msDrop.addClass('top');
-            }
-            $msDrop.removeClass('bottom');
-        }
-        else {
-            $msDrop.addClass('bottom');
-            $msDrop.removeClass('top');
         }
     };
     SelectFilter.prototype.filterCollection = function (inputCollection) {
@@ -1941,6 +1917,7 @@ var GlobalGridOptions = {
     defaultFilter: Filters.input,
     editable: false,
     enableAutoResize: true,
+    enableAutoSizeColumns: true,
     enableCellNavigation: false,
     enableColumnPicker: true,
     enableColumnReorder: true,
@@ -3060,7 +3037,9 @@ var ControlAndPluginService = /** @class */ (function () {
                     if (grid && typeof grid.autosizeColumns === 'function') {
                         var gridUid = grid.getUID();
                         if (_this.areVisibleColumnDifferent && gridUid && $("." + gridUid).length > 0) {
-                            grid.autosizeColumns();
+                            if (_this._gridOptions && _this._gridOptions.enableAutoSizeColumns) {
+                                grid.autosizeColumns();
+                            }
                             _this.areVisibleColumnDifferent = false;
                         }
                     }
@@ -4918,7 +4897,9 @@ var GridService = /** @class */ (function () {
             if (Array.isArray(originalColumns) && originalColumns.length > 0) {
                 this._grid.setColumns(originalColumns);
                 this._dataView.refresh();
-                this._grid.autosizeColumns();
+                if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
+                    this._grid.autosizeColumns();
+                }
                 this.gridStateService.resetColumns(columnDefinitions);
             }
         }
@@ -5170,7 +5151,9 @@ var ResizerService = /** @class */ (function () {
                     if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && _this._grid) {
                         _this._grid.resizeCanvas();
                     }
-                    _this._grid.autosizeColumns();
+                    if (_this._gridOptions && _this._gridOptions.enableAutoSizeColumns) {
+                        _this._grid.autosizeColumns();
+                    }
                     _this._lastDimensions = {
                         height: newHeight,
                         width: newWidth
@@ -5838,7 +5821,6 @@ var LongTextEditor = /** @class */ (function () {
     return LongTextEditor;
 }());
 var DOMPurify$1 = DOMPurify_;
-var SELECT_ELEMENT_HEIGHT$1 = 26;
 var SelectEditor = /** @class */ (function () {
     function SelectEditor(args, isMultipleSelect) {
         var _this = this;
@@ -5851,14 +5833,14 @@ var SelectEditor = /** @class */ (function () {
         var fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
         this.elementName = "editor_" + fieldId;
         var libOptions = {
+            autoAdjustDropHeight: true,
+            autoAdjustDropPosition: true,
+            autoAdjustDropWidthByTextSize: true,
             container: 'body',
             filter: false,
-            maxHeight: 200,
+            maxHeight: 275,
             name: this.elementName,
-            width: 150,
-            offsetLeft: 20,
             single: true,
-            onOpen: function () { return _this.autoAdjustDropPosition(_this.editorElmOptions); },
             textTemplate: function ($elm) {
                 var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.internalColumnEditor && _this.columnDef.internalColumnEditor.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
@@ -6092,31 +6074,6 @@ var SelectEditor = /** @class */ (function () {
             options += "<option value=\"" + option[_this.valueName] + "\">" + optionText + "</option>";
         });
         return "<select id=\"" + this.elementName + "\" class=\"ms-filter search-filter\" " + (this.isMultipleSelect ? 'multiple="multiple"' : '') + ">" + options + "</select>";
-    };
-    SelectEditor.prototype.autoAdjustDropPosition = function (multipleSelectOptions) {
-        var selectElmHeight = SELECT_ELEMENT_HEIGHT$1;
-        var windowHeight = $(window).innerHeight() || 300;
-        var pageScroll = $('body').scrollTop() || 0;
-        var $msDrop = $("[name=\"" + this.elementName + "\"].ms-drop");
-        var msDropHeight = $msDrop.height() || 0;
-        var msDropOffsetTop = $msDrop.offset().top;
-        var space = windowHeight - (msDropOffsetTop - pageScroll);
-        if (space < msDropHeight) {
-            if (multipleSelectOptions.container) {
-                var newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
-                if (newOffsetTop > 0) {
-                    $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
-                }
-            }
-            else {
-                $msDrop.addClass('top');
-            }
-            $msDrop.removeClass('bottom');
-        }
-        else {
-            $msDrop.addClass('bottom');
-            $msDrop.removeClass('top');
-        }
     };
     SelectEditor.prototype.createBlankEntry = function () {
         var blankEntry = (_a = {}, _a[this.labelName] = '', _a[this.valueName] = '', _a);
@@ -7404,13 +7361,13 @@ var AngularSlickgridComponent = /** @class */ (function () {
         }
     };
     AngularSlickgridComponent.prototype.attachResizeHook = function (grid, options) {
-        if (grid && options.autoFitColumnsOnFirstLoad) {
+        if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
             grid.autosizeColumns();
         }
         this.resizer.init(grid);
         if (options.enableAutoResize) {
             this.resizer.attachAutoResizeDataGrid({ height: this.gridHeight, width: this.gridWidth });
-            if (grid && options.autoFitColumnsOnFirstLoad) {
+            if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
                 grid.autosizeColumns();
             }
         }
@@ -7475,7 +7432,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         else {
             this.controlAndPluginService.renderColumnHeaders(newColumnDefinitions);
         }
-        this.grid.autosizeColumns();
+        if (this.gridOptions && this.gridOptions.enableAutoSizeColumns) {
+            this.grid.autosizeColumns();
+        }
     };
     AngularSlickgridComponent.prototype.showHeaderRow = function (isShowing) {
         this.grid.setHeaderRowVisibility(isShowing);

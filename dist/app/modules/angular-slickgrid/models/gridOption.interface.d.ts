@@ -76,8 +76,10 @@ export interface GridOption {
     enableAsyncPostRender?: boolean;
     /** Defaults to false, which leads to cleanup after the post render is finished executing */
     enableAsyncPostRenderCleanup?: boolean;
-    /** Defaults to true, which will automatically resize the grid whenever the browser size changes  */
+    /** Defaults to true, which will automatically resize the grid whenever the browser size changes */
     enableAutoResize?: boolean;
+    /** Defaults to true, which will automatically resize the column headers whenever the grid size changes */
+    enableAutoSizeColumns?: boolean;
     /** Defaults to false, which leads to showing tooltip over cell & header values that are not shown completely (... ellipsis) */
     enableAutoTooltip?: boolean;
     /** Defaults to false, which will let user click on cell and navigate with arrow keys. */

@@ -1,12 +1,20 @@
 export interface MultipleSelectOption {
     /** Add a title. By default this option is set to false. */
     addTitle?: boolean;
+    /** defaults to 20, when using "autoAdjustDropHeight" we might want to add a bottom (or top) padding instead of taking the entire available space */
+    adjustHeightPadding?: number;
     /** Use animation, options are ('none', 'fade', 'slide'). By default this option is set to 'none'  */
     animate?: 'none' | 'fade' | 'slide';
     /** The text displays when the select all selected.By default this option is set to "All selected". */
     allSelected?: boolean | string;
-    /** Drop menu to automatically get same width as the input select element */
+    /** Auto-adjust the Drop menu height to fit with available space */
+    autoAdjustDropHeight?: boolean;
+    /** Auto-adjust the Drop position on the side with the most available space (dropup / dropdown) */
+    autoAdjustDropPosition?: boolean;
+    /** Drop menu to automatically set same width as the input select element */
     autoDropWidth?: boolean;
+    /** Drop menu to automatically set it's width as the maximum available width of text */
+    autoAdjustDropWidthByTextSize?: boolean;
     /** HTML container to use for the drop menu, e.g. 'body' */
     container?: string;
     /** `#` is replaced with the count of selected items, `%` is replaces with total items.By default this option is set to # of % selected. */
@@ -29,8 +37,12 @@ export interface MultipleSelectOption {
     isOpen?: boolean;
     /** Keep the select dropdown always open.By default this option is set to false. */
     keepOpen?: boolean;
-    /** Define the maximum height property of the dropdown list.By default this option is set to 250. */
+    /** Defaults to 250, define the maximum height property of the dropdown list. */
     maxHeight?: number;
+    /** Defaults to 500, define the maximum width of the drop when using the "autoAdjustDropWidthByTextSize: true" flag. */
+    maxWidth?: number;
+    /** Define the minimum width of the drop when using the "autoAdjustDropWidthByTextSize: true" flag. */
+    minWidth?: number;
     /** countSelected will be shown only if more than X items where selected.By default this option is set to 3. */
     minimumCountSelected?: number;
     /** Whether or not Multiple Select show multiple items in a row.By default this option is set to false. */

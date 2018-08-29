@@ -80,10 +80,6 @@ export declare class SelectEditor implements Editor {
     protected sortCollection(inputCollection: any): any;
     protected renderDomElement(collection: any[]): void;
     protected buildTemplateHtmlString(collection: any[]): string;
-    /**
-     * Automatically adjust the multiple-select dropup or dropdown by available space
-     */
-    protected autoAdjustDropPosition(multipleSelectOptions: MultipleSelectOption): void;
     /** Create a blank entry that can be added to the collection. It will also reuse the same customStructure if need be */
     protected createBlankEntry(): {
         [x: string]: string;
