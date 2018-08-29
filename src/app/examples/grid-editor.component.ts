@@ -192,6 +192,9 @@ export class GridEditorComponent implements OnInit {
             property: 'value',
             value: 0,
             operator: OperatorType.notEqual
+          },
+          elementOptions: {
+            maxHeight: 400
           }
         },
         minWidth: 100,
@@ -283,9 +286,6 @@ export class GridEditorComponent implements OnInit {
             separatorBetweenTextLabels: ' '
           },
           model: Filters.multipleSelect,
-          filterOptions: {
-            autoDropWidth: true
-          },
           operator: OperatorType.inContains,
         }
       }

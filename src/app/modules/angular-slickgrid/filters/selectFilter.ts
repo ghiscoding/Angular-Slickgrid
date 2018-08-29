@@ -25,9 +25,6 @@ const DOMPurify = DOMPurify_; // patch to fix rollup to work
 // using external non-typed js libraries
 declare var $: any;
 
-// height in pixel of the multiple-select DOM element
-const SELECT_ELEMENT_HEIGHT = 26;
-
 export class SelectFilter implements Filter {
   /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
   elementName: string;
@@ -57,9 +54,12 @@ export class SelectFilter implements Filter {
   constructor(protected translate: TranslateService, protected collectionService: CollectionService, protected isMultipleSelect = true) {
     // default options used by this Filter, user can overwrite any of these by passing "otions"
     const options: MultipleSelectOption = {
+      autoAdjustDropHeight: true,
+      autoAdjustDropPosition: true,
+      autoAdjustDropWidthByTextSize: true,
       container: 'body',
       filter: false,  // input search term on top of the select option list
-      maxHeight: 200,
+      maxHeight: 275,
       single: true,
 
       textTemplate: ($elm) => {
@@ -67,7 +67,6 @@ export class SelectFilter implements Filter {
         const isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
         return isRenderHtmlEnabled ? $elm.text() : $elm.html();
       },
-      onOpen: () => this.autoAdjustDropPosition(this.filterElmOptions),
       onClose: () => {
         // we will subscribe to the onClose event for triggering our callback
         // also add/remove "filled" class for styling purposes
@@ -193,39 +192,6 @@ export class SelectFilter implements Filter {
   //
   // protected functions
   // ------------------
-
-  /**
-   * Automatically adjust the multiple-select dropup or dropdown by available space
-   */
-  protected autoAdjustDropPosition(multipleSelectOptions: MultipleSelectOption) {
-    // height in pixel of the multiple-select element
-    const selectElmHeight = SELECT_ELEMENT_HEIGHT;
-
-    const windowHeight = $(window).innerHeight() || 300;
-    const pageScroll = $('body').scrollTop() || 0;
-    const $msDrop = $(`[name="${this.elementName}"].ms-drop`);
-    const msDropHeight = $msDrop.height() || 0;
-    const msDropOffsetTop = $msDrop.offset().top;
-    const space = windowHeight - (msDropOffsetTop - pageScroll);
-
-    if (space < msDropHeight) {
-      if (multipleSelectOptions.container) {
-        // when using a container, we need to offset the drop ourself
-        // and also make sure there's space available on top before doing so
-        const newOffsetTop = (msDropOffsetTop - msDropHeight - selectElmHeight);
-        if (newOffsetTop > 0) {
-          $msDrop.offset({ top: newOffsetTop < 0 ? 0 : newOffsetTop });
-        }
-      } else {
-        // without container, we simply need to add the "top" class to the drop
-        $msDrop.addClass('top');
-      }
-      $msDrop.removeClass('bottom');
-    } else {
-      $msDrop.addClass('bottom');
-      $msDrop.removeClass('top');
-    }
-  }
 
   /**
    * user might want to filter certain items of the collection
