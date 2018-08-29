@@ -626,7 +626,7 @@
       var scrollbarWidth = hasScrollbar ? this.getScrollbarWidth() : 0;
       var maxDropWidth = 0;
 
-      $('li span', this.$drop).each((index, elm) => {
+      $('li span', this.$drop).each(function(index, elm) {
         var spanWidth = $(elm).width();
         if (spanWidth > maxDropWidth) {
           maxDropWidth = spanWidth;

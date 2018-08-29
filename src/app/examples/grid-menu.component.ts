@@ -52,10 +52,7 @@ export class GridMenuComponent implements OnInit {
         filterable: true,
         filter: {
           collection: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }],
-          model: Filters.singleSelect,
-          filterOptions: {
-            autoDropWidth: true
-          },
+          model: Filters.singleSelect
         }
       }
     ];
