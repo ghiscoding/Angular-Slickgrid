@@ -624,7 +624,9 @@ export class ControlAndPluginService {
       switch (args.command) {
         case 'hide':
           this.hideColumn(args.column);
-          this.autoResizeColumns();
+          if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
+            this._grid.autosizeColumns();
+          }
           break;
         case 'sort-asc':
         case 'sort-desc':
