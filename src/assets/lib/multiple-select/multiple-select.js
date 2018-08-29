@@ -17,7 +17,7 @@
  * - "autoAdjustDropPosition" (defaults to False) when set will automatically calculate the area with the most available space and use best possible choise for the drop to show (up or down)
  * - "autoDropWidth" (defaults to False) when set will automatically adjust the dropdown width with the same size as the select element width
  * - "autoAdjustDropWidthByTextSize" (defaults to false) when set will automatically adjust the drop (up or down) width by the text size (it will use largest text width)
- * - "adjustHeightPadding" (defaults to 20) when using "autoAdjustDropHeight" we might want to add a bottom (or top) padding instead of taking the entire available space
+ * - "adjustHeightPadding" (defaults to 10) when using "autoAdjustDropHeight" we might want to add a bottom (or top) padding instead of taking the entire available space
  * - "maxWidth" (defaults to 500) when using "autoAdjustDropWidthByTextSize" we want to make sure not to go too wide, so we can use "maxWidth" to cover that
  * - "minWidth" (defaults to undefined) when using "autoAdjustDropWidthByTextSize" and we want to make sure to have a minimum width
  * - "domElmOkButtonHeight" defaults to 26 (as per CSS), that is the "OK" button element height in pixels inside the drop when using multiple-selection
