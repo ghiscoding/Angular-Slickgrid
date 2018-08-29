@@ -2,6 +2,9 @@ export interface MultipleSelectOption {
   /** Add a title. By default this option is set to false. */
   addTitle?: boolean;
 
+  /** defaults to 20, when using "autoAdjustDropHeight" we might want to add a bottom (or top) padding instead of taking the entire available space */
+  adjustHeightPadding?: number;
+
   /** Use animation, options are ('none', 'fade', 'slide'). By default this option is set to 'none'  */
   animate?: 'none' | 'fade' | 'slide';
 
@@ -11,13 +14,13 @@ export interface MultipleSelectOption {
   /** Auto-adjust the Drop menu height to fit with available space */
   autoAdjustDropHeight?: boolean;
 
-   /** Auto-adjust the Drop position on the side with the most available space (dropup / dropdown) */
+  /** Auto-adjust the Drop position on the side with the most available space (dropup / dropdown) */
   autoAdjustDropPosition?: boolean;
 
-   /** Drop menu to automatically set same width as the input select element */
+  /** Drop menu to automatically set same width as the input select element */
   autoDropWidth?: boolean;
 
-   /** Drop menu to automatically set it's width as the maximum available width of text */
+  /** Drop menu to automatically set it's width as the maximum available width of text */
   autoAdjustDropWidthByTextSize?: boolean;
 
   /** HTML container to use for the drop menu, e.g. 'body' */

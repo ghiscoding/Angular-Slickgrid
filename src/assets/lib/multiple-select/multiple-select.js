@@ -620,6 +620,7 @@
       }
 
       // calculate the "Select All" element width, this text is configurable which is why we recalculate every time
+      var selectParentWidth = this.$parent.width();
       var selectAllElmWidth = $('span', this.$drop).width() + this.options.domElmSelectSidePadding;
       var hasScrollbar = $('ul', this.$drop).hasScrollBar();
       var scrollbarWidth = hasScrollbar ? this.getScrollbarWidth() : 0;
@@ -648,8 +649,13 @@
         maxDropWidth = this.options.minWidth;
       }
 
+      // if select parent DOM element is bigger then new calculated width, we'll use the same width for the drop as the parent
+      if (maxDropWidth < selectParentWidth) {
+        maxDropWidth = selectParentWidth;
+      }
+
       // finally re-adjust the drop to the new calculated width
-      this.$drop.css('max-width', maxDropWidth);
+      this.$drop.css({ 'width': maxDropWidth, 'max-width': maxDropWidth });
     },
 
     availableSpaceBottom: function () {
@@ -660,7 +666,7 @@
     },
 
     availableSpaceTop: function () {
-	    var pageScroll = $(window).scrollTop() || 0;
+      var pageScroll = $(window).scrollTop() || 0;
       var msDropOffsetTop = this.$parent.offset().top;
       return msDropOffsetTop - pageScroll;
     },
@@ -888,7 +894,7 @@
     }
   };
 
-  $.fn.hasScrollBar = function() {
+  $.fn.hasScrollBar = function () {
     return this.get(0) && this.get(0).scrollHeight && this.get(0).scrollHeight > this.height();
   }
 
@@ -938,7 +944,7 @@
     domElmSelectSidePadding: 26,
     domElmOkButtonHeight: 26,
     domElmSelectAllHeight: 39,
-    adjustHeightPadding: 20,
+    adjustHeightPadding: 10,
     name: '',
     isOpen: false,
     placeholder: '',
