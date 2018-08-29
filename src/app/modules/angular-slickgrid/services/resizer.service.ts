@@ -152,7 +152,9 @@ export class ResizerService {
           }
 
           // also call the grid auto-size columns so that it takes available when going bigger
-          this._grid.autosizeColumns();
+          if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
+            this._grid.autosizeColumns();
+          }
 
           // keep last resized dimensions & resolve them to the Promise
           this._lastDimensions = {

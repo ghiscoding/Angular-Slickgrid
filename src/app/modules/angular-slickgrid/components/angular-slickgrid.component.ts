@@ -472,7 +472,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   attachResizeHook(grid: any, options: GridOption) {
     // expand/autofit columns on first page load
-    if (grid && options.autoFitColumnsOnFirstLoad) {
+    if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
       grid.autosizeColumns();
     }
 
@@ -480,7 +480,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.resizer.init(grid);
     if (options.enableAutoResize) {
       this.resizer.attachAutoResizeDataGrid({ height: this.gridHeight, width: this.gridWidth });
-      if (grid && options.autoFitColumnsOnFirstLoad) {
+      if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
         grid.autosizeColumns();
       }
     }
@@ -578,7 +578,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     } else {
       this.controlAndPluginService.renderColumnHeaders(newColumnDefinitions);
     }
-    this.grid.autosizeColumns();
+
+    if (this.gridOptions && this.gridOptions.enableAutoSizeColumns) {
+      this.grid.autosizeColumns();
+    }
   }
 
   /** Toggle the filter row displayed on first row

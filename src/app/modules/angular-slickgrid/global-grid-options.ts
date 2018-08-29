@@ -28,6 +28,7 @@ export const GlobalGridOptions: GridOption = {
   defaultFilter: Filters.input,
   editable: false,
   enableAutoResize: true,
+  enableAutoSizeColumns: true,
   enableCellNavigation: false,
   enableColumnPicker: true,
   enableColumnReorder: true,
