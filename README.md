@@ -1,4 +1,8 @@
 # Angular-Slickgrid
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
+[![npm version](https://badge.fury.io/js/angular-slickgrid.svg)](https://badge.fury.io/js/angular-slickgrid)
+
 One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. I have used a few datagrids and slickgrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row).
 
 ### SlickGrid Source
