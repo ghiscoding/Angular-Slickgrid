@@ -107,6 +107,29 @@ export class ResizerService {
     $(window).off(`resize.grid.${this._gridUid}`);
   }
 
+  /**
+   * Adjust Chrome width to avoid showing an extra horizontal scroll,
+   * we can patch it by adding 3px to grid but only after resizing column headers
+   */
+  adjustChromeHorizontalScroll(gridOptions: GridOption) {
+    const gridElm = $(`#${gridOptions.gridId}`);
+
+    if (this.hasHorizontalScrollBar(gridOptions)) {
+      // adding 3px in grid width in Chrome is enough to remove scroll
+      gridElm.width(gridElm.width() + 3);
+    }
+  }
+
+  hasHorizontalScrollBar(gridOptions: GridOption) {
+    const scrollWidth = $(`#${gridOptions.gridId} .grid-canvas`).prop('scrollWidth');
+    const canvasWidth = $(`#${gridOptions.gridId} .grid-canvas`).width();
+    if (canvasWidth > scrollWidth) {
+      return true;
+    }
+    return false;
+  }
+
+  /** Get the last resize dimension used by the service */
   getLastResizeDimensions(): GridDimension {
     return this._lastDimensions;
   }
@@ -154,6 +177,9 @@ export class ResizerService {
           // also call the grid auto-size columns so that it takes available when going bigger
           if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
             this._grid.autosizeColumns();
+
+            // patch Chrome horizontal scroll
+            this.adjustChromeHorizontalScroll(this._gridOptions);
           }
 
           // keep last resized dimensions & resolve them to the Promise

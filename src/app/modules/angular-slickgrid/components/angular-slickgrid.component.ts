@@ -474,6 +474,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // expand/autofit columns on first page load
     if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
       grid.autosizeColumns();
+
+      // patch Chrome horizontal scroll
+      this.resizer.adjustChromeHorizontalScroll(this.gridOptions);
     }
 
     // auto-resize grid on browser resize
