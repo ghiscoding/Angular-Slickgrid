@@ -12,7 +12,6 @@ import { Subject } from 'rxjs/Subject';
 import { TextEncoder } from 'text-encoding-utf-8';
 
 // using external non-typed js libraries
-declare let Slick: any;
 declare let $: any;
 
 export interface ExportColumnHeader {
@@ -126,7 +125,7 @@ export class ExportService {
    * Get all the grid row data and return that as an output string
    */
   getAllGridRowData(columns: Column[], lineCarriageReturn: string): string {
-    let outputDataString = '';
+    const outputDataStrings = [];
     const lineCount = this._dataView.getLength();
 
     // loop through all the grid rows of data
@@ -137,19 +136,18 @@ export class ExportService {
         // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
         if (itemObj.id != null) {
           // get regular row item data
-          outputDataString += this.readRegularRowData(columns, rowNumber, itemObj);
+          outputDataStrings.push(this.readRegularRowData(columns, rowNumber, itemObj));
         } else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
           // get the group row
-          outputDataString += this.readGroupedTitleRow(itemObj) + this._exportOptions.delimiter;
+          outputDataStrings.push(this.readGroupedTitleRow(itemObj));
         } else if (itemObj.__groupTotals) {
           // else if the row is a Group By and we have agreggators, then a property of '__groupTotals' would exist under that object
-          outputDataString += this.readGroupedTotalRow(columns, itemObj) + this._exportOptions.delimiter;
+          outputDataStrings.push(this.readGroupedTotalRow(columns, itemObj));
         }
-        outputDataString += lineCarriageReturn;
       }
     }
 
-    return outputDataString;
+    return outputDataStrings.join(this._lineCarriageReturn);
   }
 
   /**
@@ -186,7 +184,7 @@ export class ExportService {
    */
   readRegularRowData(columns: Column[], row: number, itemObj: any) {
     let idx = 0;
-    let rowOutputString = '';
+    const rowOutputStrings = [];
     const delimiter = this._exportOptions.delimiter;
     const format = this._exportOptions.format;
     const exportQuoteWrapper = this._exportQuoteWrapper || '';
@@ -202,7 +200,7 @@ export class ExportService {
 
       // if we are grouping and are on 1st column index, we need to skip this column since it will be used later by the grouping text:: Group by [columnX]
       if (this._hasGroupedItems && idx === 0) {
-        rowOutputString += `""` + delimiter;
+        rowOutputStrings.push(`""`);
       }
 
       // does the user want to evaluate current column Formatter?
@@ -235,11 +233,11 @@ export class ExportService {
       // to cancel that effect we can had = in front, ex: ="1E06"
       const keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
 
-      rowOutputString += keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
+      rowOutputStrings.push(keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper);
       idx++;
     }
 
-    return rowOutputString;
+    return rowOutputStrings.join(delimiter);
   }
 
   /**
@@ -249,7 +247,6 @@ export class ExportService {
   readGroupedTitleRow(itemObj: any) {
     let groupName = sanitizeHtmlToText(itemObj.title);
     const exportQuoteWrapper = this._exportQuoteWrapper || '';
-    const delimiter = this._exportOptions.delimiter;
     const format = this._exportOptions.format;
 
     groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
@@ -258,12 +255,7 @@ export class ExportService {
       // when CSV we also need to escape double quotes twice, so " becomes ""
       groupName = groupName.toString().replace(/"/gi, `""`);
     }
-
-    // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
-    // to cancel that effect we can had = in front, ex: ="1E06"
-    // const keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
-
-    return /*keepAsStringWrapper +*/ exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper + delimiter;
+    return exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper;
   }
 
   /**
@@ -272,12 +264,11 @@ export class ExportService {
    * @param itemObj
    */
   readGroupedTotalRow(columns: Column[], itemObj: any) {
-    let exportExponentialWrapper = '';
     const delimiter = this._exportOptions.delimiter;
     const format = this._exportOptions.format;
     const groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
     const exportQuoteWrapper = this._exportQuoteWrapper || '';
-    let output = `${exportQuoteWrapper}${groupingAggregatorRowText}${exportQuoteWrapper}${delimiter}`;
+    const outputStrings = [`${exportQuoteWrapper}${groupingAggregatorRowText}${exportQuoteWrapper}`];
 
     columns.forEach((columnDef) => {
       let itemData = '';
@@ -294,15 +285,12 @@ export class ExportService {
 
       if (format === FileType.csv) {
         // when CSV we also need to escape double quotes twice, so a double quote " becomes 2x double quotes ""
-        // and if we have a text of (number)E(number),
-        // we don't want excel to transform it into exponential (1.0E06) to cancel that effect we can had = in front, ex: ="1E06"
         itemData = itemData.toString().replace(/"/gi, `""`);
-        exportExponentialWrapper = (itemData.match(/^\s*\d+E\d+\s*$/i)) ? '=' : '';
       }
-      output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
+      outputStrings.push(exportQuoteWrapper + itemData + exportQuoteWrapper);
     });
 
-    return output;
+    return outputStrings.join(delimiter);
   }
 
   /**
