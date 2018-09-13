@@ -65,11 +65,11 @@ export class LongTextEditor implements Editor {
           <button class="btn btn-default btn-xs">${cancelText}</button>
       </div>`).appendTo(this.$wrapper);
 
-    this.$wrapper.find('button:first').on('click', (event: Event) => this.save());
-    this.$wrapper.find('button:last').on('click', (event: Event) => this.cancel());
-    this.$input.on('keydown', this.handleKeyDown);
+    this.$wrapper.find('button:first').on('click', () => this.save());
+    this.$wrapper.find('button:last').on('click', () => this.cancel());
+    this.$input.on('keydown', this.handleKeyDown.bind(this));
 
-    this.position(this.args.position);
+    this.position(this.args && this.args.position);
     this.$input.focus().select();
   }
 
@@ -81,20 +81,28 @@ export class LongTextEditor implements Editor {
       this.cancel();
     } else if (e.which === KeyCode.TAB && e.shiftKey) {
       e.preventDefault();
-      this.args.grid.navigatePrev();
+      if (this.args && this.args.grid) {
+        this.args.grid.navigatePrev();
+      }
     } else if (e.which === KeyCode.TAB) {
       e.preventDefault();
-      this.args.grid.navigateNext();
+      if (this.args && this.args.grid) {
+        this.args.grid.navigateNext();
+      }
     }
   }
 
   save() {
-    this.args.commitChanges();
+    if (this.args && this.args.commitChanges) {
+      this.args.commitChanges();
+    }
   }
 
   cancel() {
     this.$input.val(this.defaultValue);
-    this.args.cancelChanges();
+    if (this.args && this.args.cancelChanges) {
+      this.args.cancelChanges();
+    }
   }
 
   hide() {

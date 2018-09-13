@@ -88,6 +88,7 @@ export class SelectEditor implements Editor {
         const isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
         return isRenderHtmlEnabled ? $elm.text() : $elm.html();
       },
+      onBlur: () => this.destroy()
     };
 
     if (isMultipleSelect) {
@@ -213,7 +214,8 @@ export class SelectEditor implements Editor {
   }
 
   destroy() {
-    if (this.$editorElm) {
+    if (this.$editorElm && this.$editorElm.multipleSelect) {
+      this.$editorElm.multipleSelect('close');
       this.$editorElm.remove();
     }
     this._subscriptions = unsubscribeAllObservables(this._subscriptions);
@@ -257,7 +259,9 @@ export class SelectEditor implements Editor {
   }
 
   focus() {
-    this.$editorElm.focus();
+    if (this.$editorElm && this.$editorElm.multipleSelect) {
+      this.$editorElm.multipleSelect('focus');
+    }
   }
 
   isValueChanged(): boolean {
