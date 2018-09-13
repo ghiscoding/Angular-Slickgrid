@@ -65,13 +65,13 @@ export class GridService {
   }
 
   /** Chain the item Metadata with our implementation of Metadata at given row index */
-  getItemRowMetadata(previousItemMetadata: any) {
+  getItemRowMetadataToHighlight(previousItemMetadata: any) {
     return (rowNumber: number) => {
       const item = this._dataView.getItem(rowNumber);
       let meta = {
         cssClasses: ''
       };
-      if (typeof previousItemMetadata === 'object' && !$.isEmptyObject(previousItemMetadata)) {
+      if (typeof previousItemMetadata === 'function') {
         meta = previousItemMetadata(rowNumber);
       }
 
@@ -101,7 +101,7 @@ export class GridService {
     }
 
     this._grid.setSelectedRows([rowNumber]);
-    this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
+    this._dataView.getItemMetadata = this.getItemRowMetadataToHighlight(this._dataView.getItemMetadata);
 
     const item = this._dataView.getItem(rowNumber);
     if (item && item.id) {
