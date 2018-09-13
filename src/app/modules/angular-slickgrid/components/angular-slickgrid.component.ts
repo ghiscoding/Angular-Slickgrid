@@ -475,8 +475,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
       grid.autosizeColumns();
 
-      // patch Chrome horizontal scroll
-      this.resizer.adjustChromeHorizontalScroll(this.gridOptions);
+      // compensate anytime SlickGrid measureScrollbar is incorrect (only seems to happen in Chrome 1/5 computers)
+      this.resizer.compensateHorizontalScroll(this.grid, this.gridOptions);
     }
 
     // auto-resize grid on browser resize

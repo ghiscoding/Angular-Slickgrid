@@ -1,4 +1,5 @@
 import { GridOption } from './../models/index';
+import { getScrollBarWidth } from './utilities';
 import { Subject } from 'rxjs/Subject';
 
 // using external non-typed js libraries
@@ -108,28 +109,29 @@ export class ResizerService {
   }
 
   /**
-   * Adjust Chrome width to avoid showing an extra horizontal scroll,
-   * we can patch it by adding 3px to grid but only after resizing column headers
+   * For some reason this only seems to happen in Chrome and is sometime miscalculated by SlickGrid measureSrollbar() method
+   * When that happens we will compensate and resize the Grid Viewport to avoid seeing horizontal scrollbar
+   * Most of the time it happens, it's a tiny offset calculation of usually 3px (enough to show scrollbar)
+   * GitHub issue reference: https://github.com/6pac/SlickGrid/issues/275
    */
-  adjustChromeHorizontalScroll(gridOptions: GridOption) {
+  compensateHorizontalScroll(grid: any, gridOptions: GridOption) {
     const gridElm = $(`#${gridOptions.gridId}`);
 
-    if (this.hasHorizontalScrollBar(gridOptions)) {
-      // adding 3px in grid width in Chrome is enough to remove scroll
-      gridElm.width(gridElm.width() + 3);
+    const scrollbarDimensions = grid && grid.getScrollbarDimensions();
+    const slickGridScrollbarWidth = scrollbarDimensions && scrollbarDimensions.width;
+    const calculatedScrollbarWidth = getScrollBarWidth();
+
+     // if scrollbar width is different from SlickGrid calculation to our custom calculation
+    // then resize the grid with the missing pixels to remove scroll (usually only 3px)
+    if (slickGridScrollbarWidth < calculatedScrollbarWidth) {
+      gridElm.width(gridElm.width() + (calculatedScrollbarWidth - slickGridScrollbarWidth));
     }
   }
 
-  hasHorizontalScrollBar(gridOptions: GridOption) {
-    const scrollWidth = $(`#${gridOptions.gridId} .grid-canvas`).prop('scrollWidth');
-    const canvasWidth = $(`#${gridOptions.gridId} .grid-canvas`).width();
-    if (canvasWidth > scrollWidth) {
-      return true;
-    }
-    return false;
-  }
-
-  /** Get the last resize dimension used by the service */
+  /**
+   * Return the last resize dimensions used by the service
+   * @return last dimensions
+   */
   getLastResizeDimensions(): GridDimension {
     return this._lastDimensions;
   }
@@ -178,8 +180,8 @@ export class ResizerService {
           if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
             this._grid.autosizeColumns();
 
-            // patch Chrome horizontal scroll
-            this.adjustChromeHorizontalScroll(this._gridOptions);
+            // compensate anytime SlickGrid measureScrollbar is incorrect
+            this.compensateHorizontalScroll(this._grid, this._gridOptions);
           }
 
           // keep last resized dimensions & resolve them to the Promise
