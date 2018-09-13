@@ -26,6 +26,17 @@ export declare class ResizerService {
      * Dispose function when element is destroyed
      */
     dispose(): void;
+    /**
+     * For some reason this only seems to happen in Chrome and is sometime miscalculated by SlickGrid measureSrollbar() method
+     * When that happens we will compensate and resize the Grid Viewport to avoid seeing horizontal scrollbar
+     * Most of the time it happens, it's a tiny offset calculation of usually 3px (enough to show scrollbar)
+     * GitHub issue reference: https://github.com/6pac/SlickGrid/issues/275
+     */
+    compensateHorizontalScroll(grid: any, gridOptions: GridOption): void;
+    /**
+     * Return the last resize dimensions used by the service
+     * @return last dimensions
+     */
     getLastResizeDimensions(): GridDimension;
     /** Resize the datagrid to fit the browser height & width */
     resizeGrid(delay?: number, newSizes?: GridDimension): Promise<GridDimension>;

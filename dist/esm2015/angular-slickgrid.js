@@ -425,6 +425,16 @@ function getDescendantProperty(obj, path) {
     return path.split('.').reduce((acc, part) => acc && acc[part], obj);
 }
 /**
+ * Get the browser's scrollbar width, this is different to each browser
+ * @return {?}
+ */
+function getScrollBarWidth() {
+    const /** @type {?} */ $outer = $('<div>').css({ visibility: 'hidden', width: 100, overflow: 'scroll' }).appendTo('body');
+    const /** @type {?} */ widthWithScroll = $('<div>').css({ width: '100%' }).appendTo($outer).outerWidth();
+    $outer.remove();
+    return Math.ceil(100 - widthWithScroll);
+}
+/**
  * From a Date FieldType, return it's equivalent moment.js format
  * refer to moment.js for the format standard used: https://momentjs.com/docs/#/parsing/string-format/
  * @param {?} fieldType
@@ -2025,6 +2035,7 @@ class SelectFilter {
                 const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
+            onBlur: () => this.destroy(),
             onClose: () => {
                 // we will subscribe to the onClose event for triggering our callback
                 // also add/remove "filled" class for styling purposes
@@ -2138,8 +2149,14 @@ class SelectFilter {
      */
     destroy() {
         if (this.$filterElm) {
+            // close the drop
+            if (this.$filterElm.multipleSelect) {
+                this.$filterElm.multipleSelect('close');
+            }
+            // remove event watcher
             this.$filterElm.off().remove();
         }
+        // also dispose of all Subscriptions
         this.subscriptions = unsubscribeAllObservables(this.subscriptions);
     }
     /**
@@ -6580,13 +6597,13 @@ class GridService {
      * @param {?} previousItemMetadata
      * @return {?}
      */
-    getItemRowMetadata(previousItemMetadata) {
+    getItemRowMetadataToHighlight(previousItemMetadata) {
         return (rowNumber) => {
             const /** @type {?} */ item = this._dataView.getItem(rowNumber);
             let /** @type {?} */ meta = {
                 cssClasses: ''
             };
-            if (typeof previousItemMetadata === 'object' && !$.isEmptyObject(previousItemMetadata)) {
+            if (typeof previousItemMetadata === 'function') {
                 meta = previousItemMetadata(rowNumber);
             }
             if (item && item._dirty) {
@@ -6613,7 +6630,7 @@ class GridService {
             this._grid.setSelectionModel(rowSelectionPlugin);
         }
         this._grid.setSelectedRows([rowNumber]);
-        this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
+        this._dataView.getItemMetadata = this.getItemRowMetadataToHighlight(this._dataView.getItemMetadata);
         const /** @type {?} */ item = this._dataView.getItem(rowNumber);
         if (item && item.id) {
             item.rowClass = 'highlight';
@@ -7043,7 +7060,28 @@ class ResizerService {
         $(window).off(`resize.grid.${this._gridUid}`);
     }
     /**
+     * For some reason this only seems to happen in Chrome and is sometime miscalculated by SlickGrid measureSrollbar() method
+     * When that happens we will compensate and resize the Grid Viewport to avoid seeing horizontal scrollbar
+     * Most of the time it happens, it's a tiny offset calculation of usually 3px (enough to show scrollbar)
+     * GitHub issue reference: https://github.com/6pac/SlickGrid/issues/275
+     * @param {?} grid
+     * @param {?} gridOptions
      * @return {?}
+     */
+    compensateHorizontalScroll(grid, gridOptions) {
+        const /** @type {?} */ gridElm = $(`#${gridOptions.gridId}`);
+        const /** @type {?} */ scrollbarDimensions = grid && grid.getScrollbarDimensions();
+        const /** @type {?} */ slickGridScrollbarWidth = scrollbarDimensions && scrollbarDimensions.width;
+        const /** @type {?} */ calculatedScrollbarWidth = getScrollBarWidth();
+        // if scrollbar width is different from SlickGrid calculation to our custom calculation
+        // then resize the grid with the missing pixels to remove scroll (usually only 3px)
+        if (slickGridScrollbarWidth < calculatedScrollbarWidth) {
+            gridElm.width(gridElm.width() + (calculatedScrollbarWidth - slickGridScrollbarWidth));
+        }
+    }
+    /**
+     * Return the last resize dimensions used by the service
+     * @return {?} last dimensions
      */
     getLastResizeDimensions() {
         return this._lastDimensions;
@@ -7089,6 +7127,8 @@ class ResizerService {
                     // also call the grid auto-size columns so that it takes available when going bigger
                     if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
                         this._grid.autosizeColumns();
+                        // compensate anytime SlickGrid measureScrollbar is incorrect
+                        this.compensateHorizontalScroll(this._grid, this._gridOptions);
                     }
                     // keep last resized dimensions & resolve them to the Promise
                     this._lastDimensions = {
@@ -7964,10 +8004,10 @@ class LongTextEditor {
           <button class="btn btn-primary btn-xs">${saveText}</button>
           <button class="btn btn-default btn-xs">${cancelText}</button>
       </div>`).appendTo(this.$wrapper);
-        this.$wrapper.find('button:first').on('click', (event) => this.save());
-        this.$wrapper.find('button:last').on('click', (event) => this.cancel());
-        this.$input.on('keydown', this.handleKeyDown);
-        this.position(this.args.position);
+        this.$wrapper.find('button:first').on('click', () => this.save());
+        this.$wrapper.find('button:last').on('click', () => this.cancel());
+        this.$input.on('keydown', this.handleKeyDown.bind(this));
+        this.position(this.args && this.args.position);
         this.$input.focus().select();
     }
     /**
@@ -7984,25 +8024,33 @@ class LongTextEditor {
         }
         else if (e.which === KeyCode.TAB && e.shiftKey) {
             e.preventDefault();
-            this.args.grid.navigatePrev();
+            if (this.args && this.args.grid) {
+                this.args.grid.navigatePrev();
+            }
         }
         else if (e.which === KeyCode.TAB) {
             e.preventDefault();
-            this.args.grid.navigateNext();
+            if (this.args && this.args.grid) {
+                this.args.grid.navigateNext();
+            }
         }
     }
     /**
      * @return {?}
      */
     save() {
-        this.args.commitChanges();
+        if (this.args && this.args.commitChanges) {
+            this.args.commitChanges();
+        }
     }
     /**
      * @return {?}
      */
     cancel() {
         this.$input.val(this.defaultValue);
-        this.args.cancelChanges();
+        if (this.args && this.args.cancelChanges) {
+            this.args.cancelChanges();
+        }
     }
     /**
      * @return {?}
@@ -8130,6 +8178,7 @@ class SelectEditor {
                 const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
+            onBlur: () => this.destroy()
         };
         if (isMultipleSelect) {
             libOptions.single = false;
@@ -8260,7 +8309,8 @@ class SelectEditor {
      * @return {?}
      */
     destroy() {
-        if (this.$editorElm) {
+        if (this.$editorElm && this.$editorElm.multipleSelect) {
+            this.$editorElm.multipleSelect('close');
             this.$editorElm.remove();
         }
         this._subscriptions = unsubscribeAllObservables(this._subscriptions);
@@ -8314,7 +8364,9 @@ class SelectEditor {
      * @return {?}
      */
     focus() {
-        this.$editorElm.focus();
+        if (this.$editorElm && this.$editorElm.multipleSelect) {
+            this.$editorElm.multipleSelect('focus');
+        }
     }
     /**
      * @return {?}
@@ -10454,6 +10506,8 @@ class AngularSlickgridComponent {
         // expand/autofit columns on first page load
         if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
             grid.autosizeColumns();
+            // compensate anytime SlickGrid measureScrollbar is incorrect (only seems to happen in Chrome 1/5 computers)
+            this.resizer.compensateHorizontalScroll(this.grid, this.gridOptions);
         }
         // auto-resize grid on browser resize
         this.resizer.init(grid);
@@ -10751,5 +10805,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, getDescendantProperty, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, unsubscribeAllObservables, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SelectEditor as ɵk, SingleSelectEditor as ɵl, SliderEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵz, CompoundInputFilter as ɵba, CompoundSliderFilter as ɵbb, InputFilter as ɵbc, MultipleSelectFilter as ɵbe, NativeSelectFilter as ɵbh, SelectFilter as ɵbf, SingleSelectFilter as ɵbg, SliderFilter as ɵbd, arrayObjectToCsvFormatter as ɵbi, arrayToCsvFormatter as ɵbj, boldFormatter as ɵbk, checkboxFormatter as ɵbl, checkmarkFormatter as ɵbm, collectionEditorFormatter as ɵbp, collectionFormatter as ɵbo, complexObjectFormatter as ɵbn, dateIsoFormatter as ɵbq, dateTimeIsoAmPmFormatter as ɵbt, dateTimeIsoFormatter as ɵbr, dateTimeShortIsoFormatter as ɵbs, dateTimeShortUsFormatter as ɵbw, dateTimeUsAmPmFormatter as ɵbx, dateTimeUsFormatter as ɵbv, dateUsFormatter as ɵbu, decimalFormatter as ɵbz, deleteIconFormatter as ɵby, dollarColoredBoldFormatter as ɵcc, dollarColoredFormatter as ɵcb, dollarFormatter as ɵca, editIconFormatter as ɵcd, hyperlinkFormatter as ɵce, hyperlinkUriPrefixFormatter as ɵcf, infoIconFormatter as ɵcg, lowercaseFormatter as ɵch, maskFormatter as ɵci, multipleFormatter as ɵcj, percentCompleteBarFormatter as ɵcm, percentCompleteFormatter as ɵcl, percentFormatter as ɵck, percentSymbolFormatter as ɵcn, progressBarFormatter as ɵco, translateBooleanFormatter as ɵcq, translateFormatter as ɵcp, uppercaseFormatter as ɵcr, yesNoFormatter as ɵcs, avgTotalsDollarFormatter as ɵcu, avgTotalsFormatter as ɵct, avgTotalsPercentageFormatter as ɵcv, maxTotalsFormatter as ɵcw, minTotalsFormatter as ɵcx, sumTotalsBoldFormatter as ɵcz, sumTotalsColoredFormatter as ɵda, sumTotalsDollarBoldFormatter as ɵdc, sumTotalsDollarColoredBoldFormatter as ɵde, sumTotalsDollarColoredFormatter as ɵdd, sumTotalsDollarFormatter as ɵdb, sumTotalsFormatter as ɵcy, dateIsoSorter as ɵdg, dateSorter as ɵdf, dateUsShortSorter as ɵdi, dateUsSorter as ɵdh, numericSorter as ɵdj, stringSorter as ɵdk };
+export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, getDescendantProperty, getScrollBarWidth, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, unsubscribeAllObservables, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SelectEditor as ɵk, SingleSelectEditor as ɵl, SliderEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵz, CompoundInputFilter as ɵba, CompoundSliderFilter as ɵbb, InputFilter as ɵbc, MultipleSelectFilter as ɵbe, NativeSelectFilter as ɵbh, SelectFilter as ɵbf, SingleSelectFilter as ɵbg, SliderFilter as ɵbd, arrayObjectToCsvFormatter as ɵbi, arrayToCsvFormatter as ɵbj, boldFormatter as ɵbk, checkboxFormatter as ɵbl, checkmarkFormatter as ɵbm, collectionEditorFormatter as ɵbp, collectionFormatter as ɵbo, complexObjectFormatter as ɵbn, dateIsoFormatter as ɵbq, dateTimeIsoAmPmFormatter as ɵbt, dateTimeIsoFormatter as ɵbr, dateTimeShortIsoFormatter as ɵbs, dateTimeShortUsFormatter as ɵbw, dateTimeUsAmPmFormatter as ɵbx, dateTimeUsFormatter as ɵbv, dateUsFormatter as ɵbu, decimalFormatter as ɵbz, deleteIconFormatter as ɵby, dollarColoredBoldFormatter as ɵcc, dollarColoredFormatter as ɵcb, dollarFormatter as ɵca, editIconFormatter as ɵcd, hyperlinkFormatter as ɵce, hyperlinkUriPrefixFormatter as ɵcf, infoIconFormatter as ɵcg, lowercaseFormatter as ɵch, maskFormatter as ɵci, multipleFormatter as ɵcj, percentCompleteBarFormatter as ɵcm, percentCompleteFormatter as ɵcl, percentFormatter as ɵck, percentSymbolFormatter as ɵcn, progressBarFormatter as ɵco, translateBooleanFormatter as ɵcq, translateFormatter as ɵcp, uppercaseFormatter as ɵcr, yesNoFormatter as ɵcs, avgTotalsDollarFormatter as ɵcu, avgTotalsFormatter as ɵct, avgTotalsPercentageFormatter as ɵcv, maxTotalsFormatter as ɵcw, minTotalsFormatter as ɵcx, sumTotalsBoldFormatter as ɵcz, sumTotalsColoredFormatter as ɵda, sumTotalsDollarBoldFormatter as ɵdc, sumTotalsDollarColoredBoldFormatter as ɵde, sumTotalsDollarColoredFormatter as ɵdd, sumTotalsDollarFormatter as ɵdb, sumTotalsFormatter as ɵcy, dateIsoSorter as ɵdg, dateSorter as ɵdf, dateUsShortSorter as ɵdi, dateUsSorter as ɵdh, numericSorter as ɵdj, stringSorter as ɵdk };
 //# sourceMappingURL=angular-slickgrid.js.map

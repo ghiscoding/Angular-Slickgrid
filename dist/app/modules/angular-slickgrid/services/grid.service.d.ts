@@ -30,7 +30,7 @@ export declare class GridService {
     /** Get data item by it's row index number */
     getDataItemByRowNumber(rowNumber: number): any;
     /** Chain the item Metadata with our implementation of Metadata at given row index */
-    getItemRowMetadata(previousItemMetadata: any): (rowNumber: number) => {
+    getItemRowMetadataToHighlight(previousItemMetadata: any): (rowNumber: number) => {
         cssClasses: string;
     };
     /**

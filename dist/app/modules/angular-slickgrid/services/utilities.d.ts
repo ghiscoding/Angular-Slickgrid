@@ -55,6 +55,8 @@ export declare function findOrDefault(array: any[], logic: (item: any) => boolea
 export declare function decimalFormatted(input: number | string, minDecimal?: number, maxDecimal?: number): string | number;
 /** From a dot (.) notation find and return a property within an object given a path */
 export declare function getDescendantProperty(obj: any, path: string): any;
+/** Get the browser's scrollbar width, this is different to each browser */
+export declare function getScrollBarWidth(): number;
 /**
  * From a Date FieldType, return it's equivalent moment.js format
  * refer to moment.js for the format standard used: https://momentjs.com/docs/#/parsing/string-format/

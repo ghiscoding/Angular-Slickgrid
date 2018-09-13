@@ -261,6 +261,12 @@ function decimalFormatted(input, minDecimal, maxDecimal) {
 function getDescendantProperty(obj, path) {
     return path.split('.').reduce(function (acc, part) { return acc && acc[part]; }, obj);
 }
+function getScrollBarWidth() {
+    var $outer = $('<div>').css({ visibility: 'hidden', width: 100, overflow: 'scroll' }).appendTo('body');
+    var widthWithScroll = $('<div>').css({ width: '100%' }).appendTo($outer).outerWidth();
+    $outer.remove();
+    return Math.ceil(100 - widthWithScroll);
+}
 function mapMomentDateFormatWithFieldType(fieldType) {
     var map;
     switch (fieldType) {
@@ -1364,6 +1370,7 @@ var SelectFilter = /** @class */ (function () {
                 var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.filter && _this.columnDef.filter.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
+            onBlur: function () { return _this.destroy(); },
             onClose: function () {
                 var selectedItems = _this.$filterElm.multipleSelect('getSelects');
                 if (Array.isArray(selectedItems) && selectedItems.length > 0) {
@@ -1456,6 +1463,9 @@ var SelectFilter = /** @class */ (function () {
     };
     SelectFilter.prototype.destroy = function () {
         if (this.$filterElm) {
+            if (this.$filterElm.multipleSelect) {
+                this.$filterElm.multipleSelect('close');
+            }
             this.$filterElm.off().remove();
         }
         this.subscriptions = unsubscribeAllObservables(this.subscriptions);
@@ -4737,14 +4747,14 @@ var GridService = /** @class */ (function () {
         }
         return this._grid.getDataItem(rowNumber);
     };
-    GridService.prototype.getItemRowMetadata = function (previousItemMetadata) {
+    GridService.prototype.getItemRowMetadataToHighlight = function (previousItemMetadata) {
         var _this = this;
         return function (rowNumber) {
             var item = _this._dataView.getItem(rowNumber);
             var meta = {
                 cssClasses: ''
             };
-            if (typeof previousItemMetadata === 'object' && !$.isEmptyObject(previousItemMetadata)) {
+            if (typeof previousItemMetadata === 'function') {
                 meta = previousItemMetadata(rowNumber);
             }
             if (item && item._dirty) {
@@ -4765,7 +4775,7 @@ var GridService = /** @class */ (function () {
             this._grid.setSelectionModel(rowSelectionPlugin);
         }
         this._grid.setSelectedRows([rowNumber]);
-        this._dataView.getItemMetadata = this.getItemRowMetadata(this._dataView.getItemMetadata);
+        this._dataView.getItemMetadata = this.getItemRowMetadataToHighlight(this._dataView.getItemMetadata);
         var item = this._dataView.getItem(rowNumber);
         if (item && item.id) {
             item.rowClass = 'highlight';
@@ -5061,6 +5071,15 @@ var ResizerService = /** @class */ (function () {
     ResizerService.prototype.dispose = function () {
         $(window).off("resize.grid." + this._gridUid);
     };
+    ResizerService.prototype.compensateHorizontalScroll = function (grid, gridOptions) {
+        var gridElm = $("#" + gridOptions.gridId);
+        var scrollbarDimensions = grid && grid.getScrollbarDimensions();
+        var slickGridScrollbarWidth = scrollbarDimensions && scrollbarDimensions.width;
+        var calculatedScrollbarWidth = getScrollBarWidth();
+        if (slickGridScrollbarWidth < calculatedScrollbarWidth) {
+            gridElm.width(gridElm.width() + (calculatedScrollbarWidth - slickGridScrollbarWidth));
+        }
+    };
     ResizerService.prototype.getLastResizeDimensions = function () {
         return this._lastDimensions;
     };
@@ -5088,6 +5107,7 @@ var ResizerService = /** @class */ (function () {
                     }
                     if (_this._gridOptions && _this._gridOptions.enableAutoSizeColumns) {
                         _this._grid.autosizeColumns();
+                        _this.compensateHorizontalScroll(_this._grid, _this._gridOptions);
                     }
                     _this._lastDimensions = {
                         height: newHeight,
@@ -5678,10 +5698,10 @@ var LongTextEditor = /** @class */ (function () {
         this.$wrapper = $("<div class=\"slick-large-editor-text\" />").appendTo($container);
         this.$input = $("<textarea hidefocus rows=\"5\">").appendTo(this.$wrapper);
         $("<div class=\"editor-footer\">\n          <button class=\"btn btn-primary btn-xs\">" + saveText + "</button>\n          <button class=\"btn btn-default btn-xs\">" + cancelText + "</button>\n      </div>").appendTo(this.$wrapper);
-        this.$wrapper.find('button:first').on('click', function (event) { return _this.save(); });
-        this.$wrapper.find('button:last').on('click', function (event) { return _this.cancel(); });
-        this.$input.on('keydown', this.handleKeyDown);
-        this.position(this.args.position);
+        this.$wrapper.find('button:first').on('click', function () { return _this.save(); });
+        this.$wrapper.find('button:last').on('click', function () { return _this.cancel(); });
+        this.$input.on('keydown', this.handleKeyDown.bind(this));
+        this.position(this.args && this.args.position);
         this.$input.focus().select();
     };
     LongTextEditor.prototype.handleKeyDown = function (e) {
@@ -5694,19 +5714,27 @@ var LongTextEditor = /** @class */ (function () {
         }
         else if (e.which === KeyCode.TAB && e.shiftKey) {
             e.preventDefault();
-            this.args.grid.navigatePrev();
+            if (this.args && this.args.grid) {
+                this.args.grid.navigatePrev();
+            }
         }
         else if (e.which === KeyCode.TAB) {
             e.preventDefault();
-            this.args.grid.navigateNext();
+            if (this.args && this.args.grid) {
+                this.args.grid.navigateNext();
+            }
         }
     };
     LongTextEditor.prototype.save = function () {
-        this.args.commitChanges();
+        if (this.args && this.args.commitChanges) {
+            this.args.commitChanges();
+        }
     };
     LongTextEditor.prototype.cancel = function () {
         this.$input.val(this.defaultValue);
-        this.args.cancelChanges();
+        if (this.args && this.args.cancelChanges) {
+            this.args.cancelChanges();
+        }
     };
     LongTextEditor.prototype.hide = function () {
         this.$wrapper.hide();
@@ -5780,6 +5808,7 @@ var SelectEditor = /** @class */ (function () {
                 var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.internalColumnEditor && _this.columnDef.internalColumnEditor.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
+            onBlur: function () { return _this.destroy(); }
         };
         if (isMultipleSelect) {
             libOptions.single = false;
@@ -5896,7 +5925,8 @@ var SelectEditor = /** @class */ (function () {
         item[this.columnDef.field] = state;
     };
     SelectEditor.prototype.destroy = function () {
-        if (this.$editorElm) {
+        if (this.$editorElm && this.$editorElm.multipleSelect) {
+            this.$editorElm.multipleSelect('close');
             this.$editorElm.remove();
         }
         this._subscriptions = unsubscribeAllObservables(this._subscriptions);
@@ -5935,7 +5965,9 @@ var SelectEditor = /** @class */ (function () {
         return (this.isMultipleSelect) ? this.currentValues : this.currentValue;
     };
     SelectEditor.prototype.focus = function () {
-        this.$editorElm.focus();
+        if (this.$editorElm && this.$editorElm.multipleSelect) {
+            this.$editorElm.multipleSelect('focus');
+        }
     };
     SelectEditor.prototype.isValueChanged = function () {
         if (this.isMultipleSelect) {
@@ -7298,6 +7330,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
     AngularSlickgridComponent.prototype.attachResizeHook = function (grid, options) {
         if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
             grid.autosizeColumns();
+            this.resizer.compensateHorizontalScroll(this.grid, this.gridOptions);
         }
         this.resizer.init(grid);
         if (options.enableAutoResize) {
@@ -7494,5 +7527,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, getDescendantProperty, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, unsubscribeAllObservables, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SelectEditor as ɵk, SingleSelectEditor as ɵl, SliderEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵz, CompoundInputFilter as ɵba, CompoundSliderFilter as ɵbb, InputFilter as ɵbc, MultipleSelectFilter as ɵbe, NativeSelectFilter as ɵbh, SelectFilter as ɵbf, SingleSelectFilter as ɵbg, SliderFilter as ɵbd, arrayObjectToCsvFormatter as ɵbi, arrayToCsvFormatter as ɵbj, boldFormatter as ɵbk, checkboxFormatter as ɵbl, checkmarkFormatter as ɵbm, collectionEditorFormatter as ɵbp, collectionFormatter as ɵbo, complexObjectFormatter as ɵbn, dateIsoFormatter as ɵbq, dateTimeIsoAmPmFormatter as ɵbt, dateTimeIsoFormatter as ɵbr, dateTimeShortIsoFormatter as ɵbs, dateTimeShortUsFormatter as ɵbw, dateTimeUsAmPmFormatter as ɵbx, dateTimeUsFormatter as ɵbv, dateUsFormatter as ɵbu, decimalFormatter as ɵbz, deleteIconFormatter as ɵby, dollarColoredBoldFormatter as ɵcc, dollarColoredFormatter as ɵcb, dollarFormatter as ɵca, editIconFormatter as ɵcd, hyperlinkFormatter as ɵce, hyperlinkUriPrefixFormatter as ɵcf, infoIconFormatter as ɵcg, lowercaseFormatter as ɵch, maskFormatter as ɵci, multipleFormatter as ɵcj, percentCompleteBarFormatter as ɵcm, percentCompleteFormatter as ɵcl, percentFormatter as ɵck, percentSymbolFormatter as ɵcn, progressBarFormatter as ɵco, translateBooleanFormatter as ɵcq, translateFormatter as ɵcp, uppercaseFormatter as ɵcr, yesNoFormatter as ɵcs, avgTotalsDollarFormatter as ɵcu, avgTotalsFormatter as ɵct, avgTotalsPercentageFormatter as ɵcv, maxTotalsFormatter as ɵcw, minTotalsFormatter as ɵcx, sumTotalsBoldFormatter as ɵcz, sumTotalsColoredFormatter as ɵda, sumTotalsDollarBoldFormatter as ɵdc, sumTotalsDollarColoredBoldFormatter as ɵde, sumTotalsDollarColoredFormatter as ɵdd, sumTotalsDollarFormatter as ɵdb, sumTotalsFormatter as ɵcy, dateIsoSorter as ɵdg, dateSorter as ɵdf, dateUsShortSorter as ɵdi, dateUsSorter as ɵdh, numericSorter as ɵdj, stringSorter as ɵdk };
+export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, getDescendantProperty, getScrollBarWidth, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, unsubscribeAllObservables, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SelectEditor as ɵk, SingleSelectEditor as ɵl, SliderEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵz, CompoundInputFilter as ɵba, CompoundSliderFilter as ɵbb, InputFilter as ɵbc, MultipleSelectFilter as ɵbe, NativeSelectFilter as ɵbh, SelectFilter as ɵbf, SingleSelectFilter as ɵbg, SliderFilter as ɵbd, arrayObjectToCsvFormatter as ɵbi, arrayToCsvFormatter as ɵbj, boldFormatter as ɵbk, checkboxFormatter as ɵbl, checkmarkFormatter as ɵbm, collectionEditorFormatter as ɵbp, collectionFormatter as ɵbo, complexObjectFormatter as ɵbn, dateIsoFormatter as ɵbq, dateTimeIsoAmPmFormatter as ɵbt, dateTimeIsoFormatter as ɵbr, dateTimeShortIsoFormatter as ɵbs, dateTimeShortUsFormatter as ɵbw, dateTimeUsAmPmFormatter as ɵbx, dateTimeUsFormatter as ɵbv, dateUsFormatter as ɵbu, decimalFormatter as ɵbz, deleteIconFormatter as ɵby, dollarColoredBoldFormatter as ɵcc, dollarColoredFormatter as ɵcb, dollarFormatter as ɵca, editIconFormatter as ɵcd, hyperlinkFormatter as ɵce, hyperlinkUriPrefixFormatter as ɵcf, infoIconFormatter as ɵcg, lowercaseFormatter as ɵch, maskFormatter as ɵci, multipleFormatter as ɵcj, percentCompleteBarFormatter as ɵcm, percentCompleteFormatter as ɵcl, percentFormatter as ɵck, percentSymbolFormatter as ɵcn, progressBarFormatter as ɵco, translateBooleanFormatter as ɵcq, translateFormatter as ɵcp, uppercaseFormatter as ɵcr, yesNoFormatter as ɵcs, avgTotalsDollarFormatter as ɵcu, avgTotalsFormatter as ɵct, avgTotalsPercentageFormatter as ɵcv, maxTotalsFormatter as ɵcw, minTotalsFormatter as ɵcx, sumTotalsBoldFormatter as ɵcz, sumTotalsColoredFormatter as ɵda, sumTotalsDollarBoldFormatter as ɵdc, sumTotalsDollarColoredBoldFormatter as ɵde, sumTotalsDollarColoredFormatter as ɵdd, sumTotalsDollarFormatter as ɵdb, sumTotalsFormatter as ɵcy, dateIsoSorter as ɵdg, dateSorter as ɵdf, dateUsShortSorter as ɵdi, dateUsSorter as ɵdh, numericSorter as ɵdj, stringSorter as ɵdk };
 //# sourceMappingURL=angular-slickgrid.js.map
