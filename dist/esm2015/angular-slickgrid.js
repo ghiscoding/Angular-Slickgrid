@@ -2035,7 +2035,6 @@ class SelectFilter {
                 const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
-            onBlur: () => this.destroy(),
             onClose: () => {
                 // we will subscribe to the onClose event for triggering our callback
                 // also add/remove "filled" class for styling purposes

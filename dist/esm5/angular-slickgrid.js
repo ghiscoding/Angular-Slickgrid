@@ -1370,7 +1370,6 @@ var SelectFilter = /** @class */ (function () {
                 var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.filter && _this.columnDef.filter.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
-            onBlur: function () { return _this.destroy(); },
             onClose: function () {
                 var selectedItems = _this.$filterElm.multipleSelect('getSelects');
                 if (Array.isArray(selectedItems) && selectedItems.length > 0) {
