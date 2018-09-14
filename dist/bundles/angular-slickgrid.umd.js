@@ -1529,9 +1529,6 @@ var SelectFilter = /** @class */ (function () {
     };
     SelectFilter.prototype.destroy = function () {
         if (this.$filterElm) {
-            if (this.$filterElm.multipleSelect) {
-                this.$filterElm.multipleSelect('close');
-            }
             this.$filterElm.off().remove();
         }
         this.subscriptions = unsubscribeAllObservables(this.subscriptions);
