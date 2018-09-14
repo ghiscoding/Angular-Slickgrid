@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import { mapOperatorType, mapOperatorByFieldType } from './utilities';
 import {
   BackendService,

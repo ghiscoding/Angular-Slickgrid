@@ -174,11 +174,6 @@ export class SelectFilter implements Filter {
    */
   destroy() {
     if (this.$filterElm) {
-      // close the drop
-      if (this.$filterElm.multipleSelect) {
-        this.$filterElm.multipleSelect('close');
-      }
-
       // remove event watcher
       this.$filterElm.off().remove();
     }
