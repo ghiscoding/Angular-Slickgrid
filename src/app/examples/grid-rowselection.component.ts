@@ -52,6 +52,7 @@ export class GridRowSelectionComponent implements OnInit {
       { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, editor: { model: Editors.date }, exportWithFormatter: true },
       { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, sortable: true }
     ];
+
     this.columnDefinitions2 = [
       { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string },
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number },
@@ -60,12 +61,14 @@ export class GridRowSelectionComponent implements OnInit {
       { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, exportWithFormatter: true },
       { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, sortable: true }
     ];
+
     this.gridOptions1 = {
       editable: true,
-      autoEdit: true,
+      autoEdit: false,
       enableAutoResize: false,
       enableCellNavigation: true,
       enableCheckboxSelector: true,
+      enableRowSelection: true,
       checkboxSelector: {
         // remove the unnecessary "Select All" checkbox in header when in single selection mode
         hideSelectAllCheckbox: true
@@ -74,8 +77,8 @@ export class GridRowSelectionComponent implements OnInit {
         // True (Single Selection), False (Multiple Selections)
         selectActiveRow: true
       },
-      enableRowSelection: true
     };
+
     this.gridOptions2 = {
       enableAutoResize: false,
       enableCellNavigation: true,

@@ -68,17 +68,20 @@ export class GridService {
   getItemRowMetadataToHighlight(previousItemMetadata: any) {
     return (rowNumber: number) => {
       const item = this._dataView.getItem(rowNumber);
-      let meta = {
-        cssClasses: ''
-      };
+      let meta = { cssClasses: '' };
       if (typeof previousItemMetadata === 'function') {
         meta = previousItemMetadata(rowNumber);
       }
 
       if (item && item._dirty) {
-        meta.cssClasses = (meta.cssClasses || '') + ' dirty';
+        meta.cssClasses = (meta && meta.cssClasses || '') + ' dirty';
       }
-      if (item && item.rowClass) {
+
+      if (!meta) {
+        meta = { cssClasses: '' };
+      }
+
+      if (item && item.rowClass && meta) {
         meta.cssClasses += ` ${item.rowClass}`;
         meta.cssClasses += ` row${rowNumber}`;
       }
