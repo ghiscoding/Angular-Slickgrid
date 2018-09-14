@@ -2464,24 +2464,23 @@ var ExportService = /** @class */ (function () {
         return outputDataString;
     };
     ExportService.prototype.getAllGridRowData = function (columns, lineCarriageReturn) {
-        var outputDataString = '';
+        var outputDataStrings = [];
         var lineCount = this._dataView.getLength();
         for (var rowNumber = 0; rowNumber < lineCount; rowNumber++) {
             var itemObj = this._dataView.getItem(rowNumber);
             if (itemObj != null) {
                 if (itemObj.id != null) {
-                    outputDataString += this.readRegularRowData(columns, rowNumber, itemObj);
+                    outputDataStrings.push(this.readRegularRowData(columns, rowNumber, itemObj));
                 }
                 else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
-                    outputDataString += this.readGroupedTitleRow(itemObj) + this._exportOptions.delimiter;
+                    outputDataStrings.push(this.readGroupedTitleRow(itemObj));
                 }
                 else if (itemObj.__groupTotals) {
-                    outputDataString += this.readGroupedTotalRow(columns, itemObj) + this._exportOptions.delimiter;
+                    outputDataStrings.push(this.readGroupedTotalRow(columns, itemObj));
                 }
-                outputDataString += lineCarriageReturn;
             }
         }
-        return outputDataString;
+        return outputDataStrings.join(this._lineCarriageReturn);
     };
     ExportService.prototype.getColumnHeaders = function (columns) {
         var _this = this;
@@ -2503,7 +2502,7 @@ var ExportService = /** @class */ (function () {
     };
     ExportService.prototype.readRegularRowData = function (columns, row, itemObj) {
         var idx = 0;
-        var rowOutputString = '';
+        var rowOutputStrings = [];
         var delimiter = this._exportOptions.delimiter;
         var format = this._exportOptions.format;
         var exportQuoteWrapper = this._exportQuoteWrapper || '';
@@ -2514,7 +2513,7 @@ var ExportService = /** @class */ (function () {
                 continue;
             }
             if (this._hasGroupedItems && idx === 0) {
-                rowOutputString += "\"\"" + delimiter;
+                rowOutputStrings.push("\"\"");
             }
             var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._exportOptions.exportWithFormatter;
             var exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
@@ -2535,30 +2534,28 @@ var ExportService = /** @class */ (function () {
                 itemData = itemData.toString().replace(/"/gi, "\"\"");
             }
             var keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
-            rowOutputString += keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
+            rowOutputStrings.push(keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper);
             idx++;
         }
-        return rowOutputString;
+        return rowOutputStrings.join(delimiter);
     };
     ExportService.prototype.readGroupedTitleRow = function (itemObj) {
         var groupName = sanitizeHtmlToText(itemObj.title);
         var exportQuoteWrapper = this._exportQuoteWrapper || '';
-        var delimiter = this._exportOptions.delimiter;
         var format = this._exportOptions.format;
         groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
         if (format === FileType.csv) {
             groupName = groupName.toString().replace(/"/gi, "\"\"");
         }
-        return exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper + delimiter;
+        return exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper;
     };
     ExportService.prototype.readGroupedTotalRow = function (columns, itemObj) {
         var _this = this;
-        var exportExponentialWrapper = '';
         var delimiter = this._exportOptions.delimiter;
         var format = this._exportOptions.format;
         var groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
         var exportQuoteWrapper = this._exportQuoteWrapper || '';
-        var output = "" + exportQuoteWrapper + groupingAggregatorRowText + exportQuoteWrapper + delimiter;
+        var outputStrings = ["" + exportQuoteWrapper + groupingAggregatorRowText + exportQuoteWrapper];
         columns.forEach(function (columnDef) {
             var itemData = '';
             if (columnDef.groupTotalsFormatter) {
@@ -2569,11 +2566,10 @@ var ExportService = /** @class */ (function () {
             }
             if (format === FileType.csv) {
                 itemData = itemData.toString().replace(/"/gi, "\"\"");
-                exportExponentialWrapper = (itemData.match(/^\s*\d+E\d+\s*$/i)) ? '=' : '';
             }
-            output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
+            outputStrings.push(exportQuoteWrapper + itemData + exportQuoteWrapper);
         });
-        return output;
+        return outputStrings.join(delimiter);
     };
     ExportService.prototype.startDownloadFile = function (options) {
         if (navigator.appName === 'Microsoft Internet Explorer') {
@@ -4817,16 +4813,17 @@ var GridService = /** @class */ (function () {
         var _this = this;
         return function (rowNumber) {
             var item = _this._dataView.getItem(rowNumber);
-            var meta = {
-                cssClasses: ''
-            };
+            var meta = { cssClasses: '' };
             if (typeof previousItemMetadata === 'function') {
                 meta = previousItemMetadata(rowNumber);
             }
             if (item && item._dirty) {
-                meta.cssClasses = (meta.cssClasses || '') + ' dirty';
+                meta.cssClasses = (meta && meta.cssClasses || '') + ' dirty';
             }
-            if (item && item.rowClass) {
+            if (!meta) {
+                meta = { cssClasses: '' };
+            }
+            if (item && item.rowClass && meta) {
                 meta.cssClasses += " " + item.rowClass;
                 meta.cssClasses += " row" + rowNumber;
             }

@@ -3438,7 +3438,7 @@ class ExportService {
      * @return {?}
      */
     getAllGridRowData(columns, lineCarriageReturn) {
-        let /** @type {?} */ outputDataString = '';
+        const /** @type {?} */ outputDataStrings = [];
         const /** @type {?} */ lineCount = this._dataView.getLength();
         // loop through all the grid rows of data
         for (let /** @type {?} */ rowNumber = 0; rowNumber < lineCount; rowNumber++) {
@@ -3447,20 +3447,19 @@ class ExportService {
                 // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
                 if (itemObj.id != null) {
                     // get regular row item data
-                    outputDataString += this.readRegularRowData(columns, rowNumber, itemObj);
+                    outputDataStrings.push(this.readRegularRowData(columns, rowNumber, itemObj));
                 }
                 else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
                     // get the group row
-                    outputDataString += this.readGroupedTitleRow(itemObj) + this._exportOptions.delimiter;
+                    outputDataStrings.push(this.readGroupedTitleRow(itemObj));
                 }
                 else if (itemObj.__groupTotals) {
                     // else if the row is a Group By and we have agreggators, then a property of '__groupTotals' would exist under that object
-                    outputDataString += this.readGroupedTotalRow(columns, itemObj) + this._exportOptions.delimiter;
+                    outputDataStrings.push(this.readGroupedTotalRow(columns, itemObj));
                 }
-                outputDataString += lineCarriageReturn;
             }
         }
-        return outputDataString;
+        return outputDataStrings.join(this._lineCarriageReturn);
     }
     /**
      * Get all header titles and their keys, translate the title when required.
@@ -3495,7 +3494,7 @@ class ExportService {
      */
     readRegularRowData(columns, row, itemObj) {
         let /** @type {?} */ idx = 0;
-        let /** @type {?} */ rowOutputString = '';
+        const /** @type {?} */ rowOutputStrings = [];
         const /** @type {?} */ delimiter = this._exportOptions.delimiter;
         const /** @type {?} */ format = this._exportOptions.format;
         const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
@@ -3508,7 +3507,7 @@ class ExportService {
             }
             // if we are grouping and are on 1st column index, we need to skip this column since it will be used later by the grouping text:: Group by [columnX]
             if (this._hasGroupedItems && idx === 0) {
-                rowOutputString += `""` + delimiter;
+                rowOutputStrings.push(`""`);
             }
             // does the user want to evaluate current column Formatter?
             const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._exportOptions.exportWithFormatter;
@@ -3535,10 +3534,10 @@ class ExportService {
             // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
             // to cancel that effect we can had = in front, ex: ="1E06"
             const /** @type {?} */ keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
-            rowOutputString += keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
+            rowOutputStrings.push(keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper);
             idx++;
         }
-        return rowOutputString;
+        return rowOutputStrings.join(delimiter);
     }
     /**
      * Get the grouped title(s), for example if we grouped by salesRep, the returned result would be:: 'Sales Rep'
@@ -3548,17 +3547,13 @@ class ExportService {
     readGroupedTitleRow(itemObj) {
         let /** @type {?} */ groupName = sanitizeHtmlToText(itemObj.title);
         const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
-        const /** @type {?} */ delimiter = this._exportOptions.delimiter;
         const /** @type {?} */ format = this._exportOptions.format;
         groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
         if (format === FileType.csv) {
             // when CSV we also need to escape double quotes twice, so " becomes ""
             groupName = groupName.toString().replace(/"/gi, `""`);
         }
-        // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
-        // to cancel that effect we can had = in front, ex: ="1E06"
-        // const keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
-        return /*keepAsStringWrapper +*/ /*keepAsStringWrapper +*/ exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper + delimiter;
+        return exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper;
     }
     /**
      * Get the grouped totals, these are set by Slick Aggregators.
@@ -3568,12 +3563,11 @@ class ExportService {
      * @return {?}
      */
     readGroupedTotalRow(columns, itemObj) {
-        let /** @type {?} */ exportExponentialWrapper = '';
         const /** @type {?} */ delimiter = this._exportOptions.delimiter;
         const /** @type {?} */ format = this._exportOptions.format;
         const /** @type {?} */ groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
         const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
-        let /** @type {?} */ output = `${exportQuoteWrapper}${groupingAggregatorRowText}${exportQuoteWrapper}${delimiter}`;
+        const /** @type {?} */ outputStrings = [`${exportQuoteWrapper}${groupingAggregatorRowText}${exportQuoteWrapper}`];
         columns.forEach((columnDef) => {
             let /** @type {?} */ itemData = '';
             // if there's a groupTotalsFormatter, we will re-run it to get the exact same output as what is shown in UI
@@ -3586,14 +3580,11 @@ class ExportService {
             }
             if (format === FileType.csv) {
                 // when CSV we also need to escape double quotes twice, so a double quote " becomes 2x double quotes ""
-                // and if we have a text of (number)E(number),
-                // we don't want excel to transform it into exponential (1.0E06) to cancel that effect we can had = in front, ex: ="1E06"
                 itemData = itemData.toString().replace(/"/gi, `""`);
-                exportExponentialWrapper = (itemData.match(/^\s*\d+E\d+\s*$/i)) ? '=' : '';
             }
-            output += exportQuoteWrapper + itemData + exportQuoteWrapper + delimiter;
+            outputStrings.push(exportQuoteWrapper + itemData + exportQuoteWrapper);
         });
-        return output;
+        return outputStrings.join(delimiter);
     }
     /**
      * Triggers download file with file format.
@@ -6599,16 +6590,17 @@ class GridService {
     getItemRowMetadataToHighlight(previousItemMetadata) {
         return (rowNumber) => {
             const /** @type {?} */ item = this._dataView.getItem(rowNumber);
-            let /** @type {?} */ meta = {
-                cssClasses: ''
-            };
+            let /** @type {?} */ meta = { cssClasses: '' };
             if (typeof previousItemMetadata === 'function') {
                 meta = previousItemMetadata(rowNumber);
             }
             if (item && item._dirty) {
-                meta.cssClasses = (meta.cssClasses || '') + ' dirty';
+                meta.cssClasses = (meta && meta.cssClasses || '') + ' dirty';
             }
-            if (item && item.rowClass) {
+            if (!meta) {
+                meta = { cssClasses: '' };
+            }
+            if (item && item.rowClass && meta) {
                 meta.cssClasses += ` ${item.rowClass}`;
                 meta.cssClasses += ` row${rowNumber}`;
             }
