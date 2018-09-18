@@ -223,21 +223,20 @@ export class SelectEditor implements Editor {
 
   loadValue(item: any): void {
     if (this.isMultipleSelect) {
-      // convert to string because that is how the DOM will return these values
-      this.defaultValue = item[this.columnDef.field].map((i: any) => i.toString());
-
-      this.$editorElm.find('option').each((i: number, $e: any) => {
-        if (this.defaultValue.indexOf($e.value) !== -1) {
-          $e.selected = true;
-        } else {
-          $e.selected = false;
-        }
-      });
+      this.loadMultipleValues(item);
     } else {
       this.loadSingleValue(item);
     }
 
     this.refresh();
+  }
+
+  loadMultipleValues(items: any[]) {
+    // convert to string because that is how the DOM will return these values
+    this.defaultValue = items[this.columnDef.field].map((i: any) => i.toString());
+    this.$editorElm.find('option').each((i: number, $e: any) => {
+      $e.selected = (this.defaultValue.indexOf($e.value) !== -1);
+    });
   }
 
   loadSingleValue(item: any) {
@@ -246,11 +245,7 @@ export class SelectEditor implements Editor {
     this.defaultValue = item[this.columnDef.field] && item[this.columnDef.field].toString();
 
     this.$editorElm.find('option').each((i: number, $e: any) => {
-      if (this.defaultValue === $e.value) {
-        $e.selected = true;
-      } else {
-        $e.selected = false;
-      }
+      $e.selected = (this.defaultValue === $e.value);
     });
   }
 
@@ -273,7 +268,8 @@ export class SelectEditor implements Editor {
 
   validate(): EditorValidatorOutput {
     if (this.validator) {
-      const validationResults = this.validator(this.isMultipleSelect ? this.currentValues : this.currentValue);
+      const value = this.isMultipleSelect ? this.currentValues : this.currentValue;
+      const validationResults = this.validator(value, this.args);
       if (!validationResults.valid) {
         return validationResults;
       }

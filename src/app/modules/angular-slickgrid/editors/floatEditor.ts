@@ -132,7 +132,7 @@ export class FloatEditor implements Editor {
     };
 
     if (this.validator) {
-      const validationResults = this.validator(elmValue);
+      const validationResults = this.validator(elmValue, this.args);
       if (!validationResults.valid) {
         return validationResults;
       }
