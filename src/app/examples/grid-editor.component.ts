@@ -30,6 +30,10 @@ const myCustomTitleValidator: EditorValidator = (value: any, args: EditorArgs) =
   const gridOptions = (grid && grid.getOptions) ? grid.getOptions() : {};
   const translate = gridOptions.i18n;
 
+  // to get the editor object, you'll need to use "internalColumnEditor"
+  // don't use "editor" property since that one is what SlickGrid uses internally by it's editor factory
+  const columnEditor = args && args.column && args.column.internalColumnEditor;
+
   if (value == null || value === undefined || !value.length) {
     return { valid: false, msg: 'This is a required field' };
   } else if (!/^Task\s\d+$/.test(value)) {
