@@ -1,4 +1,4 @@
-import { Editor, KeyCode } from './../modules/angular-slickgrid';
+import { Column, Editor, EditorValidator, EditorValidatorOutput, KeyCode } from './../modules/angular-slickgrid';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -13,6 +13,21 @@ export class CustomInputEditor implements Editor {
 
   constructor(private args: any) {
     this.init();
+  }
+
+  /** Get Column Definition object */
+  get columnDef(): Column {
+    return this.args && this.args.column || {};
+  }
+
+  /** Get Column Editor object */
+  get columnEditor(): any {
+    return this.columnDef && this.columnDef.internalColumnEditor || {};
+  }
+
+  /** Get the Validator function, can be passed in Editor property or Column Definition */
+  get validator(): EditorValidator {
+    return this.columnEditor.validator || this.columnDef.validator;
   }
 
   init(): void {
@@ -64,9 +79,11 @@ export class CustomInputEditor implements Editor {
     return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
   }
 
-  validate() {
-    if (this.args.column.validator) {
-      const validationResults = this.args.column.validator(this.$input.val());
+  validate(): EditorValidatorOutput {
+    if (this.validator) {
+      const value = this.$input && this.$input.val && this.$input.val();
+      const validationResults = this.validator(value, this.args);
+
       if (!validationResults.valid) {
         return validationResults;
       }

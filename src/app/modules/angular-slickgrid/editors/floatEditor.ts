@@ -120,6 +120,7 @@ export class FloatEditor implements Editor {
 
   validate(): EditorValidatorOutput {
     const elmValue = this.$input.val();
+    const floatNumber = !isNaN(elmValue as number) ? parseFloat(elmValue) : null;
     const decPlaces = this.getDecimalPlaces();
     const minValue = this.columnEditor.minValue;
     const maxValue = this.columnEditor.maxValue;
@@ -132,7 +133,7 @@ export class FloatEditor implements Editor {
     };
 
     if (this.validator) {
-      const validationResults = this.validator(elmValue);
+      const validationResults = this.validator(elmValue, this.args);
       if (!validationResults.valid) {
         return validationResults;
       }
@@ -142,23 +143,36 @@ export class FloatEditor implements Editor {
         valid: false,
         msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER
       };
-    } else if (minValue !== undefined && (elmValue < minValue || elmValue > maxValue)) {
+    } else if (minValue !== undefined && minValue !== undefined && (floatNumber < minValue || floatNumber > maxValue)) {
+      // MIN & MAX Values provided
       // when decimal value is bigger than 0, we only accept the decimal values as that value set
       // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
       return {
         valid: false,
-        msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => {
-          return mapValidation[matched];
-        })
+        msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => mapValidation[matched])
+      };
+    } else if (minValue !== undefined && floatNumber <= minValue) {
+      // MIN VALUE ONLY
+      // when decimal value is bigger than 0, we only accept the decimal values as that value set
+      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
+      return {
+        valid: false,
+        msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MIN.replace(/{{minValue}}/gi, (matched) => mapValidation[matched])
+      };
+    } else if (maxValue !== undefined && floatNumber >= maxValue) {
+      // MAX VALUE ONLY
+      // when decimal value is bigger than 0, we only accept the decimal values as that value set
+      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
+      return {
+        valid: false,
+        msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MAX.replace(/{{maxValue}}/gi, (matched) => mapValidation[matched])
       };
     } else if ((decPlaces > 0 && !new RegExp(`^(\\d+(\\.)?(\\d){0,${decPlaces}})$`).test(elmValue))) {
       // when decimal value is bigger than 0, we only accept the decimal values as that value set
       // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
       return {
         valid: false,
-        msg: errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, (matched) => {
-          return mapValidation[matched];
-        })
+        msg: errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, (matched) => mapValidation[matched])
       };
     }
 

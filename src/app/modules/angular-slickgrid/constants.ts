@@ -17,5 +17,7 @@ export class Constants {
   static VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
   static VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
   static VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
+  static VALIDATION_EDITOR_NUMBER_MAX = 'Please enter a valid number that is lower than {{maxValue}}';
+  static VALIDATION_EDITOR_NUMBER_MIN = 'Please enter a valid number that is greater than {{minValue}}';
   static VALIDATION_EDITOR_DECIMAL_BETWEEN = 'Please enter a valid number with a maximum of {{maxDecimal}} decimals';
 }

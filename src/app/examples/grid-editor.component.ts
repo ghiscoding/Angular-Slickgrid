@@ -4,14 +4,15 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
   Column,
-  EditorValidator,
   Editors,
+  EditorArgs,
+  EditorValidator,
   FieldType,
   Filters,
   Formatters,
   GridOption,
   OnEventArgs,
-  OperatorType
+  OperatorType,
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
 import { Subject } from 'rxjs/Subject';
@@ -23,16 +24,36 @@ const NB_ITEMS = 100;
 const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_100_numbers.json';
 
 // you can create custom validator to pass to an inline editor
-const myCustomTitleValidator: EditorValidator = (value) => {
+const myCustomTitleValidator: EditorValidator = (value: any, args: EditorArgs) => {
+  // you can get the Editor Args which can be helpful, e.g. we can get the Translate Service from it
+  const grid = args && args.grid;
+  const gridOptions = (grid && grid.getOptions) ? grid.getOptions() : {};
+  const translate = gridOptions.i18n;
+
+  // to get the editor object, you'll need to use "internalColumnEditor"
+  // don't use "editor" property since that one is what SlickGrid uses internally by it's editor factory
+  const columnEditor = args && args.column && args.column.internalColumnEditor;
+
   if (value == null || value === undefined || !value.length) {
     return { valid: false, msg: 'This is a required field' };
   } else if (!/^Task\s\d+$/.test(value)) {
     return { valid: false, msg: 'Your title is invalid, it must start with "Task" followed by a number' };
+    // OR use the Translate Service with your custom message
+    // return { valid: false, msg: translate.instant('YOUR_ERROR', { x: value }) };
   } else {
     return { valid: true, msg: '' };
   }
 };
 
+// create a custom Formatter to show the Task + value
+const taskFormatter = (row, cell, value, columnDef, dataContext) => {
+  if (value && Array.isArray(value)) {
+    const taskValues = value.map((val) => `Task ${val}`);
+    const values = taskValues.join(', ');
+    return `<span title="${values}">${values}</span>`;
+  }
+  return '';
+};
 @Component({
   templateUrl: './grid-editor.component.html'
 })
@@ -247,6 +268,7 @@ export class GridEditorComponent implements OnInit {
         name: 'Prerequisites',
         field: 'prerequisites',
         filterable: true,
+        formatter: taskFormatter,
         minWidth: 100,
         sortable: true,
         type: FieldType.string,
@@ -264,8 +286,7 @@ export class GridEditorComponent implements OnInit {
             labelPrefix: 'prefix',
           },
           collectionOptions: {
-            separatorBetweenTextLabels: ' ',
-            includePrefixSuffixToSelectedValues: true
+            separatorBetweenTextLabels: ' '
           },
           model: Editors.multipleSelect,
         },
@@ -401,7 +422,7 @@ export class GridEditorComponent implements OnInit {
         start: new Date(randomYear, randomMonth, randomDay),
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
         effortDriven: (i % 5 === 0),
-        prerequisites: (i % 2 === 0) && i !== 0 && i < 12 ? [`Task ${i}`, `Task ${i - 1}`] : []
+        prerequisites: (i % 2 === 0) && i !== 0 && i < 12 ? [i, i - 1] : []
       });
     }
     return tempDataset;
