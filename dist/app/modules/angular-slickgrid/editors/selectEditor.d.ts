@@ -61,6 +61,7 @@ export declare class SelectEditor implements Editor {
     applyValue(item: any, state: any): void;
     destroy(): void;
     loadValue(item: any): void;
+    loadMultipleValues(items: any[]): void;
     loadSingleValue(item: any): void;
     serializeValue(): any;
     focus(): void;

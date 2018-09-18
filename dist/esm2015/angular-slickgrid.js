@@ -3922,6 +3922,8 @@ Constants.TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
 Constants.VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
 Constants.VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
 Constants.VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
+Constants.VALIDATION_EDITOR_NUMBER_MAX = 'Please enter a valid number that is lower than {{maxValue}}';
+Constants.VALIDATION_EDITOR_NUMBER_MIN = 'Please enter a valid number that is greater than {{minValue}}';
 Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN = 'Please enter a valid number with a maximum of {{maxDecimal}} decimals';
 
 /**
@@ -7426,7 +7428,8 @@ class CheckboxEditor {
      */
     validate() {
         if (this.validator) {
-            const /** @type {?} */ validationResults = this.validator(this.$input.val());
+            const /** @type {?} */ value = this.$input && this.$input.val && this.$input.val();
+            const /** @type {?} */ validationResults = this.validator(value, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -7614,7 +7617,8 @@ class DateEditor {
      */
     validate() {
         if (this.validator) {
-            const /** @type {?} */ validationResults = this.validator(this.$input.val());
+            const /** @type {?} */ value = this.$input && this.$input.val && this.$input.val();
+            const /** @type {?} */ validationResults = this.validator(value, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -7769,6 +7773,7 @@ class FloatEditor {
      */
     validate() {
         const /** @type {?} */ elmValue = this.$input.val();
+        const /** @type {?} */ floatNumber = !isNaN(/** @type {?} */ (elmValue)) ? parseFloat(elmValue) : null;
         const /** @type {?} */ decPlaces = this.getDecimalPlaces();
         const /** @type {?} */ minValue = this.columnEditor.minValue;
         const /** @type {?} */ maxValue = this.columnEditor.maxValue;
@@ -7780,7 +7785,7 @@ class FloatEditor {
             '{{maxDecimal}}': decPlaces
         };
         if (this.validator) {
-            const /** @type {?} */ validationResults = this.validator(elmValue);
+            const /** @type {?} */ validationResults = this.validator(elmValue, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -7792,14 +7797,31 @@ class FloatEditor {
                 msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER
             };
         }
-        else if (minValue !== undefined && (elmValue < minValue || elmValue > maxValue)) {
+        else if (minValue !== undefined && minValue !== undefined && (floatNumber < minValue || floatNumber > maxValue)) {
+            // MIN & MAX Values provided
             // when decimal value is bigger than 0, we only accept the decimal values as that value set
             // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
             return {
                 valid: false,
-                msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => {
-                    return mapValidation[matched];
-                })
+                msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => mapValidation[matched])
+            };
+        }
+        else if (minValue !== undefined && floatNumber <= minValue) {
+            // MIN VALUE ONLY
+            // when decimal value is bigger than 0, we only accept the decimal values as that value set
+            // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
+            return {
+                valid: false,
+                msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MIN.replace(/{{minValue}}/gi, (matched) => mapValidation[matched])
+            };
+        }
+        else if (maxValue !== undefined && floatNumber >= maxValue) {
+            // MAX VALUE ONLY
+            // when decimal value is bigger than 0, we only accept the decimal values as that value set
+            // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
+            return {
+                valid: false,
+                msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MAX.replace(/{{maxValue}}/gi, (matched) => mapValidation[matched])
             };
         }
         else if ((decPlaces > 0 && !new RegExp(`^(\\d+(\\.)?(\\d){0,${decPlaces}})$`).test(elmValue))) {
@@ -7807,9 +7829,7 @@ class FloatEditor {
             // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
             return {
                 valid: false,
-                msg: errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, (matched) => {
-                    return mapValidation[matched];
-                })
+                msg: errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, (matched) => mapValidation[matched])
             };
         }
         return {
@@ -7924,7 +7944,7 @@ class IntegerEditor {
         const /** @type {?} */ elmValue = this.$input.val();
         const /** @type {?} */ errorMsg = this.columnEditor.params && this.columnEditor.errorMessage;
         if (this.validator) {
-            const /** @type {?} */ validationResults = this.validator(elmValue);
+            const /** @type {?} */ validationResults = this.validator(elmValue, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -8111,7 +8131,8 @@ class LongTextEditor {
      */
     validate() {
         if (this.validator) {
-            const /** @type {?} */ validationResults = this.validator(this.$input.val());
+            const /** @type {?} */ value = this.$input && this.$input.val && this.$input.val();
+            const /** @type {?} */ validationResults = this.validator(value, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -8308,21 +8329,23 @@ class SelectEditor {
      */
     loadValue(item) {
         if (this.isMultipleSelect) {
-            // convert to string because that is how the DOM will return these values
-            this.defaultValue = item[this.columnDef.field].map((i) => i.toString());
-            this.$editorElm.find('option').each((i, $e) => {
-                if (this.defaultValue.indexOf($e.value) !== -1) {
-                    $e.selected = true;
-                }
-                else {
-                    $e.selected = false;
-                }
-            });
+            this.loadMultipleValues(item);
         }
         else {
             this.loadSingleValue(item);
         }
         this.refresh();
+    }
+    /**
+     * @param {?} items
+     * @return {?}
+     */
+    loadMultipleValues(items) {
+        // convert to string because that is how the DOM will return these values
+        this.defaultValue = items[this.columnDef.field].map((i) => i.toString());
+        this.$editorElm.find('option').each((i, $e) => {
+            $e.selected = (this.defaultValue.indexOf($e.value) !== -1);
+        });
     }
     /**
      * @param {?} item
@@ -8333,12 +8356,7 @@ class SelectEditor {
         // make sure the prop exists first
         this.defaultValue = item[this.columnDef.field] && item[this.columnDef.field].toString();
         this.$editorElm.find('option').each((i, $e) => {
-            if (this.defaultValue === $e.value) {
-                $e.selected = true;
-            }
-            else {
-                $e.selected = false;
-            }
+            $e.selected = (this.defaultValue === $e.value);
         });
     }
     /**
@@ -8369,7 +8387,8 @@ class SelectEditor {
      */
     validate() {
         if (this.validator) {
-            const /** @type {?} */ validationResults = this.validator(this.isMultipleSelect ? this.currentValues : this.currentValue);
+            const /** @type {?} */ value = this.isMultipleSelect ? this.currentValues : this.currentValue;
+            const /** @type {?} */ validationResults = this.validator(value, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -8684,7 +8703,7 @@ class SliderEditor {
             '{{maxValue}}': maxValue
         };
         if (this.validator) {
-            const /** @type {?} */ validationResults = this.validator(elmValue);
+            const /** @type {?} */ validationResults = this.validator(elmValue, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -8842,7 +8861,8 @@ class TextEditor {
      */
     validate() {
         if (this.validator) {
-            const /** @type {?} */ validationResults = this.validator(this.$input.val());
+            const /** @type {?} */ value = this.$input && this.$input.val && this.$input.val();
+            const /** @type {?} */ validationResults = this.validator(value, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }

@@ -17,5 +17,7 @@ export declare class Constants {
     static VALIDATION_EDITOR_VALID_NUMBER: string;
     static VALIDATION_EDITOR_VALID_INTEGER: string;
     static VALIDATION_EDITOR_NUMBER_BETWEEN: string;
+    static VALIDATION_EDITOR_NUMBER_MAX: string;
+    static VALIDATION_EDITOR_NUMBER_MIN: string;
     static VALIDATION_EDITOR_DECIMAL_BETWEEN: string;
 }

@@ -2823,6 +2823,8 @@ Constants.TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
 Constants.VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
 Constants.VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
 Constants.VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
+Constants.VALIDATION_EDITOR_NUMBER_MAX = 'Please enter a valid number that is lower than {{maxValue}}';
+Constants.VALIDATION_EDITOR_NUMBER_MIN = 'Please enter a valid number that is greater than {{minValue}}';
 Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN = 'Please enter a valid number with a maximum of {{maxDecimal}} decimals';
 var ControlAndPluginService = /** @class */ (function () {
     function ControlAndPluginService(exportService, filterService, sortService, translate) {
@@ -5349,7 +5351,8 @@ var CheckboxEditor = /** @class */ (function () {
     };
     CheckboxEditor.prototype.validate = function () {
         if (this.validator) {
-            var validationResults = this.validator(this.$input.val());
+            var value = this.$input && this.$input.val && this.$input.val();
+            var validationResults = this.validator(value, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5479,7 +5482,8 @@ var DateEditor = /** @class */ (function () {
     };
     DateEditor.prototype.validate = function () {
         if (this.validator) {
-            var validationResults = this.validator(this.$input.val());
+            var value = this.$input && this.$input.val && this.$input.val();
+            var validationResults = this.validator(value, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5589,6 +5593,7 @@ var FloatEditor = /** @class */ (function () {
     };
     FloatEditor.prototype.validate = function () {
         var elmValue = this.$input.val();
+        var floatNumber = !isNaN((elmValue)) ? parseFloat(elmValue) : null;
         var decPlaces = this.getDecimalPlaces();
         var minValue = this.columnEditor.minValue;
         var maxValue = this.columnEditor.maxValue;
@@ -5600,7 +5605,7 @@ var FloatEditor = /** @class */ (function () {
             '{{maxDecimal}}': decPlaces
         };
         if (this.validator) {
-            var validationResults = this.validator(elmValue);
+            var validationResults = this.validator(elmValue, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5611,20 +5616,28 @@ var FloatEditor = /** @class */ (function () {
                 msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER
             };
         }
-        else if (minValue !== undefined && (elmValue < minValue || elmValue > maxValue)) {
+        else if (minValue !== undefined && minValue !== undefined && (floatNumber < minValue || floatNumber > maxValue)) {
             return {
                 valid: false,
-                msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, function (matched) {
-                    return mapValidation[matched];
-                })
+                msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, function (matched) { return mapValidation[matched]; })
+            };
+        }
+        else if (minValue !== undefined && floatNumber <= minValue) {
+            return {
+                valid: false,
+                msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MIN.replace(/{{minValue}}/gi, function (matched) { return mapValidation[matched]; })
+            };
+        }
+        else if (maxValue !== undefined && floatNumber >= maxValue) {
+            return {
+                valid: false,
+                msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MAX.replace(/{{maxValue}}/gi, function (matched) { return mapValidation[matched]; })
             };
         }
         else if ((decPlaces > 0 && !new RegExp("^(\\d+(\\.)?(\\d){0," + decPlaces + "})$").test(elmValue))) {
             return {
                 valid: false,
-                msg: errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, function (matched) {
-                    return mapValidation[matched];
-                })
+                msg: errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, function (matched) { return mapValidation[matched]; })
             };
         }
         return {
@@ -5703,7 +5716,7 @@ var IntegerEditor = /** @class */ (function () {
         var elmValue = this.$input.val();
         var errorMsg = this.columnEditor.params && this.columnEditor.errorMessage;
         if (this.validator) {
-            var validationResults = this.validator(elmValue);
+            var validationResults = this.validator(elmValue, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5831,7 +5844,8 @@ var LongTextEditor = /** @class */ (function () {
     };
     LongTextEditor.prototype.validate = function () {
         if (this.validator) {
-            var validationResults = this.validator(this.$input.val());
+            var value = this.$input && this.$input.val && this.$input.val();
+            var validationResults = this.validator(value, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -5992,33 +6006,26 @@ var SelectEditor = /** @class */ (function () {
         this._subscriptions = unsubscribeAllObservables(this._subscriptions);
     };
     SelectEditor.prototype.loadValue = function (item) {
-        var _this = this;
         if (this.isMultipleSelect) {
-            this.defaultValue = item[this.columnDef.field].map(function (i) { return i.toString(); });
-            this.$editorElm.find('option').each(function (i, $e) {
-                if (_this.defaultValue.indexOf($e.value) !== -1) {
-                    $e.selected = true;
-                }
-                else {
-                    $e.selected = false;
-                }
-            });
+            this.loadMultipleValues(item);
         }
         else {
             this.loadSingleValue(item);
         }
         this.refresh();
     };
+    SelectEditor.prototype.loadMultipleValues = function (items) {
+        var _this = this;
+        this.defaultValue = items[this.columnDef.field].map(function (i) { return i.toString(); });
+        this.$editorElm.find('option').each(function (i, $e) {
+            $e.selected = (_this.defaultValue.indexOf($e.value) !== -1);
+        });
+    };
     SelectEditor.prototype.loadSingleValue = function (item) {
         var _this = this;
         this.defaultValue = item[this.columnDef.field] && item[this.columnDef.field].toString();
         this.$editorElm.find('option').each(function (i, $e) {
-            if (_this.defaultValue === $e.value) {
-                $e.selected = true;
-            }
-            else {
-                $e.selected = false;
-            }
+            $e.selected = (_this.defaultValue === $e.value);
         });
     };
     SelectEditor.prototype.serializeValue = function () {
@@ -6037,7 +6044,8 @@ var SelectEditor = /** @class */ (function () {
     };
     SelectEditor.prototype.validate = function () {
         if (this.validator) {
-            var validationResults = this.validator(this.isMultipleSelect ? this.currentValues : this.currentValue);
+            var value = this.isMultipleSelect ? this.currentValues : this.currentValue;
+            var validationResults = this.validator(value, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -6251,7 +6259,7 @@ var SliderEditor = /** @class */ (function () {
             '{{maxValue}}': maxValue
         };
         if (this.validator) {
-            var validationResults = this.validator(elmValue);
+            var validationResults = this.validator(elmValue, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
@@ -6350,7 +6358,8 @@ var TextEditor = /** @class */ (function () {
     };
     TextEditor.prototype.validate = function () {
         if (this.validator) {
-            var validationResults = this.validator(this.$input.val());
+            var value = this.$input && this.$input.val && this.$input.val();
+            var validationResults = this.validator(value, this.args);
             if (!validationResults.valid) {
                 return validationResults;
             }
