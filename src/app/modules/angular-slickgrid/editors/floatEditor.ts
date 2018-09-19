@@ -137,13 +137,13 @@ export class FloatEditor implements Editor {
       if (!validationResults.valid) {
         return validationResults;
       }
-    } else if (isNaN(elmValue as number) || (decPlaces === 0 && !/^(\d+(\.)?(\d)*)$/.test(elmValue))) {
+    } else if (isNaN(elmValue as number) || (decPlaces === 0 && !/^[-+]?(\d+(\.)?(\d)*)$/.test(elmValue))) {
       // when decimal value is 0 (which is the default), we accept 0 or more decimal values
       return {
         valid: false,
         msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER
       };
-    } else if (minValue !== undefined && minValue !== undefined && (floatNumber < minValue || floatNumber > maxValue)) {
+    } else if (minValue !== undefined && maxValue !== undefined && floatNumber !== null && (floatNumber < minValue || floatNumber > maxValue)) {
       // MIN & MAX Values provided
       // when decimal value is bigger than 0, we only accept the decimal values as that value set
       // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
@@ -151,7 +151,7 @@ export class FloatEditor implements Editor {
         valid: false,
         msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => mapValidation[matched])
       };
-    } else if (minValue !== undefined && floatNumber <= minValue) {
+    } else if (minValue !== undefined && floatNumber !== null && floatNumber <= minValue) {
       // MIN VALUE ONLY
       // when decimal value is bigger than 0, we only accept the decimal values as that value set
       // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
@@ -159,7 +159,7 @@ export class FloatEditor implements Editor {
         valid: false,
         msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MIN.replace(/{{minValue}}/gi, (matched) => mapValidation[matched])
       };
-    } else if (maxValue !== undefined && floatNumber >= maxValue) {
+    } else if (maxValue !== undefined && floatNumber !== null && floatNumber >= maxValue) {
       // MAX VALUE ONLY
       // when decimal value is bigger than 0, we only accept the decimal values as that value set
       // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
