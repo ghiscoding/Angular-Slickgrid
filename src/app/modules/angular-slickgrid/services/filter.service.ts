@@ -15,7 +15,7 @@ import {
   SlickEvent,
   OperatorString
 } from './../models/index';
-import { castToPromise } from './utilities';
+import { castToPromise, getDescendantProperty } from './utilities';
 import { FilterFactory } from '../filters/filterFactory';
 import { Subject } from 'rxjs/Subject';
 import * as isequal_ from 'lodash.isequal';
@@ -185,10 +185,16 @@ export class FilterService {
       if (!columnDef) {
         return false;
       }
+
+      const fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field;
       const fieldType = columnDef.type || FieldType.string;
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
+      let cellValue = item[fieldName];
 
-      let cellValue = item[columnDef.queryField || columnDef.queryFieldFilter || columnDef.field];
+      // when item is a complex object, we need to filter the value contained in the object following the dot "." notation
+      if (columnDef && columnDef.filter && columnDef.filter.isComplexObject) {
+        cellValue = getDescendantProperty(item, fieldName);
+      }
 
       // if we find searchTerms use them but make a deep copy so that we don't affect original array
       // we might have to overwrite the value(s) locally that are returned
