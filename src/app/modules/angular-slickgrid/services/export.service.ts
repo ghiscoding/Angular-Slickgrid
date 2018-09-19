@@ -34,6 +34,10 @@ export class ExportService {
 
   constructor(private translate: TranslateService) { }
 
+  private get datasetIdName(): string {
+    return this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';
+  }
+
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
@@ -134,7 +138,7 @@ export class ExportService {
 
       if (itemObj != null) {
         // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
-        if (itemObj.id != null) {
+        if (itemObj[this.datasetIdName] != null) {
           // get regular row item data
           outputDataStrings.push(this.readRegularRowData(columns, rowNumber, itemObj));
         } else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
