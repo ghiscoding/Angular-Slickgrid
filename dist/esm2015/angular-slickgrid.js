@@ -3023,9 +3023,14 @@ class FilterService {
             if (!columnDef) {
                 return false;
             }
+            const /** @type {?} */ fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field;
             const /** @type {?} */ fieldType = columnDef.type || FieldType.string;
             const /** @type {?} */ filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
-            let /** @type {?} */ cellValue = item[columnDef.queryField || columnDef.queryFieldFilter || columnDef.field];
+            let /** @type {?} */ cellValue = item[fieldName];
+            // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
+            if (fieldName.indexOf('.') >= 0) {
+                cellValue = getDescendantProperty(item, fieldName);
+            }
             // if we find searchTerms use them but make a deep copy so that we don't affect original array
             // we might have to overwrite the value(s) locally that are returned
             // e.g: we don't want to operator within the search value, since it will fail filter condition check trigger afterward
@@ -3348,6 +3353,12 @@ class ExportService {
         this.onGridAfterExportToFile = new Subject();
     }
     /**
+     * @return {?}
+     */
+    get datasetIdName() {
+        return this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';
+    }
+    /**
      * Getter for the Grid Options pulled through the Grid Object
      * @return {?}
      */
@@ -3441,7 +3452,7 @@ class ExportService {
             const /** @type {?} */ itemObj = this._dataView.getItem(rowNumber);
             if (itemObj != null) {
                 // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
-                if (itemObj.id != null) {
+                if (itemObj[this.datasetIdName] != null) {
                     // get regular row item data
                     outputDataStrings.push(this.readRegularRowData(columns, rowNumber, itemObj));
                 }
@@ -7790,14 +7801,14 @@ class FloatEditor {
                 return validationResults;
             }
         }
-        else if (isNaN(/** @type {?} */ (elmValue)) || (decPlaces === 0 && !/^(\d+(\.)?(\d)*)$/.test(elmValue))) {
+        else if (isNaN(/** @type {?} */ (elmValue)) || (decPlaces === 0 && !/^[-+]?(\d+(\.)?(\d)*)$/.test(elmValue))) {
             // when decimal value is 0 (which is the default), we accept 0 or more decimal values
             return {
                 valid: false,
                 msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER
             };
         }
-        else if (minValue !== undefined && minValue !== undefined && (floatNumber < minValue || floatNumber > maxValue)) {
+        else if (minValue !== undefined && maxValue !== undefined && floatNumber !== null && (floatNumber < minValue || floatNumber > maxValue)) {
             // MIN & MAX Values provided
             // when decimal value is bigger than 0, we only accept the decimal values as that value set
             // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
@@ -7806,7 +7817,7 @@ class FloatEditor {
                 msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => mapValidation[matched])
             };
         }
-        else if (minValue !== undefined && floatNumber <= minValue) {
+        else if (minValue !== undefined && floatNumber !== null && floatNumber <= minValue) {
             // MIN VALUE ONLY
             // when decimal value is bigger than 0, we only accept the decimal values as that value set
             // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
@@ -7815,7 +7826,7 @@ class FloatEditor {
                 msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MIN.replace(/{{minValue}}/gi, (matched) => mapValidation[matched])
             };
         }
-        else if (maxValue !== undefined && floatNumber >= maxValue) {
+        else if (maxValue !== undefined && floatNumber !== null && floatNumber >= maxValue) {
             // MAX VALUE ONLY
             // when decimal value is bigger than 0, we only accept the decimal values as that value set
             // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals

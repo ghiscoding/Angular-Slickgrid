@@ -2152,9 +2152,13 @@ var FilterService = /** @class */ (function () {
                 if (!columnDef) {
                     return false;
                 }
+                var fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field;
                 var fieldType = columnDef.type || FieldType.string;
                 var filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
-                var cellValue = item[columnDef.queryField || columnDef.queryFieldFilter || columnDef.field];
+                var cellValue = item[fieldName];
+                if (fieldName.indexOf('.') >= 0) {
+                    cellValue = getDescendantProperty(item, fieldName);
+                }
                 var searchValues = (columnFilter && columnFilter.searchTerms) ? __spread(columnFilter.searchTerms) : null;
                 var fieldSearchValue = (Array.isArray(searchValues) && searchValues.length === 1) ? searchValues[0] : '';
                 fieldSearchValue = '' + fieldSearchValue;
@@ -2407,6 +2411,13 @@ var ExportService = /** @class */ (function () {
         this.onGridBeforeExportToFile = new Subject.Subject();
         this.onGridAfterExportToFile = new Subject.Subject();
     }
+    Object.defineProperty(ExportService.prototype, "datasetIdName", {
+        get: function () {
+            return this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(ExportService.prototype, "_gridOptions", {
         get: function () {
             return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
@@ -2466,7 +2477,7 @@ var ExportService = /** @class */ (function () {
         for (var rowNumber = 0; rowNumber < lineCount; rowNumber++) {
             var itemObj = this._dataView.getItem(rowNumber);
             if (itemObj != null) {
-                if (itemObj.id != null) {
+                if (itemObj[this.datasetIdName] != null) {
                     outputDataStrings.push(this.readRegularRowData(columns, rowNumber, itemObj));
                 }
                 else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
@@ -5610,25 +5621,25 @@ var FloatEditor = /** @class */ (function () {
                 return validationResults;
             }
         }
-        else if (isNaN((elmValue)) || (decPlaces === 0 && !/^(\d+(\.)?(\d)*)$/.test(elmValue))) {
+        else if (isNaN((elmValue)) || (decPlaces === 0 && !/^[-+]?(\d+(\.)?(\d)*)$/.test(elmValue))) {
             return {
                 valid: false,
                 msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER
             };
         }
-        else if (minValue !== undefined && minValue !== undefined && (floatNumber < minValue || floatNumber > maxValue)) {
+        else if (minValue !== undefined && maxValue !== undefined && floatNumber !== null && (floatNumber < minValue || floatNumber > maxValue)) {
             return {
                 valid: false,
                 msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, function (matched) { return mapValidation[matched]; })
             };
         }
-        else if (minValue !== undefined && floatNumber <= minValue) {
+        else if (minValue !== undefined && floatNumber !== null && floatNumber <= minValue) {
             return {
                 valid: false,
                 msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MIN.replace(/{{minValue}}/gi, function (matched) { return mapValidation[matched]; })
             };
         }
-        else if (maxValue !== undefined && floatNumber >= maxValue) {
+        else if (maxValue !== undefined && floatNumber !== null && floatNumber >= maxValue) {
             return {
                 valid: false,
                 msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MAX.replace(/{{maxValue}}/gi, function (matched) { return mapValidation[matched]; })

@@ -20,6 +20,7 @@ export declare class ExportService {
         options: any;
     }>;
     constructor(translate: TranslateService);
+    private readonly datasetIdName;
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly _gridOptions;
     /**
