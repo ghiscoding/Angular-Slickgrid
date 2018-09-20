@@ -72,12 +72,6 @@ export interface ColumnFilter {
   enableTranslateLabel?: boolean;
 
   /**
-   * Defaults to false, does the filter has to deal with item that are complex object?
-   * If so, it will explode the object using the dot "." notation to find the value to filter against.
-   */
-  isComplexObject?: boolean;
-
-  /**
    * Use "params" to pass any type of arguments to your Custom Filter
    * for example, to pass a second collection to a select Filter we can type this:
    * params: { options: [{ value: true, label: 'True' }, { value: true, label: 'True'} ]}

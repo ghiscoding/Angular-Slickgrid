@@ -97,14 +97,18 @@ export class GridClientSideComponent implements OnInit {
       },
       { id: 'utcDate', name: 'UTC Date', field: 'utcDate', formatter: Formatters.dateTimeIsoAmPm, sortable: true, minWidth: 115,
         type: FieldType.dateUtc, outputType: FieldType.dateTimeIsoAmPm, filterable: true, filter: { model: Filters.compoundDate } },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven.isEffort', minWidth: 85, maxWidth: 85,
+      {
+        id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven.isEffort', minWidth: 85, maxWidth: 85,
         type: FieldType.boolean,
         sortable: true,
-        filterable: true,
+
         // to pass multiple formatters, use the params property
         // also these formatters are executed in sequence, so if you want the checkmark to work correctly, it has to be the last formatter defined
         formatter: Formatters.multiple,
         params: { formatters: [Formatters.complexObject, Formatters.checkmark] },
+
+        // when the "field" string includes the dot "." notation, the library will consider this to be a complex object and Filter accordingly
+        filterable: true,
         filter: {
           // We can also add HTML text to be rendered (any bad script will be sanitized) but we have to opt-in, else it will be sanitized
           // enableRenderHtml: true,
@@ -115,7 +119,6 @@ export class GridClientSideComponent implements OnInit {
             value: 'isEffort',
             label: 'label'
           },
-          isComplexObject: true,
           model: Filters.singleSelect,
 
           // we could add certain option(s) to the "multiple-select" plugin

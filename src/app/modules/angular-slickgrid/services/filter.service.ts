@@ -191,8 +191,8 @@ export class FilterService {
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
       let cellValue = item[fieldName];
 
-      // when item is a complex object, we need to filter the value contained in the object following the dot "." notation
-      if (columnDef && columnDef.filter && columnDef.filter.isComplexObject) {
+      // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
+      if (fieldName.indexOf('.') >= 0) {
         cellValue = getDescendantProperty(item, fieldName);
       }
 
