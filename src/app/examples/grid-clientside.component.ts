@@ -97,16 +97,28 @@ export class GridClientSideComponent implements OnInit {
       },
       { id: 'utcDate', name: 'UTC Date', field: 'utcDate', formatter: Formatters.dateTimeIsoAmPm, sortable: true, minWidth: 115,
         type: FieldType.dateUtc, outputType: FieldType.dateTimeIsoAmPm, filterable: true, filter: { model: Filters.compoundDate } },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', minWidth: 85, maxWidth: 85, formatter: Formatters.checkmark,
+      {
+        id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven.isEffort', minWidth: 85, maxWidth: 85,
         type: FieldType.boolean,
         sortable: true,
+
+        // to pass multiple formatters, use the params property
+        // also these formatters are executed in sequence, so if you want the checkmark to work correctly, it has to be the last formatter defined
+        formatter: Formatters.multiple,
+        params: { formatters: [Formatters.complexObject, Formatters.checkmark] },
+
+        // when the "field" string includes the dot "." notation, the library will consider this to be a complex object and Filter accordingly
         filterable: true,
         filter: {
           // We can also add HTML text to be rendered (any bad script will be sanitized) but we have to opt-in, else it will be sanitized
           // enableRenderHtml: true,
           // collection: [{ value: '', label: '' }, { value: true, label: 'True', labelPrefix: `<i class="fa fa-check"></i> ` }, { value: false, label: 'False' }],
 
-          collection: [ { value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' } ],
+          collection: [ { isEffort: '', label: '' }, { isEffort: true, label: 'True' }, { isEffort: false, label: 'False' } ],
+          customStructure: {
+            value: 'isEffort',
+            label: 'label'
+          },
           model: Filters.singleSelect,
 
           // we could add certain option(s) to the "multiple-select" plugin
@@ -162,6 +174,7 @@ export class GridClientSideComponent implements OnInit {
       const randomPercent = randomBetween(0, 100);
       const randomHour = randomBetween(10, 23);
       const randomTime = randomBetween(10, 59);
+      const randomIsEffort = (i % 3 === 0);
 
       tempDataset.push({
         id: i,
@@ -173,7 +186,10 @@ export class GridClientSideComponent implements OnInit {
         start: (i % 4) ? null : new Date(randomYear, randomMonth, randomDay),          // provide a Date format
         usDateShort: `${randomMonth}/${randomDay}/${randomYearShort}`, // provide a date US Short in the dataset
         utcDate: `${randomYear}-${randomMonthStr}-${randomDay}T${randomHour}:${randomTime}:${randomTime}Z`,
-        effortDriven: (i % 3 === 0)
+        effortDriven: {
+          isEffort: randomIsEffort,
+          label: randomIsEffort ? 'Effort' : 'NoEffort',
+        }
       });
     }
 
