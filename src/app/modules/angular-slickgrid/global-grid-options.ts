@@ -90,6 +90,5 @@ export const GlobalGridOptions: GridOption = {
     totalItems: 0
   },
   rowHeight: 35,
-  showHeaderRow: false,
   topPanelHeight: 35
 };

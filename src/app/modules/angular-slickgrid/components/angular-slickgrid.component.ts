@@ -77,6 +77,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _columnDefinitions: Column[];
   private _dataView: any;
   private _eventHandler: any = new Slick.EventHandler();
+  private _hideHeaderRowAfterPageLoad = false;
   grid: any;
   gridPaginationOptions: GridOption;
   gridHeightString: string;
@@ -214,6 +215,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this._dataView.beginUpdate();
     this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
     this._dataView.endUpdate();
+
+    // user might want to hide the header row on page load but still have `enableFiltering: true`
+    // if that is the case, we need to hide the headerRow ONLY AFTER all filters got created & dataView exist
+    if (this._hideHeaderRowAfterPageLoad) {
+      this.showHeaderRow(false);
+    }
 
     // after the DataView is created & updated execute some processes
     this.executeAfterDataviewCreated(this.grid, this.gridOptions, this._dataView);
@@ -506,8 +513,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     const options = $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
 
     // also make sure to show the header row if user have enabled filtering
+    this._hideHeaderRowAfterPageLoad = (options.showHeaderRow === false);
     if (options.enableFiltering && !options.showHeaderRow) {
-      options.showHeaderRow = true;
+      options.showHeaderRow = options.enableFiltering;
     }
     return options;
   }
