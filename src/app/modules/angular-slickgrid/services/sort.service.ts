@@ -1,7 +1,6 @@
 import { SortDirectionNumber } from './../models/sortDirectionNumber.enum';
 import { castToPromise } from './utilities';
 import {
-  CellArgs,
   Column,
   ColumnSort,
   CurrentSorter,
@@ -11,8 +10,8 @@ import {
   SortDirection,
   SortDirectionString
 } from './../models/index';
+import { getDescendantProperty } from './utilities';
 import { sortByFieldType } from '../sorters/sorterUtilities';
-import { Sorters } from './../sorters';
 import { Subject } from 'rxjs/Subject';
 
 // using external non-typed js libraries
@@ -224,8 +223,15 @@ export class SortService {
           const sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
           const sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
           const fieldType = columnSortObj.sortCol.type || FieldType.string;
-          const value1 = dataRow1[sortField];
-          const value2 = dataRow2[sortField];
+          let value1 = dataRow1[sortField];
+          let value2 = dataRow2[sortField];
+
+          // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
+          if (sortField && sortField.indexOf('.') >= 0) {
+            value1 = getDescendantProperty(dataRow1, sortField);
+            value2 = getDescendantProperty(dataRow2, sortField);
+          }
+
           const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
           if (sortResult !== SortDirectionNumber.neutral) {
             return sortResult;
