@@ -83,16 +83,26 @@ export class ResizerService {
     const gridOffsetTop = (coordOffsetTop !== undefined) ? coordOffsetTop.top : 0;
     const availableHeight = gridHeight - gridOffsetTop - bottomPadding;
     const availableWidth = containerElm.width() || 0;
+    const maxHeight = (gridOptions.autoResize && gridOptions.autoResize.maxHeight > 0) ? gridOptions.autoResize.maxHeight : undefined;
     const minHeight = (gridOptions.autoResize && gridOptions.autoResize.minHeight < 0) ? gridOptions.autoResize.minHeight : DATAGRID_MIN_HEIGHT;
+    const maxWidth = (gridOptions.autoResize && gridOptions.autoResize.maxWidth > 0) ? gridOptions.autoResize.maxWidth : undefined;
     const minWidth = (gridOptions.autoResize && gridOptions.autoResize.minWidth < 0) ? gridOptions.autoResize.minWidth : DATAGRID_MIN_WIDTH;
 
     let newHeight = availableHeight;
     let newWidth = (gridOptions.autoResize && gridOptions.autoResize.sidePadding) ? availableWidth - gridOptions.autoResize.sidePadding : availableWidth;
+
+    // optionally (when defined), make sure that grid height & width are within their thresholds
     if (newHeight < minHeight) {
       newHeight = minHeight;
     }
+    if (maxHeight && newHeight > maxHeight) {
+      newHeight = maxHeight;
+    }
     if (newWidth < minWidth) {
       newWidth = minWidth;
+    }
+    if (maxWidth && newWidth > maxWidth) {
+      newWidth = maxWidth;
     }
 
     return {
