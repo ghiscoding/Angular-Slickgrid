@@ -51,10 +51,10 @@ export interface ColumnFilter {
   collectionOptions?: CollectionOption;
 
   /** We could filter some items from the collection */
-  collectionFilterBy?: CollectionFilterBy;
+  collectionFilterBy?: CollectionFilterBy | CollectionFilterBy[];
 
   /** We could sort the collection by their value, or by translated value when enableTranslateLabel is True */
-  collectionSortBy?: CollectionSortBy;
+  collectionSortBy?: CollectionSortBy | CollectionSortBy[];
 
   /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Filter */
   customStructure?: CollectionCustomStructure;

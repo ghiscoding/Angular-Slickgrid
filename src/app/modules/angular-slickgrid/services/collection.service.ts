@@ -5,6 +5,7 @@ import {
   CollectionSortBy,
   FieldType,
   OperatorType,
+  SortDirectionNumber,
 } from './../models/index';
 import { sortByFieldType } from '../sorters/sorterUtilities';
 
@@ -13,11 +14,33 @@ export class CollectionService {
   constructor(private translate: TranslateService) { }
 
   /**
-   * Filter items from a collection
+   * Filter 1 or more items from a collection
+   * @param collection
+   * @param filterByOptions
+   */
+  filterCollection(collection: any[], filterByOptions: CollectionFilterBy | CollectionFilterBy[]): any[] {
+    let filteredCollection: any[] = [];
+
+    // when it's array, we will use the new filtered collection after every pass
+    // basically if input collection has 10 items on 1st pass and 1 item is filtered out, then on 2nd pass the input collection will be 9 items
+    if (Array.isArray(filterByOptions)) {
+      filteredCollection = collection;
+      for (const filter of filterByOptions) {
+        filteredCollection = this.singleFilterCollection(filteredCollection, filter);
+      }
+    } else {
+      filteredCollection = this.singleFilterCollection(collection, filterByOptions);
+    }
+
+    return filteredCollection;
+  }
+
+  /**
+   * Filter an item from a collection
    * @param collection
    * @param filterBy
    */
-  filterCollection(collection: any[], filterBy: CollectionFilterBy): any[] {
+  singleFilterCollection(collection: any[], filterBy: CollectionFilterBy): any[] {
     let filteredCollection: any[] = [];
 
     if (filterBy) {
@@ -48,25 +71,52 @@ export class CollectionService {
   }
 
   /**
-   * Sort items in a collection
+   * Sort 1 or more items in a collection
    * @param collection
-   * @param sortBy
+   * @param sortByOptions
    * @param enableTranslateLabel
    */
-  sortCollection(collection: any[], sortBy: CollectionSortBy, enableTranslateLabel?: boolean): any[] {
+  sortCollection(collection: any[], sortByOptions: CollectionSortBy | CollectionSortBy[], enableTranslateLabel?: boolean): any[] {
     let sortedCollection: any[] = [];
 
-    if (sortBy) {
-      const property = sortBy.property || '';
-      const sortDirection = sortBy.hasOwnProperty('sortDesc') ? (sortBy.sortDesc ? -1 : 1) : 1;
-      const fieldType = sortBy.fieldType || FieldType.string;
+    if (sortByOptions) {
+      if (Array.isArray(sortByOptions)) {
+        // multi-sort
+        sortedCollection = collection.sort((dataRow1: any, dataRow2: any) => {
+          for (let i = 0, l = sortByOptions.length; i < l; i++) {
+            const sortBy = sortByOptions[i];
 
-      sortedCollection = collection.sort((dataRow1: any, dataRow2: any) => {
-        const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[property] || ' ') : dataRow1[property];
-        const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[property] || ' ') : dataRow2[property];
-        const result = sortByFieldType(value1, value2, fieldType, sortDirection);
-        return result;
-      });
+            if (sortBy) {
+              const sortDirection = sortBy.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
+              const propertyName = sortBy.property || '';
+              const fieldType = sortBy.fieldType || FieldType.string;
+              const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[propertyName] || ' ') : dataRow1[propertyName];
+              const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[propertyName] || ' ') : dataRow2[propertyName];
+
+              const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+              if (sortResult !== SortDirectionNumber.neutral) {
+                return sortResult;
+              }
+            }
+          }
+          return SortDirectionNumber.neutral;
+        });
+      } else {
+        // single sort
+        const propertyName = sortByOptions.property || '';
+        const sortDirection = sortByOptions.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
+        const fieldType = sortByOptions.fieldType || FieldType.string;
+
+        sortedCollection = collection.sort((dataRow1: any, dataRow2: any) => {
+          const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[propertyName] || ' ') : dataRow1[propertyName];
+          const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[propertyName] || ' ') : dataRow2[propertyName];
+          const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+          if (sortResult !== SortDirectionNumber.neutral) {
+            return sortResult;
+          }
+          return SortDirectionNumber.neutral;
+        });
+      }
     }
 
     return sortedCollection;

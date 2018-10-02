@@ -238,7 +238,7 @@ export class SortService {
           }
         }
       }
-      return 0;
+      return SortDirectionNumber.neutral;
     });
     grid.invalidate();
     grid.render();
