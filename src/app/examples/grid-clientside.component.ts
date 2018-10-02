@@ -59,11 +59,17 @@ export class GridClientSideComponent implements OnInit {
         filterable: true,
         filter: {
           collectionAsync: this.http.get<{ option: string; value: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
-          collectionFilterBy: {
+          // collectionFilterBy & collectionSortBy accept a single option and/or array of options
+          // remove value 365 & 360 from the dropdown filter
+          collectionFilterBy: [{
             property: 'value',
             operator: OperatorType.notEqual,
             value: 365
-          },
+          }, {
+            property: 'value',
+            operator: OperatorType.notEqual,
+            value: 360
+          }],
           collectionSortBy: {
             property: 'value',
             sortDesc: true,
