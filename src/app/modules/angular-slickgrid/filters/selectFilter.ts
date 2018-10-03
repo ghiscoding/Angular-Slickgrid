@@ -207,7 +207,8 @@ export class SelectFilter implements Filter {
     // user might want to filter certain items of the collection
     if (this.columnDef && this.columnFilter && this.columnFilter.collectionFilterBy) {
       const filterBy = this.columnFilter.collectionFilterBy;
-      outputCollection = this.collectionService.filterCollection(outputCollection, filterBy);
+      const filterCollectionBy = this.columnFilter.collectionOptions && this.columnFilter.collectionOptions.filterAfterEachPass || null;
+      outputCollection = this.collectionService.filterCollection(outputCollection, filterBy, filterCollectionBy);
     }
 
     return outputCollection;

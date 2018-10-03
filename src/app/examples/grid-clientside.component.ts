@@ -63,12 +63,12 @@ export class GridClientSideComponent implements OnInit {
           // remove value 365 & 360 from the dropdown filter
           collectionFilterBy: [{
             property: 'value',
-            operator: OperatorType.notEqual,
-            value: 365
+            operator: OperatorType.contains,
+            value: 10
           }, {
             property: 'value',
-            operator: OperatorType.notEqual,
-            value: 360
+            operator: OperatorType.contains,
+            value: 20
           }],
           collectionSortBy: {
             property: 'value',
@@ -81,7 +81,8 @@ export class GridClientSideComponent implements OnInit {
             labelSuffix: 'text',
           },
           collectionOptions: {
-            separatorBetweenTextLabels: ' '
+            separatorBetweenTextLabels: ' ',
+            filterAfterEachPass: 'merge'
           },
           model: Filters.multipleSelect,
 
@@ -147,7 +148,7 @@ export class GridClientSideComponent implements OnInit {
       // use columnDef searchTerms OR use presets as shown below
       presets: {
         filters: [
-          { columnId: 'duration', searchTerms: [2, 22, 44] },
+          { columnId: 'duration', searchTerms: [10, 220] },
           // { columnId: 'complete', searchTerms: ['5'], operator: '>' },
           { columnId: 'usDateShort', operator: '<', searchTerms: ['4/20/25'] },
           // { columnId: 'effort-driven', searchTerms: [true] }
