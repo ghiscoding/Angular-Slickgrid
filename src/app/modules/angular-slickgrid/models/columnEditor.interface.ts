@@ -15,14 +15,14 @@ export interface ColumnEditor {
   /** A collection of items/options (commonly used with a Select/Multi-Select Editor) */
   collection?: any[];
 
-  /** We could filter some items from the collection */
-  collectionFilterBy?: CollectionFilterBy;
+  /** We could filter some 1 or more items from the collection */
+  collectionFilterBy?: CollectionFilterBy | CollectionFilterBy[];
 
   /** Options to change the behavior of the "collection" */
   collectionOptions?: CollectionOption;
 
-  /** We could sort the collection by their value, or by translated value when enableTranslateLabel is True */
-  collectionSortBy?: CollectionSortBy;
+  /** We could sort the collection by 1 or more properties, or by translated value(s) when enableTranslateLabel is True */
+  collectionSortBy?: CollectionSortBy | CollectionSortBy[];
 
   /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Editor */
   customStructure?: CollectionCustomStructure;
