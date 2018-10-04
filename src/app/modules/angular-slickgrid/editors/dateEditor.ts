@@ -111,10 +111,13 @@ export class DateEditor implements Editor {
 
   save() {
     // autocommit will not focus the next editor
-    if (this.args.grid.getOptions().autoCommitEdit) {
-      this.args.grid.getEditorLock().commitCurrentEdit();
-    } else {
-      this.args.commitChanges();
+    const validation = this.validate();
+    if (validation && validation.valid) {
+      if (this.args.grid.getOptions().autoCommitEdit) {
+        this.args.grid.getEditorLock().commitCurrentEdit();
+      } else {
+        this.args.commitChanges();
+      }
     }
   }
 
