@@ -26,7 +26,7 @@ export class LongTextEditor implements Editor {
   /** Grid options */
   gridOptions: GridOption;
 
-  /** The i18n aurelia library */
+  /** The translate library */
   private _translate: TranslateService;
 
   constructor(private args: any) {
@@ -64,7 +64,7 @@ export class LongTextEditor implements Editor {
     this.$wrapper = $(`<div class="slick-large-editor-text" />`).appendTo($container);
     this.$input = $(`<textarea hidefocus rows="5">`).appendTo(this.$wrapper);
 
-    // aurelia-slickgrid does not get the focus out event for some reason
+    // the lib does not get the focus out event for some reason
     // so register it here
     if (this.hasAutoCommitEdit) {
       this.$input.on('focusout', () => this.save());

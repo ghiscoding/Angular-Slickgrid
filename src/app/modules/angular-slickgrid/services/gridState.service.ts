@@ -49,12 +49,12 @@ export class GridStateService {
     this.subscribeToAllGridChanges(grid);
   }
 
-  /** Dispose of all the SlickGrid & Aurelia subscriptions */
+  /** Dispose of all the SlickGrid & Angular subscriptions */
   dispose() {
     // unsubscribe all SlickGrid events
     this._eventHandler.unsubscribeAll();
 
-    // also unsubscribe all Aurelia Subscriptions
+    // also unsubscribe all Angular Subscriptions
     this.subscriptions.forEach((subscription: Subscription) => {
       if (subscription && subscription.unsubscribe) {
         subscription.unsubscribe();

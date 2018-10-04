@@ -25,6 +25,10 @@ export class TextEditor implements Editor {
     return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
   }
 
+  get hasAutoCommitEdit() {
+    return this.args.grid.getOptions().autoCommitEdit;
+  }
+
   /** Get the Validator function, can be passed in Editor property or Column Definition */
   get validator(): EditorValidator {
     return this.columnEditor.validator || this.columnDef.validator;
@@ -38,6 +42,12 @@ export class TextEditor implements Editor {
           e.stopImmediatePropagation();
         }
       });
+
+    // the lib does not get the focus out event for some reason
+    // so register it here
+    if (this.hasAutoCommitEdit) {
+      this.$input.on('focusout', () => this.save());
+    }
 
     setTimeout(() => {
       this.$input.focus().select();
@@ -77,6 +87,14 @@ export class TextEditor implements Editor {
 
   isValueChanged() {
     return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
+  }
+
+  save() {
+    if (this.hasAutoCommitEdit) {
+      this.args.grid.getEditorLock().commitCurrentEdit();
+    } else {
+      this.args.commitChanges();
+    }
   }
 
   validate(): EditorValidatorOutput {

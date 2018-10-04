@@ -66,7 +66,7 @@ export class SelectEditor implements Editor {
   /** Collection Service */
   protected _collectionService: CollectionService;
 
-  /** The i18n aurelia library */
+  /** The translate library */
   protected _translate: TranslateService;
 
   constructor(protected args: any, protected isMultipleSelect) {
