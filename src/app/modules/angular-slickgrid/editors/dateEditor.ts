@@ -110,7 +110,12 @@ export class DateEditor implements Editor {
   }
 
   save() {
-    this.args.commitChanges();
+    // autocommit will not focus the next editor
+    if (this.args.grid.getOptions().autoCommitEdit) {
+      this.args.grid.getEditorLock().commitCurrentEdit();
+    } else {
+      this.args.commitChanges();
+    }
   }
 
   getColumnEditor() {
