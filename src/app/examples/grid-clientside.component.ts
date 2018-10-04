@@ -60,7 +60,7 @@ export class GridClientSideComponent implements OnInit {
         filter: {
           collectionAsync: this.http.get<{ option: string; value: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
           // collectionFilterBy & collectionSortBy accept a single or multiple options
-          // here we exclude certains values 365 & 360 from the dropdown filter
+          // we can exclude certains values 365 & 360 from the dropdown filter
           collectionFilterBy: [{
             property: 'value',
             operator: OperatorType.notEqual,
