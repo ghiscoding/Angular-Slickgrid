@@ -467,8 +467,8 @@ export function toKebabCase(str: string): string {
  * @param array input with possible duplicates
  * @return array output without duplicates
  */
-export function uniqueArray(arr): any[] {
-  return arr.filter((item, index) => {
+export function uniqueArray(arr: any[]): any[] {
+  return arr.filter((item: any, index: number) => {
     return arr.indexOf(item) >= index;
   });
 }

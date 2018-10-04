@@ -296,9 +296,9 @@ export class SelectEditor implements Editor {
     let outputCollection = inputCollection;
 
     // user might want to filter certain items of the collection
-    if (this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionFilterBy) {
-      const filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
-      const filterCollectionBy = this.columnDef.internalColumnEditor.collectionOptions && this.columnDef.internalColumnEditor.collectionOptions.filterAfterEachPass || null;
+    if (this.columnEditor && this.columnEditor.collectionFilterBy) {
+      const filterBy = this.columnEditor.collectionFilterBy;
+      const filterCollectionBy = this.columnEditor.collectionOptions && this.columnEditor.collectionOptions.filterAfterEachPass || null;
       outputCollection = this._collectionService.filterCollection(outputCollection, filterBy, filterCollectionBy);
     }
 

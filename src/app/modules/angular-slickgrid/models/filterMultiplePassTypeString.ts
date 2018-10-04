@@ -1,1 +1,1 @@
-export type FilterMultiplePassTypeString = 'merge' | 'extract';
+export type FilterMultiplePassTypeString = 'merge' | 'chain';
