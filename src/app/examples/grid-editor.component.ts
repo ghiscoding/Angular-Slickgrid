@@ -315,6 +315,7 @@ export class GridEditorComponent implements OnInit {
     this.gridOptions = {
       asyncEditorLoading: false,
       autoEdit: this.isAutoEdit,
+      autoCommitEdit: false,
       autoResize: {
         containerId: 'demo-container',
         sidePadding: 15
@@ -453,6 +454,14 @@ export class GridEditorComponent implements OnInit {
 
   onCellValidation(e, args) {
     alert(args.validationResults.msg);
+  }
+
+  changeAutoCommit() {
+    this.gridOptions.autoCommitEdit = !this.gridOptions.autoCommitEdit;
+    this.gridObj.setOptions({
+      autoCommitEdit: this.gridOptions.autoCommitEdit
+    });
+    return true;
   }
 
   setAutoEdit(isAutoEdit) {

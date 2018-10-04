@@ -80,7 +80,11 @@ export class SliderEditor implements Editor {
   }
 
   save() {
-    this.args.commitChanges();
+    if (this.args.grid.getOptions().autoCommitEdit) {
+      this.args.grid.getEditorLock().commitCurrentEdit();
+    } else {
+      this.args.commitChanges();
+    }
   }
 
   cancel() {

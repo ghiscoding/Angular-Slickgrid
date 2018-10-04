@@ -34,6 +34,11 @@ export class CheckboxEditor implements Editor {
     this.$input = $(`<input type="checkbox" value="true" class="editor-checkbox" />`);
     this.$input.appendTo(this.args.container);
     this.$input.focus();
+
+    // make the checkbox editor act like a regular checkbox that commit the value on click
+    if (this.args.grid.getOptions().autoCommitEdit) {
+      this.$input.click(() => this.args.grid.getEditorLock().commitCurrentEdit());
+    }
   }
 
   destroy(): void {
