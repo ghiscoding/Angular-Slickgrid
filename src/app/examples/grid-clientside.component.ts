@@ -59,16 +59,16 @@ export class GridClientSideComponent implements OnInit {
         filterable: true,
         filter: {
           collectionAsync: this.http.get<{ option: string; value: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
-          // collectionFilterBy & collectionSortBy accept a single option and/or array of options
-          // remove value 365 & 360 from the dropdown filter
+          // collectionFilterBy & collectionSortBy accept a single or multiple options
+          // we can exclude certains values 365 & 360 from the dropdown filter
           collectionFilterBy: [{
             property: 'value',
-            operator: OperatorType.contains,
-            value: 10
+            operator: OperatorType.notEqual,
+            value: 360
           }, {
             property: 'value',
-            operator: OperatorType.contains,
-            value: 20
+            operator: OperatorType.notEqual,
+            value: 365
           }],
           collectionSortBy: {
             property: 'value',
@@ -82,7 +82,7 @@ export class GridClientSideComponent implements OnInit {
           },
           collectionOptions: {
             separatorBetweenTextLabels: ' ',
-            filterAfterEachPass: 'merge'
+            filterResultAfterEachPass: 'chain' // options are "merge" or "chain" (defaults to "chain")
           },
           model: Filters.multipleSelect,
 

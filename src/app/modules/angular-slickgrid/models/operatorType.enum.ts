@@ -5,6 +5,9 @@ export enum OperatorType {
   /** value contains x */
   contains = 'Contains',
 
+  /** value not contains x (inversed of contains) */
+  notContains = 'Not_Contains',
+
   /** value less than x */
   lessThan = 'LT',
 
