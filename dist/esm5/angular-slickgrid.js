@@ -1,4 +1,4 @@
-import { __awaiter, __generator, __extends, __values, __spread } from 'tslib';
+import { __awaiter, __values, __spread, __generator, __extends } from 'tslib';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
@@ -108,6 +108,10 @@ var FileType = {
     xls: 'xls',
     xlsx: 'xlsx',
 };
+var FilterMultiplePassType = {
+    merge: 'merge',
+    chain: 'chain',
+};
 var GridStateType = {
     columns: 'columns',
     filter: 'filter',
@@ -147,6 +151,7 @@ KeyCode[KeyCode.UP] = "UP";
 var OperatorType = {
     empty: '',
     contains: 'Contains',
+    notContains: 'Not_Contains',
     lessThan: 'LT',
     lessThanOrEqual: 'LE',
     greaterThan: 'GT',
@@ -475,6 +480,11 @@ function toCamelCase(str) {
 function toKebabCase(str) {
     return toCamelCase(str).replace(/([A-Z])/g, '-$1').toLowerCase();
 }
+function uniqueArray(arr) {
+    return arr.filter(function (item, index) {
+        return arr.indexOf(item) >= index;
+    });
+}
 function unsubscribeAllObservables(subscriptions) {
     if (Array.isArray(subscriptions)) {
         subscriptions.forEach(function (subscription) {
@@ -578,7 +588,38 @@ var CollectionService = /** @class */ (function () {
     function CollectionService(translate) {
         this.translate = translate;
     }
-    CollectionService.prototype.filterCollection = function (collection, filterBy) {
+    CollectionService.prototype.filterCollection = function (collection, filterByOptions, filterResultBy) {
+        if (filterResultBy === void 0) { filterResultBy = FilterMultiplePassType.chain; }
+        var filteredCollection = [];
+        if (Array.isArray(filterByOptions)) {
+            filteredCollection = (filterResultBy === FilterMultiplePassType.merge) ? [] : collection;
+            try {
+                for (var filterByOptions_1 = __values(filterByOptions), filterByOptions_1_1 = filterByOptions_1.next(); !filterByOptions_1_1.done; filterByOptions_1_1 = filterByOptions_1.next()) {
+                    var filter = filterByOptions_1_1.value;
+                    if (filterResultBy === FilterMultiplePassType.merge) {
+                        var filteredPass = this.singleFilterCollection(collection, filter);
+                        filteredCollection = uniqueArray(__spread(filteredCollection, filteredPass));
+                    }
+                    else {
+                        filteredCollection = this.singleFilterCollection(filteredCollection, filter);
+                    }
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (filterByOptions_1_1 && !filterByOptions_1_1.done && (_a = filterByOptions_1.return)) _a.call(filterByOptions_1);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+        }
+        else {
+            filteredCollection = this.singleFilterCollection(collection, filterByOptions);
+        }
+        return filteredCollection;
+        var e_1, _a;
+    };
+    CollectionService.prototype.singleFilterCollection = function (collection, filterBy) {
         var filteredCollection = [];
         if (filterBy) {
             var property_1 = filterBy.property || '';
@@ -588,34 +629,56 @@ var CollectionService = /** @class */ (function () {
                 case OperatorType.equal:
                     filteredCollection = collection.filter(function (item) { return item[property_1] === value_1; });
                     break;
-                case OperatorType.in:
-                    filteredCollection = collection.filter(function (item) { return item[property_1].indexOf(value_1) !== -1; });
-                    break;
-                case OperatorType.notIn:
-                    filteredCollection = collection.filter(function (item) { return item[property_1].indexOf(value_1) === -1; });
-                    break;
                 case OperatorType.contains:
-                    filteredCollection = collection.filter(function (item) { return value_1.indexOf(item[property_1]) !== -1; });
+                    filteredCollection = collection.filter(function (item) { return item[property_1].toString().indexOf(value_1.toString()) !== -1; });
                     break;
+                case OperatorType.notContains:
+                    filteredCollection = collection.filter(function (item) { return item[property_1].toString().indexOf(value_1.toString()) === -1; });
+                    break;
+                case OperatorType.notEqual:
                 default:
                     filteredCollection = collection.filter(function (item) { return item[property_1] !== value_1; });
             }
         }
         return filteredCollection;
     };
-    CollectionService.prototype.sortCollection = function (collection, sortBy, enableTranslateLabel) {
+    CollectionService.prototype.sortCollection = function (collection, sortByOptions, enableTranslateLabel) {
         var _this = this;
         var sortedCollection = [];
-        if (sortBy) {
-            var property_2 = sortBy.property || '';
-            var sortDirection_1 = sortBy.hasOwnProperty('sortDesc') ? (sortBy.sortDesc ? -1 : 1) : 1;
-            var fieldType_1 = sortBy.fieldType || FieldType.string;
-            sortedCollection = collection.sort(function (dataRow1, dataRow2) {
-                var value1 = (enableTranslateLabel) ? _this.translate.instant(dataRow1[property_2] || ' ') : dataRow1[property_2];
-                var value2 = (enableTranslateLabel) ? _this.translate.instant(dataRow2[property_2] || ' ') : dataRow2[property_2];
-                var result = sortByFieldType(value1, value2, fieldType_1, sortDirection_1);
-                return result;
-            });
+        if (sortByOptions) {
+            if (Array.isArray(sortByOptions)) {
+                sortedCollection = collection.sort(function (dataRow1, dataRow2) {
+                    for (var i = 0, l = sortByOptions.length; i < l; i++) {
+                        var sortBy = sortByOptions[i];
+                        if (sortBy) {
+                            var sortDirection = sortBy.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
+                            var propertyName = sortBy.property || '';
+                            var fieldType = sortBy.fieldType || FieldType.string;
+                            var value1 = (enableTranslateLabel) ? _this.translate.instant(dataRow1[propertyName] || ' ') : dataRow1[propertyName];
+                            var value2 = (enableTranslateLabel) ? _this.translate.instant(dataRow2[propertyName] || ' ') : dataRow2[propertyName];
+                            var sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+                            if (sortResult !== SortDirectionNumber.neutral) {
+                                return sortResult;
+                            }
+                        }
+                    }
+                    return SortDirectionNumber.neutral;
+                });
+            }
+            else {
+                var propertyName_1 = sortByOptions.property || '';
+                var sortDirection_1 = sortByOptions.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
+                var fieldType_1 = sortByOptions.fieldType || FieldType.string;
+                sortedCollection = collection.sort(function (dataRow1, dataRow2) {
+                    var value1 = (enableTranslateLabel) ? _this.translate.instant(dataRow1[propertyName_1] || ' ') : dataRow1[propertyName_1];
+                    var value2 = (enableTranslateLabel) ? _this.translate.instant(dataRow2[propertyName_1] || ' ') : dataRow2[propertyName_1];
+                    var sortResult = sortByFieldType(value1, value2, fieldType_1, sortDirection_1);
+                    if (sortResult !== SortDirectionNumber.neutral) {
+                        return sortResult;
+                    }
+                    return SortDirectionNumber.neutral;
+                });
+            }
         }
         return sortedCollection;
     };
@@ -1438,10 +1501,11 @@ var SelectFilter = /** @class */ (function () {
             throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" (or \"collectionAsync\") for the MultipleSelect/SingleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
         }
         this.enableTranslateLabel = this.columnFilter.enableTranslateLabel;
-        this.labelName = (this.customStructure) ? this.customStructure.label : 'label';
-        this.labelPrefixName = (this.customStructure) ? this.customStructure.labelPrefix : 'labelPrefix';
-        this.labelSuffixName = (this.customStructure) ? this.customStructure.labelSuffix : 'labelSuffix';
-        this.valueName = (this.customStructure) ? this.customStructure.value : 'value';
+        this.labelName = this.customStructure && this.customStructure.label || 'label';
+        this.labelPrefixName = this.customStructure && this.customStructure.labelPrefix || 'labelPrefix';
+        this.labelSuffixName = this.customStructure && this.customStructure.labelSuffix || 'labelSuffix';
+        this.optionLabel = this.customStructure && this.customStructure.optionLabel || 'value';
+        this.valueName = this.customStructure && this.customStructure.value || 'value';
         var newCollection = this.columnFilter.collection || [];
         this.renderDomElement(newCollection);
         var collectionAsync = this.columnFilter && this.columnFilter.collectionAsync;
@@ -1476,7 +1540,8 @@ var SelectFilter = /** @class */ (function () {
         var outputCollection = inputCollection;
         if (this.columnDef && this.columnFilter && this.columnFilter.collectionFilterBy) {
             var filterBy = this.columnFilter.collectionFilterBy;
-            outputCollection = this.collectionService.filterCollection(outputCollection, filterBy);
+            var filterCollectionBy = this.columnFilter.collectionOptions && this.columnFilter.collectionOptions.filterResultAfterEachPass || null;
+            outputCollection = this.collectionService.filterCollection(outputCollection, filterBy, filterCollectionBy);
         }
         return outputCollection;
     };
@@ -1554,12 +1619,14 @@ var SelectFilter = /** @class */ (function () {
             var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
             var prefixText = option[_this.labelPrefixName] || '';
             var suffixText = option[_this.labelSuffixName] || '';
+            var optionLabel = option[_this.optionLabel] || '';
+            optionLabel = optionLabel.toString().replace(/\"/g, '\'');
             var optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
             if (isRenderHtmlEnabled) {
                 var sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
                 optionText = htmlEncode(sanitizedText);
             }
-            options += "<option value=\"" + option[_this.valueName] + "\" " + selected + ">" + optionText + "</option>";
+            options += "<option value=\"" + option[_this.valueName] + "\" label=\"" + optionLabel + "\" " + selected + ">" + optionText + "</option>";
             if (selected) {
                 _this.isFilled = true;
             }
@@ -1741,7 +1808,7 @@ var SliderFilter = /** @class */ (function () {
     SliderFilter.prototype.init = function (args) {
         var _this = this;
         if (!args) {
-            throw new Error('[Aurelia-SlickGrid] A filter must always have an "init()" with valid arguments.');
+            throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
         }
         this.grid = args.grid;
         this.callback = args.callback;
@@ -1918,7 +1985,6 @@ var GlobalGridOptions = {
         totalItems: 0
     },
     rowHeight: 35,
-    showHeaderRow: false,
     topPanelHeight: 35
 };
 var SlickgridConfig = /** @class */ (function () {
@@ -2139,15 +2205,15 @@ var FilterService = /** @class */ (function () {
                 }
             }
         }
-        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        catch (e_2_1) { e_2 = { error: e_2_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_1) throw e_1.error; }
+            finally { if (e_2) throw e_2.error; }
         }
         return true;
-        var e_1, _c;
+        var e_2, _c;
     };
     FilterService.prototype.dispose = function () {
         this.disposeColumnFilters();
@@ -2191,16 +2257,16 @@ var FilterService = /** @class */ (function () {
                     }
                 }
             }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            catch (e_3_1) { e_3 = { error: e_3_1 }; }
             finally {
                 try {
                     if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
                 }
-                finally { if (e_2) throw e_2.error; }
+                finally { if (e_3) throw e_3.error; }
             }
         }
         return currentFilters;
-        var e_2, _c;
+        var e_3, _c;
     };
     FilterService.prototype.callbackSearchEvent = function (e, args) {
         if (args) {
@@ -2712,13 +2778,17 @@ var SortService = /** @class */ (function () {
                     var fieldType = columnSortObj.sortCol.type || FieldType.string;
                     var value1 = dataRow1[sortField];
                     var value2 = dataRow2[sortField];
+                    if (sortField && sortField.indexOf('.') >= 0) {
+                        value1 = getDescendantProperty(dataRow1, sortField);
+                        value2 = getDescendantProperty(dataRow2, sortField);
+                    }
                     var sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
                     if (sortResult !== SortDirectionNumber.neutral) {
                         return sortResult;
                     }
                 }
             }
-            return 0;
+            return SortDirectionNumber.neutral;
         });
         grid.invalidate();
         grid.render();
@@ -3466,14 +3536,14 @@ var ControlAndPluginService = /** @class */ (function () {
                 }
             }
         }
-        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        catch (e_4_1) { e_4 = { error: e_4_1 }; }
         finally {
             try {
                 if (items_1_1 && !items_1_1.done && (_a = items_1.return)) _a.call(items_1);
             }
-            finally { if (e_3) throw e_3.error; }
+            finally { if (e_4) throw e_4.error; }
         }
-        var e_3, _a;
+        var e_4, _a;
     };
     return ControlAndPluginService;
 }());
@@ -3517,15 +3587,15 @@ var GraphqlQueryBuilder = /** @class */ (function () {
                 this.head.push(prop + ":" + val);
             }
         }
-        catch (e_4_1) { e_4 = { error: e_4_1 }; }
+        catch (e_5_1) { e_5 = { error: e_5_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_4) throw e_4.error; }
+            finally { if (e_5) throw e_5.error; }
         }
         return this;
-        var e_4, _c;
+        var e_5, _c;
     };
     GraphqlQueryBuilder.prototype.find = function () {
         var searches = [];
@@ -3605,15 +3675,15 @@ var GraphqlQueryBuilder = /** @class */ (function () {
                 sourceA.push(prop + ":" + this.getGraphQLValue(obj[prop]));
             }
         }
-        catch (e_5_1) { e_5 = { error: e_5_1 }; }
+        catch (e_6_1) { e_6 = { error: e_6_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_5) throw e_5.error; }
+            finally { if (e_6) throw e_6.error; }
         }
         return "{" + sourceA.join() + "}";
-        var e_5, _c;
+        var e_6, _c;
     };
     return GraphqlQueryBuilder;
 }());
@@ -3656,12 +3726,12 @@ var GraphqlService = /** @class */ (function () {
                     }
                 }
             }
-            catch (e_6_1) { e_6 = { error: e_6_1 }; }
+            catch (e_7_1) { e_7 = { error: e_7_1 }; }
             finally {
                 try {
                     if (columnDefinitions_1_1 && !columnDefinitions_1_1.done && (_a = columnDefinitions_1.return)) _a.call(columnDefinitions_1);
                 }
-                finally { if (e_6) throw e_6.error; }
+                finally { if (e_7) throw e_7.error; }
             }
         }
         else {
@@ -3701,19 +3771,19 @@ var GraphqlService = /** @class */ (function () {
                     datasetFilters[queryArgument.field] = queryArgument.value;
                 }
             }
-            catch (e_7_1) { e_7 = { error: e_7_1 }; }
+            catch (e_8_1) { e_8 = { error: e_8_1 }; }
             finally {
                 try {
                     if (_c && !_c.done && (_d = _b.return)) _d.call(_b);
                 }
-                finally { if (e_7) throw e_7.error; }
+                finally { if (e_8) throw e_8.error; }
             }
         }
         datasetQb.filter(datasetFilters);
         queryQb.find(datasetQb);
         var enumSearchProperties = ['direction:', 'field:', 'operator:'];
         return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.options.keepArgumentFieldDoubleQuotes || false);
-        var e_6, _a, e_7, _d;
+        var e_7, _a, e_8, _d;
     };
     GraphqlService.prototype.buildFilterQuery = function (inputArray) {
         var set = function (o, a) {
@@ -3932,19 +4002,19 @@ var GraphqlService = /** @class */ (function () {
                             }
                         }
                     }
-                    catch (e_8_1) { e_8 = { error: e_8_1 }; }
+                    catch (e_9_1) { e_9 = { error: e_9_1 }; }
                     finally {
                         try {
                             if (sortColumns_1_1 && !sortColumns_1_1.done && (_a = sortColumns_1.return)) _a.call(sortColumns_1);
                         }
-                        finally { if (e_8) throw e_8.error; }
+                        finally { if (e_9) throw e_9.error; }
                     }
                 }
             }
         }
         this._currentSorters = currentSorters;
         this.updateOptions({ sortingOptions: graphqlSorters });
-        var e_8, _a;
+        var e_9, _a;
     };
     GraphqlService.prototype.trimDoubleQuotesOnEnumField = function (inputStr, enumSearchWords, keepArgumentFieldDoubleQuotes) {
         var patternWordInQuotes = "s?((field:s*)?\".*?\")";
@@ -4147,14 +4217,14 @@ var OdataService = /** @class */ (function () {
                 }
             }
         }
-        catch (e_9_1) { e_9 = { error: e_9_1 }; }
+        catch (e_10_1) { e_10 = { error: e_10_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_9) throw e_9.error; }
+            finally { if (e_10) throw e_10.error; }
         }
-        var e_9, _c;
+        var e_10, _c;
     };
     return OdataService;
 }());
@@ -4411,12 +4481,12 @@ var GridOdataService = /** @class */ (function () {
                             }
                         }
                     }
-                    catch (e_10_1) { e_10 = { error: e_10_1 }; }
+                    catch (e_11_1) { e_11 = { error: e_11_1 }; }
                     finally {
                         try {
                             if (sortColumns_2_1 && !sortColumns_2_1.done && (_a = sortColumns_2.return)) _a.call(sortColumns_2);
                         }
-                        finally { if (e_10) throw e_10.error; }
+                        finally { if (e_11) throw e_11.error; }
                     }
                     sortByArray = sorterArray;
                 }
@@ -4429,7 +4499,7 @@ var GridOdataService = /** @class */ (function () {
         });
         this._currentSorters = (sortByArray);
         return this.odataService.buildQuery();
-        var e_10, _a;
+        var e_11, _a;
     };
     GridOdataService.prototype.castFilterToColumnFilter = function (columnFilters) {
         var filtersArray = (((typeof columnFilters === 'object') ? Object.keys(columnFilters).map(function (key) { return columnFilters[key]; }) : columnFilters));
@@ -5045,12 +5115,13 @@ var ResizerService = /** @class */ (function () {
     };
     ResizerService.prototype.calculateGridNewDimensions = function (gridOptions) {
         var gridDomElm = $("#" + gridOptions.gridId);
-        var containerElm = (gridOptions.autoResize && gridOptions.autoResize.containerId) ? $("#" + gridOptions.autoResize.containerId) : $("#" + gridOptions.gridContainerId);
+        var autoResizeOptions = gridOptions && gridOptions.autoResize;
+        var containerElm = (autoResizeOptions && autoResizeOptions.containerId) ? $("#" + autoResizeOptions.containerId) : $("#" + gridOptions.gridContainerId);
         var windowElm = $(window);
         if (windowElm === undefined || containerElm === undefined || gridDomElm === undefined) {
             return null;
         }
-        var bottomPadding = (gridOptions.autoResize && gridOptions.autoResize.bottomPadding) ? gridOptions.autoResize.bottomPadding : DATAGRID_BOTTOM_PADDING;
+        var bottomPadding = (autoResizeOptions && autoResizeOptions.bottomPadding) ? autoResizeOptions.bottomPadding : DATAGRID_BOTTOM_PADDING;
         if (bottomPadding && (gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
             bottomPadding += DATAGRID_PAGINATION_HEIGHT;
         }
@@ -5059,15 +5130,23 @@ var ResizerService = /** @class */ (function () {
         var gridOffsetTop = (coordOffsetTop !== undefined) ? coordOffsetTop.top : 0;
         var availableHeight = gridHeight - gridOffsetTop - bottomPadding;
         var availableWidth = containerElm.width() || 0;
-        var minHeight = (gridOptions.autoResize && gridOptions.autoResize.minHeight < 0) ? gridOptions.autoResize.minHeight : DATAGRID_MIN_HEIGHT;
-        var minWidth = (gridOptions.autoResize && gridOptions.autoResize.minWidth < 0) ? gridOptions.autoResize.minWidth : DATAGRID_MIN_WIDTH;
+        var maxHeight = (autoResizeOptions && autoResizeOptions.maxHeight && autoResizeOptions.maxHeight > 0) ? autoResizeOptions.maxHeight : undefined;
+        var minHeight = (autoResizeOptions && autoResizeOptions.minHeight && autoResizeOptions.minHeight < 0) ? autoResizeOptions.minHeight : DATAGRID_MIN_HEIGHT;
+        var maxWidth = (autoResizeOptions && autoResizeOptions.maxWidth && autoResizeOptions.maxWidth > 0) ? autoResizeOptions.maxWidth : undefined;
+        var minWidth = (autoResizeOptions && autoResizeOptions.minWidth && autoResizeOptions.minWidth < 0) ? autoResizeOptions.minWidth : DATAGRID_MIN_WIDTH;
         var newHeight = availableHeight;
-        var newWidth = (gridOptions.autoResize && gridOptions.autoResize.sidePadding) ? availableWidth - gridOptions.autoResize.sidePadding : availableWidth;
+        var newWidth = (autoResizeOptions && autoResizeOptions.sidePadding) ? availableWidth - autoResizeOptions.sidePadding : availableWidth;
         if (newHeight < minHeight) {
             newHeight = minHeight;
         }
+        if (maxHeight && newHeight > maxHeight) {
+            newHeight = maxHeight;
+        }
         if (newWidth < minWidth) {
             newWidth = minWidth;
+        }
+        if (maxWidth && newWidth > maxWidth) {
+            newWidth = maxWidth;
         }
         return {
             height: newHeight,
@@ -5256,9 +5335,13 @@ var CheckboxEditor = /** @class */ (function () {
         configurable: true
     });
     CheckboxEditor.prototype.init = function () {
+        var _this = this;
         this.$input = $("<input type=\"checkbox\" value=\"true\" class=\"editor-checkbox\" />");
         this.$input.appendTo(this.args.container);
         this.$input.focus();
+        if (this.args.grid.getOptions().autoCommitEdit) {
+            this.$input.click(function () { return _this.args.grid.getEditorLock().commitCurrentEdit(); });
+        }
     };
     CheckboxEditor.prototype.destroy = function () {
         this.$input.remove();
@@ -5396,7 +5479,15 @@ var DateEditor = /** @class */ (function () {
         this.$input.focus();
     };
     DateEditor.prototype.save = function () {
-        this.args.commitChanges();
+        var validation = this.validate();
+        if (validation && validation.valid) {
+            if (this.args.grid.getOptions().autoCommitEdit) {
+                this.args.grid.getEditorLock().commitCurrentEdit();
+            }
+            else {
+                this.args.commitChanges();
+            }
+        }
     };
     DateEditor.prototype.getColumnEditor = function () {
         return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
@@ -5459,6 +5550,13 @@ var FloatEditor = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(FloatEditor.prototype, "hasAutoCommitEdit", {
+        get: function () {
+            return this.args.grid.getOptions().autoCommitEdit;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(FloatEditor.prototype, "validator", {
         get: function () {
             return this.columnEditor.validator || this.columnDef.validator;
@@ -5475,6 +5573,9 @@ var FloatEditor = /** @class */ (function () {
                 e.stopImmediatePropagation();
             }
         });
+        if (this.hasAutoCommitEdit) {
+            this.$input.on('focusout', function () { return _this.save(); });
+        }
         setTimeout(function () {
             _this.$input.focus().select();
         }, 50);
@@ -5534,6 +5635,17 @@ var FloatEditor = /** @class */ (function () {
     FloatEditor.prototype.isValueChanged = function () {
         var elmValue = this.$input.val();
         return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
+    };
+    FloatEditor.prototype.save = function () {
+        var validation = this.validate();
+        if (validation && validation.valid) {
+            if (this.hasAutoCommitEdit) {
+                this.args.grid.getEditorLock().commitCurrentEdit();
+            }
+            else {
+                this.args.commitChanges();
+            }
+        }
     };
     FloatEditor.prototype.validate = function () {
         var elmValue = this.$input.val();
@@ -5610,6 +5722,13 @@ var IntegerEditor = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(IntegerEditor.prototype, "hasAutoCommitEdit", {
+        get: function () {
+            return this.args.grid.getOptions().autoCommitEdit;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(IntegerEditor.prototype, "validator", {
         get: function () {
             return this.columnEditor.validator || this.columnDef.validator;
@@ -5626,6 +5745,9 @@ var IntegerEditor = /** @class */ (function () {
                 e.stopImmediatePropagation();
             }
         });
+        if (this.hasAutoCommitEdit) {
+            this.$input.on('focusout', function () { return _this.save(); });
+        }
         setTimeout(function () {
             _this.$input.focus().select();
         }, 50);
@@ -5655,6 +5777,17 @@ var IntegerEditor = /** @class */ (function () {
         var elmValue = this.$input.val();
         var value = isNaN(elmValue) ? elmValue : parseInt(elmValue, 10);
         return (!(value === '' && this.defaultValue === null)) && (value !== this.defaultValue);
+    };
+    IntegerEditor.prototype.save = function () {
+        var validation = this.validate();
+        if (validation && validation.valid) {
+            if (this.hasAutoCommitEdit) {
+                this.args.grid.getEditorLock().commitCurrentEdit();
+            }
+            else {
+                this.args.commitChanges();
+            }
+        }
     };
     IntegerEditor.prototype.validate = function () {
         var elmValue = this.$input.val();
@@ -5707,6 +5840,13 @@ var LongTextEditor = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(LongTextEditor.prototype, "hasAutoCommitEdit", {
+        get: function () {
+            return this.args.grid.getOptions().autoCommitEdit;
+        },
+        enumerable: true,
+        configurable: true
+    });
     LongTextEditor.prototype.init = function () {
         var _this = this;
         var cancelText = this._translate && this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
@@ -5714,6 +5854,9 @@ var LongTextEditor = /** @class */ (function () {
         var $container = $('body');
         this.$wrapper = $("<div class=\"slick-large-editor-text\" />").appendTo($container);
         this.$input = $("<textarea hidefocus rows=\"5\">").appendTo(this.$wrapper);
+        if (this.hasAutoCommitEdit) {
+            this.$input.on('focusout', function () { return _this.save(); });
+        }
         $("<div class=\"editor-footer\">\n          <button class=\"btn btn-primary btn-xs\">" + saveText + "</button>\n          <button class=\"btn btn-default btn-xs\">" + cancelText + "</button>\n      </div>").appendTo(this.$wrapper);
         this.$wrapper.find('button:first').on('click', function () { return _this.save(); });
         this.$wrapper.find('button:last').on('click', function () { return _this.cancel(); });
@@ -5743,8 +5886,14 @@ var LongTextEditor = /** @class */ (function () {
         }
     };
     LongTextEditor.prototype.save = function () {
-        if (this.args && this.args.commitChanges) {
-            this.args.commitChanges();
+        var validation = this.validate();
+        if (validation && validation.valid) {
+            if (this.hasAutoCommitEdit) {
+                this.args.grid.getEditorLock().commitCurrentEdit();
+            }
+            else {
+                this.args.commitChanges();
+            }
         }
     };
     LongTextEditor.prototype.cancel = function () {
@@ -5808,6 +5957,7 @@ var SelectEditor = /** @class */ (function () {
         this.args = args;
         this.isMultipleSelect = isMultipleSelect;
         this._subscriptions = [];
+        this._destroying = false;
         this.gridOptions = (this.args.grid.getOptions());
         var gridOptions = this.gridOptions || this.args.column.params || {};
         this._translate = gridOptions.i18n;
@@ -5826,7 +5976,12 @@ var SelectEditor = /** @class */ (function () {
                 var isRenderHtmlEnabled = _this.columnDef && _this.columnDef.internalColumnEditor && _this.columnDef.internalColumnEditor.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
-            onBlur: function () { return _this.destroy(); }
+            onBlur: function () { return _this.destroy(); },
+            onClose: function () {
+                if (!_this._destroying && args.grid.getOptions().autoCommitEdit) {
+                    args.grid.getEditorLock().commitCurrentEdit();
+                }
+            }
         };
         if (isMultipleSelect) {
             libOptions.single = false;
@@ -5933,16 +6088,18 @@ var SelectEditor = /** @class */ (function () {
         }
         this._collectionService = new CollectionService(this._translate);
         this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
-        this.labelName = (this.customStructure) ? this.customStructure.label : 'label';
-        this.labelPrefixName = (this.customStructure) ? this.customStructure.labelPrefix : 'labelPrefix';
-        this.labelSuffixName = (this.customStructure) ? this.customStructure.labelSuffix : 'labelSuffix';
-        this.valueName = (this.customStructure) ? this.customStructure.value : 'value';
+        this.labelName = this.customStructure && this.customStructure.label || 'label';
+        this.labelPrefixName = this.customStructure && this.customStructure.labelPrefix || 'labelPrefix';
+        this.labelSuffixName = this.customStructure && this.customStructure.labelSuffix || 'labelSuffix';
+        this.optionLabel = this.customStructure && this.customStructure.optionLabel || 'value';
+        this.valueName = this.customStructure && this.customStructure.value || 'value';
         this.renderDomElement(this.collection);
     };
     SelectEditor.prototype.applyValue = function (item, state) {
         item[this.columnDef.field] = state;
     };
     SelectEditor.prototype.destroy = function () {
+        this._destroying = true;
         if (this.$editorElm && this.$editorElm.multipleSelect) {
             this.$editorElm.multipleSelect('close');
             this.$editorElm.remove();
@@ -6001,9 +6158,10 @@ var SelectEditor = /** @class */ (function () {
     };
     SelectEditor.prototype.filterCollection = function (inputCollection) {
         var outputCollection = inputCollection;
-        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionFilterBy) {
-            var filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
-            outputCollection = this._collectionService.filterCollection(outputCollection, filterBy);
+        if (this.columnEditor && this.columnEditor.collectionFilterBy) {
+            var filterBy = this.columnEditor.collectionFilterBy;
+            var filterCollectionBy = this.columnEditor.collectionOptions && this.columnEditor.collectionOptions.filterAfterEachPass || null;
+            outputCollection = this._collectionService.filterCollection(outputCollection, filterBy, filterCollectionBy);
         }
         return outputCollection;
     };
@@ -6045,12 +6203,14 @@ var SelectEditor = /** @class */ (function () {
             var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
             var prefixText = option[_this.labelPrefixName] || '';
             var suffixText = option[_this.labelSuffixName] || '';
+            var optionLabel = option[_this.optionLabel] || '';
+            optionLabel = optionLabel.toString().replace(/\"/g, '\'');
             var optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
             if (isRenderHtmlEnabled) {
                 var sanitizedText = DOMPurify$1.sanitize(optionText, sanitizedOptions);
                 optionText = htmlEncode(sanitizedText);
             }
-            options += "<option value=\"" + option[_this.valueName] + "\">" + optionText + "</option>";
+            options += "<option value=\"" + option[_this.valueName] + "\" label=\"" + optionLabel + "\">" + optionText + "</option>";
         });
         return "<select id=\"" + this.elementName + "\" class=\"ms-filter search-filter\" " + (this.isMultipleSelect ? 'multiple="multiple"' : '') + ">" + options + "</select>";
     };
@@ -6171,7 +6331,12 @@ var SliderEditor = /** @class */ (function () {
         this.$editorElm.focus();
     };
     SliderEditor.prototype.save = function () {
-        this.args.commitChanges();
+        if (this.args.grid.getOptions().autoCommitEdit) {
+            this.args.grid.getEditorLock().commitCurrentEdit();
+        }
+        else {
+            this.args.commitChanges();
+        }
     };
     SliderEditor.prototype.cancel = function () {
         this.$input.val(this.defaultValue);
@@ -6253,6 +6418,13 @@ var TextEditor = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(TextEditor.prototype, "hasAutoCommitEdit", {
+        get: function () {
+            return this.args.grid.getOptions().autoCommitEdit;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(TextEditor.prototype, "validator", {
         get: function () {
             return this.columnEditor.validator || this.columnDef.validator;
@@ -6269,6 +6441,9 @@ var TextEditor = /** @class */ (function () {
                 e.stopImmediatePropagation();
             }
         });
+        if (this.hasAutoCommitEdit) {
+            this.$input.on('focusout', function () { return _this.save(); });
+        }
         setTimeout(function () {
             _this.$input.focus().select();
         }, 50);
@@ -6299,6 +6474,17 @@ var TextEditor = /** @class */ (function () {
     };
     TextEditor.prototype.isValueChanged = function () {
         return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
+    };
+    TextEditor.prototype.save = function () {
+        var validation = this.validate();
+        if (validation && validation.valid) {
+            if (this.hasAutoCommitEdit) {
+                this.args.grid.getEditorLock().commitCurrentEdit();
+            }
+            else {
+                this.args.commitChanges();
+            }
+        }
     };
     TextEditor.prototype.validate = function () {
         if (this.validator) {
@@ -6552,15 +6738,15 @@ var multipleFormatter = function (row, cell, value, columnDef, dataContext, grid
             currentValue = formatter(row, cell, currentValue, columnDef, dataContext, grid);
         }
     }
-    catch (e_11_1) { e_11 = { error: e_11_1 }; }
+    catch (e_12_1) { e_12 = { error: e_12_1 }; }
     finally {
         try {
             if (formatters_1_1 && !formatters_1_1.done && (_a = formatters_1.return)) _a.call(formatters_1);
         }
-        finally { if (e_11) throw e_11.error; }
+        finally { if (e_12) throw e_12.error; }
     }
     return currentValue;
-    var e_11, _a;
+    var e_12, _a;
 };
 var percentFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {
@@ -7018,7 +7204,7 @@ var SlickPaginationComponent = /** @class */ (function () {
 SlickPaginationComponent.decorators = [
     { type: Component, args: [{
                 selector: 'slick-pagination',
-                template: "<div class=\"slick-pagination\">\n    <div class=\"slick-pagination-nav\">\n        <nav aria-label=\"Page navigation\">\n        <ul class=\"pagination\">\n            <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-first fa fa-angle-double-left\" aria-label=\"First\" (click)=\"changeToFirstPage($event)\">\n            </a>\n            </li>\n            <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-prev fa fa-angle-left\" aria-label=\"Previous\" (click)=\"changeToPreviousPage($event)\">\n            </a>\n            </li>\n        </ul>\n        </nav>\n        <div class=\"slick-page-number\">\n            <span [translate]=\"'PAGE'\"></span>\n            <input type=\"text\" class=\"form-control\" value=\"{{pageNumber}}\" size=\"1\"  (change)=\"changeToCurrentPage($event)\">\n            <span [translate]=\"'OF'\"></span><span> {{pageCount}}</span>\n        </div>\n        <nav aria-label=\"Page navigation\">\n        <ul class=\"pagination\">\n            <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-next text-center fa fa-lg fa-angle-right\" aria-label=\"Next\" (click)=\"changeToNextPage($event)\">\n            </a>\n            </li>\n            <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-end fa fa-lg fa-angle-double-right\" aria-label=\"Last\" (click)=\"changeToLastPage($event)\">\n            </a>\n            </li>\n        </ul>\n        </nav>\n    </div>\n    <span class=\"slick-pagination-settings\">\n        <select id=\"items-per-page-label\" [value]=\"itemsPerPage\" (change)=\"onChangeItemPerPage($event)\">\n        <option value=\"{{pageSize}}\" *ngFor=\"let pageSize of paginationPageSizes;\">{{pageSize}}</option>\n        </select>\n        <span [translate]=\"'ITEMS_PER_PAGE'\"></span>,\n        <span class=\"slick-pagination-count\">\n            <span [translate]=\"'FROM_TO_OF_TOTAL_ITEMS'\" [translateParams]=\"{ from: dataFrom, to: dataTo, totalItems: totalItems }\"></span>\n        </span>\n    </span>\n    </div>\n"
+                template: "<div class=\"slick-pagination\">\n    <div class=\"slick-pagination-nav\">\n        <nav aria-label=\"Page navigation\">\n        <ul class=\"pagination\">\n            <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-first fa fa-angle-double-left\" aria-label=\"First\" (click)=\"changeToFirstPage($event)\">\n            </a>\n            </li>\n            <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-prev fa fa-angle-left\" aria-label=\"Previous\" (click)=\"changeToPreviousPage($event)\">\n            </a>\n            </li>\n        </ul>\n        </nav>\n\n        <div class=\"slick-page-number\">\n            <span [translate]=\"'PAGE'\"></span>\n            <input type=\"text\" class=\"form-control\" value=\"{{pageNumber}}\" size=\"1\"  (change)=\"changeToCurrentPage($event)\">\n            <span [translate]=\"'OF'\"></span><span> {{pageCount}}</span>\n        </div>\n\n        <nav aria-label=\"Page navigation\">\n        <ul class=\"pagination\">\n            <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-next text-center fa fa-lg fa-angle-right\" aria-label=\"Next\" (click)=\"changeToNextPage($event)\">\n            </a>\n            </li>\n            <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-end fa fa-lg fa-angle-double-right\" aria-label=\"Last\" (click)=\"changeToLastPage($event)\">\n            </a>\n            </li>\n        </ul>\n        </nav>\n    </div>\n    <span class=\"slick-pagination-settings\">\n        <select id=\"items-per-page-label\" [value]=\"itemsPerPage\" (change)=\"onChangeItemPerPage($event)\">\n        <option value=\"{{pageSize}}\" *ngFor=\"let pageSize of paginationPageSizes;\">{{pageSize}}</option>\n        </select>\n        <span [translate]=\"'ITEMS_PER_PAGE'\"></span>,\n        <span class=\"slick-pagination-count\">\n            <span [translate]=\"'FROM_TO_OF_TOTAL_ITEMS'\" [translateParams]=\"{ from: dataFrom, to: dataTo, totalItems: totalItems }\"></span>\n        </span>\n    </span>\n    </div>\n"
             },] },
     { type: Injectable },
 ];
@@ -7046,6 +7232,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.translate = translate;
         this.forRootConfig = forRootConfig;
         this._eventHandler = new Slick.EventHandler();
+        this._hideHeaderRowAfterPageLoad = false;
         this.groupingDefinition = {};
         this.showPagination = false;
         this.isGridInitialized = false;
@@ -7147,6 +7334,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataView.beginUpdate();
         this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
         this._dataView.endUpdate();
+        if (this._hideHeaderRowAfterPageLoad) {
+            this.showHeaderRow(false);
+        }
         this.executeAfterDataviewCreated(this.grid, this.gridOptions, this._dataView);
         this.attachResizeHook(this.grid, this.gridOptions);
         if (this.gridOptions.createPreHeaderPanel) {
@@ -7179,6 +7369,17 @@ var AngularSlickgridComponent = /** @class */ (function () {
             resizerService: this.resizer,
             sortService: this.sortService,
         });
+    };
+    AngularSlickgridComponent.prototype.commitEdit = function (target) {
+        var _this = this;
+        if (this.grid.getOptions().autoCommitEdit) {
+            var activeNode_1 = this.grid.getActiveCellNode();
+            setTimeout(function () {
+                if (activeNode_1 && activeNode_1.contains(target) && _this.grid.getEditorLock().isActive()) {
+                    _this.grid.getEditorLock().commitCurrentEdit();
+                }
+            });
+        }
     };
     AngularSlickgridComponent.prototype.createBackendApiInternalPostProcessCallback = function (gridOptions) {
         var _this = this;
@@ -7364,8 +7565,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         gridOptions.gridId = this.gridId;
         gridOptions.gridContainerId = "slickGridContainer-" + this.gridId;
         var options = $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
+        this._hideHeaderRowAfterPageLoad = (options.showHeaderRow === false);
         if (options.enableFiltering && !options.showHeaderRow) {
-            options.showHeaderRow = true;
+            options.showHeaderRow = options.enableFiltering;
         }
         return options;
     };
@@ -7456,7 +7658,7 @@ AngularSlickgridComponent.decorators = [
     { type: Injectable },
     { type: Component, args: [{
                 selector: 'angular-slickgrid',
-                template: "<div id=\"slickGridContainer-{{gridId}}\" class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n",
+                template: "<div id=\"slickGridContainer-{{gridId}}\" class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n",
                 providers: [
                     ControlAndPluginService,
                     ExportService,
@@ -7540,5 +7742,5 @@ AngularSlickgridModule.decorators = [
 ];
 AngularSlickgridModule.ctorParameters = function () { return []; };
 
-export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, getDescendantProperty, getScrollBarWidth, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, unsubscribeAllObservables, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SelectEditor as ɵk, SingleSelectEditor as ɵl, SliderEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵz, CompoundInputFilter as ɵba, CompoundSliderFilter as ɵbb, InputFilter as ɵbc, MultipleSelectFilter as ɵbe, NativeSelectFilter as ɵbh, SelectFilter as ɵbf, SingleSelectFilter as ɵbg, SliderFilter as ɵbd, arrayObjectToCsvFormatter as ɵbi, arrayToCsvFormatter as ɵbj, boldFormatter as ɵbk, checkboxFormatter as ɵbl, checkmarkFormatter as ɵbm, collectionEditorFormatter as ɵbp, collectionFormatter as ɵbo, complexObjectFormatter as ɵbn, dateIsoFormatter as ɵbq, dateTimeIsoAmPmFormatter as ɵbt, dateTimeIsoFormatter as ɵbr, dateTimeShortIsoFormatter as ɵbs, dateTimeShortUsFormatter as ɵbw, dateTimeUsAmPmFormatter as ɵbx, dateTimeUsFormatter as ɵbv, dateUsFormatter as ɵbu, decimalFormatter as ɵbz, deleteIconFormatter as ɵby, dollarColoredBoldFormatter as ɵcc, dollarColoredFormatter as ɵcb, dollarFormatter as ɵca, editIconFormatter as ɵcd, hyperlinkFormatter as ɵce, hyperlinkUriPrefixFormatter as ɵcf, infoIconFormatter as ɵcg, lowercaseFormatter as ɵch, maskFormatter as ɵci, multipleFormatter as ɵcj, percentCompleteBarFormatter as ɵcm, percentCompleteFormatter as ɵcl, percentFormatter as ɵck, percentSymbolFormatter as ɵcn, progressBarFormatter as ɵco, translateBooleanFormatter as ɵcq, translateFormatter as ɵcp, uppercaseFormatter as ɵcr, yesNoFormatter as ɵcs, avgTotalsDollarFormatter as ɵcu, avgTotalsFormatter as ɵct, avgTotalsPercentageFormatter as ɵcv, maxTotalsFormatter as ɵcw, minTotalsFormatter as ɵcx, sumTotalsBoldFormatter as ɵcz, sumTotalsColoredFormatter as ɵda, sumTotalsDollarBoldFormatter as ɵdc, sumTotalsDollarColoredBoldFormatter as ɵde, sumTotalsDollarColoredFormatter as ɵdd, sumTotalsDollarFormatter as ɵdb, sumTotalsFormatter as ɵcy, dateIsoSorter as ɵdg, dateSorter as ɵdf, dateUsShortSorter as ɵdi, dateUsSorter as ɵdh, numericSorter as ɵdj, stringSorter as ɵdk };
+export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterMultiplePassType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, getDescendantProperty, getScrollBarWidth, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, uniqueArray, unsubscribeAllObservables, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SelectEditor as ɵk, SingleSelectEditor as ɵl, SliderEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵz, CompoundInputFilter as ɵba, CompoundSliderFilter as ɵbb, InputFilter as ɵbc, MultipleSelectFilter as ɵbe, NativeSelectFilter as ɵbh, SelectFilter as ɵbf, SingleSelectFilter as ɵbg, SliderFilter as ɵbd, arrayObjectToCsvFormatter as ɵbi, arrayToCsvFormatter as ɵbj, boldFormatter as ɵbk, checkboxFormatter as ɵbl, checkmarkFormatter as ɵbm, collectionEditorFormatter as ɵbp, collectionFormatter as ɵbo, complexObjectFormatter as ɵbn, dateIsoFormatter as ɵbq, dateTimeIsoAmPmFormatter as ɵbt, dateTimeIsoFormatter as ɵbr, dateTimeShortIsoFormatter as ɵbs, dateTimeShortUsFormatter as ɵbw, dateTimeUsAmPmFormatter as ɵbx, dateTimeUsFormatter as ɵbv, dateUsFormatter as ɵbu, decimalFormatter as ɵbz, deleteIconFormatter as ɵby, dollarColoredBoldFormatter as ɵcc, dollarColoredFormatter as ɵcb, dollarFormatter as ɵca, editIconFormatter as ɵcd, hyperlinkFormatter as ɵce, hyperlinkUriPrefixFormatter as ɵcf, infoIconFormatter as ɵcg, lowercaseFormatter as ɵch, maskFormatter as ɵci, multipleFormatter as ɵcj, percentCompleteBarFormatter as ɵcm, percentCompleteFormatter as ɵcl, percentFormatter as ɵck, percentSymbolFormatter as ɵcn, progressBarFormatter as ɵco, translateBooleanFormatter as ɵcq, translateFormatter as ɵcp, uppercaseFormatter as ɵcr, yesNoFormatter as ɵcs, avgTotalsDollarFormatter as ɵcu, avgTotalsFormatter as ɵct, avgTotalsPercentageFormatter as ɵcv, maxTotalsFormatter as ɵcw, minTotalsFormatter as ɵcx, sumTotalsBoldFormatter as ɵcz, sumTotalsColoredFormatter as ɵda, sumTotalsDollarBoldFormatter as ɵdc, sumTotalsDollarColoredBoldFormatter as ɵde, sumTotalsDollarColoredFormatter as ɵdd, sumTotalsDollarFormatter as ɵdb, sumTotalsFormatter as ɵcy, dateIsoSorter as ɵdg, dateSorter as ɵdf, dateUsShortSorter as ɵdi, dateUsSorter as ɵdh, numericSorter as ɵdj, stringSorter as ɵdk };
 //# sourceMappingURL=angular-slickgrid.js.map

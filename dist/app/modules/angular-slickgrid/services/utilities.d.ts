@@ -114,6 +114,12 @@ export declare function toCamelCase(str: string): string;
  */
 export declare function toKebabCase(str: string): string;
 /**
+ * Takes an input array and makes sure the array has unique values by removing duplicates
+ * @param array input with possible duplicates
+ * @return array output without duplicates
+ */
+export declare function uniqueArray(arr: any[]): any[];
+/**
  * Unsubscribe all Observables Subscriptions
  * It will return an empty array if it all went well
  * @param subscriptions

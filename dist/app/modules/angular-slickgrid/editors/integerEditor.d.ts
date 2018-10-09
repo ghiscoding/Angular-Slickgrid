@@ -8,6 +8,7 @@ export declare class IntegerEditor implements Editor {
     readonly columnDef: Column;
     /** Get Column Editor object */
     readonly columnEditor: any;
+    readonly hasAutoCommitEdit: any;
     /** Get the Validator function, can be passed in Editor property or Column Definition */
     readonly validator: EditorValidator;
     init(): void;
@@ -18,5 +19,6 @@ export declare class IntegerEditor implements Editor {
     serializeValue(): number;
     applyValue(item: any, state: any): void;
     isValueChanged(): boolean;
+    save(): void;
     validate(): EditorValidatorOutput;
 }

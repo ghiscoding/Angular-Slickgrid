@@ -1,3 +1,5 @@
+import { FilterMultiplePassType } from './filterMultiplePassType.enum';
+import { FilterMultiplePassTypeString } from './filterMultiplePassTypeString';
 export interface CollectionOption {
     /**
      * Optionally add a blank entry to the beginning of the collection.
@@ -13,6 +15,13 @@ export interface CollectionOption {
      * collectionInObjectProperty: 'someProperty.myCollection'
      */
     collectionInObjectProperty?: string;
+    /**
+     * Defaults to "chain", when using multiple "collectionFilterBy", do we want to "merge" or "chain" the result after each pass?
+     * For example if we have 2 filters to pass by, and we start with pass 1 returning 7 items and last pass returning 5 items
+     * "chain" is the default and will return 5 items, since the result of each pass is sent used by the next pass
+     * "merge" would return the merge of the 7 items & 5 items (without duplicates), since some item might be the same the result is anywhere between 5 to 13 items
+     */
+    filterResultAfterEachPass?: FilterMultiplePassType | FilterMultiplePassTypeString;
     /** defaults to empty, when using label with prefix/suffix, do we want to add a separator between each text (like a white space) */
     separatorBetweenTextLabels?: string;
     /** defaults to false, should the selected value include the prefix/suffix in the output format */

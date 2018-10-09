@@ -71,6 +71,8 @@ export interface MultipleSelectOption {
     selectAllText?: string;
     /** Whether or not Multiple Select allows you to select only one option.By default this option is set to false. */
     single?: boolean;
+    /** Defaults to false, when set to True it will use the "title" that were defined in each select option */
+    useSelectOptionTitle?: boolean;
     /** Define the width property of the dropdown list, support a percentage setting.By default this option is set to undefined. Which is the same as the select input field. */
     width?: number | string;
     /** Blur the multiple select. */

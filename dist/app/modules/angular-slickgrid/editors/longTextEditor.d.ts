@@ -6,7 +6,7 @@ export declare class LongTextEditor implements Editor {
     defaultValue: any;
     /** Grid options */
     gridOptions: GridOption;
-    /** The i18n aurelia library */
+    /** The translate library */
     private _translate;
     constructor(args: any);
     /** Get Column Definition object */
@@ -15,6 +15,7 @@ export declare class LongTextEditor implements Editor {
     readonly columnEditor: any;
     /** Get the Validator function, can be passed in Editor property or Column Definition */
     readonly validator: EditorValidator;
+    readonly hasAutoCommitEdit: any;
     init(): void;
     handleKeyDown(e: any): void;
     save(): void;

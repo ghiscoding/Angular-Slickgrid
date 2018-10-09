@@ -26,15 +26,18 @@ export declare class SelectEditor implements Editor {
     labelPrefixName: string;
     /** The property name for a suffix that can be added to the labels in the collection */
     labelSuffixName: string;
+    /** A label that can be added to each option and can be used as an alternative to display selected options */
+    optionLabel: string;
     /** Grid options */
     gridOptions: GridOption;
     /** Do we translate the label? */
     enableTranslateLabel: boolean;
     /** Observable Subscriptions */
     _subscriptions: Subscription[];
+    protected _destroying: boolean;
     /** Collection Service */
     protected _collectionService: CollectionService;
-    /** The i18n aurelia library */
+    /** The translate library */
     protected _translate: TranslateService;
     constructor(args: any, isMultipleSelect: any);
     /** Get the Collection */

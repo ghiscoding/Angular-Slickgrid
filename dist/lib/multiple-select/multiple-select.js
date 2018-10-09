@@ -23,6 +23,8 @@
  * - "domElmOkButtonHeight" defaults to 26 (as per CSS), that is the "OK" button element height in pixels inside the drop when using multiple-selection
  * - "domElmSelectSidePadding" defaults to 26 (as per CSS), that is the select DOM element padding in pixels (that is not the drop but the select itself, how tall is it)
  * - "domElmSelectAllHeight" defaults to 39 (as per CSS), that is the DOM element of the "Select All" text area
+ * - "useSelectOptionLabel" (defaults to False), when set to True it will use the <option label=""> that can be used to display selected options
+ * - "useSelectOptionLabelToHtml" (defaults to False), same as "useSelectOptionLabel" but will also render html
  */
 
 (function ($) {
@@ -142,6 +144,17 @@
     return str;
 
   };
+
+  var stripScripts = function (str) {
+    var div = document.createElement('div');
+    div.innerHTML = str;
+    var scripts = div.getElementsByTagName('script');
+    var i = scripts.length;
+    while (i--) {
+      scripts[i].parentNode.removeChild(scripts[i]);
+    }
+    return div.innerHTML;
+  }
 
   function MultipleSelect($el, options) {
     var that = this,
@@ -280,6 +293,7 @@
       var that = this,
         $elm = $(elm),
         classes = $elm.attr('class') || '',
+        label = sprintf('label="%s"', $elm.attr('label') || ''),
         title = sprintf('title="%s"', $elm.attr('title')),
         multiple = this.options.multiple ? 'multiple' : '',
         disabled,
@@ -295,7 +309,7 @@
         disabled = groupDisabled || $elm.prop('disabled');
 
         $el = $([
-          sprintf('<li class="%s %s" %s %s>', multiple, classes, title, style),
+          sprintf('<li class="%s %s" %s %s %s>', multiple, classes, title, style, label),
           sprintf('<label class="%s">', disabled ? 'disabled' : ''),
           sprintf('<input type="%s" %s%s%s%s>',
             type, this.selectItemName,
@@ -688,11 +702,22 @@
           .replace('#', selects.length)
           .replace('%', this.$selectItems.length + this.$disableItems.length));
       } else {
-        $span.removeClass('placeholder').text(selects.join(this.options.delimiter));
+        if (this.options.useSelectOptionLabel || this.options.useSelectOptionLabelToHtml) {
+          var labels = this.getSelects('label').join(this.options.delimiter);
+          if (this.options.useSelectOptionLabelToHtml) {
+            var sanitizedLabels = stripScripts(labels);
+            $span.removeClass('placeholder').html(sanitizedLabels);
+          } else {
+            $span.removeClass('placeholder').text(labels);
+          }
+        } else {
+          $span.removeClass('placeholder').text(selects.join(this.options.delimiter));
+        }
       }
 
       if (this.options.addTitle) {
-        $span.prop('title', this.getSelects('text'));
+        var selectType = (this.options.useSelectOptionLabel || this.options.useSelectOptionLabelToHtml) ? 'label' : 'text'
+        $span.prop('title', this.getSelects(selectType));
       }
 
       // set selects to select
@@ -736,10 +761,12 @@
     //value or text, default: 'value'
     getSelects: function (type) {
       var that = this,
-        texts = [],
-        values = [];
+      texts = [],
+      labels = [],
+      values = [];
       this.$drop.find(sprintf('input[%s]:checked', this.selectItemName)).each(function () {
         texts.push($(this).parents('li').first().text());
+        labels.push($(this).parents('li').attr('label') || '');
         values.push($(this).val());
       });
 
@@ -768,8 +795,41 @@
           html.push(']');
           texts.push(html.join(''));
         });
+      } else if (type === 'label' && this.$selectGroups.length) {
+        labels = [];
+        this.$selectGroups.each(function () {
+          var html = [],
+            label = $.trim($(this).attr('label') || ''),
+            group = $(this).parent().data('group'),
+            $children = that.$drop.find(sprintf('[%s][data-group="%s"]', that.selectItemName, group)),
+            $selected = $children.filter(':checked');
+
+          if (!$selected.length) {
+            return;
+          }
+
+          html.push('[');
+          html.push(label);
+          if ($children.length > $selected.length) {
+            var list = [];
+            $selected.each(function () {
+              list.push($(this).attr('label') || '');
+            });
+            html.push(': ' + list.join(', '));
+          }
+          html.push(']');
+          labels.push(html.join(''));
+        });
       }
-      return type === 'text' ? texts : values;
+
+      switch(type) {
+        case 'text':
+          return texts;
+        case 'label':
+          return labels;
+        default:
+          return values;
+      }
     },
 
     getScrollbarWidth: function () {

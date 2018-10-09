@@ -21,7 +21,7 @@ export declare class DateEditor implements Editor {
     save(): void;
     getColumnEditor(): any;
     loadValue(item: any): void;
-    serializeValue(): any;
+    serializeValue(): string;
     applyValue(item: any, state: any): void;
     isValueChanged(): boolean;
     validate(): EditorValidatorOutput;

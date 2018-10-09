@@ -21,7 +21,7 @@ export declare class GridStateService {
      * @param dataView
      */
     init(grid: any, controlAndPluginService: ControlAndPluginService, filterService: FilterService, sortService: SortService): void;
-    /** Dispose of all the SlickGrid & Aurelia subscriptions */
+    /** Dispose of all the SlickGrid & Angular subscriptions */
     dispose(): void;
     /**
      * Get the current grid state (filters/sorters/pagination)

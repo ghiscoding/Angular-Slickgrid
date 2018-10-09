@@ -1,19 +1,25 @@
 import { TranslateService } from '@ngx-translate/core';
-import { CollectionFilterBy, CollectionSortBy } from './../models/index';
+import { CollectionFilterBy, CollectionSortBy, FilterMultiplePassType, FilterMultiplePassTypeString } from './../models/index';
 export declare class CollectionService {
     private translate;
     constructor(translate: TranslateService);
     /**
-     * Filter items from a collection
+     * Filter 1 or more items from a collection
+     * @param collection
+     * @param filterByOptions
+     */
+    filterCollection(collection: any[], filterByOptions: CollectionFilterBy | CollectionFilterBy[], filterResultBy?: FilterMultiplePassType | FilterMultiplePassTypeString | null): any[];
+    /**
+     * Filter an item from a collection
      * @param collection
      * @param filterBy
      */
-    filterCollection(collection: any[], filterBy: CollectionFilterBy): any[];
+    singleFilterCollection(collection: any[], filterBy: CollectionFilterBy): any[];
     /**
-     * Sort items in a collection
+     * Sort 1 or more items in a collection
      * @param collection
-     * @param sortBy
+     * @param sortByOptions
      * @param enableTranslateLabel
      */
-    sortCollection(collection: any[], sortBy: CollectionSortBy, enableTranslateLabel?: boolean): any[];
+    sortCollection(collection: any[], sortByOptions: CollectionSortBy | CollectionSortBy[], enableTranslateLabel?: boolean): any[];
 }

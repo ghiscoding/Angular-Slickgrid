@@ -23,6 +23,7 @@ export declare class SelectFilter implements Filter {
     labelName: string;
     labelPrefixName: string;
     labelSuffixName: string;
+    optionLabel: string;
     valueName: string;
     enableTranslateLabel: boolean;
     subscriptions: Subscription[];

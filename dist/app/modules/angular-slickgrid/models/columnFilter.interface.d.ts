@@ -26,10 +26,10 @@ export interface ColumnFilter {
     collection?: any[];
     /** Options to change the behavior of the "collection" */
     collectionOptions?: CollectionOption;
-    /** We could filter some items from the collection */
-    collectionFilterBy?: CollectionFilterBy;
-    /** We could sort the collection by their value, or by translated value when enableTranslateLabel is True */
-    collectionSortBy?: CollectionSortBy;
+    /** We could filter some 1 or more items from the collection */
+    collectionFilterBy?: CollectionFilterBy | CollectionFilterBy[];
+    /** We could sort the collection by 1 or more properties, or by translated value(s) when enableTranslateLabel is True */
+    collectionSortBy?: CollectionSortBy | CollectionSortBy[];
     /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Filter */
     customStructure?: CollectionCustomStructure;
     /** Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250} */

@@ -155,6 +155,16 @@ const FileType = {
  * @suppress {checkTypes} checked by tsc
  */
 /** @enum {string} */
+const FilterMultiplePassType = {
+    merge: 'merge',
+    chain: 'chain',
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/** @enum {string} */
 const GridStateType = {
     columns: 'columns',
     filter: 'filter',
@@ -208,6 +218,8 @@ const OperatorType = {
     empty: '',
     /** value contains x */
     contains: 'Contains',
+    /** value not contains x (inversed of contains) */
+    notContains: 'Not_Contains',
     /** value less than x */
     lessThan: 'LT',
     /** value less than or equal to x */
@@ -717,6 +729,16 @@ function toKebabCase(str) {
     return toCamelCase(str).replace(/([A-Z])/g, '-$1').toLowerCase();
 }
 /**
+ * Takes an input array and makes sure the array has unique values by removing duplicates
+ * @param {?} arr
+ * @return {?} array output without duplicates
+ */
+function uniqueArray(arr) {
+    return arr.filter((item, index) => {
+        return arr.indexOf(item) >= index;
+    });
+}
+/**
  * Unsubscribe all Observables Subscriptions
  * It will return an empty array if it all went well
  * @param {?} subscriptions
@@ -894,12 +916,40 @@ class CollectionService {
         this.translate = translate;
     }
     /**
-     * Filter items from a collection
+     * Filter 1 or more items from a collection
+     * @param {?} collection
+     * @param {?} filterByOptions
+     * @param {?=} filterResultBy
+     * @return {?}
+     */
+    filterCollection(collection, filterByOptions, filterResultBy = FilterMultiplePassType.chain) {
+        let /** @type {?} */ filteredCollection = [];
+        // when it's array, we will use the new filtered collection after every pass
+        // basically if input collection has 10 items on 1st pass and 1 item is filtered out, then on 2nd pass the input collection will be 9 items
+        if (Array.isArray(filterByOptions)) {
+            filteredCollection = (filterResultBy === FilterMultiplePassType.merge) ? [] : collection;
+            for (const /** @type {?} */ filter of filterByOptions) {
+                if (filterResultBy === FilterMultiplePassType.merge) {
+                    const /** @type {?} */ filteredPass = this.singleFilterCollection(collection, filter);
+                    filteredCollection = uniqueArray([...filteredCollection, ...filteredPass]);
+                }
+                else {
+                    filteredCollection = this.singleFilterCollection(filteredCollection, filter);
+                }
+            }
+        }
+        else {
+            filteredCollection = this.singleFilterCollection(collection, filterByOptions);
+        }
+        return filteredCollection;
+    }
+    /**
+     * Filter an item from a collection
      * @param {?} collection
      * @param {?} filterBy
      * @return {?}
      */
-    filterCollection(collection, filterBy) {
+    singleFilterCollection(collection, filterBy) {
         let /** @type {?} */ filteredCollection = [];
         if (filterBy) {
             const /** @type {?} */ property = filterBy.property || '';
@@ -910,15 +960,13 @@ class CollectionService {
                 case OperatorType.equal:
                     filteredCollection = collection.filter((item) => item[property] === value);
                     break;
-                case OperatorType.in:
-                    filteredCollection = collection.filter((item) => item[property].indexOf(value) !== -1);
-                    break;
-                case OperatorType.notIn:
-                    filteredCollection = collection.filter((item) => item[property].indexOf(value) === -1);
-                    break;
                 case OperatorType.contains:
-                    filteredCollection = collection.filter((item) => value.indexOf(item[property]) !== -1);
+                    filteredCollection = collection.filter((item) => item[property].toString().indexOf(value.toString()) !== -1);
                     break;
+                case OperatorType.notContains:
+                    filteredCollection = collection.filter((item) => item[property].toString().indexOf(value.toString()) === -1);
+                    break;
+                case OperatorType.notEqual:
                 default:
                     filteredCollection = collection.filter((item) => item[property] !== value);
             }
@@ -926,24 +974,50 @@ class CollectionService {
         return filteredCollection;
     }
     /**
-     * Sort items in a collection
+     * Sort 1 or more items in a collection
      * @param {?} collection
-     * @param {?} sortBy
+     * @param {?} sortByOptions
      * @param {?=} enableTranslateLabel
      * @return {?}
      */
-    sortCollection(collection, sortBy, enableTranslateLabel) {
+    sortCollection(collection, sortByOptions, enableTranslateLabel) {
         let /** @type {?} */ sortedCollection = [];
-        if (sortBy) {
-            const /** @type {?} */ property = sortBy.property || '';
-            const /** @type {?} */ sortDirection = sortBy.hasOwnProperty('sortDesc') ? (sortBy.sortDesc ? -1 : 1) : 1;
-            const /** @type {?} */ fieldType = sortBy.fieldType || FieldType.string;
-            sortedCollection = collection.sort((dataRow1, dataRow2) => {
-                const /** @type {?} */ value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[property] || ' ') : dataRow1[property];
-                const /** @type {?} */ value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[property] || ' ') : dataRow2[property];
-                const /** @type {?} */ result = sortByFieldType(value1, value2, fieldType, sortDirection);
-                return result;
-            });
+        if (sortByOptions) {
+            if (Array.isArray(sortByOptions)) {
+                // multi-sort
+                sortedCollection = collection.sort((dataRow1, dataRow2) => {
+                    for (let /** @type {?} */ i = 0, /** @type {?} */ l = sortByOptions.length; i < l; i++) {
+                        const /** @type {?} */ sortBy = sortByOptions[i];
+                        if (sortBy) {
+                            const /** @type {?} */ sortDirection = sortBy.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
+                            const /** @type {?} */ propertyName = sortBy.property || '';
+                            const /** @type {?} */ fieldType = sortBy.fieldType || FieldType.string;
+                            const /** @type {?} */ value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[propertyName] || ' ') : dataRow1[propertyName];
+                            const /** @type {?} */ value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[propertyName] || ' ') : dataRow2[propertyName];
+                            const /** @type {?} */ sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+                            if (sortResult !== SortDirectionNumber.neutral) {
+                                return sortResult;
+                            }
+                        }
+                    }
+                    return SortDirectionNumber.neutral;
+                });
+            }
+            else {
+                // single sort
+                const /** @type {?} */ propertyName = sortByOptions.property || '';
+                const /** @type {?} */ sortDirection = sortByOptions.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
+                const /** @type {?} */ fieldType = sortByOptions.fieldType || FieldType.string;
+                sortedCollection = collection.sort((dataRow1, dataRow2) => {
+                    const /** @type {?} */ value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[propertyName] || ' ') : dataRow1[propertyName];
+                    const /** @type {?} */ value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[propertyName] || ' ') : dataRow2[propertyName];
+                    const /** @type {?} */ sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+                    if (sortResult !== SortDirectionNumber.neutral) {
+                        return sortResult;
+                    }
+                    return SortDirectionNumber.neutral;
+                });
+            }
         }
         return sortedCollection;
     }
@@ -2110,10 +2184,11 @@ class SelectFilter {
             throw new Error(`[Angular-SlickGrid] You need to pass a "collection" (or "collectionAsync") for the MultipleSelect/SingleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
         }
         this.enableTranslateLabel = this.columnFilter.enableTranslateLabel;
-        this.labelName = (this.customStructure) ? this.customStructure.label : 'label';
-        this.labelPrefixName = (this.customStructure) ? this.customStructure.labelPrefix : 'labelPrefix';
-        this.labelSuffixName = (this.customStructure) ? this.customStructure.labelSuffix : 'labelSuffix';
-        this.valueName = (this.customStructure) ? this.customStructure.value : 'value';
+        this.labelName = this.customStructure && this.customStructure.label || 'label';
+        this.labelPrefixName = this.customStructure && this.customStructure.labelPrefix || 'labelPrefix';
+        this.labelSuffixName = this.customStructure && this.customStructure.labelSuffix || 'labelSuffix';
+        this.optionLabel = this.customStructure && this.customStructure.optionLabel || 'value';
+        this.valueName = this.customStructure && this.customStructure.value || 'value';
         // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
         // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
         const /** @type {?} */ newCollection = this.columnFilter.collection || [];
@@ -2175,7 +2250,8 @@ class SelectFilter {
         // user might want to filter certain items of the collection
         if (this.columnDef && this.columnFilter && this.columnFilter.collectionFilterBy) {
             const /** @type {?} */ filterBy = this.columnFilter.collectionFilterBy;
-            outputCollection = this.collectionService.filterCollection(outputCollection, filterBy);
+            const /** @type {?} */ filterCollectionBy = this.columnFilter.collectionOptions && this.columnFilter.collectionOptions.filterResultAfterEachPass || null;
+            outputCollection = this.collectionService.filterCollection(outputCollection, filterBy, filterCollectionBy);
         }
         return outputCollection;
     }
@@ -2283,6 +2359,8 @@ class SelectFilter {
             const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
             const /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
             const /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
+            let /** @type {?} */ optionLabel = option[this.optionLabel] || '';
+            optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
             let /** @type {?} */ optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
             // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
             // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
@@ -2293,7 +2371,7 @@ class SelectFilter {
                 optionText = htmlEncode(sanitizedText);
             }
             // html text of each select option
-            options += `<option value="${option[this.valueName]}" ${selected}>${optionText}</option>`;
+            options += `<option value="${option[this.valueName]}" label="${optionLabel}" ${selected}>${optionText}</option>`;
             // if there's a search term, we will add the "filled" class for styling purposes
             if (selected) {
                 this.isFilled = true;
@@ -2552,7 +2630,7 @@ class SliderFilter {
      */
     init(args) {
         if (!args) {
-            throw new Error('[Aurelia-SlickGrid] A filter must always have an "init()" with valid arguments.');
+            throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
         }
         this.grid = args.grid;
         this.callback = args.callback;
@@ -2798,7 +2876,6 @@ const GlobalGridOptions = {
         totalItems: 0
     },
     rowHeight: 35,
-    showHeaderRow: false,
     topPanelHeight: 35
 };
 
@@ -3864,15 +3941,20 @@ class SortService {
                     const /** @type {?} */ sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
                     const /** @type {?} */ sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
                     const /** @type {?} */ fieldType = columnSortObj.sortCol.type || FieldType.string;
-                    const /** @type {?} */ value1 = dataRow1[sortField];
-                    const /** @type {?} */ value2 = dataRow2[sortField];
+                    let /** @type {?} */ value1 = dataRow1[sortField];
+                    let /** @type {?} */ value2 = dataRow2[sortField];
+                    // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
+                    if (sortField && sortField.indexOf('.') >= 0) {
+                        value1 = getDescendantProperty(dataRow1, sortField);
+                        value2 = getDescendantProperty(dataRow2, sortField);
+                    }
                     const /** @type {?} */ sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
                     if (sortResult !== SortDirectionNumber.neutral) {
                         return sortResult;
                     }
                 }
             }
-            return 0;
+            return SortDirectionNumber.neutral;
         });
         grid.invalidate();
         grid.render();
@@ -6290,13 +6372,13 @@ class GridStateService {
         this.subscribeToAllGridChanges(grid);
     }
     /**
-     * Dispose of all the SlickGrid & Aurelia subscriptions
+     * Dispose of all the SlickGrid & Angular subscriptions
      * @return {?}
      */
     dispose() {
         // unsubscribe all SlickGrid events
         this._eventHandler.unsubscribeAll();
-        // also unsubscribe all Aurelia Subscriptions
+        // also unsubscribe all Angular Subscriptions
         this.subscriptions.forEach((subscription) => {
             if (subscription && subscription.unsubscribe) {
                 subscription.unsubscribe();
@@ -7021,14 +7103,15 @@ class ResizerService {
      */
     calculateGridNewDimensions(gridOptions) {
         const /** @type {?} */ gridDomElm = $(`#${gridOptions.gridId}`);
-        const /** @type {?} */ containerElm = (gridOptions.autoResize && gridOptions.autoResize.containerId) ? $(`#${gridOptions.autoResize.containerId}`) : $(`#${gridOptions.gridContainerId}`);
+        const /** @type {?} */ autoResizeOptions = gridOptions && gridOptions.autoResize;
+        const /** @type {?} */ containerElm = (autoResizeOptions && autoResizeOptions.containerId) ? $(`#${autoResizeOptions.containerId}`) : $(`#${gridOptions.gridContainerId}`);
         const /** @type {?} */ windowElm = $(window);
         if (windowElm === undefined || containerElm === undefined || gridDomElm === undefined) {
             return null;
         }
         // calculate bottom padding
         // if using pagination, we need to add the pagination height to this bottom padding
-        let /** @type {?} */ bottomPadding = (gridOptions.autoResize && gridOptions.autoResize.bottomPadding) ? gridOptions.autoResize.bottomPadding : DATAGRID_BOTTOM_PADDING;
+        let /** @type {?} */ bottomPadding = (autoResizeOptions && autoResizeOptions.bottomPadding) ? autoResizeOptions.bottomPadding : DATAGRID_BOTTOM_PADDING;
         if (bottomPadding && (gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
             bottomPadding += DATAGRID_PAGINATION_HEIGHT;
         }
@@ -7037,15 +7120,24 @@ class ResizerService {
         const /** @type {?} */ gridOffsetTop = (coordOffsetTop !== undefined) ? coordOffsetTop.top : 0;
         const /** @type {?} */ availableHeight = gridHeight - gridOffsetTop - bottomPadding;
         const /** @type {?} */ availableWidth = containerElm.width() || 0;
-        const /** @type {?} */ minHeight = (gridOptions.autoResize && gridOptions.autoResize.minHeight < 0) ? gridOptions.autoResize.minHeight : DATAGRID_MIN_HEIGHT;
-        const /** @type {?} */ minWidth = (gridOptions.autoResize && gridOptions.autoResize.minWidth < 0) ? gridOptions.autoResize.minWidth : DATAGRID_MIN_WIDTH;
+        const /** @type {?} */ maxHeight = (autoResizeOptions && autoResizeOptions.maxHeight && autoResizeOptions.maxHeight > 0) ? autoResizeOptions.maxHeight : undefined;
+        const /** @type {?} */ minHeight = (autoResizeOptions && autoResizeOptions.minHeight && autoResizeOptions.minHeight < 0) ? autoResizeOptions.minHeight : DATAGRID_MIN_HEIGHT;
+        const /** @type {?} */ maxWidth = (autoResizeOptions && autoResizeOptions.maxWidth && autoResizeOptions.maxWidth > 0) ? autoResizeOptions.maxWidth : undefined;
+        const /** @type {?} */ minWidth = (autoResizeOptions && autoResizeOptions.minWidth && autoResizeOptions.minWidth < 0) ? autoResizeOptions.minWidth : DATAGRID_MIN_WIDTH;
         let /** @type {?} */ newHeight = availableHeight;
-        let /** @type {?} */ newWidth = (gridOptions.autoResize && gridOptions.autoResize.sidePadding) ? availableWidth - gridOptions.autoResize.sidePadding : availableWidth;
+        let /** @type {?} */ newWidth = (autoResizeOptions && autoResizeOptions.sidePadding) ? availableWidth - autoResizeOptions.sidePadding : availableWidth;
+        // optionally (when defined), make sure that grid height & width are within their thresholds
         if (newHeight < minHeight) {
             newHeight = minHeight;
         }
+        if (maxHeight && newHeight > maxHeight) {
+            newHeight = maxHeight;
+        }
         if (newWidth < minWidth) {
             newWidth = minWidth;
+        }
+        if (maxWidth && newWidth > maxWidth) {
+            newWidth = maxWidth;
         }
         return {
             height: newHeight,
@@ -7370,6 +7462,10 @@ class CheckboxEditor {
         this.$input = $(`<input type="checkbox" value="true" class="editor-checkbox" />`);
         this.$input.appendTo(this.args.container);
         this.$input.focus();
+        // make the checkbox editor act like a regular checkbox that commit the value on click
+        if (this.args.grid.getOptions().autoCommitEdit) {
+            this.$input.click(() => this.args.grid.getEditorLock().commitCurrentEdit());
+        }
     }
     /**
      * @return {?}
@@ -7577,7 +7673,16 @@ class DateEditor {
      * @return {?}
      */
     save() {
-        this.args.commitChanges();
+        // autocommit will not focus the next editor
+        const /** @type {?} */ validation = this.validate();
+        if (validation && validation.valid) {
+            if (this.args.grid.getOptions().autoCommitEdit) {
+                this.args.grid.getEditorLock().commitCurrentEdit();
+            }
+            else {
+                this.args.commitChanges();
+            }
+        }
     }
     /**
      * @return {?}
@@ -7671,6 +7776,12 @@ class FloatEditor {
         return this.columnDef && this.columnDef.internalColumnEditor || {};
     }
     /**
+     * @return {?}
+     */
+    get hasAutoCommitEdit() {
+        return this.args.grid.getOptions().autoCommitEdit;
+    }
+    /**
      * Get the Validator function, can be passed in Editor property or Column Definition
      * @return {?}
      */
@@ -7688,6 +7799,11 @@ class FloatEditor {
                 e.stopImmediatePropagation();
             }
         });
+        // the lib does not get the focus out event for some reason
+        // so register it here
+        if (this.hasAutoCommitEdit) {
+            this.$input.on('focusout', () => this.save());
+        }
         setTimeout(() => {
             this.$input.focus().select();
         }, 50);
@@ -7778,6 +7894,20 @@ class FloatEditor {
     isValueChanged() {
         const /** @type {?} */ elmValue = this.$input.val();
         return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
+    }
+    /**
+     * @return {?}
+     */
+    save() {
+        const /** @type {?} */ validation = this.validate();
+        if (validation && validation.valid) {
+            if (this.hasAutoCommitEdit) {
+                this.args.grid.getEditorLock().commitCurrentEdit();
+            }
+            else {
+                this.args.commitChanges();
+            }
+        }
     }
     /**
      * @return {?}
@@ -7877,6 +8007,12 @@ class IntegerEditor {
         return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
     }
     /**
+     * @return {?}
+     */
+    get hasAutoCommitEdit() {
+        return this.args.grid.getOptions().autoCommitEdit;
+    }
+    /**
      * Get the Validator function, can be passed in Editor property or Column Definition
      * @return {?}
      */
@@ -7894,6 +8030,11 @@ class IntegerEditor {
                 e.stopImmediatePropagation();
             }
         });
+        // the lib does not get the focus out event for some reason
+        // so register it here
+        if (this.hasAutoCommitEdit) {
+            this.$input.on('focusout', () => this.save());
+        }
         setTimeout(() => {
             this.$input.focus().select();
         }, 50);
@@ -7947,6 +8088,20 @@ class IntegerEditor {
         const /** @type {?} */ elmValue = this.$input.val();
         const /** @type {?} */ value = isNaN(elmValue) ? elmValue : parseInt(elmValue, 10);
         return (!(value === '' && this.defaultValue === null)) && (value !== this.defaultValue);
+    }
+    /**
+     * @return {?}
+     */
+    save() {
+        const /** @type {?} */ validation = this.validate();
+        if (validation && validation.valid) {
+            if (this.hasAutoCommitEdit) {
+                this.args.grid.getEditorLock().commitCurrentEdit();
+            }
+            else {
+                this.args.commitChanges();
+            }
+        }
     }
     /**
      * @return {?}
@@ -8012,12 +8167,23 @@ class LongTextEditor {
     /**
      * @return {?}
      */
+    get hasAutoCommitEdit() {
+        return this.args.grid.getOptions().autoCommitEdit;
+    }
+    /**
+     * @return {?}
+     */
     init() {
         const /** @type {?} */ cancelText = this._translate && this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
         const /** @type {?} */ saveText = this._translate && this._translate.instant('SAVE') || Constants.TEXT_SAVE;
         const /** @type {?} */ $container = $('body');
         this.$wrapper = $(`<div class="slick-large-editor-text" />`).appendTo($container);
         this.$input = $(`<textarea hidefocus rows="5">`).appendTo(this.$wrapper);
+        // the lib does not get the focus out event for some reason
+        // so register it here
+        if (this.hasAutoCommitEdit) {
+            this.$input.on('focusout', () => this.save());
+        }
         $(`<div class="editor-footer">
           <button class="btn btn-primary btn-xs">${saveText}</button>
           <button class="btn btn-default btn-xs">${cancelText}</button>
@@ -8057,8 +8223,14 @@ class LongTextEditor {
      * @return {?}
      */
     save() {
-        if (this.args && this.args.commitChanges) {
-            this.args.commitChanges();
+        const /** @type {?} */ validation = this.validate();
+        if (validation && validation.valid) {
+            if (this.hasAutoCommitEdit) {
+                this.args.grid.getEditorLock().commitCurrentEdit();
+            }
+            else {
+                this.args.commitChanges();
+            }
         }
     }
     /**
@@ -8177,6 +8349,9 @@ class SelectEditor {
          * Observable Subscriptions
          */
         this._subscriptions = [];
+        // flag to signal that the editor is destroying itself, helps prevent
+        // commit changes from being called twice and erroring
+        this._destroying = false;
         this.gridOptions = /** @type {?} */ (this.args.grid.getOptions());
         const /** @type {?} */ gridOptions = this.gridOptions || this.args.column.params || {};
         this._translate = gridOptions.i18n;
@@ -8197,7 +8372,14 @@ class SelectEditor {
                 const /** @type {?} */ isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
                 return isRenderHtmlEnabled ? $elm.text() : $elm.html();
             },
-            onBlur: () => this.destroy()
+            onBlur: () => this.destroy(),
+            onClose: () => {
+                if (!this._destroying && args.grid.getOptions().autoCommitEdit) {
+                    // do not use args.commitChanges() as this sets the focus to the next
+                    // row. Also the select list will stay shown when clicking off the grid
+                    args.grid.getEditorLock().commitCurrentEdit();
+                }
+            }
         };
         if (isMultipleSelect) {
             libOptions.single = false;
@@ -8308,10 +8490,11 @@ class SelectEditor {
         }
         this._collectionService = new CollectionService(this._translate);
         this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
-        this.labelName = (this.customStructure) ? this.customStructure.label : 'label';
-        this.labelPrefixName = (this.customStructure) ? this.customStructure.labelPrefix : 'labelPrefix';
-        this.labelSuffixName = (this.customStructure) ? this.customStructure.labelSuffix : 'labelSuffix';
-        this.valueName = (this.customStructure) ? this.customStructure.value : 'value';
+        this.labelName = this.customStructure && this.customStructure.label || 'label';
+        this.labelPrefixName = this.customStructure && this.customStructure.labelPrefix || 'labelPrefix';
+        this.labelSuffixName = this.customStructure && this.customStructure.labelSuffix || 'labelSuffix';
+        this.optionLabel = this.customStructure && this.customStructure.optionLabel || 'value';
+        this.valueName = this.customStructure && this.customStructure.value || 'value';
         // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
         // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
         this.renderDomElement(this.collection);
@@ -8328,6 +8511,7 @@ class SelectEditor {
      * @return {?}
      */
     destroy() {
+        this._destroying = true;
         if (this.$editorElm && this.$editorElm.multipleSelect) {
             this.$editorElm.multipleSelect('close');
             this.$editorElm.remove();
@@ -8419,9 +8603,10 @@ class SelectEditor {
     filterCollection(inputCollection) {
         let /** @type {?} */ outputCollection = inputCollection;
         // user might want to filter certain items of the collection
-        if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionFilterBy) {
-            const /** @type {?} */ filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
-            outputCollection = this._collectionService.filterCollection(outputCollection, filterBy);
+        if (this.columnEditor && this.columnEditor.collectionFilterBy) {
+            const /** @type {?} */ filterBy = this.columnEditor.collectionFilterBy;
+            const /** @type {?} */ filterCollectionBy = this.columnEditor.collectionOptions && this.columnEditor.collectionOptions.filterAfterEachPass || null;
+            outputCollection = this._collectionService.filterCollection(outputCollection, filterBy, filterCollectionBy);
         }
         return outputCollection;
     }
@@ -8481,6 +8666,8 @@ class SelectEditor {
             const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
             const /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
             const /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
+            let /** @type {?} */ optionLabel = option[this.optionLabel] || '';
+            optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
             let /** @type {?} */ optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
             // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
             // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
@@ -8490,7 +8677,7 @@ class SelectEditor {
                 const /** @type {?} */ sanitizedText = DOMPurify$1.sanitize(optionText, sanitizedOptions);
                 optionText = htmlEncode(sanitizedText);
             }
-            options += `<option value="${option[this.valueName]}">${optionText}</option>`;
+            options += `<option value="${option[this.valueName]}" label="${optionLabel}">${optionText}</option>`;
         });
         return `<select id="${this.elementName}" class="ms-filter search-filter" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
     }
@@ -8660,7 +8847,12 @@ class SliderEditor {
      * @return {?}
      */
     save() {
-        this.args.commitChanges();
+        if (this.args.grid.getOptions().autoCommitEdit) {
+            this.args.grid.getEditorLock().commitCurrentEdit();
+        }
+        else {
+            this.args.commitChanges();
+        }
     }
     /**
      * @return {?}
@@ -8791,6 +8983,12 @@ class TextEditor {
         return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
     }
     /**
+     * @return {?}
+     */
+    get hasAutoCommitEdit() {
+        return this.args.grid.getOptions().autoCommitEdit;
+    }
+    /**
      * Get the Validator function, can be passed in Editor property or Column Definition
      * @return {?}
      */
@@ -8808,6 +9006,11 @@ class TextEditor {
                 e.stopImmediatePropagation();
             }
         });
+        // the lib does not get the focus out event for some reason
+        // so register it here
+        if (this.hasAutoCommitEdit) {
+            this.$input.on('focusout', () => this.save());
+        }
         setTimeout(() => {
             this.$input.focus().select();
         }, 50);
@@ -8866,6 +9069,20 @@ class TextEditor {
      */
     isValueChanged() {
         return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
+    }
+    /**
+     * @return {?}
+     */
+    save() {
+        const /** @type {?} */ validation = this.validate();
+        if (validation && validation.valid) {
+            if (this.hasAutoCommitEdit) {
+                this.args.grid.getEditorLock().commitCurrentEdit();
+            }
+            else {
+                this.args.commitChanges();
+            }
+        }
     }
     /**
      * @return {?}
@@ -10083,11 +10300,13 @@ SlickPaginationComponent.decorators = [
             </li>
         </ul>
         </nav>
+
         <div class="slick-page-number">
             <span [translate]="'PAGE'"></span>
             <input type="text" class="form-control" value="{{pageNumber}}" size="1"  (change)="changeToCurrentPage($event)">
             <span [translate]="'OF'"></span><span> {{pageCount}}</span>
         </div>
+
         <nav aria-label="Page navigation">
         <ul class="pagination">
             <li class="page-item" [ngClass]="pageNumber === pageCount ? 'disabled' : ''">
@@ -10159,6 +10378,7 @@ class AngularSlickgridComponent {
         this.translate = translate;
         this.forRootConfig = forRootConfig;
         this._eventHandler = new Slick.EventHandler();
+        this._hideHeaderRowAfterPageLoad = false;
         this.groupingDefinition = {};
         this.showPagination = false;
         this.isGridInitialized = false;
@@ -10288,6 +10508,11 @@ class AngularSlickgridComponent {
         this._dataView.beginUpdate();
         this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
         this._dataView.endUpdate();
+        // user might want to hide the header row on page load but still have `enableFiltering: true`
+        // if that is the case, we need to hide the headerRow ONLY AFTER all filters got created & dataView exist
+        if (this._hideHeaderRowAfterPageLoad) {
+            this.showHeaderRow(false);
+        }
         // after the DataView is created & updated execute some processes
         this.executeAfterDataviewCreated(this.grid, this.gridOptions, this._dataView);
         // attach resize ONLY after the dataView is ready
@@ -10332,6 +10557,28 @@ class AngularSlickgridComponent {
             resizerService: this.resizer,
             sortService: this.sortService,
         });
+    }
+    /**
+     * Commits the current edit to the grid
+     * @param {?} target
+     * @return {?}
+     */
+    commitEdit(target) {
+        if (this.grid.getOptions().autoCommitEdit) {
+            const /** @type {?} */ activeNode = this.grid.getActiveCellNode();
+            // a timeout must be set or this could come into conflict when slickgrid
+            // tries to commit the edit when going from one editor to another on the grid
+            // through the click event. If the timeout was not here it would
+            // try to commit/destroy the twice, which would throw a jquery
+            // error about the element not being in the DOM
+            setTimeout(() => {
+                // make sure the target is the active editor so we do not
+                // commit prematurely
+                if (activeNode && activeNode.contains(target) && this.grid.getEditorLock().isActive()) {
+                    this.grid.getEditorLock().commitCurrentEdit();
+                }
+            });
+        }
     }
     /**
      * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
@@ -10560,8 +10807,9 @@ class AngularSlickgridComponent {
         // use jquery extend to deep merge & copy to avoid immutable properties being changed in GlobalGridOptions after a route change
         const /** @type {?} */ options = $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
         // also make sure to show the header row if user have enabled filtering
+        this._hideHeaderRowAfterPageLoad = (options.showHeaderRow === false);
         if (options.enableFiltering && !options.showHeaderRow) {
-            options.showHeaderRow = true;
+            options.showHeaderRow = options.enableFiltering;
         }
         return options;
     }
@@ -10707,6 +10955,7 @@ AngularSlickgridComponent.decorators = [
                 template: `<div id="slickGridContainer-{{gridId}}" class="gridPane" [style.width]="gridWidthString">
     <div attr.id='{{gridId}}' class="slickgrid-container" style="width: 100%" [style.height]="gridHeightString">
     </div>
+
     <slick-pagination id="slickPagingContainer-{{gridId}}"
         *ngIf="showPagination"
         (onPaginationChanged)="paginationChanged($event)"
@@ -10823,5 +11072,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, getDescendantProperty, getScrollBarWidth, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, unsubscribeAllObservables, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SelectEditor as ɵk, SingleSelectEditor as ɵl, SliderEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵz, CompoundInputFilter as ɵba, CompoundSliderFilter as ɵbb, InputFilter as ɵbc, MultipleSelectFilter as ɵbe, NativeSelectFilter as ɵbh, SelectFilter as ɵbf, SingleSelectFilter as ɵbg, SliderFilter as ɵbd, arrayObjectToCsvFormatter as ɵbi, arrayToCsvFormatter as ɵbj, boldFormatter as ɵbk, checkboxFormatter as ɵbl, checkmarkFormatter as ɵbm, collectionEditorFormatter as ɵbp, collectionFormatter as ɵbo, complexObjectFormatter as ɵbn, dateIsoFormatter as ɵbq, dateTimeIsoAmPmFormatter as ɵbt, dateTimeIsoFormatter as ɵbr, dateTimeShortIsoFormatter as ɵbs, dateTimeShortUsFormatter as ɵbw, dateTimeUsAmPmFormatter as ɵbx, dateTimeUsFormatter as ɵbv, dateUsFormatter as ɵbu, decimalFormatter as ɵbz, deleteIconFormatter as ɵby, dollarColoredBoldFormatter as ɵcc, dollarColoredFormatter as ɵcb, dollarFormatter as ɵca, editIconFormatter as ɵcd, hyperlinkFormatter as ɵce, hyperlinkUriPrefixFormatter as ɵcf, infoIconFormatter as ɵcg, lowercaseFormatter as ɵch, maskFormatter as ɵci, multipleFormatter as ɵcj, percentCompleteBarFormatter as ɵcm, percentCompleteFormatter as ɵcl, percentFormatter as ɵck, percentSymbolFormatter as ɵcn, progressBarFormatter as ɵco, translateBooleanFormatter as ɵcq, translateFormatter as ɵcp, uppercaseFormatter as ɵcr, yesNoFormatter as ɵcs, avgTotalsDollarFormatter as ɵcu, avgTotalsFormatter as ɵct, avgTotalsPercentageFormatter as ɵcv, maxTotalsFormatter as ɵcw, minTotalsFormatter as ɵcx, sumTotalsBoldFormatter as ɵcz, sumTotalsColoredFormatter as ɵda, sumTotalsDollarBoldFormatter as ɵdc, sumTotalsDollarColoredBoldFormatter as ɵde, sumTotalsDollarColoredFormatter as ɵdd, sumTotalsDollarFormatter as ɵdb, sumTotalsFormatter as ɵcy, dateIsoSorter as ɵdg, dateSorter as ɵdf, dateUsShortSorter as ɵdi, dateUsSorter as ɵdh, numericSorter as ɵdj, stringSorter as ɵdk };
+export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterMultiplePassType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, getDescendantProperty, getScrollBarWidth, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, uniqueArray, unsubscribeAllObservables, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SelectEditor as ɵk, SingleSelectEditor as ɵl, SliderEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵz, CompoundInputFilter as ɵba, CompoundSliderFilter as ɵbb, InputFilter as ɵbc, MultipleSelectFilter as ɵbe, NativeSelectFilter as ɵbh, SelectFilter as ɵbf, SingleSelectFilter as ɵbg, SliderFilter as ɵbd, arrayObjectToCsvFormatter as ɵbi, arrayToCsvFormatter as ɵbj, boldFormatter as ɵbk, checkboxFormatter as ɵbl, checkmarkFormatter as ɵbm, collectionEditorFormatter as ɵbp, collectionFormatter as ɵbo, complexObjectFormatter as ɵbn, dateIsoFormatter as ɵbq, dateTimeIsoAmPmFormatter as ɵbt, dateTimeIsoFormatter as ɵbr, dateTimeShortIsoFormatter as ɵbs, dateTimeShortUsFormatter as ɵbw, dateTimeUsAmPmFormatter as ɵbx, dateTimeUsFormatter as ɵbv, dateUsFormatter as ɵbu, decimalFormatter as ɵbz, deleteIconFormatter as ɵby, dollarColoredBoldFormatter as ɵcc, dollarColoredFormatter as ɵcb, dollarFormatter as ɵca, editIconFormatter as ɵcd, hyperlinkFormatter as ɵce, hyperlinkUriPrefixFormatter as ɵcf, infoIconFormatter as ɵcg, lowercaseFormatter as ɵch, maskFormatter as ɵci, multipleFormatter as ɵcj, percentCompleteBarFormatter as ɵcm, percentCompleteFormatter as ɵcl, percentFormatter as ɵck, percentSymbolFormatter as ɵcn, progressBarFormatter as ɵco, translateBooleanFormatter as ɵcq, translateFormatter as ɵcp, uppercaseFormatter as ɵcr, yesNoFormatter as ɵcs, avgTotalsDollarFormatter as ɵcu, avgTotalsFormatter as ɵct, avgTotalsPercentageFormatter as ɵcv, maxTotalsFormatter as ɵcw, minTotalsFormatter as ɵcx, sumTotalsBoldFormatter as ɵcz, sumTotalsColoredFormatter as ɵda, sumTotalsDollarBoldFormatter as ɵdc, sumTotalsDollarColoredBoldFormatter as ɵde, sumTotalsDollarColoredFormatter as ɵdd, sumTotalsDollarFormatter as ɵdb, sumTotalsFormatter as ɵcy, dateIsoSorter as ɵdg, dateSorter as ɵdf, dateUsShortSorter as ɵdi, dateUsSorter as ɵdh, numericSorter as ɵdj, stringSorter as ɵdk };
 //# sourceMappingURL=angular-slickgrid.js.map
