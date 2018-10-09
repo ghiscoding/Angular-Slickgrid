@@ -380,7 +380,7 @@ export class SelectEditor implements Editor {
       const prefixText = option[this.labelPrefixName] || '';
       const suffixText = option[this.labelSuffixName] || '';
       let optionLabel = option[this.optionLabel] || '';
-      optionLabel = optionLabel.toString().replace(/""/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
+      optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
       let optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
 
       // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
