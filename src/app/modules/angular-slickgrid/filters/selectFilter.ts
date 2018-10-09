@@ -136,11 +136,11 @@ export class SelectFilter implements Filter {
     }
 
     this.enableTranslateLabel = this.columnFilter.enableTranslateLabel;
-    this.labelName = (this.customStructure) ? this.customStructure.label : 'label';
-    this.labelPrefixName = (this.customStructure) ? this.customStructure.labelPrefix : 'labelPrefix';
-    this.labelSuffixName = (this.customStructure) ? this.customStructure.labelSuffix : 'labelSuffix';
-    this.optionLabel = (this.customStructure) ? this.customStructure.optionLabel : 'value';
-    this.valueName = (this.customStructure) ? this.customStructure.value : 'value';
+    this.labelName = this.customStructure && this.customStructure.label || 'label';
+    this.labelPrefixName = this.customStructure && this.customStructure.labelPrefix || 'labelPrefix';
+    this.labelSuffixName = this.customStructure && this.customStructure.labelSuffix || 'labelSuffix';
+    this.optionLabel = this.customStructure && this.customStructure.optionLabel || 'value';
+    this.valueName = this.customStructure && this.customStructure.value || 'value';
 
     // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
     // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
