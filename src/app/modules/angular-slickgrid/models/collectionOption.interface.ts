@@ -19,10 +19,10 @@ export interface CollectionOption {
   collectionInObjectProperty?: string;
 
   /**
-   * Defaults to "chained", when using multiple "collectionFilterBy", do we want to "merged" or "chained" the result after each pass?
+   * Defaults to "chain", when using multiple "collectionFilterBy", do we want to "merge" or "chain" the result after each pass?
    * For example if we have 2 filters to pass by, and we start with pass 1 returning 7 items and last pass returning 5 items
-   * "chained" is the default and will return 5 items, since the result of each pass is sent used by the next pass
-   * "merged" would return the merge of the 7 items & 5 items (without duplicates), since some item might be the same the result is anywhere between 5 to 13 items
+   * "chain" is the default and will return 5 items, since the result of each pass is sent used by the next pass
+   * "merge" would return the merge of the 7 items & 5 items (without duplicates), since some item might be the same the result is anywhere between 5 to 13 items
    */
   filterResultAfterEachPass?: FilterMultiplePassType | FilterMultiplePassTypeString;
 
