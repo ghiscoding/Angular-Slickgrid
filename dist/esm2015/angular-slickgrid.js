@@ -5499,18 +5499,23 @@ class GraphqlService {
             // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
             const /** @type {?} */ tmpSorterArray = currentSorters.map((sorter) => {
                 const /** @type {?} */ columnDef = this._columnDefinitions.find((column) => column.id === sorter.columnId);
+                graphqlSorters.push({
+                    field: columnDef ? ((columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '') : (sorter.columnId + ''),
+                    direction: sorter.direction
+                });
+                // return only the column(s) found in the Column Definitions ELSE null
                 if (columnDef) {
-                    graphqlSorters.push({
-                        field: (columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '',
-                        direction: sorter.direction
-                    });
+                    return {
+                        columnId: sorter.columnId,
+                        sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
+                    };
                 }
-                return {
-                    columnId: sorter.columnId,
-                    sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
-                };
+                return null;
             });
-            this._grid.setSortColumns(tmpSorterArray);
+            // set the sort icons, but also make sure to filter out null values (happens when no columnDef found)
+            if (Array.isArray(tmpSorterArray)) {
+                this._grid.setSortColumns(tmpSorterArray.filter((sorter) => sorter));
+            }
         }
         else if (sortColumns && !presetSorters) {
             // build the orderBy array, it could be multisort, example
@@ -6157,14 +6162,19 @@ class GridOdataService {
             sortByArray.forEach((sorter) => sorter.direction = /** @type {?} */ (sorter.direction.toLowerCase()));
             // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
             const /** @type {?} */ tmpSorterArray = sortByArray.map((sorter) => {
+                const /** @type {?} */ columnDef = this._columnDefinitions.find((column) => column.id === sorter.columnId);
                 sorterArray.push({
-                    columnId: sorter.columnId + '',
+                    columnId: columnDef ? ((columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '') : (sorter.columnId + ''),
                     direction: sorter.direction
                 });
-                return {
-                    columnId: sorter.columnId,
-                    sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
-                };
+                // return only the column(s) found in the Column Definitions ELSE null
+                if (columnDef) {
+                    return {
+                        columnId: sorter.columnId,
+                        sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
+                    };
+                }
+                return null;
             });
             this._grid.setSortColumns(tmpSorterArray);
         }
@@ -6175,17 +6185,17 @@ class GridOdataService {
             }
             else {
                 if (sortColumns) {
-                    for (const /** @type {?} */ column of sortColumns) {
-                        if (column.sortCol) {
-                            let /** @type {?} */ fieldName = (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '';
-                            let /** @type {?} */ columnFieldName = (column.sortCol.field || column.sortCol.id) + '';
+                    for (const /** @type {?} */ columnDef of sortColumns) {
+                        if (columnDef.sortCol) {
+                            let /** @type {?} */ fieldName = (columnDef.sortCol.queryField || columnDef.sortCol.queryFieldSorter || columnDef.sortCol.field || columnDef.sortCol.id) + '';
+                            let /** @type {?} */ columnFieldName = (columnDef.sortCol.field || columnDef.sortCol.id) + '';
                             if (this.odataService.options.caseType === CaseType.pascalCase) {
                                 fieldName = String.titleCase(fieldName);
                                 columnFieldName = String.titleCase(columnFieldName);
                             }
                             sorterArray.push({
                                 columnId: columnFieldName,
-                                direction: column.sortAsc ? 'asc' : 'desc'
+                                direction: columnDef.sortAsc ? 'asc' : 'desc'
                             });
                         }
                     }

@@ -3967,18 +3967,21 @@ var GraphqlService = /** @class */ (function () {
             currentSorters.forEach(function (sorter) { return sorter.direction = (sorter.direction.toUpperCase()); });
             var tmpSorterArray = currentSorters.map(function (sorter) {
                 var columnDef = _this._columnDefinitions.find(function (column) { return column.id === sorter.columnId; });
+                graphqlSorters.push({
+                    field: columnDef ? ((columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '') : (sorter.columnId + ''),
+                    direction: sorter.direction
+                });
                 if (columnDef) {
-                    graphqlSorters.push({
-                        field: (columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '',
-                        direction: sorter.direction
-                    });
+                    return {
+                        columnId: sorter.columnId,
+                        sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
+                    };
                 }
-                return {
-                    columnId: sorter.columnId,
-                    sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
-                };
+                return null;
             });
-            this._grid.setSortColumns(tmpSorterArray);
+            if (Array.isArray(tmpSorterArray)) {
+                this._grid.setSortColumns(tmpSorterArray.filter(function (sorter) { return sorter; }));
+            }
         }
         else if (sortColumns && !presetSorters) {
             if (sortColumns && sortColumns.length === 0) {
@@ -4441,20 +4444,25 @@ var GridOdataService = /** @class */ (function () {
         });
     };
     GridOdataService.prototype.updateSorters = function (sortColumns, presetSorters) {
+        var _this = this;
         var sortByArray = [];
         var sorterArray = [];
         if (!sortColumns && presetSorters) {
             sortByArray = presetSorters;
             sortByArray.forEach(function (sorter) { return sorter.direction = (sorter.direction.toLowerCase()); });
             var tmpSorterArray = sortByArray.map(function (sorter) {
+                var columnDef = _this._columnDefinitions.find(function (column) { return column.id === sorter.columnId; });
                 sorterArray.push({
-                    columnId: sorter.columnId + '',
+                    columnId: columnDef ? ((columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '') : (sorter.columnId + ''),
                     direction: sorter.direction
                 });
-                return {
-                    columnId: sorter.columnId,
-                    sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
-                };
+                if (columnDef) {
+                    return {
+                        columnId: sorter.columnId,
+                        sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
+                    };
+                }
+                return null;
             });
             this._grid.setSortColumns(tmpSorterArray);
         }
@@ -4466,17 +4474,17 @@ var GridOdataService = /** @class */ (function () {
                 if (sortColumns) {
                     try {
                         for (var sortColumns_2 = __values(sortColumns), sortColumns_2_1 = sortColumns_2.next(); !sortColumns_2_1.done; sortColumns_2_1 = sortColumns_2.next()) {
-                            var column = sortColumns_2_1.value;
-                            if (column.sortCol) {
-                                var fieldName = (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '';
-                                var columnFieldName = (column.sortCol.field || column.sortCol.id) + '';
+                            var columnDef = sortColumns_2_1.value;
+                            if (columnDef.sortCol) {
+                                var fieldName = (columnDef.sortCol.queryField || columnDef.sortCol.queryFieldSorter || columnDef.sortCol.field || columnDef.sortCol.id) + '';
+                                var columnFieldName = (columnDef.sortCol.field || columnDef.sortCol.id) + '';
                                 if (this.odataService.options.caseType === CaseType.pascalCase) {
                                     fieldName = String.titleCase(fieldName);
                                     columnFieldName = String.titleCase(columnFieldName);
                                 }
                                 sorterArray.push({
                                     columnId: columnFieldName,
-                                    direction: column.sortAsc ? 'asc' : 'desc'
+                                    direction: columnDef.sortAsc ? 'asc' : 'desc'
                                 });
                             }
                         }
