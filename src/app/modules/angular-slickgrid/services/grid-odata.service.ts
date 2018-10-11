@@ -337,14 +337,21 @@ export class GridOdataService implements BackendService {
 
       // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
       const tmpSorterArray = sortByArray.map((sorter) => {
+        const columnDef = this._columnDefinitions.find((column: Column) => column.id === sorter.columnId);
+
         sorterArray.push({
-          columnId: sorter.columnId + '',
+          columnId: columnDef ? ((columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '') : (sorter.columnId + ''),
           direction: sorter.direction
         });
-        return {
-          columnId: sorter.columnId,
-          sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
-        };
+
+        // return only the column(s) found in the Column Definitions ELSE null
+        if (columnDef) {
+          return {
+            columnId: sorter.columnId,
+            sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
+          };
+        }
+        return null;
       });
       this._grid.setSortColumns(tmpSorterArray);
     } else if (sortColumns && !presetSorters) {
@@ -353,10 +360,10 @@ export class GridOdataService implements BackendService {
         sortByArray = new Array(this.defaultOptions.orderBy); // when empty, use the default sort
       } else {
         if (sortColumns) {
-          for (const column of sortColumns) {
-            if (column.sortCol) {
-              let fieldName = (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '';
-              let columnFieldName = (column.sortCol.field || column.sortCol.id) + '';
+          for (const columnDef of sortColumns) {
+            if (columnDef.sortCol) {
+              let fieldName = (columnDef.sortCol.queryField || columnDef.sortCol.queryFieldSorter || columnDef.sortCol.field || columnDef.sortCol.id) + '';
+              let columnFieldName = (columnDef.sortCol.field || columnDef.sortCol.id) + '';
               if (this.odataService.options.caseType === CaseType.pascalCase) {
                 fieldName = String.titleCase(fieldName);
                 columnFieldName = String.titleCase(columnFieldName);
@@ -364,7 +371,7 @@ export class GridOdataService implements BackendService {
 
               sorterArray.push({
                 columnId: columnFieldName,
-                direction: column.sortAsc ? 'asc' : 'desc'
+                direction: columnDef.sortAsc ? 'asc' : 'desc'
               });
             }
           }

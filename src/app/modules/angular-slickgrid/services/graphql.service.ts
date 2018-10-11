@@ -446,18 +446,26 @@ export class GraphqlService implements BackendService {
       // display the correct sorting icons on the UI, for that it requires (columnId, sortAsc) properties
       const tmpSorterArray = currentSorters.map((sorter) => {
         const columnDef = this._columnDefinitions.find((column: Column) => column.id === sorter.columnId);
+
+        graphqlSorters.push({
+          field: columnDef ? ((columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '') : (sorter.columnId + ''),
+          direction: sorter.direction
+        });
+
+        // return only the column(s) found in the Column Definitions ELSE null
         if (columnDef) {
-          graphqlSorters.push({
-            field: (columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '',
-            direction: sorter.direction
-          });
+          return {
+            columnId: sorter.columnId,
+            sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
+          };
         }
-        return {
-          columnId: sorter.columnId,
-          sortAsc: sorter.direction.toUpperCase() === SortDirection.ASC
-        };
+        return null;
       });
-      this._grid.setSortColumns(tmpSorterArray);
+
+      // set the sort icons, but also make sure to filter out null values (happens when no columnDef found)
+      if (Array.isArray(tmpSorterArray)) {
+        this._grid.setSortColumns(tmpSorterArray.filter((sorter) => sorter));
+      }
     } else if (sortColumns && !presetSorters) {
       // build the orderBy array, it could be multisort, example
       // orderBy:[{field: lastName, direction: ASC}, {field: firstName, direction: DESC}]
