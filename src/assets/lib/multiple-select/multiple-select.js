@@ -510,7 +510,7 @@
         this.filter();
       }
 
-      if (!this.options.autoDropWidth && this.options.autoAdjustDropWidthByTextSize) {
+      if (this.options.autoAdjustDropWidthByTextSize) {
         this.adjustDropWidthByText();
       } else if (!this.options.width && this.options.autoDropWidth) {
         this.$drop.css('width', this.$parent.width());
@@ -628,9 +628,10 @@
     },
 
     adjustDropWidthByText: function () {
-      // if the dropWidth or width is specified, we won't adjust anything here
+      // keep the dropWidth/width as reference, if our new calculated width is below then we will re-adjust (else do nothing)
+      var currentDefinedWidth = this.$parent.width();
       if (this.options.dropWidth || this.options.width) {
-        return;
+        currentDefinedWidth = this.options.dropWidth || this.options.width;
       }
 
       // calculate the "Select All" element width, this text is configurable which is why we recalculate every time
@@ -668,8 +669,10 @@
         maxDropWidth = selectParentWidth;
       }
 
-      // finally re-adjust the drop to the new calculated width
-      this.$drop.css({ 'width': maxDropWidth, 'max-width': maxDropWidth });
+      // finally re-adjust the drop to the new calculated width when necessary
+      if (maxDropWidth > currentDefinedWidth || currentDefinedWidth === '100%') {
+        this.$drop.css({ 'width': maxDropWidth, 'max-width': maxDropWidth });
+      }
     },
 
     availableSpaceBottom: function () {
