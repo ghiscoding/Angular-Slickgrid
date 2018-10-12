@@ -131,7 +131,7 @@ export class SelectEditor implements Editor {
 
   /** Getter for the Collection Options */
   get collectionOptions(): CollectionOption {
-    return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions;
+    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionOptions;
   }
 
   /** Get Column Definition object */
@@ -160,11 +160,16 @@ export class SelectEditor implements Editor {
       .filter(c => this.$editorElm.val().indexOf(c[this.valueName].toString()) !== -1)
       .map(c => {
         const labelText = c[this.valueName];
-        const prefixText = c[this.labelPrefixName] || '';
-        const suffixText = c[this.labelSuffixName] || '';
+        let prefixText = c[this.labelPrefixName] || '';
+        let suffixText = c[this.labelSuffixName] || '';
+
+        // also translate prefix/suffix if enableTranslateLabel is true and text is a string
+        prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+        suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
 
         if (isIncludingPrefixSuffix) {
-          return (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+          const tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text); // add to a temp array for joining purpose and filter out empty text
+          return tmpOptionArray.join(separatorBetweenLabels);
         }
         return labelText;
       });
@@ -183,9 +188,16 @@ export class SelectEditor implements Editor {
       const labelText = itemFound[this.valueName];
 
       if (isIncludingPrefixSuffix) {
-        const prefixText = itemFound[this.labelPrefixName] || '';
-        const suffixText = itemFound[this.labelSuffixName] || '';
-        return (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+        let prefixText = itemFound[this.labelPrefixName] || '';
+        let suffixText = itemFound[this.labelSuffixName] || '';
+
+        // also translate prefix/suffix if enableTranslateLabel is true and text is a string
+        prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+        suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
+
+        // add to a temp array for joining purpose and filter out empty text
+        const tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
+        return tmpOptionArray.join(separatorBetweenLabels);
       }
 
       return labelText;
@@ -218,6 +230,10 @@ export class SelectEditor implements Editor {
     this.labelSuffixName = this.customStructure && this.customStructure.labelSuffix || 'labelSuffix';
     this.optionLabel = this.customStructure && this.customStructure.optionLabel || 'value';
     this.valueName = this.customStructure && this.customStructure.value || 'value';
+
+    if (this.enableTranslateLabel && (!this._translate || typeof this._translate.instant !== 'function')) {
+      throw new Error(`[select-editor] The ngx-translate TranslateService is required for the Select Editor to work correctly`);
+    }
 
     // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
     // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
@@ -373,15 +389,23 @@ export class SelectEditor implements Editor {
 
     collection.forEach((option: SelectOption) => {
       if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
-        throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
+        throw new Error(`[select-editor] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
       }
       const labelKey = (option.labelKey || option[this.labelName]) as string;
-      const labelText = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
-      const prefixText = option[this.labelPrefixName] || '';
-      const suffixText = option[this.labelSuffixName] || '';
+      const labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey) ? this._translate.instant(labelKey || ' ') : labelKey;
+      let prefixText = option[this.labelPrefixName] || '';
+      let suffixText = option[this.labelSuffixName] || '';
       let optionLabel = option[this.optionLabel] || '';
       optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
-      let optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+
+      // also translate prefix/suffix if enableTranslateLabel is true and text is a string
+      prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+      suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
+      optionLabel = (this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? this._translate.instant(optionLabel || ' ') : optionLabel;
+
+      // add to a temp array for joining purpose and filter out empty text
+      const tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
+      let optionText = tmpOptionArray.join(separatorBetweenLabels);
 
       // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
       // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
