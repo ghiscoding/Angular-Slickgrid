@@ -2189,6 +2189,9 @@ class SelectFilter {
         this.labelSuffixName = this.customStructure && this.customStructure.labelSuffix || 'labelSuffix';
         this.optionLabel = this.customStructure && this.customStructure.optionLabel || 'value';
         this.valueName = this.customStructure && this.customStructure.value || 'value';
+        if (this.enableTranslateLabel && (!this.translate || typeof this.translate.instant !== 'function')) {
+            throw new Error(`[select-editor] The ngx-translate TranslateService is required for the Select Filter to work correctly`);
+        }
         // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
         // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
         const /** @type {?} */ newCollection = this.columnFilter.collection || [];
@@ -2352,16 +2355,22 @@ class SelectFilter {
         const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
+                throw new Error(`[select-filter] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
             }
             const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
             const /** @type {?} */ selected = (searchTerms.findIndex((term) => term === option[this.valueName]) >= 0) ? 'selected' : '';
-            const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
-            const /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
-            const /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
+            const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey) ? this.translate.instant(labelKey || ' ') : labelKey;
+            let /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
+            let /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
             let /** @type {?} */ optionLabel = option[this.optionLabel] || '';
             optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
-            let /** @type {?} */ optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+            // also translate prefix/suffix if enableTranslateLabel is true and text is a string
+            prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this.translate.instant(prefixText || ' ') : prefixText;
+            suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this.translate.instant(suffixText || ' ') : suffixText;
+            optionLabel = (this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? this.translate.instant(optionLabel || ' ') : optionLabel;
+            // add to a temp array for joining purpose and filter out empty text
+            const /** @type {?} */ tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
+            let /** @type {?} */ optionText = tmpOptionArray.join(separatorBetweenLabels);
             // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
             // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
             if (isRenderHtmlEnabled) {
@@ -8418,7 +8427,7 @@ class SelectEditor {
      * @return {?}
      */
     get collectionOptions() {
-        return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions;
+        return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionOptions;
     }
     /**
      * Get Column Definition object
@@ -8452,10 +8461,14 @@ class SelectEditor {
             .filter(c => this.$editorElm.val().indexOf(c[this.valueName].toString()) !== -1)
             .map(c => {
             const /** @type {?} */ labelText = c[this.valueName];
-            const /** @type {?} */ prefixText = c[this.labelPrefixName] || '';
-            const /** @type {?} */ suffixText = c[this.labelSuffixName] || '';
+            let /** @type {?} */ prefixText = c[this.labelPrefixName] || '';
+            let /** @type {?} */ suffixText = c[this.labelSuffixName] || '';
+            // also translate prefix/suffix if enableTranslateLabel is true and text is a string
+            prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+            suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
             if (isIncludingPrefixSuffix) {
-                return (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+                const /** @type {?} */ tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text); // add to a temp array for joining purpose and filter out empty text
+                return tmpOptionArray.join(separatorBetweenLabels);
             }
             return labelText;
         });
@@ -8471,9 +8484,14 @@ class SelectEditor {
         if (itemFound) {
             const /** @type {?} */ labelText = itemFound[this.valueName];
             if (isIncludingPrefixSuffix) {
-                const /** @type {?} */ prefixText = itemFound[this.labelPrefixName] || '';
-                const /** @type {?} */ suffixText = itemFound[this.labelSuffixName] || '';
-                return (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+                let /** @type {?} */ prefixText = itemFound[this.labelPrefixName] || '';
+                let /** @type {?} */ suffixText = itemFound[this.labelSuffixName] || '';
+                // also translate prefix/suffix if enableTranslateLabel is true and text is a string
+                prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+                suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
+                // add to a temp array for joining purpose and filter out empty text
+                const /** @type {?} */ tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
+                return tmpOptionArray.join(separatorBetweenLabels);
             }
             return labelText;
         }
@@ -8505,6 +8523,9 @@ class SelectEditor {
         this.labelSuffixName = this.customStructure && this.customStructure.labelSuffix || 'labelSuffix';
         this.optionLabel = this.customStructure && this.customStructure.optionLabel || 'value';
         this.valueName = this.customStructure && this.customStructure.value || 'value';
+        if (this.enableTranslateLabel && (!this._translate || typeof this._translate.instant !== 'function')) {
+            throw new Error(`[select-editor] The ngx-translate TranslateService is required for the Select Editor to work correctly`);
+        }
         // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
         // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
         this.renderDomElement(this.collection);
@@ -8670,15 +8691,21 @@ class SelectEditor {
         const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach((option) => {
             if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
+                throw new Error(`[select-editor] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
             }
             const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
-            const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
-            const /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
-            const /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
+            const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey) ? this._translate.instant(labelKey || ' ') : labelKey;
+            let /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
+            let /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
             let /** @type {?} */ optionLabel = option[this.optionLabel] || '';
             optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
-            let /** @type {?} */ optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+            // also translate prefix/suffix if enableTranslateLabel is true and text is a string
+            prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+            suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
+            optionLabel = (this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? this._translate.instant(optionLabel || ' ') : optionLabel;
+            // add to a temp array for joining purpose and filter out empty text
+            const /** @type {?} */ tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
+            let /** @type {?} */ optionText = tmpOptionArray.join(separatorBetweenLabels);
             // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
             // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
             if (isRenderHtmlEnabled) {

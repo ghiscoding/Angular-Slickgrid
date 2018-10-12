@@ -1576,6 +1576,9 @@ var SelectFilter = /** @class */ (function () {
         this.labelSuffixName = this.customStructure && this.customStructure.labelSuffix || 'labelSuffix';
         this.optionLabel = this.customStructure && this.customStructure.optionLabel || 'value';
         this.valueName = this.customStructure && this.customStructure.value || 'value';
+        if (this.enableTranslateLabel && (!this.translate || typeof this.translate.instant !== 'function')) {
+            throw new Error("[select-editor] The ngx-translate TranslateService is required for the Select Filter to work correctly");
+        }
         var newCollection = this.columnFilter.collection || [];
         this.renderDomElement(newCollection);
         var collectionAsync = this.columnFilter && this.columnFilter.collectionAsync;
@@ -1682,16 +1685,20 @@ var SelectFilter = /** @class */ (function () {
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         optionCollection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')");
+                throw new Error("[select-filter] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')");
             }
             var labelKey = ((option.labelKey || option[_this.labelName]));
             var selected = (searchTerms.findIndex(function (term) { return term === option[_this.valueName]; }) >= 0) ? 'selected' : '';
-            var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
+            var labelText = ((option.labelKey || _this.enableTranslateLabel) && labelKey) ? _this.translate.instant(labelKey || ' ') : labelKey;
             var prefixText = option[_this.labelPrefixName] || '';
             var suffixText = option[_this.labelSuffixName] || '';
             var optionLabel = option[_this.optionLabel] || '';
             optionLabel = optionLabel.toString().replace(/\"/g, '\'');
-            var optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+            prefixText = (_this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? _this.translate.instant(prefixText || ' ') : prefixText;
+            suffixText = (_this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? _this.translate.instant(suffixText || ' ') : suffixText;
+            optionLabel = (_this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? _this.translate.instant(optionLabel || ' ') : optionLabel;
+            var tmpOptionArray = [prefixText, labelText, suffixText].filter(function (text) { return text; });
+            var optionText = tmpOptionArray.join(separatorBetweenLabels);
             if (isRenderHtmlEnabled) {
                 var sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
                 optionText = htmlEncode(sanitizedText);
@@ -6084,7 +6091,7 @@ var SelectEditor = /** @class */ (function () {
     });
     Object.defineProperty(SelectEditor.prototype, "collectionOptions", {
         get: function () {
-            return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions;
+            return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionOptions;
         },
         enumerable: true,
         configurable: true
@@ -6121,8 +6128,11 @@ var SelectEditor = /** @class */ (function () {
                 var labelText = c[_this.valueName];
                 var prefixText = c[_this.labelPrefixName] || '';
                 var suffixText = c[_this.labelSuffixName] || '';
+                prefixText = (_this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? _this._translate.instant(prefixText || ' ') : prefixText;
+                suffixText = (_this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? _this._translate.instant(suffixText || ' ') : suffixText;
                 if (isIncludingPrefixSuffix) {
-                    return (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+                    var tmpOptionArray = [prefixText, labelText, suffixText].filter(function (text) { return text; });
+                    return tmpOptionArray.join(separatorBetweenLabels);
                 }
                 return labelText;
             });
@@ -6141,7 +6151,10 @@ var SelectEditor = /** @class */ (function () {
                 if (isIncludingPrefixSuffix) {
                     var prefixText = itemFound[this.labelPrefixName] || '';
                     var suffixText = itemFound[this.labelSuffixName] || '';
-                    return (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+                    prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+                    suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
+                    var tmpOptionArray = [prefixText, labelText, suffixText].filter(function (text) { return text; });
+                    return tmpOptionArray.join(separatorBetweenLabels);
                 }
                 return labelText;
             }
@@ -6171,6 +6184,9 @@ var SelectEditor = /** @class */ (function () {
         this.labelSuffixName = this.customStructure && this.customStructure.labelSuffix || 'labelSuffix';
         this.optionLabel = this.customStructure && this.customStructure.optionLabel || 'value';
         this.valueName = this.customStructure && this.customStructure.value || 'value';
+        if (this.enableTranslateLabel && (!this._translate || typeof this._translate.instant !== 'function')) {
+            throw new Error("[select-editor] The ngx-translate TranslateService is required for the Select Editor to work correctly");
+        }
         this.renderDomElement(this.collection);
     };
     SelectEditor.prototype.applyValue = function (item, state) {
@@ -6275,15 +6291,19 @@ var SelectEditor = /** @class */ (function () {
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
         collection.forEach(function (option) {
             if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])");
+                throw new Error("[select-editor] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])");
             }
             var labelKey = ((option.labelKey || option[_this.labelName]));
-            var labelText = ((option.labelKey || _this.enableTranslateLabel) && _this._translate && typeof _this._translate.instant === 'function') ? _this._translate.instant(labelKey || ' ') : labelKey;
+            var labelText = ((option.labelKey || _this.enableTranslateLabel) && labelKey) ? _this._translate.instant(labelKey || ' ') : labelKey;
             var prefixText = option[_this.labelPrefixName] || '';
             var suffixText = option[_this.labelSuffixName] || '';
             var optionLabel = option[_this.optionLabel] || '';
             optionLabel = optionLabel.toString().replace(/\"/g, '\'');
-            var optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+            prefixText = (_this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? _this._translate.instant(prefixText || ' ') : prefixText;
+            suffixText = (_this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? _this._translate.instant(suffixText || ' ') : suffixText;
+            optionLabel = (_this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? _this._translate.instant(optionLabel || ' ') : optionLabel;
+            var tmpOptionArray = [prefixText, labelText, suffixText].filter(function (text) { return text; });
+            var optionText = tmpOptionArray.join(separatorBetweenLabels);
             if (isRenderHtmlEnabled) {
                 var sanitizedText = DOMPurify$1.sanitize(optionText, sanitizedOptions);
                 optionText = htmlEncode(sanitizedText);
