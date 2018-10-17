@@ -5125,7 +5125,6 @@ var ResizerService = /** @class */ (function () {
         $(window).on("resize.grid." + this._gridUid, function () {
             _this.onGridBeforeResize.next(true);
             _this.resizeGrid(0, newSizes);
-            _this.resizeGrid(0, newSizes);
         });
     };
     ResizerService.prototype.calculateGridNewDimensions = function (gridOptions) {
@@ -5185,41 +5184,54 @@ var ResizerService = /** @class */ (function () {
     };
     ResizerService.prototype.resizeGrid = function (delay, newSizes) {
         var _this = this;
+        if (delay === void 0) { delay = 10; }
         if (!this._grid || !this._gridOptions) {
             throw new Error("\n      Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined.\n      You can fix this by setting your gridOption to use \"enableAutoResize\" or create an instance of the ResizerService by calling attachAutoResizeDataGrid()");
         }
         return new Promise(function (resolve) {
             delay = delay || 0;
-            clearTimeout(timer$2);
-            timer$2 = setTimeout(function () {
-                var availableDimensions = _this.calculateGridNewDimensions(_this._gridOptions);
-                var gridElm = $("#" + _this._gridOptions.gridId) || {};
-                var gridContainerElm = $("#" + _this._gridOptions.gridContainerId) || {};
-                if ((newSizes || availableDimensions) && gridElm.length > 0) {
-                    var newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
-                    var newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
-                    gridElm.height(newHeight);
-                    gridElm.width(newWidth);
-                    gridContainerElm.height(newHeight);
-                    gridContainerElm.width(newWidth);
-                    if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && _this._grid) {
-                        _this._grid.resizeCanvas();
-                    }
-                    if (_this._gridOptions && _this._gridOptions.enableAutoSizeColumns) {
-                        _this._grid.autosizeColumns();
-                        _this.compensateHorizontalScroll(_this._grid, _this._gridOptions);
-                    }
-                    _this._lastDimensions = {
-                        height: newHeight,
-                        width: newWidth
-                    };
-                    if ((_this._gridOptions.enablePagination || _this._gridOptions.backendServiceApi)) {
-                        _this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
-                    }
+            if (delay > 0) {
+                clearTimeout(timer$2);
+                timer$2 = setTimeout(function () {
+                    _this.resizeGridWithDimensions(newSizes);
                     resolve(_this._lastDimensions);
-                }
-            }, delay);
+                }, delay);
+            }
+            else {
+                _this.resizeGridWithDimensions(newSizes);
+                resolve(_this._lastDimensions);
+            }
         });
+    };
+    ResizerService.prototype.resizeGridWithDimensions = function (newSizes) {
+        var availableDimensions = this.calculateGridNewDimensions(this._gridOptions);
+        var gridElm = $("#" + this._gridOptions.gridId) || {};
+        var gridContainerElm = $("#" + this._gridOptions.gridContainerId) || {};
+        if ((newSizes || availableDimensions) && gridElm.length > 0) {
+            var newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
+            var newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
+            gridElm.height(newHeight);
+            gridElm.width(newWidth);
+            gridContainerElm.height(newHeight);
+            gridContainerElm.width(newWidth);
+            if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && this._grid && this._grid.resizeCanvas) {
+                this._grid.resizeCanvas();
+            }
+            if (this._gridOptions && this._gridOptions.enableAutoSizeColumns && typeof this._grid.autosizeColumns) {
+                if (this._gridUid && $("." + this._gridUid).length > 0) {
+                    this._grid.autosizeColumns();
+                }
+                this.compensateHorizontalScroll(this._grid, this._gridOptions);
+            }
+            this._lastDimensions = {
+                height: newHeight,
+                width: newWidth
+            };
+            if ((this._gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
+                this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
+            }
+        }
+        return this._lastDimensions;
     };
     return ResizerService;
 }());

@@ -23,6 +23,12 @@ export interface MultipleSelectOption {
     delimiter?: string;
     /** Display selected values on the element. By default this option is set to false. */
     displayValues?: boolean;
+    /** Defaults to 26 (as per CSS), that is the "OK" button element height in pixels inside the drop when using multiple-selection */
+    domElmOkButtonHeight?: number;
+    /** Defaults to 26 (as per CSS), that is the select DOM element padding in pixels (that is not the drop but the select itself, how tall is it) */
+    domElmSelectSidePadding?: number;
+    /** Defaults to 39 (as per CSS), that is the DOM element of the "Select All" text area */
+    domElmSelectAllHeight?: number;
     /** Define the width of the dropdown list */
     dropWidth?: number;
     /** Add `…` after selected options if minimumCountSelected is set. Overrides countSelected option.By default this option is set to false. */
@@ -73,6 +79,10 @@ export interface MultipleSelectOption {
     single?: boolean;
     /** Defaults to false, when set to True it will use the "title" that were defined in each select option */
     useSelectOptionTitle?: boolean;
+    /** Defaults to False, when set to True it will use the <option label=""> that can be used to display selected options */
+    useSelectOptionLabel?: boolean;
+    /** Defaults to False, same as "useSelectOptionLabel" but will also render html */
+    useSelectOptionLabelToHtml?: boolean;
     /** Define the width property of the dropdown list, support a percentage setting.By default this option is set to undefined. Which is the same as the select input field. */
     width?: number | string;
     /** Blur the multiple select. */

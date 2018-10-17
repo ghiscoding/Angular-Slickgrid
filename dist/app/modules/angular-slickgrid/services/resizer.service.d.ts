@@ -40,4 +40,5 @@ export declare class ResizerService {
     getLastResizeDimensions(): GridDimension;
     /** Resize the datagrid to fit the browser height & width */
     resizeGrid(delay?: number, newSizes?: GridDimension): Promise<GridDimension>;
+    resizeGridWithDimensions(newSizes?: GridDimension): GridDimension;
 }

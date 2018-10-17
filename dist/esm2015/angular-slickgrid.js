@@ -7109,8 +7109,6 @@ class ResizerService {
         // -- attach auto-resize to Window object only if it exist
         $(window).on(`resize.grid.${this._gridUid}`, () => {
             this.onGridBeforeResize.next(true);
-            // for some yet unknown reason, calling the resize twice removes any stuttering/flickering when changing the height and makes it much smoother
-            this.resizeGrid(0, newSizes);
             this.resizeGrid(0, newSizes);
         });
     }
@@ -7203,7 +7201,7 @@ class ResizerService {
      * @param {?=} newSizes
      * @return {?}
      */
-    resizeGrid(delay, newSizes) {
+    resizeGrid(delay = 10, newSizes) {
         if (!this._grid || !this._gridOptions) {
             throw new Error(`
       Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined.
@@ -7212,47 +7210,64 @@ class ResizerService {
         return new Promise((resolve) => {
             // because of the javascript async nature, we might want to delay the resize a little bit
             delay = delay || 0;
-            clearTimeout(timer$2);
-            timer$2 = setTimeout(() => {
-                // calculate the available sizes with minimum height defined as a constant
-                const /** @type {?} */ availableDimensions = this.calculateGridNewDimensions(this._gridOptions);
-                const /** @type {?} */ gridElm = $(`#${this._gridOptions.gridId}`) || {};
-                const /** @type {?} */ gridContainerElm = $(`#${this._gridOptions.gridContainerId}`) || {};
-                if ((newSizes || availableDimensions) && gridElm.length > 0) {
-                    // get the new sizes, if new sizes are passed (not 0), we will use them else use available space
-                    // basically if user passes 1 of the dimension, let say he passes just the height,
-                    // we will use the height as a fixed height but the width will be resized by it's available space
-                    const /** @type {?} */ newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
-                    const /** @type {?} */ newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
-                    // apply these new height/width to the datagrid
-                    gridElm.height(newHeight);
-                    gridElm.width(newWidth);
-                    gridContainerElm.height(newHeight);
-                    gridContainerElm.width(newWidth);
-                    // resize the slickgrid canvas on all browser except some IE versions
-                    // exclude all IE below IE11
-                    // IE11 wants to be a better standard (W3C) follower (finally) they even changed their appName output to also have 'Netscape'
-                    if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && this._grid) {
-                        this._grid.resizeCanvas();
-                    }
-                    // also call the grid auto-size columns so that it takes available when going bigger
-                    if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
-                        this._grid.autosizeColumns();
-                        // compensate anytime SlickGrid measureScrollbar is incorrect
-                        this.compensateHorizontalScroll(this._grid, this._gridOptions);
-                    }
-                    // keep last resized dimensions & resolve them to the Promise
-                    this._lastDimensions = {
-                        height: newHeight,
-                        width: newWidth
-                    };
-                    if ((this._gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
-                        this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
-                    }
+            if (delay > 0) {
+                clearTimeout(timer$2);
+                timer$2 = setTimeout(() => {
+                    this.resizeGridWithDimensions(newSizes);
                     resolve(this._lastDimensions);
-                }
-            }, delay);
+                }, delay);
+            }
+            else {
+                this.resizeGridWithDimensions(newSizes);
+                resolve(this._lastDimensions);
+            }
         });
+    }
+    /**
+     * @param {?=} newSizes
+     * @return {?}
+     */
+    resizeGridWithDimensions(newSizes) {
+        // calculate the available sizes with minimum height defined as a constant
+        const /** @type {?} */ availableDimensions = this.calculateGridNewDimensions(this._gridOptions);
+        const /** @type {?} */ gridElm = $(`#${this._gridOptions.gridId}`) || {};
+        const /** @type {?} */ gridContainerElm = $(`#${this._gridOptions.gridContainerId}`) || {};
+        if ((newSizes || availableDimensions) && gridElm.length > 0) {
+            // get the new sizes, if new sizes are passed (not 0), we will use them else use available space
+            // basically if user passes 1 of the dimension, let say he passes just the height,
+            // we will use the height as a fixed height but the width will be resized by it's available space
+            const /** @type {?} */ newHeight = (newSizes && newSizes.height) ? newSizes.height : availableDimensions.height;
+            const /** @type {?} */ newWidth = (newSizes && newSizes.width) ? newSizes.width : availableDimensions.width;
+            // apply these new height/width to the datagrid
+            gridElm.height(newHeight);
+            gridElm.width(newWidth);
+            gridContainerElm.height(newHeight);
+            gridContainerElm.width(newWidth);
+            // resize the slickgrid canvas on all browser except some IE versions
+            // exclude all IE below IE11
+            // IE11 wants to be a better standard (W3C) follower (finally) they even changed their appName output to also have 'Netscape'
+            if (new RegExp('MSIE [6-8]').exec(navigator.userAgent) === null && this._grid && this._grid.resizeCanvas) {
+                this._grid.resizeCanvas();
+            }
+            // also call the grid auto-size columns so that it takes available when going bigger
+            if (this._gridOptions && this._gridOptions.enableAutoSizeColumns && typeof this._grid.autosizeColumns) {
+                // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree) to avoid SlickGrid error "missing stylesheet"
+                if (this._gridUid && $(`.${this._gridUid}`).length > 0) {
+                    this._grid.autosizeColumns();
+                }
+                // compensate anytime SlickGrid measureScrollbar is incorrect
+                this.compensateHorizontalScroll(this._grid, this._gridOptions);
+            }
+            // keep last resized dimensions & resolve them to the Promise
+            this._lastDimensions = {
+                height: newHeight,
+                width: newWidth
+            };
+            if ((this._gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
+                this._lastDimensions.heightWithPagination = newHeight + DATAGRID_PAGINATION_HEIGHT;
+            }
+        }
+        return this._lastDimensions;
     }
 }
 
