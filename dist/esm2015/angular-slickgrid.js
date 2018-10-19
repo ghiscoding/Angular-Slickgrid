@@ -7104,7 +7104,8 @@ class ResizerService {
             return null;
         }
         // -- 1st resize the datagrid size at first load (we need this because the .on event is not triggered on first load)
-        this.resizeGrid(0, newSizes);
+        // -- also we add a slight delay (in ms) so that we resize after the grid render is done
+        this.resizeGrid(10, newSizes);
         // -- 2nd attach a trigger on the Window DOM element, so that it happens also when resizing after first load
         // -- attach auto-resize to Window object only if it exist
         $(window).on(`resize.grid.${this._gridUid}`, () => {
@@ -10481,7 +10482,7 @@ class AngularSlickgridComponent {
      */
     ngOnInit() {
         this.onBeforeGridCreate.emit(true);
-        if (!this.gridOptions.enableAutoResize && !this.gridOptions.autoResize) {
+        if (this.gridOptions && !this.gridOptions.enableAutoResize && !this.gridOptions.autoResize) {
             this.gridHeightString = `${this.gridHeight}px`;
             this.gridWidthString = `${this.gridWidth}px`;
         }

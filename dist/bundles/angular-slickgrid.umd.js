@@ -5191,7 +5191,7 @@ var ResizerService = /** @class */ (function () {
         if (gridDomElm === undefined || gridDomElm.offset() === undefined) {
             return null;
         }
-        this.resizeGrid(0, newSizes);
+        this.resizeGrid(10, newSizes);
         $(window).on("resize.grid." + this._gridUid, function () {
             _this.onGridBeforeResize.next(true);
             _this.resizeGrid(0, newSizes);
@@ -7384,7 +7384,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
     });
     AngularSlickgridComponent.prototype.ngOnInit = function () {
         this.onBeforeGridCreate.emit(true);
-        if (!this.gridOptions.enableAutoResize && !this.gridOptions.autoResize) {
+        if (this.gridOptions && !this.gridOptions.enableAutoResize && !this.gridOptions.autoResize) {
             this.gridHeightString = this.gridHeight + "px";
             this.gridWidthString = this.gridWidth + "px";
         }
