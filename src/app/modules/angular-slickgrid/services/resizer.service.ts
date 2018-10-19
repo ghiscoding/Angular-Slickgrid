@@ -47,7 +47,8 @@ export class ResizerService {
     }
 
     // -- 1st resize the datagrid size at first load (we need this because the .on event is not triggered on first load)
-    this.resizeGrid(0, newSizes);
+    // -- also we add a slight delay (in ms) so that we resize after the grid render is done
+    this.resizeGrid(10, newSizes);
 
     // -- 2nd attach a trigger on the Window DOM element, so that it happens also when resizing after first load
     // -- attach auto-resize to Window object only if it exist
