@@ -119,7 +119,10 @@ export class SelectFilter implements Filter {
 
   /** Getter for the filter operator */
   get operator(): OperatorType | OperatorString {
-    return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.in;
+    if (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) {
+      return this.columnDef && this.columnDef.filter && this.columnDef.filter.operator;
+    }
+    return  this.isMultipleSelect ? OperatorType.in : OperatorType.equal;
   }
 
   /**
