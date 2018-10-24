@@ -1487,7 +1487,10 @@ var SelectFilter = /** @class */ (function () {
     });
     Object.defineProperty(SelectFilter.prototype, "operator", {
         get: function () {
-            return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.in;
+            if (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) {
+                return this.columnDef && this.columnDef.filter && this.columnDef.filter.operator;
+            }
+            return this.isMultipleSelect ? OperatorType.in : OperatorType.equal;
         },
         enumerable: true,
         configurable: true

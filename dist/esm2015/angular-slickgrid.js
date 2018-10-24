@@ -2168,7 +2168,10 @@ class SelectFilter {
      * @return {?}
      */
     get operator() {
-        return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.in;
+        if (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) {
+            return this.columnDef && this.columnDef.filter && this.columnDef.filter.operator;
+        }
+        return this.isMultipleSelect ? OperatorType.in : OperatorType.equal;
     }
     /**
      * Initialize the filter template

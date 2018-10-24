@@ -670,7 +670,7 @@
       }
 
       // finally re-adjust the drop to the new calculated width when necessary
-      if (maxDropWidth > currentDefinedWidth || currentDefinedWidth === '100%') {
+      if (currentDefinedWidth > maxDropWidth || this.$drop.width() > maxDropWidth || currentDefinedWidth === '100%') {
         this.$drop.css({ 'width': maxDropWidth, 'max-width': maxDropWidth });
       }
     },
