@@ -12,7 +12,10 @@ export interface ColumnEditor {
   /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Editor) */
   collectionAsync?: Promise<any> | Observable<any>;
 
-  /** A collection of items/options (commonly used with a Select/Multi-Select Editor) */
+  /**
+   * A collection of items/options (commonly used with a Select/Multi-Select Editor)
+   * It can be a collection of string or label/value pair (the pair can be customized via the "customStructure" option)
+   */
   collection?: any[];
 
   /** We could filter some 1 or more items from the collection */

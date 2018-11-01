@@ -106,14 +106,22 @@ export class NativeSelectFilter implements Filter {
     const valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
 
     let options = '';
-    optionCollection.forEach((option: any) => {
-      if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
-        throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.select, collection: [ { value: '1', label: 'One' } ]')`);
-      }
-      const labelKey = option.labelKey || option[labelName];
-      const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
-      options += `<option value="${option[valueName]}">${textLabel}</option>`;
-    });
+
+    // collection could be an Array of Strings OR Objects
+    if (optionCollection.every(x => typeof x === 'string')) {
+      optionCollection.forEach((option: string) => {
+        options += `<option value="${option}" label="${option}">${option}</option>`;
+      });
+    } else {
+      optionCollection.forEach((option: any) => {
+        if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
+          throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.select, collection: [ { value: '1', label: 'One' } ]')`);
+        }
+        const labelKey = option.labelKey || option[labelName];
+        const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+        options += `<option value="${option[valueName]}">${textLabel}</option>`;
+      });
+    }
     return `<select class="form-control search-filter">${options}</select>`;
   }
 
