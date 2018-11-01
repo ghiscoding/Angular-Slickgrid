@@ -16,11 +16,19 @@ export const collectionEditorFormatter: Formatter = (row: number, cell: number, 
   const valueName = (internalColumnEditor.customStructure) ? internalColumnEditor.customStructure.value : 'value';
 
   if (Array.isArray(value)) {
-    return arrayToCsvFormatter(row,
-      cell,
-      value.map((v: any) => findOrDefault(collection, (c: any) => c[valueName] === v)[labelName]),
-      columnDef,
-      dataContext);
+    if (collection.every(x => typeof x === 'string')) {
+      return arrayToCsvFormatter(row,
+        cell,
+        value.map((v: any) => findOrDefault(collection, (c: any) => c === v)),
+        columnDef,
+        dataContext);
+    } else {
+      return arrayToCsvFormatter(row,
+        cell,
+        value.map((v: any) => findOrDefault(collection, (c: any) => c[valueName] === v)[labelName]),
+        columnDef,
+        dataContext);
+    }
   }
 
   return findOrDefault(collection, (c: any) => c[valueName] === value)[labelName] || '';
