@@ -19,8 +19,6 @@ export interface GridOption {
     autoEdit?: boolean;
     /** Defaults to true, which leads to automatically adjust the size of each column with the available space. Similar to "Force Fit Column" but only happens on first page/component load. */
     autoFitColumnsOnFirstLoad?: boolean;
-    /** Defaults to false, when enabled will automatically adjust grid height. */
-    autoHeight?: boolean;
     /** Auto-resize options (bottom padding, minHeight, ...)  */
     autoResize?: AutoResizeOption;
     /** Auto-tooltip options (enableForCells, enableForHeaderCells, maxToolTipLength) */

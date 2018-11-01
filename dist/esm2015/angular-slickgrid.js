@@ -2356,39 +2356,53 @@ class SelectFilter {
         const /** @type {?} */ separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         const /** @type {?} */ isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
         const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
-        optionCollection.forEach((option) => {
-            if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error(`[select-filter] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
-            }
-            const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
-            const /** @type {?} */ selected = (searchTerms.findIndex((term) => term === option[this.valueName]) >= 0) ? 'selected' : '';
-            const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey) ? this.translate.instant(labelKey || ' ') : labelKey;
-            let /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
-            let /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
-            let /** @type {?} */ optionLabel = option[this.optionLabel] || '';
-            optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
-            // also translate prefix/suffix if enableTranslateLabel is true and text is a string
-            prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this.translate.instant(prefixText || ' ') : prefixText;
-            suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this.translate.instant(suffixText || ' ') : suffixText;
-            optionLabel = (this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? this.translate.instant(optionLabel || ' ') : optionLabel;
-            // add to a temp array for joining purpose and filter out empty text
-            const /** @type {?} */ tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
-            let /** @type {?} */ optionText = tmpOptionArray.join(separatorBetweenLabels);
-            // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
-            // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
-            if (isRenderHtmlEnabled) {
-                // sanitize any unauthorized html tags like script and others
-                // for the remaining allowed tags we'll permit all attributes
-                const /** @type {?} */ sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
-                optionText = htmlEncode(sanitizedText);
-            }
-            // html text of each select option
-            options += `<option value="${option[this.valueName]}" label="${optionLabel}" ${selected}>${optionText}</option>`;
-            // if there's a search term, we will add the "filled" class for styling purposes
-            if (selected) {
-                this.isFilled = true;
-            }
-        });
+        // collection could be an Array of Strings OR Objects
+        if (optionCollection.every(x => typeof x === 'string')) {
+            optionCollection.forEach((option) => {
+                const /** @type {?} */ selected = (searchTerms.findIndex((term) => term === option) >= 0) ? 'selected' : '';
+                options += `<option value="${option}" label="${option}" ${selected}>${option}</option>`;
+                // if there's at least 1 search term found, we will add the "filled" class for styling purposes
+                if (selected) {
+                    this.isFilled = true;
+                }
+            });
+        }
+        else {
+            // array of objects will require a label/value pair unless a customStructure is passed
+            optionCollection.forEach((option) => {
+                if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
+                    throw new Error(`[select-filter] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')`);
+                }
+                const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
+                const /** @type {?} */ selected = (searchTerms.findIndex((term) => term === option[this.valueName]) >= 0) ? 'selected' : '';
+                const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey) ? this.translate.instant(labelKey || ' ') : labelKey;
+                let /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
+                let /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
+                let /** @type {?} */ optionLabel = option[this.optionLabel] || '';
+                optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
+                // also translate prefix/suffix if enableTranslateLabel is true and text is a string
+                prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this.translate.instant(prefixText || ' ') : prefixText;
+                suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this.translate.instant(suffixText || ' ') : suffixText;
+                optionLabel = (this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? this.translate.instant(optionLabel || ' ') : optionLabel;
+                // add to a temp array for joining purpose and filter out empty text
+                const /** @type {?} */ tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
+                let /** @type {?} */ optionText = tmpOptionArray.join(separatorBetweenLabels);
+                // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
+                // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
+                if (isRenderHtmlEnabled) {
+                    // sanitize any unauthorized html tags like script and others
+                    // for the remaining allowed tags we'll permit all attributes
+                    const /** @type {?} */ sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
+                    optionText = htmlEncode(sanitizedText);
+                }
+                // html text of each select option
+                options += `<option value="${option[this.valueName]}" label="${optionLabel}" ${selected}>${optionText}</option>`;
+                // if there's at least 1 search term found, we will add the "filled" class for styling purposes
+                if (selected) {
+                    this.isFilled = true;
+                }
+            });
+        }
         return `<select class="ms-filter search-filter" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
     }
     /**
@@ -2554,14 +2568,22 @@ class NativeSelectFilter {
         const /** @type {?} */ labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
         const /** @type {?} */ valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         let /** @type {?} */ options = '';
-        optionCollection.forEach((option) => {
-            if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.select, collection: [ { value: '1', label: 'One' } ]')`);
-            }
-            const /** @type {?} */ labelKey = option.labelKey || option[labelName];
-            const /** @type {?} */ textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
-            options += `<option value="${option[valueName]}">${textLabel}</option>`;
-        });
+        // collection could be an Array of Strings OR Objects
+        if (optionCollection.every(x => typeof x === 'string')) {
+            optionCollection.forEach((option) => {
+                options += `<option value="${option}" label="${option}">${option}</option>`;
+            });
+        }
+        else {
+            optionCollection.forEach((option) => {
+                if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
+                    throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.select, collection: [ { value: '1', label: 'One' } ]')`);
+                }
+                const /** @type {?} */ labelKey = option.labelKey || option[labelName];
+                const /** @type {?} */ textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+                options += `<option value="${option[valueName]}">${textLabel}</option>`;
+            });
+        }
         return `<select class="form-control search-filter">${options}</select>`;
     }
     /**
@@ -7089,10 +7111,15 @@ class ResizerService {
     }
     /**
      * @param {?} grid
+     * @param {?=} fixedDimensions
      * @return {?}
      */
-    init(grid) {
+    init(grid, fixedDimensions) {
         this._grid = grid;
+        if (fixedDimensions) {
+            this._fixedHeight = fixedDimensions.height;
+            this._fixedWidth = fixedDimensions.width;
+        }
     }
     /**
      * Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
@@ -7160,9 +7187,10 @@ class ResizerService {
         if (maxWidth && newWidth > maxWidth) {
             newWidth = maxWidth;
         }
+        // return the new dimensions unless a fixed height/width was defined
         return {
-            height: newHeight,
-            width: newWidth
+            height: this._fixedHeight || newHeight,
+            width: this._fixedWidth || newWidth
         };
     }
     /**
@@ -8474,6 +8502,11 @@ class SelectEditor {
      * @return {?}
      */
     get currentValues() {
+        // collection of strings, just return the filtered string that are equals
+        if (this.collection.every(x => typeof x === 'string')) {
+            return this.collection.filter(c => this.$editorElm.val().indexOf(c.toString()) !== -1);
+        }
+        // collection of label/value pair
         const /** @type {?} */ separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         const /** @type {?} */ isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
         return this.collection
@@ -8497,6 +8530,11 @@ class SelectEditor {
      * @return {?}
      */
     get currentValue() {
+        // collection of strings, just return the filtered string that are equals
+        if (this.collection.every(x => typeof x === 'string')) {
+            return findOrDefault(this.collection, (c) => c.toString() === this.$editorElm.val());
+        }
+        // collection of label/value pair
         const /** @type {?} */ separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         const /** @type {?} */ isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
         const /** @type {?} */ itemFound = findOrDefault(this.collection, (c) => c[this.valueName].toString() === this.$editorElm.val());
@@ -8708,33 +8746,42 @@ class SelectEditor {
         const /** @type {?} */ separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         const /** @type {?} */ isRenderHtmlEnabled = this.columnDef.internalColumnEditor.enableRenderHtml || false;
         const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
-        collection.forEach((option) => {
-            if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error(`[select-editor] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
-            }
-            const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
-            const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey) ? this._translate.instant(labelKey || ' ') : labelKey;
-            let /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
-            let /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
-            let /** @type {?} */ optionLabel = option[this.optionLabel] || '';
-            optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
-            // also translate prefix/suffix if enableTranslateLabel is true and text is a string
-            prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
-            suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
-            optionLabel = (this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? this._translate.instant(optionLabel || ' ') : optionLabel;
-            // add to a temp array for joining purpose and filter out empty text
-            const /** @type {?} */ tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
-            let /** @type {?} */ optionText = tmpOptionArray.join(separatorBetweenLabels);
-            // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
-            // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
-            if (isRenderHtmlEnabled) {
-                // sanitize any unauthorized html tags like script and others
-                // for the remaining allowed tags we'll permit all attributes
-                const /** @type {?} */ sanitizedText = DOMPurify$1.sanitize(optionText, sanitizedOptions);
-                optionText = htmlEncode(sanitizedText);
-            }
-            options += `<option value="${option[this.valueName]}" label="${optionLabel}">${optionText}</option>`;
-        });
+        // collection could be an Array of Strings OR Objects
+        if (collection.every(x => typeof x === 'string')) {
+            collection.forEach((option) => {
+                options += `<option value="${option}" label="${option}">${option}</option>`;
+            });
+        }
+        else {
+            // array of objects will require a label/value pair unless a customStructure is passed
+            collection.forEach((option) => {
+                if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
+                    throw new Error(`[select-editor] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
+                }
+                const /** @type {?} */ labelKey = /** @type {?} */ ((option.labelKey || option[this.labelName]));
+                const /** @type {?} */ labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey) ? this._translate.instant(labelKey || ' ') : labelKey;
+                let /** @type {?} */ prefixText = option[this.labelPrefixName] || '';
+                let /** @type {?} */ suffixText = option[this.labelSuffixName] || '';
+                let /** @type {?} */ optionLabel = option[this.optionLabel] || '';
+                optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
+                // also translate prefix/suffix if enableTranslateLabel is true and text is a string
+                prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+                suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
+                optionLabel = (this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? this._translate.instant(optionLabel || ' ') : optionLabel;
+                // add to a temp array for joining purpose and filter out empty text
+                const /** @type {?} */ tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
+                let /** @type {?} */ optionText = tmpOptionArray.join(separatorBetweenLabels);
+                // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
+                // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
+                if (isRenderHtmlEnabled) {
+                    // sanitize any unauthorized html tags like script and others
+                    // for the remaining allowed tags we'll permit all attributes
+                    const /** @type {?} */ sanitizedText = DOMPurify$1.sanitize(optionText, sanitizedOptions);
+                    optionText = htmlEncode(sanitizedText);
+                }
+                options += `<option value="${option[this.valueName]}" label="${optionLabel}">${optionText}</option>`;
+            });
+        }
         return `<select id="${this.elementName}" class="ms-filter search-filter" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
     }
     /**
@@ -9297,7 +9344,12 @@ const collectionEditorFormatter = (row, cell, value, columnDef, dataContext) => 
     const /** @type {?} */ labelName = (internalColumnEditor.customStructure) ? internalColumnEditor.customStructure.label : 'label';
     const /** @type {?} */ valueName = (internalColumnEditor.customStructure) ? internalColumnEditor.customStructure.value : 'value';
     if (Array.isArray(value)) {
-        return arrayToCsvFormatter(row, cell, value.map((v) => findOrDefault(collection, (c) => c[valueName] === v)[labelName]), columnDef, dataContext);
+        if (collection.every(x => typeof x === 'string')) {
+            return arrayToCsvFormatter(row, cell, value.map((v) => findOrDefault(collection, (c) => c === v)), columnDef, dataContext);
+        }
+        else {
+            return arrayToCsvFormatter(row, cell, value.map((v) => findOrDefault(collection, (c) => c[valueName] === v)[labelName]), columnDef, dataContext);
+        }
     }
     return findOrDefault(collection, (c) => c[valueName] === value)[labelName] || '';
 };
@@ -10447,8 +10499,20 @@ class AngularSlickgridComponent {
         this.onBeforeGridDestroy = new EventEmitter();
         this.onAfterGridDestroyed = new EventEmitter();
         this.onGridStateChanged = new EventEmitter();
-        this.gridHeight = 0;
-        this.gridWidth = 0;
+    }
+    /**
+     * @param {?} height
+     * @return {?}
+     */
+    set gridHeight(height) {
+        this._fixedHeight = height;
+    }
+    /**
+     * @param {?} width
+     * @return {?}
+     */
+    set gridWidth(width) {
+        this._fixedWidth = width;
     }
     /**
      * @param {?} columnDefinitions
@@ -10486,8 +10550,8 @@ class AngularSlickgridComponent {
     ngOnInit() {
         this.onBeforeGridCreate.emit(true);
         if (this.gridOptions && !this.gridOptions.enableAutoResize && !this.gridOptions.autoResize) {
-            this.gridHeightString = `${this.gridHeight}px`;
-            this.gridWidthString = `${this.gridWidth}px`;
+            this.gridHeightString = `${this._fixedHeight}px`;
+            this.gridWidthString = `${this._fixedWidth}px`;
         }
     }
     /**
@@ -10831,9 +10895,14 @@ class AngularSlickgridComponent {
             this.resizer.compensateHorizontalScroll(this.grid, this.gridOptions);
         }
         // auto-resize grid on browser resize
-        this.resizer.init(grid);
+        if (this._fixedHeight || this._fixedWidth) {
+            this.resizer.init(grid, { height: this._fixedHeight, width: this._fixedWidth });
+        }
+        else {
+            this.resizer.init(grid);
+        }
         if (options.enableAutoResize) {
-            this.resizer.attachAutoResizeDataGrid({ height: this.gridHeight, width: this.gridWidth });
+            this.resizer.attachAutoResizeDataGrid();
             if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
                 grid.autosizeColumns();
             }
@@ -10920,7 +10989,7 @@ class AngularSlickgridComponent {
             // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
             if (this.grid && this.gridOptions.enableAutoResize) {
                 const /** @type {?} */ delay = this.gridOptions.autoResize && this.gridOptions.autoResize.delay;
-                this.resizer.resizeGrid(delay || 10, { height: this.gridHeight, width: this.gridWidth });
+                this.resizer.resizeGrid(delay || 10);
             }
         }
     }

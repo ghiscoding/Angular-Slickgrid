@@ -47,6 +47,8 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     private _columnDefinitions;
     private _dataView;
     private _eventHandler;
+    private _fixedHeight;
+    private _fixedWidth;
     private _hideHeaderRowAfterPageLoad;
     grid: any;
     gridPaginationOptions: GridOption;

@@ -6,13 +6,15 @@ export interface GridDimension {
     heightWithPagination?: number;
 }
 export declare class ResizerService {
+    private _fixedHeight;
+    private _fixedWidth;
     private _grid;
     private _lastDimensions;
     onGridBeforeResize: Subject<boolean>;
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly _gridOptions;
     private readonly _gridUid;
-    init(grid: any): void;
+    init(grid: any, fixedDimensions?: GridDimension): void;
     /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
      * Options: we could also provide a % factor to resize on each height/width independently
      */

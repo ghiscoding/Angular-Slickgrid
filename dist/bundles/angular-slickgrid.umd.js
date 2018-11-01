@@ -1686,31 +1686,42 @@ var SelectFilter = /** @class */ (function () {
         var separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         var isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
-        optionCollection.forEach(function (option) {
-            if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error("[select-filter] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')");
-            }
-            var labelKey = ((option.labelKey || option[_this.labelName]));
-            var selected = (searchTerms.findIndex(function (term) { return term === option[_this.valueName]; }) >= 0) ? 'selected' : '';
-            var labelText = ((option.labelKey || _this.enableTranslateLabel) && labelKey) ? _this.translate.instant(labelKey || ' ') : labelKey;
-            var prefixText = option[_this.labelPrefixName] || '';
-            var suffixText = option[_this.labelSuffixName] || '';
-            var optionLabel = option[_this.optionLabel] || '';
-            optionLabel = optionLabel.toString().replace(/\"/g, '\'');
-            prefixText = (_this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? _this.translate.instant(prefixText || ' ') : prefixText;
-            suffixText = (_this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? _this.translate.instant(suffixText || ' ') : suffixText;
-            optionLabel = (_this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? _this.translate.instant(optionLabel || ' ') : optionLabel;
-            var tmpOptionArray = [prefixText, labelText, suffixText].filter(function (text) { return text; });
-            var optionText = tmpOptionArray.join(separatorBetweenLabels);
-            if (isRenderHtmlEnabled) {
-                var sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
-                optionText = htmlEncode(sanitizedText);
-            }
-            options += "<option value=\"" + option[_this.valueName] + "\" label=\"" + optionLabel + "\" " + selected + ">" + optionText + "</option>";
-            if (selected) {
-                _this.isFilled = true;
-            }
-        });
+        if (optionCollection.every(function (x) { return typeof x === 'string'; })) {
+            optionCollection.forEach(function (option) {
+                var selected = (searchTerms.findIndex(function (term) { return term === option; }) >= 0) ? 'selected' : '';
+                options += "<option value=\"" + option + "\" label=\"" + option + "\" " + selected + ">" + option + "</option>";
+                if (selected) {
+                    _this.isFilled = true;
+                }
+            });
+        }
+        else {
+            optionCollection.forEach(function (option) {
+                if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
+                    throw new Error("[select-filter] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.multipleSelect, collection: [ { value: '1', label: 'One' } ]')");
+                }
+                var labelKey = ((option.labelKey || option[_this.labelName]));
+                var selected = (searchTerms.findIndex(function (term) { return term === option[_this.valueName]; }) >= 0) ? 'selected' : '';
+                var labelText = ((option.labelKey || _this.enableTranslateLabel) && labelKey) ? _this.translate.instant(labelKey || ' ') : labelKey;
+                var prefixText = option[_this.labelPrefixName] || '';
+                var suffixText = option[_this.labelSuffixName] || '';
+                var optionLabel = option[_this.optionLabel] || '';
+                optionLabel = optionLabel.toString().replace(/\"/g, '\'');
+                prefixText = (_this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? _this.translate.instant(prefixText || ' ') : prefixText;
+                suffixText = (_this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? _this.translate.instant(suffixText || ' ') : suffixText;
+                optionLabel = (_this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? _this.translate.instant(optionLabel || ' ') : optionLabel;
+                var tmpOptionArray = [prefixText, labelText, suffixText].filter(function (text) { return text; });
+                var optionText = tmpOptionArray.join(separatorBetweenLabels);
+                if (isRenderHtmlEnabled) {
+                    var sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
+                    optionText = htmlEncode(sanitizedText);
+                }
+                options += "<option value=\"" + option[_this.valueName] + "\" label=\"" + optionLabel + "\" " + selected + ">" + optionText + "</option>";
+                if (selected) {
+                    _this.isFilled = true;
+                }
+            });
+        }
         return "<select class=\"ms-filter search-filter\" " + (this.isMultipleSelect ? 'multiple="multiple"' : '') + ">" + options + "</select>";
     };
     SelectFilter.prototype.createBlankEntry = function () {
@@ -1822,14 +1833,21 @@ var NativeSelectFilter = /** @class */ (function () {
         var labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
         var valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
         var options = '';
-        optionCollection.forEach(function (option) {
-            if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.select, collection: [ { value: '1', label: 'One' } ]')");
-            }
-            var labelKey = option.labelKey || option[labelName];
-            var textLabel = ((option.labelKey || _this.columnDef.filter.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
-            options += "<option value=\"" + option[valueName] + "\">" + textLabel + "</option>";
-        });
+        if (optionCollection.every(function (x) { return typeof x === 'string'; })) {
+            optionCollection.forEach(function (option) {
+                options += "<option value=\"" + option + "\" label=\"" + option + "\">" + option + "</option>";
+            });
+        }
+        else {
+            optionCollection.forEach(function (option) {
+                if (!option || (option[labelName] === undefined && option.labelKey === undefined)) {
+                    throw new Error("A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example:: { filter: model: Filters.select, collection: [ { value: '1', label: 'One' } ]')");
+                }
+                var labelKey = option.labelKey || option[labelName];
+                var textLabel = ((option.labelKey || _this.columnDef.filter.enableTranslateLabel) && _this.translate && typeof _this.translate.instant === 'function') ? _this.translate.instant(labelKey || ' ') : labelKey;
+                options += "<option value=\"" + option[valueName] + "\">" + textLabel + "</option>";
+            });
+        }
         return "<select class=\"form-control search-filter\">" + options + "</select>";
     };
     NativeSelectFilter.prototype.createDomElement = function (filterTemplate, searchTerm) {
@@ -5185,8 +5203,12 @@ var ResizerService = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    ResizerService.prototype.init = function (grid) {
+    ResizerService.prototype.init = function (grid, fixedDimensions) {
         this._grid = grid;
+        if (fixedDimensions) {
+            this._fixedHeight = fixedDimensions.height;
+            this._fixedWidth = fixedDimensions.width;
+        }
     };
     ResizerService.prototype.attachAutoResizeDataGrid = function (newSizes) {
         var _this = this;
@@ -5236,8 +5258,8 @@ var ResizerService = /** @class */ (function () {
             newWidth = maxWidth;
         }
         return {
-            height: newHeight,
-            width: newWidth
+            height: this._fixedHeight || newHeight,
+            width: this._fixedWidth || newWidth
         };
     };
     ResizerService.prototype.dispose = function () {
@@ -6135,6 +6157,9 @@ var SelectEditor = /** @class */ (function () {
     Object.defineProperty(SelectEditor.prototype, "currentValues", {
         get: function () {
             var _this = this;
+            if (this.collection.every(function (x) { return typeof x === 'string'; })) {
+                return this.collection.filter(function (c) { return _this.$editorElm.val().indexOf(c.toString()) !== -1; });
+            }
             var separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
             var isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
             return this.collection
@@ -6158,6 +6183,9 @@ var SelectEditor = /** @class */ (function () {
     Object.defineProperty(SelectEditor.prototype, "currentValue", {
         get: function () {
             var _this = this;
+            if (this.collection.every(function (x) { return typeof x === 'string'; })) {
+                return findOrDefault(this.collection, function (c) { return c.toString() === _this.$editorElm.val(); });
+            }
             var separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
             var isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
             var itemFound = findOrDefault(this.collection, function (c) { return c[_this.valueName].toString() === _this.$editorElm.val(); });
@@ -6304,27 +6332,34 @@ var SelectEditor = /** @class */ (function () {
         var separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         var isRenderHtmlEnabled = this.columnDef.internalColumnEditor.enableRenderHtml || false;
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
-        collection.forEach(function (option) {
-            if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
-                throw new Error("[select-editor] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])");
-            }
-            var labelKey = ((option.labelKey || option[_this.labelName]));
-            var labelText = ((option.labelKey || _this.enableTranslateLabel) && labelKey) ? _this._translate.instant(labelKey || ' ') : labelKey;
-            var prefixText = option[_this.labelPrefixName] || '';
-            var suffixText = option[_this.labelSuffixName] || '';
-            var optionLabel = option[_this.optionLabel] || '';
-            optionLabel = optionLabel.toString().replace(/\"/g, '\'');
-            prefixText = (_this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? _this._translate.instant(prefixText || ' ') : prefixText;
-            suffixText = (_this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? _this._translate.instant(suffixText || ' ') : suffixText;
-            optionLabel = (_this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? _this._translate.instant(optionLabel || ' ') : optionLabel;
-            var tmpOptionArray = [prefixText, labelText, suffixText].filter(function (text) { return text; });
-            var optionText = tmpOptionArray.join(separatorBetweenLabels);
-            if (isRenderHtmlEnabled) {
-                var sanitizedText = DOMPurify$1.sanitize(optionText, sanitizedOptions);
-                optionText = htmlEncode(sanitizedText);
-            }
-            options += "<option value=\"" + option[_this.valueName] + "\" label=\"" + optionLabel + "\">" + optionText + "</option>";
-        });
+        if (collection.every(function (x) { return typeof x === 'string'; })) {
+            collection.forEach(function (option) {
+                options += "<option value=\"" + option + "\" label=\"" + option + "\">" + option + "</option>";
+            });
+        }
+        else {
+            collection.forEach(function (option) {
+                if (!option || (option[_this.labelName] === undefined && option.labelKey === undefined)) {
+                    throw new Error("[select-editor] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])");
+                }
+                var labelKey = ((option.labelKey || option[_this.labelName]));
+                var labelText = ((option.labelKey || _this.enableTranslateLabel) && labelKey) ? _this._translate.instant(labelKey || ' ') : labelKey;
+                var prefixText = option[_this.labelPrefixName] || '';
+                var suffixText = option[_this.labelSuffixName] || '';
+                var optionLabel = option[_this.optionLabel] || '';
+                optionLabel = optionLabel.toString().replace(/\"/g, '\'');
+                prefixText = (_this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? _this._translate.instant(prefixText || ' ') : prefixText;
+                suffixText = (_this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? _this._translate.instant(suffixText || ' ') : suffixText;
+                optionLabel = (_this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? _this._translate.instant(optionLabel || ' ') : optionLabel;
+                var tmpOptionArray = [prefixText, labelText, suffixText].filter(function (text) { return text; });
+                var optionText = tmpOptionArray.join(separatorBetweenLabels);
+                if (isRenderHtmlEnabled) {
+                    var sanitizedText = DOMPurify$1.sanitize(optionText, sanitizedOptions);
+                    optionText = htmlEncode(sanitizedText);
+                }
+                options += "<option value=\"" + option[_this.valueName] + "\" label=\"" + optionLabel + "\">" + optionText + "</option>";
+            });
+        }
         return "<select id=\"" + this.elementName + "\" class=\"ms-filter search-filter\" " + (this.isMultipleSelect ? 'multiple="multiple"' : '') + ">" + options + "</select>";
     };
     SelectEditor.prototype.createBlankEntry = function () {
@@ -6690,7 +6725,12 @@ var collectionEditorFormatter = function (row, cell, value, columnDef, dataConte
     var labelName = (internalColumnEditor.customStructure) ? internalColumnEditor.customStructure.label : 'label';
     var valueName = (internalColumnEditor.customStructure) ? internalColumnEditor.customStructure.value : 'value';
     if (Array.isArray(value)) {
-        return arrayToCsvFormatter(row, cell, value.map(function (v) { return findOrDefault(collection, function (c) { return c[valueName] === v; })[labelName]; }), columnDef, dataContext);
+        if (collection.every(function (x) { return typeof x === 'string'; })) {
+            return arrayToCsvFormatter(row, cell, value.map(function (v) { return findOrDefault(collection, function (c) { return c === v; }); }), columnDef, dataContext);
+        }
+        else {
+            return arrayToCsvFormatter(row, cell, value.map(function (v) { return findOrDefault(collection, function (c) { return c[valueName] === v; })[labelName]; }), columnDef, dataContext);
+        }
     }
     return findOrDefault(collection, function (c) { return c[valueName] === value; })[labelName] || '';
 };
@@ -7358,9 +7398,21 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.onBeforeGridDestroy = new core.EventEmitter();
         this.onAfterGridDestroyed = new core.EventEmitter();
         this.onGridStateChanged = new core.EventEmitter();
-        this.gridHeight = 0;
-        this.gridWidth = 0;
     }
+    Object.defineProperty(AngularSlickgridComponent.prototype, "gridHeight", {
+        set: function (height) {
+            this._fixedHeight = height;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AngularSlickgridComponent.prototype, "gridWidth", {
+        set: function (width) {
+            this._fixedWidth = width;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(AngularSlickgridComponent.prototype, "columnDefinitions", {
         get: function () {
             return this._columnDefinitions;
@@ -7388,8 +7440,8 @@ var AngularSlickgridComponent = /** @class */ (function () {
     AngularSlickgridComponent.prototype.ngOnInit = function () {
         this.onBeforeGridCreate.emit(true);
         if (this.gridOptions && !this.gridOptions.enableAutoResize && !this.gridOptions.autoResize) {
-            this.gridHeightString = this.gridHeight + "px";
-            this.gridWidthString = this.gridWidth + "px";
+            this.gridHeightString = this._fixedHeight + "px";
+            this.gridWidthString = this._fixedWidth + "px";
         }
     };
     AngularSlickgridComponent.prototype.ngOnDestroy = function () {
@@ -7659,9 +7711,14 @@ var AngularSlickgridComponent = /** @class */ (function () {
             grid.autosizeColumns();
             this.resizer.compensateHorizontalScroll(this.grid, this.gridOptions);
         }
-        this.resizer.init(grid);
+        if (this._fixedHeight || this._fixedWidth) {
+            this.resizer.init(grid, { height: this._fixedHeight, width: this._fixedWidth });
+        }
+        else {
+            this.resizer.init(grid);
+        }
         if (options.enableAutoResize) {
-            this.resizer.attachAutoResizeDataGrid({ height: this.gridHeight, width: this.gridWidth });
+            this.resizer.attachAutoResizeDataGrid();
             if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
                 grid.autosizeColumns();
             }
@@ -7717,7 +7774,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
             }
             if (this.grid && this.gridOptions.enableAutoResize) {
                 var delay = this.gridOptions.autoResize && this.gridOptions.autoResize.delay;
-                this.resizer.resizeGrid(delay || 10, { height: this.gridHeight, width: this.gridWidth });
+                this.resizer.resizeGrid(delay || 10);
             }
         }
     };

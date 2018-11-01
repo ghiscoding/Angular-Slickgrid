@@ -22,7 +22,10 @@ export interface ColumnFilter {
     model?: any;
     /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Filter) */
     collectionAsync?: Promise<any> | Observable<any> | Subject<any>;
-    /** A collection of items/options (commonly used with a Select/Multi-Select Filter) */
+    /**
+     * A collection of items/options (commonly used with a Select/Multi-Select Filter)
+     * It can be a collection of string or label/value pair (the pair can be customized via the "customStructure" option)
+     */
     collection?: any[];
     /** Options to change the behavior of the "collection" */
     collectionOptions?: CollectionOption;
