@@ -93,7 +93,6 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     ];
 
     this.gridOptions = {
-      autoHeight: false,
       enableAutoResize: false,
       enableFiltering: true,
       enableCellNavigation: true,
