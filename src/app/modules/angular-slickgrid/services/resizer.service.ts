@@ -19,6 +19,8 @@ export interface GridDimension {
 }
 
 export class ResizerService {
+  private _fixedHeight: number;
+  private _fixedWidth: number;
   private _grid: any;
   private _lastDimensions: GridDimension;
   onGridBeforeResize = new Subject<boolean>();
@@ -32,8 +34,12 @@ export class ResizerService {
     return (this._grid && this._grid.getUID) ? this._grid.getUID() : this._gridOptions.gridId;
   }
 
-  init(grid: any): void {
+  init(grid: any, fixedDimensions?: GridDimension): void {
     this._grid = grid;
+    if (fixedDimensions) {
+      this._fixedHeight = fixedDimensions.height;
+      this._fixedWidth = fixedDimensions.width;
+    }
   }
 
   /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
@@ -105,9 +111,10 @@ export class ResizerService {
       newWidth = maxWidth;
     }
 
+    // return the new dimensions unless a fixed height/width was defined
     return {
-      height: newHeight,
-      width: newWidth
+      height: this._fixedHeight || newHeight,
+      width: this._fixedWidth || newWidth
     };
   }
 
