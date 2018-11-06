@@ -160,8 +160,6 @@ export class SelectFilter implements Filter {
     const collectionAsync = this.columnFilter && this.columnFilter.collectionAsync;
     if (collectionAsync) {
       this.renderOptionsAsync(collectionAsync); // create Subject after resolve (createCollectionAsyncSubject)
-    } else if (this.columnFilter && this.columnFilter.collection) {
-      this.createCollectionAsyncSubject();
     }
   }
 
