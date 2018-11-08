@@ -4,10 +4,11 @@ import {
   CurrentFilter,
   CurrentPagination,
   CurrentSorter,
+  ExtensionName,
   GridOption,
   GridState,
   GridStateChange,
-  GridStateType
+  GridStateType,
 } from './../models/index';
 import { ControlAndPluginService, FilterService, SortService } from './../services/index';
 import { Subject } from 'rxjs/Subject';
@@ -206,7 +207,7 @@ export class GridStateService {
    * @param extension name
    * @param grid
    */
-  hookExtensionEventToGridStateChange(extensionName: string, eventName: string) {
+  hookExtensionEventToGridStateChange(extensionName: ExtensionName, eventName: string) {
     const extension = this.controlAndPluginService && this.controlAndPluginService.getExtensionByName(extensionName);
 
     if (extension && extension.service && extension.service[eventName] && extension.service[eventName].subscribe) {
@@ -283,8 +284,8 @@ export class GridStateService {
     );
 
     // Subscribe to ColumnPicker and/or GridMenu for show/hide Columns visibility changes
-    this.hookExtensionEventToGridStateChange('ColumnPicker', 'onColumnsChanged');
-    this.hookExtensionEventToGridStateChange('GridMenu', 'onColumnsChanged');
+    this.hookExtensionEventToGridStateChange(ExtensionName.columnPicker, 'onColumnsChanged');
+    this.hookExtensionEventToGridStateChange(ExtensionName.gridMenu, 'onColumnsChanged');
 
     // subscribe to Column Resize & Reordering
     this.hookSlickGridEventToGridStateChange('onColumnsReordered', grid);

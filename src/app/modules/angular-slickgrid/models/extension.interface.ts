@@ -1,4 +1,6 @@
+import { ExtensionName } from './extensionName.enum';
+
 export interface Extension {
-  name: string;
+  name: ExtensionName;
   service: any;
 }
