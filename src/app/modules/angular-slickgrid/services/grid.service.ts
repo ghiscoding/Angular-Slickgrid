@@ -1,7 +1,7 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Injectable } from '@angular/core';
 import { CellArgs, Column, GridOption, OnEventArgs } from './../models/index';
-import { ExtensionService } from './controlAndPlugin.service';
+import { ExtensionService } from './extension.service';
 import { FilterService } from './filter.service';
 import { GridStateService } from './gridState.service';
 import { SortService } from './sort.service';

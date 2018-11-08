@@ -1,6 +1,6 @@
 export * from './collection.service';
-export * from './controlAndPlugin.service';
 export * from './export.service';
+export * from './extension.service';
 export * from './filter.service';
 export * from './graphqlQueryBuilder';
 export * from './graphql.service';

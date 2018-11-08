@@ -4,7 +4,7 @@ import {
   Extension,
   ExtensionName,
   GridOption,
-} from './../models/index';
+} from '../models/index';
 import { TranslateService } from '@ngx-translate/core';
 import { FilterService } from './filter.service';
 import { ExportService } from './export.service';

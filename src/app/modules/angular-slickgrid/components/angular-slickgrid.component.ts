@@ -32,7 +32,7 @@ import {
   GridStateType,
   Pagination,
 } from './../models/index';
-import { ExtensionService } from './../services/controlAndPlugin.service';
+import { ExtensionService } from '../services/extension.service';
 import { ExportService } from './../services/export.service';
 import { FilterService } from './../services/filter.service';
 import { GraphqlService } from './../services/graphql.service';
