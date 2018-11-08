@@ -1,7 +1,7 @@
 import { BackendService } from './../models';
 import {
-  ControlAndPluginService,
   ExportService,
+  ExtensionService,
   FilterService,
   GridService,
   GridEventService,
@@ -30,8 +30,11 @@ export interface AngularGridInstance {
   /** Backend Service, when available */
   backendService?: BackendService;
 
-  /** Plugin (and Control) Service */
-  pluginService: ControlAndPluginService;
+  /** Extension (Plugin & Control) Service */
+  extensionService: ExtensionService;
+
+  /** @deprecated, use `extensionService` instead. Plugin and Control Service */
+  pluginService: ExtensionService;
 
   /** Export Service */
   exportService: ExportService;

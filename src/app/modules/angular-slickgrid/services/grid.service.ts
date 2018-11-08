@@ -1,7 +1,7 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Injectable } from '@angular/core';
 import { CellArgs, Column, GridOption, OnEventArgs } from './../models/index';
-import { ControlAndPluginService } from './controlAndPlugin.service';
+import { ExtensionService } from './controlAndPlugin.service';
 import { FilterService } from './filter.service';
 import { GridStateService } from './gridState.service';
 import { SortService } from './sort.service';
@@ -15,7 +15,7 @@ export class GridService {
   private _grid: any;
   private _dataView: any;
 
-  constructor(private controlAndPluginService: ControlAndPluginService, private filterService: FilterService, private gridStateService: GridStateService, private sortService: SortService, private translate: TranslateService) { }
+  constructor(private extensionService: ExtensionService, private filterService: FilterService, private gridStateService: GridStateService, private sortService: SortService, private translate: TranslateService) { }
 
   /** Getter for the Column Definitions pulled through the Grid Object */
   private get _columnDefinitions(): Column[] {
@@ -197,7 +197,7 @@ export class GridService {
   resetGrid(columnDefinitions?: Column[]) {
     // reset columns to original states & refresh the grid
     if (this._grid && this._dataView) {
-      const originalColumns = this.controlAndPluginService.getAllColumns();
+      const originalColumns = this.extensionService.getAllColumns();
       // const originalColumns = columnDefinitions || this._columnDefinitions;
       if (Array.isArray(originalColumns) && originalColumns.length > 0) {
         // set the grid columns to it's original column definitions

@@ -3,7 +3,7 @@ import { GridOption } from '../models';
 // using external non-typed js libraries
 declare var Slick: any;
 
-export class AutoTooltipPlugin {
+export class AutoTooltipExtension {
   constructor(private grid: any, private gridOptions: GridOption) {}
 
   register() {

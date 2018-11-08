@@ -3,7 +3,7 @@ import { GridOption, HeaderButtonOnCommandArgs, Column } from '../models';
 // using external non-typed js libraries
 declare var Slick: any;
 
-export class CheckboxSelectorPlugin {
+export class CheckboxSelectorExtension {
   private _checkboxSelectorPlugin: any;
 
   constructor(private columnDefinitions: Column[], private gridOptions: GridOption) {}

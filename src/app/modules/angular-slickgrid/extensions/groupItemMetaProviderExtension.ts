@@ -1,4 +1,4 @@
-export class GroupItemMetaProviderPlugin {
+export class GroupItemMetaProviderExtension {
   constructor(private grid: any, private groupItemMetadataProvider?: any) {}
 
   /** register the group item metadata provider to add expand/collapse group handlers */

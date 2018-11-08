@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 // using external non-typed js libraries
 declare var Slick: any;
 
-export class ColumnPickerControl {
+export class ColumnPickerExtension {
   extension: any;
 
   constructor(

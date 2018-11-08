@@ -5,7 +5,7 @@ import { sanitizeHtmlToText } from '../services/utilities';
 declare var Slick: any;
 declare var $: any;
 
-export class CellExternalCopyManagerPlugin {
+export class CellExternalCopyManagerExtension {
   undoRedoBuffer: any;
 
   constructor(private grid: any, private gridOptions: GridOption) {}

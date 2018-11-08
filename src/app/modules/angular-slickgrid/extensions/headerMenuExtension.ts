@@ -7,7 +7,7 @@ import { SortService } from '../services/sort.service';
 // using external non-typed js libraries
 declare var Slick: any;
 
-export class HeaderMenuPlugin {
+export class HeaderMenuExtension {
   constructor(
     private grid: any,
     private gridOptions: GridOption,

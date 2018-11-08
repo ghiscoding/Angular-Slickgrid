@@ -3,7 +3,7 @@ import { GridOption, HeaderButtonOnCommandArgs } from '../models';
 // using external non-typed js libraries
 declare var Slick: any;
 
-export class HeaderButtonPlugin {
+export class HeaderButtonExtension {
   constructor(private grid: any, private gridOptions: GridOption) {}
 
   register() {

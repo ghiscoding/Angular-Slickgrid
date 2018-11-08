@@ -10,7 +10,7 @@ import {
   GridStateChange,
   GridStateType,
 } from './../models/index';
-import { ControlAndPluginService, FilterService, SortService } from './../services/index';
+import { ExtensionService, FilterService, SortService } from './../services/index';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 
@@ -23,7 +23,7 @@ export class GridStateService {
   private _columns: Column[] = [];
   private _currentColumns: CurrentColumn[] = [];
   private _grid: any;
-  private controlAndPluginService: ControlAndPluginService;
+  private extensionService: ExtensionService;
   private filterService: FilterService;
   private sortService: SortService;
   private subscriptions: Subscription[] = [];
@@ -41,9 +41,9 @@ export class GridStateService {
    * @param sortService
    * @param dataView
    */
-  init(grid: any, controlAndPluginService: ControlAndPluginService, filterService: FilterService, sortService: SortService): void {
+  init(grid: any, extensionService: ExtensionService, filterService: FilterService, sortService: SortService): void {
     this._grid = grid;
-    this.controlAndPluginService = controlAndPluginService;
+    this.extensionService = extensionService;
     this.filterService = filterService;
     this.sortService = sortService;
 
@@ -208,7 +208,7 @@ export class GridStateService {
    * @param grid
    */
   hookExtensionEventToGridStateChange(extensionName: ExtensionName, eventName: string) {
-    const extension = this.controlAndPluginService && this.controlAndPluginService.getExtensionByName(extensionName);
+    const extension = this.extensionService && this.extensionService.getExtensionByName(extensionName);
 
     if (extension && extension.service && extension.service[eventName] && extension.service[eventName].subscribe) {
       this._eventHandler.subscribe(extension.service[eventName], (e: Event, args: any) => {
