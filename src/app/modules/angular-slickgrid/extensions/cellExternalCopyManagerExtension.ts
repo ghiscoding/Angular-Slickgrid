@@ -1,20 +1,23 @@
-import { GridOption, Column } from '../models';
+import { Injectable } from '@angular/core';
+import { Column } from '../models';
 import { sanitizeHtmlToText } from '../services/utilities';
+import { SharedService } from '../services/shared.service';
 
 // using external non-typed js libraries
 declare var Slick: any;
 declare var $: any;
 
+@Injectable()
 export class CellExternalCopyManagerExtension {
   undoRedoBuffer: any;
 
-  constructor(private grid: any, private gridOptions: GridOption) {}
+  constructor(private sharedService: SharedService) {}
 
   register() {
     this.createUndoRedoBuffer();
     this.hookUndoShortcutKey();
 
-    if (this.grid && this.gridOptions) {
+    if (this.sharedService.grid && this.sharedService.gridOptions) {
       let newRowIds = 0;
       const pluginOptions = {
         clipboardCommandHandler: (editCommand: any) => {
@@ -23,11 +26,11 @@ export class CellExternalCopyManagerExtension {
         dataItemColumnValueExtractor: (item: any, columnDef: Column) => {
           // when grid or cell is not editable, we will possibly evaluate the Formatter if it was passed
           // to decide if we evaluate the Formatter, we will use the same flag from Export which is "exportWithFormatter"
-          if (!this.gridOptions.editable || !columnDef.editor) {
-            const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this.gridOptions.exportOptions.exportWithFormatter;
+          if (!this.sharedService.gridOptions.editable || !columnDef.editor) {
+            const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this.sharedService.gridOptions.exportOptions.exportWithFormatter;
             if (columnDef.formatter && isEvaluatingFormatter) {
-              const formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this.grid);
-              if (columnDef.sanitizeDataExport || (this.gridOptions.exportOptions && this.gridOptions.exportOptions.sanitizeDataExport)) {
+              const formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this.sharedService.grid);
+              if (columnDef.sanitizeDataExport || (this.sharedService.gridOptions.exportOptions && this.sharedService.gridOptions.exportOptions.sanitizeDataExport)) {
                 return sanitizeHtmlToText(formattedOutput);
               }
               return formattedOutput;
@@ -45,14 +48,14 @@ export class CellExternalCopyManagerExtension {
             const item = {
               id: 'newRow_' + newRowIds++
             };
-            this.grid.getData().addItem(item);
+            this.sharedService.grid.getData().addItem(item);
           }
         }
       };
 
-      this.grid.setSelectionModel(new Slick.CellSelectionModel());
+      this.sharedService.grid.setSelectionModel(new Slick.CellSelectionModel());
       const plugin = new Slick.CellExternalCopyManager(pluginOptions);
-      this.grid.registerPlugin(plugin);
+      this.sharedService.grid.registerPlugin(plugin);
 
       return plugin;
     }

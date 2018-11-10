@@ -1,22 +1,30 @@
-import { Column, GridOption, HeaderMenu, HeaderMenuItem, HeaderMenuOnCommandArgs, HeaderMenuOnBeforeMenuShowArgs, ColumnSort, } from '../models';
+import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Constants } from '../constants';
-import { translateItems, arrayRemoveItemByIndex } from './extensionUtilities';
+import {
+  Column,
+  ColumnSort,
+  GridOption,
+  HeaderMenu,
+  HeaderMenuItem,
+  HeaderMenuOnCommandArgs,
+  HeaderMenuOnBeforeMenuShowArgs,
+} from '../models';
 import { SortService } from '../services/sort.service';
+import { SharedService } from '../services/shared.service';
+import { ExtensionUtility } from './extensionUtility';
 
 // using external non-typed js libraries
 declare var Slick: any;
 
+@Injectable()
 export class HeaderMenuExtension {
   constructor(
-    private grid: any,
-    private gridOptions: GridOption,
-    private columnDefinitions: Column[],
-    private dataView: any,
+    private extensionUtility: ExtensionUtility,
+    private sharedService: SharedService,
     private sortService: SortService,
-    private translate: TranslateService,
-    private visibleColumns: Column[]
-    ) {}
+    private translate: TranslateService
+  ) {}
 
   /**
    * Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...)
@@ -25,22 +33,22 @@ export class HeaderMenuExtension {
    * @param columnDefinitions
    */
   register() {
-    this.gridOptions.headerMenu = { ...this.getDefaultHeaderMenuOptions(), ...this.gridOptions.headerMenu };
-    if (this.gridOptions.enableHeaderMenu) {
-      this.gridOptions.headerMenu = this.addHeaderMenuCustomCommands(this.gridOptions, this.columnDefinitions);
+    this.sharedService.gridOptions.headerMenu = { ...this.getDefaultHeaderMenuOptions(), ...this.sharedService.gridOptions.headerMenu };
+    if (this.sharedService.gridOptions.enableHeaderMenu) {
+      this.sharedService.gridOptions.headerMenu = this.addHeaderMenuCustomCommands(this.sharedService.gridOptions, this.sharedService.columnDefinitions);
     }
-    const headerMenuPlugin = new Slick.Plugins.HeaderMenu(this.gridOptions.headerMenu);
+    const headerMenuPlugin = new Slick.Plugins.HeaderMenu(this.sharedService.gridOptions.headerMenu);
 
-    this.grid.registerPlugin(headerMenuPlugin);
+    this.sharedService.grid.registerPlugin(headerMenuPlugin);
     headerMenuPlugin.onCommand.subscribe((e: Event, args: HeaderMenuOnCommandArgs) => {
       this.executeHeaderMenuInternalCommands(e, args);
-      if (this.gridOptions.headerMenu && typeof this.gridOptions.headerMenu.onCommand === 'function') {
-        this.gridOptions.headerMenu.onCommand(e, args);
+      if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onCommand === 'function') {
+        this.sharedService.gridOptions.headerMenu.onCommand(e, args);
       }
     });
     headerMenuPlugin.onBeforeMenuShow.subscribe((e: Event, args: HeaderMenuOnBeforeMenuShowArgs) => {
-      if (this.gridOptions.headerMenu && typeof this.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
-        this.gridOptions.headerMenu.onBeforeMenuShow(e, args);
+      if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
+        this.sharedService.gridOptions.headerMenu.onBeforeMenuShow(e, args);
       }
     });
 
@@ -98,7 +106,7 @@ export class HeaderMenuExtension {
             });
           }
 
-          translateItems(this.translate, columnHeaderMenuItems, 'titleKey', 'title');
+          this.extensionUtility.translateItems(columnHeaderMenuItems, 'titleKey', 'title');
 
           // sort the custom items by their position in the list
           columnHeaderMenuItems.sort((itemA, itemB) => {
@@ -121,8 +129,8 @@ export class HeaderMenuExtension {
       switch (args.command) {
         case 'hide':
           this.hideColumn(args.column);
-          if (this.gridOptions && this.gridOptions.enableAutoSizeColumns) {
-            this.grid.autosizeColumns();
+          if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableAutoSizeColumns) {
+            this.sharedService.grid.autosizeColumns();
           }
           break;
         case 'sort-asc':
@@ -132,17 +140,17 @@ export class HeaderMenuExtension {
 
           // add to the column array, the column sorted by the header menu
           cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
-          if (this.gridOptions.backendServiceApi) {
-            this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this.grid });
+          if (this.sharedService.gridOptions.backendServiceApi) {
+            this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this.sharedService.grid });
           } else {
-            this.sortService.onLocalSortChanged(this.grid, this.dataView, cols);
+            this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, cols);
           }
 
-          // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
+          // update the this.sharedService.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
           const newSortColumns: ColumnSort[] = cols.map((col) => {
             return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
           });
-          this.grid.setSortColumns(newSortColumns); // add sort icon in UI
+          this.sharedService.grid.setSortColumns(newSortColumns); // add sort icon in UI
           break;
         default:
           break;
@@ -152,10 +160,10 @@ export class HeaderMenuExtension {
 
   /** Hide a column from the grid */
   hideColumn(column: Column) {
-    if (this.grid && this.grid.getColumns && this.grid.setColumns) {
-      const columnIndex = this.grid.getColumnIndex(column.id);
-      this.visibleColumns = arrayRemoveItemByIndex(this.grid.getColumns(), columnIndex);
-      this.grid.setColumns(this.visibleColumns);
+    if (this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns) {
+      const columnIndex = this.sharedService.grid.getColumnIndex(column.id);
+      this.sharedService.visibleColumns = this.extensionUtility.arrayRemoveItemByIndex(this.sharedService.grid.getColumns(), columnIndex);
+      this.sharedService.grid.setColumns(this.sharedService.visibleColumns);
     }
   }
 
@@ -183,8 +191,8 @@ export class HeaderMenuExtension {
             }
 
             // re-translate if there's a "titleKey"
-            if (this.gridOptions && this.gridOptions.enableTranslate) {
-              translateItems(this.translate, columnHeaderMenuItems, 'titleKey', 'title');
+            if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate) {
+              this.extensionUtility.translateItems(columnHeaderMenuItems, 'titleKey', 'title');
             }
           });
         }
@@ -196,8 +204,8 @@ export class HeaderMenuExtension {
    * Translate the Header Menu titles, we need to loop through all column definition to re-translate them
    */
   translateHeaderMenu() {
-    if (this.gridOptions && this.gridOptions.headerMenu) {
-      this.resetHeaderMenuTranslations(this.visibleColumns);
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.headerMenu) {
+      this.resetHeaderMenuTranslations(this.sharedService.visibleColumns);
     }
   }
 

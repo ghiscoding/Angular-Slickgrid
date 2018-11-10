@@ -5,12 +5,12 @@ import { SharedService } from '../services/shared.service';
 declare var Slick: any;
 
 @Injectable()
-export class AutoTooltipExtension {
+export class RowSelectionExtension {
   constructor(private sharedService: SharedService) {}
 
   register() {
-    const plugin = new Slick.AutoTooltips(this.sharedService.gridOptions.autoTooltipOptions || {});
-    this.sharedService.grid.registerPlugin(plugin);
+    const plugin = new Slick.RowSelectionModel(this.sharedService.gridOptions.rowSelectionOptions || {});
+    this.sharedService.grid.setSelectionModel(plugin);
 
     return plugin;
   }

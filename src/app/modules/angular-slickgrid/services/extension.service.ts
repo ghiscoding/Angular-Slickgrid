@@ -1,75 +1,53 @@
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
   Column,
   Extension,
   ExtensionName,
   GridOption,
 } from '../models/index';
-import { TranslateService } from '@ngx-translate/core';
-import { FilterService } from './filter.service';
-import { ExportService } from './export.service';
-import { SortService } from './sort.service';
 import {
   AutoTooltipExtension,
   CellExternalCopyManagerExtension,
   CheckboxSelectorExtension,
   ColumnPickerExtension,
+  GridMenuExtension,
   GroupItemMetaProviderExtension,
   HeaderButtonExtension,
   HeaderMenuExtension,
+  RowSelectionExtension,
 } from '../extensions';
-import { GridMenuExtension } from '../extensions/gridMenuExtension';
+import { SharedService } from './shared.service';
 
 // using external non-typed js libraries
 declare var Slick: any;
-declare var $: any;
 
 @Injectable()
 export class ExtensionService {
-  private _dataView: any;
-  private _grid: any;
-  allColumns: Column[];
-  visibleColumns: Column[];
   extensionList: Extension[] = [];
-  undoRedoBuffer: any;
-
-  // controls & plugins
-  checkboxSelectorExtension: CheckboxSelectorExtension;
-  columnPickerExtension: ColumnPickerExtension;
-  gridMenuExtension: GridMenuExtension;
-  headerMenuExtension: HeaderMenuExtension;
-  rowSelectionExtension: any;
 
   constructor(
-    private exportService: ExportService,
-    private filterService: FilterService,
-    private sortService: SortService,
+    private autoTooltipExtension: AutoTooltipExtension,
+    private cellExternalCopyExtension: CellExternalCopyManagerExtension,
+    private checkboxSelectorExtension: CheckboxSelectorExtension,
+    private columnPickerExtension: ColumnPickerExtension,
+    private gridMenuExtension: GridMenuExtension,
+    private groupItemMetaExtension: GroupItemMetaProviderExtension,
+    private headerButtonExtension: HeaderButtonExtension,
+    private headerMenuExtension: HeaderMenuExtension,
+    private rowSelectionExtension: RowSelectionExtension,
+    private sharedService: SharedService,
     private translate: TranslateService,
-  ) { }
-
-  /** Getter for the Grid Options pulled through the Grid Object */
-  private get _gridOptions(): GridOption {
-    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
-  }
-
-  /** Setter for the Grid Options pulled through the Grid Object */
-  private set _gridOptions(gridOptions: GridOption) {
-    this._gridOptions = gridOptions;
-  }
-
-  /** Getter for the Column Definitions pulled through the Grid Object */
-  private get _columnDefinitions(): Column[] {
-    return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
-  }
+  ) {}
 
   /** Get all columns (includes visible and non-visible) */
   getAllColumns(): Column[] {
-    return this.allColumns || [];
+    return this.sharedService.allColumns || [];
   }
 
   /** Get only visible columns */
   getVisibleColumns(): Column[] {
-    return this.visibleColumns || [];
+    return this.sharedService.visibleColumns || [];
   }
 
   /** Get all Extensions */
@@ -87,7 +65,7 @@ export class ExtensionService {
 
   /** Auto-resize all the column in the grid to fit the grid width */
   autoResizeColumns() {
-    this._grid.autosizeColumns();
+    this.sharedService.grid.autosizeColumns();
   }
 
   /**
@@ -96,98 +74,88 @@ export class ExtensionService {
    * @param dataView
    * @param groupItemMetadataProvider
    */
-  attachDifferentControlOrPlugins(grid: any, dataView: any, groupItemMetadataProvider: any) {
-    this._grid = grid;
-    this._dataView = dataView;
-    this.allColumns = this._columnDefinitions;
-    this.visibleColumns = this._columnDefinitions;
-
+  attachDifferentExtensions() {
     // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
     // this is to avoid having hidden columns not being translated on first load
-    if (this._gridOptions.enableTranslate) {
-      this.translateItems(this.allColumns, 'headerKey', 'name');
+    if (this.sharedService.gridOptions.enableTranslate) {
+      this.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
     }
 
     // Column Picker Control
-    if (this._gridOptions.enableColumnPicker) {
-      this.columnPickerExtension = new ColumnPickerExtension(this._grid, this._gridOptions, this.allColumns, this._columnDefinitions, this.translate);
+    if (this.sharedService.gridOptions.enableColumnPicker) {
       if (this.columnPickerExtension && this.columnPickerExtension.register) {
         this.extensionList.push({ name: ExtensionName.columnPicker, service: this.columnPickerExtension.register() });
       }
     }
 
     // Grid Menu Control
-    if (this._gridOptions.enableGridMenu) {
-      this.gridMenuExtension = new GridMenuExtension(this._grid, this._gridOptions, this.allColumns, this._columnDefinitions, this._dataView, this.exportService, this.filterService, this.sortService, this.translate, this.visibleColumns);
+    if (this.sharedService.gridOptions.enableGridMenu) {
       if (this.gridMenuExtension && this.gridMenuExtension.register) {
         this.extensionList.push({ name: ExtensionName.gridMenu, service: this.gridMenuExtension.register() });
       }
     }
 
     // Auto Tooltip Plugin
-    if (this._gridOptions.enableAutoTooltip) {
-      const autoTooltipPlugin = new AutoTooltipExtension(this._grid, this._gridOptions);
-      if (autoTooltipPlugin && autoTooltipPlugin.register) {
-        this.extensionList.push({ name: ExtensionName.autoTooltip, service: autoTooltipPlugin.register() });
+    if (this.sharedService.gridOptions.enableAutoTooltip) {
+      if (this.autoTooltipExtension && this.autoTooltipExtension.register) {
+        this.extensionList.push({ name: ExtensionName.autoTooltip, service: this.autoTooltipExtension.register() });
       }
     }
 
     // Grouping Plugin
     // register the group item metadata provider to add expand/collapse group handlers
-    if (this._gridOptions.enableGrouping) {
-      const extension = new GroupItemMetaProviderExtension(this._grid, groupItemMetadataProvider);
-      if (extension && extension.register) {
-        this.extensionList.push({ name: ExtensionName.groupItemMetaProvider, service: extension.register() });
+    if (this.sharedService.gridOptions.enableGrouping) {
+      if (this.groupItemMetaExtension && this.groupItemMetaExtension.register) {
+        this.extensionList.push({ name: ExtensionName.groupItemMetaProvider, service: this.groupItemMetaExtension.register() });
       }
     }
 
     // Checkbox Selector Plugin
-    if (this._gridOptions.enableCheckboxSelector) {
+    if (this.sharedService.gridOptions.enableCheckboxSelector) {
       if (this.checkboxSelectorExtension && this.checkboxSelectorExtension.register) {
-        this.extensionList.push({ name: ExtensionName.checkboxSelector, service: this.checkboxSelectorExtension.register(this._grid, this.rowSelectionExtension) });
+        const rowSelectionExtension = this.getExtensionByName(ExtensionName.rowSelectionExtension);
+        this.extensionList.push({ name: ExtensionName.checkboxSelector, service: this.checkboxSelectorExtension.register(rowSelectionExtension) });
       }
     }
 
     // Row Selection Plugin
-    if (!this._gridOptions.enableCheckboxSelector && this._gridOptions.enableRowSelection) {
-      this.rowSelectionExtension = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
-      this._grid.setSelectionModel(this.rowSelectionExtension);
+    if (!this.sharedService.gridOptions.enableCheckboxSelector && this.sharedService.gridOptions.enableRowSelection) {
+      if (this.rowSelectionExtension && this.rowSelectionExtension.register) {
+        this.extensionList.push({ name: ExtensionName.rowSelectionExtension, service: this.rowSelectionExtension.register() });
+      }
     }
 
     // Header Button Plugin
-    if (this._gridOptions.enableHeaderButton) {
-      const headerButtonPlugin = new HeaderButtonExtension(this._grid, this._gridOptions);
-      if (headerButtonPlugin && headerButtonPlugin.register) {
-        this.extensionList.push({ name: ExtensionName.headerButtons, service: headerButtonPlugin.register() });
+    if (this.sharedService.gridOptions.enableHeaderButton) {
+      if (this.headerButtonExtension && this.headerButtonExtension.register) {
+        this.extensionList.push({ name: ExtensionName.headerButtons, service: this.headerButtonExtension.register() });
       }
     }
 
     // Header Menu Plugin
-    if (this._gridOptions.enableHeaderMenu) {
-      this.headerMenuExtension = new HeaderMenuExtension(this._grid, this._gridOptions, this._columnDefinitions, this._dataView, this.sortService, this.translate, this.visibleColumns);
+    if (this.sharedService.gridOptions.enableHeaderMenu) {
       if (this.headerMenuExtension && this.headerMenuExtension.register) {
         this.extensionList.push({ name: ExtensionName.headerMenu, service: this.headerMenuExtension.register() });
       }
     }
 
     // Cell External Copy Manager Plugin (Excel Like)
-    if (this._gridOptions.enableExcelCopyBuffer) {
-      const extension = new CellExternalCopyManagerExtension(this._grid, this._gridOptions);
-      if (extension && extension.register) {
-        this.extensionList.push({ name: ExtensionName.cellExternalCopyManager, service: extension.register() });
+    if (this.sharedService.gridOptions.enableExcelCopyBuffer) {
+      if (this.cellExternalCopyExtension && this.cellExternalCopyExtension.register) {
+        this.extensionList.push({ name: ExtensionName.cellExternalCopyManager, service: this.cellExternalCopyExtension.register() });
       }
     }
 
     // manually register other plugins
-    if (this._gridOptions.registerPlugins !== undefined) {
-      if (Array.isArray(this._gridOptions.registerPlugins)) {
-        this._gridOptions.registerPlugins.forEach((plugin) => {
-          this._grid.registerPlugin(plugin);
+    if (this.sharedService.gridOptions.registerPlugins !== undefined) {
+      if (Array.isArray(this.sharedService.gridOptions.registerPlugins)) {
+        this.sharedService.gridOptions.registerPlugins.forEach((plugin) => {
+          this.sharedService.grid.registerPlugin(plugin);
           this.extensionList.push({ name: ExtensionName.noname, service: plugin });
         });
       } else {
-        this._grid.registerPlugin(this._gridOptions.registerPlugins);
-        this.extensionList.push({ name: ExtensionName.noname, service: this._gridOptions.registerPlugins });
+        this.sharedService.grid.registerPlugin(this.sharedService.gridOptions.registerPlugins);
+        this.extensionList.push({ name: ExtensionName.noname, service: this.sharedService.gridOptions.registerPlugins });
       }
     }
   }
@@ -200,25 +168,23 @@ export class ExtensionService {
    */
   createCheckboxPluginBeforeGridCreation(columnDefinitions: Column[], options: GridOption) {
     if (options.enableCheckboxSelector) {
-      this.checkboxSelectorExtension = new CheckboxSelectorExtension(columnDefinitions, options);
-      this.checkboxSelectorExtension.create();
+      this.checkboxSelectorExtension.create(columnDefinitions, options);
     }
   }
 
   /** Hide a column from the grid */
   hideColumn(column: Column) {
-    if (this._grid && this._grid.getColumns && this._grid.setColumns) {
-      const columnIndex = this._grid.getColumnIndex(column.id);
-      this.visibleColumns = this.removeColumnByIndex(this._grid.getColumns(), columnIndex);
-      this._grid.setColumns(this.visibleColumns);
+    if (this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns) {
+      const columnIndex = this.sharedService.grid.getColumnIndex(column.id);
+      this.sharedService.visibleColumns = this.removeColumnByIndex(this.sharedService.grid.getColumns(), columnIndex);
+      this.sharedService.grid.setColumns(this.sharedService.visibleColumns);
     }
   }
 
   /** Dispose of all the controls & plugins */
   dispose() {
-    this._grid = null;
-    this._dataView = null;
-    this.visibleColumns = [];
+    this.sharedService.grid = null;
+    this.sharedService.visibleColumns = [];
 
     // dispose of each control/plugin if it has a destroy method
     this.extensionList.forEach((item) => {
@@ -254,7 +220,7 @@ export class ExtensionService {
    * Translate the Header Menu titles, we need to loop through all column definition to re-translate them
    */
   translateGridMenu() {
-    if (this._gridOptions && this._gridOptions.gridMenu) {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
       this.gridMenuExtension.translateGridMenu();
     }
   }
@@ -263,7 +229,7 @@ export class ExtensionService {
    * Translate the Header Menu titles, we need to loop through all column definition to re-translate them
    */
   translateHeaderMenu() {
-    if (this._gridOptions && this._gridOptions.headerMenu) {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.headerMenu) {
       this.headerMenuExtension.translateHeaderMenu();
     }
   }
@@ -279,10 +245,10 @@ export class ExtensionService {
       this.translate.use(locale as string);
     }
 
-    const columnDefinitions = newColumnDefinitions || this._columnDefinitions;
+    const columnDefinitions = newColumnDefinitions || this.sharedService.columnDefinitions;
 
     this.translateItems(columnDefinitions, 'headerKey', 'name');
-    this.translateItems(this.allColumns, 'headerKey', 'name');
+    this.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
 
     // re-render the column headers
     this.renderColumnHeaders(columnDefinitions);
@@ -293,9 +259,9 @@ export class ExtensionService {
    * calling setColumns() will trigger a grid re-render
    */
   renderColumnHeaders(newColumnDefinitions?: Column[]) {
-    const collection = newColumnDefinitions || this._columnDefinitions;
-    if (Array.isArray(collection) && this._grid && this._grid.setColumns) {
-      this._grid.setColumns(collection);
+    const collection = newColumnDefinitions || this.sharedService.columnDefinitions;
+    if (Array.isArray(collection) && this.sharedService.grid && this.sharedService.grid.setColumns) {
+      this.sharedService.grid.setColumns(collection);
     }
   }
 

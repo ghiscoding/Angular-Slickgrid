@@ -9,4 +9,5 @@ export enum ExtensionName {
   headerButtons = 'headerButtons',
   headerMenu = 'headerMenu',
   noname = 'noname',
+  rowSelectionExtension = 'rowSelectionExtension',
 }
