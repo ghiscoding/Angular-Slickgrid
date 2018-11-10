@@ -15,6 +15,7 @@ import {
   GroupItemMetaProviderExtension,
   HeaderButtonExtension,
   HeaderMenuExtension,
+  RowMoveManagerExtension,
   RowSelectionExtension,
 } from '../extensions';
 import { SharedService } from './shared.service';
@@ -35,6 +36,7 @@ export class ExtensionService {
     private groupItemMetaExtension: GroupItemMetaProviderExtension,
     private headerButtonExtension: HeaderButtonExtension,
     private headerMenuExtension: HeaderMenuExtension,
+    private rowMoveManagerExtension: RowMoveManagerExtension,
     private rowSelectionExtension: RowSelectionExtension,
     private sharedService: SharedService,
     private translate: TranslateService,
@@ -115,6 +117,13 @@ export class ExtensionService {
       if (this.checkboxSelectorExtension && this.checkboxSelectorExtension.register) {
         const rowSelectionExtension = this.getExtensionByName(ExtensionName.rowSelectionExtension);
         this.extensionList.push({ name: ExtensionName.checkboxSelector, service: this.checkboxSelectorExtension.register(rowSelectionExtension) });
+      }
+    }
+
+    // Row Move Manager Plugin
+    if (this.sharedService.gridOptions.enableRowMoveManager) {
+      if (this.rowMoveManagerExtension && this.rowMoveManagerExtension.register) {
+        this.extensionList.push({ name: ExtensionName.rowMoveManager, service: this.rowMoveManagerExtension.register() });
       }
     }
 

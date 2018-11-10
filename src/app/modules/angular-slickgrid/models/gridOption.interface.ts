@@ -11,7 +11,8 @@ import {
   GridState,
   HeaderButton,
   HeaderMenu,
-  Pagination
+  Pagination,
+  RowMoveManager
 } from './../models/index';
 
 export interface GridOption {
@@ -69,7 +70,7 @@ export interface GridOption {
   /** Checkbox Select Plugin options (columnId, cssClass, toolTip, width) */
   checkboxSelector?: CheckboxSelector;
 
-  /** Checkbox Select Plugin options (columnTitle, forceFitTitle, syncResizeTitle) */
+  /** Column Picker Plugin options (columnTitle, forceFitTitle, syncResizeTitle) */
   columnPicker?: ColumnPicker;
 
   /** Defaults to false, which leads to create the footer row of the grid */
@@ -171,6 +172,9 @@ export interface GridOption {
   /** Do we want to enable pagination? Currently only works with a Backend Service API */
   enablePagination?: boolean;
 
+  /** Defaults to false, when enabled it will make possible to move rows in the grid. */
+  enableRowMoveManager?: boolean;
+
   /** Do we want to enable row selection? */
   enableRowSelection?: boolean;
 
@@ -263,6 +267,9 @@ export interface GridOption {
 
   /** Grid row height in pixels (only type the number). Row of cell values. */
   rowHeight?: number;
+
+  /** Row Move Manager Plugin options & events */
+  rowMoveManager?: RowMoveManager;
 
   /** Row selection options */
   rowSelectionOptions?: {

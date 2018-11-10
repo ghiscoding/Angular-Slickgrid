@@ -248,6 +248,11 @@ $pagination-page-select-width:            54px !default;
 $pagination-page-select-font-size:        ($font-size-base - 2px) !default;
 $pagination-text-color:                   #808080 !default;
 
+/* Row Move Manager Plugin */
+$row-move-plugin-icon:                    "\f0c9" !default;
+$row-move-plugin-size:                    $icon-font-size;
+$row-move-plugin-cursor:                  all-scroll;
+
 /* selector plugin */
 $selector-border-right:                   1px solid rgb(196, 196, 196) !default;
 

@@ -61,6 +61,7 @@ import {
   GroupItemMetaProviderExtension,
   HeaderButtonExtension,
   HeaderMenuExtension,
+  RowMoveManagerExtension,
   RowSelectionExtension,
 } from '../extensions';
 
@@ -94,6 +95,7 @@ const slickgridEventPrefix = 'sg';
     HeaderButtonExtension,
     HeaderMenuExtension,
     ResizerService,
+    RowMoveManagerExtension,
     RowSelectionExtension,
     SharedService,
     SortService,
