@@ -1,23 +1,11 @@
 // import 3rd party vendor libs
+// only import the necessary core lib, each will be imported on demand when enabled (via require)
 import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
-import 'slickgrid/slick.groupitemmetadataprovider';
-import 'slickgrid/controls/slick.columnpicker';
-import 'slickgrid/controls/slick.gridmenu';
-import 'slickgrid/controls/slick.pager';
-import 'slickgrid/plugins/slick.autotooltips';
-import 'slickgrid/plugins/slick.cellexternalcopymanager';
-import 'slickgrid/plugins/slick.cellrangedecorator';
-import 'slickgrid/plugins/slick.cellrangeselector';
-import 'slickgrid/plugins/slick.cellselectionmodel';
-import 'slickgrid/plugins/slick.checkboxselectcolumn';
-import 'slickgrid/plugins/slick.headerbuttons';
-import 'slickgrid/plugins/slick.headermenu';
-import 'slickgrid/plugins/slick.rowmovemanager';
-import 'slickgrid/plugins/slick.rowselectionmodel';
+
 import { AfterViewInit, Component, ElementRef, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise, titleCase, unsubscribeAllObservables } from './../services/utilities';
@@ -26,6 +14,7 @@ import {
   AngularGridInstance,
   BackendServiceOption,
   Column,
+  ExtensionName,
   GraphqlResult,
   GridOption,
   GridStateChange,
@@ -40,6 +29,7 @@ import { Subscription } from 'rxjs/Subscription';
 // Services
 import { ExportService } from './../services/export.service';
 import { ExtensionService } from '../services/extension.service';
+import { ExtensionUtility } from '../extensions/extensionUtility';
 import { FilterService } from './../services/filter.service';
 import { GraphqlService } from './../services/graphql.service';
 import { GridEventService } from './../services/gridEvent.service';
@@ -56,7 +46,6 @@ import {
   CellExternalCopyManagerExtension,
   CheckboxSelectorExtension,
   ColumnPickerExtension,
-  ExtensionUtility,
   GridMenuExtension,
   GroupItemMetaProviderExtension,
   HeaderButtonExtension,
@@ -107,8 +96,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _columnDefinitions: Column[];
   private _dataView: any;
   private _eventHandler: any = new Slick.EventHandler();
-  private _fixedHeight: number;
-  private _fixedWidth: number;
+  private _fixedHeight: number | null;
+  private _fixedWidth: number | null;
   private _hideHeaderRowAfterPageLoad = false;
   grid: any;
   gridPaginationOptions: GridOption;
@@ -163,6 +152,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private elm: ElementRef,
     private exportService: ExportService,
     private extensionService: ExtensionService,
+    private extensionUtility: ExtensionUtility,
     private filterService: FilterService,
     private gridService: GridService,
     private gridEventService: GridEventService,
@@ -222,7 +212,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
 
     if (this.gridOptions.enableGrouping) {
+      this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
       this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
+      this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
       this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
     } else {
       this._dataView = new Slick.Data.DataView();
@@ -243,14 +235,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // save reference for all columns before they optionally become hidden/visible
     this.sharedService.allColumns = this._columnDefinitions;
     this.sharedService.visibleColumns = this._columnDefinitions;
-
-
     this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
 
     this.sharedService.dataView = this._dataView;
     this.sharedService.grid = this.grid;
-    this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
 
     this.extensionService.attachDifferentExtensions();
     this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
@@ -322,7 +312,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       gridService: this.gridService,
       groupingService: this.groupingAndColspanService,
       extensionService: this.extensionService,
-      pluginService: this.extensionService, // @deprecated, use `extensionService`
+
+      /** @deprecated please use "extensionService" instead */
+      pluginService: this.extensionService,
       resizerService: this.resizer,
       sortService: this.sortService,
     });

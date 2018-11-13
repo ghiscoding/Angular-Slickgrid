@@ -19,8 +19,8 @@ export interface GridDimension {
 }
 
 export class ResizerService {
-  private _fixedHeight: number;
-  private _fixedWidth: number;
+  private _fixedHeight: number | null;
+  private _fixedWidth: number | null;
   private _grid: any;
   private _lastDimensions: GridDimension;
   onGridBeforeResize = new Subject<boolean>();

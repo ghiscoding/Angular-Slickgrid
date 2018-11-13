@@ -30,7 +30,7 @@ export interface AngularGridInstance {
   /** Backend Service, when available */
   backendService?: BackendService;
 
-  /** Extension (Plugin & Control) Service */
+  /** Extension (Controls & Plugins) Service */
   extensionService: ExtensionService;
 
   /** @deprecated, use `extensionService` instead. Plugin and Control Service */

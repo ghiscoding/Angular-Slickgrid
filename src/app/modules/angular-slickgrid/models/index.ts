@@ -31,6 +31,7 @@ export * from './editorValidatorOutput.interface';
 export * from './elementPosition.interface';
 export * from './exportOption.interface';
 export * from './extension.interface';
+export * from './extensionModel.interface';
 export * from './extensionName.enum';
 export * from './fieldType.enum';
 export * from './fileType.enum';

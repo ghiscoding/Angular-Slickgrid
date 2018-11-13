@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Column } from '../models';
+import { Column, Extension, ExtensionName } from '../models/index';
+import { ExtensionUtility } from './extensionUtility';
 import { sanitizeHtmlToText } from '../services/utilities';
 import { SharedService } from '../services/shared.service';
 
@@ -8,26 +9,34 @@ declare var Slick: any;
 declare var $: any;
 
 @Injectable()
-export class CellExternalCopyManagerExtension {
-  undoRedoBuffer: any;
+export class CellExternalCopyManagerExtension implements Extension {
+  private _extension: any;
+  private _undoRedoBuffer: any;
 
-  constructor(private sharedService: SharedService) {}
+  constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) { }
 
-  register() {
-    this.createUndoRedoBuffer();
-    this.hookUndoShortcutKey();
+  dispose() {
+    if (this._extension && this._extension.destroy) {
+      this._extension.destroy();
+    }
+  }
 
-    if (this.sharedService.grid && this.sharedService.gridOptions) {
+  register(): any {
+    if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+      // dynamically import the SlickGrid plugin with requireJS
+      this.extensionUtility.loadExtensionDynamically(ExtensionName.cellExternalCopyManager);
+      this.createUndoRedoBuffer();
+      this.hookUndoShortcutKey();
       let newRowIds = 0;
       const pluginOptions = {
         clipboardCommandHandler: (editCommand: any) => {
-          this.undoRedoBuffer.queueAndExecuteCommand.call(this.undoRedoBuffer, editCommand);
+          this._undoRedoBuffer.queueAndExecuteCommand.call(this._undoRedoBuffer, editCommand);
         },
         dataItemColumnValueExtractor: (item: any, columnDef: Column) => {
           // when grid or cell is not editable, we will possibly evaluate the Formatter if it was passed
           // to decide if we evaluate the Formatter, we will use the same flag from Export which is "exportWithFormatter"
           if (!this.sharedService.gridOptions.editable || !columnDef.editor) {
-            const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this.sharedService.gridOptions.exportOptions.exportWithFormatter;
+            const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this.sharedService.gridOptions.exportOptions && this.sharedService.gridOptions.exportOptions.exportWithFormatter);
             if (columnDef.formatter && isEvaluatingFormatter) {
               const formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this.sharedService.grid);
               if (columnDef.sanitizeDataExport || (this.sharedService.gridOptions.exportOptions && this.sharedService.gridOptions.exportOptions.sanitizeDataExport)) {
@@ -36,7 +45,6 @@ export class CellExternalCopyManagerExtension {
               return formattedOutput;
             }
           }
-
           // else use the default "dataItemColumnValueExtractor" from the plugin itself
           // we can do that by setting back the getter with null
           return null;
@@ -52,14 +60,11 @@ export class CellExternalCopyManagerExtension {
           }
         }
       };
-
       this.sharedService.grid.setSelectionModel(new Slick.CellSelectionModel());
-      const plugin = new Slick.CellExternalCopyManager(pluginOptions);
-      this.sharedService.grid.registerPlugin(plugin);
-
-      return plugin;
+      this._extension = new Slick.CellExternalCopyManager(pluginOptions);
+      this.sharedService.grid.registerPlugin(this._extension);
+      return this._extension;
     }
-
     return null;
   }
 
@@ -67,8 +72,7 @@ export class CellExternalCopyManagerExtension {
   private createUndoRedoBuffer() {
     const commandQueue: any[] = [];
     let commandCtr = 0;
-
-    this.undoRedoBuffer = {
+    this._undoRedoBuffer = {
       queueAndExecuteCommand: (editCommand: any) => {
         commandQueue[commandCtr] = editCommand;
         commandCtr++;
@@ -96,12 +100,12 @@ export class CellExternalCopyManagerExtension {
   /** Attach an undo shortcut key hook that will redo/undo the copy buffer */
   private hookUndoShortcutKey() {
     // undo shortcut
-    $(document).keydown((e) => {
+    $(document).keydown((e: any) => {
       if (e.which === 90 && (e.ctrlKey || e.metaKey)) {    // CTRL + (shift) + Z
         if (e.shiftKey) {
-          this.undoRedoBuffer.redo();
+          this._undoRedoBuffer.redo();
         } else {
-          this.undoRedoBuffer.undo();
+          this._undoRedoBuffer.undo();
         }
       }
     });

@@ -80,7 +80,10 @@ export class DateEditor implements Editor {
 
   loadFlatpickrLocale(locale: string) {
     // change locale if needed, Flatpickr reference: https://chmln.github.io/flatpickr/localization/
-    if (locale !== 'en') {
+    const gridOptions = this.args && this.args.grid && this.args.grid.getOptions();
+    if (gridOptions && gridOptions.params && gridOptions.params.flapickrLocale) {
+      return gridOptions.params.flapickrLocale;
+    } else if (locale !== 'en') {
       const localeDefault: any = require(`flatpickr/dist/l10n/${locale}.js`).default;
       return (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
     }

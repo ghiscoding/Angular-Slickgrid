@@ -210,8 +210,8 @@ export class GridStateService {
   hookExtensionEventToGridStateChange(extensionName: ExtensionName, eventName: string) {
     const extension = this.extensionService && this.extensionService.getExtensionByName(extensionName);
 
-    if (extension && extension.service && extension.service[eventName] && extension.service[eventName].subscribe) {
-      this._eventHandler.subscribe(extension.service[eventName], (e: Event, args: any) => {
+    if (extension && extension.class && extension.class[eventName] && extension.class[eventName].subscribe) {
+      this._eventHandler.subscribe(extension.class[eventName], (e: Event, args: any) => {
         const columns: Column[] = args && args.columns;
         const currentColumns: CurrentColumn[] = this.getAssociatedCurrentColumns(columns);
         this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
@@ -243,7 +243,11 @@ export class GridStateService {
   /** if we use Row Selection or the Checkbox Selector, we need to reset any selection */
   resetRowSelection() {
     if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
-      this._grid.setSelectedRows([]);
+      // this also requires the Row Selection Model to be registered as well
+      const rowSelectionExtension = this.extensionService && this.extensionService.getExtensionByName && this.extensionService.getExtensionByName(ExtensionName.rowSelection);
+      if (rowSelectionExtension && rowSelectionExtension.extension) {
+        this._grid.setSelectedRows([]);
+      }
     }
   }
 

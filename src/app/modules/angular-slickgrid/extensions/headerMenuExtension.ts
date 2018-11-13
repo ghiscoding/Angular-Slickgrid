@@ -4,12 +4,14 @@ import { Constants } from '../constants';
 import {
   Column,
   ColumnSort,
+  Extension,
+  ExtensionName,
   GridOption,
   HeaderMenu,
   HeaderMenuItem,
   HeaderMenuOnCommandArgs,
   HeaderMenuOnBeforeMenuShowArgs,
-} from '../models';
+} from '../models/index';
 import { SortService } from '../services/sort.service';
 import { SharedService } from '../services/shared.service';
 import { ExtensionUtility } from './extensionUtility';
@@ -18,51 +20,68 @@ import { ExtensionUtility } from './extensionUtility';
 declare var Slick: any;
 
 @Injectable()
-export class HeaderMenuExtension {
+export class HeaderMenuExtension implements Extension {
+  private _eventHandler: any = new Slick.EventHandler();
+  private _extension: any;
+
   constructor(
     private extensionUtility: ExtensionUtility,
     private sharedService: SharedService,
     private sortService: SortService,
-    private translate: TranslateService
-  ) {}
+    private translate: TranslateService,
+  ) { }
 
-  /**
-   * Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...)
-   * @param grid
-   * @param dataView
-   * @param columnDefinitions
-   */
-  register() {
-    this.sharedService.gridOptions.headerMenu = { ...this.getDefaultHeaderMenuOptions(), ...this.sharedService.gridOptions.headerMenu };
-    if (this.sharedService.gridOptions.enableHeaderMenu) {
-      this.sharedService.gridOptions.headerMenu = this.addHeaderMenuCustomCommands(this.sharedService.gridOptions, this.sharedService.columnDefinitions);
+  dispose() {
+    // unsubscribe all SlickGrid events
+    this._eventHandler.unsubscribeAll();
+    if (this._extension && this._extension.destroy) {
+      this._extension.destroy();
     }
-    const headerMenuPlugin = new Slick.Plugins.HeaderMenu(this.sharedService.gridOptions.headerMenu);
-
-    this.sharedService.grid.registerPlugin(headerMenuPlugin);
-    headerMenuPlugin.onCommand.subscribe((e: Event, args: HeaderMenuOnCommandArgs) => {
-      this.executeHeaderMenuInternalCommands(e, args);
-      if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onCommand === 'function') {
-        this.sharedService.gridOptions.headerMenu.onCommand(e, args);
-      }
-    });
-    headerMenuPlugin.onBeforeMenuShow.subscribe((e: Event, args: HeaderMenuOnBeforeMenuShowArgs) => {
-      if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
-        this.sharedService.gridOptions.headerMenu.onBeforeMenuShow(e, args);
-      }
-    });
-
-    return headerMenuPlugin;
   }
 
   /**
-   * Create Header Menu with Custom Commands if user has enabled Header Menu
-   * @param options
-   * @param columnDefinitions
-   * @return header menu
-   */
+  * Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...)
+  * @param grid
+  * @param dataView
+  * @param columnDefinitions
+  */
+  register(): any {
+    if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+      // dynamically import the SlickGrid plugin with requireJS
+      this.extensionUtility.loadExtensionDynamically(ExtensionName.headerMenu);
+      this.sharedService.gridOptions.headerMenu = { ...this.getDefaultHeaderMenuOptions(), ...this.sharedService.gridOptions.headerMenu };
+      if (this.sharedService.gridOptions.enableHeaderMenu) {
+        this.sharedService.gridOptions.headerMenu = this.addHeaderMenuCustomCommands(this.sharedService.gridOptions, this.sharedService.columnDefinitions);
+      }
+
+      this._extension = new Slick.Plugins.HeaderMenu(this.sharedService.gridOptions.headerMenu);
+      this.sharedService.grid.registerPlugin(this._extension);
+      this._eventHandler.subscribe(this._extension.onCommand, (e: any, args: HeaderMenuOnCommandArgs) => {
+        this.executeHeaderMenuInternalCommands(e, args);
+        if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onCommand === 'function') {
+          this.sharedService.gridOptions.headerMenu.onCommand(e, args);
+        }
+      });
+
+      this._eventHandler.subscribe(this._extension.onBeforeMenuShow, (e: any, args: HeaderMenuOnBeforeMenuShowArgs) => {
+        if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
+          this.sharedService.gridOptions.headerMenu.onBeforeMenuShow(e, args);
+        }
+      });
+
+      return this._extension;
+    }
+    return null;
+  }
+
+ /**
+  * Create Header Menu with Custom Commands if user has enabled Header Menu
+  * @param options
+  * @param columnDefinitions
+  * @return header menu
+  */
   private addHeaderMenuCustomCommands(options: GridOption, columnDefinitions: Column[]): HeaderMenu {
-    const headerMenuOptions = options.headerMenu;
+    const headerMenuOptions = options.headerMenu || {};
 
     if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
       columnDefinitions.forEach((columnDef: Column) => {
@@ -74,10 +93,11 @@ export class HeaderMenuExtension {
               }
             };
           }
-          const columnHeaderMenuItems: HeaderMenuItem[] = columnDef.header.menu.items || [];
+
+          const columnHeaderMenuItems: HeaderMenuItem[] = columnDef && columnDef.header && columnDef.header.menu && columnDef.header.menu.items || [];
 
           // Sorting Commands
-          if (options.enableSorting && columnDef.sortable && !headerMenuOptions.hideSortCommands) {
+          if (options.enableSorting && columnDef.sortable && headerMenuOptions && !headerMenuOptions.hideSortCommands) {
             if (columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'sort-asc').length === 0) {
               columnHeaderMenuItems.push({
                 iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
@@ -97,7 +117,7 @@ export class HeaderMenuExtension {
           }
 
           // Hide Column Command
-          if (!headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'hide').length === 0) {
+          if (headerMenuOptions && !headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'hide').length === 0) {
             columnHeaderMenuItems.push({
               iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
               title: options.enableTranslate ? this.translate.instant('HIDE_COLUMN') : Constants.TEXT_HIDE_COLUMN,
@@ -107,9 +127,8 @@ export class HeaderMenuExtension {
           }
 
           this.extensionUtility.translateItems(columnHeaderMenuItems, 'titleKey', 'title');
-
           // sort the custom items by their position in the list
-          columnHeaderMenuItems.sort((itemA, itemB) => {
+          columnHeaderMenuItems.sort((itemA: any, itemB: any) => {
             if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
               return itemA.positionOrder - itemB.positionOrder;
             }
@@ -117,9 +136,7 @@ export class HeaderMenuExtension {
           });
         }
       });
-
     }
-
     return headerMenuOptions;
   }
 
@@ -148,7 +165,10 @@ export class HeaderMenuExtension {
 
           // update the this.sharedService.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
           const newSortColumns: ColumnSort[] = cols.map((col) => {
-            return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
+            return {
+              columnId: col && col.sortCol && col.sortCol.id,
+              sortAsc: col && col.sortAsc
+            };
           });
           this.sharedService.grid.setSortColumns(newSortColumns); // add sort icon in UI
           break;
@@ -176,7 +196,6 @@ export class HeaderMenuExtension {
       if (columnDef && columnDef.header && columnDef.header && columnDef.header.menu && columnDef.header.menu.items) {
         if (!columnDef.excludeFromHeaderMenu) {
           const columnHeaderMenuItems: HeaderMenuItem[] = columnDef.header.menu.items || [];
-
           columnHeaderMenuItems.forEach((item) => {
             switch (item.command) {
               case 'sort-asc':

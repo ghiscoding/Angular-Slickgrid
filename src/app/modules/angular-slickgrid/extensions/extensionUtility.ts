@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Constants } from '../constants';
+import { ExtensionName } from '../models/index';
 import { SharedService } from '../services/shared.service';
+
+declare function require(name: string);
 
 @Injectable()
 export class ExtensionUtility {
-  constructor(private sharedService: SharedService, private translate: TranslateService) {}
+  constructor(private sharedService: SharedService, private translate: TranslateService) { }
 
   /**
    * Remove a column from the grid by it's index in the grid
@@ -16,6 +19,51 @@ export class ExtensionUtility {
     return array.filter((el: any, i: number) => {
       return index !== i;
     });
+  }
+
+  /**
+   * Load SlickGrid Extension (Control/Plugin) dynamically (on demand)
+   * This will basically only load the extension when user enables the feature
+   * @param extensionName
+   */
+  loadExtensionDynamically(extensionName: ExtensionName): any {
+    try {
+      switch (extensionName) {
+        case ExtensionName.autoTooltip:
+          require('slickgrid/plugins/slick.autotooltips');
+          break;
+        case ExtensionName.cellExternalCopyManager:
+          require('slickgrid/plugins/slick.cellexternalcopymanager');
+          break;
+        case ExtensionName.checkboxSelector:
+          require('slickgrid/plugins/slick.checkboxselectcolumn');
+          break;
+        case ExtensionName.columnPicker:
+          require('slickgrid/controls/slick.columnpicker');
+          break;
+        case ExtensionName.gridMenu:
+          require('slickgrid/controls/slick.gridmenu');
+          break;
+        case ExtensionName.groupItemMetaProvider:
+          require('slickgrid/slick.groupitemmetadataprovider');
+          break;
+        case ExtensionName.headerButton:
+          require('slickgrid/plugins/slick.headerbuttons');
+          break;
+        case ExtensionName.headerMenu:
+          require('slickgrid/plugins/slick.headermenu');
+          break;
+        case ExtensionName.rowSelection:
+          require('slickgrid/plugins/slick.rowselectionmodel');
+          break;
+        case ExtensionName.rowMoveManager:
+          require('slickgrid/plugins/slick.rowmovemanager.js');
+          break;
+      }
+    } catch (e) {
+      // do nothing, we fall here when using Aurelia-CLI and RequireJS
+      // if you do use RequireJS then you need to make sure to include all necessary extensions in your `aurelia.json`
+    }
   }
 
   /**
@@ -64,7 +112,7 @@ export class ExtensionUtility {
    */
   sortItems(items: any[], propertyName: string) {
     // sort the custom items by their position in the list
-    items.sort((itemA, itemB) => {
+    items.sort((itemA: any, itemB: any) => {
       if (itemA && itemB && itemA.hasOwnProperty(propertyName) && itemB.hasOwnProperty(propertyName)) {
         return itemA[propertyName] - itemB[propertyName];
       }

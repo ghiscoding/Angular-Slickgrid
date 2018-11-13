@@ -6,9 +6,9 @@ export enum ExtensionName {
   columnPicker = 'columnPicker',
   groupItemMetaProvider = 'groupItemMetaProvider',
   gridMenu = 'gridMenu',
-  headerButtons = 'headerButtons',
+  headerButton = 'headerButton',
   headerMenu = 'headerMenu',
   noname = 'noname',
   rowMoveManager = 'rowMoveManager',
-  rowSelectionExtension = 'rowSelectionExtension',
+  rowSelection = 'rowSelection',
 }
