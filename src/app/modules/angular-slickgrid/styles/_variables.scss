@@ -84,7 +84,7 @@ $icon-font-size:                          14px !default;
 $icon-group-color:                        $primary-color !default;
 $icon-group-expanded:                     "\f107" !default;
 $icon-group-collapsed:                    "\f105" !default;
-$icon-group-font-size:                    ($icon-font-size + 2px) !default;
+$icon-group-font-size:                    ($icon-font-size + 4px) !default;
 $icon-group-font-weight:                  bold !default;
 $icon-group-margin-right:                 2px !default;
 $icon-group-height:                       20px !default;
@@ -247,6 +247,11 @@ $pagination-page-select-height:           32px !default;
 $pagination-page-select-width:            54px !default;
 $pagination-page-select-font-size:        ($font-size-base - 2px) !default;
 $pagination-text-color:                   #808080 !default;
+
+/* Row Move Manager Plugin */
+$row-move-plugin-icon:                    "\f0c9" !default;
+$row-move-plugin-size:                    $icon-font-size !default;
+$row-move-plugin-cursor:                  move !default;
 
 /* selector plugin */
 $selector-border-right:                   1px solid rgb(196, 196, 196) !default;

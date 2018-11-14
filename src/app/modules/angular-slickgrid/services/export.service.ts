@@ -229,7 +229,7 @@ export class ExportService {
       }
 
       // when CSV we also need to escape double quotes twice, so " becomes ""
-      if (format === FileType.csv) {
+      if (format === FileType.csv && itemData) {
         itemData = itemData.toString().replace(/"/gi, `""`);
       }
 

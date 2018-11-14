@@ -3,7 +3,7 @@ import { mapFlatpickrDateFormatWithFieldType } from '../services/utilities';
 import { Column, Filter, FilterArguments, FilterCallback, FieldType, GridOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
 
 // importing Flatpickr works better with a 'require'
-declare function require(name: string);
+declare function require(name: string): any;
 require('flatpickr');
 
 // using external non-typed js libraries
@@ -214,7 +214,9 @@ export class CompoundDateFilter implements Filter {
 
   private loadFlatpickrLocale(locale: string) {
     // change locale if needed, Flatpickr reference: https://chmln.github.io/flatpickr/localization/
-    if (locale !== 'en') {
+    if (this.gridOptions && this.gridOptions.params && this.gridOptions.params.flapickrLocale) {
+      return this.gridOptions.params.flapickrLocale;
+    } else if (locale !== 'en') {
       const localeDefault: any = require(`flatpickr/dist/l10n/${locale}.js`).default;
       return (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
     }

@@ -1,4 +1,4 @@
 export interface Extension {
-  name: string;
-  service: any;
+  dispose: () => void;
+  register: () => any;
 }

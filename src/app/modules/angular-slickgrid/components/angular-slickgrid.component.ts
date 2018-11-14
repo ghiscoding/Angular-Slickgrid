@@ -1,24 +1,12 @@
 // import 3rd party vendor libs
+// only import the necessary core lib, each will be imported on demand when enabled (via require)
 import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
-import 'slickgrid/slick.groupitemmetadataprovider';
-import 'slickgrid/controls/slick.columnpicker';
-import 'slickgrid/controls/slick.gridmenu';
-import 'slickgrid/controls/slick.pager';
-import 'slickgrid/plugins/slick.autotooltips';
-import 'slickgrid/plugins/slick.cellexternalcopymanager';
-import 'slickgrid/plugins/slick.cellrangedecorator';
-import 'slickgrid/plugins/slick.cellrangeselector';
-import 'slickgrid/plugins/slick.cellselectionmodel';
-import 'slickgrid/plugins/slick.checkboxselectcolumn';
-import 'slickgrid/plugins/slick.headerbuttons';
-import 'slickgrid/plugins/slick.headermenu';
-import 'slickgrid/plugins/slick.rowmovemanager';
-import 'slickgrid/plugins/slick.rowselectionmodel';
-import { AfterViewInit, Component, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit, ElementRef, ViewChild } from '@angular/core';
+
+import { AfterViewInit, Component, ElementRef, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { castToPromise, titleCase, unsubscribeAllObservables } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
@@ -26,14 +14,22 @@ import {
   AngularGridInstance,
   BackendServiceOption,
   Column,
+  ExtensionName,
   GraphqlResult,
   GridOption,
   GridStateChange,
   GridStateType,
   Pagination,
 } from './../models/index';
-import { ControlAndPluginService } from './../services/controlAndPlugin.service';
+import { FilterFactory } from '../filters/filterFactory';
+import { SlickgridConfig } from '../slickgrid-config';
+import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
+
+// Services
 import { ExportService } from './../services/export.service';
+import { ExtensionService } from '../services/extension.service';
+import { ExtensionUtility } from '../extensions/extensionUtility';
 import { FilterService } from './../services/filter.service';
 import { GraphqlService } from './../services/graphql.service';
 import { GridEventService } from './../services/gridEvent.service';
@@ -41,11 +37,21 @@ import { GridService } from './../services/grid.service';
 import { GridStateService } from './../services/gridState.service';
 import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
 import { ResizerService } from './../services/resizer.service';
+import { SharedService } from '../services/shared.service';
 import { SortService } from './../services/sort.service';
-import { FilterFactory } from '../filters/filterFactory';
-import { SlickgridConfig } from '../slickgrid-config';
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
+
+// Extensions (SlickGrid Controls & Plugins)
+import { AutoTooltipExtension } from '../extensions/autoTooltipExtension';
+import { CellExternalCopyManagerExtension } from '../extensions/cellExternalCopyManagerExtension';
+import { CheckboxSelectorExtension } from '../extensions/checkboxSelectorExtension';
+import { ColumnPickerExtension } from '../extensions/columnPickerExtension';
+import { GridMenuExtension } from '../extensions/gridMenuExtension';
+import { GroupItemMetaProviderExtension } from '../extensions/groupItemMetaProviderExtension';
+import { HeaderButtonExtension } from '../extensions/headerButtonExtension';
+import { HeaderMenuExtension } from '../extensions/headerMenuExtension';
+import { RowMoveManagerExtension } from '../extensions/rowMoveManagerExtension';
+import { RowSelectionExtension } from '../extensions/rowSelectionExtension';
+
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -58,16 +64,28 @@ const slickgridEventPrefix = 'sg';
   selector: 'angular-slickgrid',
   templateUrl: './angular-slickgrid.component.html',
   providers: [
-    ControlAndPluginService,
+    AutoTooltipExtension,
+    CellExternalCopyManagerExtension,
+    CheckboxSelectorExtension,
+    ColumnPickerExtension,
+    ExtensionService,
     ExportService,
+    ExtensionUtility,
     FilterFactory,
     FilterService,
     GraphqlService,
     GridEventService,
+    GridMenuExtension,
     GridService,
     GridStateService,
     GroupingAndColspanService,
+    GroupItemMetaProviderExtension,
+    HeaderButtonExtension,
+    HeaderMenuExtension,
     ResizerService,
+    RowMoveManagerExtension,
+    RowSelectionExtension,
+    SharedService,
     SortService,
     SlickgridConfig
   ]
@@ -77,8 +95,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _columnDefinitions: Column[];
   private _dataView: any;
   private _eventHandler: any = new Slick.EventHandler();
-  private _fixedHeight: number;
-  private _fixedWidth: number;
+  private _fixedHeight: number | null;
+  private _fixedWidth: number | null;
   private _hideHeaderRowAfterPageLoad = false;
   grid: any;
   gridPaginationOptions: GridOption;
@@ -130,15 +148,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   constructor(
-    private controlAndPluginService: ControlAndPluginService,
     private elm: ElementRef,
     private exportService: ExportService,
+    private extensionService: ExtensionService,
+    private extensionUtility: ExtensionUtility,
     private filterService: FilterService,
     private gridService: GridService,
     private gridEventService: GridEventService,
     private gridStateService: GridStateService,
     private groupingAndColspanService: GroupingAndColspanService,
     private resizer: ResizerService,
+    private sharedService: SharedService,
     private sortService: SortService,
     private translate: TranslateService,
     @Inject('config') private forRootConfig: GridOption
@@ -162,7 +182,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this._dataView = [];
     this.gridOptions = {};
     this._eventHandler.unsubscribeAll();
-    this.controlAndPluginService.dispose();
+    this.extensionService.dispose();
     this.filterService.dispose();
     this.gridEventService.dispose();
     this.gridStateService.dispose();
@@ -191,7 +211,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
 
     if (this.gridOptions.enableGrouping) {
+      this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
       this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
+      this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
       this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
     } else {
       this._dataView = new Slick.Data.DataView();
@@ -209,10 +231,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor  }};
     });
 
-    this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+    // save reference for all columns before they optionally become hidden/visible
+    this.sharedService.allColumns = this._columnDefinitions;
+    this.sharedService.visibleColumns = this._columnDefinitions;
+    this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+
     this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
 
-    this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._dataView, this.groupItemMetadataProvider);
+    this.sharedService.dataView = this._dataView;
+    this.sharedService.grid = this.grid;
+
+    this.extensionService.attachDifferentExtensions();
     this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
 
     // emit the Grid & DataView object to make them available in parent component
@@ -246,7 +275,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
     if (this.gridOptions.enableTranslate) {
-      this.controlAndPluginService.translateColumnHeaders();
+      this.extensionService.translateColumnHeaders();
     }
 
     // if Export is enabled, initialize the service with the necessary grid and other objects
@@ -263,7 +292,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.attachBackendCallbackFunctions(this.gridOptions);
     }
 
-    this.gridStateService.init(this.grid, this.controlAndPluginService, this.filterService, this.sortService);
+    this.gridStateService.init(this.grid, this.extensionService, this.filterService, this.sortService);
 
     this.onAngularGridCreated.emit({
       // Slick Grid & DataView objects
@@ -281,7 +310,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       gridStateService: this.gridStateService,
       gridService: this.gridService,
       groupingService: this.groupingAndColspanService,
-      pluginService: this.controlAndPluginService,
+      extensionService: this.extensionService,
+
+      /** @deprecated please use "extensionService" instead */
+      pluginService: this.extensionService,
       resizerService: this.resizer,
       sortService: this.sortService,
     });
@@ -337,10 +369,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.subscriptions.push(
       this.translate.onLangChange.subscribe((event) => {
         if (gridOptions.enableTranslate) {
-          this.controlAndPluginService.translateColumnHeaders();
-          this.controlAndPluginService.translateColumnPicker();
-          this.controlAndPluginService.translateGridMenu();
-          this.controlAndPluginService.translateHeaderMenu();
+          this.extensionService.translateColumnHeaders();
+          this.extensionService.translateColumnPicker();
+          this.extensionService.translateGridMenu();
+          this.extensionService.translateHeaderMenu();
         }
       })
     );
@@ -619,9 +651,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    */
   updateColumnDefinitionsList(newColumnDefinitions) {
     if (this.gridOptions.enableTranslate) {
-      this.controlAndPluginService.translateColumnHeaders(false, newColumnDefinitions);
+      this.extensionService.translateColumnHeaders(false, newColumnDefinitions);
     } else {
-      this.controlAndPluginService.renderColumnHeaders(newColumnDefinitions);
+      this.extensionService.renderColumnHeaders(newColumnDefinitions);
     }
 
     if (this.gridOptions && this.gridOptions.enableAutoSizeColumns) {
