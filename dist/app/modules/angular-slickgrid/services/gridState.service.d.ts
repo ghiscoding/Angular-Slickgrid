@@ -1,12 +1,14 @@
-import { Column, CurrentColumn, CurrentFilter, CurrentPagination, CurrentSorter, GridState, GridStateChange } from './../models/index';
-import { ControlAndPluginService, FilterService, SortService } from './../services/index';
+import { Column, CurrentColumn, CurrentFilter, CurrentPagination, CurrentSorter, ExtensionName, GridState, GridStateChange } from './../models/index';
+import { ExtensionService } from './extension.service';
+import { FilterService } from './filter.service';
+import { SortService } from './sort.service';
 import { Subject } from 'rxjs/Subject';
 export declare class GridStateService {
     private _eventHandler;
     private _columns;
     private _currentColumns;
     private _grid;
-    private controlAndPluginService;
+    private extensionService;
     private filterService;
     private sortService;
     private subscriptions;
@@ -20,7 +22,7 @@ export declare class GridStateService {
      * @param sortService
      * @param dataView
      */
-    init(grid: any, controlAndPluginService: ControlAndPluginService, filterService: FilterService, sortService: SortService): void;
+    init(grid: any, extensionService: ExtensionService, filterService: FilterService, sortService: SortService): void;
     /** Dispose of all the SlickGrid & Angular subscriptions */
     dispose(): void;
     /**
@@ -69,7 +71,7 @@ export declare class GridStateService {
      * @param extension name
      * @param grid
      */
-    hookExtensionEventToGridStateChange(extensionName: string, eventName: string): void;
+    hookExtensionEventToGridStateChange(extensionName: ExtensionName, eventName: string): void;
     /**
      * Hook a Grid Event to a Grid State change event
      * @param event name

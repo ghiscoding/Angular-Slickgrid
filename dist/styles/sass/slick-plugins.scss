@@ -160,6 +160,18 @@
 }
 
 // ----------------------------------------------
+// Row Move Manager Plugin
+// ----------------------------------------------
+.slick-cell.cell-reorder:before {
+  font-family: $icon-font-family;
+  font-size: $row-move-plugin-size;
+  content: $row-move-plugin-icon;
+}
+.slick-cell.cell-reorder {
+  cursor: $row-move-plugin-cursor;
+}
+
+// ----------------------------------------------
 // Checkbox Selector Plugin
 // ----------------------------------------------
 

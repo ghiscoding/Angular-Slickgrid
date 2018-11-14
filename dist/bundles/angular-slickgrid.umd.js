@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('moment-mini'), require('@angular/core'), require('@ngx-translate/core'), require('rxjs/Subject'), require('dompurify'), require('lodash.isequal'), require('text-encoding-utf-8'), require('jquery-ui-dist/jquery-ui'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.grid'), require('slickgrid/slick.dataview'), require('slickgrid/slick.groupitemmetadataprovider'), require('slickgrid/controls/slick.columnpicker'), require('slickgrid/controls/slick.gridmenu'), require('slickgrid/controls/slick.pager'), require('slickgrid/plugins/slick.autotooltips'), require('slickgrid/plugins/slick.cellexternalcopymanager'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('slickgrid/plugins/slick.checkboxselectcolumn'), require('slickgrid/plugins/slick.headerbuttons'), require('slickgrid/plugins/slick.headermenu'), require('slickgrid/plugins/slick.rowmovemanager'), require('slickgrid/plugins/slick.rowselectionmodel'), require('@angular/common')) :
-	typeof define === 'function' && define.amd ? define('angular-slickgrid', ['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'moment-mini', '@angular/core', '@ngx-translate/core', 'rxjs/Subject', 'dompurify', 'lodash.isequal', 'text-encoding-utf-8', 'jquery-ui-dist/jquery-ui', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.grid', 'slickgrid/slick.dataview', 'slickgrid/slick.groupitemmetadataprovider', 'slickgrid/controls/slick.columnpicker', 'slickgrid/controls/slick.gridmenu', 'slickgrid/controls/slick.pager', 'slickgrid/plugins/slick.autotooltips', 'slickgrid/plugins/slick.cellexternalcopymanager', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'slickgrid/plugins/slick.checkboxselectcolumn', 'slickgrid/plugins/slick.headerbuttons', 'slickgrid/plugins/slick.headermenu', 'slickgrid/plugins/slick.rowmovemanager', 'slickgrid/plugins/slick.rowselectionmodel', '@angular/common'], factory) :
-	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.moment,global.ng.core,global['ngx-translate-core'],global.Rx,global.dompurify,global.lodash.isequal,global.textEncodingUtf8,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,global.ng.common));
-}(this, (function (exports,Observable,first,take,toPromise,moment_,core,core$1,Subject,DOMPurify_,isequal_,textEncodingUtf8,jqueryUi,jquery_event_drag2_3_0,slick_core,slick_grid,slick_dataview,slick_groupitemmetadataprovider,slick_columnpicker,slick_gridmenu,slick_pager,slick_autotooltips,slick_cellexternalcopymanager,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,slick_checkboxselectcolumn,slick_headerbuttons,slick_headermenu,slick_rowmovemanager,slick_rowselectionmodel,common) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/Observable'), require('rxjs/add/operator/first'), require('rxjs/add/operator/take'), require('rxjs/add/operator/toPromise'), require('moment-mini'), require('@angular/core'), require('@ngx-translate/core'), require('rxjs/Subject'), require('text-encoding-utf-8'), require('dompurify'), require('lodash.isequal'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('jquery-ui-dist/jquery-ui'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.grid'), require('slickgrid/slick.dataview'), require('@angular/common')) :
+	typeof define === 'function' && define.amd ? define('angular-slickgrid', ['exports', 'rxjs/Observable', 'rxjs/add/operator/first', 'rxjs/add/operator/take', 'rxjs/add/operator/toPromise', 'moment-mini', '@angular/core', '@ngx-translate/core', 'rxjs/Subject', 'text-encoding-utf-8', 'dompurify', 'lodash.isequal', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'jquery-ui-dist/jquery-ui', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.grid', 'slickgrid/slick.dataview', '@angular/common'], factory) :
+	(factory((global['angular-slickgrid'] = {}),global.Rx,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.Rx.Observable.prototype,global.moment,global.ng.core,global['ngx-translate-core'],global.Rx,global.textEncodingUtf8,global.dompurify,global.lodash.isequal,null,null,null,null,null,null,null,null,global.ng.common));
+}(this, (function (exports,Observable,first,take,toPromise,moment_,core,core$1,Subject,textEncodingUtf8,DOMPurify_,isequal_,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,jqueryUi,jquery_event_drag2_3_0,slick_core,slick_grid,slick_dataview,common) { 'use strict';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -120,6 +120,19 @@ var DelimiterType = {
     doubleColon: '::',
     doublePipe: '||',
     doubleSemicolon: ';;',
+};
+var ExtensionName = {
+    autoTooltip: 'autoTooltip',
+    cellExternalCopyManager: 'cellExternalCopyManager',
+    checkboxSelector: 'checkboxSelector',
+    columnPicker: 'columnPicker',
+    groupItemMetaProvider: 'groupItemMetaProvider',
+    gridMenu: 'gridMenu',
+    headerButton: 'headerButton',
+    headerMenu: 'headerMenu',
+    noname: 'noname',
+    rowMoveManager: 'rowMoveManager',
+    rowSelection: 'rowSelection',
 };
 var FieldType = {
     unknown: 0,
@@ -760,6 +773,679 @@ CollectionService.decorators = [
 CollectionService.ctorParameters = function () { return [
     { type: core$1.TranslateService, },
 ]; };
+var ExportService = /** @class */ (function () {
+    function ExportService(translate) {
+        this.translate = translate;
+        this._lineCarriageReturn = '\n';
+        this._hasGroupedItems = false;
+        this.onGridBeforeExportToFile = new Subject.Subject();
+        this.onGridAfterExportToFile = new Subject.Subject();
+    }
+    Object.defineProperty(ExportService.prototype, "datasetIdName", {
+        get: function () {
+            return this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ExportService.prototype, "_gridOptions", {
+        get: function () {
+            return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ExportService.prototype.init = function (grid, dataView) {
+        this._grid = grid;
+        this._dataView = dataView;
+    };
+    ExportService.prototype.exportToFile = function (options) {
+        var _this = this;
+        this.onGridBeforeExportToFile.next(true);
+        this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
+        var dataOutput = this.getDataOutput();
+        setTimeout(function () {
+            var downloadOptions = {
+                filename: _this._exportOptions.filename + "." + _this._exportOptions.format,
+                csvContent: dataOutput,
+                format: _this._exportOptions.format,
+                useUtf8WithBom: _this._exportOptions.useUtf8WithBom
+            };
+            _this.startDownloadFile(downloadOptions);
+            _this.onGridAfterExportToFile.next({ options: downloadOptions });
+        }, 0);
+    };
+    ExportService.prototype.getDataOutput = function () {
+        var _this = this;
+        var columns = this._grid.getColumns() || [];
+        var delimiter = this._exportOptions.delimiter || '';
+        var format = this._exportOptions.format || '';
+        var groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle || this.translate.instant('GROUP_BY');
+        this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
+        var outputDataString = '';
+        var grouping = this._dataView.getGrouping();
+        if (grouping && Array.isArray(grouping) && grouping.length > 0) {
+            this._hasGroupedItems = true;
+            outputDataString += "" + groupByColumnHeader + delimiter;
+        }
+        else {
+            this._hasGroupedItems = false;
+        }
+        this._columnHeaders = this.getColumnHeaders(columns) || [];
+        if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
+            var outputHeaderTitles = this._columnHeaders.map(function (header) {
+                return _this._exportQuoteWrapper + header.title + _this._exportQuoteWrapper;
+            });
+            outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
+        }
+        outputDataString += this.getAllGridRowData(columns, this._lineCarriageReturn);
+        return outputDataString;
+    };
+    ExportService.prototype.getAllGridRowData = function (columns, lineCarriageReturn) {
+        var outputDataStrings = [];
+        var lineCount = this._dataView.getLength();
+        for (var rowNumber = 0; rowNumber < lineCount; rowNumber++) {
+            var itemObj = this._dataView.getItem(rowNumber);
+            if (itemObj != null) {
+                if (itemObj[this.datasetIdName] != null) {
+                    outputDataStrings.push(this.readRegularRowData(columns, rowNumber, itemObj));
+                }
+                else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
+                    outputDataStrings.push(this.readGroupedTitleRow(itemObj));
+                }
+                else if (itemObj.__groupTotals) {
+                    outputDataStrings.push(this.readGroupedTotalRow(columns, itemObj));
+                }
+            }
+        }
+        return outputDataStrings.join(this._lineCarriageReturn);
+    };
+    ExportService.prototype.getColumnHeaders = function (columns) {
+        var _this = this;
+        if (!columns || !Array.isArray(columns) || columns.length === 0) {
+            return null;
+        }
+        var columnHeaders = [];
+        columns.forEach(function (columnDef) {
+            var fieldName = (columnDef.headerKey) ? _this.translate.instant(columnDef.headerKey) : columnDef.name;
+            var skippedField = columnDef.excludeFromExport || false;
+            if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
+                columnHeaders.push({
+                    key: columnDef.field || columnDef.id,
+                    title: fieldName
+                });
+            }
+        });
+        return columnHeaders;
+    };
+    ExportService.prototype.readRegularRowData = function (columns, row, itemObj) {
+        var idx = 0;
+        var rowOutputStrings = [];
+        var delimiter = this._exportOptions.delimiter;
+        var format = this._exportOptions.format;
+        var exportQuoteWrapper = this._exportQuoteWrapper || '';
+        for (var col = 0, ln = columns.length; col < ln; col++) {
+            var columnDef = columns[col];
+            var fieldId = columnDef.field || columnDef.id || '';
+            if (columnDef.excludeFromExport) {
+                continue;
+            }
+            if (this._hasGroupedItems && idx === 0) {
+                rowOutputStrings.push("\"\"");
+            }
+            var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._exportOptions.exportWithFormatter;
+            var exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
+            var itemData = '';
+            if (exportCustomFormatter) {
+                itemData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+            }
+            else if (isEvaluatingFormatter && !!columnDef.formatter) {
+                itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+            }
+            else {
+                itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
+            }
+            if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
+                itemData = sanitizeHtmlToText(itemData);
+            }
+            if (format === FileType.csv && itemData) {
+                itemData = itemData.toString().replace(/"/gi, "\"\"");
+            }
+            var keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
+            rowOutputStrings.push(keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper);
+            idx++;
+        }
+        return rowOutputStrings.join(delimiter);
+    };
+    ExportService.prototype.readGroupedTitleRow = function (itemObj) {
+        var groupName = sanitizeHtmlToText(itemObj.title);
+        var exportQuoteWrapper = this._exportQuoteWrapper || '';
+        var format = this._exportOptions.format;
+        groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
+        if (format === FileType.csv) {
+            groupName = groupName.toString().replace(/"/gi, "\"\"");
+        }
+        return exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper;
+    };
+    ExportService.prototype.readGroupedTotalRow = function (columns, itemObj) {
+        var _this = this;
+        var delimiter = this._exportOptions.delimiter;
+        var format = this._exportOptions.format;
+        var groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
+        var exportQuoteWrapper = this._exportQuoteWrapper || '';
+        var outputStrings = ["" + exportQuoteWrapper + groupingAggregatorRowText + exportQuoteWrapper];
+        columns.forEach(function (columnDef) {
+            var itemData = '';
+            if (columnDef.groupTotalsFormatter) {
+                itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
+            }
+            if (columnDef.sanitizeDataExport || _this._exportOptions.sanitizeDataExport) {
+                itemData = sanitizeHtmlToText(itemData);
+            }
+            if (format === FileType.csv) {
+                itemData = itemData.toString().replace(/"/gi, "\"\"");
+            }
+            outputStrings.push(exportQuoteWrapper + itemData + exportQuoteWrapper);
+        });
+        return outputStrings.join(delimiter);
+    };
+    ExportService.prototype.startDownloadFile = function (options) {
+        if (navigator.appName === 'Microsoft Internet Explorer') {
+            throw new Error('Microsoft Internet Explorer 6 to 10 do not support javascript export to CSV. Please upgrade your browser.');
+        }
+        var mimeType = (options.format === FileType.csv) ? 'text/csv' : 'text/plain';
+        var csvContent = htmlEntityDecode(options.csvContent);
+        var outputData;
+        if (options.format === FileType.csv) {
+            outputData = new textEncodingUtf8.TextEncoder('utf-8').encode(csvContent);
+        }
+        else {
+            outputData = csvContent;
+        }
+        var blob = new Blob([options.useUtf8WithBom ? '\uFEFF' : '', outputData], {
+            type: mimeType + ";charset=utf-8;"
+        });
+        if (typeof navigator.msSaveOrOpenBlob === 'function') {
+            navigator.msSaveOrOpenBlob(blob, options.filename);
+        }
+        else {
+            var link = document.createElement('a');
+            var csvUrl = URL.createObjectURL(blob);
+            link.textContent = 'download';
+            link.href = csvUrl;
+            link.setAttribute('download', options.filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+    return ExportService;
+}());
+ExportService.decorators = [
+    { type: core.Injectable },
+];
+ExportService.ctorParameters = function () { return [
+    { type: core$1.TranslateService, },
+]; };
+var Constants = /** @class */ (function () {
+    function Constants() {
+    }
+    return Constants;
+}());
+Constants.TEXT_CANCEL = 'Cancel';
+Constants.TEXT_CLEAR_ALL_FILTERS = 'Clear All Filters';
+Constants.TEXT_CLEAR_ALL_SORTING = 'Clear All Sorting';
+Constants.TEXT_COLUMNS = 'Columns';
+Constants.TEXT_COMMANDS = 'Commands';
+Constants.TEXT_EXPORT_IN_CSV_FORMAT = 'Export in CSV format';
+Constants.TEXT_EXPORT_IN_TEXT_FORMAT = 'Export in Text format (Tab delimited)';
+Constants.TEXT_FORCE_FIT_COLUMNS = 'Force fit columns';
+Constants.TEXT_HIDE_COLUMN = 'Hide Column';
+Constants.TEXT_REFRESH_DATASET = 'Refresh Dataset';
+Constants.TEXT_SAVE = 'Save';
+Constants.TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';
+Constants.TEXT_SORT_ASCENDING = 'Sort Ascending';
+Constants.TEXT_SORT_DESCENDING = 'Sort Descending';
+Constants.TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
+Constants.VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
+Constants.VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
+Constants.VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
+Constants.VALIDATION_EDITOR_NUMBER_MAX = 'Please enter a valid number that is lower than {{maxValue}}';
+Constants.VALIDATION_EDITOR_NUMBER_MIN = 'Please enter a valid number that is greater than {{minValue}}';
+Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN = 'Please enter a valid number with a maximum of {{maxDecimal}} decimals';
+var SharedService = /** @class */ (function () {
+    function SharedService() {
+    }
+    Object.defineProperty(SharedService.prototype, "allColumns", {
+        get: function () {
+            return this._allColumns;
+        },
+        set: function (allColumns) {
+            this._allColumns = allColumns;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SharedService.prototype, "columnDefinitions", {
+        get: function () {
+            return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SharedService.prototype, "dataView", {
+        get: function () {
+            return this._dataView;
+        },
+        set: function (dataView) {
+            this._dataView = dataView;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SharedService.prototype, "grid", {
+        get: function () {
+            return this._grid;
+        },
+        set: function (grid) {
+            this._grid = grid;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SharedService.prototype, "gridOptions", {
+        get: function () {
+            return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+        },
+        set: function (gridOptions) {
+            this.gridOptions = gridOptions;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SharedService.prototype, "groupItemMetadataProvider", {
+        get: function () {
+            return this._groupItemMetadataProvider;
+        },
+        set: function (groupItemMetadataProvider) {
+            this._groupItemMetadataProvider = groupItemMetadataProvider;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SharedService.prototype, "visibleColumns", {
+        get: function () {
+            return this._visibleColumns;
+        },
+        set: function (visibleColumns) {
+            this._visibleColumns = visibleColumns;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return SharedService;
+}());
+var ExtensionUtility = /** @class */ (function () {
+    function ExtensionUtility(sharedService, translate) {
+        this.sharedService = sharedService;
+        this.translate = translate;
+    }
+    ExtensionUtility.prototype.arrayRemoveItemByIndex = function (array, index) {
+        return array.filter(function (el, i) {
+            return index !== i;
+        });
+    };
+    ExtensionUtility.prototype.loadExtensionDynamically = function (extensionName) {
+        try {
+            switch (extensionName) {
+                case ExtensionName.autoTooltip:
+                    require('slickgrid/plugins/slick.autotooltips');
+                    break;
+                case ExtensionName.cellExternalCopyManager:
+                    require('slickgrid/plugins/slick.cellexternalcopymanager');
+                    break;
+                case ExtensionName.checkboxSelector:
+                    require('slickgrid/plugins/slick.checkboxselectcolumn');
+                    break;
+                case ExtensionName.columnPicker:
+                    require('slickgrid/controls/slick.columnpicker');
+                    break;
+                case ExtensionName.gridMenu:
+                    require('slickgrid/controls/slick.gridmenu');
+                    break;
+                case ExtensionName.groupItemMetaProvider:
+                    require('slickgrid/slick.groupitemmetadataprovider');
+                    break;
+                case ExtensionName.headerButton:
+                    require('slickgrid/plugins/slick.headerbuttons');
+                    break;
+                case ExtensionName.headerMenu:
+                    require('slickgrid/plugins/slick.headermenu');
+                    break;
+                case ExtensionName.rowSelection:
+                    require('slickgrid/plugins/slick.rowselectionmodel');
+                    break;
+                case ExtensionName.rowMoveManager:
+                    require('slickgrid/plugins/slick.rowmovemanager.js');
+                    break;
+            }
+        }
+        catch (e) {
+        }
+    };
+    ExtensionUtility.prototype.getPickerTitleOutputString = function (propName, pickerName) {
+        var output = '';
+        var picker = this.sharedService.gridOptions && this.sharedService.gridOptions[pickerName] || {};
+        var enableTranslate = this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate || false;
+        var title = picker && picker[propName];
+        var titleKey = picker && picker[propName + "Key"];
+        if (titleKey) {
+            output = this.translate.instant(titleKey || ' ');
+        }
+        else {
+            switch (propName) {
+                case 'customTitle':
+                    output = title || (enableTranslate ? this.translate.instant('COMMANDS') : Constants.TEXT_COMMANDS);
+                    break;
+                case 'columnTitle':
+                    output = title || (enableTranslate ? this.translate.instant('COLUMNS') : Constants.TEXT_COLUMNS);
+                    break;
+                case 'forceFitTitle':
+                    output = title || (enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : Constants.TEXT_FORCE_FIT_COLUMNS);
+                    break;
+                case 'syncResizeTitle':
+                    output = title || (enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : Constants.TEXT_SYNCHRONOUS_RESIZE);
+                    break;
+                default:
+                    output = title;
+                    break;
+            }
+        }
+        return output;
+    };
+    ExtensionUtility.prototype.sortItems = function (items, propertyName) {
+        items.sort(function (itemA, itemB) {
+            if (itemA && itemB && itemA.hasOwnProperty(propertyName) && itemB.hasOwnProperty(propertyName)) {
+                return itemA[propertyName] - itemB[propertyName];
+            }
+            return 0;
+        });
+    };
+    ExtensionUtility.prototype.translateItems = function (items, inputKey, outputKey) {
+        try {
+            for (var items_1 = __values(items), items_1_1 = items_1.next(); !items_1_1.done; items_1_1 = items_1.next()) {
+                var item = items_1_1.value;
+                if (item[inputKey]) {
+                    item[outputKey] = this.translate.instant(item[inputKey]);
+                }
+            }
+        }
+        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+        finally {
+            try {
+                if (items_1_1 && !items_1_1.done && (_a = items_1.return)) _a.call(items_1);
+            }
+            finally { if (e_2) throw e_2.error; }
+        }
+        var e_2, _a;
+    };
+    return ExtensionUtility;
+}());
+ExtensionUtility.decorators = [
+    { type: core.Injectable },
+];
+ExtensionUtility.ctorParameters = function () { return [
+    { type: SharedService, },
+    { type: core$1.TranslateService, },
+]; };
+var AutoTooltipExtension = /** @class */ (function () {
+    function AutoTooltipExtension(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+    }
+    AutoTooltipExtension.prototype.dispose = function () {
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    };
+    AutoTooltipExtension.prototype.register = function () {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.autoTooltip);
+            this._extension = new Slick.AutoTooltips(this.sharedService.gridOptions.autoTooltipOptions || {});
+            this.sharedService.grid.registerPlugin(this._extension);
+            return this._extension;
+        }
+        return null;
+    };
+    return AutoTooltipExtension;
+}());
+AutoTooltipExtension.decorators = [
+    { type: core.Injectable },
+];
+AutoTooltipExtension.ctorParameters = function () { return [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+]; };
+var CellExternalCopyManagerExtension = /** @class */ (function () {
+    function CellExternalCopyManagerExtension(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+    }
+    CellExternalCopyManagerExtension.prototype.dispose = function () {
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    };
+    CellExternalCopyManagerExtension.prototype.register = function () {
+        var _this = this;
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.cellExternalCopyManager);
+            this.createUndoRedoBuffer();
+            this.hookUndoShortcutKey();
+            var newRowIds_1 = 0;
+            var pluginOptions = {
+                clipboardCommandHandler: function (editCommand) {
+                    _this._undoRedoBuffer.queueAndExecuteCommand.call(_this._undoRedoBuffer, editCommand);
+                },
+                dataItemColumnValueExtractor: function (item, columnDef) {
+                    if (!_this.sharedService.gridOptions.editable || !columnDef.editor) {
+                        var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (_this.sharedService.gridOptions.exportOptions && _this.sharedService.gridOptions.exportOptions.exportWithFormatter);
+                        if (columnDef.formatter && isEvaluatingFormatter) {
+                            var formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, _this.sharedService.grid);
+                            if (columnDef.sanitizeDataExport || (_this.sharedService.gridOptions.exportOptions && _this.sharedService.gridOptions.exportOptions.sanitizeDataExport)) {
+                                return sanitizeHtmlToText(formattedOutput);
+                            }
+                            return formattedOutput;
+                        }
+                    }
+                    return null;
+                },
+                readOnlyMode: false,
+                includeHeaderWhenCopying: false,
+                newRowCreator: function (count) {
+                    for (var i = 0; i < count; i++) {
+                        var item = {
+                            id: 'newRow_' + newRowIds_1++
+                        };
+                        _this.sharedService.grid.getData().addItem(item);
+                    }
+                }
+            };
+            this.sharedService.grid.setSelectionModel(new Slick.CellSelectionModel());
+            this._extension = new Slick.CellExternalCopyManager(pluginOptions);
+            this.sharedService.grid.registerPlugin(this._extension);
+            return this._extension;
+        }
+        return null;
+    };
+    CellExternalCopyManagerExtension.prototype.createUndoRedoBuffer = function () {
+        var commandQueue = [];
+        var commandCtr = 0;
+        this._undoRedoBuffer = {
+            queueAndExecuteCommand: function (editCommand) {
+                commandQueue[commandCtr] = editCommand;
+                commandCtr++;
+                editCommand.execute();
+            },
+            undo: function () {
+                if (commandCtr === 0) {
+                    return;
+                }
+                commandCtr--;
+                var command = commandQueue[commandCtr];
+                if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+                    command.undo();
+                }
+            },
+            redo: function () {
+                if (commandCtr >= commandQueue.length) {
+                    return;
+                }
+                var command = commandQueue[commandCtr];
+                commandCtr++;
+                if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+                    command.execute();
+                }
+            }
+        };
+    };
+    CellExternalCopyManagerExtension.prototype.hookUndoShortcutKey = function () {
+        var _this = this;
+        $(document).keydown(function (e) {
+            if (e.which === 90 && (e.ctrlKey || e.metaKey)) {
+                if (e.shiftKey) {
+                    _this._undoRedoBuffer.redo();
+                }
+                else {
+                    _this._undoRedoBuffer.undo();
+                }
+            }
+        });
+    };
+    return CellExternalCopyManagerExtension;
+}());
+CellExternalCopyManagerExtension.decorators = [
+    { type: core.Injectable },
+];
+CellExternalCopyManagerExtension.ctorParameters = function () { return [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+]; };
+var CheckboxSelectorExtension = /** @class */ (function () {
+    function CheckboxSelectorExtension(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+    }
+    CheckboxSelectorExtension.prototype.dispose = function () {
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    };
+    CheckboxSelectorExtension.prototype.create = function (columnDefinitions, gridOptions) {
+        if (columnDefinitions && gridOptions) {
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.checkboxSelector);
+            if (!this._extension) {
+                this._extension = new Slick.CheckboxSelectColumn(gridOptions.checkboxSelector || {});
+            }
+            var selectionColumn = this._extension.getColumnDefinition();
+            selectionColumn.excludeFromExport = true;
+            selectionColumn.excludeFromQuery = true;
+            selectionColumn.excludeFromHeaderMenu = true;
+            columnDefinitions.unshift(selectionColumn);
+            return this._extension;
+        }
+        return null;
+    };
+    CheckboxSelectorExtension.prototype.register = function (rowSelectionPlugin) {
+        var _this = this;
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            this.sharedService.grid.registerPlugin(this._extension);
+            if (!rowSelectionPlugin || !this.sharedService.grid.getSelectionModel()) {
+                this.extensionUtility.loadExtensionDynamically(ExtensionName.rowSelection);
+                rowSelectionPlugin = new Slick.RowSelectionModel(this.sharedService.gridOptions.rowSelectionOptions || {});
+                this.sharedService.grid.setSelectionModel(rowSelectionPlugin);
+            }
+            if (this.sharedService.gridOptions.preselectedRows && rowSelectionPlugin && this.sharedService.grid.getSelectionModel()) {
+                setTimeout(function () { return _this._extension.selectRows(_this.sharedService.gridOptions.preselectedRows); }, 0);
+            }
+            return rowSelectionPlugin;
+        }
+        return null;
+    };
+    return CheckboxSelectorExtension;
+}());
+CheckboxSelectorExtension.decorators = [
+    { type: core.Injectable },
+];
+CheckboxSelectorExtension.ctorParameters = function () { return [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+]; };
+var ColumnPickerExtension = /** @class */ (function () {
+    function ColumnPickerExtension(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+        this._eventHandler = new Slick.EventHandler();
+    }
+    ColumnPickerExtension.prototype.dispose = function () {
+        this._eventHandler.unsubscribeAll();
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    };
+    ColumnPickerExtension.prototype.register = function () {
+        var _this = this;
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.columnPicker);
+            var columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'columnPicker');
+            var forceFitTitle = this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
+            var syncResizeTitle = this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
+            this.sharedService.gridOptions.columnPicker = this.sharedService.gridOptions.columnPicker || {};
+            this.sharedService.gridOptions.columnPicker.columnTitle = this.sharedService.gridOptions.columnPicker.columnTitle || columnTitle;
+            this.sharedService.gridOptions.columnPicker.forceFitTitle = this.sharedService.gridOptions.columnPicker.forceFitTitle || forceFitTitle;
+            this.sharedService.gridOptions.columnPicker.syncResizeTitle = this.sharedService.gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
+            this._extension = new Slick.Controls.ColumnPicker(this.sharedService.columnDefinitions, this.sharedService.grid, this.sharedService.gridOptions);
+            if (this.sharedService.grid && this.sharedService.gridOptions.enableColumnPicker) {
+                this._eventHandler.subscribe(this._extension.onColumnsChanged, function (e, args) {
+                    if (_this.sharedService.gridOptions.columnPicker && typeof _this.sharedService.gridOptions.columnPicker.onColumnsChanged === 'function') {
+                        _this.sharedService.gridOptions.columnPicker.onColumnsChanged(e, args);
+                    }
+                });
+            }
+            return this._extension;
+        }
+    };
+    ColumnPickerExtension.prototype.translateColumnPicker = function () {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            if (this.sharedService.gridOptions.columnPicker) {
+                this.emptyColumnPickerTitles();
+                this.sharedService.gridOptions.columnPicker.columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'columnPicker');
+                this.sharedService.gridOptions.columnPicker.forceFitTitle = this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
+                this.sharedService.gridOptions.columnPicker.syncResizeTitle = this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
+            }
+            this.extensionUtility.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+            if (this._extension.init) {
+                this._extension.init(this.sharedService.grid);
+            }
+        }
+    };
+    ColumnPickerExtension.prototype.emptyColumnPickerTitles = function () {
+        if (this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.columnPicker) {
+            this.sharedService.gridOptions.columnPicker.columnTitle = '';
+            this.sharedService.gridOptions.columnPicker.forceFitTitle = '';
+            this.sharedService.gridOptions.columnPicker.syncResizeTitle = '';
+        }
+    };
+    return ColumnPickerExtension;
+}());
+ColumnPickerExtension.decorators = [
+    { type: core.Injectable },
+];
+ColumnPickerExtension.ctorParameters = function () { return [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+]; };
 function parseBoolean(str) {
     return /(true|1)/i.test(str + '');
 }
@@ -1043,19 +1729,20 @@ var CompoundDateFilter = /** @class */ (function () {
         ];
     };
     CompoundDateFilter.prototype.createDomElement = function (searchTerm) {
-        var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        var fieldId = this.columnDef && this.columnDef.id;
+        var $headerElm = this.grid.getHeaderRowColumn(fieldId);
         $($headerElm).empty();
         this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
         this.$filterInputElm = this.buildDatePickerInput(searchTerm);
-        var $filterContainerElm = $("<div class=\"form-group search-filter\"></div>");
+        var $filterContainerElm = $("<div class=\"form-group search-filter filter-" + fieldId + "\"></div>");
         var $containerInputGroup = $("<div class=\"input-group flatpickr\"></div>");
         var $operatorInputGroupAddon = $("<div class=\"input-group-addon input-group-prepend operator\"></div>");
         $operatorInputGroupAddon.append(this.$selectOperatorElm);
         $containerInputGroup.append($operatorInputGroupAddon);
         $containerInputGroup.append(this.$filterInputElm);
         $filterContainerElm.append($containerInputGroup);
-        $filterContainerElm.attr('id', "filter-" + this.columnDef.id);
-        this.$filterInputElm.data('columnId', this.columnDef.id);
+        $filterContainerElm.attr('id', "filter-" + fieldId);
+        this.$filterInputElm.data('columnId', fieldId);
         if (this.operator) {
             this.$selectOperatorElm.val(this.operator);
         }
@@ -1069,7 +1756,10 @@ var CompoundDateFilter = /** @class */ (function () {
         return $filterContainerElm;
     };
     CompoundDateFilter.prototype.loadFlatpickrLocale = function (locale) {
-        if (locale !== 'en') {
+        if (this.gridOptions && this.gridOptions.params && this.gridOptions.params.flapickrLocale) {
+            return this.gridOptions.params.flapickrLocale;
+        }
+        else if (locale !== 'en') {
             var localeDefault = require("flatpickr/dist/l10n/" + locale + ".js").default;
             return (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
         }
@@ -1195,20 +1885,21 @@ var CompoundInputFilter = /** @class */ (function () {
         return optionValues;
     };
     CompoundInputFilter.prototype.createDomElement = function (searchTerm) {
-        var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        var fieldId = this.columnDef && this.columnDef.id;
+        var $headerElm = this.grid.getHeaderRowColumn(fieldId);
         $($headerElm).empty();
         this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
         this.$filterInputElm = $(this.buildInputHtmlString());
-        var $filterContainerElm = $("<div class=\"form-group search-filter\"></div>");
+        var $filterContainerElm = $("<div class=\"form-group search-filter filter-" + fieldId + "\"></div>");
         var $containerInputGroup = $("<div class=\"input-group\"></div>");
         var $operatorInputGroupAddon = $("<div class=\"input-group-addon input-group-prepend operator\"></div>");
         $operatorInputGroupAddon.append(this.$selectOperatorElm);
         $containerInputGroup.append($operatorInputGroupAddon);
         $containerInputGroup.append(this.$filterInputElm);
         $filterContainerElm.append($containerInputGroup);
-        $filterContainerElm.attr('id', "filter-" + this.columnDef.id);
+        $filterContainerElm.attr('id', "filter-" + fieldId);
         this.$filterInputElm.val(searchTerm);
-        this.$filterInputElm.data('columnId', this.columnDef.id);
+        this.$filterInputElm.data('columnId', fieldId);
         if (this.operator) {
             this.$selectOperatorElm.val(this.operator);
         }
@@ -1356,13 +2047,14 @@ var CompoundSliderFilter = /** @class */ (function () {
         ];
     };
     CompoundSliderFilter.prototype.createDomElement = function (searchTerm) {
+        var fieldId = this.columnDef && this.columnDef.id;
         var searchTermInput = ((searchTerm || '0'));
         var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
         this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
         this.$filterInputElm = $(this.buildTemplateHtmlString());
-        var $filterContainerElm = $("<div class=\"form-group search-filter\"></div>");
-        this.$containerInputGroupElm = $("<div class=\"input-group search-filter\"></div>");
+        var $filterContainerElm = $("<div class=\"form-group search-filter filter-" + fieldId + "\"></div>");
+        this.$containerInputGroupElm = $("<div class=\"input-group search-filter filter-" + fieldId + "\"></div>");
         var $operatorInputGroupAddon = $("<span class=\"input-group-addon input-group-prepend operator\"></span>");
         $operatorInputGroupAddon.append(this.$selectOperatorElm);
         this.$containerInputGroupElm.append($operatorInputGroupAddon);
@@ -1373,9 +2065,9 @@ var CompoundSliderFilter = /** @class */ (function () {
             this.$containerInputGroupElm.append($sliderTextInputAppendAddon);
         }
         $filterContainerElm.append(this.$containerInputGroupElm);
-        $filterContainerElm.attr('id', "filter-" + this.columnDef.field);
+        $filterContainerElm.attr('id', "filter-" + fieldId);
         this.$filterInputElm.val(searchTermInput);
-        this.$filterInputElm.data('columnId', this.columnDef.field);
+        this.$filterInputElm.data('columnId', fieldId);
         if (this.operator) {
             this.$selectOperatorElm.val(this.operator);
         }
@@ -1460,16 +2152,18 @@ var InputFilter = /** @class */ (function () {
         }
     };
     InputFilter.prototype.buildTemplateHtmlString = function () {
+        var fieldId = this.columnDef && this.columnDef.id;
         var placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
-        return "<input type=\"text\" class=\"form-control search-filter\" placeholder=\"" + placeholder + "\">";
+        return "<input type=\"text\" class=\"form-control search-filter filter-" + fieldId + "\" placeholder=\"" + placeholder + "\">";
     };
     InputFilter.prototype.createDomElement = function (filterTemplate, searchTerm) {
-        var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        var fieldId = this.columnDef && this.columnDef.id;
+        var $headerElm = this.grid.getHeaderRowColumn(fieldId);
         $($headerElm).empty();
         var $filterElm = $(filterTemplate);
         $filterElm.val(searchTerm);
-        $filterElm.attr('id', "filter-" + this.columnDef.id);
-        $filterElm.data('columnId', this.columnDef.id);
+        $filterElm.attr('id', "filter-" + fieldId);
+        $filterElm.data('columnId', fieldId);
         if (searchTerm) {
             $filterElm.addClass('filled');
         }
@@ -1588,9 +2282,6 @@ var SelectFilter = /** @class */ (function () {
         if (collectionAsync) {
             this.renderOptionsAsync(collectionAsync);
         }
-        else if (this.columnFilter && this.columnFilter.collection) {
-            this.createCollectionAsyncSubject();
-        }
     };
     SelectFilter.prototype.clear = function () {
         if (this.$filterElm && this.$filterElm.multipleSelect) {
@@ -1683,6 +2374,7 @@ var SelectFilter = /** @class */ (function () {
     SelectFilter.prototype.buildTemplateHtmlString = function (optionCollection, searchTerms) {
         var _this = this;
         var options = '';
+        var fieldId = this.columnDef && this.columnDef.id;
         var separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         var isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
@@ -1722,7 +2414,7 @@ var SelectFilter = /** @class */ (function () {
                 }
             });
         }
-        return "<select class=\"ms-filter search-filter\" " + (this.isMultipleSelect ? 'multiple="multiple"' : '') + ">" + options + "</select>";
+        return "<select class=\"ms-filter search-filter filter-" + fieldId + "\" " + (this.isMultipleSelect ? 'multiple="multiple"' : '') + ">" + options + "</select>";
     };
     SelectFilter.prototype.createBlankEntry = function () {
         var blankEntry = (_a = {}, _a[this.labelName] = '', _a[this.valueName] = '', _a);
@@ -1736,10 +2428,10 @@ var SelectFilter = /** @class */ (function () {
         var _a;
     };
     SelectFilter.prototype.createDomElement = function (filterTemplate) {
-        var fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
-        this.elementName = "filter_" + fieldId;
+        var fieldId = this.columnDef && this.columnDef.id;
+        this.elementName = "filter-" + fieldId;
         this.defaultOptions.name = this.elementName;
-        var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        var $headerElm = this.grid.getHeaderRowColumn(fieldId);
         $($headerElm).empty();
         this.$filterElm = $(filterTemplate);
         if (typeof this.$filterElm.multipleSelect !== 'function') {
@@ -1829,6 +2521,7 @@ var NativeSelectFilter = /** @class */ (function () {
         if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
             throw new Error("[Angular-SlickGrid] You need to pass a \"collection\" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }");
         }
+        var fieldId = this.columnDef && this.columnDef.id;
         var optionCollection = this.columnDef.filter.collection || [];
         var labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
         var valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
@@ -1848,16 +2541,17 @@ var NativeSelectFilter = /** @class */ (function () {
                 options += "<option value=\"" + option[valueName] + "\">" + textLabel + "</option>";
             });
         }
-        return "<select class=\"form-control search-filter\">" + options + "</select>";
+        return "<select class=\"form-control search-filter filter-" + fieldId + "\">" + options + "</select>";
     };
     NativeSelectFilter.prototype.createDomElement = function (filterTemplate, searchTerm) {
-        var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        var fieldId = this.columnDef && this.columnDef.id;
+        var $headerElm = this.grid.getHeaderRowColumn(fieldId);
         $($headerElm).empty();
         var $filterElm = $(filterTemplate);
         var searchTermInput = ((searchTerm || ''));
         $filterElm.val(searchTermInput);
-        $filterElm.attr('id', "filter-" + this.columnDef.id);
-        $filterElm.data('columnId', this.columnDef.id);
+        $filterElm.attr('id', "filter-" + fieldId);
+        $filterElm.data('columnId', fieldId);
         if ($filterElm && typeof $filterElm.appendTo === 'function') {
             $filterElm.appendTo($headerElm);
         }
@@ -1959,24 +2653,26 @@ var SliderFilter = /** @class */ (function () {
         }
     };
     SliderFilter.prototype.buildTemplateHtmlString = function () {
+        var fieldId = this.columnDef && this.columnDef.id;
         var minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE$1;
         var maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE$1;
         var defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
         var step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP$1;
         if (this.filterParams.hideSliderNumber) {
-            return "\n      <div class=\"search-filter\">\n        <input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n          name=\"" + this._elementRangeInputId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\" />\n      </div>";
+            return "\n      <div class=\"search-filter filter-" + fieldId + "\">\n        <input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n          name=\"" + this._elementRangeInputId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\" />\n      </div>";
         }
-        return "\n      <div class=\"input-group search-filter\">\n        <input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n          name=\"" + this._elementRangeInputId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\" />\n        <div class=\"input-group-addon input-group-append slider-value\">\n          <span class=\"input-group-text\" id=\"" + this._elementRangeOutputId + "\">" + defaultValue + "</span>\n        </div>\n      </div>";
+        return "\n      <div class=\"input-group search-filter filter-" + fieldId + "\">\n        <input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n          name=\"" + this._elementRangeInputId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-filter-input range\" />\n        <div class=\"input-group-addon input-group-append slider-value\">\n          <span class=\"input-group-text\" id=\"" + this._elementRangeOutputId + "\">" + defaultValue + "</span>\n        </div>\n      </div>";
     };
     SliderFilter.prototype.createDomElement = function (filterTemplate, searchTerm) {
-        var $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        var fieldId = this.columnDef && this.columnDef.id;
+        var $headerElm = this.grid.getHeaderRowColumn(fieldId);
         $($headerElm).empty();
         var $filterElm = $(filterTemplate);
         var searchTermInput = ((searchTerm || '0'));
         $filterElm.children('input').val(searchTermInput);
         $filterElm.children('div.input-group-addon.input-group-append').children().html(searchTermInput);
-        $filterElm.attr('id', "filter-" + this.columnDef.id);
-        $filterElm.data('columnId', this.columnDef.id);
+        $filterElm.attr('id', "filter-" + fieldId);
+        $filterElm.data('columnId', fieldId);
         if (searchTerm) {
             $filterElm.addClass('filled');
         }
@@ -2303,15 +2999,15 @@ var FilterService = /** @class */ (function () {
                 }
             }
         }
-        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+        catch (e_3_1) { e_3 = { error: e_3_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_2) throw e_2.error; }
+            finally { if (e_3) throw e_3.error; }
         }
         return true;
-        var e_2, _c;
+        var e_3, _c;
     };
     FilterService.prototype.dispose = function () {
         this.disposeColumnFilters();
@@ -2355,16 +3051,16 @@ var FilterService = /** @class */ (function () {
                     }
                 }
             }
-            catch (e_3_1) { e_3 = { error: e_3_1 }; }
+            catch (e_4_1) { e_4 = { error: e_4_1 }; }
             finally {
                 try {
                     if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
                 }
-                finally { if (e_3) throw e_3.error; }
+                finally { if (e_4) throw e_4.error; }
             }
         }
         return currentFilters;
-        var e_3, _c;
+        var e_4, _c;
     };
     FilterService.prototype.callbackSearchEvent = function (e, args) {
         if (args) {
@@ -2499,221 +3195,6 @@ FilterService.decorators = [
 ];
 FilterService.ctorParameters = function () { return [
     { type: FilterFactory, },
-]; };
-var ExportService = /** @class */ (function () {
-    function ExportService(translate) {
-        this.translate = translate;
-        this._lineCarriageReturn = '\n';
-        this._hasGroupedItems = false;
-        this.onGridBeforeExportToFile = new Subject.Subject();
-        this.onGridAfterExportToFile = new Subject.Subject();
-    }
-    Object.defineProperty(ExportService.prototype, "datasetIdName", {
-        get: function () {
-            return this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ExportService.prototype, "_gridOptions", {
-        get: function () {
-            return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ExportService.prototype.init = function (grid, dataView) {
-        this._grid = grid;
-        this._dataView = dataView;
-    };
-    ExportService.prototype.exportToFile = function (options) {
-        var _this = this;
-        this.onGridBeforeExportToFile.next(true);
-        this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
-        var dataOutput = this.getDataOutput();
-        setTimeout(function () {
-            var downloadOptions = {
-                filename: _this._exportOptions.filename + "." + _this._exportOptions.format,
-                csvContent: dataOutput,
-                format: _this._exportOptions.format,
-                useUtf8WithBom: _this._exportOptions.useUtf8WithBom
-            };
-            _this.startDownloadFile(downloadOptions);
-            _this.onGridAfterExportToFile.next({ options: downloadOptions });
-        }, 0);
-    };
-    ExportService.prototype.getDataOutput = function () {
-        var _this = this;
-        var columns = this._grid.getColumns() || [];
-        var delimiter = this._exportOptions.delimiter || '';
-        var format = this._exportOptions.format || '';
-        var groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle || this.translate.instant('GROUP_BY');
-        this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
-        var outputDataString = '';
-        var grouping = this._dataView.getGrouping();
-        if (grouping && Array.isArray(grouping) && grouping.length > 0) {
-            this._hasGroupedItems = true;
-            outputDataString += "" + groupByColumnHeader + delimiter;
-        }
-        else {
-            this._hasGroupedItems = false;
-        }
-        this._columnHeaders = this.getColumnHeaders(columns) || [];
-        if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
-            var outputHeaderTitles = this._columnHeaders.map(function (header) {
-                return _this._exportQuoteWrapper + header.title + _this._exportQuoteWrapper;
-            });
-            outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
-        }
-        outputDataString += this.getAllGridRowData(columns, this._lineCarriageReturn);
-        return outputDataString;
-    };
-    ExportService.prototype.getAllGridRowData = function (columns, lineCarriageReturn) {
-        var outputDataStrings = [];
-        var lineCount = this._dataView.getLength();
-        for (var rowNumber = 0; rowNumber < lineCount; rowNumber++) {
-            var itemObj = this._dataView.getItem(rowNumber);
-            if (itemObj != null) {
-                if (itemObj[this.datasetIdName] != null) {
-                    outputDataStrings.push(this.readRegularRowData(columns, rowNumber, itemObj));
-                }
-                else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
-                    outputDataStrings.push(this.readGroupedTitleRow(itemObj));
-                }
-                else if (itemObj.__groupTotals) {
-                    outputDataStrings.push(this.readGroupedTotalRow(columns, itemObj));
-                }
-            }
-        }
-        return outputDataStrings.join(this._lineCarriageReturn);
-    };
-    ExportService.prototype.getColumnHeaders = function (columns) {
-        var _this = this;
-        if (!columns || !Array.isArray(columns) || columns.length === 0) {
-            return null;
-        }
-        var columnHeaders = [];
-        columns.forEach(function (columnDef) {
-            var fieldName = (columnDef.headerKey) ? _this.translate.instant(columnDef.headerKey) : columnDef.name;
-            var skippedField = columnDef.excludeFromExport || false;
-            if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
-                columnHeaders.push({
-                    key: columnDef.field || columnDef.id,
-                    title: fieldName
-                });
-            }
-        });
-        return columnHeaders;
-    };
-    ExportService.prototype.readRegularRowData = function (columns, row, itemObj) {
-        var idx = 0;
-        var rowOutputStrings = [];
-        var delimiter = this._exportOptions.delimiter;
-        var format = this._exportOptions.format;
-        var exportQuoteWrapper = this._exportQuoteWrapper || '';
-        for (var col = 0, ln = columns.length; col < ln; col++) {
-            var columnDef = columns[col];
-            var fieldId = columnDef.field || columnDef.id || '';
-            if (columnDef.excludeFromExport) {
-                continue;
-            }
-            if (this._hasGroupedItems && idx === 0) {
-                rowOutputStrings.push("\"\"");
-            }
-            var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._exportOptions.exportWithFormatter;
-            var exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
-            var itemData = '';
-            if (exportCustomFormatter) {
-                itemData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
-            }
-            else if (isEvaluatingFormatter && !!columnDef.formatter) {
-                itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
-            }
-            else {
-                itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
-            }
-            if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
-                itemData = sanitizeHtmlToText(itemData);
-            }
-            if (format === FileType.csv) {
-                itemData = itemData.toString().replace(/"/gi, "\"\"");
-            }
-            var keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
-            rowOutputStrings.push(keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper);
-            idx++;
-        }
-        return rowOutputStrings.join(delimiter);
-    };
-    ExportService.prototype.readGroupedTitleRow = function (itemObj) {
-        var groupName = sanitizeHtmlToText(itemObj.title);
-        var exportQuoteWrapper = this._exportQuoteWrapper || '';
-        var format = this._exportOptions.format;
-        groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
-        if (format === FileType.csv) {
-            groupName = groupName.toString().replace(/"/gi, "\"\"");
-        }
-        return exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper;
-    };
-    ExportService.prototype.readGroupedTotalRow = function (columns, itemObj) {
-        var _this = this;
-        var delimiter = this._exportOptions.delimiter;
-        var format = this._exportOptions.format;
-        var groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
-        var exportQuoteWrapper = this._exportQuoteWrapper || '';
-        var outputStrings = ["" + exportQuoteWrapper + groupingAggregatorRowText + exportQuoteWrapper];
-        columns.forEach(function (columnDef) {
-            var itemData = '';
-            if (columnDef.groupTotalsFormatter) {
-                itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
-            }
-            if (columnDef.sanitizeDataExport || _this._exportOptions.sanitizeDataExport) {
-                itemData = sanitizeHtmlToText(itemData);
-            }
-            if (format === FileType.csv) {
-                itemData = itemData.toString().replace(/"/gi, "\"\"");
-            }
-            outputStrings.push(exportQuoteWrapper + itemData + exportQuoteWrapper);
-        });
-        return outputStrings.join(delimiter);
-    };
-    ExportService.prototype.startDownloadFile = function (options) {
-        if (navigator.appName === 'Microsoft Internet Explorer') {
-            throw new Error('Microsoft Internet Explorer 6 to 10 do not support javascript export to CSV. Please upgrade your browser.');
-        }
-        var mimeType = (options.format === FileType.csv) ? 'text/csv' : 'text/plain';
-        var csvContent = htmlEntityDecode(options.csvContent);
-        var outputData;
-        if (options.format === FileType.csv) {
-            outputData = new textEncodingUtf8.TextEncoder('utf-8').encode(csvContent);
-        }
-        else {
-            outputData = csvContent;
-        }
-        var blob = new Blob([options.useUtf8WithBom ? '\uFEFF' : '', outputData], {
-            type: mimeType + ";charset=utf-8;"
-        });
-        if (typeof navigator.msSaveOrOpenBlob === 'function') {
-            navigator.msSaveOrOpenBlob(blob, options.filename);
-        }
-        else {
-            var link = document.createElement('a');
-            var csvUrl = URL.createObjectURL(blob);
-            link.textContent = 'download';
-            link.href = csvUrl;
-            link.setAttribute('download', options.filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    };
-    return ExportService;
-}());
-ExportService.decorators = [
-    { type: core.Injectable },
-];
-ExportService.ctorParameters = function () { return [
-    { type: core$1.TranslateService, },
 ]; };
 var SortService = /** @class */ (function () {
     function SortService() {
@@ -2912,499 +3393,80 @@ var SortService = /** @class */ (function () {
     };
     return SortService;
 }());
-var Constants = /** @class */ (function () {
-    function Constants() {
-    }
-    return Constants;
-}());
-Constants.TEXT_CANCEL = 'Cancel';
-Constants.TEXT_CLEAR_ALL_FILTERS = 'Clear All Filters';
-Constants.TEXT_CLEAR_ALL_SORTING = 'Clear All Sorting';
-Constants.TEXT_COLUMNS = 'Columns';
-Constants.TEXT_COMMANDS = 'Commands';
-Constants.TEXT_EXPORT_IN_CSV_FORMAT = 'Export in CSV format';
-Constants.TEXT_EXPORT_IN_TEXT_FORMAT = 'Export in Text format (Tab delimited)';
-Constants.TEXT_FORCE_FIT_COLUMNS = 'Force fit columns';
-Constants.TEXT_HIDE_COLUMN = 'Hide Column';
-Constants.TEXT_REFRESH_DATASET = 'Refresh Dataset';
-Constants.TEXT_SAVE = 'Save';
-Constants.TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';
-Constants.TEXT_SORT_ASCENDING = 'Sort Ascending';
-Constants.TEXT_SORT_DESCENDING = 'Sort Descending';
-Constants.TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
-Constants.VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
-Constants.VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
-Constants.VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
-Constants.VALIDATION_EDITOR_NUMBER_MAX = 'Please enter a valid number that is lower than {{maxValue}}';
-Constants.VALIDATION_EDITOR_NUMBER_MIN = 'Please enter a valid number that is greater than {{minValue}}';
-Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN = 'Please enter a valid number with a maximum of {{maxDecimal}} decimals';
-var ControlAndPluginService = /** @class */ (function () {
-    function ControlAndPluginService(exportService, filterService, sortService, translate) {
+var GridMenuExtension = /** @class */ (function () {
+    function GridMenuExtension(exportService, extensionUtility, filterService, sharedService, sortService, translate) {
         this.exportService = exportService;
+        this.extensionUtility = extensionUtility;
         this.filterService = filterService;
+        this.sharedService = sharedService;
         this.sortService = sortService;
         this.translate = translate;
-        this.areVisibleColumnDifferent = false;
-        this.extensionList = [];
+        this._areVisibleColumnDifferent = false;
+        this._eventHandler = new Slick.EventHandler();
     }
-    Object.defineProperty(ControlAndPluginService.prototype, "_gridOptions", {
-        get: function () {
-            return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
-        },
-        set: function (gridOptions) {
-            this._gridOptions = gridOptions;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ControlAndPluginService.prototype, "_columnDefinitions", {
-        get: function () {
-            return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ControlAndPluginService.prototype.getAllColumns = function () {
-        return this.allColumns || [];
+    GridMenuExtension.prototype.dispose = function () {
+        this._eventHandler.unsubscribeAll();
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
     };
-    ControlAndPluginService.prototype.getVisibleColumns = function () {
-        return this.visibleColumns || [];
-    };
-    ControlAndPluginService.prototype.getAllExtensions = function () {
-        return this.extensionList;
-    };
-    ControlAndPluginService.prototype.getExtensionByName = function (name) {
-        return this.extensionList.find(function (p) { return p.name === name; });
-    };
-    ControlAndPluginService.prototype.autoResizeColumns = function () {
-        this._grid.autosizeColumns();
-    };
-    ControlAndPluginService.prototype.attachDifferentControlOrPlugins = function (grid, dataView, groupItemMetadataProvider) {
+    GridMenuExtension.prototype.register = function () {
         var _this = this;
-        this._grid = grid;
-        this._dataView = dataView;
-        this.allColumns = this._columnDefinitions;
-        this.visibleColumns = this._columnDefinitions;
-        if (this._gridOptions.enableTranslate) {
-            this.translateItems(this.allColumns, 'headerKey', 'name');
-        }
-        if (this._gridOptions.enableColumnPicker) {
-            this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions);
-            this.extensionList.push({ name: 'ColumnPicker', service: this.columnPickerControl });
-        }
-        if (this._gridOptions.enableGridMenu) {
-            this.userOriginalGridMenu = Object.assign({}, this._gridOptions.gridMenu);
-            this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions);
-            this.extensionList.push({ name: 'GridMenu', service: this.gridMenuControl });
-        }
-        if (this._gridOptions.enableAutoTooltip) {
-            this.autoTooltipPlugin = new Slick.AutoTooltips(this._gridOptions.autoTooltipOptions || {});
-            this._grid.registerPlugin(this.autoTooltipPlugin);
-            this.extensionList.push({ name: 'AutoTooltip', service: this.autoTooltipPlugin });
-        }
-        if (this._gridOptions.enableGrouping) {
-            this.groupItemMetaProviderPlugin = groupItemMetadataProvider || {};
-            this._grid.registerPlugin(this.groupItemMetaProviderPlugin);
-            this.extensionList.push({ name: 'GroupItemMetaProvider', service: this.groupItemMetaProviderPlugin });
-        }
-        if (this._gridOptions.enableCheckboxSelector) {
-            this._grid.registerPlugin(this.checkboxSelectorPlugin);
-            this.extensionList.push({ name: 'CheckboxSelector', service: this.checkboxSelectorPlugin });
-            if (!this.rowSelectionPlugin || !this._grid.getSelectionModel()) {
-                this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
-                this._grid.setSelectionModel(this.rowSelectionPlugin);
-            }
-            if (this._gridOptions.preselectedRows && this.rowSelectionPlugin && this._grid.getSelectionModel()) {
-                setTimeout(function () { return _this.checkboxSelectorPlugin.selectRows(_this._gridOptions.preselectedRows); }, 0);
-            }
-        }
-        if (!this._gridOptions.enableCheckboxSelector && this._gridOptions.enableRowSelection) {
-            this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
-            this._grid.setSelectionModel(this.rowSelectionPlugin);
-        }
-        if (this._gridOptions.enableHeaderButton) {
-            this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(this._gridOptions.headerButton || {});
-            this._grid.registerPlugin(this.headerButtonsPlugin);
-            this.extensionList.push({ name: 'HeaderButtons', service: this.headerButtonsPlugin });
-            this.headerButtonsPlugin.onCommand.subscribe(function (e, args) {
-                if (_this._gridOptions.headerButton && typeof _this._gridOptions.headerButton.onCommand === 'function') {
-                    _this._gridOptions.headerButton.onCommand(e, args);
-                }
-            });
-        }
-        if (this._gridOptions.enableHeaderMenu) {
-            this.headerMenuPlugin = this.createHeaderMenu(this._grid, this._dataView, this._columnDefinitions);
-        }
-        if (this._gridOptions.enableExcelCopyBuffer) {
-            this.createUndoRedoBuffer();
-            this.hookUndoShortcutKey();
-            this.createCellExternalCopyManagerPlugin(this._grid);
-        }
-        if (this._gridOptions.registerPlugins !== undefined) {
-            if (Array.isArray(this._gridOptions.registerPlugins)) {
-                this._gridOptions.registerPlugins.forEach(function (plugin) {
-                    _this._grid.registerPlugin(plugin);
-                    _this.extensionList.push({ name: 'generic', service: plugin });
-                });
-            }
-            else {
-                this._grid.registerPlugin(this._gridOptions.registerPlugins);
-                this.extensionList.push({ name: 'generic', service: this._gridOptions.registerPlugins });
-            }
-        }
-    };
-    ControlAndPluginService.prototype.createCheckboxPluginBeforeGridCreation = function (columnDefinitions, options) {
-        if (options.enableCheckboxSelector) {
-            if (!this.checkboxSelectorPlugin) {
-                this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
-            }
-            var selectionColumn = this.checkboxSelectorPlugin.getColumnDefinition();
-            selectionColumn.excludeFromExport = true;
-            selectionColumn.excludeFromQuery = true;
-            selectionColumn.excludeFromHeaderMenu = true;
-            columnDefinitions.unshift(selectionColumn);
-        }
-    };
-    ControlAndPluginService.prototype.createCellExternalCopyManagerPlugin = function (grid) {
-        var _this = this;
-        var newRowIds = 0;
-        var pluginOptions = {
-            clipboardCommandHandler: function (editCommand) {
-                _this.undoRedoBuffer.queueAndExecuteCommand.call(_this.undoRedoBuffer, editCommand);
-            },
-            dataItemColumnValueExtractor: function (item, columnDef) {
-                if (!_this._gridOptions.editable || !columnDef.editor) {
-                    var isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : _this._gridOptions.exportOptions.exportWithFormatter;
-                    if (columnDef.formatter && isEvaluatingFormatter) {
-                        var formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, _this._grid);
-                        if (columnDef.sanitizeDataExport || (_this._gridOptions.exportOptions && _this._gridOptions.exportOptions.sanitizeDataExport)) {
-                            return sanitizeHtmlToText(formattedOutput);
-                        }
-                        return formattedOutput;
-                    }
-                }
-                return null;
-            },
-            readOnlyMode: false,
-            includeHeaderWhenCopying: false,
-            newRowCreator: function (count) {
-                for (var i = 0; i < count; i++) {
-                    var item = {
-                        id: 'newRow_' + newRowIds++
-                    };
-                    grid.getData().addItem(item);
-                }
-            }
-        };
-        grid.setSelectionModel(new Slick.CellSelectionModel());
-        this.cellExternalCopyManagerPlugin = new Slick.CellExternalCopyManager(pluginOptions);
-        grid.registerPlugin(this.cellExternalCopyManagerPlugin);
-        this.extensionList.push({ name: 'CellExternalCopyManager', service: this.cellExternalCopyManagerPlugin });
-    };
-    ControlAndPluginService.prototype.createColumnPicker = function (grid, columnDefinitions) {
-        var _this = this;
-        var columnTitle = this.getPickerTitleOutputString('columnTitle', 'columnPicker');
-        var forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
-        var syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
-        this._gridOptions.columnPicker = this._gridOptions.columnPicker || {};
-        this._gridOptions.columnPicker.columnTitle = this._gridOptions.columnPicker.columnTitle || columnTitle;
-        this._gridOptions.columnPicker.forceFitTitle = this._gridOptions.columnPicker.forceFitTitle || forceFitTitle;
-        this._gridOptions.columnPicker.syncResizeTitle = this._gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
-        this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, this._gridOptions);
-        if (grid && this._gridOptions.enableColumnPicker) {
-            this.columnPickerControl.onColumnsChanged.subscribe(function (e, args) {
-                if (_this._gridOptions.columnPicker && typeof _this._gridOptions.columnPicker.onColumnsChanged === 'function') {
-                    _this._gridOptions.columnPicker.onColumnsChanged(e, args);
-                }
-            });
-        }
-        return this.columnPickerControl;
-    };
-    ControlAndPluginService.prototype.createGridMenu = function (grid, columnDefinitions) {
-        var _this = this;
-        if (this._gridOptions && this._gridOptions.gridMenu) {
-            this._gridOptions.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), this._gridOptions.gridMenu);
-            this._gridOptions.gridMenu.customItems = __spread(this.userOriginalGridMenu.customItems || [], this.addGridMenuCustomCommands());
-            this.translateItems(this._gridOptions.gridMenu.customItems, 'titleKey', 'title');
-            this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
-            var gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
-            if (grid && this._gridOptions.gridMenu) {
-                gridMenuControl.onBeforeMenuShow.subscribe(function (e, args) {
-                    if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onBeforeMenuShow === 'function') {
-                        _this._gridOptions.gridMenu.onBeforeMenuShow(e, args);
+        this._userOriginalGridMenu = Object.assign({}, this.sharedService.gridOptions.gridMenu);
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.gridMenu);
+            this.sharedService.gridOptions.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), this.sharedService.gridOptions.gridMenu);
+            this.sharedService.gridOptions.gridMenu.customItems = __spread(this._userOriginalGridMenu.customItems || [], this.addGridMenuCustomCommands());
+            this.extensionUtility.translateItems(this.sharedService.gridOptions.gridMenu.customItems, 'titleKey', 'title');
+            this.extensionUtility.sortItems(this.sharedService.gridOptions.gridMenu.customItems, 'positionOrder');
+            this._extension = new Slick.Controls.GridMenu(this.sharedService.columnDefinitions, this.sharedService.grid, this.sharedService.gridOptions);
+            if (this.sharedService.grid && this.sharedService.gridOptions.gridMenu) {
+                this._eventHandler.subscribe(this._extension.onBeforeMenuShow, function (e, args) {
+                    if (_this.sharedService.gridOptions.gridMenu && typeof _this.sharedService.gridOptions.gridMenu.onBeforeMenuShow === 'function') {
+                        _this.sharedService.gridOptions.gridMenu.onBeforeMenuShow(e, args);
                     }
                 });
-                gridMenuControl.onColumnsChanged.subscribe(function (e, args) {
-                    _this.areVisibleColumnDifferent = true;
-                    if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onColumnsChanged === 'function') {
-                        _this._gridOptions.gridMenu.onColumnsChanged(e, args);
+                this._eventHandler.subscribe(this._extension.onColumnsChanged, function (e, args) {
+                    _this._areVisibleColumnDifferent = true;
+                    if (_this.sharedService.gridOptions.gridMenu && typeof _this.sharedService.gridOptions.gridMenu.onColumnsChanged === 'function') {
+                        _this.sharedService.gridOptions.gridMenu.onColumnsChanged(e, args);
                     }
                 });
-                gridMenuControl.onCommand.subscribe(function (e, args) {
+                this._eventHandler.subscribe(this._extension.onCommand, function (e, args) {
                     _this.executeGridMenuInternalCustomCommands(e, args);
-                    if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onCommand === 'function') {
-                        _this._gridOptions.gridMenu.onCommand(e, args);
+                    if (_this.sharedService.gridOptions.gridMenu && typeof _this.sharedService.gridOptions.gridMenu.onCommand === 'function') {
+                        _this.sharedService.gridOptions.gridMenu.onCommand(e, args);
                     }
                 });
-                gridMenuControl.onMenuClose.subscribe(function (e, args) {
-                    if (_this._gridOptions.gridMenu && typeof _this._gridOptions.gridMenu.onMenuClose === 'function') {
-                        _this._gridOptions.gridMenu.onMenuClose(e, args);
+                this._eventHandler.subscribe(this._extension.onMenuClose, function (e, args) {
+                    if (_this.sharedService.gridOptions.gridMenu && typeof _this.sharedService.gridOptions.gridMenu.onMenuClose === 'function') {
+                        _this.sharedService.gridOptions.gridMenu.onMenuClose(e, args);
                     }
-                    if (grid && typeof grid.autosizeColumns === 'function') {
-                        var gridUid = grid.getUID();
-                        if (_this.areVisibleColumnDifferent && gridUid && $("." + gridUid).length > 0) {
-                            if (_this._gridOptions && _this._gridOptions.enableAutoSizeColumns) {
-                                grid.autosizeColumns();
+                    if (_this.sharedService.grid && typeof _this.sharedService.grid.autosizeColumns === 'function') {
+                        var gridUid = _this.sharedService.grid.getUID();
+                        if (_this._areVisibleColumnDifferent && gridUid && $("." + gridUid).length > 0) {
+                            if (_this.sharedService.gridOptions && _this.sharedService.gridOptions.enableAutoSizeColumns) {
+                                _this.sharedService.grid.autosizeColumns();
                             }
-                            _this.areVisibleColumnDifferent = false;
+                            _this._areVisibleColumnDifferent = false;
                         }
                     }
                 });
             }
-            return gridMenuControl;
+            return this._extension;
         }
         return null;
     };
-    ControlAndPluginService.prototype.createHeaderMenu = function (grid, dataView, columnDefinitions) {
-        var _this = this;
-        this._gridOptions.headerMenu = Object.assign({}, this.getDefaultHeaderMenuOptions(), this._gridOptions.headerMenu);
-        if (this._gridOptions.enableHeaderMenu) {
-            this._gridOptions.headerMenu = this.addHeaderMenuCustomCommands(this._gridOptions, columnDefinitions);
-        }
-        var headerMenuPlugin = new Slick.Plugins.HeaderMenu(this._gridOptions.headerMenu);
-        grid.registerPlugin(headerMenuPlugin);
-        headerMenuPlugin.onCommand.subscribe(function (e, args) {
-            _this.executeHeaderMenuInternalCommands(e, args);
-            if (_this._gridOptions.headerMenu && typeof _this._gridOptions.headerMenu.onCommand === 'function') {
-                _this._gridOptions.headerMenu.onCommand(e, args);
-            }
-        });
-        headerMenuPlugin.onBeforeMenuShow.subscribe(function (e, args) {
-            if (_this._gridOptions.headerMenu && typeof _this._gridOptions.headerMenu.onBeforeMenuShow === 'function') {
-                _this._gridOptions.headerMenu.onBeforeMenuShow(e, args);
-            }
-        });
-        return headerMenuPlugin;
-    };
-    ControlAndPluginService.prototype.createUndoRedoBuffer = function () {
-        var commandQueue = [];
-        var commandCtr = 0;
-        this.undoRedoBuffer = {
-            queueAndExecuteCommand: function (editCommand) {
-                commandQueue[commandCtr] = editCommand;
-                commandCtr++;
-                editCommand.execute();
-            },
-            undo: function () {
-                if (commandCtr === 0) {
-                    return;
-                }
-                commandCtr--;
-                var command = commandQueue[commandCtr];
-                if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
-                    command.undo();
-                }
-            },
-            redo: function () {
-                if (commandCtr >= commandQueue.length) {
-                    return;
-                }
-                var command = commandQueue[commandCtr];
-                commandCtr++;
-                if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
-                    command.execute();
-                }
-            }
-        };
-    };
-    ControlAndPluginService.prototype.hideColumn = function (column) {
-        if (this._grid && this._grid.getColumns && this._grid.setColumns) {
-            var columnIndex = this._grid.getColumnIndex(column.id);
-            this.visibleColumns = this.removeColumnByIndex(this._grid.getColumns(), columnIndex);
-            this._grid.setColumns(this.visibleColumns);
-        }
-    };
-    ControlAndPluginService.prototype.hookUndoShortcutKey = function () {
-        var _this = this;
-        $(document).keydown(function (e) {
-            if (e.which === 90 && (e.ctrlKey || e.metaKey)) {
-                if (e.shiftKey) {
-                    _this.undoRedoBuffer.redo();
-                }
-                else {
-                    _this.undoRedoBuffer.undo();
-                }
-            }
-        });
-    };
-    ControlAndPluginService.prototype.dispose = function () {
-        this._grid = null;
-        this._dataView = null;
-        this.visibleColumns = [];
-        this.extensionList.forEach(function (item) {
-            if (item && item.service && item.service.destroy) {
-                item.service.destroy();
-            }
-        });
-        this.extensionList = [];
-    };
-    ControlAndPluginService.prototype.addGridMenuCustomCommands = function () {
-        var backendApi = this._gridOptions.backendServiceApi || null;
-        var gridMenuCustomItems = [];
-        if (this._gridOptions && this._gridOptions.enableFiltering) {
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand) {
-                gridMenuCustomItems.push({
-                    iconCssClass: this._gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : Constants.TEXT_CLEAR_ALL_FILTERS,
-                    disabled: false,
-                    command: 'clear-filter',
-                    positionOrder: 50
-                });
-            }
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideToggleFilterCommand) {
-                gridMenuCustomItems.push({
-                    iconCssClass: this._gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : Constants.TEXT_TOGGLE_FILTER_ROW,
-                    disabled: false,
-                    command: 'toggle-filter',
-                    positionOrder: 52
-                });
-            }
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi) {
-                gridMenuCustomItems.push({
-                    iconCssClass: this._gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : Constants.TEXT_REFRESH_DATASET,
-                    disabled: false,
-                    command: 'refresh-dataset',
-                    positionOrder: 54
-                });
-            }
-        }
-        if (this._gridOptions.enableSorting) {
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllSortingCommand) {
-                gridMenuCustomItems.push({
-                    iconCssClass: this._gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : Constants.TEXT_CLEAR_ALL_SORTING,
-                    disabled: false,
-                    command: 'clear-sorting',
-                    positionOrder: 51
-                });
-            }
-        }
-        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportCsvCommand) {
-            gridMenuCustomItems.push({
-                iconCssClass: this._gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
-                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : Constants.TEXT_EXPORT_IN_CSV_FORMAT,
-                disabled: false,
-                command: 'export-csv',
-                positionOrder: 53
-            });
-        }
-        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportTextDelimitedCommand) {
-            gridMenuCustomItems.push({
-                iconCssClass: this._gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
-                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : Constants.TEXT_EXPORT_IN_TEXT_FORMAT,
-                disabled: false,
-                command: 'export-text-delimited',
-                positionOrder: 54
-            });
-        }
-        if (this._gridOptions && this._gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || this._gridOptions.gridMenu.customItems.length > 0)) {
-            this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || this.getPickerTitleOutputString('customTitle', 'gridMenu');
-        }
-        return gridMenuCustomItems;
-    };
-    ControlAndPluginService.prototype.addHeaderMenuCustomCommands = function (options, columnDefinitions) {
-        var _this = this;
-        var headerMenuOptions = options.headerMenu;
-        if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
-            columnDefinitions.forEach(function (columnDef) {
-                if (columnDef && !columnDef.excludeFromHeaderMenu) {
-                    if (!columnDef.header || !columnDef.header.menu) {
-                        columnDef.header = {
-                            menu: {
-                                items: []
-                            }
-                        };
-                    }
-                    var columnHeaderMenuItems = columnDef.header.menu.items || [];
-                    if (options.enableSorting && columnDef.sortable && !headerMenuOptions.hideSortCommands) {
-                        if (columnHeaderMenuItems.filter(function (item) { return item.command === 'sort-asc'; }).length === 0) {
-                            columnHeaderMenuItems.push({
-                                iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
-                                title: options.enableTranslate ? _this.translate.instant('SORT_ASCENDING') : Constants.TEXT_SORT_ASCENDING,
-                                command: 'sort-asc',
-                                positionOrder: 50
-                            });
-                        }
-                        if (columnHeaderMenuItems.filter(function (item) { return item.command === 'sort-desc'; }).length === 0) {
-                            columnHeaderMenuItems.push({
-                                iconCssClass: headerMenuOptions.iconSortDescCommand || 'fa fa-sort-desc',
-                                title: options.enableTranslate ? _this.translate.instant('SORT_DESCENDING') : Constants.TEXT_SORT_DESCENDING,
-                                command: 'sort-desc',
-                                positionOrder: 51
-                            });
-                        }
-                    }
-                    if (!headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter(function (item) { return item.command === 'hide'; }).length === 0) {
-                        columnHeaderMenuItems.push({
-                            iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
-                            title: options.enableTranslate ? _this.translate.instant('HIDE_COLUMN') : Constants.TEXT_HIDE_COLUMN,
-                            command: 'hide',
-                            positionOrder: 52
-                        });
-                    }
-                    _this.translateItems(columnHeaderMenuItems, 'titleKey', 'title');
-                    columnHeaderMenuItems.sort(function (itemA, itemB) {
-                        if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
-                            return itemA.positionOrder - itemB.positionOrder;
-                        }
-                        return 0;
-                    });
-                }
-            });
-        }
-        return headerMenuOptions;
-    };
-    ControlAndPluginService.prototype.executeHeaderMenuInternalCommands = function (e, args) {
-        if (args && args.command) {
-            switch (args.command) {
-                case 'hide':
-                    this.hideColumn(args.column);
-                    if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
-                        this._grid.autosizeColumns();
-                    }
-                    break;
-                case 'sort-asc':
-                case 'sort-desc':
-                    var cols = this.sortService.getPreviousColumnSorts(args.column.id + '');
-                    cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
-                    if (this._gridOptions.backendServiceApi) {
-                        this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this._grid });
-                    }
-                    else {
-                        this.sortService.onLocalSortChanged(this._grid, this._dataView, cols);
-                    }
-                    var newSortColumns = cols.map(function (col) {
-                        return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
-                    });
-                    this._grid.setSortColumns(newSortColumns);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-    ControlAndPluginService.prototype.executeGridMenuInternalCustomCommands = function (e, args) {
+    GridMenuExtension.prototype.executeGridMenuInternalCustomCommands = function (e, args) {
         if (args && args.command) {
             switch (args.command) {
                 case 'clear-filter':
                     this.filterService.clearFilters();
-                    this._dataView.refresh();
+                    this.sharedService.dataView.refresh();
                     break;
                 case 'clear-sorting':
                     this.sortService.clearSorting();
-                    this._dataView.refresh();
+                    this.sharedService.dataView.refresh();
                     break;
                 case 'export-csv':
                     this.exportService.exportToFile({
@@ -3423,10 +3485,10 @@ var ControlAndPluginService = /** @class */ (function () {
                     });
                     break;
                 case 'toggle-filter':
-                    this._grid.setHeaderRowVisibility(!this._grid.getOptions().showHeaderRow);
+                    this.sharedService.grid.setHeaderRowVisibility(!this.sharedService.grid.getOptions().showHeaderRow);
                     break;
                 case 'toggle-toppanel':
-                    this._grid.setTopPanelVisibility(!this._grid.getOptions().showTopPanel);
+                    this.sharedService.grid.setTopPanelVisibility(!this.sharedService.grid.getOptions().showTopPanel);
                     break;
                 case 'refresh-dataset':
                     this.refreshBackendDataset();
@@ -3436,13 +3498,13 @@ var ControlAndPluginService = /** @class */ (function () {
             }
         }
     };
-    ControlAndPluginService.prototype.refreshBackendDataset = function (gridOptions) {
+    GridMenuExtension.prototype.refreshBackendDataset = function (gridOptions) {
         var _this = this;
         var query = '';
         if (gridOptions) {
-            this._gridOptions = Object.assign({}, this._gridOptions, gridOptions);
+            this.sharedService.gridOptions = Object.assign({}, this.sharedService.gridOptions, gridOptions);
         }
-        var backendApi = this._gridOptions.backendServiceApi;
+        var backendApi = this.sharedService.gridOptions.backendServiceApi;
         if (!backendApi || !backendApi.service || !backendApi.process) {
             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
         }
@@ -3457,16 +3519,16 @@ var ControlAndPluginService = /** @class */ (function () {
             var observableOrPromise = backendApi.process(query);
             castToPromise(observableOrPromise).then(function (processResult) {
                 var endTime = new Date();
-                if (processResult && backendApi.internalPostProcess) {
+                if (processResult && backendApi && backendApi.internalPostProcess) {
                     backendApi.internalPostProcess(processResult);
                 }
-                if (backendApi.postProcess) {
+                if (backendApi && backendApi.postProcess) {
                     if (processResult instanceof Object) {
                         processResult.statistics = {
                             startTime: startTime_1,
                             endTime: endTime,
                             executionTime: endTime.valueOf() - startTime_1.valueOf(),
-                            totalItemCount: _this._gridOptions && _this._gridOptions.pagination && _this._gridOptions.pagination.totalItems
+                            totalItemCount: _this.sharedService.gridOptions && _this.sharedService.gridOptions.pagination && _this.sharedService.gridOptions.pagination.totalItems
                         };
                     }
                     backendApi.postProcess(processResult);
@@ -3474,76 +3536,141 @@ var ControlAndPluginService = /** @class */ (function () {
             });
         }
     };
-    ControlAndPluginService.prototype.removeColumnByIndex = function (array, index) {
-        return array.filter(function (el, i) {
-            return index !== i;
-        });
-    };
-    ControlAndPluginService.prototype.translateColumnPicker = function () {
-        if (this._gridOptions && this._gridOptions.columnPicker) {
-            this.emptyColumnPickerTitles();
-            this._gridOptions.columnPicker.columnTitle = this.getPickerTitleOutputString('columnTitle', 'columnPicker');
-            this._gridOptions.columnPicker.forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
-            this._gridOptions.columnPicker.syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
+    GridMenuExtension.prototype.addGridMenuCustomCommands = function () {
+        var backendApi = this.sharedService.gridOptions.backendServiceApi || null;
+        var gridMenuCustomItems = [];
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableFiltering) {
+            if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllFiltersCommand) {
+                gridMenuCustomItems.push({
+                    iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
+                    title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : Constants.TEXT_CLEAR_ALL_FILTERS,
+                    disabled: false,
+                    command: 'clear-filter',
+                    positionOrder: 50
+                });
+            }
+            if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideToggleFilterCommand) {
+                gridMenuCustomItems.push({
+                    iconCssClass: this.sharedService.gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
+                    title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : Constants.TEXT_TOGGLE_FILTER_ROW,
+                    disabled: false,
+                    command: 'toggle-filter',
+                    positionOrder: 52
+                });
+            }
+            if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi) {
+                gridMenuCustomItems.push({
+                    iconCssClass: this.sharedService.gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
+                    title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : Constants.TEXT_REFRESH_DATASET,
+                    disabled: false,
+                    command: 'refresh-dataset',
+                    positionOrder: 54
+                });
+            }
         }
-        this.translateItems(this.allColumns, 'headerKey', 'name');
-        if (this.columnPickerControl.init) {
-            this.columnPickerControl.init(this._grid);
+        if (this.sharedService.gridOptions.enableSorting) {
+            if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllSortingCommand) {
+                gridMenuCustomItems.push({
+                    iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
+                    title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : Constants.TEXT_CLEAR_ALL_SORTING,
+                    disabled: false,
+                    command: 'clear-sorting',
+                    positionOrder: 51
+                });
+            }
         }
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportCsvCommand) {
+            gridMenuCustomItems.push({
+                iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
+                title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : Constants.TEXT_EXPORT_IN_CSV_FORMAT,
+                disabled: false,
+                command: 'export-csv',
+                positionOrder: 53
+            });
+        }
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportTextDelimitedCommand) {
+            gridMenuCustomItems.push({
+                iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
+                title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : Constants.TEXT_EXPORT_IN_TEXT_FORMAT,
+                disabled: false,
+                command: 'export-text-delimited',
+                positionOrder: 54
+            });
+        }
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || (this.sharedService.gridOptions.gridMenu.customItems && this.sharedService.gridOptions.gridMenu.customItems.length > 0))) {
+            this.sharedService.gridOptions.gridMenu.customTitle = this.sharedService.gridOptions.gridMenu.customTitle || this.extensionUtility.getPickerTitleOutputString('customTitle', 'gridMenu');
+        }
+        return gridMenuCustomItems;
     };
-    ControlAndPluginService.prototype.translateGridMenu = function () {
-        if (this._gridOptions && this._gridOptions.gridMenu) {
-            this._gridOptions.gridMenu.customItems = [];
-            this.emptyGridMenuTitles();
-            this._gridOptions.gridMenu.customItems = __spread(this.userOriginalGridMenu.customItems || [], this.addGridMenuCustomCommands());
-            this.translateItems(this._gridOptions.gridMenu.customItems, 'titleKey', 'title');
-            this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
-            this._gridOptions.gridMenu.columnTitle = this.getPickerTitleOutputString('columnTitle', 'gridMenu');
-            this._gridOptions.gridMenu.forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'gridMenu');
-            this._gridOptions.gridMenu.syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'gridMenu');
-            this.translateItems(this.allColumns, 'headerKey', 'name');
-            if (this.gridMenuControl.init) {
-                this.gridMenuControl.init(this._grid);
+    GridMenuExtension.prototype.executeHeaderMenuInternalCommands = function (e, args) {
+        if (args && args.command) {
+            switch (args.command) {
+                case 'hide':
+                    this.hideColumn(args.column);
+                    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableAutoSizeColumns) {
+                        this.sharedService.grid.autosizeColumns();
+                    }
+                    break;
+                case 'sort-asc':
+                case 'sort-desc':
+                    var cols = this.sortService.getPreviousColumnSorts(args.column.id + '');
+                    cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
+                    if (this.sharedService.gridOptions.backendServiceApi) {
+                        this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this.sharedService.grid });
+                    }
+                    else {
+                        this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, cols);
+                    }
+                    var newSortColumns = cols.map(function (col) {
+                        return {
+                            columnId: col && col.sortCol && col.sortCol.id,
+                            sortAsc: col && col.sortAsc
+                        };
+                    });
+                    this.sharedService.grid.setSortColumns(newSortColumns);
+                    break;
+                default:
+                    break;
             }
         }
     };
-    ControlAndPluginService.prototype.translateHeaderMenu = function () {
-        if (this._gridOptions && this._gridOptions.headerMenu) {
-            this.resetHeaderMenuTranslations(this.visibleColumns);
+    GridMenuExtension.prototype.hideColumn = function (column) {
+        if (this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns) {
+            var columnIndex = this.sharedService.grid.getColumnIndex(column.id);
+            this.sharedService.visibleColumns = this.extensionUtility.arrayRemoveItemByIndex(this.sharedService.grid.getColumns(), columnIndex);
+            this.sharedService.grid.setColumns(this.sharedService.visibleColumns);
         }
     };
-    ControlAndPluginService.prototype.translateColumnHeaders = function (locale, newColumnDefinitions) {
-        if (locale) {
-            this.translate.use((locale));
+    GridMenuExtension.prototype.translateGridMenu = function () {
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
+            this.sharedService.gridOptions.gridMenu.customItems = [];
+            this.emptyGridMenuTitles();
+            this.sharedService.gridOptions.gridMenu.customItems = __spread(this._userOriginalGridMenu.customItems || [], this.addGridMenuCustomCommands());
+            this.extensionUtility.translateItems(this.sharedService.gridOptions.gridMenu.customItems, 'titleKey', 'title');
+            this.extensionUtility.sortItems(this.sharedService.gridOptions.gridMenu.customItems, 'positionOrder');
+            this.sharedService.gridOptions.gridMenu.columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'gridMenu');
+            this.sharedService.gridOptions.gridMenu.forceFitTitle = this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'gridMenu');
+            this.sharedService.gridOptions.gridMenu.syncResizeTitle = this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'gridMenu');
+            this.extensionUtility.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+            if (this._extension.init) {
+                this._extension.init(this.sharedService.grid);
+            }
         }
-        var columnDefinitions = newColumnDefinitions || this._columnDefinitions;
-        this.translateItems(columnDefinitions, 'headerKey', 'name');
-        this.translateItems(this.allColumns, 'headerKey', 'name');
-        this.renderColumnHeaders(columnDefinitions);
     };
-    ControlAndPluginService.prototype.renderColumnHeaders = function (newColumnDefinitions) {
-        var collection = newColumnDefinitions || this._columnDefinitions;
-        if (Array.isArray(collection) && this._grid && this._grid.setColumns) {
-            this._grid.setColumns(collection);
+    GridMenuExtension.prototype.emptyGridMenuTitles = function () {
+        if (this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
+            this.sharedService.gridOptions.gridMenu.customTitle = '';
+            this.sharedService.gridOptions.gridMenu.columnTitle = '';
+            this.sharedService.gridOptions.gridMenu.forceFitTitle = '';
+            this.sharedService.gridOptions.gridMenu.syncResizeTitle = '';
         }
     };
-    ControlAndPluginService.prototype.emptyColumnPickerTitles = function () {
-        this._gridOptions.columnPicker.columnTitle = '';
-        this._gridOptions.columnPicker.forceFitTitle = '';
-        this._gridOptions.columnPicker.syncResizeTitle = '';
-    };
-    ControlAndPluginService.prototype.emptyGridMenuTitles = function () {
-        this._gridOptions.gridMenu.customTitle = '';
-        this._gridOptions.gridMenu.columnTitle = '';
-        this._gridOptions.gridMenu.forceFitTitle = '';
-        this._gridOptions.gridMenu.syncResizeTitle = '';
-    };
-    ControlAndPluginService.prototype.getDefaultGridMenuOptions = function () {
+    GridMenuExtension.prototype.getDefaultGridMenuOptions = function () {
         return {
             customTitle: undefined,
-            columnTitle: this.getPickerTitleOutputString('columnTitle', 'gridMenu'),
-            forceFitTitle: this.getPickerTitleOutputString('forceFitTitle', 'gridMenu'),
-            syncResizeTitle: this.getPickerTitleOutputString('syncResizeTitle', 'gridMenu'),
+            columnTitle: this.extensionUtility.getPickerTitleOutputString('columnTitle', 'gridMenu'),
+            forceFitTitle: this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'gridMenu'),
+            syncResizeTitle: this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'gridMenu'),
             iconCssClass: 'fa fa-bars',
             menuWidth: 18,
             customItems: [],
@@ -3552,46 +3679,211 @@ var ControlAndPluginService = /** @class */ (function () {
             hideToggleFilterCommand: false,
         };
     };
-    ControlAndPluginService.prototype.getDefaultHeaderMenuOptions = function () {
-        return {
-            autoAlignOffset: 12,
-            minWidth: 140,
-            hideColumnHideCommand: false,
-            hideSortCommands: false,
-            title: ''
-        };
-    };
-    ControlAndPluginService.prototype.getPickerTitleOutputString = function (propName, pickerName) {
-        var output = '';
-        var picker = this._gridOptions && this._gridOptions[pickerName] || {};
-        var enableTranslate = this._gridOptions && this._gridOptions.enableTranslate || false;
-        var title = picker && picker[propName];
-        var titleKey = picker && picker[propName + "Key"];
-        if (titleKey) {
-            output = this.translate.instant(titleKey || ' ');
+    return GridMenuExtension;
+}());
+GridMenuExtension.decorators = [
+    { type: core.Injectable },
+];
+GridMenuExtension.ctorParameters = function () { return [
+    { type: ExportService, },
+    { type: ExtensionUtility, },
+    { type: FilterService, },
+    { type: SharedService, },
+    { type: SortService, },
+    { type: core$1.TranslateService, },
+]; };
+var GroupItemMetaProviderExtension = /** @class */ (function () {
+    function GroupItemMetaProviderExtension(sharedService) {
+        this.sharedService = sharedService;
+    }
+    GroupItemMetaProviderExtension.prototype.dispose = function () {
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
         }
-        else {
-            switch (propName) {
-                case 'customTitle':
-                    output = title || (enableTranslate ? this.translate.instant('COMMANDS') : Constants.TEXT_COMMANDS);
+    };
+    GroupItemMetaProviderExtension.prototype.register = function () {
+        if (this.sharedService && this.sharedService.grid) {
+            this._extension = this.sharedService.groupItemMetadataProvider || {};
+            this.sharedService.grid.registerPlugin(this._extension);
+            return this._extension;
+        }
+        return null;
+    };
+    return GroupItemMetaProviderExtension;
+}());
+GroupItemMetaProviderExtension.decorators = [
+    { type: core.Injectable },
+];
+GroupItemMetaProviderExtension.ctorParameters = function () { return [
+    { type: SharedService, },
+]; };
+var HeaderButtonExtension = /** @class */ (function () {
+    function HeaderButtonExtension(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+        this._eventHandler = new Slick.EventHandler();
+    }
+    HeaderButtonExtension.prototype.dispose = function () {
+        this._eventHandler.unsubscribeAll();
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    };
+    HeaderButtonExtension.prototype.register = function () {
+        var _this = this;
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.headerButton);
+            this._extension = new Slick.Plugins.HeaderButtons(this.sharedService.gridOptions.headerButton || {});
+            this.sharedService.grid.registerPlugin(this._extension);
+            this._eventHandler.subscribe(this._extension.onCommand, function (e, args) {
+                if (_this.sharedService.gridOptions.headerButton && typeof _this.sharedService.gridOptions.headerButton.onCommand === 'function') {
+                    _this.sharedService.gridOptions.headerButton.onCommand(e, args);
+                }
+            });
+            return this._extension;
+        }
+        return null;
+    };
+    return HeaderButtonExtension;
+}());
+HeaderButtonExtension.decorators = [
+    { type: core.Injectable },
+];
+HeaderButtonExtension.ctorParameters = function () { return [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+]; };
+var HeaderMenuExtension = /** @class */ (function () {
+    function HeaderMenuExtension(extensionUtility, sharedService, sortService, translate) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+        this.sortService = sortService;
+        this.translate = translate;
+        this._eventHandler = new Slick.EventHandler();
+    }
+    HeaderMenuExtension.prototype.dispose = function () {
+        this._eventHandler.unsubscribeAll();
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    };
+    HeaderMenuExtension.prototype.register = function () {
+        var _this = this;
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.headerMenu);
+            this.sharedService.gridOptions.headerMenu = Object.assign({}, this.getDefaultHeaderMenuOptions(), this.sharedService.gridOptions.headerMenu);
+            if (this.sharedService.gridOptions.enableHeaderMenu) {
+                this.sharedService.gridOptions.headerMenu = this.addHeaderMenuCustomCommands(this.sharedService.gridOptions, this.sharedService.columnDefinitions);
+            }
+            this._extension = new Slick.Plugins.HeaderMenu(this.sharedService.gridOptions.headerMenu);
+            this.sharedService.grid.registerPlugin(this._extension);
+            this._eventHandler.subscribe(this._extension.onCommand, function (e, args) {
+                _this.executeHeaderMenuInternalCommands(e, args);
+                if (_this.sharedService.gridOptions.headerMenu && typeof _this.sharedService.gridOptions.headerMenu.onCommand === 'function') {
+                    _this.sharedService.gridOptions.headerMenu.onCommand(e, args);
+                }
+            });
+            this._eventHandler.subscribe(this._extension.onBeforeMenuShow, function (e, args) {
+                if (_this.sharedService.gridOptions.headerMenu && typeof _this.sharedService.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
+                    _this.sharedService.gridOptions.headerMenu.onBeforeMenuShow(e, args);
+                }
+            });
+            return this._extension;
+        }
+        return null;
+    };
+    HeaderMenuExtension.prototype.addHeaderMenuCustomCommands = function (options, columnDefinitions) {
+        var _this = this;
+        var headerMenuOptions = options.headerMenu || {};
+        if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
+            columnDefinitions.forEach(function (columnDef) {
+                if (columnDef && !columnDef.excludeFromHeaderMenu) {
+                    if (!columnDef.header || !columnDef.header.menu) {
+                        columnDef.header = {
+                            menu: {
+                                items: []
+                            }
+                        };
+                    }
+                    var columnHeaderMenuItems = columnDef && columnDef.header && columnDef.header.menu && columnDef.header.menu.items || [];
+                    if (options.enableSorting && columnDef.sortable && headerMenuOptions && !headerMenuOptions.hideSortCommands) {
+                        if (columnHeaderMenuItems.filter(function (item) { return item.command === 'sort-asc'; }).length === 0) {
+                            columnHeaderMenuItems.push({
+                                iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
+                                title: options.enableTranslate ? _this.translate.instant('SORT_ASCENDING') : Constants.TEXT_SORT_ASCENDING,
+                                command: 'sort-asc',
+                                positionOrder: 50
+                            });
+                        }
+                        if (columnHeaderMenuItems.filter(function (item) { return item.command === 'sort-desc'; }).length === 0) {
+                            columnHeaderMenuItems.push({
+                                iconCssClass: headerMenuOptions.iconSortDescCommand || 'fa fa-sort-desc',
+                                title: options.enableTranslate ? _this.translate.instant('SORT_DESCENDING') : Constants.TEXT_SORT_DESCENDING,
+                                command: 'sort-desc',
+                                positionOrder: 51
+                            });
+                        }
+                    }
+                    if (headerMenuOptions && !headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter(function (item) { return item.command === 'hide'; }).length === 0) {
+                        columnHeaderMenuItems.push({
+                            iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
+                            title: options.enableTranslate ? _this.translate.instant('HIDE_COLUMN') : Constants.TEXT_HIDE_COLUMN,
+                            command: 'hide',
+                            positionOrder: 52
+                        });
+                    }
+                    _this.extensionUtility.translateItems(columnHeaderMenuItems, 'titleKey', 'title');
+                    columnHeaderMenuItems.sort(function (itemA, itemB) {
+                        if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
+                            return itemA.positionOrder - itemB.positionOrder;
+                        }
+                        return 0;
+                    });
+                }
+            });
+        }
+        return headerMenuOptions;
+    };
+    HeaderMenuExtension.prototype.executeHeaderMenuInternalCommands = function (e, args) {
+        if (args && args.command) {
+            switch (args.command) {
+                case 'hide':
+                    this.hideColumn(args.column);
+                    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableAutoSizeColumns) {
+                        this.sharedService.grid.autosizeColumns();
+                    }
                     break;
-                case 'columnTitle':
-                    output = title || (enableTranslate ? this.translate.instant('COLUMNS') : Constants.TEXT_COLUMNS);
-                    break;
-                case 'forceFitTitle':
-                    output = title || (enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : Constants.TEXT_FORCE_FIT_COLUMNS);
-                    break;
-                case 'syncResizeTitle':
-                    output = title || (enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : Constants.TEXT_SYNCHRONOUS_RESIZE);
+                case 'sort-asc':
+                case 'sort-desc':
+                    var cols = this.sortService.getPreviousColumnSorts(args.column.id + '');
+                    cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
+                    if (this.sharedService.gridOptions.backendServiceApi) {
+                        this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this.sharedService.grid });
+                    }
+                    else {
+                        this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, cols);
+                    }
+                    var newSortColumns = cols.map(function (col) {
+                        return {
+                            columnId: col && col.sortCol && col.sortCol.id,
+                            sortAsc: col && col.sortAsc
+                        };
+                    });
+                    this.sharedService.grid.setSortColumns(newSortColumns);
                     break;
                 default:
-                    output = title;
                     break;
             }
         }
-        return output;
     };
-    ControlAndPluginService.prototype.resetHeaderMenuTranslations = function (columnDefinitions) {
+    HeaderMenuExtension.prototype.hideColumn = function (column) {
+        if (this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns) {
+            var columnIndex = this.sharedService.grid.getColumnIndex(column.id);
+            this.sharedService.visibleColumns = this.extensionUtility.arrayRemoveItemByIndex(this.sharedService.grid.getColumns(), columnIndex);
+            this.sharedService.grid.setColumns(this.sharedService.visibleColumns);
+        }
+    };
+    HeaderMenuExtension.prototype.resetHeaderMenuTranslations = function (columnDefinitions) {
         var _this = this;
         columnDefinitions.forEach(function (columnDef) {
             if (columnDef && columnDef.header && columnDef.header && columnDef.header.menu && columnDef.header.menu.items) {
@@ -3609,49 +3901,310 @@ var ControlAndPluginService = /** @class */ (function () {
                                 item.title = _this.translate.instant('HIDE_COLUMN') || Constants.TEXT_HIDE_COLUMN;
                                 break;
                         }
-                        if (_this._gridOptions && _this._gridOptions.enableTranslate) {
-                            _this.translateItems(columnHeaderMenuItems_1, 'titleKey', 'title');
+                        if (_this.sharedService.gridOptions && _this.sharedService.gridOptions.enableTranslate) {
+                            _this.extensionUtility.translateItems(columnHeaderMenuItems_1, 'titleKey', 'title');
                         }
                     });
                 }
             }
         });
     };
-    ControlAndPluginService.prototype.sortItems = function (items, propertyName) {
-        items.sort(function (itemA, itemB) {
-            if (itemA && itemB && itemA.hasOwnProperty(propertyName) && itemB.hasOwnProperty(propertyName)) {
-                return itemA[propertyName] - itemB[propertyName];
+    HeaderMenuExtension.prototype.translateHeaderMenu = function () {
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.headerMenu) {
+            this.resetHeaderMenuTranslations(this.sharedService.visibleColumns);
+        }
+    };
+    HeaderMenuExtension.prototype.getDefaultHeaderMenuOptions = function () {
+        return {
+            autoAlignOffset: 12,
+            minWidth: 140,
+            hideColumnHideCommand: false,
+            hideSortCommands: false,
+            title: ''
+        };
+    };
+    return HeaderMenuExtension;
+}());
+HeaderMenuExtension.decorators = [
+    { type: core.Injectable },
+];
+HeaderMenuExtension.ctorParameters = function () { return [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+    { type: SortService, },
+    { type: core$1.TranslateService, },
+]; };
+var RowMoveManagerExtension = /** @class */ (function () {
+    function RowMoveManagerExtension(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+        this._eventHandler = new Slick.EventHandler();
+    }
+    RowMoveManagerExtension.prototype.dispose = function () {
+        this._eventHandler.unsubscribeAll();
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    };
+    RowMoveManagerExtension.prototype.register = function (rowSelectionPlugin) {
+        var _this = this;
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.rowMoveManager);
+            if (!rowSelectionPlugin || !this.sharedService.grid.getSelectionModel()) {
+                this.extensionUtility.loadExtensionDynamically(ExtensionName.rowSelection);
+                rowSelectionPlugin = new Slick.RowSelectionModel(this.sharedService.gridOptions.rowSelectionOptions || {});
+                this.sharedService.grid.setSelectionModel(rowSelectionPlugin);
             }
-            return 0;
+            this._extension = new Slick.RowMoveManager(this.sharedService.gridOptions.rowMoveManager || { cancelEditOnDrag: true });
+            this.sharedService.grid.registerPlugin(this._extension);
+            if (this.sharedService.grid && this.sharedService.gridOptions.rowMoveManager) {
+                this._eventHandler.subscribe(this._extension.onBeforeMoveRows, function (e, args) {
+                    if (_this.sharedService.gridOptions.rowMoveManager && typeof _this.sharedService.gridOptions.rowMoveManager.onBeforeMoveRows === 'function') {
+                        _this.sharedService.gridOptions.rowMoveManager.onBeforeMoveRows(e, args);
+                    }
+                });
+                this._eventHandler.subscribe(this._extension.onMoveRows, function (e, args) {
+                    if (_this.sharedService.gridOptions.rowMoveManager && typeof _this.sharedService.gridOptions.rowMoveManager.onMoveRows === 'function') {
+                        _this.sharedService.gridOptions.rowMoveManager.onMoveRows(e, args);
+                    }
+                });
+            }
+            return this._extension;
+        }
+        return null;
+    };
+    return RowMoveManagerExtension;
+}());
+RowMoveManagerExtension.decorators = [
+    { type: core.Injectable },
+];
+RowMoveManagerExtension.ctorParameters = function () { return [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+]; };
+var RowSelectionExtension = /** @class */ (function () {
+    function RowSelectionExtension(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+    }
+    RowSelectionExtension.prototype.dispose = function () {
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    };
+    RowSelectionExtension.prototype.register = function () {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.rowSelection);
+            this._extension = new Slick.RowSelectionModel(this.sharedService.gridOptions.rowSelectionOptions || {});
+            this.sharedService.grid.setSelectionModel(this._extension);
+            return this._extension;
+        }
+        return null;
+    };
+    return RowSelectionExtension;
+}());
+RowSelectionExtension.decorators = [
+    { type: core.Injectable },
+];
+RowSelectionExtension.ctorParameters = function () { return [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+]; };
+var ExtensionService = /** @class */ (function () {
+    function ExtensionService(autoTooltipExtension, cellExternalCopyExtension, checkboxSelectorExtension, columnPickerExtension, gridMenuExtension, groupItemMetaExtension, headerButtonExtension, headerMenuExtension, rowMoveManagerExtension, rowSelectionExtension, sharedService, translate) {
+        this.autoTooltipExtension = autoTooltipExtension;
+        this.cellExternalCopyExtension = cellExternalCopyExtension;
+        this.checkboxSelectorExtension = checkboxSelectorExtension;
+        this.columnPickerExtension = columnPickerExtension;
+        this.gridMenuExtension = gridMenuExtension;
+        this.groupItemMetaExtension = groupItemMetaExtension;
+        this.headerButtonExtension = headerButtonExtension;
+        this.headerMenuExtension = headerMenuExtension;
+        this.rowMoveManagerExtension = rowMoveManagerExtension;
+        this.rowSelectionExtension = rowSelectionExtension;
+        this.sharedService = sharedService;
+        this.translate = translate;
+        this.extensionList = [];
+    }
+    ExtensionService.prototype.dispose = function () {
+        this.sharedService.grid = null;
+        this.sharedService.visibleColumns = [];
+        this.extensionList.forEach(function (item) {
+            if (item && item.class && item.class.dispose) {
+                item.class.dispose();
+            }
+        });
+        this.extensionList = [];
+    };
+    ExtensionService.prototype.getAllColumns = function () {
+        return this.sharedService.allColumns || [];
+    };
+    ExtensionService.prototype.getVisibleColumns = function () {
+        return this.sharedService.visibleColumns || [];
+    };
+    ExtensionService.prototype.getAllExtensions = function () {
+        return this.extensionList;
+    };
+    ExtensionService.prototype.getExtensionByName = function (name) {
+        return this.extensionList.find(function (p) { return p.name === name; });
+    };
+    ExtensionService.prototype.autoResizeColumns = function () {
+        this.sharedService.grid.autosizeColumns();
+    };
+    ExtensionService.prototype.attachDifferentExtensions = function () {
+        var _this = this;
+        if (this.sharedService.gridOptions.enableTranslate) {
+            this.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+        }
+        if (this.sharedService.gridOptions.enableAutoTooltip) {
+            if (this.autoTooltipExtension && this.autoTooltipExtension.register) {
+                this.extensionList.push({ name: ExtensionName.autoTooltip, class: this.autoTooltipExtension, extension: this.autoTooltipExtension.register() });
+            }
+        }
+        if (this.sharedService.gridOptions.enableColumnPicker) {
+            if (this.columnPickerExtension && this.columnPickerExtension.register) {
+                this.extensionList.push({ name: ExtensionName.columnPicker, class: this.columnPickerExtension, extension: this.columnPickerExtension.register() });
+            }
+        }
+        if (this.sharedService.gridOptions.enableGridMenu) {
+            if (this.gridMenuExtension && this.gridMenuExtension.register) {
+                this.extensionList.push({ name: ExtensionName.gridMenu, class: this.gridMenuExtension, extension: this.gridMenuExtension.register() });
+            }
+        }
+        if (this.sharedService.gridOptions.enableGrouping) {
+            if (this.groupItemMetaExtension && this.groupItemMetaExtension.register) {
+                this.extensionList.push({ name: ExtensionName.groupItemMetaProvider, class: this.groupItemMetaExtension, extension: this.groupItemMetaExtension.register() });
+            }
+        }
+        if (this.sharedService.gridOptions.enableCheckboxSelector) {
+            if (this.checkboxSelectorExtension && this.checkboxSelectorExtension.register) {
+                var rowSelectionExtension = this.getExtensionByName(ExtensionName.rowSelection);
+                this.extensionList.push({ name: ExtensionName.checkboxSelector, class: this.checkboxSelectorExtension, extension: this.checkboxSelectorExtension.register(rowSelectionExtension) });
+            }
+        }
+        if (this.sharedService.gridOptions.enableRowMoveManager) {
+            if (this.rowMoveManagerExtension && this.rowMoveManagerExtension.register) {
+                this.extensionList.push({ name: ExtensionName.rowMoveManager, class: this.rowMoveManagerExtension, extension: this.rowMoveManagerExtension.register() });
+            }
+        }
+        if (!this.sharedService.gridOptions.enableCheckboxSelector && this.sharedService.gridOptions.enableRowSelection) {
+            if (this.rowSelectionExtension && this.rowSelectionExtension.register) {
+                this.extensionList.push({ name: ExtensionName.rowSelection, class: this.rowSelectionExtension, extension: this.rowSelectionExtension.register() });
+            }
+        }
+        if (this.sharedService.gridOptions.enableHeaderButton) {
+            if (this.headerButtonExtension && this.headerButtonExtension.register) {
+                this.extensionList.push({ name: ExtensionName.headerButton, class: this.headerButtonExtension, extension: this.headerButtonExtension.register() });
+            }
+        }
+        if (this.sharedService.gridOptions.enableHeaderMenu) {
+            if (this.headerMenuExtension && this.headerMenuExtension.register) {
+                this.extensionList.push({ name: ExtensionName.headerMenu, class: this.headerMenuExtension, extension: this.headerMenuExtension.register() });
+            }
+        }
+        if (this.sharedService.gridOptions.enableExcelCopyBuffer) {
+            if (this.cellExternalCopyExtension && this.cellExternalCopyExtension.register) {
+                this.extensionList.push({ name: ExtensionName.cellExternalCopyManager, class: this.cellExternalCopyExtension, extension: this.cellExternalCopyExtension.register() });
+            }
+        }
+        if (this.sharedService.gridOptions.registerPlugins !== undefined) {
+            if (Array.isArray(this.sharedService.gridOptions.registerPlugins)) {
+                this.sharedService.gridOptions.registerPlugins.forEach(function (plugin) {
+                    _this.sharedService.grid.registerPlugin(plugin);
+                    _this.extensionList.push({ name: ExtensionName.noname, class: null, extension: plugin });
+                });
+            }
+            else {
+                this.sharedService.grid.registerPlugin(this.sharedService.gridOptions.registerPlugins);
+                this.extensionList.push({ name: ExtensionName.noname, class: null, extension: this.sharedService.gridOptions.registerPlugins });
+            }
+        }
+    };
+    ExtensionService.prototype.createCheckboxPluginBeforeGridCreation = function (columnDefinitions, options) {
+        if (options.enableCheckboxSelector) {
+            this.checkboxSelectorExtension.create(columnDefinitions, options);
+        }
+    };
+    ExtensionService.prototype.hideColumn = function (column) {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns) {
+            var columnIndex = this.sharedService.grid.getColumnIndex(column.id);
+            this.sharedService.visibleColumns = this.removeColumnByIndex(this.sharedService.grid.getColumns(), columnIndex);
+            this.sharedService.grid.setColumns(this.sharedService.visibleColumns);
+        }
+    };
+    ExtensionService.prototype.refreshBackendDataset = function (gridOptions) {
+        this.gridMenuExtension.refreshBackendDataset(gridOptions);
+    };
+    ExtensionService.prototype.removeColumnByIndex = function (array, index) {
+        return array.filter(function (el, i) {
+            return index !== i;
         });
     };
-    ControlAndPluginService.prototype.translateItems = function (items, inputKey, outputKey) {
+    ExtensionService.prototype.translateColumnPicker = function () {
+        if (this.columnPickerExtension && this.columnPickerExtension.translateColumnPicker) {
+            this.columnPickerExtension.translateColumnPicker();
+        }
+    };
+    ExtensionService.prototype.translateGridMenu = function () {
+        if (this.gridMenuExtension && this.gridMenuExtension.translateGridMenu) {
+            this.gridMenuExtension.translateGridMenu();
+        }
+    };
+    ExtensionService.prototype.translateHeaderMenu = function () {
+        if (this.headerMenuExtension && this.headerMenuExtension.translateHeaderMenu) {
+            this.headerMenuExtension.translateHeaderMenu();
+        }
+    };
+    ExtensionService.prototype.translateColumnHeaders = function (locale, newColumnDefinitions) {
+        if (locale) {
+            this.translate.use((locale));
+        }
+        var columnDefinitions = newColumnDefinitions || this.sharedService.columnDefinitions;
+        this.translateItems(columnDefinitions, 'headerKey', 'name');
+        this.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+        this.renderColumnHeaders(columnDefinitions);
+    };
+    ExtensionService.prototype.renderColumnHeaders = function (newColumnDefinitions) {
+        var collection = newColumnDefinitions || this.sharedService.columnDefinitions;
+        if (Array.isArray(collection) && this.sharedService.grid && this.sharedService.grid.setColumns) {
+            this.sharedService.grid.setColumns(collection);
+        }
+    };
+    ExtensionService.prototype.translateItems = function (items, inputKey, outputKey) {
         try {
-            for (var items_1 = __values(items), items_1_1 = items_1.next(); !items_1_1.done; items_1_1 = items_1.next()) {
-                var item = items_1_1.value;
+            for (var items_2 = __values(items), items_2_1 = items_2.next(); !items_2_1.done; items_2_1 = items_2.next()) {
+                var item = items_2_1.value;
                 if (item[inputKey]) {
                     item[outputKey] = this.translate.instant(item[inputKey]);
                 }
             }
         }
-        catch (e_4_1) { e_4 = { error: e_4_1 }; }
+        catch (e_5_1) { e_5 = { error: e_5_1 }; }
         finally {
             try {
-                if (items_1_1 && !items_1_1.done && (_a = items_1.return)) _a.call(items_1);
+                if (items_2_1 && !items_2_1.done && (_a = items_2.return)) _a.call(items_2);
             }
-            finally { if (e_4) throw e_4.error; }
+            finally { if (e_5) throw e_5.error; }
         }
-        var e_4, _a;
+        var e_5, _a;
     };
-    return ControlAndPluginService;
+    return ExtensionService;
 }());
-ControlAndPluginService.decorators = [
+ExtensionService.decorators = [
     { type: core.Injectable },
 ];
-ControlAndPluginService.ctorParameters = function () { return [
-    { type: ExportService, },
-    { type: FilterService, },
-    { type: SortService, },
+ExtensionService.ctorParameters = function () { return [
+    { type: AutoTooltipExtension, },
+    { type: CellExternalCopyManagerExtension, },
+    { type: CheckboxSelectorExtension, },
+    { type: ColumnPickerExtension, },
+    { type: GridMenuExtension, },
+    { type: GroupItemMetaProviderExtension, },
+    { type: HeaderButtonExtension, },
+    { type: HeaderMenuExtension, },
+    { type: RowMoveManagerExtension, },
+    { type: RowSelectionExtension, },
+    { type: SharedService, },
     { type: core$1.TranslateService, },
 ]; };
 var GraphqlQueryBuilder = /** @class */ (function () {
@@ -3685,15 +4238,15 @@ var GraphqlQueryBuilder = /** @class */ (function () {
                 this.head.push(prop + ":" + val);
             }
         }
-        catch (e_5_1) { e_5 = { error: e_5_1 }; }
+        catch (e_6_1) { e_6 = { error: e_6_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_5) throw e_5.error; }
+            finally { if (e_6) throw e_6.error; }
         }
         return this;
-        var e_5, _c;
+        var e_6, _c;
     };
     GraphqlQueryBuilder.prototype.find = function () {
         var searches = [];
@@ -3773,15 +4326,15 @@ var GraphqlQueryBuilder = /** @class */ (function () {
                 sourceA.push(prop + ":" + this.getGraphQLValue(obj[prop]));
             }
         }
-        catch (e_6_1) { e_6 = { error: e_6_1 }; }
+        catch (e_7_1) { e_7 = { error: e_7_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_6) throw e_6.error; }
+            finally { if (e_7) throw e_7.error; }
         }
         return "{" + sourceA.join() + "}";
-        var e_6, _c;
+        var e_7, _c;
     };
     return GraphqlQueryBuilder;
 }());
@@ -3824,12 +4377,12 @@ var GraphqlService = /** @class */ (function () {
                     }
                 }
             }
-            catch (e_7_1) { e_7 = { error: e_7_1 }; }
+            catch (e_8_1) { e_8 = { error: e_8_1 }; }
             finally {
                 try {
                     if (columnDefinitions_1_1 && !columnDefinitions_1_1.done && (_a = columnDefinitions_1.return)) _a.call(columnDefinitions_1);
                 }
-                finally { if (e_7) throw e_7.error; }
+                finally { if (e_8) throw e_8.error; }
             }
         }
         else {
@@ -3869,19 +4422,19 @@ var GraphqlService = /** @class */ (function () {
                     datasetFilters[queryArgument.field] = queryArgument.value;
                 }
             }
-            catch (e_8_1) { e_8 = { error: e_8_1 }; }
+            catch (e_9_1) { e_9 = { error: e_9_1 }; }
             finally {
                 try {
                     if (_c && !_c.done && (_d = _b.return)) _d.call(_b);
                 }
-                finally { if (e_8) throw e_8.error; }
+                finally { if (e_9) throw e_9.error; }
             }
         }
         datasetQb.filter(datasetFilters);
         queryQb.find(datasetQb);
         var enumSearchProperties = ['direction:', 'field:', 'operator:'];
         return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.options.keepArgumentFieldDoubleQuotes || false);
-        var e_7, _a, e_8, _d;
+        var e_8, _a, e_9, _d;
     };
     GraphqlService.prototype.buildFilterQuery = function (inputArray) {
         var set = function (o, a) {
@@ -4103,19 +4656,19 @@ var GraphqlService = /** @class */ (function () {
                             }
                         }
                     }
-                    catch (e_9_1) { e_9 = { error: e_9_1 }; }
+                    catch (e_10_1) { e_10 = { error: e_10_1 }; }
                     finally {
                         try {
                             if (sortColumns_1_1 && !sortColumns_1_1.done && (_a = sortColumns_1.return)) _a.call(sortColumns_1);
                         }
-                        finally { if (e_9) throw e_9.error; }
+                        finally { if (e_10) throw e_10.error; }
                     }
                 }
             }
         }
         this._currentSorters = currentSorters;
         this.updateOptions({ sortingOptions: graphqlSorters });
-        var e_9, _a;
+        var e_10, _a;
     };
     GraphqlService.prototype.trimDoubleQuotesOnEnumField = function (inputStr, enumSearchWords, keepArgumentFieldDoubleQuotes) {
         var patternWordInQuotes = "s?((field:s*)?\".*?\")";
@@ -4318,14 +4871,14 @@ var OdataService = /** @class */ (function () {
                 }
             }
         }
-        catch (e_10_1) { e_10 = { error: e_10_1 }; }
+        catch (e_11_1) { e_11 = { error: e_11_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_10) throw e_10.error; }
+            finally { if (e_11) throw e_11.error; }
         }
-        var e_10, _c;
+        var e_11, _c;
     };
     return OdataService;
 }());
@@ -4587,12 +5140,12 @@ var GridOdataService = /** @class */ (function () {
                             }
                         }
                     }
-                    catch (e_11_1) { e_11 = { error: e_11_1 }; }
+                    catch (e_12_1) { e_12 = { error: e_12_1 }; }
                     finally {
                         try {
                             if (sortColumns_2_1 && !sortColumns_2_1.done && (_a = sortColumns_2.return)) _a.call(sortColumns_2);
                         }
-                        finally { if (e_11) throw e_11.error; }
+                        finally { if (e_12) throw e_12.error; }
                     }
                     sortByArray = sorterArray;
                 }
@@ -4605,7 +5158,7 @@ var GridOdataService = /** @class */ (function () {
         });
         this._currentSorters = (sortByArray);
         return this.odataService.buildQuery();
-        var e_11, _a;
+        var e_12, _a;
     };
     GridOdataService.prototype.castFilterToColumnFilter = function (columnFilters) {
         var filtersArray = (((typeof columnFilters === 'object') ? Object.keys(columnFilters).map(function (key) { return columnFilters[key]; }) : columnFilters));
@@ -4719,9 +5272,9 @@ var GridStateService = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    GridStateService.prototype.init = function (grid, controlAndPluginService, filterService, sortService) {
+    GridStateService.prototype.init = function (grid, extensionService, filterService, sortService) {
         this._grid = grid;
-        this.controlAndPluginService = controlAndPluginService;
+        this.extensionService = extensionService;
         this.filterService = filterService;
         this.sortService = sortService;
         this.subscribeToAllGridChanges(grid);
@@ -4828,9 +5381,9 @@ var GridStateService = /** @class */ (function () {
     };
     GridStateService.prototype.hookExtensionEventToGridStateChange = function (extensionName, eventName) {
         var _this = this;
-        var extension = this.controlAndPluginService && this.controlAndPluginService.getExtensionByName(extensionName);
-        if (extension && extension.service && extension.service[eventName] && extension.service[eventName].subscribe) {
-            this._eventHandler.subscribe(extension.service[eventName], function (e, args) {
+        var extension = this.extensionService && this.extensionService.getExtensionByName(extensionName);
+        if (extension && extension.class && extension.class[eventName] && extension.class[eventName].subscribe) {
+            this._eventHandler.subscribe(extension.class[eventName], function (e, args) {
                 var columns = args && args.columns;
                 var currentColumns = _this.getAssociatedCurrentColumns(columns);
                 _this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: _this.getCurrentGridState() });
@@ -4854,7 +5407,10 @@ var GridStateService = /** @class */ (function () {
     };
     GridStateService.prototype.resetRowSelection = function () {
         if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
-            this._grid.setSelectedRows([]);
+            var rowSelectionExtension = this.extensionService && this.extensionService.getExtensionByName && this.extensionService.getExtensionByName(ExtensionName.rowSelection);
+            if (rowSelectionExtension && rowSelectionExtension.extension) {
+                this._grid.setSelectedRows([]);
+            }
         }
     };
     GridStateService.prototype.subscribeToAllGridChanges = function (grid) {
@@ -4875,16 +5431,16 @@ var GridStateService = /** @class */ (function () {
             _this.resetRowSelection();
             _this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.sorter }, gridState: _this.getCurrentGridState() });
         }));
-        this.hookExtensionEventToGridStateChange('ColumnPicker', 'onColumnsChanged');
-        this.hookExtensionEventToGridStateChange('GridMenu', 'onColumnsChanged');
+        this.hookExtensionEventToGridStateChange(ExtensionName.columnPicker, 'onColumnsChanged');
+        this.hookExtensionEventToGridStateChange(ExtensionName.gridMenu, 'onColumnsChanged');
         this.hookSlickGridEventToGridStateChange('onColumnsReordered', grid);
         this.hookSlickGridEventToGridStateChange('onColumnsResized', grid);
     };
     return GridStateService;
 }());
 var GridService = /** @class */ (function () {
-    function GridService(controlAndPluginService, filterService, gridStateService, sortService, translate) {
-        this.controlAndPluginService = controlAndPluginService;
+    function GridService(extensionService, filterService, gridStateService, sortService, translate) {
+        this.extensionService = extensionService;
         this.filterService = filterService;
         this.gridStateService = gridStateService;
         this.sortService = sortService;
@@ -5020,7 +5576,7 @@ var GridService = /** @class */ (function () {
     };
     GridService.prototype.resetGrid = function (columnDefinitions) {
         if (this._grid && this._dataView) {
-            var originalColumns = this.controlAndPluginService.getAllColumns();
+            var originalColumns = this.extensionService.getAllColumns();
             if (Array.isArray(originalColumns) && originalColumns.length > 0) {
                 this._grid.setColumns(originalColumns);
                 this._dataView.refresh();
@@ -5102,7 +5658,7 @@ GridService.decorators = [
     { type: core.Injectable },
 ];
 GridService.ctorParameters = function () { return [
-    { type: ControlAndPluginService, },
+    { type: ExtensionService, },
     { type: FilterService, },
     { type: GridStateService, },
     { type: SortService, },
@@ -5458,7 +6014,8 @@ var CheckboxEditor = /** @class */ (function () {
     });
     CheckboxEditor.prototype.init = function () {
         var _this = this;
-        this.$input = $("<input type=\"checkbox\" value=\"true\" class=\"editor-checkbox\" />");
+        var fieldId = this.columnDef && this.columnDef.id;
+        this.$input = $("<input type=\"checkbox\" value=\"true\" class=\"editor-checkbox editor-" + fieldId + "\" />");
         this.$input.appendTo(this.args.container);
         this.$input.focus();
         if (this.args.grid.getOptions().autoCommitEdit) {
@@ -5544,6 +6101,7 @@ var DateEditor = /** @class */ (function () {
     DateEditor.prototype.init = function () {
         var _this = this;
         if (this.args && this.args.column) {
+            var fieldId = this.columnDef && this.columnDef.id;
             var gridOptions = (this.args.grid.getOptions());
             this.defaultDate = (this.args.item) ? this.args.item[this.args.column.field] : null;
             var inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
@@ -5563,7 +6121,7 @@ var DateEditor = /** @class */ (function () {
                     _this.save();
                 },
             };
-            this.$input = $("<input type=\"text\" data-defaultDate=\"" + this.defaultDate + "\" class=\"editor-text flatpickr\" />");
+            this.$input = $("<input type=\"text\" data-defaultDate=\"" + this.defaultDate + "\" class=\"editor-text flatpickr editor-" + fieldId + "\" />");
             this.$input.appendTo(this.args.container);
             this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
             this.show();
@@ -5577,7 +6135,11 @@ var DateEditor = /** @class */ (function () {
         return 'en';
     };
     DateEditor.prototype.loadFlatpickrLocale = function (locale) {
-        if (locale !== 'en') {
+        var gridOptions = this.args && this.args.grid && this.args.grid.getOptions();
+        if (gridOptions && gridOptions.params && gridOptions.params.flapickrLocale) {
+            return gridOptions.params.flapickrLocale;
+        }
+        else if (locale !== 'en') {
             var localeDefault = require("flatpickr/dist/l10n/" + locale + ".js").default;
             return (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
         }
@@ -5688,7 +6250,8 @@ var FloatEditor = /** @class */ (function () {
     });
     FloatEditor.prototype.init = function () {
         var _this = this;
-        this.$input = $("<input type=\"number\" class=\"editor-text\" step=\"" + this.getInputDecimalSteps() + "\" />")
+        var fieldId = this.columnDef && this.columnDef.id;
+        this.$input = $("<input type=\"number\" class=\"editor-text editor-" + fieldId + "\" step=\"" + this.getInputDecimalSteps() + "\" />")
             .appendTo(this.args.container)
             .on('keydown.nav', function (e) {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
@@ -5860,7 +6423,8 @@ var IntegerEditor = /** @class */ (function () {
     });
     IntegerEditor.prototype.init = function () {
         var _this = this;
-        this.$input = $("<input type=\"number\" class='editor-text' />")
+        var fieldId = this.columnDef && this.columnDef.id;
+        this.$input = $("<input type=\"number\" class=\"editor-text editor-" + fieldId + "\" />")
             .appendTo(this.args.container)
             .on('keydown.nav', function (e) {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
@@ -5971,10 +6535,11 @@ var LongTextEditor = /** @class */ (function () {
     });
     LongTextEditor.prototype.init = function () {
         var _this = this;
+        var fieldId = this.columnDef && this.columnDef.id;
         var cancelText = this._translate && this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
         var saveText = this._translate && this._translate.instant('SAVE') || Constants.TEXT_SAVE;
         var $container = $('body');
-        this.$wrapper = $("<div class=\"slick-large-editor-text\" />").appendTo($container);
+        this.$wrapper = $("<div class=\"slick-large-editor-text editor-" + fieldId + "\" />").appendTo($container);
         this.$input = $("<textarea hidefocus rows=\"5\">").appendTo(this.$wrapper);
         if (this.hasAutoCommitEdit) {
             this.$input.on('focusout', function () { return _this.save(); });
@@ -6083,8 +6648,8 @@ var SelectEditor = /** @class */ (function () {
         this.gridOptions = (this.args.grid.getOptions());
         var gridOptions = this.gridOptions || this.args.column.params || {};
         this._translate = gridOptions.i18n;
-        var fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
-        this.elementName = "editor_" + fieldId;
+        var fieldId = this.columnDef && this.columnDef.id;
+        this.elementName = "editor-" + fieldId;
         var libOptions = {
             autoAdjustDropHeight: true,
             autoAdjustDropPosition: true,
@@ -6329,6 +6894,7 @@ var SelectEditor = /** @class */ (function () {
     SelectEditor.prototype.buildTemplateHtmlString = function (collection) {
         var _this = this;
         var options = '';
+        var fieldId = this.columnDef && this.columnDef.id;
         var separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         var isRenderHtmlEnabled = this.columnDef.internalColumnEditor.enableRenderHtml || false;
         var sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
@@ -6360,7 +6926,7 @@ var SelectEditor = /** @class */ (function () {
                 options += "<option value=\"" + option[_this.valueName] + "\" label=\"" + optionLabel + "\">" + optionText + "</option>";
             });
         }
-        return "<select id=\"" + this.elementName + "\" class=\"ms-filter search-filter\" " + (this.isMultipleSelect ? 'multiple="multiple"' : '') + ">" + options + "</select>";
+        return "<select id=\"" + this.elementName + "\" class=\"ms-filter search-filter editor-" + fieldId + "\" " + (this.isMultipleSelect ? 'multiple="multiple"' : '') + ">" + options + "</select>";
     };
     SelectEditor.prototype.createBlankEntry = function () {
         var blankEntry = (_a = {}, _a[this.labelName] = '', _a[this.valueName] = '', _a);
@@ -6452,7 +7018,7 @@ var SliderEditor = /** @class */ (function () {
     });
     SliderEditor.prototype.init = function () {
         var _this = this;
-        var container = this.args.container;
+        var container = this.args && this.args.container;
         var itemId = this.args && this.args.item && this.args.item.id;
         this._elementRangeInputId = "rangeInput_" + this.columnDef.field + "_" + itemId;
         this._elementRangeOutputId = "rangeOutput_" + this.columnDef.field + "_" + itemId;
@@ -6461,8 +7027,8 @@ var SliderEditor = /** @class */ (function () {
         this.$input = this.$editorElm.children('input');
         this.$sliderNumber = this.$editorElm.children('div.input-group-addon.input-group-append').children();
         this.$editorElm
-            .appendTo(this.args.container)
-            .on('mouseup', function (event) { return _this.save(); });
+            .appendTo(container)
+            .on('mouseup', function () { return _this.save(); });
         if (!this.editorParams.hideSliderNumber) {
             this.$editorElm.on('input change', function (e) {
                 var value = e && e.target && e.target.value || '';
@@ -6535,15 +7101,16 @@ var SliderEditor = /** @class */ (function () {
         };
     };
     SliderEditor.prototype.buildTemplateHtmlString = function () {
+        var fieldId = this.columnDef && this.columnDef.id;
         var minValue = this.columnEditor.hasOwnProperty('minValue') ? this.columnEditor.minValue : DEFAULT_MIN_VALUE$2;
         var maxValue = this.columnEditor.hasOwnProperty('maxValue') ? this.columnEditor.maxValue : DEFAULT_MAX_VALUE$2;
         var defaultValue = this.editorParams.hasOwnProperty('sliderStartValue') ? this.editorParams.sliderStartValue : minValue;
         var step = this.columnEditor.hasOwnProperty('valueStep') ? this.columnEditor.valueStep : DEFAULT_STEP$2;
         var itemId = this.args && this.args.item && this.args.item.id;
         if (this.editorParams.hideSliderNumber) {
-            return "\n      <div class=\"slider-editor\">\n        <input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n          name=\"" + this._elementRangeInputId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input range\" />\n      </div>";
+            return "\n      <div class=\"slider-editor\">\n        <input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n          name=\"" + this._elementRangeInputId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input editor-" + fieldId + " range\" />\n      </div>";
         }
-        return "\n      <div class=\"input-group slider-editor\">\n        <input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n          name=\"" + this._elementRangeInputId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input range\" />\n        <div class=\"input-group-addon input-group-append slider-value\"><span class=\"input-group-text\" id=\"" + this._elementRangeOutputId + "\">" + defaultValue + "</span></div>\n      </div>";
+        return "\n      <div class=\"input-group slider-editor\">\n        <input type=\"range\" id=\"" + this._elementRangeInputId + "\"\n          name=\"" + this._elementRangeInputId + "\"\n          defaultValue=\"" + defaultValue + "\" min=\"" + minValue + "\" max=\"" + maxValue + "\" step=\"" + step + "\"\n          class=\"form-control slider-editor-input editor-" + fieldId + " range\" />\n        <div class=\"input-group-addon input-group-append slider-value\"><span class=\"input-group-text\" id=\"" + this._elementRangeOutputId + "\">" + defaultValue + "</span></div>\n      </div>";
     };
     return SliderEditor;
 }());
@@ -6582,7 +7149,8 @@ var TextEditor = /** @class */ (function () {
     });
     TextEditor.prototype.init = function () {
         var _this = this;
-        this.$input = $("<input type=\"text\" class=\"editor-text\" />")
+        var fieldId = this.columnDef && this.columnDef.id;
+        this.$input = $("<input type=\"text\" class=\"editor-text editor-" + fieldId + "\" />")
             .appendTo(this.args.container)
             .on('keydown.nav', function (e) {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
@@ -6891,15 +7459,15 @@ var multipleFormatter = function (row, cell, value, columnDef, dataContext, grid
             currentValue = formatter(row, cell, currentValue, columnDef, dataContext, grid);
         }
     }
-    catch (e_12_1) { e_12 = { error: e_12_1 }; }
+    catch (e_13_1) { e_13 = { error: e_13_1 }; }
     finally {
         try {
             if (formatters_1_1 && !formatters_1_1.done && (_a = formatters_1.return)) _a.call(formatters_1);
         }
-        finally { if (e_12) throw e_12.error; }
+        finally { if (e_13) throw e_13.error; }
     }
     return currentValue;
-    var e_12, _a;
+    var e_13, _a;
 };
 var percentFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {
@@ -7371,16 +7939,18 @@ SlickPaginationComponent.propDecorators = {
 };
 var slickgridEventPrefix = 'sg';
 var AngularSlickgridComponent = /** @class */ (function () {
-    function AngularSlickgridComponent(controlAndPluginService, elm, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
-        this.controlAndPluginService = controlAndPluginService;
+    function AngularSlickgridComponent(elm, exportService, extensionService, extensionUtility, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sharedService, sortService, translate, forRootConfig) {
         this.elm = elm;
         this.exportService = exportService;
+        this.extensionService = extensionService;
+        this.extensionUtility = extensionUtility;
         this.filterService = filterService;
         this.gridService = gridService;
         this.gridEventService = gridEventService;
         this.gridStateService = gridStateService;
         this.groupingAndColspanService = groupingAndColspanService;
         this.resizer = resizer;
+        this.sharedService = sharedService;
         this.sortService = sortService;
         this.translate = translate;
         this.forRootConfig = forRootConfig;
@@ -7454,7 +8024,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataView = [];
         this.gridOptions = {};
         this._eventHandler.unsubscribeAll();
-        this.controlAndPluginService.dispose();
+        this.extensionService.dispose();
         this.filterService.dispose();
         this.gridEventService.dispose();
         this.gridStateService.dispose();
@@ -7477,7 +8047,9 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
         if (this.gridOptions.enableGrouping) {
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
             this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
+            this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
             this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
         }
         else {
@@ -7489,9 +8061,13 @@ var AngularSlickgridComponent = /** @class */ (function () {
             }
             return Object.assign({}, column, { editor: column.editor && column.editor.model, internalColumnEditor: Object.assign({}, column.editor) });
         });
-        this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+        this.sharedService.allColumns = this._columnDefinitions;
+        this.sharedService.visibleColumns = this._columnDefinitions;
+        this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
         this.grid = new Slick.Grid("#" + this.gridId, this._dataView, this._columnDefinitions, this.gridOptions);
-        this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._dataView, this.groupItemMetadataProvider);
+        this.sharedService.dataView = this._dataView;
+        this.sharedService.grid = this.grid;
+        this.extensionService.attachDifferentExtensions();
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
         this.onGridCreated.emit(this.grid);
         this.onDataviewCreated.emit(this._dataView);
@@ -7509,7 +8085,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         }
         this.gridService.init(this.grid, this._dataView);
         if (this.gridOptions.enableTranslate) {
-            this.controlAndPluginService.translateColumnHeaders();
+            this.extensionService.translateColumnHeaders();
         }
         if (this.gridOptions.enableExport) {
             this.exportService.init(this.grid, this._dataView);
@@ -7518,7 +8094,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         if (this.gridOptions && this.gridOptions.backendServiceApi) {
             this.attachBackendCallbackFunctions(this.gridOptions);
         }
-        this.gridStateService.init(this.grid, this.controlAndPluginService, this.filterService, this.sortService);
+        this.gridStateService.init(this.grid, this.extensionService, this.filterService, this.sortService);
         this.onAngularGridCreated.emit({
             dataView: this._dataView,
             slickGrid: this.grid,
@@ -7530,7 +8106,8 @@ var AngularSlickgridComponent = /** @class */ (function () {
             gridStateService: this.gridStateService,
             gridService: this.gridService,
             groupingService: this.groupingAndColspanService,
-            pluginService: this.controlAndPluginService,
+            extensionService: this.extensionService,
+            pluginService: this.extensionService,
             resizerService: this.resizer,
             sortService: this.sortService,
         });
@@ -7568,10 +8145,10 @@ var AngularSlickgridComponent = /** @class */ (function () {
         var _this = this;
         this.subscriptions.push(this.translate.onLangChange.subscribe(function (event) {
             if (gridOptions.enableTranslate) {
-                _this.controlAndPluginService.translateColumnHeaders();
-                _this.controlAndPluginService.translateColumnPicker();
-                _this.controlAndPluginService.translateGridMenu();
-                _this.controlAndPluginService.translateHeaderMenu();
+                _this.extensionService.translateColumnHeaders();
+                _this.extensionService.translateColumnPicker();
+                _this.extensionService.translateGridMenu();
+                _this.extensionService.translateHeaderMenu();
             }
         }));
         if (gridOptions.presets && Array.isArray(gridOptions.presets.columns) && gridOptions.presets.columns.length > 0) {
@@ -7780,10 +8357,10 @@ var AngularSlickgridComponent = /** @class */ (function () {
     };
     AngularSlickgridComponent.prototype.updateColumnDefinitionsList = function (newColumnDefinitions) {
         if (this.gridOptions.enableTranslate) {
-            this.controlAndPluginService.translateColumnHeaders(false, newColumnDefinitions);
+            this.extensionService.translateColumnHeaders(false, newColumnDefinitions);
         }
         else {
-            this.controlAndPluginService.renderColumnHeaders(newColumnDefinitions);
+            this.extensionService.renderColumnHeaders(newColumnDefinitions);
         }
         if (this.gridOptions && this.gridOptions.enableAutoSizeColumns) {
             this.grid.autosizeColumns();
@@ -7830,31 +8407,45 @@ AngularSlickgridComponent.decorators = [
                 selector: 'angular-slickgrid',
                 template: "<div id=\"slickGridContainer-{{gridId}}\" class=\"gridPane\" [style.width]=\"gridWidthString\">\n    <div attr.id='{{gridId}}' class=\"slickgrid-container\" style=\"width: 100%\" [style.height]=\"gridHeightString\">\n    </div>\n\n    <slick-pagination id=\"slickPagingContainer-{{gridId}}\"\n        *ngIf=\"showPagination\"\n        (onPaginationChanged)=\"paginationChanged($event)\"\n        [gridPaginationOptions]=\"gridPaginationOptions\">\n    </slick-pagination>\n</div>\n",
                 providers: [
-                    ControlAndPluginService,
+                    AutoTooltipExtension,
+                    CellExternalCopyManagerExtension,
+                    CheckboxSelectorExtension,
+                    ColumnPickerExtension,
+                    ExtensionService,
                     ExportService,
+                    ExtensionUtility,
                     FilterFactory,
                     FilterService,
                     GraphqlService,
                     GridEventService,
+                    GridMenuExtension,
                     GridService,
                     GridStateService,
                     GroupingAndColspanService,
+                    GroupItemMetaProviderExtension,
+                    HeaderButtonExtension,
+                    HeaderMenuExtension,
                     ResizerService,
+                    RowMoveManagerExtension,
+                    RowSelectionExtension,
+                    SharedService,
                     SortService,
                     SlickgridConfig
                 ]
             },] },
 ];
 AngularSlickgridComponent.ctorParameters = function () { return [
-    { type: ControlAndPluginService, },
     { type: core.ElementRef, },
     { type: ExportService, },
+    { type: ExtensionService, },
+    { type: ExtensionUtility, },
     { type: FilterService, },
     { type: GridService, },
     { type: GridEventService, },
     { type: GridStateService, },
     { type: GroupingAndColspanService, },
     { type: ResizerService, },
+    { type: SharedService, },
     { type: SortService, },
     { type: core$1.TranslateService, },
     { type: undefined, decorators: [{ type: core.Inject, args: ['config',] },] },
@@ -7918,6 +8509,7 @@ exports.AngularSlickgridComponent = AngularSlickgridComponent;
 exports.AngularSlickgridModule = AngularSlickgridModule;
 exports.CaseType = CaseType;
 exports.DelimiterType = DelimiterType;
+exports.ExtensionName = ExtensionName;
 exports.FieldType = FieldType;
 exports.FileType = FileType;
 exports.FilterMultiplePassType = FilterMultiplePassType;
@@ -7927,8 +8519,8 @@ exports.OperatorType = OperatorType;
 exports.SortDirection = SortDirection;
 exports.SortDirectionNumber = SortDirectionNumber;
 exports.CollectionService = CollectionService;
-exports.ControlAndPluginService = ControlAndPluginService;
 exports.ExportService = ExportService;
+exports.ExtensionService = ExtensionService;
 exports.FilterService = FilterService;
 exports.GraphqlService = GraphqlService;
 exports.GridOdataService = GridOdataService;
@@ -7938,6 +8530,7 @@ exports.GridStateService = GridStateService;
 exports.GroupingAndColspanService = GroupingAndColspanService;
 exports.OdataService = OdataService;
 exports.ResizerService = ResizerService;
+exports.SharedService = SharedService;
 exports.SortService = SortService;
 exports.addWhiteSpaces = addWhiteSpaces;
 exports.htmlEncode = htmlEncode;
@@ -7963,6 +8556,17 @@ exports.uniqueArray = uniqueArray;
 exports.unsubscribeAllObservables = unsubscribeAllObservables;
 exports.Aggregators = Aggregators;
 exports.Editors = Editors;
+exports.AutoTooltipExtension = AutoTooltipExtension;
+exports.CellExternalCopyManagerExtension = CellExternalCopyManagerExtension;
+exports.CheckboxSelectorExtension = CheckboxSelectorExtension;
+exports.ColumnPickerExtension = ColumnPickerExtension;
+exports.ExtensionUtility = ExtensionUtility;
+exports.GridMenuExtension = GridMenuExtension;
+exports.GroupItemMetaProviderExtension = GroupItemMetaProviderExtension;
+exports.HeaderButtonExtension = HeaderButtonExtension;
+exports.HeaderMenuExtension = HeaderMenuExtension;
+exports.RowMoveManagerExtension = RowMoveManagerExtension;
+exports.RowSelectionExtension = RowSelectionExtension;
 exports.FilterConditions = FilterConditions;
 exports.Filters = Filters;
 exports.FilterFactory = FilterFactory;

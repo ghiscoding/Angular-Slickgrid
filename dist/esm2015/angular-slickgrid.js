@@ -3,32 +3,21 @@ import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/toPromise';
 import * as moment_ from 'moment-mini';
-import { Injectable, Component, EventEmitter, Input, Output, Inject, ElementRef, NgModule } from '@angular/core';
+import { Injectable, Component, EventEmitter, Input, Output, ElementRef, Inject, NgModule } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { __awaiter } from 'tslib';
 import { Subject } from 'rxjs/Subject';
+import { TextEncoder } from 'text-encoding-utf-8';
+import { __awaiter } from 'tslib';
 import * as DOMPurify_ from 'dompurify';
 import * as isequal_ from 'lodash.isequal';
-import { TextEncoder } from 'text-encoding-utf-8';
+import 'slickgrid/plugins/slick.cellrangedecorator';
+import 'slickgrid/plugins/slick.cellrangeselector';
+import 'slickgrid/plugins/slick.cellselectionmodel';
 import 'jquery-ui-dist/jquery-ui';
 import 'slickgrid/lib/jquery.event.drag-2.3.0';
 import 'slickgrid/slick.core';
 import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
-import 'slickgrid/slick.groupitemmetadataprovider';
-import 'slickgrid/controls/slick.columnpicker';
-import 'slickgrid/controls/slick.gridmenu';
-import 'slickgrid/controls/slick.pager';
-import 'slickgrid/plugins/slick.autotooltips';
-import 'slickgrid/plugins/slick.cellexternalcopymanager';
-import 'slickgrid/plugins/slick.cellrangedecorator';
-import 'slickgrid/plugins/slick.cellrangeselector';
-import 'slickgrid/plugins/slick.cellselectionmodel';
-import 'slickgrid/plugins/slick.checkboxselectcolumn';
-import 'slickgrid/plugins/slick.headerbuttons';
-import 'slickgrid/plugins/slick.headermenu';
-import 'slickgrid/plugins/slick.rowmovemanager';
-import 'slickgrid/plugins/slick.rowselectionmodel';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -61,6 +50,25 @@ const DelimiterType = {
     doubleColon: '::',
     doublePipe: '||',
     doubleSemicolon: ';;',
+};
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/** @enum {string} */
+const ExtensionName = {
+    autoTooltip: 'autoTooltip',
+    cellExternalCopyManager: 'cellExternalCopyManager',
+    checkboxSelector: 'checkboxSelector',
+    columnPicker: 'columnPicker',
+    groupItemMetaProvider: 'groupItemMetaProvider',
+    gridMenu: 'gridMenu',
+    headerButton: 'headerButton',
+    headerMenu: 'headerMenu',
+    noname: 'noname',
+    rowMoveManager: 'rowMoveManager',
+    rowSelection: 'rowSelection',
 };
 
 /**
@@ -1035,6 +1043,954 @@ CollectionService.ctorParameters = () => [
  * @suppress {checkTypes} checked by tsc
  */
 /**
+ * @record
+ */
+
+class ExportService {
+    /**
+     * @param {?} translate
+     */
+    constructor(translate) {
+        this.translate = translate;
+        this._lineCarriageReturn = '\n';
+        this._hasGroupedItems = false;
+        this.onGridBeforeExportToFile = new Subject();
+        this.onGridAfterExportToFile = new Subject();
+    }
+    /**
+     * @return {?}
+     */
+    get datasetIdName() {
+        return this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';
+    }
+    /**
+     * Getter for the Grid Options pulled through the Grid Object
+     * @return {?}
+     */
+    get _gridOptions() {
+        return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+    }
+    /**
+     * Initialize the Export Service
+     * @param {?} grid
+     * @param {?} dataView
+     * @return {?}
+     */
+    init(grid, dataView) {
+        this._grid = grid;
+        this._dataView = dataView;
+    }
+    /**
+     * Function to export the Grid result to an Excel CSV format using javascript for it to produce the CSV file.
+     * This is a WYSIWYG export to file output (What You See is What You Get)
+     *
+     * NOTES: The column position needs to match perfectly the JSON Object position because of the way we are pulling the data,
+     * which means that if any column(s) got moved in the UI, it has to be reflected in the JSON array output as well
+     *
+     * Example: exportToFile({ format: FileType.csv, delimiter: DelimiterType.comma })
+     * @param {?} options
+     * @return {?}
+     */
+    exportToFile(options) {
+        this.onGridBeforeExportToFile.next(true);
+        this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
+        // get the CSV output from the grid data
+        const /** @type {?} */ dataOutput = this.getDataOutput();
+        // trigger a download file
+        // wrap it into a setTimeout so that the EventAggregator has enough time to start a pre-process like showing a spinner
+        setTimeout(() => {
+            const /** @type {?} */ downloadOptions = {
+                filename: `${this._exportOptions.filename}.${this._exportOptions.format}`,
+                csvContent: dataOutput,
+                format: this._exportOptions.format,
+                useUtf8WithBom: this._exportOptions.useUtf8WithBom
+            };
+            this.startDownloadFile(downloadOptions);
+            this.onGridAfterExportToFile.next({ options: downloadOptions });
+        }, 0);
+    }
+    /**
+     * @return {?}
+     */
+    getDataOutput() {
+        const /** @type {?} */ columns = this._grid.getColumns() || [];
+        const /** @type {?} */ delimiter = this._exportOptions.delimiter || '';
+        const /** @type {?} */ format = this._exportOptions.format || '';
+        const /** @type {?} */ groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle || this.translate.instant('GROUP_BY');
+        // a CSV needs double quotes wrapper, the other types do not need any wrapper
+        this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
+        // data variable which will hold all the fields data of a row
+        let /** @type {?} */ outputDataString = '';
+        // get grouped column titles and if found, we will add a "Group by" column at the first column index
+        const /** @type {?} */ grouping = this._dataView.getGrouping();
+        if (grouping && Array.isArray(grouping) && grouping.length > 0) {
+            this._hasGroupedItems = true;
+            outputDataString += `${groupByColumnHeader}` + delimiter;
+        }
+        else {
+            this._hasGroupedItems = false;
+        }
+        // get all column headers
+        this._columnHeaders = this.getColumnHeaders(columns) || [];
+        if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
+            // add the header row + add a new line at the end of the row
+            const /** @type {?} */ outputHeaderTitles = this._columnHeaders.map((header) => {
+                return this._exportQuoteWrapper + header.title + this._exportQuoteWrapper;
+            });
+            outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
+        }
+        // Populate the rest of the Grid Data
+        outputDataString += this.getAllGridRowData(columns, this._lineCarriageReturn);
+        return outputDataString;
+    }
+    /**
+     * Get all the grid row data and return that as an output string
+     * @param {?} columns
+     * @param {?} lineCarriageReturn
+     * @return {?}
+     */
+    getAllGridRowData(columns, lineCarriageReturn) {
+        const /** @type {?} */ outputDataStrings = [];
+        const /** @type {?} */ lineCount = this._dataView.getLength();
+        // loop through all the grid rows of data
+        for (let /** @type {?} */ rowNumber = 0; rowNumber < lineCount; rowNumber++) {
+            const /** @type {?} */ itemObj = this._dataView.getItem(rowNumber);
+            if (itemObj != null) {
+                // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
+                if (itemObj[this.datasetIdName] != null) {
+                    // get regular row item data
+                    outputDataStrings.push(this.readRegularRowData(columns, rowNumber, itemObj));
+                }
+                else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
+                    // get the group row
+                    outputDataStrings.push(this.readGroupedTitleRow(itemObj));
+                }
+                else if (itemObj.__groupTotals) {
+                    // else if the row is a Group By and we have agreggators, then a property of '__groupTotals' would exist under that object
+                    outputDataStrings.push(this.readGroupedTotalRow(columns, itemObj));
+                }
+            }
+        }
+        return outputDataStrings.join(this._lineCarriageReturn);
+    }
+    /**
+     * Get all header titles and their keys, translate the title when required.
+     * @param {?} columns of the grid
+     * @return {?}
+     */
+    getColumnHeaders(columns) {
+        if (!columns || !Array.isArray(columns) || columns.length === 0) {
+            return null;
+        }
+        const /** @type {?} */ columnHeaders = [];
+        // Populate the Column Header, pull the name defined
+        columns.forEach((columnDef) => {
+            const /** @type {?} */ fieldName = (columnDef.headerKey) ? this.translate.instant(columnDef.headerKey) : columnDef.name;
+            const /** @type {?} */ skippedField = columnDef.excludeFromExport || false;
+            // if column width is 0 then it's not evaluated since that field is considered hidden should not be part of the export
+            if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
+                columnHeaders.push({
+                    key: columnDef.field || columnDef.id,
+                    title: fieldName
+                });
+            }
+        });
+        return columnHeaders;
+    }
+    /**
+     * Get the data of a regular row (a row without grouping)
+     * @param {?} columns
+     * @param {?} row
+     * @param {?} itemObj
+     * @return {?}
+     */
+    readRegularRowData(columns, row, itemObj) {
+        let /** @type {?} */ idx = 0;
+        const /** @type {?} */ rowOutputStrings = [];
+        const /** @type {?} */ delimiter = this._exportOptions.delimiter;
+        const /** @type {?} */ format = this._exportOptions.format;
+        const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
+        for (let /** @type {?} */ col = 0, /** @type {?} */ ln = columns.length; col < ln; col++) {
+            const /** @type {?} */ columnDef = columns[col];
+            const /** @type {?} */ fieldId = columnDef.field || columnDef.id || '';
+            // skip excluded column
+            if (columnDef.excludeFromExport) {
+                continue;
+            }
+            // if we are grouping and are on 1st column index, we need to skip this column since it will be used later by the grouping text:: Group by [columnX]
+            if (this._hasGroupedItems && idx === 0) {
+                rowOutputStrings.push(`""`);
+            }
+            // does the user want to evaluate current column Formatter?
+            const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._exportOptions.exportWithFormatter;
+            // did the user provide a Custom Formatter for the export
+            const /** @type {?} */ exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
+            let /** @type {?} */ itemData = '';
+            if (exportCustomFormatter) {
+                itemData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+            }
+            else if (isEvaluatingFormatter && !!columnDef.formatter) {
+                itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+            }
+            else {
+                itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
+            }
+            // does the user want to sanitize the output data (remove HTML tags)?
+            if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
+                itemData = sanitizeHtmlToText(itemData);
+            }
+            // when CSV we also need to escape double quotes twice, so " becomes ""
+            if (format === FileType.csv && itemData) {
+                itemData = itemData.toString().replace(/"/gi, `""`);
+            }
+            // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
+            // to cancel that effect we can had = in front, ex: ="1E06"
+            const /** @type {?} */ keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
+            rowOutputStrings.push(keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper);
+            idx++;
+        }
+        return rowOutputStrings.join(delimiter);
+    }
+    /**
+     * Get the grouped title(s), for example if we grouped by salesRep, the returned result would be:: 'Sales Rep'
+     * @param {?} itemObj
+     * @return {?}
+     */
+    readGroupedTitleRow(itemObj) {
+        let /** @type {?} */ groupName = sanitizeHtmlToText(itemObj.title);
+        const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
+        const /** @type {?} */ format = this._exportOptions.format;
+        groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
+        if (format === FileType.csv) {
+            // when CSV we also need to escape double quotes twice, so " becomes ""
+            groupName = groupName.toString().replace(/"/gi, `""`);
+        }
+        return exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper;
+    }
+    /**
+     * Get the grouped totals, these are set by Slick Aggregators.
+     * For example if we grouped by "salesRep" and we have a Sum Aggregator on "sales", then the returned output would be:: ["Sum 123$"]
+     * @param {?} columns
+     * @param {?} itemObj
+     * @return {?}
+     */
+    readGroupedTotalRow(columns, itemObj) {
+        const /** @type {?} */ delimiter = this._exportOptions.delimiter;
+        const /** @type {?} */ format = this._exportOptions.format;
+        const /** @type {?} */ groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
+        const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
+        const /** @type {?} */ outputStrings = [`${exportQuoteWrapper}${groupingAggregatorRowText}${exportQuoteWrapper}`];
+        columns.forEach((columnDef) => {
+            let /** @type {?} */ itemData = '';
+            // if there's a groupTotalsFormatter, we will re-run it to get the exact same output as what is shown in UI
+            if (columnDef.groupTotalsFormatter) {
+                itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
+            }
+            // does the user want to sanitize the output data (remove HTML tags)?
+            if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
+                itemData = sanitizeHtmlToText(itemData);
+            }
+            if (format === FileType.csv) {
+                // when CSV we also need to escape double quotes twice, so a double quote " becomes 2x double quotes ""
+                itemData = itemData.toString().replace(/"/gi, `""`);
+            }
+            outputStrings.push(exportQuoteWrapper + itemData + exportQuoteWrapper);
+        });
+        return outputStrings.join(delimiter);
+    }
+    /**
+     * Triggers download file with file format.
+     * IE(6-10) are not supported
+     * All other browsers will use plain javascript on client side to produce a file download.
+     * @param {?} options
+     * @return {?}
+     */
+    startDownloadFile(options) {
+        // IE(6-10) don't support javascript download and our service doesn't support either so throw an error, we have to make a round trip to the Web Server for exporting
+        if (navigator.appName === 'Microsoft Internet Explorer') {
+            throw new Error('Microsoft Internet Explorer 6 to 10 do not support javascript export to CSV. Please upgrade your browser.');
+        }
+        // set the correct MIME type
+        const /** @type {?} */ mimeType = (options.format === FileType.csv) ? 'text/csv' : 'text/plain';
+        // make sure no html entities exist in the data
+        const /** @type {?} */ csvContent = htmlEntityDecode(options.csvContent);
+        // dealing with Excel CSV export and UTF-8 is a little tricky.. We will use Option #2 to cover older Excel versions
+        // Option #1: we need to make Excel knowing that it's dealing with an UTF-8, A correctly formatted UTF8 file can have a Byte Order Mark as its first three octets
+        // reference: http://stackoverflow.com/questions/155097/microsoft-excel-mangles-diacritics-in-csv-files
+        // Option#2: use a 3rd party extension to javascript encode into UTF-16
+        let /** @type {?} */ outputData;
+        if (options.format === FileType.csv) {
+            outputData = new TextEncoder('utf-8').encode(csvContent);
+        }
+        else {
+            outputData = csvContent;
+        }
+        // create a Blob object for the download
+        const /** @type {?} */ blob = new Blob([options.useUtf8WithBom ? '\uFEFF' : '', outputData], {
+            type: `${mimeType};charset=utf-8;`
+        });
+        // when using IE/Edge, then use different download call
+        if (typeof navigator.msSaveOrOpenBlob === 'function') {
+            navigator.msSaveOrOpenBlob(blob, options.filename);
+        }
+        else {
+            // this trick will generate a temp <a /> tag
+            // the code will then trigger a hidden click for it to start downloading
+            const /** @type {?} */ link = document.createElement('a');
+            const /** @type {?} */ csvUrl = URL.createObjectURL(blob);
+            link.textContent = 'download';
+            link.href = csvUrl;
+            link.setAttribute('download', options.filename);
+            // set the visibility to hidden so there is no effect on your web-layout
+            link.style.visibility = 'hidden';
+            // this part will append the anchor tag, trigger a click (for download to start) and finally remove the tag once completed
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+}
+ExportService.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+ExportService.ctorParameters = () => [
+    { type: TranslateService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class Constants {
+}
+Constants.TEXT_CANCEL = 'Cancel';
+Constants.TEXT_CLEAR_ALL_FILTERS = 'Clear All Filters';
+Constants.TEXT_CLEAR_ALL_SORTING = 'Clear All Sorting';
+Constants.TEXT_COLUMNS = 'Columns';
+Constants.TEXT_COMMANDS = 'Commands';
+Constants.TEXT_EXPORT_IN_CSV_FORMAT = 'Export in CSV format';
+Constants.TEXT_EXPORT_IN_TEXT_FORMAT = 'Export in Text format (Tab delimited)';
+Constants.TEXT_FORCE_FIT_COLUMNS = 'Force fit columns';
+Constants.TEXT_HIDE_COLUMN = 'Hide Column';
+Constants.TEXT_REFRESH_DATASET = 'Refresh Dataset';
+Constants.TEXT_SAVE = 'Save';
+Constants.TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';
+Constants.TEXT_SORT_ASCENDING = 'Sort Ascending';
+Constants.TEXT_SORT_DESCENDING = 'Sort Descending';
+Constants.TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
+Constants.VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
+Constants.VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
+Constants.VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
+Constants.VALIDATION_EDITOR_NUMBER_MAX = 'Please enter a valid number that is lower than {{maxValue}}';
+Constants.VALIDATION_EDITOR_NUMBER_MIN = 'Please enter a valid number that is greater than {{minValue}}';
+Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN = 'Please enter a valid number with a maximum of {{maxDecimal}} decimals';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class SharedService {
+    /**
+     * Getter for All Columns  in the grid (hidden/visible)
+     * @return {?}
+     */
+    get allColumns() {
+        return this._allColumns;
+    }
+    /**
+     * Setter for All Columns  in the grid (hidden/visible)
+     * @param {?} allColumns
+     * @return {?}
+     */
+    set allColumns(allColumns) {
+        this._allColumns = allColumns;
+    }
+    /**
+     * Getter for the Column Definitions pulled through the Grid Object
+     * @return {?}
+     */
+    get columnDefinitions() {
+        return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
+    }
+    /**
+     * Getter for SlickGrid DataView object
+     * @return {?}
+     */
+    get dataView() {
+        return this._dataView;
+    }
+    /**
+     * Setter for SlickGrid DataView object
+     * @param {?} dataView
+     * @return {?}
+     */
+    set dataView(dataView) {
+        this._dataView = dataView;
+    }
+    /**
+     * Getter for SlickGrid Grid object
+     * @return {?}
+     */
+    get grid() {
+        return this._grid;
+    }
+    /**
+     * Setter for SlickGrid Grid object
+     * @param {?} grid
+     * @return {?}
+     */
+    set grid(grid) {
+        this._grid = grid;
+    }
+    /**
+     * Getter for the Grid Options pulled through the Grid Object
+     * @return {?}
+     */
+    get gridOptions() {
+        return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+    }
+    /**
+     * Setter for the Grid Options pulled through the Grid Object
+     * @param {?} gridOptions
+     * @return {?}
+     */
+    set gridOptions(gridOptions) {
+        this.gridOptions = gridOptions;
+    }
+    /**
+     * Getter for the Grid Options
+     * @return {?}
+     */
+    get groupItemMetadataProvider() {
+        return this._groupItemMetadataProvider;
+    }
+    /**
+     * Setter for the Grid Options
+     * @param {?} groupItemMetadataProvider
+     * @return {?}
+     */
+    set groupItemMetadataProvider(groupItemMetadataProvider) {
+        this._groupItemMetadataProvider = groupItemMetadataProvider;
+    }
+    /**
+     * Getter for the Visible Columns in the grid
+     * @return {?}
+     */
+    get visibleColumns() {
+        return this._visibleColumns;
+    }
+    /**
+     * Setter for the Visible Columns in the grid
+     * @param {?} visibleColumns
+     * @return {?}
+     */
+    set visibleColumns(visibleColumns) {
+        this._visibleColumns = visibleColumns;
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class ExtensionUtility {
+    /**
+     * @param {?} sharedService
+     * @param {?} translate
+     */
+    constructor(sharedService, translate) {
+        this.sharedService = sharedService;
+        this.translate = translate;
+    }
+    /**
+     * Remove a column from the grid by it's index in the grid
+     * @param {?} array input
+     * @param {?} index
+     * @return {?}
+     */
+    arrayRemoveItemByIndex(array, index) {
+        return array.filter((el, i) => {
+            return index !== i;
+        });
+    }
+    /**
+     * Load SlickGrid Extension (Control/Plugin) dynamically (on demand)
+     * This will basically only load the extension when user enables the feature
+     * @param {?} extensionName
+     * @return {?}
+     */
+    loadExtensionDynamically(extensionName) {
+        try {
+            switch (extensionName) {
+                case ExtensionName.autoTooltip:
+                    require('slickgrid/plugins/slick.autotooltips');
+                    break;
+                case ExtensionName.cellExternalCopyManager:
+                    require('slickgrid/plugins/slick.cellexternalcopymanager');
+                    break;
+                case ExtensionName.checkboxSelector:
+                    require('slickgrid/plugins/slick.checkboxselectcolumn');
+                    break;
+                case ExtensionName.columnPicker:
+                    require('slickgrid/controls/slick.columnpicker');
+                    break;
+                case ExtensionName.gridMenu:
+                    require('slickgrid/controls/slick.gridmenu');
+                    break;
+                case ExtensionName.groupItemMetaProvider:
+                    require('slickgrid/slick.groupitemmetadataprovider');
+                    break;
+                case ExtensionName.headerButton:
+                    require('slickgrid/plugins/slick.headerbuttons');
+                    break;
+                case ExtensionName.headerMenu:
+                    require('slickgrid/plugins/slick.headermenu');
+                    break;
+                case ExtensionName.rowSelection:
+                    require('slickgrid/plugins/slick.rowselectionmodel');
+                    break;
+                case ExtensionName.rowMoveManager:
+                    require('slickgrid/plugins/slick.rowmovemanager.js');
+                    break;
+            }
+        }
+        catch (/** @type {?} */ e) {
+            // do nothing, we fall here when using Aurelia-CLI and RequireJS
+            // if you do use RequireJS then you need to make sure to include all necessary extensions in your `aurelia.json`
+        }
+    }
+    /**
+     * From a Grid Menu object property name, we will return the correct title output string following this order
+     * 1- if user provided a title, use it as the output title
+     * 2- else if user provided a title key, use it to translate the output title
+     * 3- else if nothing is provided use
+     * @param {?} propName
+     * @param {?} pickerName
+     * @return {?}
+     */
+    getPickerTitleOutputString(propName, pickerName) {
+        let /** @type {?} */ output = '';
+        const /** @type {?} */ picker = this.sharedService.gridOptions && this.sharedService.gridOptions[pickerName] || {};
+        const /** @type {?} */ enableTranslate = this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate || false;
+        const /** @type {?} */ title = picker && picker[propName];
+        const /** @type {?} */ titleKey = picker && picker[`${propName}Key`];
+        if (titleKey) {
+            output = this.translate.instant(titleKey || ' ');
+        }
+        else {
+            switch (propName) {
+                case 'customTitle':
+                    output = title || (enableTranslate ? this.translate.instant('COMMANDS') : Constants.TEXT_COMMANDS);
+                    break;
+                case 'columnTitle':
+                    output = title || (enableTranslate ? this.translate.instant('COLUMNS') : Constants.TEXT_COLUMNS);
+                    break;
+                case 'forceFitTitle':
+                    output = title || (enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : Constants.TEXT_FORCE_FIT_COLUMNS);
+                    break;
+                case 'syncResizeTitle':
+                    output = title || (enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : Constants.TEXT_SYNCHRONOUS_RESIZE);
+                    break;
+                default:
+                    output = title;
+                    break;
+            }
+        }
+        return output;
+    }
+    /**
+     * Sort items in an array by a property name
+     * \@params items array
+     * @param {?} items
+     * @param {?} propertyName
+     * @return {?} sorted array
+     */
+    sortItems(items, propertyName) {
+        // sort the custom items by their position in the list
+        items.sort((itemA, itemB) => {
+            if (itemA && itemB && itemA.hasOwnProperty(propertyName) && itemB.hasOwnProperty(propertyName)) {
+                return itemA[propertyName] - itemB[propertyName];
+            }
+            return 0;
+        });
+    }
+    /**
+     * Translate the an array of items from an input key and assign to the output key
+     * @param {?} items
+     * @param {?} inputKey
+     * @param {?} outputKey
+     * @return {?}
+     */
+    translateItems(items, inputKey, outputKey) {
+        for (const /** @type {?} */ item of items) {
+            if (item[inputKey]) {
+                item[outputKey] = this.translate.instant(item[inputKey]);
+            }
+        }
+    }
+}
+ExtensionUtility.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+ExtensionUtility.ctorParameters = () => [
+    { type: SharedService, },
+    { type: TranslateService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class AutoTooltipExtension {
+    /**
+     * @param {?} extensionUtility
+     * @param {?} sharedService
+     */
+    constructor(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+    }
+    /**
+     * @return {?}
+     */
+    dispose() {
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    }
+    /**
+     * @return {?}
+     */
+    register() {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            // dynamically import the SlickGrid plugin with requireJS
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.autoTooltip);
+            this._extension = new Slick.AutoTooltips(this.sharedService.gridOptions.autoTooltipOptions || {});
+            this.sharedService.grid.registerPlugin(this._extension);
+            return this._extension;
+        }
+        return null;
+    }
+}
+AutoTooltipExtension.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+AutoTooltipExtension.ctorParameters = () => [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class CellExternalCopyManagerExtension {
+    /**
+     * @param {?} extensionUtility
+     * @param {?} sharedService
+     */
+    constructor(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+    }
+    /**
+     * @return {?}
+     */
+    dispose() {
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    }
+    /**
+     * @return {?}
+     */
+    register() {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            // dynamically import the SlickGrid plugin with requireJS
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.cellExternalCopyManager);
+            this.createUndoRedoBuffer();
+            this.hookUndoShortcutKey();
+            let /** @type {?} */ newRowIds = 0;
+            const /** @type {?} */ pluginOptions = {
+                clipboardCommandHandler: (editCommand) => {
+                    this._undoRedoBuffer.queueAndExecuteCommand.call(this._undoRedoBuffer, editCommand);
+                },
+                dataItemColumnValueExtractor: (item, columnDef) => {
+                    // when grid or cell is not editable, we will possibly evaluate the Formatter if it was passed
+                    // to decide if we evaluate the Formatter, we will use the same flag from Export which is "exportWithFormatter"
+                    if (!this.sharedService.gridOptions.editable || !columnDef.editor) {
+                        const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : (this.sharedService.gridOptions.exportOptions && this.sharedService.gridOptions.exportOptions.exportWithFormatter);
+                        if (columnDef.formatter && isEvaluatingFormatter) {
+                            const /** @type {?} */ formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this.sharedService.grid);
+                            if (columnDef.sanitizeDataExport || (this.sharedService.gridOptions.exportOptions && this.sharedService.gridOptions.exportOptions.sanitizeDataExport)) {
+                                return sanitizeHtmlToText(formattedOutput);
+                            }
+                            return formattedOutput;
+                        }
+                    }
+                    // else use the default "dataItemColumnValueExtractor" from the plugin itself
+                    // we can do that by setting back the getter with null
+                    return null;
+                },
+                readOnlyMode: false,
+                includeHeaderWhenCopying: false,
+                newRowCreator: (count) => {
+                    for (let /** @type {?} */ i = 0; i < count; i++) {
+                        const /** @type {?} */ item = {
+                            id: 'newRow_' + newRowIds++
+                        };
+                        this.sharedService.grid.getData().addItem(item);
+                    }
+                }
+            };
+            this.sharedService.grid.setSelectionModel(new Slick.CellSelectionModel());
+            this._extension = new Slick.CellExternalCopyManager(pluginOptions);
+            this.sharedService.grid.registerPlugin(this._extension);
+            return this._extension;
+        }
+        return null;
+    }
+    /**
+     * Create an undo redo buffer used by the Excel like copy
+     * @return {?}
+     */
+    createUndoRedoBuffer() {
+        const /** @type {?} */ commandQueue = [];
+        let /** @type {?} */ commandCtr = 0;
+        this._undoRedoBuffer = {
+            queueAndExecuteCommand: (editCommand) => {
+                commandQueue[commandCtr] = editCommand;
+                commandCtr++;
+                editCommand.execute();
+            },
+            undo: () => {
+                if (commandCtr === 0) {
+                    return;
+                }
+                commandCtr--;
+                const /** @type {?} */ command = commandQueue[commandCtr];
+                if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+                    command.undo();
+                }
+            },
+            redo: () => {
+                if (commandCtr >= commandQueue.length) {
+                    return;
+                }
+                const /** @type {?} */ command = commandQueue[commandCtr];
+                commandCtr++;
+                if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+                    command.execute();
+                }
+            }
+        };
+    }
+    /**
+     * Attach an undo shortcut key hook that will redo/undo the copy buffer
+     * @return {?}
+     */
+    hookUndoShortcutKey() {
+        // undo shortcut
+        $(document).keydown((e) => {
+            if (e.which === 90 && (e.ctrlKey || e.metaKey)) {
+                // CTRL + (shift) + Z
+                if (e.shiftKey) {
+                    this._undoRedoBuffer.redo();
+                }
+                else {
+                    this._undoRedoBuffer.undo();
+                }
+            }
+        });
+    }
+}
+CellExternalCopyManagerExtension.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+CellExternalCopyManagerExtension.ctorParameters = () => [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class CheckboxSelectorExtension {
+    /**
+     * @param {?} extensionUtility
+     * @param {?} sharedService
+     */
+    constructor(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+    }
+    /**
+     * @return {?}
+     */
+    dispose() {
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    }
+    /**
+     * Attach/Create different plugins before the Grid creation.
+     * For example the multi-select have to be added to the column definition before the grid is created to work properly
+     * @param {?} columnDefinitions
+     * @param {?} gridOptions
+     * @return {?}
+     */
+    create(columnDefinitions, gridOptions) {
+        if (columnDefinitions && gridOptions) {
+            // dynamically import the SlickGrid plugin with requireJS
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.checkboxSelector);
+            if (!this._extension) {
+                this._extension = new Slick.CheckboxSelectColumn(gridOptions.checkboxSelector || {});
+            }
+            const /** @type {?} */ selectionColumn = this._extension.getColumnDefinition();
+            selectionColumn.excludeFromExport = true;
+            selectionColumn.excludeFromQuery = true;
+            selectionColumn.excludeFromHeaderMenu = true;
+            columnDefinitions.unshift(selectionColumn);
+            return this._extension;
+        }
+        return null;
+    }
+    /**
+     * @param {?=} rowSelectionPlugin
+     * @return {?}
+     */
+    register(rowSelectionPlugin) {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
+            // the selector column has to be created BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
+            this.sharedService.grid.registerPlugin(this._extension);
+            // this also requires the Row Selection Model to be registered as well
+            if (!rowSelectionPlugin || !this.sharedService.grid.getSelectionModel()) {
+                this.extensionUtility.loadExtensionDynamically(ExtensionName.rowSelection);
+                rowSelectionPlugin = new Slick.RowSelectionModel(this.sharedService.gridOptions.rowSelectionOptions || {});
+                this.sharedService.grid.setSelectionModel(rowSelectionPlugin);
+            }
+            // user might want to pre-select some rows
+            // the setTimeout is because of timing issue with styling (row selection happen but rows aren't highlighted properly)
+            if (this.sharedService.gridOptions.preselectedRows && rowSelectionPlugin && this.sharedService.grid.getSelectionModel()) {
+                setTimeout(() => this._extension.selectRows(this.sharedService.gridOptions.preselectedRows), 0);
+            }
+            return rowSelectionPlugin;
+        }
+        return null;
+    }
+}
+CheckboxSelectorExtension.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+CheckboxSelectorExtension.ctorParameters = () => [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class ColumnPickerExtension {
+    /**
+     * @param {?} extensionUtility
+     * @param {?} sharedService
+     */
+    constructor(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+        this._eventHandler = new Slick.EventHandler();
+    }
+    /**
+     * @return {?}
+     */
+    dispose() {
+        // unsubscribe all SlickGrid events
+        this._eventHandler.unsubscribeAll();
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    }
+    /**
+     * @return {?}
+     */
+    register() {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            // dynamically import the SlickGrid plugin with requireJS
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.columnPicker);
+            // localization support for the picker
+            const /** @type {?} */ columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'columnPicker');
+            const /** @type {?} */ forceFitTitle = this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
+            const /** @type {?} */ syncResizeTitle = this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
+            this.sharedService.gridOptions.columnPicker = this.sharedService.gridOptions.columnPicker || {};
+            this.sharedService.gridOptions.columnPicker.columnTitle = this.sharedService.gridOptions.columnPicker.columnTitle || columnTitle;
+            this.sharedService.gridOptions.columnPicker.forceFitTitle = this.sharedService.gridOptions.columnPicker.forceFitTitle || forceFitTitle;
+            this.sharedService.gridOptions.columnPicker.syncResizeTitle = this.sharedService.gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
+            this._extension = new Slick.Controls.ColumnPicker(this.sharedService.columnDefinitions, this.sharedService.grid, this.sharedService.gridOptions);
+            if (this.sharedService.grid && this.sharedService.gridOptions.enableColumnPicker) {
+                this._eventHandler.subscribe(this._extension.onColumnsChanged, (e, args) => {
+                    if (this.sharedService.gridOptions.columnPicker && typeof this.sharedService.gridOptions.columnPicker.onColumnsChanged === 'function') {
+                        this.sharedService.gridOptions.columnPicker.onColumnsChanged(e, args);
+                    }
+                });
+            }
+            return this._extension;
+        }
+    }
+    /**
+     * Translate the Column Picker and it's last 2 checkboxes
+     * @return {?}
+     */
+    translateColumnPicker() {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
+            if (this.sharedService.gridOptions.columnPicker) {
+                this.emptyColumnPickerTitles();
+                this.sharedService.gridOptions.columnPicker.columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'columnPicker');
+                this.sharedService.gridOptions.columnPicker.forceFitTitle = this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
+                this.sharedService.gridOptions.columnPicker.syncResizeTitle = this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
+            }
+            // translate all columns (including non-visible)
+            this.extensionUtility.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+            // re-initialize the Column Picker, that will recreate all the list
+            // doing an "init()" won't drop any existing command attached
+            if (this._extension.init) {
+                this._extension.init(this.sharedService.grid);
+            }
+        }
+    }
+    /**
+     * @return {?}
+     */
+    emptyColumnPickerTitles() {
+        if (this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.columnPicker) {
+            this.sharedService.gridOptions.columnPicker.columnTitle = '';
+            this.sharedService.gridOptions.columnPicker.forceFitTitle = '';
+            this.sharedService.gridOptions.columnPicker.syncResizeTitle = '';
+        }
+    }
+}
+ColumnPickerExtension.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+ColumnPickerExtension.ctorParameters = () => [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
  * @param {?} str
  * @return {?}
  */
@@ -1436,12 +2392,13 @@ class CompoundDateFilter {
      * @return {?}
      */
     createDomElement(searchTerm) {
-        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
+        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(fieldId);
         $($headerElm).empty();
         // create the DOM Select dropdown for the Operator
         this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
         this.$filterInputElm = this.buildDatePickerInput(searchTerm);
-        const /** @type {?} */ $filterContainerElm = $(`<div class="form-group search-filter"></div>`);
+        const /** @type {?} */ $filterContainerElm = $(`<div class="form-group search-filter filter-${fieldId}"></div>`);
         const /** @type {?} */ $containerInputGroup = $(`<div class="input-group flatpickr"></div>`);
         const /** @type {?} */ $operatorInputGroupAddon = $(`<div class="input-group-addon input-group-prepend operator"></div>`);
         /* the DOM element final structure will be
@@ -1459,8 +2416,8 @@ class CompoundDateFilter {
         $containerInputGroup.append(this.$filterInputElm);
         // create the DOM element & add an ID and filter class
         $filterContainerElm.append($containerInputGroup);
-        $filterContainerElm.attr('id', `filter-${this.columnDef.id}`);
-        this.$filterInputElm.data('columnId', this.columnDef.id);
+        $filterContainerElm.attr('id', `filter-${fieldId}`);
+        this.$filterInputElm.data('columnId', fieldId);
         if (this.operator) {
             this.$selectOperatorElm.val(this.operator);
         }
@@ -1481,7 +2438,10 @@ class CompoundDateFilter {
      */
     loadFlatpickrLocale(locale) {
         // change locale if needed, Flatpickr reference: https://chmln.github.io/flatpickr/localization/
-        if (locale !== 'en') {
+        if (this.gridOptions && this.gridOptions.params && this.gridOptions.params.flapickrLocale) {
+            return this.gridOptions.params.flapickrLocale;
+        }
+        else if (locale !== 'en') {
             const /** @type {?} */ localeDefault = require(`flatpickr/dist/l10n/${locale}.js`).default;
             return (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
         }
@@ -1663,12 +2623,13 @@ class CompoundInputFilter {
      * @return {?}
      */
     createDomElement(searchTerm) {
-        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
+        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(fieldId);
         $($headerElm).empty();
         // create the DOM Select dropdown for the Operator
         this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
         this.$filterInputElm = $(this.buildInputHtmlString());
-        const /** @type {?} */ $filterContainerElm = $(`<div class="form-group search-filter"></div>`);
+        const /** @type {?} */ $filterContainerElm = $(`<div class="form-group search-filter filter-${fieldId}"></div>`);
         const /** @type {?} */ $containerInputGroup = $(`<div class="input-group"></div>`);
         const /** @type {?} */ $operatorInputGroupAddon = $(`<div class="input-group-addon input-group-prepend operator"></div>`);
         /* the DOM element final structure will be
@@ -1684,9 +2645,9 @@ class CompoundInputFilter {
         $containerInputGroup.append(this.$filterInputElm);
         // create the DOM element & add an ID and filter class
         $filterContainerElm.append($containerInputGroup);
-        $filterContainerElm.attr('id', `filter-${this.columnDef.id}`);
+        $filterContainerElm.attr('id', `filter-${fieldId}`);
         this.$filterInputElm.val(searchTerm);
-        this.$filterInputElm.data('columnId', this.columnDef.id);
+        this.$filterInputElm.data('columnId', fieldId);
         if (this.operator) {
             this.$selectOperatorElm.val(this.operator);
         }
@@ -1896,14 +2857,15 @@ class CompoundSliderFilter {
      * @return {?}
      */
     createDomElement(searchTerm) {
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
         const /** @type {?} */ searchTermInput = /** @type {?} */ ((searchTerm || '0'));
         const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
         // create the DOM Select dropdown for the Operator
         this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
         this.$filterInputElm = $(this.buildTemplateHtmlString());
-        const /** @type {?} */ $filterContainerElm = $(`<div class="form-group search-filter"></div>`);
-        this.$containerInputGroupElm = $(`<div class="input-group search-filter"></div>`);
+        const /** @type {?} */ $filterContainerElm = $(`<div class="form-group search-filter filter-${fieldId}"></div>`);
+        this.$containerInputGroupElm = $(`<div class="input-group search-filter filter-${fieldId}"></div>`);
         const /** @type {?} */ $operatorInputGroupAddon = $(`<span class="input-group-addon input-group-prepend operator"></span>`);
         /* the DOM element final structure will be
               <div class="input-group">
@@ -1924,9 +2886,9 @@ class CompoundSliderFilter {
         }
         // create the DOM element & add an ID and filter class
         $filterContainerElm.append(this.$containerInputGroupElm);
-        $filterContainerElm.attr('id', `filter-${this.columnDef.field}`);
+        $filterContainerElm.attr('id', `filter-${fieldId}`);
         this.$filterInputElm.val(searchTermInput);
-        this.$filterInputElm.data('columnId', this.columnDef.field);
+        this.$filterInputElm.data('columnId', fieldId);
         if (this.operator) {
             this.$selectOperatorElm.val(this.operator);
         }
@@ -2046,8 +3008,9 @@ class InputFilter {
      * @return {?}
      */
     buildTemplateHtmlString() {
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
         const /** @type {?} */ placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
-        return `<input type="text" class="form-control search-filter" placeholder="${placeholder}">`;
+        return `<input type="text" class="form-control search-filter filter-${fieldId}" placeholder="${placeholder}">`;
     }
     /**
      * From the html template string, create a DOM element
@@ -2056,13 +3019,14 @@ class InputFilter {
      * @return {?}
      */
     createDomElement(filterTemplate, searchTerm) {
-        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
+        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(fieldId);
         $($headerElm).empty();
         // create the DOM element & add an ID and filter class
         const /** @type {?} */ $filterElm = $(filterTemplate);
         $filterElm.val(searchTerm);
-        $filterElm.attr('id', `filter-${this.columnDef.id}`);
-        $filterElm.data('columnId', this.columnDef.id);
+        $filterElm.attr('id', `filter-${fieldId}`);
+        $filterElm.data('columnId', fieldId);
         // if there's a search term, we will add the "filled" class for styling purposes
         if (searchTerm) {
             $filterElm.addClass('filled');
@@ -2205,9 +3169,6 @@ class SelectFilter {
         const /** @type {?} */ collectionAsync = this.columnFilter && this.columnFilter.collectionAsync;
         if (collectionAsync) {
             this.renderOptionsAsync(collectionAsync); // create Subject after resolve (createCollectionAsyncSubject)
-        }
-        else if (this.columnFilter && this.columnFilter.collection) {
-            this.createCollectionAsyncSubject();
         }
     }
     /**
@@ -2353,6 +3314,7 @@ class SelectFilter {
      */
     buildTemplateHtmlString(optionCollection, searchTerms) {
         let /** @type {?} */ options = '';
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
         const /** @type {?} */ separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         const /** @type {?} */ isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
         const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
@@ -2403,7 +3365,7 @@ class SelectFilter {
                 }
             });
         }
-        return `<select class="ms-filter search-filter" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
+        return `<select class="ms-filter search-filter filter-${fieldId}" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
     }
     /**
      * Create a blank entry that can be added to the collection. It will also reuse the same customStructure if need be
@@ -2429,11 +3391,11 @@ class SelectFilter {
      * @return {?}
      */
     createDomElement(filterTemplate) {
-        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
         // provide the name attribute to the DOM element which will be needed to auto-adjust drop position (dropup / dropdown)
-        this.elementName = `filter_${fieldId}`;
+        this.elementName = `filter-${fieldId}`;
         this.defaultOptions.name = this.elementName;
-        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(fieldId);
         $($headerElm).empty();
         // create the DOM element & add an ID and filter class
         this.$filterElm = $(filterTemplate);
@@ -2564,6 +3526,7 @@ class NativeSelectFilter {
         if (!this.columnDef || !this.columnDef.filter || !this.columnDef.filter.collection) {
             throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
         }
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
         const /** @type {?} */ optionCollection = this.columnDef.filter.collection || [];
         const /** @type {?} */ labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
         const /** @type {?} */ valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';
@@ -2584,7 +3547,7 @@ class NativeSelectFilter {
                 options += `<option value="${option[valueName]}">${textLabel}</option>`;
             });
         }
-        return `<select class="form-control search-filter">${options}</select>`;
+        return `<select class="form-control search-filter filter-${fieldId}">${options}</select>`;
     }
     /**
      * From the html template string, create a DOM element
@@ -2593,14 +3556,15 @@ class NativeSelectFilter {
      * @return {?}
      */
     createDomElement(filterTemplate, searchTerm) {
-        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
+        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(fieldId);
         $($headerElm).empty();
         // create the DOM element & add an ID and filter class
         const /** @type {?} */ $filterElm = $(filterTemplate);
         const /** @type {?} */ searchTermInput = /** @type {?} */ ((searchTerm || ''));
         $filterElm.val(searchTermInput);
-        $filterElm.attr('id', `filter-${this.columnDef.id}`);
-        $filterElm.data('columnId', this.columnDef.id);
+        $filterElm.attr('id', `filter-${fieldId}`);
+        $filterElm.data('columnId', fieldId);
         // append the new DOM element to the header row
         if ($filterElm && typeof $filterElm.appendTo === 'function') {
             $filterElm.appendTo($headerElm);
@@ -2742,13 +3706,14 @@ class SliderFilter {
      * @return {?}
      */
     buildTemplateHtmlString() {
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
         const /** @type {?} */ minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE$1;
         const /** @type {?} */ maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE$1;
         const /** @type {?} */ defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
         const /** @type {?} */ step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP$1;
         if (this.filterParams.hideSliderNumber) {
             return `
-      <div class="search-filter">
+      <div class="search-filter filter-${fieldId}">
         <input type="range" id="${this._elementRangeInputId}"
           name="${this._elementRangeInputId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
@@ -2756,7 +3721,7 @@ class SliderFilter {
       </div>`;
         }
         return `
-      <div class="input-group search-filter">
+      <div class="input-group search-filter filter-${fieldId}">
         <input type="range" id="${this._elementRangeInputId}"
           name="${this._elementRangeInputId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
@@ -2773,15 +3738,16 @@ class SliderFilter {
      * @return {?}
      */
     createDomElement(filterTemplate, searchTerm) {
-        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
+        const /** @type {?} */ $headerElm = this.grid.getHeaderRowColumn(fieldId);
         $($headerElm).empty();
         // create the DOM element & add an ID and filter class
         const /** @type {?} */ $filterElm = $(filterTemplate);
         const /** @type {?} */ searchTermInput = /** @type {?} */ ((searchTerm || '0'));
         $filterElm.children('input').val(searchTermInput);
         $filterElm.children('div.input-group-addon.input-group-append').children().html(searchTermInput);
-        $filterElm.attr('id', `filter-${this.columnDef.id}`);
-        $filterElm.data('columnId', this.columnDef.id);
+        $filterElm.attr('id', `filter-${fieldId}`);
+        $filterElm.data('columnId', fieldId);
         // if there's a search term, we will add the "filled" class for styling purposes
         if (searchTerm) {
             $filterElm.addClass('filled');
@@ -3448,326 +4414,6 @@ FilterService.ctorParameters = () => [
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-/**
- * @record
- */
-
-class ExportService {
-    /**
-     * @param {?} translate
-     */
-    constructor(translate) {
-        this.translate = translate;
-        this._lineCarriageReturn = '\n';
-        this._hasGroupedItems = false;
-        this.onGridBeforeExportToFile = new Subject();
-        this.onGridAfterExportToFile = new Subject();
-    }
-    /**
-     * @return {?}
-     */
-    get datasetIdName() {
-        return this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';
-    }
-    /**
-     * Getter for the Grid Options pulled through the Grid Object
-     * @return {?}
-     */
-    get _gridOptions() {
-        return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
-    }
-    /**
-     * Initialize the Export Service
-     * @param {?} grid
-     * @param {?} dataView
-     * @return {?}
-     */
-    init(grid, dataView) {
-        this._grid = grid;
-        this._dataView = dataView;
-    }
-    /**
-     * Function to export the Grid result to an Excel CSV format using javascript for it to produce the CSV file.
-     * This is a WYSIWYG export to file output (What You See is What You Get)
-     *
-     * NOTES: The column position needs to match perfectly the JSON Object position because of the way we are pulling the data,
-     * which means that if any column(s) got moved in the UI, it has to be reflected in the JSON array output as well
-     *
-     * Example: exportToFile({ format: FileType.csv, delimiter: DelimiterType.comma })
-     * @param {?} options
-     * @return {?}
-     */
-    exportToFile(options) {
-        this.onGridBeforeExportToFile.next(true);
-        this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
-        // get the CSV output from the grid data
-        const /** @type {?} */ dataOutput = this.getDataOutput();
-        // trigger a download file
-        // wrap it into a setTimeout so that the EventAggregator has enough time to start a pre-process like showing a spinner
-        setTimeout(() => {
-            const /** @type {?} */ downloadOptions = {
-                filename: `${this._exportOptions.filename}.${this._exportOptions.format}`,
-                csvContent: dataOutput,
-                format: this._exportOptions.format,
-                useUtf8WithBom: this._exportOptions.useUtf8WithBom
-            };
-            this.startDownloadFile(downloadOptions);
-            this.onGridAfterExportToFile.next({ options: downloadOptions });
-        }, 0);
-    }
-    /**
-     * @return {?}
-     */
-    getDataOutput() {
-        const /** @type {?} */ columns = this._grid.getColumns() || [];
-        const /** @type {?} */ delimiter = this._exportOptions.delimiter || '';
-        const /** @type {?} */ format = this._exportOptions.format || '';
-        const /** @type {?} */ groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle || this.translate.instant('GROUP_BY');
-        // a CSV needs double quotes wrapper, the other types do not need any wrapper
-        this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
-        // data variable which will hold all the fields data of a row
-        let /** @type {?} */ outputDataString = '';
-        // get grouped column titles and if found, we will add a "Group by" column at the first column index
-        const /** @type {?} */ grouping = this._dataView.getGrouping();
-        if (grouping && Array.isArray(grouping) && grouping.length > 0) {
-            this._hasGroupedItems = true;
-            outputDataString += `${groupByColumnHeader}` + delimiter;
-        }
-        else {
-            this._hasGroupedItems = false;
-        }
-        // get all column headers
-        this._columnHeaders = this.getColumnHeaders(columns) || [];
-        if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
-            // add the header row + add a new line at the end of the row
-            const /** @type {?} */ outputHeaderTitles = this._columnHeaders.map((header) => {
-                return this._exportQuoteWrapper + header.title + this._exportQuoteWrapper;
-            });
-            outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
-        }
-        // Populate the rest of the Grid Data
-        outputDataString += this.getAllGridRowData(columns, this._lineCarriageReturn);
-        return outputDataString;
-    }
-    /**
-     * Get all the grid row data and return that as an output string
-     * @param {?} columns
-     * @param {?} lineCarriageReturn
-     * @return {?}
-     */
-    getAllGridRowData(columns, lineCarriageReturn) {
-        const /** @type {?} */ outputDataStrings = [];
-        const /** @type {?} */ lineCount = this._dataView.getLength();
-        // loop through all the grid rows of data
-        for (let /** @type {?} */ rowNumber = 0; rowNumber < lineCount; rowNumber++) {
-            const /** @type {?} */ itemObj = this._dataView.getItem(rowNumber);
-            if (itemObj != null) {
-                // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
-                if (itemObj[this.datasetIdName] != null) {
-                    // get regular row item data
-                    outputDataStrings.push(this.readRegularRowData(columns, rowNumber, itemObj));
-                }
-                else if (this._hasGroupedItems && itemObj.__groupTotals === undefined) {
-                    // get the group row
-                    outputDataStrings.push(this.readGroupedTitleRow(itemObj));
-                }
-                else if (itemObj.__groupTotals) {
-                    // else if the row is a Group By and we have agreggators, then a property of '__groupTotals' would exist under that object
-                    outputDataStrings.push(this.readGroupedTotalRow(columns, itemObj));
-                }
-            }
-        }
-        return outputDataStrings.join(this._lineCarriageReturn);
-    }
-    /**
-     * Get all header titles and their keys, translate the title when required.
-     * @param {?} columns of the grid
-     * @return {?}
-     */
-    getColumnHeaders(columns) {
-        if (!columns || !Array.isArray(columns) || columns.length === 0) {
-            return null;
-        }
-        const /** @type {?} */ columnHeaders = [];
-        // Populate the Column Header, pull the name defined
-        columns.forEach((columnDef) => {
-            const /** @type {?} */ fieldName = (columnDef.headerKey) ? this.translate.instant(columnDef.headerKey) : columnDef.name;
-            const /** @type {?} */ skippedField = columnDef.excludeFromExport || false;
-            // if column width is 0 then it's not evaluated since that field is considered hidden should not be part of the export
-            if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
-                columnHeaders.push({
-                    key: columnDef.field || columnDef.id,
-                    title: fieldName
-                });
-            }
-        });
-        return columnHeaders;
-    }
-    /**
-     * Get the data of a regular row (a row without grouping)
-     * @param {?} columns
-     * @param {?} row
-     * @param {?} itemObj
-     * @return {?}
-     */
-    readRegularRowData(columns, row, itemObj) {
-        let /** @type {?} */ idx = 0;
-        const /** @type {?} */ rowOutputStrings = [];
-        const /** @type {?} */ delimiter = this._exportOptions.delimiter;
-        const /** @type {?} */ format = this._exportOptions.format;
-        const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
-        for (let /** @type {?} */ col = 0, /** @type {?} */ ln = columns.length; col < ln; col++) {
-            const /** @type {?} */ columnDef = columns[col];
-            const /** @type {?} */ fieldId = columnDef.field || columnDef.id || '';
-            // skip excluded column
-            if (columnDef.excludeFromExport) {
-                continue;
-            }
-            // if we are grouping and are on 1st column index, we need to skip this column since it will be used later by the grouping text:: Group by [columnX]
-            if (this._hasGroupedItems && idx === 0) {
-                rowOutputStrings.push(`""`);
-            }
-            // does the user want to evaluate current column Formatter?
-            const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._exportOptions.exportWithFormatter;
-            // did the user provide a Custom Formatter for the export
-            const /** @type {?} */ exportCustomFormatter = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
-            let /** @type {?} */ itemData = '';
-            if (exportCustomFormatter) {
-                itemData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
-            }
-            else if (isEvaluatingFormatter && !!columnDef.formatter) {
-                itemData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
-            }
-            else {
-                itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
-            }
-            // does the user want to sanitize the output data (remove HTML tags)?
-            if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
-                itemData = sanitizeHtmlToText(itemData);
-            }
-            // when CSV we also need to escape double quotes twice, so " becomes ""
-            if (format === FileType.csv) {
-                itemData = itemData.toString().replace(/"/gi, `""`);
-            }
-            // do we have a wrapper to keep as a string? in certain cases like "1E06", we don't want excel to transform it into exponential (1.0E06)
-            // to cancel that effect we can had = in front, ex: ="1E06"
-            const /** @type {?} */ keepAsStringWrapper = (columnDef && columnDef.exportCsvForceToKeepAsString) ? '=' : '';
-            rowOutputStrings.push(keepAsStringWrapper + exportQuoteWrapper + itemData + exportQuoteWrapper);
-            idx++;
-        }
-        return rowOutputStrings.join(delimiter);
-    }
-    /**
-     * Get the grouped title(s), for example if we grouped by salesRep, the returned result would be:: 'Sales Rep'
-     * @param {?} itemObj
-     * @return {?}
-     */
-    readGroupedTitleRow(itemObj) {
-        let /** @type {?} */ groupName = sanitizeHtmlToText(itemObj.title);
-        const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
-        const /** @type {?} */ format = this._exportOptions.format;
-        groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
-        if (format === FileType.csv) {
-            // when CSV we also need to escape double quotes twice, so " becomes ""
-            groupName = groupName.toString().replace(/"/gi, `""`);
-        }
-        return exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper;
-    }
-    /**
-     * Get the grouped totals, these are set by Slick Aggregators.
-     * For example if we grouped by "salesRep" and we have a Sum Aggregator on "sales", then the returned output would be:: ["Sum 123$"]
-     * @param {?} columns
-     * @param {?} itemObj
-     * @return {?}
-     */
-    readGroupedTotalRow(columns, itemObj) {
-        const /** @type {?} */ delimiter = this._exportOptions.delimiter;
-        const /** @type {?} */ format = this._exportOptions.format;
-        const /** @type {?} */ groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
-        const /** @type {?} */ exportQuoteWrapper = this._exportQuoteWrapper || '';
-        const /** @type {?} */ outputStrings = [`${exportQuoteWrapper}${groupingAggregatorRowText}${exportQuoteWrapper}`];
-        columns.forEach((columnDef) => {
-            let /** @type {?} */ itemData = '';
-            // if there's a groupTotalsFormatter, we will re-run it to get the exact same output as what is shown in UI
-            if (columnDef.groupTotalsFormatter) {
-                itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
-            }
-            // does the user want to sanitize the output data (remove HTML tags)?
-            if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {
-                itemData = sanitizeHtmlToText(itemData);
-            }
-            if (format === FileType.csv) {
-                // when CSV we also need to escape double quotes twice, so a double quote " becomes 2x double quotes ""
-                itemData = itemData.toString().replace(/"/gi, `""`);
-            }
-            outputStrings.push(exportQuoteWrapper + itemData + exportQuoteWrapper);
-        });
-        return outputStrings.join(delimiter);
-    }
-    /**
-     * Triggers download file with file format.
-     * IE(6-10) are not supported
-     * All other browsers will use plain javascript on client side to produce a file download.
-     * @param {?} options
-     * @return {?}
-     */
-    startDownloadFile(options) {
-        // IE(6-10) don't support javascript download and our service doesn't support either so throw an error, we have to make a round trip to the Web Server for exporting
-        if (navigator.appName === 'Microsoft Internet Explorer') {
-            throw new Error('Microsoft Internet Explorer 6 to 10 do not support javascript export to CSV. Please upgrade your browser.');
-        }
-        // set the correct MIME type
-        const /** @type {?} */ mimeType = (options.format === FileType.csv) ? 'text/csv' : 'text/plain';
-        // make sure no html entities exist in the data
-        const /** @type {?} */ csvContent = htmlEntityDecode(options.csvContent);
-        // dealing with Excel CSV export and UTF-8 is a little tricky.. We will use Option #2 to cover older Excel versions
-        // Option #1: we need to make Excel knowing that it's dealing with an UTF-8, A correctly formatted UTF8 file can have a Byte Order Mark as its first three octets
-        // reference: http://stackoverflow.com/questions/155097/microsoft-excel-mangles-diacritics-in-csv-files
-        // Option#2: use a 3rd party extension to javascript encode into UTF-16
-        let /** @type {?} */ outputData;
-        if (options.format === FileType.csv) {
-            outputData = new TextEncoder('utf-8').encode(csvContent);
-        }
-        else {
-            outputData = csvContent;
-        }
-        // create a Blob object for the download
-        const /** @type {?} */ blob = new Blob([options.useUtf8WithBom ? '\uFEFF' : '', outputData], {
-            type: `${mimeType};charset=utf-8;`
-        });
-        // when using IE/Edge, then use different download call
-        if (typeof navigator.msSaveOrOpenBlob === 'function') {
-            navigator.msSaveOrOpenBlob(blob, options.filename);
-        }
-        else {
-            // this trick will generate a temp <a /> tag
-            // the code will then trigger a hidden click for it to start downloading
-            const /** @type {?} */ link = document.createElement('a');
-            const /** @type {?} */ csvUrl = URL.createObjectURL(blob);
-            link.textContent = 'download';
-            link.href = csvUrl;
-            link.setAttribute('download', options.filename);
-            // set the visibility to hidden so there is no effect on your web-layout
-            link.style.visibility = 'hidden';
-            // this part will append the anchor tag, trigger a click (for download to start) and finally remove the tag once completed
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    }
-}
-ExportService.decorators = [
-    { type: Injectable },
-];
-/** @nocollapse */
-ExportService.ctorParameters = () => [
-    { type: TranslateService, },
-];
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
 class SortService {
     constructor() {
         this._currentLocalSorters = [];
@@ -4029,502 +4675,232 @@ class SortService {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-class Constants {
-}
-Constants.TEXT_CANCEL = 'Cancel';
-Constants.TEXT_CLEAR_ALL_FILTERS = 'Clear All Filters';
-Constants.TEXT_CLEAR_ALL_SORTING = 'Clear All Sorting';
-Constants.TEXT_COLUMNS = 'Columns';
-Constants.TEXT_COMMANDS = 'Commands';
-Constants.TEXT_EXPORT_IN_CSV_FORMAT = 'Export in CSV format';
-Constants.TEXT_EXPORT_IN_TEXT_FORMAT = 'Export in Text format (Tab delimited)';
-Constants.TEXT_FORCE_FIT_COLUMNS = 'Force fit columns';
-Constants.TEXT_HIDE_COLUMN = 'Hide Column';
-Constants.TEXT_REFRESH_DATASET = 'Refresh Dataset';
-Constants.TEXT_SAVE = 'Save';
-Constants.TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';
-Constants.TEXT_SORT_ASCENDING = 'Sort Ascending';
-Constants.TEXT_SORT_DESCENDING = 'Sort Descending';
-Constants.TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
-Constants.VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
-Constants.VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
-Constants.VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
-Constants.VALIDATION_EDITOR_NUMBER_MAX = 'Please enter a valid number that is lower than {{maxValue}}';
-Constants.VALIDATION_EDITOR_NUMBER_MIN = 'Please enter a valid number that is greater than {{minValue}}';
-Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN = 'Please enter a valid number with a maximum of {{maxDecimal}} decimals';
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-class ControlAndPluginService {
+class GridMenuExtension {
     /**
      * @param {?} exportService
+     * @param {?} extensionUtility
      * @param {?} filterService
+     * @param {?} sharedService
      * @param {?} sortService
      * @param {?} translate
      */
-    constructor(exportService, filterService, sortService, translate) {
+    constructor(exportService, extensionUtility, filterService, sharedService, sortService, translate) {
         this.exportService = exportService;
+        this.extensionUtility = extensionUtility;
         this.filterService = filterService;
+        this.sharedService = sharedService;
         this.sortService = sortService;
         this.translate = translate;
-        this.areVisibleColumnDifferent = false;
-        this.extensionList = [];
+        this._areVisibleColumnDifferent = false;
+        this._eventHandler = new Slick.EventHandler();
     }
     /**
-     * Getter for the Grid Options pulled through the Grid Object
      * @return {?}
      */
-    get _gridOptions() {
-        return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
-    }
-    /**
-     * Setter for the Grid Options pulled through the Grid Object
-     * @param {?} gridOptions
-     * @return {?}
-     */
-    set _gridOptions(gridOptions) {
-        this._gridOptions = gridOptions;
-    }
-    /**
-     * Getter for the Column Definitions pulled through the Grid Object
-     * @return {?}
-     */
-    get _columnDefinitions() {
-        return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
-    }
-    /**
-     * Get all columns (includes visible and non-visible)
-     * @return {?}
-     */
-    getAllColumns() {
-        return this.allColumns || [];
-    }
-    /**
-     * Get only visible columns
-     * @return {?}
-     */
-    getVisibleColumns() {
-        return this.visibleColumns || [];
-    }
-    /**
-     * Get all Extensions
-     * @return {?}
-     */
-    getAllExtensions() {
-        return this.extensionList;
-    }
-    /**
-     * Get an Extension by it's name
-     *  \@param name
-     * @param {?} name
-     * @return {?}
-     */
-    getExtensionByName(name) {
-        return this.extensionList.find((p) => p.name === name);
-    }
-    /**
-     * Auto-resize all the column in the grid to fit the grid width
-     * @return {?}
-     */
-    autoResizeColumns() {
-        this._grid.autosizeColumns();
-    }
-    /**
-     * Attach/Create different Controls or Plugins after the Grid is created
-     * @param {?} grid
-     * @param {?} dataView
-     * @param {?} groupItemMetadataProvider
-     * @return {?}
-     */
-    attachDifferentControlOrPlugins(grid, dataView, groupItemMetadataProvider) {
-        this._grid = grid;
-        this._dataView = dataView;
-        this.allColumns = this._columnDefinitions;
-        this.visibleColumns = this._columnDefinitions;
-        // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
-        // this is to avoid having hidden columns not being translated on first load
-        if (this._gridOptions.enableTranslate) {
-            this.translateItems(this.allColumns, 'headerKey', 'name');
-        }
-        // Column Picker Control
-        if (this._gridOptions.enableColumnPicker) {
-            this.columnPickerControl = this.createColumnPicker(this._grid, this._columnDefinitions);
-            this.extensionList.push({ name: 'ColumnPicker', service: this.columnPickerControl });
-        }
-        // Grid Menu Control
-        if (this._gridOptions.enableGridMenu) {
-            // keep original user grid menu, useful when switching locale to translate
-            this.userOriginalGridMenu = Object.assign({}, this._gridOptions.gridMenu);
-            this.gridMenuControl = this.createGridMenu(this._grid, this._columnDefinitions);
-            this.extensionList.push({ name: 'GridMenu', service: this.gridMenuControl });
-        }
-        // Auto Tooltip Plugin
-        if (this._gridOptions.enableAutoTooltip) {
-            this.autoTooltipPlugin = new Slick.AutoTooltips(this._gridOptions.autoTooltipOptions || {});
-            this._grid.registerPlugin(this.autoTooltipPlugin);
-            this.extensionList.push({ name: 'AutoTooltip', service: this.autoTooltipPlugin });
-        }
-        // Grouping Plugin
-        // register the group item metadata provider to add expand/collapse group handlers
-        if (this._gridOptions.enableGrouping) {
-            this.groupItemMetaProviderPlugin = groupItemMetadataProvider || {};
-            this._grid.registerPlugin(this.groupItemMetaProviderPlugin);
-            this.extensionList.push({ name: 'GroupItemMetaProvider', service: this.groupItemMetaProviderPlugin });
-        }
-        // Checkbox Selector Plugin
-        if (this._gridOptions.enableCheckboxSelector) {
-            // when enabling the Checkbox Selector Plugin, we need to also watch onClick events to perform certain actions
-            // the selector column has to be created BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
-            this._grid.registerPlugin(this.checkboxSelectorPlugin);
-            this.extensionList.push({ name: 'CheckboxSelector', service: this.checkboxSelectorPlugin });
-            // this also requires the Row Selection Model to be registered as well
-            if (!this.rowSelectionPlugin || !this._grid.getSelectionModel()) {
-                this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
-                this._grid.setSelectionModel(this.rowSelectionPlugin);
-            }
-            // user might want to pre-select some rows
-            // the setTimeout is because of timing issue with styling (row selection happen but rows aren't highlighted properly)
-            if (this._gridOptions.preselectedRows && this.rowSelectionPlugin && this._grid.getSelectionModel()) {
-                setTimeout(() => this.checkboxSelectorPlugin.selectRows(this._gridOptions.preselectedRows), 0);
-            }
-        }
-        // Row Selection Plugin
-        if (!this._gridOptions.enableCheckboxSelector && this._gridOptions.enableRowSelection) {
-            this.rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
-            this._grid.setSelectionModel(this.rowSelectionPlugin);
-        }
-        // Header Button Plugin
-        if (this._gridOptions.enableHeaderButton) {
-            this.headerButtonsPlugin = new Slick.Plugins.HeaderButtons(this._gridOptions.headerButton || {});
-            this._grid.registerPlugin(this.headerButtonsPlugin);
-            this.extensionList.push({ name: 'HeaderButtons', service: this.headerButtonsPlugin });
-            this.headerButtonsPlugin.onCommand.subscribe((e, args) => {
-                if (this._gridOptions.headerButton && typeof this._gridOptions.headerButton.onCommand === 'function') {
-                    this._gridOptions.headerButton.onCommand(e, args);
-                }
-            });
-        }
-        // Header Menu Plugin
-        if (this._gridOptions.enableHeaderMenu) {
-            this.headerMenuPlugin = this.createHeaderMenu(this._grid, this._dataView, this._columnDefinitions);
-        }
-        // Cell External Copy Manager Plugin (Excel Like)
-        if (this._gridOptions.enableExcelCopyBuffer) {
-            this.createUndoRedoBuffer();
-            this.hookUndoShortcutKey();
-            this.createCellExternalCopyManagerPlugin(this._grid);
-        }
-        // manually register other plugins
-        if (this._gridOptions.registerPlugins !== undefined) {
-            if (Array.isArray(this._gridOptions.registerPlugins)) {
-                this._gridOptions.registerPlugins.forEach((plugin) => {
-                    this._grid.registerPlugin(plugin);
-                    this.extensionList.push({ name: 'generic', service: plugin });
-                });
-            }
-            else {
-                this._grid.registerPlugin(this._gridOptions.registerPlugins);
-                this.extensionList.push({ name: 'generic', service: this._gridOptions.registerPlugins });
-            }
+    dispose() {
+        // unsubscribe all SlickGrid events
+        this._eventHandler.unsubscribeAll();
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
         }
     }
     /**
-     * Attach/Create different plugins before the Grid creation.
-     * For example the multi-select have to be added to the column definition before the grid is created to work properly
-     * @param {?} columnDefinitions
-     * @param {?} options
+     * Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...)
      * @return {?}
      */
-    createCheckboxPluginBeforeGridCreation(columnDefinitions, options) {
-        if (options.enableCheckboxSelector) {
-            if (!this.checkboxSelectorPlugin) {
-                this.checkboxSelectorPlugin = new Slick.CheckboxSelectColumn(options.checkboxSelector || {});
-            }
-            const /** @type {?} */ selectionColumn = this.checkboxSelectorPlugin.getColumnDefinition();
-            selectionColumn.excludeFromExport = true;
-            selectionColumn.excludeFromQuery = true;
-            selectionColumn.excludeFromHeaderMenu = true;
-            columnDefinitions.unshift(selectionColumn);
-        }
-    }
-    /**
-     * Create the Excel like copy manager
-     * @param {?} grid
-     * @return {?}
-     */
-    createCellExternalCopyManagerPlugin(grid) {
-        let /** @type {?} */ newRowIds = 0;
-        const /** @type {?} */ pluginOptions = {
-            clipboardCommandHandler: (editCommand) => {
-                this.undoRedoBuffer.queueAndExecuteCommand.call(this.undoRedoBuffer, editCommand);
-            },
-            dataItemColumnValueExtractor: (item, columnDef) => {
-                // when grid or cell is not editable, we will possibly evaluate the Formatter if it was passed
-                // to decide if we evaluate the Formatter, we will use the same flag from Export which is "exportWithFormatter"
-                if (!this._gridOptions.editable || !columnDef.editor) {
-                    const /** @type {?} */ isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._gridOptions.exportOptions.exportWithFormatter;
-                    if (columnDef.formatter && isEvaluatingFormatter) {
-                        const /** @type {?} */ formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this._grid);
-                        if (columnDef.sanitizeDataExport || (this._gridOptions.exportOptions && this._gridOptions.exportOptions.sanitizeDataExport)) {
-                            return sanitizeHtmlToText(formattedOutput);
-                        }
-                        return formattedOutput;
-                    }
-                }
-                // else use the default "dataItemColumnValueExtractor" from the plugin itself
-                // we can do that by setting back the getter with null
-                return null;
-            },
-            readOnlyMode: false,
-            includeHeaderWhenCopying: false,
-            newRowCreator: (count) => {
-                for (let /** @type {?} */ i = 0; i < count; i++) {
-                    const /** @type {?} */ item = {
-                        id: 'newRow_' + newRowIds++
-                    };
-                    grid.getData().addItem(item);
-                }
-            }
-        };
-        grid.setSelectionModel(new Slick.CellSelectionModel());
-        this.cellExternalCopyManagerPlugin = new Slick.CellExternalCopyManager(pluginOptions);
-        grid.registerPlugin(this.cellExternalCopyManagerPlugin);
-        this.extensionList.push({ name: 'CellExternalCopyManager', service: this.cellExternalCopyManagerPlugin });
-    }
-    /**
-     * Create the Column Picker and expose all the available hooks that user can subscribe (onColumnsChanged)
-     * @param {?} grid
-     * @param {?} columnDefinitions
-     * @return {?}
-     */
-    createColumnPicker(grid, columnDefinitions) {
-        // localization support for the picker
-        const /** @type {?} */ columnTitle = this.getPickerTitleOutputString('columnTitle', 'columnPicker');
-        const /** @type {?} */ forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
-        const /** @type {?} */ syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
-        this._gridOptions.columnPicker = this._gridOptions.columnPicker || {};
-        this._gridOptions.columnPicker.columnTitle = this._gridOptions.columnPicker.columnTitle || columnTitle;
-        this._gridOptions.columnPicker.forceFitTitle = this._gridOptions.columnPicker.forceFitTitle || forceFitTitle;
-        this._gridOptions.columnPicker.syncResizeTitle = this._gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
-        this.columnPickerControl = new Slick.Controls.ColumnPicker(columnDefinitions, grid, this._gridOptions);
-        if (grid && this._gridOptions.enableColumnPicker) {
-            this.columnPickerControl.onColumnsChanged.subscribe((e, args) => {
-                if (this._gridOptions.columnPicker && typeof this._gridOptions.columnPicker.onColumnsChanged === 'function') {
-                    this._gridOptions.columnPicker.onColumnsChanged(e, args);
-                }
-            });
-        }
-        return this.columnPickerControl;
-    }
-    /**
-     * Create (or re-create) Grid Menu and expose all the available hooks that user can subscribe (onCommand, onMenuClose, ...)
-     * @param {?} grid
-     * @param {?} columnDefinitions
-     * @return {?}
-     */
-    createGridMenu(grid, columnDefinitions) {
-        if (this._gridOptions && this._gridOptions.gridMenu) {
-            this._gridOptions.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), this._gridOptions.gridMenu);
+    register() {
+        // keep original user grid menu, useful when switching locale to translate
+        this._userOriginalGridMenu = Object.assign({}, this.sharedService.gridOptions.gridMenu);
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
+            // dynamically import the SlickGrid plugin with requireJS
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.gridMenu);
+            this.sharedService.gridOptions.gridMenu = Object.assign({}, this.getDefaultGridMenuOptions(), this.sharedService.gridOptions.gridMenu);
             // merge original user grid menu items with internal items
             // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
-            this._gridOptions.gridMenu.customItems = [...this.userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
-            this.translateItems(this._gridOptions.gridMenu.customItems, 'titleKey', 'title');
-            this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
-            const /** @type {?} */ gridMenuControl = new Slick.Controls.GridMenu(columnDefinitions, grid, this._gridOptions);
-            if (grid && this._gridOptions.gridMenu) {
-                gridMenuControl.onBeforeMenuShow.subscribe((e, args) => {
-                    if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onBeforeMenuShow === 'function') {
-                        this._gridOptions.gridMenu.onBeforeMenuShow(e, args);
+            this.sharedService.gridOptions.gridMenu.customItems = [...this._userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
+            this.extensionUtility.translateItems(this.sharedService.gridOptions.gridMenu.customItems, 'titleKey', 'title');
+            this.extensionUtility.sortItems(this.sharedService.gridOptions.gridMenu.customItems, 'positionOrder');
+            this._extension = new Slick.Controls.GridMenu(this.sharedService.columnDefinitions, this.sharedService.grid, this.sharedService.gridOptions);
+            if (this.sharedService.grid && this.sharedService.gridOptions.gridMenu) {
+                this._eventHandler.subscribe(this._extension.onBeforeMenuShow, (e, args) => {
+                    if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onBeforeMenuShow === 'function') {
+                        this.sharedService.gridOptions.gridMenu.onBeforeMenuShow(e, args);
                     }
                 });
-                gridMenuControl.onColumnsChanged.subscribe((e, args) => {
-                    this.areVisibleColumnDifferent = true;
-                    if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onColumnsChanged === 'function') {
-                        this._gridOptions.gridMenu.onColumnsChanged(e, args);
+                this._eventHandler.subscribe(this._extension.onColumnsChanged, (e, args) => {
+                    this._areVisibleColumnDifferent = true;
+                    if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onColumnsChanged === 'function') {
+                        this.sharedService.gridOptions.gridMenu.onColumnsChanged(e, args);
                     }
                 });
-                gridMenuControl.onCommand.subscribe((e, args) => {
+                this._eventHandler.subscribe(this._extension.onCommand, (e, args) => {
                     this.executeGridMenuInternalCustomCommands(e, args);
-                    if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onCommand === 'function') {
-                        this._gridOptions.gridMenu.onCommand(e, args);
+                    if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onCommand === 'function') {
+                        this.sharedService.gridOptions.gridMenu.onCommand(e, args);
                     }
                 });
-                gridMenuControl.onMenuClose.subscribe((e, args) => {
-                    if (this._gridOptions.gridMenu && typeof this._gridOptions.gridMenu.onMenuClose === 'function') {
-                        this._gridOptions.gridMenu.onMenuClose(e, args);
+                this._eventHandler.subscribe(this._extension.onMenuClose, (e, args) => {
+                    if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onMenuClose === 'function') {
+                        this.sharedService.gridOptions.gridMenu.onMenuClose(e, args);
                     }
                     // we also want to resize the columns if the user decided to hide certain column(s)
-                    if (grid && typeof grid.autosizeColumns === 'function') {
+                    if (this.sharedService.grid && typeof this.sharedService.grid.autosizeColumns === 'function') {
                         // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree)
-                        const /** @type {?} */ gridUid = grid.getUID();
-                        if (this.areVisibleColumnDifferent && gridUid && $(`.${gridUid}`).length > 0) {
-                            if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
-                                grid.autosizeColumns();
+                        const /** @type {?} */ gridUid = this.sharedService.grid.getUID();
+                        if (this._areVisibleColumnDifferent && gridUid && $(`.${gridUid}`).length > 0) {
+                            if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableAutoSizeColumns) {
+                                this.sharedService.grid.autosizeColumns();
                             }
-                            this.areVisibleColumnDifferent = false;
+                            this._areVisibleColumnDifferent = false;
                         }
                     }
                 });
             }
-            return gridMenuControl;
+            return this._extension;
         }
         return null;
     }
     /**
-     * Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...)
-     * @param {?} grid
-     * @param {?} dataView
-     * @param {?} columnDefinitions
+     * Execute the Grid Menu Custom command callback that was triggered by the onCommand subscribe
+     * These are the default internal custom commands
+     * @param {?} e
+     * @param {?} args
      * @return {?}
      */
-    createHeaderMenu(grid, dataView, columnDefinitions) {
-        this._gridOptions.headerMenu = Object.assign({}, this.getDefaultHeaderMenuOptions(), this._gridOptions.headerMenu);
-        if (this._gridOptions.enableHeaderMenu) {
-            this._gridOptions.headerMenu = this.addHeaderMenuCustomCommands(this._gridOptions, columnDefinitions);
-        }
-        const /** @type {?} */ headerMenuPlugin = new Slick.Plugins.HeaderMenu(this._gridOptions.headerMenu);
-        grid.registerPlugin(headerMenuPlugin);
-        headerMenuPlugin.onCommand.subscribe((e, args) => {
-            this.executeHeaderMenuInternalCommands(e, args);
-            if (this._gridOptions.headerMenu && typeof this._gridOptions.headerMenu.onCommand === 'function') {
-                this._gridOptions.headerMenu.onCommand(e, args);
+    executeGridMenuInternalCustomCommands(e, args) {
+        if (args && args.command) {
+            switch (args.command) {
+                case 'clear-filter':
+                    this.filterService.clearFilters();
+                    this.sharedService.dataView.refresh();
+                    break;
+                case 'clear-sorting':
+                    this.sortService.clearSorting();
+                    this.sharedService.dataView.refresh();
+                    break;
+                case 'export-csv':
+                    this.exportService.exportToFile({
+                        delimiter: DelimiterType.comma,
+                        filename: 'export',
+                        format: FileType.csv,
+                        useUtf8WithBom: true
+                    });
+                    break;
+                case 'export-text-delimited':
+                    this.exportService.exportToFile({
+                        delimiter: DelimiterType.tab,
+                        filename: 'export',
+                        format: FileType.txt,
+                        useUtf8WithBom: true
+                    });
+                    break;
+                case 'toggle-filter':
+                    this.sharedService.grid.setHeaderRowVisibility(!this.sharedService.grid.getOptions().showHeaderRow);
+                    break;
+                case 'toggle-toppanel':
+                    this.sharedService.grid.setTopPanelVisibility(!this.sharedService.grid.getOptions().showTopPanel);
+                    break;
+                case 'refresh-dataset':
+                    this.refreshBackendDataset();
+                    break;
+                default:
+                    break;
             }
-        });
-        headerMenuPlugin.onBeforeMenuShow.subscribe((e, args) => {
-            if (this._gridOptions.headerMenu && typeof this._gridOptions.headerMenu.onBeforeMenuShow === 'function') {
-                this._gridOptions.headerMenu.onBeforeMenuShow(e, args);
-            }
-        });
-        return headerMenuPlugin;
-    }
-    /**
-     * Create an undo redo buffer used by the Excel like copy
-     * @return {?}
-     */
-    createUndoRedoBuffer() {
-        const /** @type {?} */ commandQueue = [];
-        let /** @type {?} */ commandCtr = 0;
-        this.undoRedoBuffer = {
-            queueAndExecuteCommand: (editCommand) => {
-                commandQueue[commandCtr] = editCommand;
-                commandCtr++;
-                editCommand.execute();
-            },
-            undo: () => {
-                if (commandCtr === 0) {
-                    return;
-                }
-                commandCtr--;
-                const /** @type {?} */ command = commandQueue[commandCtr];
-                if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
-                    command.undo();
-                }
-            },
-            redo: () => {
-                if (commandCtr >= commandQueue.length) {
-                    return;
-                }
-                const /** @type {?} */ command = commandQueue[commandCtr];
-                commandCtr++;
-                if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
-                    command.execute();
-                }
-            }
-        };
-    }
-    /**
-     * Hide a column from the grid
-     * @param {?} column
-     * @return {?}
-     */
-    hideColumn(column) {
-        if (this._grid && this._grid.getColumns && this._grid.setColumns) {
-            const /** @type {?} */ columnIndex = this._grid.getColumnIndex(column.id);
-            this.visibleColumns = this.removeColumnByIndex(this._grid.getColumns(), columnIndex);
-            this._grid.setColumns(this.visibleColumns);
         }
     }
     /**
-     * Attach an undo shortcut key hook that will redo/undo the copy buffer
+     * Refresh the dataset through the Backend Service
+     * @param {?=} gridOptions
      * @return {?}
      */
-    hookUndoShortcutKey() {
-        // undo shortcut
-        $(document).keydown((e) => {
-            if (e.which === 90 && (e.ctrlKey || e.metaKey)) {
-                // CTRL + (shift) + Z
-                if (e.shiftKey) {
-                    this.undoRedoBuffer.redo();
-                }
-                else {
-                    this.undoRedoBuffer.undo();
-                }
+    refreshBackendDataset(gridOptions) {
+        let /** @type {?} */ query = '';
+        // user can pass new set of grid options which will override current ones
+        if (gridOptions) {
+            this.sharedService.gridOptions = Object.assign({}, this.sharedService.gridOptions, gridOptions);
+        }
+        const /** @type {?} */ backendApi = this.sharedService.gridOptions.backendServiceApi;
+        if (!backendApi || !backendApi.service || !backendApi.process) {
+            throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
+        }
+        if (backendApi.service) {
+            query = backendApi.service.buildQuery();
+        }
+        if (query && query !== '') {
+            // keep start time & end timestamps & return it after process execution
+            const /** @type {?} */ startTime = new Date();
+            if (backendApi.preProcess) {
+                backendApi.preProcess();
             }
-        });
-    }
-    /**
-     * Dispose of all the controls & plugins
-     * @return {?}
-     */
-    dispose() {
-        this._grid = null;
-        this._dataView = null;
-        this.visibleColumns = [];
-        // dispose of each control/plugin if it has a destroy method
-        this.extensionList.forEach((item) => {
-            if (item && item.service && item.service.destroy) {
-                item.service.destroy();
-            }
-        });
-        this.extensionList = [];
+            // the process could be an Observable (like HttpClient) or a Promise
+            // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+            const /** @type {?} */ observableOrPromise = backendApi.process(query);
+            castToPromise(observableOrPromise).then((processResult) => {
+                const /** @type {?} */ endTime = new Date();
+                // from the result, call our internal post process to update the Dataset and Pagination info
+                if (processResult && backendApi && backendApi.internalPostProcess) {
+                    backendApi.internalPostProcess(processResult);
+                }
+                // send the response process to the postProcess callback
+                if (backendApi && backendApi.postProcess) {
+                    if (processResult instanceof Object) {
+                        processResult.statistics = {
+                            startTime,
+                            endTime,
+                            executionTime: endTime.valueOf() - startTime.valueOf(),
+                            totalItemCount: this.sharedService.gridOptions && this.sharedService.gridOptions.pagination && this.sharedService.gridOptions.pagination.totalItems
+                        };
+                    }
+                    backendApi.postProcess(processResult);
+                }
+            });
+        }
     }
     /**
      * Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL)
      * @return {?}
      */
     addGridMenuCustomCommands() {
-        const /** @type {?} */ backendApi = this._gridOptions.backendServiceApi || null;
+        const /** @type {?} */ backendApi = this.sharedService.gridOptions.backendServiceApi || null;
         const /** @type {?} */ gridMenuCustomItems = [];
-        if (this._gridOptions && this._gridOptions.enableFiltering) {
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableFiltering) {
             // show grid menu: clear all filters
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllFiltersCommand) {
+            if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllFiltersCommand) {
                 gridMenuCustomItems.push({
-                    iconCssClass: this._gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : Constants.TEXT_CLEAR_ALL_FILTERS,
+                    iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
+                    title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : Constants.TEXT_CLEAR_ALL_FILTERS,
                     disabled: false,
                     command: 'clear-filter',
                     positionOrder: 50
                 });
             }
             // show grid menu: toggle filter row
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideToggleFilterCommand) {
+            if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideToggleFilterCommand) {
                 gridMenuCustomItems.push({
-                    iconCssClass: this._gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : Constants.TEXT_TOGGLE_FILTER_ROW,
+                    iconCssClass: this.sharedService.gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
+                    title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : Constants.TEXT_TOGGLE_FILTER_ROW,
                     disabled: false,
                     command: 'toggle-filter',
                     positionOrder: 52
                 });
             }
             // show grid menu: refresh dataset
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi) {
+            if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi) {
                 gridMenuCustomItems.push({
-                    iconCssClass: this._gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : Constants.TEXT_REFRESH_DATASET,
+                    iconCssClass: this.sharedService.gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
+                    title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : Constants.TEXT_REFRESH_DATASET,
                     disabled: false,
                     command: 'refresh-dataset',
                     positionOrder: 54
                 });
             }
         }
-        if (this._gridOptions.enableSorting) {
+        if (this.sharedService.gridOptions.enableSorting) {
             // show grid menu: clear all sorting
-            if (this._gridOptions && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideClearAllSortingCommand) {
+            if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllSortingCommand) {
                 gridMenuCustomItems.push({
-                    iconCssClass: this._gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
-                    title: this._gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : Constants.TEXT_CLEAR_ALL_SORTING,
+                    iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
+                    title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : Constants.TEXT_CLEAR_ALL_SORTING,
                     disabled: false,
                     command: 'clear-sorting',
                     positionOrder: 51
@@ -4532,30 +4908,301 @@ class ControlAndPluginService {
             }
         }
         // show grid menu: export to file
-        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportCsvCommand) {
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportCsvCommand) {
             gridMenuCustomItems.push({
-                iconCssClass: this._gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
-                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : Constants.TEXT_EXPORT_IN_CSV_FORMAT,
+                iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
+                title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : Constants.TEXT_EXPORT_IN_CSV_FORMAT,
                 disabled: false,
                 command: 'export-csv',
                 positionOrder: 53
             });
         }
         // show grid menu: export to text file as tab delimited
-        if (this._gridOptions && this._gridOptions.enableExport && this._gridOptions.gridMenu && !this._gridOptions.gridMenu.hideExportTextDelimitedCommand) {
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportTextDelimitedCommand) {
             gridMenuCustomItems.push({
-                iconCssClass: this._gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
-                title: this._gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : Constants.TEXT_EXPORT_IN_TEXT_FORMAT,
+                iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
+                title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : Constants.TEXT_EXPORT_IN_TEXT_FORMAT,
                 disabled: false,
                 command: 'export-text-delimited',
                 positionOrder: 54
             });
         }
         // add the custom "Commands" title if there are any commands
-        if (this._gridOptions && this._gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || this._gridOptions.gridMenu.customItems.length > 0)) {
-            this._gridOptions.gridMenu.customTitle = this._gridOptions.gridMenu.customTitle || this.getPickerTitleOutputString('customTitle', 'gridMenu');
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || (this.sharedService.gridOptions.gridMenu.customItems && this.sharedService.gridOptions.gridMenu.customItems.length > 0))) {
+            this.sharedService.gridOptions.gridMenu.customTitle = this.sharedService.gridOptions.gridMenu.customTitle || this.extensionUtility.getPickerTitleOutputString('customTitle', 'gridMenu');
         }
         return gridMenuCustomItems;
+    }
+    /**
+     * Execute the Header Menu Commands that was triggered by the onCommand subscribe
+     * @param {?} e
+     * @param {?} args
+     * @return {?}
+     */
+    executeHeaderMenuInternalCommands(e, args) {
+        if (args && args.command) {
+            switch (args.command) {
+                case 'hide':
+                    this.hideColumn(args.column);
+                    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableAutoSizeColumns) {
+                        this.sharedService.grid.autosizeColumns();
+                    }
+                    break;
+                case 'sort-asc':
+                case 'sort-desc':
+                    // get previously sorted columns
+                    const /** @type {?} */ cols = this.sortService.getPreviousColumnSorts(args.column.id + '');
+                    // add to the column array, the column sorted by the header menu
+                    cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
+                    if (this.sharedService.gridOptions.backendServiceApi) {
+                        this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this.sharedService.grid });
+                    }
+                    else {
+                        this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, cols);
+                    }
+                    // update the this.sharedService.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
+                    const /** @type {?} */ newSortColumns = cols.map((col) => {
+                        return {
+                            columnId: col && col.sortCol && col.sortCol.id,
+                            sortAsc: col && col.sortAsc
+                        };
+                    });
+                    this.sharedService.grid.setSortColumns(newSortColumns); // add sort icon in UI
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    /**
+     * Hide a column from the grid
+     * @param {?} column
+     * @return {?}
+     */
+    hideColumn(column) {
+        if (this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns) {
+            const /** @type {?} */ columnIndex = this.sharedService.grid.getColumnIndex(column.id);
+            this.sharedService.visibleColumns = this.extensionUtility.arrayRemoveItemByIndex(this.sharedService.grid.getColumns(), columnIndex);
+            this.sharedService.grid.setColumns(this.sharedService.visibleColumns);
+        }
+    }
+    /**
+     * Translate the Grid Menu titles and column picker
+     * @return {?}
+     */
+    translateGridMenu() {
+        // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
+        // we also need to call the control init so that it takes the new Grid object with latest values
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
+            this.sharedService.gridOptions.gridMenu.customItems = [];
+            this.emptyGridMenuTitles();
+            // merge original user grid menu items with internal items
+            // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
+            this.sharedService.gridOptions.gridMenu.customItems = [...this._userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
+            this.extensionUtility.translateItems(this.sharedService.gridOptions.gridMenu.customItems, 'titleKey', 'title');
+            this.extensionUtility.sortItems(this.sharedService.gridOptions.gridMenu.customItems, 'positionOrder');
+            this.sharedService.gridOptions.gridMenu.columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'gridMenu');
+            this.sharedService.gridOptions.gridMenu.forceFitTitle = this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'gridMenu');
+            this.sharedService.gridOptions.gridMenu.syncResizeTitle = this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'gridMenu');
+            // translate all columns (including non-visible)
+            this.extensionUtility.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+            // re-initialize the Grid Menu, that will recreate all the menus & list
+            // doing an "init()" won't drop any existing command attached
+            if (this._extension.init) {
+                this._extension.init(this.sharedService.grid);
+            }
+        }
+    }
+    /**
+     * @return {?}
+     */
+    emptyGridMenuTitles() {
+        if (this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
+            this.sharedService.gridOptions.gridMenu.customTitle = '';
+            this.sharedService.gridOptions.gridMenu.columnTitle = '';
+            this.sharedService.gridOptions.gridMenu.forceFitTitle = '';
+            this.sharedService.gridOptions.gridMenu.syncResizeTitle = '';
+        }
+    }
+    /**
+     * @return {?} default Grid Menu options
+     */
+    getDefaultGridMenuOptions() {
+        return {
+            customTitle: undefined,
+            columnTitle: this.extensionUtility.getPickerTitleOutputString('columnTitle', 'gridMenu'),
+            forceFitTitle: this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'gridMenu'),
+            syncResizeTitle: this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'gridMenu'),
+            iconCssClass: 'fa fa-bars',
+            menuWidth: 18,
+            customItems: [],
+            hideClearAllFiltersCommand: false,
+            hideRefreshDatasetCommand: false,
+            hideToggleFilterCommand: false,
+        };
+    }
+}
+GridMenuExtension.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+GridMenuExtension.ctorParameters = () => [
+    { type: ExportService, },
+    { type: ExtensionUtility, },
+    { type: FilterService, },
+    { type: SharedService, },
+    { type: SortService, },
+    { type: TranslateService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class GroupItemMetaProviderExtension {
+    /**
+     * @param {?} sharedService
+     */
+    constructor(sharedService) {
+        this.sharedService = sharedService;
+    }
+    /**
+     * @return {?}
+     */
+    dispose() {
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    }
+    /**
+     * register the group item metadata provider to add expand/collapse group handlers
+     * @return {?}
+     */
+    register() {
+        if (this.sharedService && this.sharedService.grid) {
+            this._extension = this.sharedService.groupItemMetadataProvider || {};
+            this.sharedService.grid.registerPlugin(this._extension);
+            return this._extension;
+        }
+        return null;
+    }
+}
+GroupItemMetaProviderExtension.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+GroupItemMetaProviderExtension.ctorParameters = () => [
+    { type: SharedService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class HeaderButtonExtension {
+    /**
+     * @param {?} extensionUtility
+     * @param {?} sharedService
+     */
+    constructor(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+        this._eventHandler = new Slick.EventHandler();
+    }
+    /**
+     * @return {?}
+     */
+    dispose() {
+        // unsubscribe all SlickGrid events
+        this._eventHandler.unsubscribeAll();
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    }
+    /**
+     * @return {?}
+     */
+    register() {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            // dynamically import the SlickGrid plugin with requireJS
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.headerButton);
+            this._extension = new Slick.Plugins.HeaderButtons(this.sharedService.gridOptions.headerButton || {});
+            this.sharedService.grid.registerPlugin(this._extension);
+            this._eventHandler.subscribe(this._extension.onCommand, (e, args) => {
+                if (this.sharedService.gridOptions.headerButton && typeof this.sharedService.gridOptions.headerButton.onCommand === 'function') {
+                    this.sharedService.gridOptions.headerButton.onCommand(e, args);
+                }
+            });
+            return this._extension;
+        }
+        return null;
+    }
+}
+HeaderButtonExtension.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+HeaderButtonExtension.ctorParameters = () => [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class HeaderMenuExtension {
+    /**
+     * @param {?} extensionUtility
+     * @param {?} sharedService
+     * @param {?} sortService
+     * @param {?} translate
+     */
+    constructor(extensionUtility, sharedService, sortService, translate) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+        this.sortService = sortService;
+        this.translate = translate;
+        this._eventHandler = new Slick.EventHandler();
+    }
+    /**
+     * @return {?}
+     */
+    dispose() {
+        // unsubscribe all SlickGrid events
+        this._eventHandler.unsubscribeAll();
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    }
+    /**
+     * Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...)
+     * @return {?}
+     */
+    register() {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            // dynamically import the SlickGrid plugin with requireJS
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.headerMenu);
+            this.sharedService.gridOptions.headerMenu = Object.assign({}, this.getDefaultHeaderMenuOptions(), this.sharedService.gridOptions.headerMenu);
+            if (this.sharedService.gridOptions.enableHeaderMenu) {
+                this.sharedService.gridOptions.headerMenu = this.addHeaderMenuCustomCommands(this.sharedService.gridOptions, this.sharedService.columnDefinitions);
+            }
+            this._extension = new Slick.Plugins.HeaderMenu(this.sharedService.gridOptions.headerMenu);
+            this.sharedService.grid.registerPlugin(this._extension);
+            this._eventHandler.subscribe(this._extension.onCommand, (e, args) => {
+                this.executeHeaderMenuInternalCommands(e, args);
+                if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onCommand === 'function') {
+                    this.sharedService.gridOptions.headerMenu.onCommand(e, args);
+                }
+            });
+            this._eventHandler.subscribe(this._extension.onBeforeMenuShow, (e, args) => {
+                if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
+                    this.sharedService.gridOptions.headerMenu.onBeforeMenuShow(e, args);
+                }
+            });
+            return this._extension;
+        }
+        return null;
     }
     /**
      * Create Header Menu with Custom Commands if user has enabled Header Menu
@@ -4564,7 +5211,7 @@ class ControlAndPluginService {
      * @return {?} header menu
      */
     addHeaderMenuCustomCommands(options, columnDefinitions) {
-        const /** @type {?} */ headerMenuOptions = options.headerMenu;
+        const /** @type {?} */ headerMenuOptions = options.headerMenu || {};
         if (columnDefinitions && Array.isArray(columnDefinitions) && options.enableHeaderMenu) {
             columnDefinitions.forEach((columnDef) => {
                 if (columnDef && !columnDef.excludeFromHeaderMenu) {
@@ -4575,9 +5222,9 @@ class ControlAndPluginService {
                             }
                         };
                     }
-                    const /** @type {?} */ columnHeaderMenuItems = columnDef.header.menu.items || [];
+                    const /** @type {?} */ columnHeaderMenuItems = columnDef && columnDef.header && columnDef.header.menu && columnDef.header.menu.items || [];
                     // Sorting Commands
-                    if (options.enableSorting && columnDef.sortable && !headerMenuOptions.hideSortCommands) {
+                    if (options.enableSorting && columnDef.sortable && headerMenuOptions && !headerMenuOptions.hideSortCommands) {
                         if (columnHeaderMenuItems.filter((item) => item.command === 'sort-asc').length === 0) {
                             columnHeaderMenuItems.push({
                                 iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
@@ -4596,7 +5243,7 @@ class ControlAndPluginService {
                         }
                     }
                     // Hide Column Command
-                    if (!headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter((item) => item.command === 'hide').length === 0) {
+                    if (headerMenuOptions && !headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter((item) => item.command === 'hide').length === 0) {
                         columnHeaderMenuItems.push({
                             iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
                             title: options.enableTranslate ? this.translate.instant('HIDE_COLUMN') : Constants.TEXT_HIDE_COLUMN,
@@ -4604,7 +5251,7 @@ class ControlAndPluginService {
                             positionOrder: 52
                         });
                     }
-                    this.translateItems(columnHeaderMenuItems, 'titleKey', 'title');
+                    this.extensionUtility.translateItems(columnHeaderMenuItems, 'titleKey', 'title');
                     // sort the custom items by their position in the list
                     columnHeaderMenuItems.sort((itemA, itemB) => {
                         if (itemA && itemB && itemA.hasOwnProperty('positionOrder') && itemB.hasOwnProperty('positionOrder')) {
@@ -4628,8 +5275,8 @@ class ControlAndPluginService {
             switch (args.command) {
                 case 'hide':
                     this.hideColumn(args.column);
-                    if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
-                        this._grid.autosizeColumns();
+                    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableAutoSizeColumns) {
+                        this.sharedService.grid.autosizeColumns();
                     }
                     break;
                 case 'sort-asc':
@@ -4638,299 +5285,37 @@ class ControlAndPluginService {
                     const /** @type {?} */ cols = this.sortService.getPreviousColumnSorts(args.column.id + '');
                     // add to the column array, the column sorted by the header menu
                     cols.push({ sortCol: args.column, sortAsc: (args.command === 'sort-asc') });
-                    if (this._gridOptions.backendServiceApi) {
-                        this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this._grid });
+                    if (this.sharedService.gridOptions.backendServiceApi) {
+                        this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this.sharedService.grid });
                     }
                     else {
-                        this.sortService.onLocalSortChanged(this._grid, this._dataView, cols);
+                        this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, cols);
                     }
-                    // update the this.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
+                    // update the this.sharedService.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
                     const /** @type {?} */ newSortColumns = cols.map((col) => {
-                        return { columnId: col.sortCol.id, sortAsc: col.sortAsc };
-                    });
-                    this._grid.setSortColumns(newSortColumns); // add sort icon in UI
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    /**
-     * Execute the Grid Menu Custom command callback that was triggered by the onCommand subscribe
-     * These are the default internal custom commands
-     * @param {?} e
-     * @param {?} args
-     * @return {?}
-     */
-    executeGridMenuInternalCustomCommands(e, args) {
-        if (args && args.command) {
-            switch (args.command) {
-                case 'clear-filter':
-                    this.filterService.clearFilters();
-                    this._dataView.refresh();
-                    break;
-                case 'clear-sorting':
-                    this.sortService.clearSorting();
-                    this._dataView.refresh();
-                    break;
-                case 'export-csv':
-                    this.exportService.exportToFile({
-                        delimiter: DelimiterType.comma,
-                        filename: 'export',
-                        format: FileType.csv,
-                        useUtf8WithBom: true
-                    });
-                    break;
-                case 'export-text-delimited':
-                    this.exportService.exportToFile({
-                        delimiter: DelimiterType.tab,
-                        filename: 'export',
-                        format: FileType.txt,
-                        useUtf8WithBom: true
-                    });
-                    break;
-                case 'toggle-filter':
-                    this._grid.setHeaderRowVisibility(!this._grid.getOptions().showHeaderRow);
-                    break;
-                case 'toggle-toppanel':
-                    this._grid.setTopPanelVisibility(!this._grid.getOptions().showTopPanel);
-                    break;
-                case 'refresh-dataset':
-                    this.refreshBackendDataset();
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    /**
-     * Refresh the dataset through the Backend Service
-     * @param {?=} gridOptions
-     * @return {?}
-     */
-    refreshBackendDataset(gridOptions) {
-        let /** @type {?} */ query = '';
-        // user can pass new set of grid options which will override current ones
-        if (gridOptions) {
-            this._gridOptions = Object.assign({}, this._gridOptions, gridOptions);
-        }
-        const /** @type {?} */ backendApi = this._gridOptions.backendServiceApi;
-        if (!backendApi || !backendApi.service || !backendApi.process) {
-            throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
-        }
-        if (backendApi.service) {
-            query = backendApi.service.buildQuery();
-        }
-        if (query && query !== '') {
-            // keep start time & end timestamps & return it after process execution
-            const /** @type {?} */ startTime = new Date();
-            if (backendApi.preProcess) {
-                backendApi.preProcess();
-            }
-            // the process could be an Observable (like HttpClient) or a Promise
-            // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-            const /** @type {?} */ observableOrPromise = backendApi.process(query);
-            castToPromise(observableOrPromise).then((processResult) => {
-                const /** @type {?} */ endTime = new Date();
-                // from the result, call our internal post process to update the Dataset and Pagination info
-                if (processResult && backendApi.internalPostProcess) {
-                    backendApi.internalPostProcess(processResult);
-                }
-                // send the response process to the postProcess callback
-                if (backendApi.postProcess) {
-                    if (processResult instanceof Object) {
-                        processResult.statistics = {
-                            startTime,
-                            endTime,
-                            executionTime: endTime.valueOf() - startTime.valueOf(),
-                            totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                        return {
+                            columnId: col && col.sortCol && col.sortCol.id,
+                            sortAsc: col && col.sortAsc
                         };
-                    }
-                    backendApi.postProcess(processResult);
-                }
-            });
-        }
-    }
-    /**
-     * Remove a column from the grid by it's index in the grid
-     * @param {?} array input
-     * @param {?} index
-     * @return {?}
-     */
-    removeColumnByIndex(array, index) {
-        return array.filter((el, i) => {
-            return index !== i;
-        });
-    }
-    /**
-     * Translate the Column Picker and it's last 2 checkboxes
-     * @return {?}
-     */
-    translateColumnPicker() {
-        // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
-        if (this._gridOptions && this._gridOptions.columnPicker) {
-            this.emptyColumnPickerTitles();
-            this._gridOptions.columnPicker.columnTitle = this.getPickerTitleOutputString('columnTitle', 'columnPicker');
-            this._gridOptions.columnPicker.forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
-            this._gridOptions.columnPicker.syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
-        }
-        // translate all columns (including non-visible)
-        this.translateItems(this.allColumns, 'headerKey', 'name');
-        // re-initialize the Column Picker, that will recreate all the list
-        // doing an "init()" won't drop any existing command attached
-        if (this.columnPickerControl.init) {
-            this.columnPickerControl.init(this._grid);
-        }
-    }
-    /**
-     * Translate the Grid Menu titles and column picker
-     * @return {?}
-     */
-    translateGridMenu() {
-        // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
-        // we also need to call the control init so that it takes the new Grid object with latest values
-        if (this._gridOptions && this._gridOptions.gridMenu) {
-            this._gridOptions.gridMenu.customItems = [];
-            this.emptyGridMenuTitles();
-            // merge original user grid menu items with internal items
-            // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
-            this._gridOptions.gridMenu.customItems = [...this.userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
-            this.translateItems(this._gridOptions.gridMenu.customItems, 'titleKey', 'title');
-            this.sortItems(this._gridOptions.gridMenu.customItems, 'positionOrder');
-            this._gridOptions.gridMenu.columnTitle = this.getPickerTitleOutputString('columnTitle', 'gridMenu');
-            this._gridOptions.gridMenu.forceFitTitle = this.getPickerTitleOutputString('forceFitTitle', 'gridMenu');
-            this._gridOptions.gridMenu.syncResizeTitle = this.getPickerTitleOutputString('syncResizeTitle', 'gridMenu');
-            // translate all columns (including non-visible)
-            this.translateItems(this.allColumns, 'headerKey', 'name');
-            // re-initialize the Grid Menu, that will recreate all the menus & list
-            // doing an "init()" won't drop any existing command attached
-            if (this.gridMenuControl.init) {
-                this.gridMenuControl.init(this._grid);
-            }
-        }
-    }
-    /**
-     * Translate the Header Menu titles, we need to loop through all column definition to re-translate them
-     * @return {?}
-     */
-    translateHeaderMenu() {
-        if (this._gridOptions && this._gridOptions.headerMenu) {
-            this.resetHeaderMenuTranslations(this.visibleColumns);
-        }
-    }
-    /**
-     * Translate manually the header titles.
-     * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
-     * @param {?=} locale to use
-     * @param {?=} newColumnDefinitions
-     * @return {?}
-     */
-    translateColumnHeaders(locale, newColumnDefinitions) {
-        if (locale) {
-            this.translate.use(/** @type {?} */ (locale));
-        }
-        const /** @type {?} */ columnDefinitions = newColumnDefinitions || this._columnDefinitions;
-        this.translateItems(columnDefinitions, 'headerKey', 'name');
-        this.translateItems(this.allColumns, 'headerKey', 'name');
-        // re-render the column headers
-        this.renderColumnHeaders(columnDefinitions);
-    }
-    /**
-     * Render (or re-render) the column headers from column definitions.
-     * calling setColumns() will trigger a grid re-render
-     * @param {?=} newColumnDefinitions
-     * @return {?}
-     */
-    renderColumnHeaders(newColumnDefinitions) {
-        const /** @type {?} */ collection = newColumnDefinitions || this._columnDefinitions;
-        if (Array.isArray(collection) && this._grid && this._grid.setColumns) {
-            this._grid.setColumns(collection);
-        }
-    }
-    /**
-     * @return {?}
-     */
-    emptyColumnPickerTitles() {
-        this._gridOptions.columnPicker.columnTitle = '';
-        this._gridOptions.columnPicker.forceFitTitle = '';
-        this._gridOptions.columnPicker.syncResizeTitle = '';
-    }
-    /**
-     * @return {?}
-     */
-    emptyGridMenuTitles() {
-        this._gridOptions.gridMenu.customTitle = '';
-        this._gridOptions.gridMenu.columnTitle = '';
-        this._gridOptions.gridMenu.forceFitTitle = '';
-        this._gridOptions.gridMenu.syncResizeTitle = '';
-    }
-    /**
-     * @return {?} default Grid Menu options
-     */
-    getDefaultGridMenuOptions() {
-        return {
-            customTitle: undefined,
-            columnTitle: this.getPickerTitleOutputString('columnTitle', 'gridMenu'),
-            forceFitTitle: this.getPickerTitleOutputString('forceFitTitle', 'gridMenu'),
-            syncResizeTitle: this.getPickerTitleOutputString('syncResizeTitle', 'gridMenu'),
-            iconCssClass: 'fa fa-bars',
-            menuWidth: 18,
-            customItems: [],
-            hideClearAllFiltersCommand: false,
-            hideRefreshDatasetCommand: false,
-            hideToggleFilterCommand: false,
-        };
-    }
-    /**
-     * @return {?} default Header Menu options
-     */
-    getDefaultHeaderMenuOptions() {
-        return {
-            autoAlignOffset: 12,
-            minWidth: 140,
-            hideColumnHideCommand: false,
-            hideSortCommands: false,
-            title: ''
-        };
-    }
-    /**
-     * From a Grid Menu object property name, we will return the correct title output string following this order
-     * 1- if user provided a title, use it as the output title
-     * 2- else if user provided a title key, use it to translate the output title
-     * 3- else if nothing is provided use
-     * @param {?} propName
-     * @param {?} pickerName
-     * @return {?}
-     */
-    getPickerTitleOutputString(propName, pickerName) {
-        let /** @type {?} */ output = '';
-        const /** @type {?} */ picker = this._gridOptions && this._gridOptions[pickerName] || {};
-        const /** @type {?} */ enableTranslate = this._gridOptions && this._gridOptions.enableTranslate || false;
-        const /** @type {?} */ title = picker && picker[propName];
-        const /** @type {?} */ titleKey = picker && picker[`${propName}Key`];
-        if (titleKey) {
-            output = this.translate.instant(titleKey || ' ');
-        }
-        else {
-            switch (propName) {
-                case 'customTitle':
-                    output = title || (enableTranslate ? this.translate.instant('COMMANDS') : Constants.TEXT_COMMANDS);
-                    break;
-                case 'columnTitle':
-                    output = title || (enableTranslate ? this.translate.instant('COLUMNS') : Constants.TEXT_COLUMNS);
-                    break;
-                case 'forceFitTitle':
-                    output = title || (enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : Constants.TEXT_FORCE_FIT_COLUMNS);
-                    break;
-                case 'syncResizeTitle':
-                    output = title || (enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : Constants.TEXT_SYNCHRONOUS_RESIZE);
+                    });
+                    this.sharedService.grid.setSortColumns(newSortColumns); // add sort icon in UI
                     break;
                 default:
-                    output = title;
                     break;
             }
         }
-        return output;
+    }
+    /**
+     * Hide a column from the grid
+     * @param {?} column
+     * @return {?}
+     */
+    hideColumn(column) {
+        if (this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns) {
+            const /** @type {?} */ columnIndex = this.sharedService.grid.getColumnIndex(column.id);
+            this.sharedService.visibleColumns = this.extensionUtility.arrayRemoveItemByIndex(this.sharedService.grid.getColumns(), columnIndex);
+            this.sharedService.grid.setColumns(this.sharedService.visibleColumns);
+        }
     }
     /**
      * Reset all the Grid Menu options which have text to translate
@@ -4955,8 +5340,8 @@ class ControlAndPluginService {
                                 break;
                         }
                         // re-translate if there's a "titleKey"
-                        if (this._gridOptions && this._gridOptions.enableTranslate) {
-                            this.translateItems(columnHeaderMenuItems, 'titleKey', 'title');
+                        if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate) {
+                            this.extensionUtility.translateItems(columnHeaderMenuItems, 'titleKey', 'title');
                         }
                     });
                 }
@@ -4964,20 +5349,424 @@ class ControlAndPluginService {
         });
     }
     /**
-     * Sort items in an array by a property name
-     * \@params items array
-     * @param {?} items
-     * @param {?} propertyName
-     * @return {?} sorted array
+     * Translate the Header Menu titles, we need to loop through all column definition to re-translate them
+     * @return {?}
      */
-    sortItems(items, propertyName) {
-        // sort the custom items by their position in the list
-        items.sort((itemA, itemB) => {
-            if (itemA && itemB && itemA.hasOwnProperty(propertyName) && itemB.hasOwnProperty(propertyName)) {
-                return itemA[propertyName] - itemB[propertyName];
+    translateHeaderMenu() {
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.headerMenu) {
+            this.resetHeaderMenuTranslations(this.sharedService.visibleColumns);
+        }
+    }
+    /**
+     * @return {?} default Header Menu options
+     */
+    getDefaultHeaderMenuOptions() {
+        return {
+            autoAlignOffset: 12,
+            minWidth: 140,
+            hideColumnHideCommand: false,
+            hideSortCommands: false,
+            title: ''
+        };
+    }
+}
+HeaderMenuExtension.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+HeaderMenuExtension.ctorParameters = () => [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+    { type: SortService, },
+    { type: TranslateService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class RowMoveManagerExtension {
+    /**
+     * @param {?} extensionUtility
+     * @param {?} sharedService
+     */
+    constructor(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+        this._eventHandler = new Slick.EventHandler();
+    }
+    /**
+     * @return {?}
+     */
+    dispose() {
+        // unsubscribe all SlickGrid events
+        this._eventHandler.unsubscribeAll();
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    }
+    /**
+     * @param {?=} rowSelectionPlugin
+     * @return {?}
+     */
+    register(rowSelectionPlugin) {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            // dynamically import the SlickGrid plugin with requireJS
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.rowMoveManager);
+            // this also requires the Row Selection Model to be registered as well
+            if (!rowSelectionPlugin || !this.sharedService.grid.getSelectionModel()) {
+                this.extensionUtility.loadExtensionDynamically(ExtensionName.rowSelection);
+                rowSelectionPlugin = new Slick.RowSelectionModel(this.sharedService.gridOptions.rowSelectionOptions || {});
+                this.sharedService.grid.setSelectionModel(rowSelectionPlugin);
             }
-            return 0;
+            this._extension = new Slick.RowMoveManager(this.sharedService.gridOptions.rowMoveManager || { cancelEditOnDrag: true });
+            this.sharedService.grid.registerPlugin(this._extension);
+            // hook all events
+            if (this.sharedService.grid && this.sharedService.gridOptions.rowMoveManager) {
+                this._eventHandler.subscribe(this._extension.onBeforeMoveRows, (e, args) => {
+                    if (this.sharedService.gridOptions.rowMoveManager && typeof this.sharedService.gridOptions.rowMoveManager.onBeforeMoveRows === 'function') {
+                        this.sharedService.gridOptions.rowMoveManager.onBeforeMoveRows(e, args);
+                    }
+                });
+                this._eventHandler.subscribe(this._extension.onMoveRows, (e, args) => {
+                    if (this.sharedService.gridOptions.rowMoveManager && typeof this.sharedService.gridOptions.rowMoveManager.onMoveRows === 'function') {
+                        this.sharedService.gridOptions.rowMoveManager.onMoveRows(e, args);
+                    }
+                });
+            }
+            return this._extension;
+        }
+        return null;
+    }
+}
+RowMoveManagerExtension.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+RowMoveManagerExtension.ctorParameters = () => [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class RowSelectionExtension {
+    /**
+     * @param {?} extensionUtility
+     * @param {?} sharedService
+     */
+    constructor(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+    }
+    /**
+     * @return {?}
+     */
+    dispose() {
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    }
+    /**
+     * @return {?}
+     */
+    register() {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            // dynamically import the SlickGrid plugin with requireJS
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.rowSelection);
+            this._extension = new Slick.RowSelectionModel(this.sharedService.gridOptions.rowSelectionOptions || {});
+            this.sharedService.grid.setSelectionModel(this._extension);
+            return this._extension;
+        }
+        return null;
+    }
+}
+RowSelectionExtension.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+RowSelectionExtension.ctorParameters = () => [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class ExtensionService {
+    /**
+     * @param {?} autoTooltipExtension
+     * @param {?} cellExternalCopyExtension
+     * @param {?} checkboxSelectorExtension
+     * @param {?} columnPickerExtension
+     * @param {?} gridMenuExtension
+     * @param {?} groupItemMetaExtension
+     * @param {?} headerButtonExtension
+     * @param {?} headerMenuExtension
+     * @param {?} rowMoveManagerExtension
+     * @param {?} rowSelectionExtension
+     * @param {?} sharedService
+     * @param {?} translate
+     */
+    constructor(autoTooltipExtension, cellExternalCopyExtension, checkboxSelectorExtension, columnPickerExtension, gridMenuExtension, groupItemMetaExtension, headerButtonExtension, headerMenuExtension, rowMoveManagerExtension, rowSelectionExtension, sharedService, translate) {
+        this.autoTooltipExtension = autoTooltipExtension;
+        this.cellExternalCopyExtension = cellExternalCopyExtension;
+        this.checkboxSelectorExtension = checkboxSelectorExtension;
+        this.columnPickerExtension = columnPickerExtension;
+        this.gridMenuExtension = gridMenuExtension;
+        this.groupItemMetaExtension = groupItemMetaExtension;
+        this.headerButtonExtension = headerButtonExtension;
+        this.headerMenuExtension = headerMenuExtension;
+        this.rowMoveManagerExtension = rowMoveManagerExtension;
+        this.rowSelectionExtension = rowSelectionExtension;
+        this.sharedService = sharedService;
+        this.translate = translate;
+        this.extensionList = [];
+    }
+    /**
+     * Dispose of all the controls & plugins
+     * @return {?}
+     */
+    dispose() {
+        this.sharedService.grid = null;
+        this.sharedService.visibleColumns = [];
+        // dispose of each control/plugin & reset the list
+        this.extensionList.forEach((item) => {
+            if (item && item.class && item.class.dispose) {
+                item.class.dispose();
+            }
         });
+        this.extensionList = [];
+    }
+    /**
+     * Get all columns (includes visible and non-visible)
+     * @return {?}
+     */
+    getAllColumns() {
+        return this.sharedService.allColumns || [];
+    }
+    /**
+     * Get only visible columns
+     * @return {?}
+     */
+    getVisibleColumns() {
+        return this.sharedService.visibleColumns || [];
+    }
+    /**
+     * Get all Extensions
+     * @return {?}
+     */
+    getAllExtensions() {
+        return this.extensionList;
+    }
+    /**
+     * Get an Extension by it's name
+     *  \@param name
+     * @param {?} name
+     * @return {?}
+     */
+    getExtensionByName(name) {
+        return this.extensionList.find((p) => p.name === name);
+    }
+    /**
+     * Auto-resize all the column in the grid to fit the grid width
+     * @return {?}
+     */
+    autoResizeColumns() {
+        this.sharedService.grid.autosizeColumns();
+    }
+    /**
+     * Attach/Create different Controls or Plugins after the Grid is created
+     * @return {?}
+     */
+    attachDifferentExtensions() {
+        // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
+        // this is to avoid having hidden columns not being translated on first load
+        if (this.sharedService.gridOptions.enableTranslate) {
+            this.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+        }
+        // Auto Tooltip Plugin
+        if (this.sharedService.gridOptions.enableAutoTooltip) {
+            if (this.autoTooltipExtension && this.autoTooltipExtension.register) {
+                this.extensionList.push({ name: ExtensionName.autoTooltip, class: this.autoTooltipExtension, extension: this.autoTooltipExtension.register() });
+            }
+        }
+        // Column Picker Control
+        if (this.sharedService.gridOptions.enableColumnPicker) {
+            if (this.columnPickerExtension && this.columnPickerExtension.register) {
+                this.extensionList.push({ name: ExtensionName.columnPicker, class: this.columnPickerExtension, extension: this.columnPickerExtension.register() });
+            }
+        }
+        // Grid Menu Control
+        if (this.sharedService.gridOptions.enableGridMenu) {
+            if (this.gridMenuExtension && this.gridMenuExtension.register) {
+                this.extensionList.push({ name: ExtensionName.gridMenu, class: this.gridMenuExtension, extension: this.gridMenuExtension.register() });
+            }
+        }
+        // Grouping Plugin
+        // register the group item metadata provider to add expand/collapse group handlers
+        if (this.sharedService.gridOptions.enableGrouping) {
+            if (this.groupItemMetaExtension && this.groupItemMetaExtension.register) {
+                this.extensionList.push({ name: ExtensionName.groupItemMetaProvider, class: this.groupItemMetaExtension, extension: this.groupItemMetaExtension.register() });
+            }
+        }
+        // Checkbox Selector Plugin
+        if (this.sharedService.gridOptions.enableCheckboxSelector) {
+            if (this.checkboxSelectorExtension && this.checkboxSelectorExtension.register) {
+                const /** @type {?} */ rowSelectionExtension = this.getExtensionByName(ExtensionName.rowSelection);
+                this.extensionList.push({ name: ExtensionName.checkboxSelector, class: this.checkboxSelectorExtension, extension: this.checkboxSelectorExtension.register(rowSelectionExtension) });
+            }
+        }
+        // Row Move Manager Plugin
+        if (this.sharedService.gridOptions.enableRowMoveManager) {
+            if (this.rowMoveManagerExtension && this.rowMoveManagerExtension.register) {
+                this.extensionList.push({ name: ExtensionName.rowMoveManager, class: this.rowMoveManagerExtension, extension: this.rowMoveManagerExtension.register() });
+            }
+        }
+        // Row Selection Plugin
+        if (!this.sharedService.gridOptions.enableCheckboxSelector && this.sharedService.gridOptions.enableRowSelection) {
+            if (this.rowSelectionExtension && this.rowSelectionExtension.register) {
+                this.extensionList.push({ name: ExtensionName.rowSelection, class: this.rowSelectionExtension, extension: this.rowSelectionExtension.register() });
+            }
+        }
+        // Header Button Plugin
+        if (this.sharedService.gridOptions.enableHeaderButton) {
+            if (this.headerButtonExtension && this.headerButtonExtension.register) {
+                this.extensionList.push({ name: ExtensionName.headerButton, class: this.headerButtonExtension, extension: this.headerButtonExtension.register() });
+            }
+        }
+        // Header Menu Plugin
+        if (this.sharedService.gridOptions.enableHeaderMenu) {
+            if (this.headerMenuExtension && this.headerMenuExtension.register) {
+                this.extensionList.push({ name: ExtensionName.headerMenu, class: this.headerMenuExtension, extension: this.headerMenuExtension.register() });
+            }
+        }
+        // Cell External Copy Manager Plugin (Excel Like)
+        if (this.sharedService.gridOptions.enableExcelCopyBuffer) {
+            if (this.cellExternalCopyExtension && this.cellExternalCopyExtension.register) {
+                this.extensionList.push({ name: ExtensionName.cellExternalCopyManager, class: this.cellExternalCopyExtension, extension: this.cellExternalCopyExtension.register() });
+            }
+        }
+        // manually register other plugins
+        if (this.sharedService.gridOptions.registerPlugins !== undefined) {
+            if (Array.isArray(this.sharedService.gridOptions.registerPlugins)) {
+                this.sharedService.gridOptions.registerPlugins.forEach((plugin) => {
+                    this.sharedService.grid.registerPlugin(plugin);
+                    this.extensionList.push({ name: ExtensionName.noname, class: null, extension: plugin });
+                });
+            }
+            else {
+                this.sharedService.grid.registerPlugin(this.sharedService.gridOptions.registerPlugins);
+                this.extensionList.push({ name: ExtensionName.noname, class: null, extension: this.sharedService.gridOptions.registerPlugins });
+            }
+        }
+    }
+    /**
+     * Attach/Create different plugins before the Grid creation.
+     * For example the multi-select have to be added to the column definition before the grid is created to work properly
+     * @param {?} columnDefinitions
+     * @param {?} options
+     * @return {?}
+     */
+    createCheckboxPluginBeforeGridCreation(columnDefinitions, options) {
+        if (options.enableCheckboxSelector) {
+            this.checkboxSelectorExtension.create(columnDefinitions, options);
+        }
+    }
+    /**
+     * Hide a column from the grid
+     * @param {?} column
+     * @return {?}
+     */
+    hideColumn(column) {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns) {
+            const /** @type {?} */ columnIndex = this.sharedService.grid.getColumnIndex(column.id);
+            this.sharedService.visibleColumns = this.removeColumnByIndex(this.sharedService.grid.getColumns(), columnIndex);
+            this.sharedService.grid.setColumns(this.sharedService.visibleColumns);
+        }
+    }
+    /**
+     * Refresh the dataset through the Backend Service
+     * @param {?=} gridOptions
+     * @return {?}
+     */
+    refreshBackendDataset(gridOptions) {
+        this.gridMenuExtension.refreshBackendDataset(gridOptions);
+    }
+    /**
+     * Remove a column from the grid by it's index in the grid
+     * @param {?} array input
+     * @param {?} index
+     * @return {?}
+     */
+    removeColumnByIndex(array, index) {
+        return array.filter((el, i) => {
+            return index !== i;
+        });
+    }
+    /**
+     * Translate the Column Picker and it's last 2 checkboxes
+     * @return {?}
+     */
+    translateColumnPicker() {
+        if (this.columnPickerExtension && this.columnPickerExtension.translateColumnPicker) {
+            this.columnPickerExtension.translateColumnPicker();
+        }
+    }
+    /**
+     * Translate the Header Menu titles, we need to loop through all column definition to re-translate them
+     * @return {?}
+     */
+    translateGridMenu() {
+        if (this.gridMenuExtension && this.gridMenuExtension.translateGridMenu) {
+            this.gridMenuExtension.translateGridMenu();
+        }
+    }
+    /**
+     * Translate the Header Menu titles, we need to loop through all column definition to re-translate them
+     * @return {?}
+     */
+    translateHeaderMenu() {
+        if (this.headerMenuExtension && this.headerMenuExtension.translateHeaderMenu) {
+            this.headerMenuExtension.translateHeaderMenu();
+        }
+    }
+    /**
+     * Translate manually the header titles.
+     * We could optionally pass a locale (that will change currently loaded locale), else it will use current locale
+     * @param {?=} locale to use
+     * @param {?=} newColumnDefinitions
+     * @return {?}
+     */
+    translateColumnHeaders(locale, newColumnDefinitions) {
+        if (locale) {
+            this.translate.use(/** @type {?} */ (locale));
+        }
+        const /** @type {?} */ columnDefinitions = newColumnDefinitions || this.sharedService.columnDefinitions;
+        this.translateItems(columnDefinitions, 'headerKey', 'name');
+        this.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+        // re-render the column headers
+        this.renderColumnHeaders(columnDefinitions);
+    }
+    /**
+     * Render (or re-render) the column headers from column definitions.
+     * calling setColumns() will trigger a grid re-render
+     * @param {?=} newColumnDefinitions
+     * @return {?}
+     */
+    renderColumnHeaders(newColumnDefinitions) {
+        const /** @type {?} */ collection = newColumnDefinitions || this.sharedService.columnDefinitions;
+        if (Array.isArray(collection) && this.sharedService.grid && this.sharedService.grid.setColumns) {
+            this.sharedService.grid.setColumns(collection);
+        }
     }
     /**
      * Translate the an array of items from an input key and assign to the output key
@@ -4994,14 +5783,22 @@ class ControlAndPluginService {
         }
     }
 }
-ControlAndPluginService.decorators = [
+ExtensionService.decorators = [
     { type: Injectable },
 ];
 /** @nocollapse */
-ControlAndPluginService.ctorParameters = () => [
-    { type: ExportService, },
-    { type: FilterService, },
-    { type: SortService, },
+ExtensionService.ctorParameters = () => [
+    { type: AutoTooltipExtension, },
+    { type: CellExternalCopyManagerExtension, },
+    { type: CheckboxSelectorExtension, },
+    { type: ColumnPickerExtension, },
+    { type: GridMenuExtension, },
+    { type: GroupItemMetaProviderExtension, },
+    { type: HeaderButtonExtension, },
+    { type: HeaderMenuExtension, },
+    { type: RowMoveManagerExtension, },
+    { type: RowSelectionExtension, },
+    { type: SharedService, },
     { type: TranslateService, },
 ];
 
@@ -6403,14 +7200,14 @@ class GridStateService {
     /**
      * Initialize the Export Service
      * @param {?} grid
-     * @param {?} controlAndPluginService
+     * @param {?} extensionService
      * @param {?} filterService
      * @param {?} sortService
      * @return {?}
      */
-    init(grid, controlAndPluginService, filterService, sortService) {
+    init(grid, extensionService, filterService, sortService) {
         this._grid = grid;
-        this.controlAndPluginService = controlAndPluginService;
+        this.extensionService = extensionService;
         this.filterService = filterService;
         this.sortService = sortService;
         this.subscribeToAllGridChanges(grid);
@@ -6564,9 +7361,9 @@ class GridStateService {
      * @return {?}
      */
     hookExtensionEventToGridStateChange(extensionName, eventName) {
-        const /** @type {?} */ extension = this.controlAndPluginService && this.controlAndPluginService.getExtensionByName(extensionName);
-        if (extension && extension.service && extension.service[eventName] && extension.service[eventName].subscribe) {
-            this._eventHandler.subscribe(extension.service[eventName], (e, args) => {
+        const /** @type {?} */ extension = this.extensionService && this.extensionService.getExtensionByName(extensionName);
+        if (extension && extension.class && extension.class[eventName] && extension.class[eventName].subscribe) {
+            this._eventHandler.subscribe(extension.class[eventName], (e, args) => {
                 const /** @type {?} */ columns = args && args.columns;
                 const /** @type {?} */ currentColumns = this.getAssociatedCurrentColumns(columns);
                 this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
@@ -6603,7 +7400,11 @@ class GridStateService {
      */
     resetRowSelection() {
         if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
-            this._grid.setSelectedRows([]);
+            // this also requires the Row Selection Model to be registered as well
+            const /** @type {?} */ rowSelectionExtension = this.extensionService && this.extensionService.getExtensionByName && this.extensionService.getExtensionByName(ExtensionName.rowSelection);
+            if (rowSelectionExtension && rowSelectionExtension.extension) {
+                this._grid.setSelectedRows([]);
+            }
         }
     }
     /**
@@ -6634,8 +7435,8 @@ class GridStateService {
             this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
         }));
         // Subscribe to ColumnPicker and/or GridMenu for show/hide Columns visibility changes
-        this.hookExtensionEventToGridStateChange('ColumnPicker', 'onColumnsChanged');
-        this.hookExtensionEventToGridStateChange('GridMenu', 'onColumnsChanged');
+        this.hookExtensionEventToGridStateChange(ExtensionName.columnPicker, 'onColumnsChanged');
+        this.hookExtensionEventToGridStateChange(ExtensionName.gridMenu, 'onColumnsChanged');
         // subscribe to Column Resize & Reordering
         this.hookSlickGridEventToGridStateChange('onColumnsReordered', grid);
         this.hookSlickGridEventToGridStateChange('onColumnsResized', grid);
@@ -6648,14 +7449,14 @@ class GridStateService {
  */
 class GridService {
     /**
-     * @param {?} controlAndPluginService
+     * @param {?} extensionService
      * @param {?} filterService
      * @param {?} gridStateService
      * @param {?} sortService
      * @param {?} translate
      */
-    constructor(controlAndPluginService, filterService, gridStateService, sortService, translate) {
-        this.controlAndPluginService = controlAndPluginService;
+    constructor(extensionService, filterService, gridStateService, sortService, translate) {
+        this.extensionService = extensionService;
         this.filterService = filterService;
         this.gridStateService = gridStateService;
         this.sortService = sortService;
@@ -6860,7 +7661,7 @@ class GridService {
     resetGrid(columnDefinitions) {
         // reset columns to original states & refresh the grid
         if (this._grid && this._dataView) {
-            const /** @type {?} */ originalColumns = this.controlAndPluginService.getAllColumns();
+            const /** @type {?} */ originalColumns = this.extensionService.getAllColumns();
             // const originalColumns = columnDefinitions || this._columnDefinitions;
             if (Array.isArray(originalColumns) && originalColumns.length > 0) {
                 // set the grid columns to it's original column definitions
@@ -6980,7 +7781,7 @@ GridService.decorators = [
 ];
 /** @nocollapse */
 GridService.ctorParameters = () => [
-    { type: ControlAndPluginService, },
+    { type: ExtensionService, },
     { type: FilterService, },
     { type: GridStateService, },
     { type: SortService, },
@@ -7525,7 +8326,8 @@ class CheckboxEditor {
      * @return {?}
      */
     init() {
-        this.$input = $(`<input type="checkbox" value="true" class="editor-checkbox" />`);
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
+        this.$input = $(`<input type="checkbox" value="true" class="editor-checkbox editor-${fieldId}" />`);
         this.$input.appendTo(this.args.container);
         this.$input.focus();
         // make the checkbox editor act like a regular checkbox that commit the value on click
@@ -7656,6 +8458,7 @@ class DateEditor {
      */
     init() {
         if (this.args && this.args.column) {
+            const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
             const /** @type {?} */ gridOptions = /** @type {?} */ (this.args.grid.getOptions());
             this.defaultDate = (this.args.item) ? this.args.item[this.args.column.field] : null;
             const /** @type {?} */ inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
@@ -7675,7 +8478,7 @@ class DateEditor {
                     this.save();
                 },
             };
-            this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text flatpickr" />`);
+            this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text flatpickr editor-${fieldId}" />`);
             this.$input.appendTo(this.args.container);
             this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
             this.show();
@@ -7699,7 +8502,11 @@ class DateEditor {
      */
     loadFlatpickrLocale(locale) {
         // change locale if needed, Flatpickr reference: https://chmln.github.io/flatpickr/localization/
-        if (locale !== 'en') {
+        const /** @type {?} */ gridOptions = this.args && this.args.grid && this.args.grid.getOptions();
+        if (gridOptions && gridOptions.params && gridOptions.params.flapickrLocale) {
+            return gridOptions.params.flapickrLocale;
+        }
+        else if (locale !== 'en') {
             const /** @type {?} */ localeDefault = require(`flatpickr/dist/l10n/${locale}.js`).default;
             return (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
         }
@@ -7858,7 +8665,8 @@ class FloatEditor {
      * @return {?}
      */
     init() {
-        this.$input = $(`<input type="number" class="editor-text" step="${this.getInputDecimalSteps()}" />`)
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
+        this.$input = $(`<input type="number" class="editor-text editor-${fieldId}" step="${this.getInputDecimalSteps()}" />`)
             .appendTo(this.args.container)
             .on('keydown.nav', (e) => {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
@@ -8089,7 +8897,8 @@ class IntegerEditor {
      * @return {?}
      */
     init() {
-        this.$input = $(`<input type="number" class='editor-text' />`)
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
+        this.$input = $(`<input type="number" class="editor-text editor-${fieldId}" />`)
             .appendTo(this.args.container)
             .on('keydown.nav', (e) => {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
@@ -8240,10 +9049,11 @@ class LongTextEditor {
      * @return {?}
      */
     init() {
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
         const /** @type {?} */ cancelText = this._translate && this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
         const /** @type {?} */ saveText = this._translate && this._translate.instant('SAVE') || Constants.TEXT_SAVE;
         const /** @type {?} */ $container = $('body');
-        this.$wrapper = $(`<div class="slick-large-editor-text" />`).appendTo($container);
+        this.$wrapper = $(`<div class="slick-large-editor-text editor-${fieldId}" />`).appendTo($container);
         this.$input = $(`<textarea hidefocus rows="5">`).appendTo(this.$wrapper);
         // the lib does not get the focus out event for some reason
         // so register it here
@@ -8422,8 +9232,8 @@ class SelectEditor {
         const /** @type {?} */ gridOptions = this.gridOptions || this.args.column.params || {};
         this._translate = gridOptions.i18n;
         // provide the name attribute to the DOM element which will be needed to auto-adjust drop position (dropup / dropdown)
-        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
-        this.elementName = `editor_${fieldId}`;
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
+        this.elementName = `editor-${fieldId}`;
         const /** @type {?} */ libOptions = {
             autoAdjustDropHeight: true,
             autoAdjustDropPosition: true,
@@ -8743,6 +9553,7 @@ class SelectEditor {
      */
     buildTemplateHtmlString(collection) {
         let /** @type {?} */ options = '';
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
         const /** @type {?} */ separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
         const /** @type {?} */ isRenderHtmlEnabled = this.columnDef.internalColumnEditor.enableRenderHtml || false;
         const /** @type {?} */ sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
@@ -8782,7 +9593,7 @@ class SelectEditor {
                 options += `<option value="${option[this.valueName]}" label="${optionLabel}">${optionText}</option>`;
             });
         }
-        return `<select id="${this.elementName}" class="ms-filter search-filter" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
+        return `<select id="${this.elementName}" class="ms-filter search-filter editor-${fieldId}" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
     }
     /**
      * Create a blank entry that can be added to the collection. It will also reuse the same customStructure if need be
@@ -8909,7 +9720,7 @@ class SliderEditor {
      * @return {?}
      */
     init() {
-        const /** @type {?} */ container = this.args.container;
+        const /** @type {?} */ container = this.args && this.args.container;
         // define the input & slider number IDs
         const /** @type {?} */ itemId = this.args && this.args.item && this.args.item.id;
         this._elementRangeInputId = `rangeInput_${this.columnDef.field}_${itemId}`;
@@ -8921,8 +9732,8 @@ class SliderEditor {
         this.$sliderNumber = this.$editorElm.children('div.input-group-addon.input-group-append').children();
         // watch on change event
         this.$editorElm
-            .appendTo(this.args.container)
-            .on('mouseup', (event) => this.save());
+            .appendTo(container)
+            .on('mouseup', () => this.save());
         // if user chose to display the slider number on the right side, then update it every time it changes
         // we need to use both "input" and "change" event to be all cross-browser
         if (!this.editorParams.hideSliderNumber) {
@@ -9034,6 +9845,7 @@ class SliderEditor {
      * @return {?}
      */
     buildTemplateHtmlString() {
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
         const /** @type {?} */ minValue = this.columnEditor.hasOwnProperty('minValue') ? this.columnEditor.minValue : DEFAULT_MIN_VALUE$2;
         const /** @type {?} */ maxValue = this.columnEditor.hasOwnProperty('maxValue') ? this.columnEditor.maxValue : DEFAULT_MAX_VALUE$2;
         const /** @type {?} */ defaultValue = this.editorParams.hasOwnProperty('sliderStartValue') ? this.editorParams.sliderStartValue : minValue;
@@ -9045,7 +9857,7 @@ class SliderEditor {
         <input type="range" id="${this._elementRangeInputId}"
           name="${this._elementRangeInputId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
-          class="form-control slider-editor-input range" />
+          class="form-control slider-editor-input editor-${fieldId} range" />
       </div>`;
         }
         return `
@@ -9053,7 +9865,7 @@ class SliderEditor {
         <input type="range" id="${this._elementRangeInputId}"
           name="${this._elementRangeInputId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
-          class="form-control slider-editor-input range" />
+          class="form-control slider-editor-input editor-${fieldId} range" />
         <div class="input-group-addon input-group-append slider-value"><span class="input-group-text" id="${this._elementRangeOutputId}">${defaultValue}</span></div>
       </div>`;
     }
@@ -9102,7 +9914,8 @@ class TextEditor {
      * @return {?}
      */
     init() {
-        this.$input = $(`<input type="text" class="editor-text" />`)
+        const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
+        this.$input = $(`<input type="text" class="editor-text editor-${fieldId}" />`)
             .appendTo(this.args.container)
             .on('keydown.nav', (e) => {
             if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
@@ -10459,29 +11272,33 @@ SlickPaginationComponent.propDecorators = {
 const slickgridEventPrefix = 'sg';
 class AngularSlickgridComponent {
     /**
-     * @param {?} controlAndPluginService
      * @param {?} elm
      * @param {?} exportService
+     * @param {?} extensionService
+     * @param {?} extensionUtility
      * @param {?} filterService
      * @param {?} gridService
      * @param {?} gridEventService
      * @param {?} gridStateService
      * @param {?} groupingAndColspanService
      * @param {?} resizer
+     * @param {?} sharedService
      * @param {?} sortService
      * @param {?} translate
      * @param {?} forRootConfig
      */
-    constructor(controlAndPluginService, elm, exportService, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sortService, translate, forRootConfig) {
-        this.controlAndPluginService = controlAndPluginService;
+    constructor(elm, exportService, extensionService, extensionUtility, filterService, gridService, gridEventService, gridStateService, groupingAndColspanService, resizer, sharedService, sortService, translate, forRootConfig) {
         this.elm = elm;
         this.exportService = exportService;
+        this.extensionService = extensionService;
+        this.extensionUtility = extensionUtility;
         this.filterService = filterService;
         this.gridService = gridService;
         this.gridEventService = gridEventService;
         this.gridStateService = gridStateService;
         this.groupingAndColspanService = groupingAndColspanService;
         this.resizer = resizer;
+        this.sharedService = sharedService;
         this.sortService = sortService;
         this.translate = translate;
         this.forRootConfig = forRootConfig;
@@ -10570,7 +11387,7 @@ class AngularSlickgridComponent {
         this._dataView = [];
         this.gridOptions = {};
         this._eventHandler.unsubscribeAll();
-        this.controlAndPluginService.dispose();
+        this.extensionService.dispose();
         this.filterService.dispose();
         this.gridEventService.dispose();
         this.gridStateService.dispose();
@@ -10600,7 +11417,9 @@ class AngularSlickgridComponent {
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
         if (this.gridOptions.enableGrouping) {
+            this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
             this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
+            this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
             this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
         }
         else {
@@ -10617,9 +11436,14 @@ class AngularSlickgridComponent {
             }
             return Object.assign({}, column, { editor: column.editor && column.editor.model, internalColumnEditor: Object.assign({}, column.editor) });
         });
-        this.controlAndPluginService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+        // save reference for all columns before they optionally become hidden/visible
+        this.sharedService.allColumns = this._columnDefinitions;
+        this.sharedService.visibleColumns = this._columnDefinitions;
+        this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
         this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
-        this.controlAndPluginService.attachDifferentControlOrPlugins(this.grid, this._dataView, this.groupItemMetadataProvider);
+        this.sharedService.dataView = this._dataView;
+        this.sharedService.grid = this.grid;
+        this.extensionService.attachDifferentExtensions();
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
         // emit the Grid & DataView object to make them available in parent component
         this.onGridCreated.emit(this.grid);
@@ -10645,7 +11469,7 @@ class AngularSlickgridComponent {
         this.gridService.init(this.grid, this._dataView);
         // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
         if (this.gridOptions.enableTranslate) {
-            this.controlAndPluginService.translateColumnHeaders();
+            this.extensionService.translateColumnHeaders();
         }
         // if Export is enabled, initialize the service with the necessary grid and other objects
         if (this.gridOptions.enableExport) {
@@ -10658,7 +11482,7 @@ class AngularSlickgridComponent {
         if (this.gridOptions && this.gridOptions.backendServiceApi) {
             this.attachBackendCallbackFunctions(this.gridOptions);
         }
-        this.gridStateService.init(this.grid, this.controlAndPluginService, this.filterService, this.sortService);
+        this.gridStateService.init(this.grid, this.extensionService, this.filterService, this.sortService);
         this.onAngularGridCreated.emit({
             // Slick Grid & DataView objects
             dataView: this._dataView,
@@ -10673,7 +11497,9 @@ class AngularSlickgridComponent {
             gridStateService: this.gridStateService,
             gridService: this.gridService,
             groupingService: this.groupingAndColspanService,
-            pluginService: this.controlAndPluginService,
+            extensionService: this.extensionService,
+            /** @deprecated please use "extensionService" instead */
+            pluginService: this.extensionService,
             resizerService: this.resizer,
             sortService: this.sortService,
         });
@@ -10734,10 +11560,10 @@ class AngularSlickgridComponent {
         // on locale change, we have to manually translate the Headers, GridMenu
         this.subscriptions.push(this.translate.onLangChange.subscribe((event) => {
             if (gridOptions.enableTranslate) {
-                this.controlAndPluginService.translateColumnHeaders();
-                this.controlAndPluginService.translateColumnPicker();
-                this.controlAndPluginService.translateGridMenu();
-                this.controlAndPluginService.translateHeaderMenu();
+                this.extensionService.translateColumnHeaders();
+                this.extensionService.translateColumnPicker();
+                this.extensionService.translateGridMenu();
+                this.extensionService.translateHeaderMenu();
             }
         }));
         // if user entered some Columns "presets", we need to reflect them all in the grid
@@ -11002,10 +11828,10 @@ class AngularSlickgridComponent {
      */
     updateColumnDefinitionsList(newColumnDefinitions) {
         if (this.gridOptions.enableTranslate) {
-            this.controlAndPluginService.translateColumnHeaders(false, newColumnDefinitions);
+            this.extensionService.translateColumnHeaders(false, newColumnDefinitions);
         }
         else {
-            this.controlAndPluginService.renderColumnHeaders(newColumnDefinitions);
+            this.extensionService.renderColumnHeaders(newColumnDefinitions);
         }
         if (this.gridOptions && this.gridOptions.enableAutoSizeColumns) {
             this.grid.autosizeColumns();
@@ -11089,16 +11915,28 @@ AngularSlickgridComponent.decorators = [
 </div>
 `,
                 providers: [
-                    ControlAndPluginService,
+                    AutoTooltipExtension,
+                    CellExternalCopyManagerExtension,
+                    CheckboxSelectorExtension,
+                    ColumnPickerExtension,
+                    ExtensionService,
                     ExportService,
+                    ExtensionUtility,
                     FilterFactory,
                     FilterService,
                     GraphqlService,
                     GridEventService,
+                    GridMenuExtension,
                     GridService,
                     GridStateService,
                     GroupingAndColspanService,
+                    GroupItemMetaProviderExtension,
+                    HeaderButtonExtension,
+                    HeaderMenuExtension,
                     ResizerService,
+                    RowMoveManagerExtension,
+                    RowSelectionExtension,
+                    SharedService,
                     SortService,
                     SlickgridConfig
                 ]
@@ -11106,15 +11944,17 @@ AngularSlickgridComponent.decorators = [
 ];
 /** @nocollapse */
 AngularSlickgridComponent.ctorParameters = () => [
-    { type: ControlAndPluginService, },
     { type: ElementRef, },
     { type: ExportService, },
+    { type: ExtensionService, },
+    { type: ExtensionUtility, },
     { type: FilterService, },
     { type: GridService, },
     { type: GridEventService, },
     { type: GridStateService, },
     { type: GroupingAndColspanService, },
     { type: ResizerService, },
+    { type: SharedService, },
     { type: SortService, },
     { type: TranslateService, },
     { type: undefined, decorators: [{ type: Inject, args: ['config',] },] },
@@ -11197,5 +12037,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, FieldType, FileType, FilterMultiplePassType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ControlAndPluginService, ExportService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, getDescendantProperty, getScrollBarWidth, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, uniqueArray, unsubscribeAllObservables, Aggregators, Editors, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SelectEditor as ɵk, SingleSelectEditor as ɵl, SliderEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵz, CompoundInputFilter as ɵba, CompoundSliderFilter as ɵbb, InputFilter as ɵbc, MultipleSelectFilter as ɵbe, NativeSelectFilter as ɵbh, SelectFilter as ɵbf, SingleSelectFilter as ɵbg, SliderFilter as ɵbd, arrayObjectToCsvFormatter as ɵbi, arrayToCsvFormatter as ɵbj, boldFormatter as ɵbk, checkboxFormatter as ɵbl, checkmarkFormatter as ɵbm, collectionEditorFormatter as ɵbp, collectionFormatter as ɵbo, complexObjectFormatter as ɵbn, dateIsoFormatter as ɵbq, dateTimeIsoAmPmFormatter as ɵbt, dateTimeIsoFormatter as ɵbr, dateTimeShortIsoFormatter as ɵbs, dateTimeShortUsFormatter as ɵbw, dateTimeUsAmPmFormatter as ɵbx, dateTimeUsFormatter as ɵbv, dateUsFormatter as ɵbu, decimalFormatter as ɵbz, deleteIconFormatter as ɵby, dollarColoredBoldFormatter as ɵcc, dollarColoredFormatter as ɵcb, dollarFormatter as ɵca, editIconFormatter as ɵcd, hyperlinkFormatter as ɵce, hyperlinkUriPrefixFormatter as ɵcf, infoIconFormatter as ɵcg, lowercaseFormatter as ɵch, maskFormatter as ɵci, multipleFormatter as ɵcj, percentCompleteBarFormatter as ɵcm, percentCompleteFormatter as ɵcl, percentFormatter as ɵck, percentSymbolFormatter as ɵcn, progressBarFormatter as ɵco, translateBooleanFormatter as ɵcq, translateFormatter as ɵcp, uppercaseFormatter as ɵcr, yesNoFormatter as ɵcs, avgTotalsDollarFormatter as ɵcu, avgTotalsFormatter as ɵct, avgTotalsPercentageFormatter as ɵcv, maxTotalsFormatter as ɵcw, minTotalsFormatter as ɵcx, sumTotalsBoldFormatter as ɵcz, sumTotalsColoredFormatter as ɵda, sumTotalsDollarBoldFormatter as ɵdc, sumTotalsDollarColoredBoldFormatter as ɵde, sumTotalsDollarColoredFormatter as ɵdd, sumTotalsDollarFormatter as ɵdb, sumTotalsFormatter as ɵcy, dateIsoSorter as ɵdg, dateSorter as ɵdf, dateUsShortSorter as ɵdi, dateUsSorter as ɵdh, numericSorter as ɵdj, stringSorter as ɵdk };
+export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, ExtensionName, FieldType, FileType, FilterMultiplePassType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ExportService, ExtensionService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, getDescendantProperty, getScrollBarWidth, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, uniqueArray, unsubscribeAllObservables, Aggregators, Editors, AutoTooltipExtension, CellExternalCopyManagerExtension, CheckboxSelectorExtension, ColumnPickerExtension, ExtensionUtility, GridMenuExtension, GroupItemMetaProviderExtension, HeaderButtonExtension, HeaderMenuExtension, RowMoveManagerExtension, RowSelectionExtension, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SelectEditor as ɵk, SingleSelectEditor as ɵl, SliderEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵz, CompoundInputFilter as ɵba, CompoundSliderFilter as ɵbb, InputFilter as ɵbc, MultipleSelectFilter as ɵbe, NativeSelectFilter as ɵbh, SelectFilter as ɵbf, SingleSelectFilter as ɵbg, SliderFilter as ɵbd, arrayObjectToCsvFormatter as ɵbi, arrayToCsvFormatter as ɵbj, boldFormatter as ɵbk, checkboxFormatter as ɵbl, checkmarkFormatter as ɵbm, collectionEditorFormatter as ɵbp, collectionFormatter as ɵbo, complexObjectFormatter as ɵbn, dateIsoFormatter as ɵbq, dateTimeIsoAmPmFormatter as ɵbt, dateTimeIsoFormatter as ɵbr, dateTimeShortIsoFormatter as ɵbs, dateTimeShortUsFormatter as ɵbw, dateTimeUsAmPmFormatter as ɵbx, dateTimeUsFormatter as ɵbv, dateUsFormatter as ɵbu, decimalFormatter as ɵbz, deleteIconFormatter as ɵby, dollarColoredBoldFormatter as ɵcc, dollarColoredFormatter as ɵcb, dollarFormatter as ɵca, editIconFormatter as ɵcd, hyperlinkFormatter as ɵce, hyperlinkUriPrefixFormatter as ɵcf, infoIconFormatter as ɵcg, lowercaseFormatter as ɵch, maskFormatter as ɵci, multipleFormatter as ɵcj, percentCompleteBarFormatter as ɵcm, percentCompleteFormatter as ɵcl, percentFormatter as ɵck, percentSymbolFormatter as ɵcn, progressBarFormatter as ɵco, translateBooleanFormatter as ɵcq, translateFormatter as ɵcp, uppercaseFormatter as ɵcr, yesNoFormatter as ɵcs, avgTotalsDollarFormatter as ɵcu, avgTotalsFormatter as ɵct, avgTotalsPercentageFormatter as ɵcv, maxTotalsFormatter as ɵcw, minTotalsFormatter as ɵcx, sumTotalsBoldFormatter as ɵcz, sumTotalsColoredFormatter as ɵda, sumTotalsDollarBoldFormatter as ɵdc, sumTotalsDollarColoredBoldFormatter as ɵde, sumTotalsDollarColoredFormatter as ɵdd, sumTotalsDollarFormatter as ɵdb, sumTotalsFormatter as ɵcy, dateIsoSorter as ɵdg, dateSorter as ɵdf, dateUsShortSorter as ɵdi, dateUsSorter as ɵdh, numericSorter as ɵdj, stringSorter as ɵdk };
 //# sourceMappingURL=angular-slickgrid.js.map

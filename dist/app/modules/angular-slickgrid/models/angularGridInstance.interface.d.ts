@@ -1,5 +1,5 @@
 import { BackendService } from './../models';
-import { ControlAndPluginService, ExportService, FilterService, GridService, GridEventService, GridStateService, GroupingAndColspanService, ResizerService, SortService } from '../services';
+import { ExportService, ExtensionService, FilterService, GridService, GridEventService, GridStateService, GroupingAndColspanService, ResizerService, SortService } from '../services';
 export interface AngularGridInstance {
     /** Slick DataView object */
     dataView: any;
@@ -9,8 +9,10 @@ export interface AngularGridInstance {
     destroy: (emptyDomElementContainer?: boolean) => void;
     /** Backend Service, when available */
     backendService?: BackendService;
-    /** Plugin (and Control) Service */
-    pluginService: ControlAndPluginService;
+    /** Extension (Controls & Plugins) Service */
+    extensionService: ExtensionService;
+    /** @deprecated, use `extensionService` instead. Plugin and Control Service */
+    pluginService: ExtensionService;
     /** Export Service */
     exportService: ExportService;
     /** Filter Service */

@@ -11,6 +11,8 @@ import { Sorter } from './sorter.interface';
 export interface Column {
     /** async background post-rendering formatter */
     asyncPostRender?: (domCellNode: any, row: number, dataContext: any, columnDef: Column) => void;
+    /** Row Move Behavior, used by the Row Move Manager Plugin */
+    behavior?: string;
     /** Block event triggering of an insert? */
     cannotTriggerInsert?: boolean;
     /** Column group name for grouping of column headers spanning accross multiple columns */

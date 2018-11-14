@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { AutoResizeOption, BackendServiceApi, Column, ColumnPicker, CheckboxSelector, EditCommand, ExportOption, GridMenu, GridState, HeaderButton, HeaderMenu, Pagination } from './../models/index';
+import { AutoResizeOption, BackendServiceApi, Column, ColumnPicker, CheckboxSelector, EditCommand, ExportOption, GridMenu, GridState, HeaderButton, HeaderMenu, Pagination, RowMoveManager } from './../models/index';
 export interface GridOption {
     /** CSS class name used on newly added row */
     addNewRowCssClass?: string;
@@ -38,7 +38,7 @@ export interface GridOption {
     cellHighlightCssClass?: string | null;
     /** Checkbox Select Plugin options (columnId, cssClass, toolTip, width) */
     checkboxSelector?: CheckboxSelector;
-    /** Checkbox Select Plugin options (columnTitle, forceFitTitle, syncResizeTitle) */
+    /** Column Picker Plugin options (columnTitle, forceFitTitle, syncResizeTitle) */
     columnPicker?: ColumnPicker;
     /** Defaults to false, which leads to create the footer row of the grid */
     createFooterRow?: boolean;
@@ -108,6 +108,8 @@ export interface GridOption {
     enableMouseHoverHighlightRow?: boolean;
     /** Do we want to enable pagination? Currently only works with a Backend Service API */
     enablePagination?: boolean;
+    /** Defaults to false, when enabled it will make possible to move rows in the grid. */
+    enableRowMoveManager?: boolean;
     /** Do we want to enable row selection? */
     enableRowSelection?: boolean;
     /** Do we want to enable sorting? */
@@ -170,6 +172,8 @@ export interface GridOption {
     registerPlugins?: any | any[];
     /** Grid row height in pixels (only type the number). Row of cell values. */
     rowHeight?: number;
+    /** Row Move Manager Plugin options & events */
+    rowMoveManager?: RowMoveManager;
     /** Row selection options */
     rowSelectionOptions?: {
         /** do we want to select the active row? */
