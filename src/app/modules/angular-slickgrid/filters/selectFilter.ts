@@ -313,6 +313,7 @@ export class SelectFilter implements Filter {
    */
   protected buildTemplateHtmlString(optionCollection: any[], searchTerms: SearchTerm[]) {
     let options = '';
+    const fieldId = this.columnDef && this.columnDef.id;
     const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
     const isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
     const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
@@ -370,7 +371,7 @@ export class SelectFilter implements Filter {
       });
     }
 
-    return `<select class="ms-filter search-filter" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
+    return `<select class="ms-filter search-filter filter-${fieldId}" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
   }
 
   /** Create a blank entry that can be added to the collection. It will also reuse the same customStructure if need be */
@@ -394,13 +395,13 @@ export class SelectFilter implements Filter {
    * @param filterTemplate
    */
   protected createDomElement(filterTemplate: string) {
-    const fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
+    const fieldId = this.columnDef && this.columnDef.id;
 
     // provide the name attribute to the DOM element which will be needed to auto-adjust drop position (dropup / dropdown)
-    this.elementName = `filter_${fieldId}`;
+    this.elementName = `filter-${fieldId}`;
     this.defaultOptions.name = this.elementName;
 
-    const $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+    const $headerElm = this.grid.getHeaderRowColumn(fieldId);
     $($headerElm).empty();
 
     // create the DOM element & add an ID and filter class
