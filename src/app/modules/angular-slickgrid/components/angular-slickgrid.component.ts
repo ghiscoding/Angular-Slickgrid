@@ -37,22 +37,21 @@ import { GridService } from './../services/grid.service';
 import { GridStateService } from './../services/gridState.service';
 import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
 import { ResizerService } from './../services/resizer.service';
-import { SharedService } from '../services';
+import { SharedService } from '../services/shared.service';
 import { SortService } from './../services/sort.service';
 
 // Extensions (SlickGrid Controls & Plugins)
-import {
-  AutoTooltipExtension,
-  CellExternalCopyManagerExtension,
-  CheckboxSelectorExtension,
-  ColumnPickerExtension,
-  GridMenuExtension,
-  GroupItemMetaProviderExtension,
-  HeaderButtonExtension,
-  HeaderMenuExtension,
-  RowMoveManagerExtension,
-  RowSelectionExtension,
-} from '../extensions';
+import { AutoTooltipExtension } from '../extensions/autoTooltipExtension';
+import { CellExternalCopyManagerExtension } from '../extensions/cellExternalCopyManagerExtension';
+import { CheckboxSelectorExtension } from '../extensions/checkboxSelectorExtension';
+import { ColumnPickerExtension } from '../extensions/columnPickerExtension';
+import { GridMenuExtension } from '../extensions/gridMenuExtension';
+import { GroupItemMetaProviderExtension } from '../extensions/groupItemMetaProviderExtension';
+import { HeaderButtonExtension } from '../extensions/headerButtonExtension';
+import { HeaderMenuExtension } from '../extensions/headerMenuExtension';
+import { RowMoveManagerExtension } from '../extensions/rowMoveManagerExtension';
+import { RowSelectionExtension } from '../extensions/rowSelectionExtension';
+
 
 // using external non-typed js libraries
 declare var Slick: any;
