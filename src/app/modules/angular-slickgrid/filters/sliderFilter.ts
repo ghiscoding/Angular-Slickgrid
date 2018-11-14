@@ -131,7 +131,7 @@ export class SliderFilter implements Filter {
    * Create the HTML template as a string
    */
   private buildTemplateHtmlString() {
-    const fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
+    const fieldId = this.columnDef && this.columnDef.id;
     const minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
     const maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE;
     const defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;

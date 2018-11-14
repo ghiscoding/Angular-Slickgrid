@@ -57,11 +57,12 @@ export class LongTextEditor implements Editor {
   }
 
   init(): void {
+    const fieldId = this.columnDef && this.columnDef.id;
     const cancelText = this._translate && this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
     const saveText = this._translate && this._translate.instant('SAVE') || Constants.TEXT_SAVE;
     const $container = $('body');
 
-    this.$wrapper = $(`<div class="slick-large-editor-text" />`).appendTo($container);
+    this.$wrapper = $(`<div class="slick-large-editor-text editor-${fieldId}" />`).appendTo($container);
     this.$input = $(`<textarea hidefocus rows="5">`).appendTo(this.$wrapper);
 
     // the lib does not get the focus out event for some reason

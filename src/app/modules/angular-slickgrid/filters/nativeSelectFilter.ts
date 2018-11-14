@@ -101,7 +101,7 @@ export class NativeSelectFilter implements Filter {
       throw new Error(`[Angular-SlickGrid] You need to pass a "collection" for the Select Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.select, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
 
-    const fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
+    const fieldId = this.columnDef && this.columnDef.id;
     const optionCollection = this.columnDef.filter.collection || [];
     const labelName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.label : 'label';
     const valueName = (this.columnDef.filter.customStructure) ? this.columnDef.filter.customStructure.value : 'value';

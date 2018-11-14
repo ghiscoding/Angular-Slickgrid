@@ -31,7 +31,8 @@ export class CheckboxEditor implements Editor {
   }
 
   init(): void {
-    this.$input = $(`<input type="checkbox" value="true" class="editor-checkbox" />`);
+    const fieldId = this.columnDef && this.columnDef.id;
+    this.$input = $(`<input type="checkbox" value="true" class="editor-checkbox editor-${fieldId}" />`);
     this.$input.appendTo(this.args.container);
     this.$input.focus();
 

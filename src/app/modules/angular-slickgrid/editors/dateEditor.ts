@@ -40,6 +40,7 @@ export class DateEditor implements Editor {
 
   init(): void {
     if (this.args && this.args.column) {
+      const fieldId = this.columnDef && this.columnDef.id;
       const gridOptions = this.args.grid.getOptions() as GridOption;
       this.defaultDate = (this.args.item) ? this.args.item[this.args.column.field] : null;
       const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
@@ -61,8 +62,7 @@ export class DateEditor implements Editor {
         },
       };
 
-
-      this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text flatpickr" />`);
+      this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text flatpickr editor-${fieldId}" />`);
       this.$input.appendTo(this.args.container);
       this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
       this.show();
