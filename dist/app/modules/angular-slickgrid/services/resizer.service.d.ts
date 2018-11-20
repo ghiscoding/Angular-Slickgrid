@@ -10,6 +10,7 @@ export declare class ResizerService {
     private _fixedWidth;
     private _grid;
     private _lastDimensions;
+    private _timer;
     onGridBeforeResize: Subject<boolean>;
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly _gridOptions;

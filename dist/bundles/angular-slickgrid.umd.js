@@ -5512,7 +5512,18 @@ var GridService = /** @class */ (function () {
             var rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
             this._grid.setSelectionModel(rowSelectionPlugin);
         }
-        this._grid.setSelectedRows([rowNumber]);
+        var rowIndexes = Array.isArray(rowNumber) ? rowNumber : [rowNumber];
+        this._grid.setSelectedRows(rowIndexes);
+        if (Array.isArray(rowNumber)) {
+            rowNumber.forEach(function (row) { return _this.highlightRowByMetadata(row, fadeDelay); });
+        }
+        else {
+            this.highlightRowByMetadata(rowNumber, fadeDelay);
+        }
+    };
+    GridService.prototype.highlightRowByMetadata = function (rowNumber, fadeDelay) {
+        var _this = this;
+        if (fadeDelay === void 0) { fadeDelay = 1500; }
         this._dataView.getItemMetadata = this.getItemRowMetadataToHighlight(this._dataView.getItemMetadata);
         var item = this._dataView.getItem(rowNumber);
         if (item && item.id) {
@@ -5627,12 +5638,27 @@ var GridService = /** @class */ (function () {
         this._dataView.deleteItem(itemId);
         this._dataView.refresh();
     };
-    GridService.prototype.updateDataGridItem = function (item) {
+    GridService.prototype.updateDataGridItem = function (item, shouldHighlightRow) {
+        if (shouldHighlightRow === void 0) { shouldHighlightRow = true; }
         var itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
         if (itemId === undefined) {
             throw new Error("Could not find the item in the grid or it's associated \"id\"");
         }
-        this.updateDataGridItemById(itemId, item);
+        return this.updateDataGridItemById(itemId, item, shouldHighlightRow);
+    };
+    GridService.prototype.updateDataGridItems = function (items, shouldHighlightRow) {
+        var _this = this;
+        if (shouldHighlightRow === void 0) { shouldHighlightRow = true; }
+        if (!Array.isArray(items)) {
+            throw new Error('The function "updateDataGridItems" only support array of items, if you wish to only update 1 item then use "updateDataGridItem"');
+        }
+        var gridIndexes = [];
+        items.forEach(function (item) {
+            gridIndexes.push(_this.updateDataGridItem(item, false));
+        });
+        if (shouldHighlightRow) {
+            this.highlightRow(gridIndexes);
+        }
     };
     GridService.prototype.updateDataGridItemById = function (itemId, item, shouldHighlightRow) {
         if (shouldHighlightRow === void 0) { shouldHighlightRow = true; }
@@ -5650,6 +5676,7 @@ var GridService = /** @class */ (function () {
                 this.highlightRow(row, 1500);
             }
             this._dataView.refresh();
+            return gridIdx;
         }
     };
     return GridService;
@@ -5740,7 +5767,6 @@ var DATAGRID_MIN_HEIGHT = 180;
 var DATAGRID_MIN_WIDTH = 300;
 var DATAGRID_BOTTOM_PADDING = 20;
 var DATAGRID_PAGINATION_HEIGHT = 35;
-var timer$2;
 var ResizerService = /** @class */ (function () {
     function ResizerService() {
         this.onGridBeforeResize = new Subject.Subject();
@@ -5842,8 +5868,8 @@ var ResizerService = /** @class */ (function () {
         return new Promise(function (resolve) {
             delay = delay || 0;
             if (delay > 0) {
-                clearTimeout(timer$2);
-                timer$2 = setTimeout(function () {
+                clearTimeout(_this._timer);
+                _this._timer = setTimeout(function () {
                     _this.resizeGridWithDimensions(newSizes);
                     resolve(_this._lastDimensions);
                 }, delay);
