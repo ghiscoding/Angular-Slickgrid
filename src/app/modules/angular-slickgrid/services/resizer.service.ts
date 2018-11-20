@@ -10,7 +10,6 @@ const DATAGRID_MIN_HEIGHT = 180;
 const DATAGRID_MIN_WIDTH = 300;
 const DATAGRID_BOTTOM_PADDING = 20;
 const DATAGRID_PAGINATION_HEIGHT = 35;
-let timer: any;
 
 export interface GridDimension {
   height: number;
@@ -23,6 +22,7 @@ export class ResizerService {
   private _fixedWidth: number | null;
   private _grid: any;
   private _lastDimensions: GridDimension;
+  private _timer: any;
   onGridBeforeResize = new Subject<boolean>();
 
   /** Getter for the Grid Options pulled through the Grid Object */
@@ -166,8 +166,8 @@ export class ResizerService {
       delay = delay || 0;
 
       if (delay > 0) {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
+        clearTimeout(this._timer);
+        this._timer = setTimeout(() => {
           this.resizeGridWithDimensions(newSizes);
           resolve(this._lastDimensions);
         }, delay);
