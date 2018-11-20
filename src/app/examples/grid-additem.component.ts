@@ -213,5 +213,14 @@ export class GridAddItemComponent implements OnInit {
 
     // OR by id
     // this.angularGrid.gridService.updateDataGridItemById(updatedItem.id, updatedItem);
+
+    // OR multiple changes
+    /*
+    const updatedItem1 = this.angularGrid.gridService.getDataItemByRowNumber(1);
+    const updatedItem2 = this.angularGrid.gridService.getDataItemByRowNumber(2);
+    updatedItem1.duration = Math.round(Math.random() * 100);
+    updatedItem2.duration = Math.round(Math.random() * 100);
+    this.angularGrid.gridService.updateDataGridItems([updatedItem1, updatedItem2], true);
+    */
   }
 }

@@ -96,14 +96,24 @@ export class GridService {
    * @param rowNumber
    * @param fadeDelay
    */
-  highlightRow(rowNumber: number, fadeDelay: number = 1500) {
+  highlightRow(rowNumber: number | number[], fadeDelay: number = 1500) {
     // create a SelectionModel if there's not one yet
     if (!this._grid.getSelectionModel()) {
       const rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
       this._grid.setSelectionModel(rowSelectionPlugin);
     }
 
-    this._grid.setSelectedRows([rowNumber]);
+    const rowIndexes = Array.isArray(rowNumber) ? rowNumber : [rowNumber];
+    this._grid.setSelectedRows(rowIndexes);
+
+    if (Array.isArray(rowNumber)) {
+      rowNumber.forEach(row => this.highlightRowByMetadata(row, fadeDelay));
+    } else {
+      this.highlightRowByMetadata(rowNumber, fadeDelay);
+    }
+  }
+
+  highlightRowByMetadata(rowNumber: number, fadeDelay: number = 1500) {
     this._dataView.getItemMetadata = this.getItemRowMetadataToHighlight(this._dataView.getItemMetadata);
 
     const item = this._dataView.getItem(rowNumber);
@@ -280,15 +290,37 @@ export class GridService {
   /**
    * Update an existing item with new properties inside the datagrid
    * @param object item: item object holding all properties of that row
+   * @return grid row index
    */
-  updateDataGridItem(item: any) {
+  updateDataGridItem(item: any, shouldHighlightRow = true) {
     const itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
 
     if (itemId === undefined) {
       throw new Error(`Could not find the item in the grid or it's associated "id"`);
     }
 
-    this.updateDataGridItemById(itemId, item);
+    return this.updateDataGridItemById(itemId, item, shouldHighlightRow);
+  }
+
+  /**
+   * Update an array of existing items with new properties inside the datagrid
+   * @param object item: item object holding all properties of that row
+   */
+  updateDataGridItems(items: any[], shouldHighlightRow = true) {
+    if (!Array.isArray(items)) {
+      throw new Error('The function "updateDataGridItems" only support array of items, if you wish to only update 1 item then use "updateDataGridItem"');
+    }
+
+    const gridIndexes: number[] = [];
+    items.forEach((item) => {
+      gridIndexes.push(this.updateDataGridItem(item, false));
+    });
+
+    // only highlight at the end, all at once
+    // we have to do this because doing highlight 1 by 1 would only re-select the last highlighted row which is wrong behavior
+    if (shouldHighlightRow) {
+      this.highlightRow(gridIndexes);
+    }
   }
 
   /**
@@ -296,6 +328,7 @@ export class GridService {
    * @param itemId: item unique id
    * @param object item: item object holding all properties of that row
    * @param shouldHighlightRow do we want to highlight the row after update
+   * @return grid row index
    */
   updateDataGridItemById(itemId: number | string, item: any, shouldHighlightRow = true) {
     if (itemId === undefined) {
@@ -319,6 +352,8 @@ export class GridService {
 
       // refresh dataview & grid
       this._dataView.refresh();
+
+      return gridIdx;
     }
   }
 }
