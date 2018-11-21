@@ -134,6 +134,7 @@ export class GridEditorComponent implements OnInit {
         id: 'title',
         name: 'Title',
         field: 'title',
+        minWidth: 100,
         filterable: true,
         sortable: true,
         type: FieldType.string,
@@ -141,7 +142,6 @@ export class GridEditorComponent implements OnInit {
           model: Editors.longText,
           validator: myCustomTitleValidator, // use a custom validator
         },
-        minWidth: 100,
         onCellChange: (e: Event, args: OnEventArgs) => {
           console.log(args);
           this.alertWarning = `Updated Title: ${args.dataContext.title}`;
@@ -150,6 +150,7 @@ export class GridEditorComponent implements OnInit {
         id: 'title2',
         name: 'Title, Custom Editor',
         field: 'title',
+        minWidth: 70,
         filterable: true,
         sortable: true,
         type: FieldType.string,
@@ -157,11 +158,11 @@ export class GridEditorComponent implements OnInit {
           model: CustomInputEditor,
           validator: myCustomTitleValidator, // use a custom validator
         },
-        minWidth: 70
       }, {
         id: 'duration',
         name: 'Duration (days)',
         field: 'duration',
+        minWidth: 100,
         filterable: true,
         sortable: true,
         type: FieldType.number,
@@ -184,11 +185,11 @@ export class GridEditorComponent implements OnInit {
           params: { decimalPlaces: 2 },
         },
         */
-        minWidth: 100
       }, {
         id: 'complete',
         name: '% Complete',
         field: 'percentComplete',
+        minWidth: 100,
         filterable: true,
         formatter: Formatters.multiple,
         type: FieldType.number,
@@ -218,7 +219,6 @@ export class GridEditorComponent implements OnInit {
             maxHeight: 400
           }
         },
-        minWidth: 100,
         params: {
           formatters: [Formatters.collectionEditor, Formatters.percentCompleteBar],
         }
@@ -226,11 +226,11 @@ export class GridEditorComponent implements OnInit {
         id: 'start',
         name: 'Start',
         field: 'start',
+        minWidth: 100,
         filterable: true,
         filter: { model: Filters.compoundDate },
         formatter: Formatters.dateIso,
         sortable: true,
-        minWidth: 100,
         type: FieldType.date,
         editor: {
           model: Editors.date
@@ -239,11 +239,11 @@ export class GridEditorComponent implements OnInit {
         id: 'finish',
         name: 'Finish',
         field: 'finish',
+        minWidth: 100,
         filterable: true,
         filter: { model: Filters.compoundDate },
         formatter: Formatters.dateIso,
         sortable: true,
-        minWidth: 100,
         type: FieldType.date,
         editor: {
           model: Editors.date
@@ -252,6 +252,7 @@ export class GridEditorComponent implements OnInit {
         id: 'effort-driven',
         name: 'Effort Driven',
         field: 'effortDriven',
+        minWidth: 70,
         filterable: true,
         type: FieldType.boolean,
         filter: {
@@ -262,14 +263,13 @@ export class GridEditorComponent implements OnInit {
         editor: {
           model: Editors.checkbox,
         },
-        minWidth: 70
       }, {
         id: 'prerequisites',
         name: 'Prerequisites',
         field: 'prerequisites',
+        minWidth: 100,
         filterable: true,
         formatter: taskFormatter,
-        minWidth: 100,
         sortable: true,
         type: FieldType.string,
         editor: {
