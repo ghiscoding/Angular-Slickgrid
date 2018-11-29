@@ -3818,6 +3818,7 @@ const GlobalGridOptions = {
     enableCellNavigation: false,
     enableColumnPicker: true,
     enableColumnReorder: true,
+    enableCustomDataView: false,
     enableExport: true,
     enableGridMenu: true,
     enableHeaderMenu: true,
@@ -11475,7 +11476,12 @@ class AngularSlickgridComponent {
         this.sharedService.allColumns = this._columnDefinitions;
         this.sharedService.visibleColumns = this._columnDefinitions;
         this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
-        this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
+        if (this.gridOptions && this.gridOptions.enableCustomDataView) {
+            this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView, this._columnDefinitions, this.gridOptions);
+        }
+        else {
+            this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
+        }
         this.sharedService.dataView = this._dataView;
         this.sharedService.grid = this.grid;
         this.extensionService.attachDifferentExtensions();
@@ -11617,11 +11623,11 @@ class AngularSlickgridComponent {
             }
         }
         // attach external sorting (backend) when available or default onSort (dataView)
-        if (gridOptions.enableSorting) {
+        if (gridOptions.enableSorting && !gridOptions.enableCustomDataView) {
             gridOptions.backendServiceApi ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
         }
         // attach external filter (backend) when available or default onFilter (dataView)
-        if (gridOptions.enableFiltering) {
+        if (gridOptions.enableFiltering && !gridOptions.enableCustomDataView) {
             this.filterService.init(grid);
             // if user entered some "presets", we need to reflect them all in the DOM
             if (gridOptions.presets && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
@@ -12003,6 +12009,7 @@ AngularSlickgridComponent.propDecorators = {
     "onBeforeGridDestroy": [{ type: Output },],
     "onAfterGridDestroyed": [{ type: Output },],
     "onGridStateChanged": [{ type: Output },],
+    "customDataView": [{ type: Input },],
     "gridId": [{ type: Input },],
     "gridOptions": [{ type: Input },],
     "gridHeight": [{ type: Input },],
