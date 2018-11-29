@@ -32,6 +32,7 @@ export const GlobalGridOptions: GridOption = {
   enableCellNavigation: false,
   enableColumnPicker: true,
   enableColumnReorder: true,
+  enableCustomDataView: false,
   enableExport: true,
   enableGridMenu: true,
   enableHeaderMenu: true,

@@ -116,6 +116,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   @Output() onBeforeGridDestroy = new EventEmitter<any>();
   @Output() onAfterGridDestroyed = new EventEmitter<boolean>();
   @Output() onGridStateChanged = new EventEmitter<GridStateChange>();
+  @Input() customDataView: any;
   @Input() gridId: string;
   @Input() gridOptions: GridOption;
 
@@ -236,7 +237,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.sharedService.visibleColumns = this._columnDefinitions;
     this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
 
-    this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
+    if (this.gridOptions && this.gridOptions.enableCustomDataView) {
+      this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView, this._columnDefinitions, this.gridOptions);
+    } else {
+      this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
+    }
 
     this.sharedService.dataView = this._dataView;
     this.sharedService.grid = this.grid;
@@ -395,12 +400,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // attach external sorting (backend) when available or default onSort (dataView)
-    if (gridOptions.enableSorting) {
+    if (gridOptions.enableSorting && !gridOptions.enableCustomDataView) {
       gridOptions.backendServiceApi ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
     }
 
     // attach external filter (backend) when available or default onFilter (dataView)
-    if (gridOptions.enableFiltering) {
+    if (gridOptions.enableFiltering && !gridOptions.enableCustomDataView) {
       this.filterService.init(grid);
 
       // if user entered some "presets", we need to reflect them all in the DOM
