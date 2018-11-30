@@ -8,6 +8,8 @@ export interface BackendServiceApi {
     options?: OdataOption | GraphqlServiceOption;
     /** Backend Service instance (could be OData or GraphQL Service) */
     service: BackendService;
+    /** On error callback, when an error is thrown by the process execution */
+    onError?: (e) => void;
     /** On init (or on page load), what action to perform? */
     onInit?: (query: string) => Promise<GraphqlResult | any> | Observable<GraphqlResult | any>;
     /** Before executing the query, what action to perform? For example, start a spinner */

@@ -2853,7 +2853,7 @@ var FilterService = /** @class */ (function () {
     };
     FilterService.prototype.attachBackendOnFilterSubscribe = function (event, args) {
         return __awaiter(this, void 0, void 0, function () {
-            var backendApi, startTime, query, observableOrPromise, processResult, endTime;
+            var backendApi, startTime, query, observableOrPromise, processResult, endTime, e_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -2864,19 +2864,22 @@ var FilterService = /** @class */ (function () {
                         if (!backendApi || !backendApi.process || !backendApi.service) {
                             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
                         }
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 4, , 5]);
                         startTime = new Date();
                         if (backendApi.preProcess) {
                             backendApi.preProcess();
                         }
                         return [4 /*yield*/, backendApi.service.processOnFilterChanged(event, args)];
-                    case 1:
+                    case 2:
                         query = _a.sent();
                         if (args && !args.clearFilterTriggered) {
                             this.emitFilterChanged('remote');
                         }
                         observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
-                    case 2:
+                    case 3:
                         processResult = _a.sent();
                         endTime = new Date();
                         if (processResult && backendApi.internalPostProcess) {
@@ -2893,7 +2896,17 @@ var FilterService = /** @class */ (function () {
                             }
                             backendApi.postProcess(processResult);
                         }
-                        return [2 /*return*/];
+                        return [3 /*break*/, 5];
+                    case 4:
+                        e_3 = _a.sent();
+                        if (backendApi && backendApi.onError) {
+                            backendApi.onError(e_3);
+                        }
+                        else {
+                            throw e_3;
+                        }
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
                 }
             });
         });
@@ -3000,15 +3013,15 @@ var FilterService = /** @class */ (function () {
                 }
             }
         }
-        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        catch (e_4_1) { e_4 = { error: e_4_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_3) throw e_3.error; }
+            finally { if (e_4) throw e_4.error; }
         }
         return true;
-        var e_3, _c;
+        var e_4, _c;
     };
     FilterService.prototype.dispose = function () {
         this.disposeColumnFilters();
@@ -3052,16 +3065,16 @@ var FilterService = /** @class */ (function () {
                     }
                 }
             }
-            catch (e_4_1) { e_4 = { error: e_4_1 }; }
+            catch (e_5_1) { e_5 = { error: e_5_1 }; }
             finally {
                 try {
                     if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
                 }
-                finally { if (e_4) throw e_4.error; }
+                finally { if (e_5) throw e_5.error; }
             }
         }
         return currentFilters;
-        var e_4, _c;
+        var e_5, _c;
     };
     FilterService.prototype.callbackSearchEvent = function (e, args) {
         if (args) {
@@ -3228,7 +3241,7 @@ var SortService = /** @class */ (function () {
     };
     SortService.prototype.onBackendSortChanged = function (event, args) {
         return __awaiter(this, void 0, void 0, function () {
-            var gridOptions, backendApi, startTime, query, observableOrPromise, processResult, endTime;
+            var gridOptions, backendApi, startTime, query, observableOrPromise, processResult, endTime, e_6;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -3240,6 +3253,9 @@ var SortService = /** @class */ (function () {
                         if (!backendApi || !backendApi.process || !backendApi.service) {
                             throw new Error("BackendServiceApi requires at least a \"process\" function and a \"service\" defined");
                         }
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
                         startTime = new Date();
                         if (backendApi.preProcess) {
                             backendApi.preProcess();
@@ -3248,7 +3264,7 @@ var SortService = /** @class */ (function () {
                         this.emitSortChanged('remote');
                         observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
-                    case 1:
+                    case 2:
                         processResult = _a.sent();
                         endTime = new Date();
                         if (processResult && backendApi.internalPostProcess) {
@@ -3265,7 +3281,17 @@ var SortService = /** @class */ (function () {
                             }
                             backendApi.postProcess(processResult);
                         }
-                        return [2 /*return*/];
+                        return [3 /*break*/, 4];
+                    case 3:
+                        e_6 = _a.sent();
+                        if (backendApi && backendApi.onError) {
+                            backendApi.onError(e_6);
+                        }
+                        else {
+                            throw e_6;
+                        }
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
                 }
             });
         });
@@ -4180,14 +4206,14 @@ var ExtensionService = /** @class */ (function () {
                 }
             }
         }
-        catch (e_5_1) { e_5 = { error: e_5_1 }; }
+        catch (e_7_1) { e_7 = { error: e_7_1 }; }
         finally {
             try {
                 if (items_2_1 && !items_2_1.done && (_a = items_2.return)) _a.call(items_2);
             }
-            finally { if (e_5) throw e_5.error; }
+            finally { if (e_7) throw e_7.error; }
         }
-        var e_5, _a;
+        var e_7, _a;
     };
     return ExtensionService;
 }());
@@ -4239,15 +4265,15 @@ var GraphqlQueryBuilder = /** @class */ (function () {
                 this.head.push(prop + ":" + val);
             }
         }
-        catch (e_6_1) { e_6 = { error: e_6_1 }; }
+        catch (e_8_1) { e_8 = { error: e_8_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_6) throw e_6.error; }
+            finally { if (e_8) throw e_8.error; }
         }
         return this;
-        var e_6, _c;
+        var e_8, _c;
     };
     GraphqlQueryBuilder.prototype.find = function () {
         var searches = [];
@@ -4327,15 +4353,15 @@ var GraphqlQueryBuilder = /** @class */ (function () {
                 sourceA.push(prop + ":" + this.getGraphQLValue(obj[prop]));
             }
         }
-        catch (e_7_1) { e_7 = { error: e_7_1 }; }
+        catch (e_9_1) { e_9 = { error: e_9_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_7) throw e_7.error; }
+            finally { if (e_9) throw e_9.error; }
         }
         return "{" + sourceA.join() + "}";
-        var e_7, _c;
+        var e_9, _c;
     };
     return GraphqlQueryBuilder;
 }());
@@ -4378,12 +4404,12 @@ var GraphqlService = /** @class */ (function () {
                     }
                 }
             }
-            catch (e_8_1) { e_8 = { error: e_8_1 }; }
+            catch (e_10_1) { e_10 = { error: e_10_1 }; }
             finally {
                 try {
                     if (columnDefinitions_1_1 && !columnDefinitions_1_1.done && (_a = columnDefinitions_1.return)) _a.call(columnDefinitions_1);
                 }
-                finally { if (e_8) throw e_8.error; }
+                finally { if (e_10) throw e_10.error; }
             }
         }
         else {
@@ -4423,19 +4449,19 @@ var GraphqlService = /** @class */ (function () {
                     datasetFilters[queryArgument.field] = queryArgument.value;
                 }
             }
-            catch (e_9_1) { e_9 = { error: e_9_1 }; }
+            catch (e_11_1) { e_11 = { error: e_11_1 }; }
             finally {
                 try {
                     if (_c && !_c.done && (_d = _b.return)) _d.call(_b);
                 }
-                finally { if (e_9) throw e_9.error; }
+                finally { if (e_11) throw e_11.error; }
             }
         }
         datasetQb.filter(datasetFilters);
         queryQb.find(datasetQb);
         var enumSearchProperties = ['direction:', 'field:', 'operator:'];
         return this.trimDoubleQuotesOnEnumField(queryQb.toString(), enumSearchProperties, this.options.keepArgumentFieldDoubleQuotes || false);
-        var e_8, _a, e_9, _d;
+        var e_10, _a, e_11, _d;
     };
     GraphqlService.prototype.buildFilterQuery = function (inputArray) {
         var set = function (o, a) {
@@ -4657,19 +4683,19 @@ var GraphqlService = /** @class */ (function () {
                             }
                         }
                     }
-                    catch (e_10_1) { e_10 = { error: e_10_1 }; }
+                    catch (e_12_1) { e_12 = { error: e_12_1 }; }
                     finally {
                         try {
                             if (sortColumns_1_1 && !sortColumns_1_1.done && (_a = sortColumns_1.return)) _a.call(sortColumns_1);
                         }
-                        finally { if (e_10) throw e_10.error; }
+                        finally { if (e_12) throw e_12.error; }
                     }
                 }
             }
         }
         this._currentSorters = currentSorters;
         this.updateOptions({ sortingOptions: graphqlSorters });
-        var e_10, _a;
+        var e_12, _a;
     };
     GraphqlService.prototype.trimDoubleQuotesOnEnumField = function (inputStr, enumSearchWords, keepArgumentFieldDoubleQuotes) {
         var patternWordInQuotes = "s?((field:s*)?\".*?\")";
@@ -4872,14 +4898,14 @@ var OdataService = /** @class */ (function () {
                 }
             }
         }
-        catch (e_11_1) { e_11 = { error: e_11_1 }; }
+        catch (e_13_1) { e_13 = { error: e_13_1 }; }
         finally {
             try {
                 if (_b && !_b.done && (_c = _a.return)) _c.call(_a);
             }
-            finally { if (e_11) throw e_11.error; }
+            finally { if (e_13) throw e_13.error; }
         }
-        var e_11, _c;
+        var e_13, _c;
     };
     return OdataService;
 }());
@@ -5141,12 +5167,12 @@ var GridOdataService = /** @class */ (function () {
                             }
                         }
                     }
-                    catch (e_12_1) { e_12 = { error: e_12_1 }; }
+                    catch (e_14_1) { e_14 = { error: e_14_1 }; }
                     finally {
                         try {
                             if (sortColumns_2_1 && !sortColumns_2_1.done && (_a = sortColumns_2.return)) _a.call(sortColumns_2);
                         }
-                        finally { if (e_12) throw e_12.error; }
+                        finally { if (e_14) throw e_14.error; }
                     }
                     sortByArray = sorterArray;
                 }
@@ -5159,7 +5185,7 @@ var GridOdataService = /** @class */ (function () {
         });
         this._currentSorters = (sortByArray);
         return this.odataService.buildQuery();
-        var e_12, _a;
+        var e_14, _a;
     };
     GridOdataService.prototype.castFilterToColumnFilter = function (columnFilters) {
         var filtersArray = (((typeof columnFilters === 'object') ? Object.keys(columnFilters).map(function (key) { return columnFilters[key]; }) : columnFilters));
@@ -7486,15 +7512,15 @@ var multipleFormatter = function (row, cell, value, columnDef, dataContext, grid
             currentValue = formatter(row, cell, currentValue, columnDef, dataContext, grid);
         }
     }
-    catch (e_13_1) { e_13 = { error: e_13_1 }; }
+    catch (e_15_1) { e_15 = { error: e_15_1 }; }
     finally {
         try {
             if (formatters_1_1 && !formatters_1_1.done && (_a = formatters_1.return)) _a.call(formatters_1);
         }
-        finally { if (e_13) throw e_13.error; }
+        finally { if (e_15) throw e_15.error; }
     }
     return currentValue;
-    var e_13, _a;
+    var e_15, _a;
 };
 var percentFormatter = function (row, cell, value, columnDef, dataContext) {
     if (value === null || value === '') {
@@ -7887,7 +7913,7 @@ var SlickPaginationComponent = /** @class */ (function () {
     };
     SlickPaginationComponent.prototype.onPageChanged = function (event, pageNumber) {
         return __awaiter(this, void 0, void 0, function () {
-            var backendApi, itemsPerPage, startTime, query, observableOrPromise, processResult, endTime;
+            var backendApi, itemsPerPage, startTime, query, observableOrPromise, processResult, endTime, e_16;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -7902,7 +7928,10 @@ var SlickPaginationComponent = /** @class */ (function () {
                         else if (this.totalItems < this.itemsPerPage) {
                             this.dataTo = this.totalItems;
                         }
-                        if (!backendApi) return [3 /*break*/, 2];
+                        if (!backendApi) return [3 /*break*/, 5];
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
                         itemsPerPage = +this.itemsPerPage;
                         startTime = new Date();
                         if (backendApi.preProcess) {
@@ -7911,7 +7940,7 @@ var SlickPaginationComponent = /** @class */ (function () {
                         query = backendApi.service.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
                         observableOrPromise = backendApi.process(query);
                         return [4 /*yield*/, castToPromise(observableOrPromise)];
-                    case 1:
+                    case 2:
                         processResult = _a.sent();
                         endTime = new Date();
                         if (processResult && backendApi.internalPostProcess) {
@@ -7929,9 +7958,19 @@ var SlickPaginationComponent = /** @class */ (function () {
                             }
                             backendApi.postProcess(processResult);
                         }
-                        return [3 /*break*/, 3];
-                    case 2: throw new Error('Pagination with a backend service requires "BackendServiceApi" to be defined in your grid options');
+                        return [3 /*break*/, 4];
                     case 3:
+                        e_16 = _a.sent();
+                        if (backendApi && backendApi.onError) {
+                            backendApi.onError(e_16);
+                        }
+                        else {
+                            throw e_16;
+                        }
+                        return [3 /*break*/, 4];
+                    case 4: return [3 /*break*/, 6];
+                    case 5: throw new Error('Pagination with a backend service requires "BackendServiceApi" to be defined in your grid options');
+                    case 6:
                         this.onPaginationChanged.emit({
                             pageNumber: this.pageNumber,
                             pageSizes: this.paginationPageSizes,
@@ -8282,7 +8321,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
             var query = (typeof backendApi.service.buildQuery === 'function') ? backendApi.service.buildQuery() : '';
             var observableOrPromise_1 = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
             setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
-                var startTime, processResult, endTime, datasetName;
+                var startTime, processResult, endTime, e_17;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -8290,15 +8329,17 @@ var AngularSlickgridComponent = /** @class */ (function () {
                             if (backendApi.preProcess) {
                                 backendApi.preProcess();
                             }
-                            return [4 /*yield*/, castToPromise(observableOrPromise_1)];
+                            _a.label = 1;
                         case 1:
+                            _a.trys.push([1, 3, , 4]);
+                            return [4 /*yield*/, castToPromise(observableOrPromise_1)];
+                        case 2:
                             processResult = _a.sent();
                             endTime = new Date();
                             if (processResult && backendApi && backendApi.service instanceof GraphqlService && backendApi.internalPostProcess) {
                                 backendApi.internalPostProcess(processResult);
                             }
                             if (backendApi.postProcess) {
-                                datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
                                 if (processResult instanceof Object) {
                                     processResult.statistics = {
                                         startTime: startTime,
@@ -8309,7 +8350,17 @@ var AngularSlickgridComponent = /** @class */ (function () {
                                 }
                                 backendApi.postProcess(processResult);
                             }
-                            return [2 /*return*/];
+                            return [3 /*break*/, 4];
+                        case 3:
+                            e_17 = _a.sent();
+                            if (backendApi && backendApi.onError) {
+                                backendApi.onError(e_17);
+                            }
+                            else {
+                                throw e_17;
+                            }
+                            return [3 /*break*/, 4];
+                        case 4: return [2 /*return*/];
                     }
                 });
             }); });

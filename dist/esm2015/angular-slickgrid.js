@@ -3999,38 +3999,48 @@ class FilterService {
             if (!backendApi || !backendApi.process || !backendApi.service) {
                 throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
             }
-            // keep start time & end timestamps & return it after process execution
-            const /** @type {?} */ startTime = new Date();
-            // run a preProcess callback if defined
-            if (backendApi.preProcess) {
-                backendApi.preProcess();
-            }
-            // call the service to get a query back
-            const /** @type {?} */ query = yield backendApi.service.processOnFilterChanged(event, args);
-            // emit an onFilterChanged event
-            if (args && !args.clearFilterTriggered) {
-                this.emitFilterChanged('remote');
-            }
-            // the process could be an Observable (like HttpClient) or a Promise
-            // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-            const /** @type {?} */ observableOrPromise = backendApi.process(query);
-            const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
-            const /** @type {?} */ endTime = new Date();
-            // from the result, call our internal post process to update the Dataset and Pagination info
-            if (processResult && backendApi.internalPostProcess) {
-                backendApi.internalPostProcess(processResult);
-            }
-            // send the response process to the postProcess callback
-            if (backendApi.postProcess !== undefined) {
-                if (processResult instanceof Object) {
-                    processResult.statistics = {
-                        startTime,
-                        endTime,
-                        executionTime: endTime.valueOf() - startTime.valueOf(),
-                        totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
-                    };
+            try {
+                // keep start time & end timestamps & return it after process execution
+                const /** @type {?} */ startTime = new Date();
+                // run a preProcess callback if defined
+                if (backendApi.preProcess) {
+                    backendApi.preProcess();
                 }
-                backendApi.postProcess(processResult);
+                // call the service to get a query back
+                const /** @type {?} */ query = yield backendApi.service.processOnFilterChanged(event, args);
+                // emit an onFilterChanged event
+                if (args && !args.clearFilterTriggered) {
+                    this.emitFilterChanged('remote');
+                }
+                // the process could be an Observable (like HttpClient) or a Promise
+                // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+                const /** @type {?} */ observableOrPromise = backendApi.process(query);
+                const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+                const /** @type {?} */ endTime = new Date();
+                // from the result, call our internal post process to update the Dataset and Pagination info
+                if (processResult && backendApi.internalPostProcess) {
+                    backendApi.internalPostProcess(processResult);
+                }
+                // send the response process to the postProcess callback
+                if (backendApi.postProcess !== undefined) {
+                    if (processResult instanceof Object) {
+                        processResult.statistics = {
+                            startTime,
+                            endTime,
+                            executionTime: endTime.valueOf() - startTime.valueOf(),
+                            totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                        };
+                    }
+                    backendApi.postProcess(processResult);
+                }
+            }
+            catch (/** @type {?} */ e) {
+                if (backendApi && backendApi.onError) {
+                    backendApi.onError(e);
+                }
+                else {
+                    throw e;
+                }
             }
         });
     }
@@ -4466,33 +4476,43 @@ class SortService {
             if (!backendApi || !backendApi.process || !backendApi.service) {
                 throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
             }
-            // keep start time & end timestamps & return it after process execution
-            const /** @type {?} */ startTime = new Date();
-            if (backendApi.preProcess) {
-                backendApi.preProcess();
-            }
-            const /** @type {?} */ query = backendApi.service.processOnSortChanged(event, args);
-            this.emitSortChanged('remote');
-            // the process could be an Observable (like HttpClient) or a Promise
-            // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-            const /** @type {?} */ observableOrPromise = backendApi.process(query);
-            const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
-            const /** @type {?} */ endTime = new Date();
-            // from the result, call our internal post process to update the Dataset and Pagination info
-            if (processResult && backendApi.internalPostProcess) {
-                backendApi.internalPostProcess(processResult);
-            }
-            // send the response process to the postProcess callback
-            if (backendApi.postProcess) {
-                if (processResult instanceof Object) {
-                    processResult.statistics = {
-                        startTime,
-                        endTime,
-                        executionTime: endTime.valueOf() - startTime.valueOf(),
-                        totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
-                    };
+            try {
+                // keep start time & end timestamps & return it after process execution
+                const /** @type {?} */ startTime = new Date();
+                if (backendApi.preProcess) {
+                    backendApi.preProcess();
                 }
-                backendApi.postProcess(processResult);
+                const /** @type {?} */ query = backendApi.service.processOnSortChanged(event, args);
+                this.emitSortChanged('remote');
+                // the process could be an Observable (like HttpClient) or a Promise
+                // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+                const /** @type {?} */ observableOrPromise = backendApi.process(query);
+                const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+                const /** @type {?} */ endTime = new Date();
+                // from the result, call our internal post process to update the Dataset and Pagination info
+                if (processResult && backendApi.internalPostProcess) {
+                    backendApi.internalPostProcess(processResult);
+                }
+                // send the response process to the postProcess callback
+                if (backendApi.postProcess) {
+                    if (processResult instanceof Object) {
+                        processResult.statistics = {
+                            startTime,
+                            endTime,
+                            executionTime: endTime.valueOf() - startTime.valueOf(),
+                            totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+                        };
+                    }
+                    backendApi.postProcess(processResult);
+                }
+            }
+            catch (/** @type {?} */ e) {
+                if (backendApi && backendApi.onError) {
+                    backendApi.onError(e);
+                }
+                else {
+                    throw e;
+                }
             }
         });
     }
@@ -11190,34 +11210,44 @@ class SlickPaginationComponent {
                 this.dataTo = this.totalItems;
             }
             if (backendApi) {
-                const /** @type {?} */ itemsPerPage = +this.itemsPerPage;
-                // keep start time & end timestamps & return it after process execution
-                const /** @type {?} */ startTime = new Date();
-                if (backendApi.preProcess) {
-                    backendApi.preProcess();
-                }
-                const /** @type {?} */ query = backendApi.service.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
-                // the process could be an Observable (like HttpClient) or a Promise
-                // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-                const /** @type {?} */ observableOrPromise = backendApi.process(query);
-                const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
-                const /** @type {?} */ endTime = new Date();
-                // from the result, call our internal post process to update the Dataset and Pagination info
-                if (processResult && backendApi.internalPostProcess) {
-                    backendApi.internalPostProcess(processResult);
-                }
-                // send the response process to the postProcess callback
-                if (backendApi.postProcess) {
-                    if (processResult instanceof Object) {
-                        processResult.statistics = {
-                            startTime,
-                            endTime,
-                            executionTime: endTime.valueOf() - startTime.valueOf(),
-                            itemCount: this.totalItems,
-                            totalItemCount: this.totalItems
-                        };
+                try {
+                    const /** @type {?} */ itemsPerPage = +this.itemsPerPage;
+                    // keep start time & end timestamps & return it after process execution
+                    const /** @type {?} */ startTime = new Date();
+                    if (backendApi.preProcess) {
+                        backendApi.preProcess();
                     }
-                    backendApi.postProcess(processResult);
+                    const /** @type {?} */ query = backendApi.service.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
+                    // the process could be an Observable (like HttpClient) or a Promise
+                    // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+                    const /** @type {?} */ observableOrPromise = backendApi.process(query);
+                    const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+                    const /** @type {?} */ endTime = new Date();
+                    // from the result, call our internal post process to update the Dataset and Pagination info
+                    if (processResult && backendApi.internalPostProcess) {
+                        backendApi.internalPostProcess(processResult);
+                    }
+                    // send the response process to the postProcess callback
+                    if (backendApi.postProcess) {
+                        if (processResult instanceof Object) {
+                            processResult.statistics = {
+                                startTime,
+                                endTime,
+                                executionTime: endTime.valueOf() - startTime.valueOf(),
+                                itemCount: this.totalItems,
+                                totalItemCount: this.totalItems
+                            };
+                        }
+                        backendApi.postProcess(processResult);
+                    }
+                }
+                catch (/** @type {?} */ e) {
+                    if (backendApi && backendApi.onError) {
+                        backendApi.onError(e);
+                    }
+                    else {
+                        throw e;
+                    }
                 }
             }
             else {
@@ -11724,27 +11754,36 @@ class AngularSlickgridComponent {
                 if (backendApi.preProcess) {
                     backendApi.preProcess();
                 }
-                // the process could be an Observable (like HttpClient) or a Promise
-                // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-                const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
-                const /** @type {?} */ endTime = new Date();
-                // define what our internal Post Process callback, only available for GraphQL Service for now
-                // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
-                if (processResult && backendApi && backendApi.service instanceof GraphqlService && backendApi.internalPostProcess) {
-                    backendApi.internalPostProcess(processResult);
-                }
-                // send the response process to the postProcess callback
-                if (backendApi.postProcess) {
-                    const /** @type {?} */ datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
-                    if (processResult instanceof Object) {
-                        processResult.statistics = {
-                            startTime,
-                            endTime,
-                            executionTime: endTime.valueOf() - startTime.valueOf(),
-                            totalItemCount: this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems
-                        };
+                try {
+                    // the process could be an Observable (like HttpClient) or a Promise
+                    // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+                    const /** @type {?} */ processResult = yield castToPromise(observableOrPromise);
+                    const /** @type {?} */ endTime = new Date();
+                    // define what our internal Post Process callback, only available for GraphQL Service for now
+                    // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+                    if (processResult && backendApi && backendApi.service instanceof GraphqlService && backendApi.internalPostProcess) {
+                        backendApi.internalPostProcess(processResult);
                     }
-                    backendApi.postProcess(processResult);
+                    // send the response process to the postProcess callback
+                    if (backendApi.postProcess) {
+                        if (processResult instanceof Object) {
+                            processResult.statistics = {
+                                startTime,
+                                endTime,
+                                executionTime: endTime.valueOf() - startTime.valueOf(),
+                                totalItemCount: this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems
+                            };
+                        }
+                        backendApi.postProcess(processResult);
+                    }
+                }
+                catch (/** @type {?} */ e) {
+                    if (backendApi && backendApi.onError) {
+                        backendApi.onError(e);
+                    }
+                    else {
+                        throw e;
+                    }
                 }
             }));
         }
