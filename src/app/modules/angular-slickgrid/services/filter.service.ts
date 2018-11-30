@@ -79,44 +79,52 @@ export class FilterService {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }
 
-    // keep start time & end timestamps & return it after process execution
-    const startTime = new Date();
+    try {
+      // keep start time & end timestamps & return it after process execution
+      const startTime = new Date();
 
-    // run a preProcess callback if defined
-    if (backendApi.preProcess) {
-      backendApi.preProcess();
-    }
-
-    // call the service to get a query back
-    const query = await backendApi.service.processOnFilterChanged(event, args);
-
-    // emit an onFilterChanged event
-    if (args && !args.clearFilterTriggered) {
-      this.emitFilterChanged('remote');
-    }
-
-    // the process could be an Observable (like HttpClient) or a Promise
-    // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-    const observableOrPromise = backendApi.process(query);
-    const processResult = await castToPromise(observableOrPromise);
-    const endTime = new Date();
-
-    // from the result, call our internal post process to update the Dataset and Pagination info
-    if (processResult && backendApi.internalPostProcess) {
-      backendApi.internalPostProcess(processResult);
-    }
-
-    // send the response process to the postProcess callback
-    if (backendApi.postProcess !== undefined) {
-      if (processResult instanceof Object) {
-        processResult.statistics = {
-          startTime,
-          endTime,
-          executionTime: endTime.valueOf() - startTime.valueOf(),
-          totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
-        };
+      // run a preProcess callback if defined
+      if (backendApi.preProcess) {
+        backendApi.preProcess();
       }
-      backendApi.postProcess(processResult);
+
+      // call the service to get a query back
+      const query = await backendApi.service.processOnFilterChanged(event, args);
+
+      // emit an onFilterChanged event
+      if (args && !args.clearFilterTriggered) {
+        this.emitFilterChanged('remote');
+      }
+
+      // the process could be an Observable (like HttpClient) or a Promise
+      // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+      const observableOrPromise = backendApi.process(query);
+      const processResult = await castToPromise(observableOrPromise);
+      const endTime = new Date();
+
+      // from the result, call our internal post process to update the Dataset and Pagination info
+      if (processResult && backendApi.internalPostProcess) {
+        backendApi.internalPostProcess(processResult);
+      }
+
+      // send the response process to the postProcess callback
+      if (backendApi.postProcess !== undefined) {
+        if (processResult instanceof Object) {
+          processResult.statistics = {
+            startTime,
+            endTime,
+            executionTime: endTime.valueOf() - startTime.valueOf(),
+            totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+          };
+        }
+        backendApi.postProcess(processResult);
+      }
+    } catch (e) {
+      if (backendApi && backendApi.onError) {
+        backendApi.onError(e);
+      } else {
+        throw e;
+      }
     }
   }
 

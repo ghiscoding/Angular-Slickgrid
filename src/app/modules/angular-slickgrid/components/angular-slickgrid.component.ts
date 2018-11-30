@@ -516,29 +516,36 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           backendApi.preProcess();
         }
 
-        // the process could be an Observable (like HttpClient) or a Promise
-        // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-        const processResult: GraphqlResult | any = await castToPromise(observableOrPromise);
-        const endTime = new Date();
+        try {
+          // the process could be an Observable (like HttpClient) or a Promise
+          // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+          const processResult: GraphqlResult | any = await castToPromise(observableOrPromise);
+          const endTime = new Date();
 
-        // define what our internal Post Process callback, only available for GraphQL Service for now
-        // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
-        if (processResult && backendApi && backendApi.service instanceof GraphqlService && backendApi.internalPostProcess) {
-          backendApi.internalPostProcess(processResult);
-        }
-
-        // send the response process to the postProcess callback
-        if (backendApi.postProcess) {
-          const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
-          if (processResult instanceof Object) {
-            processResult.statistics = {
-              startTime,
-              endTime,
-              executionTime: endTime.valueOf() - startTime.valueOf(),
-              totalItemCount: this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems
-            };
+          // define what our internal Post Process callback, only available for GraphQL Service for now
+          // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+          if (processResult && backendApi && backendApi.service instanceof GraphqlService && backendApi.internalPostProcess) {
+            backendApi.internalPostProcess(processResult);
           }
-          backendApi.postProcess(processResult);
+
+          // send the response process to the postProcess callback
+          if (backendApi.postProcess) {
+            if (processResult instanceof Object) {
+              processResult.statistics = {
+                startTime,
+                endTime,
+                executionTime: endTime.valueOf() - startTime.valueOf(),
+                totalItemCount: this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems
+              };
+            }
+            backendApi.postProcess(processResult);
+          }
+        } catch (e) {
+          if (backendApi && backendApi.onError) {
+            backendApi.onError(e);
+          } else {
+            throw e;
+          }
         }
       });
     }
