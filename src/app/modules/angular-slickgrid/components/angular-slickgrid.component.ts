@@ -237,7 +237,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.sharedService.visibleColumns = this._columnDefinitions;
     this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
 
-    if (this.gridOptions && this.gridOptions.enableCustomDataView) {
+    if (this.gridOptions && this.customDataView) {
       this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView, this._columnDefinitions, this.gridOptions);
     } else {
       this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
@@ -400,12 +400,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // attach external sorting (backend) when available or default onSort (dataView)
-    if (gridOptions.enableSorting && !gridOptions.enableCustomDataView) {
+    if (gridOptions.enableSorting && !this.customDataView) {
       gridOptions.backendServiceApi ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
     }
 
     // attach external filter (backend) when available or default onFilter (dataView)
-    if (gridOptions.enableFiltering && !gridOptions.enableCustomDataView) {
+    if (gridOptions.enableFiltering && !this.customDataView) {
       this.filterService.init(grid);
 
       // if user entered some "presets", we need to reflect them all in the DOM
