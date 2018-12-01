@@ -2640,7 +2640,6 @@ var GlobalGridOptions = {
     enableCellNavigation: false,
     enableColumnPicker: true,
     enableColumnReorder: true,
-    enableCustomDataView: false,
     enableExport: true,
     enableGridMenu: true,
     enableHeaderMenu: true,
@@ -8049,7 +8048,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.sharedService.allColumns = this._columnDefinitions;
         this.sharedService.visibleColumns = this._columnDefinitions;
         this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
-        if (this.gridOptions && this.gridOptions.enableCustomDataView) {
+        if (this.gridOptions && this.customDataView) {
             this.grid = new Slick.Grid("#" + this.gridId, this.customDataView, this._columnDefinitions, this.gridOptions);
         }
         else {
@@ -8153,10 +8152,10 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 grid.setColumns(gridColumns);
             }
         }
-        if (gridOptions.enableSorting && !gridOptions.enableCustomDataView) {
+        if (gridOptions.enableSorting && !this.customDataView) {
             gridOptions.backendServiceApi ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
         }
-        if (gridOptions.enableFiltering && !gridOptions.enableCustomDataView) {
+        if (gridOptions.enableFiltering && !this.customDataView) {
             this.filterService.init(grid);
             if (gridOptions.presets && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
                 this.filterService.populateColumnFilterSearchTerms();
