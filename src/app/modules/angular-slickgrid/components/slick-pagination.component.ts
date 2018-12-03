@@ -90,11 +90,11 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   }
 
   changeToCurrentPage(event: any) {
-    this.pageNumber = event.currentTarget.value;
+    this.pageNumber = +event.currentTarget.value;
     if (this.pageNumber < 1) {
-          this.pageNumber = 1;
+      this.pageNumber = 1;
     } else if (this.pageNumber > this.pageCount) {
-          this.pageNumber = this.pageCount;
+      this.pageNumber = this.pageCount;
     }
 
     this.onPageChanged(event, this.pageNumber);
@@ -110,7 +110,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   onChangeItemPerPage(event: any) {
     const itemsPerPage = +event.target.value;
     this.pageCount = Math.ceil(this.totalItems / itemsPerPage);
-    this.pageNumber = 1;
+    this.pageNumber = (this.totalItems > 0) ? 1 : 0;
     this.itemsPerPage = itemsPerPage;
     this.onPageChanged(event, this.pageNumber);
   }
@@ -221,7 +221,13 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   }
 
   recalculateFromToIndexes() {
-    this.dataFrom = (this.pageNumber * this.itemsPerPage) - this.itemsPerPage + 1;
-    this.dataTo = (this.totalItems < this.itemsPerPage) ? this.totalItems : (this.pageNumber * this.itemsPerPage);
+    if (this.totalItems === 0) {
+      this.dataFrom = 0;
+      this.dataTo = 0;
+      this.pageNumber = 0;
+    } else {
+      this.dataFrom = (this.pageNumber * this.itemsPerPage) - this.itemsPerPage + 1;
+      this.dataTo = (this.totalItems < this.itemsPerPage) ? this.totalItems : (this.pageNumber * this.itemsPerPage);
+    }
   }
 }

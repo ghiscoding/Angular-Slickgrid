@@ -104,13 +104,18 @@ export class GraphqlService implements BackendService {
     }
 
     // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
-    const datasetFilters: GraphqlDatasetFilter = {
-      ...this.options.paginationOptions,
-      first: ((this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : ((this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null)) || this.defaultPaginationOptions.first
-    };
+    let datasetFilters: GraphqlDatasetFilter = {};
 
-    if (!this.options.isWithCursor) {
-      datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +this.options.paginationOptions['offset'] : 0);
+    // only add pagination if it's enabled in the grid options
+    if (this._gridOptions.enablePagination !== false) {
+      datasetFilters = {
+        ...this.options.paginationOptions,
+        first: ((this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : ((this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null)) || this.defaultPaginationOptions.first
+      };
+
+      if (!this.options.isWithCursor) {
+        datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +this.options.paginationOptions['offset'] : 0);
+      }
     }
 
     if (this.options.sortingOptions && Array.isArray(this.options.sortingOptions) && this.options.sortingOptions.length > 0) {

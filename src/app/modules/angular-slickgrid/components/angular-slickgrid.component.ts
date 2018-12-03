@@ -638,7 +638,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         if (!this.gridOptions.pagination) {
           this.gridOptions.pagination = (this.gridOptions.pagination) ? this.gridOptions.pagination : undefined;
         }
-        if (this.gridOptions.pagination && totalCount) {
+        if (this.gridOptions.pagination && totalCount !== undefined) {
           this.gridOptions.pagination.totalItems = totalCount;
         }
         if (this.gridOptions.presets && this.gridOptions.presets.pagination && this.gridOptions.pagination) {
