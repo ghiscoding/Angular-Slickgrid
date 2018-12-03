@@ -211,13 +211,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.gridOptions = this.mergeGridOptions(this.gridOptions);
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
 
-    if (this.gridOptions.enableGrouping) {
-      this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
-      this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
-      this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
-      this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
-    } else {
-      this._dataView = new Slick.Data.DataView();
+    if (!this.customDataView) {
+      if (this.gridOptions.enableGrouping) {
+        this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
+        this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
+        this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
+        this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
+      } else {
+        this._dataView = new Slick.Data.DataView();
+      }
     }
 
     // for convenience, we provide the property "editor" as an Angular-Slickgrid editor complex object
@@ -237,11 +239,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.sharedService.visibleColumns = this._columnDefinitions;
     this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
 
-    if (this.gridOptions && this.customDataView) {
-      this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView, this._columnDefinitions, this.gridOptions);
-    } else {
-      this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
-    }
+    // build SlickGrid Grid, also user might optionally pass a custom dataview (e.g. remote model)
+    this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView || this._dataView, this._columnDefinitions, this.gridOptions);
 
     this.sharedService.dataView = this._dataView;
     this.sharedService.grid = this.grid;
@@ -251,12 +250,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // emit the Grid & DataView object to make them available in parent component
     this.onGridCreated.emit(this.grid);
-    this.onDataviewCreated.emit(this._dataView);
 
+    // initialize the SlickGrid grid
     this.grid.init();
-    this._dataView.beginUpdate();
-    this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
-    this._dataView.endUpdate();
+
+    if (!this.customDataView && (this._dataView && this._dataView.beginUpdate && this._dataView.setItems && this._dataView.endUpdate)) {
+      this.onDataviewCreated.emit(this._dataView);
+      this._dataView.beginUpdate();
+      this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
+      this._dataView.endUpdate();
+    }
 
     // user might want to hide the header row on page load but still have `enableFiltering: true`
     // if that is the case, we need to hide the headerRow ONLY AFTER all filters got created & dataView exist
@@ -454,14 +457,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.gridEventService.attachOnCellChange(grid, dataView);
     this.gridEventService.attachOnClick(grid, dataView);
 
-    this._eventHandler.subscribe(dataView.onRowCountChanged, (e: any, args: any) => {
-      grid.updateRowCount();
-      grid.render();
-    });
-    this._eventHandler.subscribe(dataView.onRowsChanged, (e: any, args: any) => {
-      grid.invalidateRows(args.rows);
-      grid.render();
-    });
+    if (dataView && grid) {
+      this._eventHandler.subscribe(dataView.onRowCountChanged, (e: any, args: any) => {
+        grid.updateRowCount();
+        grid.render();
+      });
+      this._eventHandler.subscribe(dataView.onRowsChanged, (e: any, args: any) => {
+        grid.invalidateRows(args.rows);
+        grid.render();
+      });
+    }
 
     // does the user have a colspan callback?
     if (gridOptions.colspanCallback) {

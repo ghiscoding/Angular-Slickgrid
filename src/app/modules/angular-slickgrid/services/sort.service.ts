@@ -175,17 +175,20 @@ export class SortService {
    */
   getPreviousColumnSorts(columnId?: string) {
     // getSortColumns() only returns sortAsc & columnId, we want the entire column definition
-    const oldSortColumns = this._grid.getSortColumns();
+    const oldSortColumns = this._grid && this._grid.getSortColumns();
 
     // get the column definition but only keep column which are not equal to our current column
-    const sortedCols = oldSortColumns.reduce((cols, col) => {
-      if (!columnId || col.columnId !== columnId) {
-        cols.push({ sortCol: this._columnDefinitions[this._grid.getColumnIndex(col.columnId)], sortAsc: col.sortAsc });
-      }
-      return cols;
-    }, []);
+    if (Array.isArray(oldSortColumns)) {
+      const sortedCols = oldSortColumns.reduce((cols, col) => {
+        if (!columnId || col.columnId !== columnId) {
+          cols.push({ sortCol: this._columnDefinitions[this._grid.getColumnIndex(col.columnId)], sortAsc: col.sortAsc });
+        }
+        return cols;
+      }, []);
 
-    return sortedCols;
+      return sortedCols;
+    }
+    return [];
   }
 
   /**
@@ -224,32 +227,34 @@ export class SortService {
   }
 
   onLocalSortChanged(grid: any, dataView: any, sortColumns: ColumnSort[]) {
-    dataView.sort((dataRow1: any, dataRow2: any) => {
-      for (let i = 0, l = sortColumns.length; i < l; i++) {
-        const columnSortObj = sortColumns[i];
-        if (columnSortObj && columnSortObj.sortCol) {
-          const sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
-          const sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
-          const fieldType = columnSortObj.sortCol.type || FieldType.string;
-          let value1 = dataRow1[sortField];
-          let value2 = dataRow2[sortField];
+    if (grid && dataView) {
+      dataView.sort((dataRow1: any, dataRow2: any) => {
+        for (let i = 0, l = sortColumns.length; i < l; i++) {
+          const columnSortObj = sortColumns[i];
+          if (columnSortObj && columnSortObj.sortCol) {
+            const sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
+            const sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
+            const fieldType = columnSortObj.sortCol.type || FieldType.string;
+            let value1 = dataRow1[sortField];
+            let value2 = dataRow2[sortField];
 
-          // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
-          if (sortField && sortField.indexOf('.') >= 0) {
-            value1 = getDescendantProperty(dataRow1, sortField);
-            value2 = getDescendantProperty(dataRow2, sortField);
-          }
+            // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
+            if (sortField && sortField.indexOf('.') >= 0) {
+              value1 = getDescendantProperty(dataRow1, sortField);
+              value2 = getDescendantProperty(dataRow2, sortField);
+            }
 
-          const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
-          if (sortResult !== SortDirectionNumber.neutral) {
-            return sortResult;
+            const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+            if (sortResult !== SortDirectionNumber.neutral) {
+              return sortResult;
+            }
           }
         }
-      }
-      return SortDirectionNumber.neutral;
-    });
-    grid.invalidate();
-    grid.render();
+        return SortDirectionNumber.neutral;
+      });
+      grid.invalidate();
+      grid.render();
+    }
   }
 
   dispose() {

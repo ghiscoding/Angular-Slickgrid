@@ -3,19 +3,16 @@
     <h2>{{title}}</h2>
     <div class="subtitle" [innerHTML]="subTitle"></div>
 
-    <div class="col-md-12">
-        <div class="alert alert-warning col-md-6" role="alert" *ngIf="loading">
-            <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
-            <span>Loading...</span>
-        </div>
-        <div class="alert alert-info col-md-6" role="alert" *ngIf="!loading">
-            <span>Ready</span>
-        </div>
+    <div class="col-md-6" style="margin-bottom: 15px">
+            <label>Octopart Catalog Search <small>(type a word then press ENTER)</small></label>
+            <input type="text" class="form-control" [value]="search" (change)="searchChanged($event.target.value)">
     </div>
 
-    <div class="col-md-6">
-        <label>Octopart Catalog Search <small>(type a word then press ENTER)</small></label>
-        <input type="text" id="txtSearch" class="form-control" value="switch">
+    <div class="alert alert-warning col-md-6"
+        role="alert"
+        *ngIf="loading">
+        <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
+        <span>Loading...</span>
     </div>
 
     <angular-slickgrid
