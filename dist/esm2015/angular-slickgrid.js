@@ -4585,15 +4585,18 @@ class SortService {
      */
     getPreviousColumnSorts(columnId) {
         // getSortColumns() only returns sortAsc & columnId, we want the entire column definition
-        const /** @type {?} */ oldSortColumns = this._grid.getSortColumns();
+        const /** @type {?} */ oldSortColumns = this._grid && this._grid.getSortColumns();
         // get the column definition but only keep column which are not equal to our current column
-        const /** @type {?} */ sortedCols = oldSortColumns.reduce((cols, col) => {
-            if (!columnId || col.columnId !== columnId) {
-                cols.push({ sortCol: this._columnDefinitions[this._grid.getColumnIndex(col.columnId)], sortAsc: col.sortAsc });
-            }
-            return cols;
-        }, []);
-        return sortedCols;
+        if (Array.isArray(oldSortColumns)) {
+            const /** @type {?} */ sortedCols = oldSortColumns.reduce((cols, col) => {
+                if (!columnId || col.columnId !== columnId) {
+                    cols.push({ sortCol: this._columnDefinitions[this._grid.getColumnIndex(col.columnId)], sortAsc: col.sortAsc });
+                }
+                return cols;
+            }, []);
+            return sortedCols;
+        }
+        return [];
     }
     /**
      * load any presets if there are any
@@ -4634,30 +4637,32 @@ class SortService {
      * @return {?}
      */
     onLocalSortChanged(grid, dataView, sortColumns) {
-        dataView.sort((dataRow1, dataRow2) => {
-            for (let /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
-                const /** @type {?} */ columnSortObj = sortColumns[i];
-                if (columnSortObj && columnSortObj.sortCol) {
-                    const /** @type {?} */ sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
-                    const /** @type {?} */ sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
-                    const /** @type {?} */ fieldType = columnSortObj.sortCol.type || FieldType.string;
-                    let /** @type {?} */ value1 = dataRow1[sortField];
-                    let /** @type {?} */ value2 = dataRow2[sortField];
-                    // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
-                    if (sortField && sortField.indexOf('.') >= 0) {
-                        value1 = getDescendantProperty(dataRow1, sortField);
-                        value2 = getDescendantProperty(dataRow2, sortField);
-                    }
-                    const /** @type {?} */ sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
-                    if (sortResult !== SortDirectionNumber.neutral) {
-                        return sortResult;
+        if (grid && dataView) {
+            dataView.sort((dataRow1, dataRow2) => {
+                for (let /** @type {?} */ i = 0, /** @type {?} */ l = sortColumns.length; i < l; i++) {
+                    const /** @type {?} */ columnSortObj = sortColumns[i];
+                    if (columnSortObj && columnSortObj.sortCol) {
+                        const /** @type {?} */ sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
+                        const /** @type {?} */ sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
+                        const /** @type {?} */ fieldType = columnSortObj.sortCol.type || FieldType.string;
+                        let /** @type {?} */ value1 = dataRow1[sortField];
+                        let /** @type {?} */ value2 = dataRow2[sortField];
+                        // when item is a complex object (dot "." notation), we need to filter the value contained in the object tree
+                        if (sortField && sortField.indexOf('.') >= 0) {
+                            value1 = getDescendantProperty(dataRow1, sortField);
+                            value2 = getDescendantProperty(dataRow2, sortField);
+                        }
+                        const /** @type {?} */ sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+                        if (sortResult !== SortDirectionNumber.neutral) {
+                            return sortResult;
+                        }
                     }
                 }
-            }
-            return SortDirectionNumber.neutral;
-        });
-        grid.invalidate();
-        grid.render();
+                return SortDirectionNumber.neutral;
+            });
+            grid.invalidate();
+            grid.render();
+        }
     }
     /**
      * @return {?}
@@ -5308,8 +5313,14 @@ class HeaderMenuExtension {
                     if (this.sharedService.gridOptions.backendServiceApi) {
                         this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this.sharedService.grid });
                     }
-                    else {
+                    else if (this.sharedService.dataView) {
                         this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, cols);
+                    }
+                    else {
+                        // when using customDataView, we will simply send it as a onSort event with notify
+                        const /** @type {?} */ isMultiSort = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.multiColumnSort || false;
+                        const /** @type {?} */ sortOutput = isMultiSort ? cols : cols[0];
+                        args.grid.onSort.notify(sortOutput);
                     }
                     // update the this.sharedService.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
                     const /** @type {?} */ newSortColumns = cols.map((col) => {
@@ -6048,9 +6059,13 @@ class GraphqlService {
             datasetQb.find(['totalCount', dataQb]);
         }
         // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
-        const /** @type {?} */ datasetFilters = Object.assign({}, this.options.paginationOptions, { first: ((this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : ((this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null)) || this.defaultPaginationOptions.first });
-        if (!this.options.isWithCursor) {
-            datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +this.options.paginationOptions['offset'] : 0);
+        let /** @type {?} */ datasetFilters = {};
+        // only add pagination if it's enabled in the grid options
+        if (this._gridOptions.enablePagination !== false) {
+            datasetFilters = Object.assign({}, this.options.paginationOptions, { first: ((this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : ((this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null)) || this.defaultPaginationOptions.first });
+            if (!this.options.isWithCursor) {
+                datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +this.options.paginationOptions['offset'] : 0);
+            }
         }
         if (this.options.sortingOptions && Array.isArray(this.options.sortingOptions) && this.options.sortingOptions.length > 0) {
             // orderBy: [{ field:x, direction: 'ASC' }]
@@ -11126,7 +11141,7 @@ class SlickPaginationComponent {
      * @return {?}
      */
     changeToCurrentPage(event) {
-        this.pageNumber = event.currentTarget.value;
+        this.pageNumber = +event.currentTarget.value;
         if (this.pageNumber < 1) {
             this.pageNumber = 1;
         }
@@ -11151,7 +11166,7 @@ class SlickPaginationComponent {
     onChangeItemPerPage(event) {
         const /** @type {?} */ itemsPerPage = +event.target.value;
         this.pageCount = Math.ceil(this.totalItems / itemsPerPage);
-        this.pageNumber = 1;
+        this.pageNumber = (this.totalItems > 0) ? 1 : 0;
         this.itemsPerPage = itemsPerPage;
         this.onPageChanged(event, this.pageNumber);
     }
@@ -11265,8 +11280,15 @@ class SlickPaginationComponent {
      * @return {?}
      */
     recalculateFromToIndexes() {
-        this.dataFrom = (this.pageNumber * this.itemsPerPage) - this.itemsPerPage + 1;
-        this.dataTo = (this.totalItems < this.itemsPerPage) ? this.totalItems : (this.pageNumber * this.itemsPerPage);
+        if (this.totalItems === 0) {
+            this.dataFrom = 0;
+            this.dataTo = 0;
+            this.pageNumber = 0;
+        }
+        else {
+            this.dataFrom = (this.pageNumber * this.itemsPerPage) - this.itemsPerPage + 1;
+            this.dataTo = (this.totalItems < this.itemsPerPage) ? this.totalItems : (this.pageNumber * this.itemsPerPage);
+        }
     }
 }
 SlickPaginationComponent.decorators = [
@@ -11276,11 +11298,11 @@ SlickPaginationComponent.decorators = [
     <div class="slick-pagination-nav">
         <nav aria-label="Page navigation">
         <ul class="pagination">
-            <li class="page-item" [ngClass]="pageNumber === 1 ? 'disabled' : ''">
+            <li class="page-item" [ngClass]="(pageNumber === 1 || totalItems === 0) ? 'disabled' : ''">
             <a class="page-link icon-seek-first fa fa-angle-double-left" aria-label="First" (click)="changeToFirstPage($event)">
             </a>
             </li>
-            <li class="page-item" [ngClass]="pageNumber === 1 ? 'disabled' : ''">
+            <li class="page-item" [ngClass]="(pageNumber === 1 || totalItems === 0) ? 'disabled' : ''">
             <a class="page-link icon-seek-prev fa fa-angle-left" aria-label="Previous" (click)="changeToPreviousPage($event)">
             </a>
             </li>
@@ -11289,17 +11311,17 @@ SlickPaginationComponent.decorators = [
 
         <div class="slick-page-number">
             <span [translate]="'PAGE'"></span>
-            <input type="text" class="form-control" value="{{pageNumber}}" size="1"  (change)="changeToCurrentPage($event)">
+            <input type="text" class="form-control" [value]="pageNumber" size="1" [readOnly]="totalItems === 0" (change)="changeToCurrentPage($event)">
             <span [translate]="'OF'"></span><span> {{pageCount}}</span>
         </div>
 
         <nav aria-label="Page navigation">
         <ul class="pagination">
-            <li class="page-item" [ngClass]="pageNumber === pageCount ? 'disabled' : ''">
+            <li class="page-item" [ngClass]="(pageNumber === pageCount || totalItems === 0) ? 'disabled' : ''">
             <a class="page-link icon-seek-next text-center fa fa-lg fa-angle-right" aria-label="Next" (click)="changeToNextPage($event)">
             </a>
             </li>
-            <li class="page-item" [ngClass]="pageNumber === pageCount ? 'disabled' : ''">
+            <li class="page-item" [ngClass]="(pageNumber === pageCount || totalItems === 0) ? 'disabled' : ''">
             <a class="page-link icon-seek-end fa fa-lg fa-angle-double-right" aria-label="Last" (click)="changeToLastPage($event)">
             </a>
             </li>
@@ -11481,14 +11503,16 @@ class AngularSlickgridComponent {
         this._dataset = this._dataset || [];
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
-        if (this.gridOptions.enableGrouping) {
-            this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
-            this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
-            this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
-            this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
-        }
-        else {
-            this._dataView = new Slick.Data.DataView();
+        if (!this.customDataView) {
+            if (this.gridOptions.enableGrouping) {
+                this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
+                this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
+                this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
+                this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
+            }
+            else {
+                this._dataView = new Slick.Data.DataView();
+            }
         }
         // for convenience, we provide the property "editor" as an Angular-Slickgrid editor complex object
         // however "editor" is used internally by SlickGrid for it's own Editor Factory
@@ -11505,23 +11529,22 @@ class AngularSlickgridComponent {
         this.sharedService.allColumns = this._columnDefinitions;
         this.sharedService.visibleColumns = this._columnDefinitions;
         this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
-        if (this.gridOptions && this.customDataView) {
-            this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView, this._columnDefinitions, this.gridOptions);
-        }
-        else {
-            this.grid = new Slick.Grid(`#${this.gridId}`, this._dataView, this._columnDefinitions, this.gridOptions);
-        }
+        // build SlickGrid Grid, also user might optionally pass a custom dataview (e.g. remote model)
+        this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView || this._dataView, this._columnDefinitions, this.gridOptions);
         this.sharedService.dataView = this._dataView;
         this.sharedService.grid = this.grid;
         this.extensionService.attachDifferentExtensions();
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
         // emit the Grid & DataView object to make them available in parent component
         this.onGridCreated.emit(this.grid);
-        this.onDataviewCreated.emit(this._dataView);
+        // initialize the SlickGrid grid
         this.grid.init();
-        this._dataView.beginUpdate();
-        this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
-        this._dataView.endUpdate();
+        if (!this.customDataView && (this._dataView && this._dataView.beginUpdate && this._dataView.setItems && this._dataView.endUpdate)) {
+            this.onDataviewCreated.emit(this._dataView);
+            this._dataView.beginUpdate();
+            this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
+            this._dataView.endUpdate();
+        }
         // user might want to hide the header row on page load but still have `enableFiltering: true`
         // if that is the case, we need to hide the headerRow ONLY AFTER all filters got created & dataView exist
         if (this._hideHeaderRowAfterPageLoad) {
@@ -11694,14 +11717,16 @@ class AngularSlickgridComponent {
         // on cell click, mainly used with the columnDef.action callback
         this.gridEventService.attachOnCellChange(grid, dataView);
         this.gridEventService.attachOnClick(grid, dataView);
-        this._eventHandler.subscribe(dataView.onRowCountChanged, (e, args) => {
-            grid.updateRowCount();
-            grid.render();
-        });
-        this._eventHandler.subscribe(dataView.onRowsChanged, (e, args) => {
-            grid.invalidateRows(args.rows);
-            grid.render();
-        });
+        if (dataView && grid) {
+            this._eventHandler.subscribe(dataView.onRowCountChanged, (e, args) => {
+                grid.updateRowCount();
+                grid.render();
+            });
+            this._eventHandler.subscribe(dataView.onRowsChanged, (e, args) => {
+                grid.invalidateRows(args.rows);
+                grid.render();
+            });
+        }
         // does the user have a colspan callback?
         if (gridOptions.colspanCallback) {
             this._dataView.getItemMetadata = (rowNumber) => {
@@ -11882,7 +11907,7 @@ class AngularSlickgridComponent {
                 if (!this.gridOptions.pagination) {
                     this.gridOptions.pagination = (this.gridOptions.pagination) ? this.gridOptions.pagination : undefined;
                 }
-                if (this.gridOptions.pagination && totalCount) {
+                if (this.gridOptions.pagination && totalCount !== undefined) {
                     this.gridOptions.pagination.totalItems = totalCount;
                 }
                 if (this.gridOptions.presets && this.gridOptions.presets.pagination && this.gridOptions.pagination) {

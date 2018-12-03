@@ -3257,14 +3257,17 @@ var SortService = /** @class */ (function () {
     };
     SortService.prototype.getPreviousColumnSorts = function (columnId) {
         var _this = this;
-        var oldSortColumns = this._grid.getSortColumns();
-        var sortedCols = oldSortColumns.reduce(function (cols, col) {
-            if (!columnId || col.columnId !== columnId) {
-                cols.push({ sortCol: _this._columnDefinitions[_this._grid.getColumnIndex(col.columnId)], sortAsc: col.sortAsc });
-            }
-            return cols;
-        }, []);
-        return sortedCols;
+        var oldSortColumns = this._grid && this._grid.getSortColumns();
+        if (Array.isArray(oldSortColumns)) {
+            var sortedCols = oldSortColumns.reduce(function (cols, col) {
+                if (!columnId || col.columnId !== columnId) {
+                    cols.push({ sortCol: _this._columnDefinitions[_this._grid.getColumnIndex(col.columnId)], sortAsc: col.sortAsc });
+                }
+                return cols;
+            }, []);
+            return sortedCols;
+        }
+        return [];
     };
     SortService.prototype.loadLocalPresets = function (grid, dataView) {
         var _this = this;
@@ -3293,29 +3296,31 @@ var SortService = /** @class */ (function () {
         }
     };
     SortService.prototype.onLocalSortChanged = function (grid, dataView, sortColumns) {
-        dataView.sort(function (dataRow1, dataRow2) {
-            for (var i = 0, l = sortColumns.length; i < l; i++) {
-                var columnSortObj = sortColumns[i];
-                if (columnSortObj && columnSortObj.sortCol) {
-                    var sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
-                    var sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
-                    var fieldType = columnSortObj.sortCol.type || FieldType.string;
-                    var value1 = dataRow1[sortField];
-                    var value2 = dataRow2[sortField];
-                    if (sortField && sortField.indexOf('.') >= 0) {
-                        value1 = getDescendantProperty(dataRow1, sortField);
-                        value2 = getDescendantProperty(dataRow2, sortField);
-                    }
-                    var sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
-                    if (sortResult !== SortDirectionNumber.neutral) {
-                        return sortResult;
+        if (grid && dataView) {
+            dataView.sort(function (dataRow1, dataRow2) {
+                for (var i = 0, l = sortColumns.length; i < l; i++) {
+                    var columnSortObj = sortColumns[i];
+                    if (columnSortObj && columnSortObj.sortCol) {
+                        var sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
+                        var sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
+                        var fieldType = columnSortObj.sortCol.type || FieldType.string;
+                        var value1 = dataRow1[sortField];
+                        var value2 = dataRow2[sortField];
+                        if (sortField && sortField.indexOf('.') >= 0) {
+                            value1 = getDescendantProperty(dataRow1, sortField);
+                            value2 = getDescendantProperty(dataRow2, sortField);
+                        }
+                        var sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+                        if (sortResult !== SortDirectionNumber.neutral) {
+                            return sortResult;
+                        }
                     }
                 }
-            }
-            return SortDirectionNumber.neutral;
-        });
-        grid.invalidate();
-        grid.render();
+                return SortDirectionNumber.neutral;
+            });
+            grid.invalidate();
+            grid.render();
+        }
     };
     SortService.prototype.dispose = function () {
         if (this._slickSubscriber && typeof this._slickSubscriber.unsubscribe === 'function') {
@@ -3805,8 +3810,13 @@ var HeaderMenuExtension = /** @class */ (function () {
                     if (this.sharedService.gridOptions.backendServiceApi) {
                         this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this.sharedService.grid });
                     }
-                    else {
+                    else if (this.sharedService.dataView) {
                         this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, cols);
+                    }
+                    else {
+                        var isMultiSort = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.multiColumnSort || false;
+                        var sortOutput = isMultiSort ? cols : cols[0];
+                        args.grid.onSort.notify(sortOutput);
                     }
                     var newSortColumns = cols.map(function (col) {
                         return {
@@ -4347,9 +4357,12 @@ var GraphqlService = /** @class */ (function () {
             dataQb.find(filters);
             datasetQb.find(['totalCount', dataQb]);
         }
-        var datasetFilters = Object.assign({}, this.options.paginationOptions, { first: ((this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : ((this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null)) || this.defaultPaginationOptions.first });
-        if (!this.options.isWithCursor) {
-            datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +this.options.paginationOptions['offset'] : 0);
+        var datasetFilters = {};
+        if (this._gridOptions.enablePagination !== false) {
+            datasetFilters = Object.assign({}, this.options.paginationOptions, { first: ((this.options.paginationOptions && this.options.paginationOptions.first) ? this.options.paginationOptions.first : ((this.pagination && this.pagination.pageSize) ? this.pagination.pageSize : null)) || this.defaultPaginationOptions.first });
+            if (!this.options.isWithCursor) {
+                datasetFilters.offset = ((this.options.paginationOptions && this.options.paginationOptions.hasOwnProperty('offset')) ? +this.options.paginationOptions['offset'] : 0);
+            }
         }
         if (this.options.sortingOptions && Array.isArray(this.options.sortingOptions) && this.options.sortingOptions.length > 0) {
             datasetFilters.orderBy = this.options.sortingOptions;
@@ -7779,7 +7792,7 @@ var SlickPaginationComponent = /** @class */ (function () {
         }
     };
     SlickPaginationComponent.prototype.changeToCurrentPage = function (event) {
-        this.pageNumber = event.currentTarget.value;
+        this.pageNumber = +event.currentTarget.value;
         if (this.pageNumber < 1) {
             this.pageNumber = 1;
         }
@@ -7797,7 +7810,7 @@ var SlickPaginationComponent = /** @class */ (function () {
     SlickPaginationComponent.prototype.onChangeItemPerPage = function (event) {
         var itemsPerPage = +event.target.value;
         this.pageCount = Math.ceil(this.totalItems / itemsPerPage);
-        this.pageNumber = 1;
+        this.pageNumber = (this.totalItems > 0) ? 1 : 0;
         this.itemsPerPage = itemsPerPage;
         this.onPageChanged(event, this.pageNumber);
     };
@@ -7901,15 +7914,22 @@ var SlickPaginationComponent = /** @class */ (function () {
         });
     };
     SlickPaginationComponent.prototype.recalculateFromToIndexes = function () {
-        this.dataFrom = (this.pageNumber * this.itemsPerPage) - this.itemsPerPage + 1;
-        this.dataTo = (this.totalItems < this.itemsPerPage) ? this.totalItems : (this.pageNumber * this.itemsPerPage);
+        if (this.totalItems === 0) {
+            this.dataFrom = 0;
+            this.dataTo = 0;
+            this.pageNumber = 0;
+        }
+        else {
+            this.dataFrom = (this.pageNumber * this.itemsPerPage) - this.itemsPerPage + 1;
+            this.dataTo = (this.totalItems < this.itemsPerPage) ? this.totalItems : (this.pageNumber * this.itemsPerPage);
+        }
     };
     return SlickPaginationComponent;
 }());
 SlickPaginationComponent.decorators = [
     { type: Component, args: [{
                 selector: 'slick-pagination',
-                template: "<div class=\"slick-pagination\">\n    <div class=\"slick-pagination-nav\">\n        <nav aria-label=\"Page navigation\">\n        <ul class=\"pagination\">\n            <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-first fa fa-angle-double-left\" aria-label=\"First\" (click)=\"changeToFirstPage($event)\">\n            </a>\n            </li>\n            <li class=\"page-item\" [ngClass]=\"pageNumber === 1 ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-prev fa fa-angle-left\" aria-label=\"Previous\" (click)=\"changeToPreviousPage($event)\">\n            </a>\n            </li>\n        </ul>\n        </nav>\n\n        <div class=\"slick-page-number\">\n            <span [translate]=\"'PAGE'\"></span>\n            <input type=\"text\" class=\"form-control\" value=\"{{pageNumber}}\" size=\"1\"  (change)=\"changeToCurrentPage($event)\">\n            <span [translate]=\"'OF'\"></span><span> {{pageCount}}</span>\n        </div>\n\n        <nav aria-label=\"Page navigation\">\n        <ul class=\"pagination\">\n            <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-next text-center fa fa-lg fa-angle-right\" aria-label=\"Next\" (click)=\"changeToNextPage($event)\">\n            </a>\n            </li>\n            <li class=\"page-item\" [ngClass]=\"pageNumber === pageCount ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-end fa fa-lg fa-angle-double-right\" aria-label=\"Last\" (click)=\"changeToLastPage($event)\">\n            </a>\n            </li>\n        </ul>\n        </nav>\n    </div>\n    <span class=\"slick-pagination-settings\">\n        <select id=\"items-per-page-label\" [value]=\"itemsPerPage\" (change)=\"onChangeItemPerPage($event)\">\n        <option value=\"{{pageSize}}\" *ngFor=\"let pageSize of paginationPageSizes;\">{{pageSize}}</option>\n        </select>\n        <span [translate]=\"'ITEMS_PER_PAGE'\"></span>,\n        <span class=\"slick-pagination-count\">\n            <span [translate]=\"'FROM_TO_OF_TOTAL_ITEMS'\" [translateParams]=\"{ from: dataFrom, to: dataTo, totalItems: totalItems }\"></span>\n        </span>\n    </span>\n    </div>\n"
+                template: "<div class=\"slick-pagination\">\n    <div class=\"slick-pagination-nav\">\n        <nav aria-label=\"Page navigation\">\n        <ul class=\"pagination\">\n            <li class=\"page-item\" [ngClass]=\"(pageNumber === 1 || totalItems === 0) ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-first fa fa-angle-double-left\" aria-label=\"First\" (click)=\"changeToFirstPage($event)\">\n            </a>\n            </li>\n            <li class=\"page-item\" [ngClass]=\"(pageNumber === 1 || totalItems === 0) ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-prev fa fa-angle-left\" aria-label=\"Previous\" (click)=\"changeToPreviousPage($event)\">\n            </a>\n            </li>\n        </ul>\n        </nav>\n\n        <div class=\"slick-page-number\">\n            <span [translate]=\"'PAGE'\"></span>\n            <input type=\"text\" class=\"form-control\" [value]=\"pageNumber\" size=\"1\" [readOnly]=\"totalItems === 0\" (change)=\"changeToCurrentPage($event)\">\n            <span [translate]=\"'OF'\"></span><span> {{pageCount}}</span>\n        </div>\n\n        <nav aria-label=\"Page navigation\">\n        <ul class=\"pagination\">\n            <li class=\"page-item\" [ngClass]=\"(pageNumber === pageCount || totalItems === 0) ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-next text-center fa fa-lg fa-angle-right\" aria-label=\"Next\" (click)=\"changeToNextPage($event)\">\n            </a>\n            </li>\n            <li class=\"page-item\" [ngClass]=\"(pageNumber === pageCount || totalItems === 0) ? 'disabled' : ''\">\n            <a class=\"page-link icon-seek-end fa fa-lg fa-angle-double-right\" aria-label=\"Last\" (click)=\"changeToLastPage($event)\">\n            </a>\n            </li>\n        </ul>\n        </nav>\n    </div>\n    <span class=\"slick-pagination-settings\">\n        <select id=\"items-per-page-label\" [value]=\"itemsPerPage\" (change)=\"onChangeItemPerPage($event)\">\n        <option value=\"{{pageSize}}\" *ngFor=\"let pageSize of paginationPageSizes;\">{{pageSize}}</option>\n        </select>\n        <span [translate]=\"'ITEMS_PER_PAGE'\"></span>,\n        <span class=\"slick-pagination-count\">\n            <span [translate]=\"'FROM_TO_OF_TOTAL_ITEMS'\" [translateParams]=\"{ from: dataFrom, to: dataTo, totalItems: totalItems }\"></span>\n        </span>\n    </span>\n    </div>\n"
             },] },
     { type: Injectable },
 ];
@@ -8030,14 +8050,16 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this._dataset = this._dataset || [];
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
-        if (this.gridOptions.enableGrouping) {
-            this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
-            this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
-            this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
-            this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
-        }
-        else {
-            this._dataView = new Slick.Data.DataView();
+        if (!this.customDataView) {
+            if (this.gridOptions.enableGrouping) {
+                this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
+                this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
+                this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
+                this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
+            }
+            else {
+                this._dataView = new Slick.Data.DataView();
+            }
         }
         this._columnDefinitions = this._columnDefinitions.map(function (column) {
             if (column.editor && column.editor.collectionAsync) {
@@ -8048,22 +8070,19 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.sharedService.allColumns = this._columnDefinitions;
         this.sharedService.visibleColumns = this._columnDefinitions;
         this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
-        if (this.gridOptions && this.customDataView) {
-            this.grid = new Slick.Grid("#" + this.gridId, this.customDataView, this._columnDefinitions, this.gridOptions);
-        }
-        else {
-            this.grid = new Slick.Grid("#" + this.gridId, this._dataView, this._columnDefinitions, this.gridOptions);
-        }
+        this.grid = new Slick.Grid("#" + this.gridId, this.customDataView || this._dataView, this._columnDefinitions, this.gridOptions);
         this.sharedService.dataView = this._dataView;
         this.sharedService.grid = this.grid;
         this.extensionService.attachDifferentExtensions();
         this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
         this.onGridCreated.emit(this.grid);
-        this.onDataviewCreated.emit(this._dataView);
         this.grid.init();
-        this._dataView.beginUpdate();
-        this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
-        this._dataView.endUpdate();
+        if (!this.customDataView && (this._dataView && this._dataView.beginUpdate && this._dataView.setItems && this._dataView.endUpdate)) {
+            this.onDataviewCreated.emit(this._dataView);
+            this._dataView.beginUpdate();
+            this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
+            this._dataView.endUpdate();
+        }
         if (this._hideHeaderRowAfterPageLoad) {
             this.showHeaderRow(false);
         }
@@ -8195,14 +8214,16 @@ var AngularSlickgridComponent = /** @class */ (function () {
         }));
         this.gridEventService.attachOnCellChange(grid, dataView);
         this.gridEventService.attachOnClick(grid, dataView);
-        this._eventHandler.subscribe(dataView.onRowCountChanged, function (e, args) {
-            grid.updateRowCount();
-            grid.render();
-        });
-        this._eventHandler.subscribe(dataView.onRowsChanged, function (e, args) {
-            grid.invalidateRows(args.rows);
-            grid.render();
-        });
+        if (dataView && grid) {
+            this._eventHandler.subscribe(dataView.onRowCountChanged, function (e, args) {
+                grid.updateRowCount();
+                grid.render();
+            });
+            this._eventHandler.subscribe(dataView.onRowsChanged, function (e, args) {
+                grid.invalidateRows(args.rows);
+                grid.render();
+            });
+        }
         if (gridOptions.colspanCallback) {
             this._dataView.getItemMetadata = function (rowNumber) {
                 var item = _this._dataView.getItem(rowNumber);
@@ -8341,7 +8362,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
                 if (!this.gridOptions.pagination) {
                     this.gridOptions.pagination = (this.gridOptions.pagination) ? this.gridOptions.pagination : undefined;
                 }
-                if (this.gridOptions.pagination && totalCount) {
+                if (this.gridOptions.pagination && totalCount !== undefined) {
                     this.gridOptions.pagination.totalItems = totalCount;
                 }
                 if (this.gridOptions.presets && this.gridOptions.presets.pagination && this.gridOptions.pagination) {
