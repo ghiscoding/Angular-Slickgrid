@@ -45,6 +45,7 @@ import { AutoTooltipExtension } from '../extensions/autoTooltipExtension';
 import { CellExternalCopyManagerExtension } from '../extensions/cellExternalCopyManagerExtension';
 import { CheckboxSelectorExtension } from '../extensions/checkboxSelectorExtension';
 import { ColumnPickerExtension } from '../extensions/columnPickerExtension';
+import { DraggableGroupingExtension } from '../extensions/draggableGroupingExtension';
 import { GridMenuExtension } from '../extensions/gridMenuExtension';
 import { GroupItemMetaProviderExtension } from '../extensions/groupItemMetaProviderExtension';
 import { HeaderButtonExtension } from '../extensions/headerButtonExtension';
@@ -64,10 +65,12 @@ const slickgridEventPrefix = 'sg';
   selector: 'angular-slickgrid',
   templateUrl: './angular-slickgrid.component.html',
   providers: [
+    // make everything transient (non-singleton)
     AutoTooltipExtension,
     CellExternalCopyManagerExtension,
     CheckboxSelectorExtension,
     ColumnPickerExtension,
+    DraggableGroupingExtension,
     ExtensionService,
     ExportService,
     ExtensionUtility,
@@ -212,7 +215,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
 
     if (!this.customDataView) {
-      if (this.gridOptions.enableGrouping) {
+      if (this.gridOptions.draggableGrouping || this.gridOptions.enableGrouping) {
         this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
         this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
         this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
@@ -237,7 +240,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // save reference for all columns before they optionally become hidden/visible
     this.sharedService.allColumns = this._columnDefinitions;
     this.sharedService.visibleColumns = this._columnDefinitions;
-    this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+    this.extensionService.createExtensionsBeforeGridCreation(this._columnDefinitions, this.gridOptions);
 
     // build SlickGrid Grid, also user might optionally pass a custom dataview (e.g. remote model)
     this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView || this._dataView, this._columnDefinitions, this.gridOptions);
@@ -274,7 +277,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.attachResizeHook(this.grid, this.gridOptions);
 
     // attach grouping and header grouping colspan service
-    if (this.gridOptions.createPreHeaderPanel) {
+    if (this.gridOptions.createPreHeaderPanel && !this.gridOptions.enableDraggableGrouping) {
       this.groupingAndColspanService.init(this.grid, this._dataView);
     }
 
@@ -623,7 +626,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * @param dataset
    */
   refreshGridData(dataset: any[], totalCount?: number) {
-    if (dataset && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
+    if (Array.isArray(dataset) && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
       this._dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
       if (!this.gridOptions.backendServiceApi) {
         this._dataView.reSort();

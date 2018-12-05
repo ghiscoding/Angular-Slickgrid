@@ -30,6 +30,7 @@
   "STARTS_WITH": "Starts With",
   "SYNCHRONOUS_RESIZE": "Synchronous resize",
   "TOGGLE_FILTER_ROW": "Toggle Filter Row",
+  "TOGGLE_PRE_HEADER_ROW": "Toggle Pre-Header Row",
   "X_OF_Y_SELECTED": "# of % selected",
 
   "BILLING": {

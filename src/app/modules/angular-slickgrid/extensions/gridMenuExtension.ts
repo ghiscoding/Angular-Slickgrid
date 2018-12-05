@@ -147,6 +147,9 @@ export class GridMenuExtension implements Extension {
         case 'toggle-toppanel':
           this.sharedService.grid.setTopPanelVisibility(!this.sharedService.grid.getOptions().showTopPanel);
           break;
+        case 'toggle-preheader':
+          this.sharedService.grid.setPreHeaderPanelVisibility(!this.sharedService.grid.getOptions().showPreHeaderPanel);
+          break;
         case 'refresh-dataset':
           this.refreshBackendDataset();
           break;
@@ -251,6 +254,21 @@ export class GridMenuExtension implements Extension {
             disabled: false,
             command: 'refresh-dataset',
             positionOrder: 54
+          }
+        );
+      }
+    }
+
+    if (this.sharedService.gridOptions.showPreHeaderPanel) {
+      // show grid menu: toggle pre-header row
+      if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideTogglePreHeaderCommand) {
+        gridMenuCustomItems.push(
+          {
+            iconCssClass: this.sharedService.gridOptions.gridMenu.iconTogglePreHeaderCommand || 'fa fa-random',
+            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('TOGGLE_PRE_HEADER_ROW') : Constants.TEXT_TOGGLE_PRE_HEADER_ROW,
+            disabled: false,
+            command: 'toggle-preheader',
+            positionOrder: 52
           }
         );
       }

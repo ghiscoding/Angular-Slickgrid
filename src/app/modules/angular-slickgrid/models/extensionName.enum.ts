@@ -4,6 +4,7 @@ export enum ExtensionName {
   cellExternalCopyManager = 'cellExternalCopyManager',
   checkboxSelector = 'checkboxSelector',
   columnPicker = 'columnPicker',
+  draggableGrouping = 'draggableGrouping',
   groupItemMetaProvider = 'groupItemMetaProvider',
   gridMenu = 'gridMenu',
   headerButton = 'headerButton',
