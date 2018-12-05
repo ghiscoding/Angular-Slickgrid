@@ -46,7 +46,7 @@ export class GridClientSideComponent implements OnInit {
   ngOnInit(): void {
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', sortable: true, minWidth: 55,
-        type: FieldType.string, filterable: true, filter: { model: Filters.compoundInput }
+        type: FieldType.string, filterable: true, filter: { model: Filters.compoundInputText }
       },
       { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80,
         type: FieldType.string,
@@ -99,7 +99,7 @@ export class GridClientSideComponent implements OnInit {
         }
       },
       { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 70, type: FieldType.number, sortable: true,
-        filterable: true, filter: { model: Filters.compoundInput }
+        filterable: true, filter: { model: Filters.compoundInputNumber }
       },
       { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true,
         type: FieldType.date, filterable: true, filter: { model: Filters.compoundDate }
