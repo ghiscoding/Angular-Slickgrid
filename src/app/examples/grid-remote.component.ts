@@ -28,7 +28,10 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
   subTitle = `
     This example demonstrates how to use "slick.remotemodel.js" or any Remote implementation through an external Remote Service
     <ul>
-      <li>Your browser might block access to the Octopart query, if you get "block content" then just unblock it.</li>
+      <li>
+        Your browser (Chrome) might block access to the Octopart query, if you get "block content" then just unblock it
+        or try with different browser like Firefox or Edge
+      </li>
       <li>If the demo throws some errors, try again later (there's a limit per day).</li>
       <li>
         Uses <a href="https://github.com/6pac/SlickGrid/blob/master/slick.remotemodel.js" target="_blank">slick.remotemodel.js</a>
