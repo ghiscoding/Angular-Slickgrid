@@ -63,7 +63,7 @@ export class InputFilter implements Filter {
 
     // step 3, subscribe to the keyup event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
-    this.$filterElm.keyup((e: any) => {
+    this.$filterElm.on('keyup input change', (e: any) => {
       const value = e && e.target && e.target.value || '';
       if (this._clearFilterTriggered) {
         this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
@@ -93,7 +93,7 @@ export class InputFilter implements Filter {
    */
   destroy() {
     if (this.$filterElm) {
-      this.$filterElm.off('keyup').remove();
+      this.$filterElm.off('keyup input change').remove();
     }
   }
 

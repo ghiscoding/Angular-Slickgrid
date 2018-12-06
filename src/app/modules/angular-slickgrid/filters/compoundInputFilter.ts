@@ -63,10 +63,10 @@ export class CompoundInputFilter implements Filter {
 
     // step 3, subscribe to the keyup event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
-    this.$filterInputElm.keyup((e: any) => {
+    this.$filterInputElm.on('keyup input change', (e: any) => {
       this.onTriggerEvent(e);
     });
-    this.$selectOperatorElm.change((e: any) => {
+    this.$selectOperatorElm.on('change', (e: any) => {
       this.onTriggerEvent(e);
     });
   }
@@ -88,9 +88,9 @@ export class CompoundInputFilter implements Filter {
    * destroy the filter
    */
   destroy() {
-    if (this.$filterElm) {
-      this.$filterElm.off('keyup').remove();
-      this.$selectOperatorElm.off('change').remove();
+    if (this.$filterElm && this.$selectOperatorElm) {
+      this.$filterElm.off('keyup input change').remove();
+      this.$selectOperatorElm.off('change');
     }
   }
 
