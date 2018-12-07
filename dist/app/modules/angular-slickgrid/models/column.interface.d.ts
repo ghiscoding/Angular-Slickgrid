@@ -3,6 +3,7 @@ import { ColumnFilter } from './columnFilter.interface';
 import { EditorValidator } from './editorValidator.interface';
 import { FieldType } from './fieldType.enum';
 import { Formatter } from './formatter.interface';
+import { Grouping } from './grouping.interface';
 import { GroupTotalsFormatter } from './groupTotalsFormatter.interface';
 import { HeaderButtonItem } from './headerButtonItem.interface';
 import { HeaderMenuItem } from './headerMenuItem.interface';
@@ -65,6 +66,8 @@ export interface Column {
     focusable?: boolean;
     /** Formatter function that can be used to change and format certain column(s) in the grid */
     formatter?: Formatter;
+    /** Grouping option used by a Draggable Grouping Column */
+    grouping?: Grouping;
     /** Group Totals Formatter function that can be used to add grouping totals in the grid */
     groupTotalsFormatter?: GroupTotalsFormatter;
     /** Options that can be provide to the Header Menu Plugin */

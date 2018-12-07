@@ -1,8 +1,9 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Column, Filter, FilterArguments, FilterCallback, OperatorString, OperatorType, SearchTerm } from './../models/index';
 export declare class CompoundInputFilter implements Filter {
-    private translate;
+    protected translate: TranslateService;
     private _clearFilterTriggered;
+    private _inputType;
     private $filterElm;
     private $filterInputElm;
     private $selectOperatorElm;
@@ -14,6 +15,11 @@ export declare class CompoundInputFilter implements Filter {
     constructor(translate: TranslateService);
     /** Getter for the Grid Options pulled through the Grid Object */
     private readonly gridOptions;
+    /** Getter of input type (text, number, password) */
+    /** Setter of input type (text, number, password) */
+    inputType: string;
+    /** Getter of the Operator to use when doing the filter comparing */
+    /** Getter of the Operator to use when doing the filter comparing */
     operator: OperatorType | OperatorString;
     /**
      * Initialize the Filter

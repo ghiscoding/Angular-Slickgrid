@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { AutoResizeOption, BackendServiceApi, Column, ColumnPicker, CheckboxSelector, EditCommand, ExportOption, GridMenu, GridState, HeaderButton, HeaderMenu, Pagination, RowMoveManager } from './../models/index';
+import { AutoResizeOption, BackendServiceApi, Column, ColumnPicker, CheckboxSelector, DraggableGrouping, EditCommand, ExportOption, GridMenu, GridState, HeaderButton, HeaderMenu, Pagination, RowMoveManager } from './../models/index';
 export interface GridOption {
     /** CSS class name used on newly added row */
     addNewRowCssClass?: string;
@@ -60,6 +60,8 @@ export interface GridOption {
     defaultFilterPlaceholder?: string;
     /** The default filter model to use when none is specified */
     defaultFilter?: any;
+    /** Draggable Grouping Plugin options & events */
+    draggableGrouping?: DraggableGrouping;
     /** Defaults to false, when enabled will give the possibility to edit cell values with inline editors. */
     editable?: boolean;
     /** option to intercept edit commands and implement undo support. */
@@ -90,6 +92,8 @@ export interface GridOption {
     enableColumnPicker?: boolean;
     /** Defaults to true, which permits the user to move an entire column from a position to another. */
     enableColumnReorder?: boolean;
+    /** Defaults to false, do we want to enable the Draggable Grouping Plugin? */
+    enableDraggableGrouping?: boolean;
     /** Defaults to true, which leads to use an Excel like copy buffer that gets copied in clipboard and can be pasted back in Excel or any other app */
     enableExcelCopyBuffer?: boolean;
     /** Do we want to enable the Export to File? (if Yes, it will show up in the Grid Menu) */

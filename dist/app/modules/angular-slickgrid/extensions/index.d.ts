@@ -2,6 +2,7 @@ export * from './autoTooltipExtension';
 export * from './cellExternalCopyManagerExtension';
 export * from './checkboxSelectorExtension';
 export * from './columnPickerExtension';
+export * from './draggableGroupingExtension';
 export * from './extensionUtility';
 export * from './gridMenuExtension';
 export * from './groupItemMetaProviderExtension';

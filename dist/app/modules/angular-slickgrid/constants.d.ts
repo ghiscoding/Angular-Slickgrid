@@ -14,6 +14,7 @@ export declare class Constants {
     static TEXT_SORT_ASCENDING: string;
     static TEXT_SORT_DESCENDING: string;
     static TEXT_TOGGLE_FILTER_ROW: string;
+    static TEXT_TOGGLE_PRE_HEADER_ROW: string;
     static VALIDATION_EDITOR_VALID_NUMBER: string;
     static VALIDATION_EDITOR_VALID_INTEGER: string;
     static VALIDATION_EDITOR_NUMBER_BETWEEN: string;

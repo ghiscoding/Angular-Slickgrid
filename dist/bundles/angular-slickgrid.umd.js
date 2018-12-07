@@ -126,6 +126,7 @@ var ExtensionName = {
     cellExternalCopyManager: 'cellExternalCopyManager',
     checkboxSelector: 'checkboxSelector',
     columnPicker: 'columnPicker',
+    draggableGrouping: 'draggableGrouping',
     groupItemMetaProvider: 'groupItemMetaProvider',
     gridMenu: 'gridMenu',
     headerButton: 'headerButton',
@@ -1008,6 +1009,7 @@ Constants.TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';
 Constants.TEXT_SORT_ASCENDING = 'Sort Ascending';
 Constants.TEXT_SORT_DESCENDING = 'Sort Descending';
 Constants.TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
+Constants.TEXT_TOGGLE_PRE_HEADER_ROW = 'Toggle Pre-Header Row';
 Constants.VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
 Constants.VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
 Constants.VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
@@ -1110,6 +1112,9 @@ var ExtensionUtility = /** @class */ (function () {
                     break;
                 case ExtensionName.columnPicker:
                     require('slickgrid/controls/slick.columnpicker');
+                    break;
+                case ExtensionName.draggableGrouping:
+                    require('slickgrid/plugins/slick.draggablegrouping.js');
                     break;
                 case ExtensionName.gridMenu:
                     require('slickgrid/controls/slick.gridmenu');
@@ -1443,6 +1448,52 @@ ColumnPickerExtension.decorators = [
     { type: core.Injectable },
 ];
 ColumnPickerExtension.ctorParameters = function () { return [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+]; };
+var DraggableGroupingExtension = /** @class */ (function () {
+    function DraggableGroupingExtension(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+        this._eventHandler = new Slick.EventHandler();
+    }
+    DraggableGroupingExtension.prototype.dispose = function () {
+        this._eventHandler.unsubscribeAll();
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    };
+    DraggableGroupingExtension.prototype.create = function (gridOptions) {
+        this.extensionUtility.loadExtensionDynamically(ExtensionName.draggableGrouping);
+        if (!this._extension && gridOptions) {
+            this._extension = new Slick.DraggableGrouping(gridOptions.draggableGrouping || {});
+        }
+        return this._extension;
+    };
+    DraggableGroupingExtension.prototype.register = function () {
+        var _this = this;
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            this.sharedService.grid.registerPlugin(this._extension);
+            if (this.sharedService.grid && this.sharedService.gridOptions.draggableGrouping) {
+                if (this.sharedService.gridOptions.draggableGrouping.onExtensionRegistered) {
+                    this.sharedService.gridOptions.draggableGrouping.onExtensionRegistered(this._extension);
+                }
+                this._eventHandler.subscribe(this._extension.onGroupChanged, function (e, args) {
+                    if (_this.sharedService.gridOptions.draggableGrouping && typeof _this.sharedService.gridOptions.draggableGrouping.onGroupChanged === 'function') {
+                        _this.sharedService.gridOptions.draggableGrouping.onGroupChanged(e, args);
+                    }
+                });
+            }
+            return this._extension;
+        }
+        return null;
+    };
+    return DraggableGroupingExtension;
+}());
+DraggableGroupingExtension.decorators = [
+    { type: core.Injectable },
+];
+DraggableGroupingExtension.ctorParameters = function () { return [
     { type: ExtensionUtility, },
     { type: SharedService, },
 ]; };
@@ -1792,10 +1843,21 @@ var CompoundInputFilter = /** @class */ (function () {
     function CompoundInputFilter(translate) {
         this.translate = translate;
         this._clearFilterTriggered = false;
+        this._inputType = 'text';
     }
     Object.defineProperty(CompoundInputFilter.prototype, "gridOptions", {
         get: function () {
             return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CompoundInputFilter.prototype, "inputType", {
+        get: function () {
+            return this._inputType;
+        },
+        set: function (type) {
+            this._inputType = type;
         },
         enumerable: true,
         configurable: true
@@ -1819,10 +1881,10 @@ var CompoundInputFilter = /** @class */ (function () {
         this.searchTerms = args.searchTerms || [];
         var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
         this.$filterElm = this.createDomElement(searchTerm);
-        this.$filterInputElm.keyup(function (e) {
+        this.$filterInputElm.on('keyup input change', function (e) {
             _this.onTriggerEvent(e);
         });
-        this.$selectOperatorElm.change(function (e) {
+        this.$selectOperatorElm.on('change', function (e) {
             _this.onTriggerEvent(e);
         });
     };
@@ -1836,9 +1898,9 @@ var CompoundInputFilter = /** @class */ (function () {
         }
     };
     CompoundInputFilter.prototype.destroy = function () {
-        if (this.$filterElm) {
-            this.$filterElm.off('keyup').remove();
-            this.$selectOperatorElm.off('change').remove();
+        if (this.$filterElm && this.$selectOperatorElm) {
+            this.$filterElm.off('keyup input change').remove();
+            this.$selectOperatorElm.off('change');
         }
     };
     CompoundInputFilter.prototype.setValues = function (values) {
@@ -1848,7 +1910,7 @@ var CompoundInputFilter = /** @class */ (function () {
     };
     CompoundInputFilter.prototype.buildInputHtmlString = function () {
         var placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
-        return "<input class=\"form-control\" type=\"text\" placeholder=\"" + placeholder + "\" />";
+        return "<input class=\"form-control\" type=\"" + (this._inputType || 'text') + "\" placeholder=\"" + placeholder + "\" />";
     };
     CompoundInputFilter.prototype.buildSelectOperatorHtmlString = function () {
         var optionValues = this.getOptionValues();
@@ -1919,12 +1981,32 @@ var CompoundInputFilter = /** @class */ (function () {
         else {
             var selectedOperator = this.$selectOperatorElm.find('option:selected').text();
             var value = this.$filterInputElm.val();
-            (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
+            (value !== null && value !== undefined && value !== '') ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
             this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '' });
         }
     };
     return CompoundInputFilter;
 }());
+var CompoundInputNumberFilter = /** @class */ (function (_super) {
+    __extends(CompoundInputNumberFilter, _super);
+    function CompoundInputNumberFilter(translate) {
+        var _this = _super.call(this, translate) || this;
+        _this.translate = translate;
+        _this.inputType = 'number';
+        return _this;
+    }
+    return CompoundInputNumberFilter;
+}(CompoundInputFilter));
+var CompoundInputPasswordFilter = /** @class */ (function (_super) {
+    __extends(CompoundInputPasswordFilter, _super);
+    function CompoundInputPasswordFilter(translate) {
+        var _this = _super.call(this, translate) || this;
+        _this.translate = translate;
+        _this.inputType = 'password';
+        return _this;
+    }
+    return CompoundInputPasswordFilter;
+}(CompoundInputFilter));
 var DEFAULT_MIN_VALUE = 0;
 var DEFAULT_MAX_VALUE = 100;
 var DEFAULT_STEP = 1;
@@ -2096,10 +2178,14 @@ var CompoundSliderFilter = /** @class */ (function () {
 var InputFilter = /** @class */ (function () {
     function InputFilter() {
         this._clearFilterTriggered = false;
+        this._inputType = 'text';
     }
-    Object.defineProperty(InputFilter.prototype, "gridOptions", {
+    Object.defineProperty(InputFilter.prototype, "inputType", {
         get: function () {
-            return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+            return this._inputType;
+        },
+        set: function (type) {
+            this._inputType = type;
         },
         enumerable: true,
         configurable: true
@@ -2107,6 +2193,13 @@ var InputFilter = /** @class */ (function () {
     Object.defineProperty(InputFilter.prototype, "operator", {
         get: function () {
             return this.columnDef && this.columnDef.filter && this.columnDef.filter.operator || '';
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(InputFilter.prototype, "gridOptions", {
+        get: function () {
+            return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
         },
         enumerable: true,
         configurable: true
@@ -2120,7 +2213,7 @@ var InputFilter = /** @class */ (function () {
         var searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
         var filterTemplate = this.buildTemplateHtmlString();
         this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
-        this.$filterElm.keyup(function (e) {
+        this.$filterElm.on('keyup input change', function (e) {
             var value = e && e.target && e.target.value || '';
             if (_this._clearFilterTriggered) {
                 _this.callback(e, { columnDef: _this.columnDef, clearFilterTriggered: _this._clearFilterTriggered });
@@ -2143,7 +2236,7 @@ var InputFilter = /** @class */ (function () {
     };
     InputFilter.prototype.destroy = function () {
         if (this.$filterElm) {
-            this.$filterElm.off('keyup').remove();
+            this.$filterElm.off('keyup input change').remove();
         }
     };
     InputFilter.prototype.setValues = function (values) {
@@ -2154,7 +2247,7 @@ var InputFilter = /** @class */ (function () {
     InputFilter.prototype.buildTemplateHtmlString = function () {
         var fieldId = this.columnDef && this.columnDef.id;
         var placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
-        return "<input type=\"text\" class=\"form-control search-filter filter-" + fieldId + "\" placeholder=\"" + placeholder + "\">";
+        return "<input type=\"" + (this._inputType || 'text') + "\" class=\"form-control search-filter filter-" + fieldId + "\" placeholder=\"" + placeholder + "\">";
     };
     InputFilter.prototype.createDomElement = function (filterTemplate, searchTerm) {
         var fieldId = this.columnDef && this.columnDef.id;
@@ -2174,6 +2267,24 @@ var InputFilter = /** @class */ (function () {
     };
     return InputFilter;
 }());
+var InputNumberFilter = /** @class */ (function (_super) {
+    __extends(InputNumberFilter, _super);
+    function InputNumberFilter() {
+        var _this = _super.call(this) || this;
+        _this.inputType = 'number';
+        return _this;
+    }
+    return InputNumberFilter;
+}(InputFilter));
+var InputPasswordFilter = /** @class */ (function (_super) {
+    __extends(InputPasswordFilter, _super);
+    function InputPasswordFilter() {
+        var _this = _super.call(this) || this;
+        _this.inputType = 'password';
+        return _this;
+    }
+    return InputPasswordFilter;
+}(InputFilter));
 var DOMPurify = DOMPurify_;
 var SelectFilter = /** @class */ (function () {
     function SelectFilter(translate, collectionService, isMultipleSelect) {
@@ -2686,12 +2797,18 @@ var SliderFilter = /** @class */ (function () {
 var Filters = {
     compoundDate: CompoundDateFilter,
     compoundInput: CompoundInputFilter,
+    compoundInputNumber: CompoundInputNumberFilter,
+    compoundInputPassword: CompoundInputPasswordFilter,
+    compoundInputText: CompoundInputFilter,
     compoundSlider: CompoundSliderFilter,
     input: InputFilter,
-    slider: SliderFilter,
+    inputNumber: InputNumberFilter,
+    inputPassword: InputPasswordFilter,
+    inputText: InputFilter,
     multipleSelect: MultipleSelectFilter,
+    select: NativeSelectFilter,
     singleSelect: SingleSelectFilter,
-    select: NativeSelectFilter
+    slider: SliderFilter,
 };
 var GlobalGridOptions = {
     alwaysShowVerticalScroll: true,
@@ -2747,6 +2864,7 @@ var GlobalGridOptions = {
         hideRefreshDatasetCommand: false,
         hideSyncResizeButton: true,
         hideToggleFilterCommand: false,
+        hideTogglePreHeaderCommand: false,
         iconCssClass: 'fa fa-bars',
         iconClearAllFiltersCommand: 'fa fa-filter text-danger',
         iconClearAllSortingCommand: 'fa fa-unsorted text-danger',
@@ -2754,6 +2872,7 @@ var GlobalGridOptions = {
         iconExportTextDelimitedCommand: 'fa fa-download',
         iconRefreshDatasetCommand: 'fa fa-refresh',
         iconToggleFilterCommand: 'fa fa-random',
+        iconTogglePreHeaderCommand: 'fa fa-random',
         menuWidth: 16,
         resizeOnShowHeaderRow: true
     },
@@ -3521,6 +3640,9 @@ var GridMenuExtension = /** @class */ (function () {
                 case 'toggle-toppanel':
                     this.sharedService.grid.setTopPanelVisibility(!this.sharedService.grid.getOptions().showTopPanel);
                     break;
+                case 'toggle-preheader':
+                    this.sharedService.grid.setPreHeaderPanelVisibility(!this.sharedService.grid.getOptions().showPreHeaderPanel);
+                    break;
                 case 'refresh-dataset':
                     this.refreshBackendDataset();
                     break;
@@ -3596,6 +3718,17 @@ var GridMenuExtension = /** @class */ (function () {
                     disabled: false,
                     command: 'refresh-dataset',
                     positionOrder: 54
+                });
+            }
+        }
+        if (this.sharedService.gridOptions.showPreHeaderPanel) {
+            if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideTogglePreHeaderCommand) {
+                gridMenuCustomItems.push({
+                    iconCssClass: this.sharedService.gridOptions.gridMenu.iconTogglePreHeaderCommand || 'fa fa-random',
+                    title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('TOGGLE_PRE_HEADER_ROW') : Constants.TEXT_TOGGLE_PRE_HEADER_ROW,
+                    disabled: false,
+                    command: 'toggle-preheader',
+                    positionOrder: 52
                 });
             }
         }
@@ -4047,11 +4180,12 @@ RowSelectionExtension.ctorParameters = function () { return [
     { type: SharedService, },
 ]; };
 var ExtensionService = /** @class */ (function () {
-    function ExtensionService(autoTooltipExtension, cellExternalCopyExtension, checkboxSelectorExtension, columnPickerExtension, gridMenuExtension, groupItemMetaExtension, headerButtonExtension, headerMenuExtension, rowMoveManagerExtension, rowSelectionExtension, sharedService, translate) {
+    function ExtensionService(autoTooltipExtension, cellExternalCopyExtension, checkboxSelectorExtension, columnPickerExtension, draggableGroupingExtension, gridMenuExtension, groupItemMetaExtension, headerButtonExtension, headerMenuExtension, rowMoveManagerExtension, rowSelectionExtension, sharedService, translate) {
         this.autoTooltipExtension = autoTooltipExtension;
         this.cellExternalCopyExtension = cellExternalCopyExtension;
         this.checkboxSelectorExtension = checkboxSelectorExtension;
         this.columnPickerExtension = columnPickerExtension;
+        this.draggableGroupingExtension = draggableGroupingExtension;
         this.gridMenuExtension = gridMenuExtension;
         this.groupItemMetaExtension = groupItemMetaExtension;
         this.headerButtonExtension = headerButtonExtension;
@@ -4100,6 +4234,11 @@ var ExtensionService = /** @class */ (function () {
         if (this.sharedService.gridOptions.enableColumnPicker) {
             if (this.columnPickerExtension && this.columnPickerExtension.register) {
                 this.extensionList.push({ name: ExtensionName.columnPicker, class: this.columnPickerExtension, extension: this.columnPickerExtension.register() });
+            }
+        }
+        if (this.sharedService.gridOptions.enableDraggableGrouping) {
+            if (this.draggableGroupingExtension && this.draggableGroupingExtension.register) {
+                this.extensionList.push({ name: ExtensionName.draggableGrouping, class: this.draggableGroupingExtension, extension: this.draggableGroupingExtension.register() });
             }
         }
         if (this.sharedService.gridOptions.enableGridMenu) {
@@ -4156,9 +4295,13 @@ var ExtensionService = /** @class */ (function () {
             }
         }
     };
-    ExtensionService.prototype.createCheckboxPluginBeforeGridCreation = function (columnDefinitions, options) {
+    ExtensionService.prototype.createExtensionsBeforeGridCreation = function (columnDefinitions, options) {
         if (options.enableCheckboxSelector) {
             this.checkboxSelectorExtension.create(columnDefinitions, options);
+        }
+        if (options.enableDraggableGrouping) {
+            var plugin = this.draggableGroupingExtension.create(options);
+            options.enableColumnReorder = plugin.getSetupColumnReorder;
         }
     };
     ExtensionService.prototype.hideColumn = function (column) {
@@ -4234,6 +4377,7 @@ ExtensionService.ctorParameters = function () { return [
     { type: CellExternalCopyManagerExtension, },
     { type: CheckboxSelectorExtension, },
     { type: ColumnPickerExtension, },
+    { type: DraggableGroupingExtension, },
     { type: GridMenuExtension, },
     { type: GroupItemMetaProviderExtension, },
     { type: HeaderButtonExtension, },
@@ -8132,7 +8276,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
         if (!this.customDataView) {
-            if (this.gridOptions.enableGrouping) {
+            if (this.gridOptions.draggableGrouping || this.gridOptions.enableGrouping) {
                 this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
                 this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
                 this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
@@ -8150,7 +8294,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         });
         this.sharedService.allColumns = this._columnDefinitions;
         this.sharedService.visibleColumns = this._columnDefinitions;
-        this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+        this.extensionService.createExtensionsBeforeGridCreation(this._columnDefinitions, this.gridOptions);
         this.grid = new Slick.Grid("#" + this.gridId, this.customDataView || this._dataView, this._columnDefinitions, this.gridOptions);
         this.sharedService.dataView = this._dataView;
         this.sharedService.grid = this.grid;
@@ -8169,7 +8313,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         }
         this.executeAfterDataviewCreated(this.grid, this.gridOptions, this._dataView);
         this.attachResizeHook(this.grid, this.gridOptions);
-        if (this.gridOptions.createPreHeaderPanel) {
+        if (this.gridOptions.createPreHeaderPanel && !this.gridOptions.enableDraggableGrouping) {
             this.groupingAndColspanService.init(this.grid, this._dataView);
         }
         this.gridService.init(this.grid, this._dataView);
@@ -8431,7 +8575,7 @@ var AngularSlickgridComponent = /** @class */ (function () {
         });
     };
     AngularSlickgridComponent.prototype.refreshGridData = function (dataset, totalCount) {
-        if (dataset && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
+        if (Array.isArray(dataset) && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
             this._dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
             if (!this.gridOptions.backendServiceApi) {
                 this._dataView.reSort();
@@ -8514,6 +8658,7 @@ AngularSlickgridComponent.decorators = [
                     CellExternalCopyManagerExtension,
                     CheckboxSelectorExtension,
                     ColumnPickerExtension,
+                    DraggableGroupingExtension,
                     ExtensionService,
                     ExportService,
                     ExtensionUtility,
@@ -8664,6 +8809,7 @@ exports.AutoTooltipExtension = AutoTooltipExtension;
 exports.CellExternalCopyManagerExtension = CellExternalCopyManagerExtension;
 exports.CheckboxSelectorExtension = CheckboxSelectorExtension;
 exports.ColumnPickerExtension = ColumnPickerExtension;
+exports.DraggableGroupingExtension = DraggableGroupingExtension;
 exports.ExtensionUtility = ExtensionUtility;
 exports.GridMenuExtension = GridMenuExtension;
 exports.GroupItemMetaProviderExtension = GroupItemMetaProviderExtension;
@@ -8704,68 +8850,72 @@ exports.ɵw = numberFilterCondition;
 exports.ɵx = stringFilterCondition;
 exports.ɵz = CompoundDateFilter;
 exports.ɵba = CompoundInputFilter;
-exports.ɵbb = CompoundSliderFilter;
-exports.ɵbc = InputFilter;
-exports.ɵbe = MultipleSelectFilter;
-exports.ɵbh = NativeSelectFilter;
-exports.ɵbf = SelectFilter;
-exports.ɵbg = SingleSelectFilter;
-exports.ɵbd = SliderFilter;
-exports.ɵbi = arrayObjectToCsvFormatter;
-exports.ɵbj = arrayToCsvFormatter;
-exports.ɵbk = boldFormatter;
-exports.ɵbl = checkboxFormatter;
-exports.ɵbm = checkmarkFormatter;
-exports.ɵbp = collectionEditorFormatter;
-exports.ɵbo = collectionFormatter;
-exports.ɵbn = complexObjectFormatter;
-exports.ɵbq = dateIsoFormatter;
-exports.ɵbt = dateTimeIsoAmPmFormatter;
-exports.ɵbr = dateTimeIsoFormatter;
-exports.ɵbs = dateTimeShortIsoFormatter;
-exports.ɵbw = dateTimeShortUsFormatter;
-exports.ɵbx = dateTimeUsAmPmFormatter;
-exports.ɵbv = dateTimeUsFormatter;
-exports.ɵbu = dateUsFormatter;
-exports.ɵbz = decimalFormatter;
-exports.ɵby = deleteIconFormatter;
-exports.ɵcc = dollarColoredBoldFormatter;
-exports.ɵcb = dollarColoredFormatter;
-exports.ɵca = dollarFormatter;
-exports.ɵcd = editIconFormatter;
-exports.ɵce = hyperlinkFormatter;
-exports.ɵcf = hyperlinkUriPrefixFormatter;
-exports.ɵcg = infoIconFormatter;
-exports.ɵch = lowercaseFormatter;
-exports.ɵci = maskFormatter;
-exports.ɵcj = multipleFormatter;
-exports.ɵcm = percentCompleteBarFormatter;
-exports.ɵcl = percentCompleteFormatter;
-exports.ɵck = percentFormatter;
-exports.ɵcn = percentSymbolFormatter;
-exports.ɵco = progressBarFormatter;
-exports.ɵcq = translateBooleanFormatter;
-exports.ɵcp = translateFormatter;
-exports.ɵcr = uppercaseFormatter;
-exports.ɵcs = yesNoFormatter;
-exports.ɵcu = avgTotalsDollarFormatter;
-exports.ɵct = avgTotalsFormatter;
-exports.ɵcv = avgTotalsPercentageFormatter;
-exports.ɵcw = maxTotalsFormatter;
-exports.ɵcx = minTotalsFormatter;
-exports.ɵcz = sumTotalsBoldFormatter;
-exports.ɵda = sumTotalsColoredFormatter;
-exports.ɵdc = sumTotalsDollarBoldFormatter;
-exports.ɵde = sumTotalsDollarColoredBoldFormatter;
-exports.ɵdd = sumTotalsDollarColoredFormatter;
-exports.ɵdb = sumTotalsDollarFormatter;
-exports.ɵcy = sumTotalsFormatter;
-exports.ɵdg = dateIsoSorter;
-exports.ɵdf = dateSorter;
-exports.ɵdi = dateUsShortSorter;
-exports.ɵdh = dateUsSorter;
-exports.ɵdj = numericSorter;
-exports.ɵdk = stringSorter;
+exports.ɵbb = CompoundInputNumberFilter;
+exports.ɵbc = CompoundInputPasswordFilter;
+exports.ɵbd = CompoundSliderFilter;
+exports.ɵbe = InputFilter;
+exports.ɵbf = InputNumberFilter;
+exports.ɵbg = InputPasswordFilter;
+exports.ɵbh = MultipleSelectFilter;
+exports.ɵbj = NativeSelectFilter;
+exports.ɵbi = SelectFilter;
+exports.ɵbk = SingleSelectFilter;
+exports.ɵbl = SliderFilter;
+exports.ɵbm = arrayObjectToCsvFormatter;
+exports.ɵbn = arrayToCsvFormatter;
+exports.ɵbo = boldFormatter;
+exports.ɵbp = checkboxFormatter;
+exports.ɵbq = checkmarkFormatter;
+exports.ɵbt = collectionEditorFormatter;
+exports.ɵbs = collectionFormatter;
+exports.ɵbr = complexObjectFormatter;
+exports.ɵbu = dateIsoFormatter;
+exports.ɵbx = dateTimeIsoAmPmFormatter;
+exports.ɵbv = dateTimeIsoFormatter;
+exports.ɵbw = dateTimeShortIsoFormatter;
+exports.ɵca = dateTimeShortUsFormatter;
+exports.ɵcb = dateTimeUsAmPmFormatter;
+exports.ɵbz = dateTimeUsFormatter;
+exports.ɵby = dateUsFormatter;
+exports.ɵcd = decimalFormatter;
+exports.ɵcc = deleteIconFormatter;
+exports.ɵcg = dollarColoredBoldFormatter;
+exports.ɵcf = dollarColoredFormatter;
+exports.ɵce = dollarFormatter;
+exports.ɵch = editIconFormatter;
+exports.ɵci = hyperlinkFormatter;
+exports.ɵcj = hyperlinkUriPrefixFormatter;
+exports.ɵck = infoIconFormatter;
+exports.ɵcl = lowercaseFormatter;
+exports.ɵcm = maskFormatter;
+exports.ɵcn = multipleFormatter;
+exports.ɵcq = percentCompleteBarFormatter;
+exports.ɵcp = percentCompleteFormatter;
+exports.ɵco = percentFormatter;
+exports.ɵcr = percentSymbolFormatter;
+exports.ɵcs = progressBarFormatter;
+exports.ɵcu = translateBooleanFormatter;
+exports.ɵct = translateFormatter;
+exports.ɵcv = uppercaseFormatter;
+exports.ɵcw = yesNoFormatter;
+exports.ɵcy = avgTotalsDollarFormatter;
+exports.ɵcx = avgTotalsFormatter;
+exports.ɵcz = avgTotalsPercentageFormatter;
+exports.ɵda = maxTotalsFormatter;
+exports.ɵdb = minTotalsFormatter;
+exports.ɵdd = sumTotalsBoldFormatter;
+exports.ɵde = sumTotalsColoredFormatter;
+exports.ɵdg = sumTotalsDollarBoldFormatter;
+exports.ɵdi = sumTotalsDollarColoredBoldFormatter;
+exports.ɵdh = sumTotalsDollarColoredFormatter;
+exports.ɵdf = sumTotalsDollarFormatter;
+exports.ɵdc = sumTotalsFormatter;
+exports.ɵdk = dateIsoSorter;
+exports.ɵdj = dateSorter;
+exports.ɵdm = dateUsShortSorter;
+exports.ɵdl = dateUsSorter;
+exports.ɵdn = numericSorter;
+exports.ɵdo = stringSorter;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

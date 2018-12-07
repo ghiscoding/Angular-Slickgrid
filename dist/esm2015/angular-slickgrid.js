@@ -62,6 +62,7 @@ const ExtensionName = {
     cellExternalCopyManager: 'cellExternalCopyManager',
     checkboxSelector: 'checkboxSelector',
     columnPicker: 'columnPicker',
+    draggableGrouping: 'draggableGrouping',
     groupItemMetaProvider: 'groupItemMetaProvider',
     gridMenu: 'gridMenu',
     headerButton: 'headerButton',
@@ -1379,6 +1380,7 @@ Constants.TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';
 Constants.TEXT_SORT_ASCENDING = 'Sort Ascending';
 Constants.TEXT_SORT_DESCENDING = 'Sort Descending';
 Constants.TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
+Constants.TEXT_TOGGLE_PRE_HEADER_ROW = 'Toggle Pre-Header Row';
 Constants.VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
 Constants.VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';
 Constants.VALIDATION_EDITOR_NUMBER_BETWEEN = 'Please enter a valid number between {{minValue}} and {{maxValue}}';
@@ -1534,6 +1536,9 @@ class ExtensionUtility {
                     break;
                 case ExtensionName.columnPicker:
                     require('slickgrid/controls/slick.columnpicker');
+                    break;
+                case ExtensionName.draggableGrouping:
+                    require('slickgrid/plugins/slick.draggablegrouping.js');
                     break;
                 case ExtensionName.gridMenu:
                     require('slickgrid/controls/slick.gridmenu');
@@ -1982,6 +1987,75 @@ ColumnPickerExtension.decorators = [
 ];
 /** @nocollapse */
 ColumnPickerExtension.ctorParameters = () => [
+    { type: ExtensionUtility, },
+    { type: SharedService, },
+];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class DraggableGroupingExtension {
+    /**
+     * @param {?} extensionUtility
+     * @param {?} sharedService
+     */
+    constructor(extensionUtility, sharedService) {
+        this.extensionUtility = extensionUtility;
+        this.sharedService = sharedService;
+        this._eventHandler = new Slick.EventHandler();
+    }
+    /**
+     * @return {?}
+     */
+    dispose() {
+        // unsubscribe all SlickGrid events
+        this._eventHandler.unsubscribeAll();
+        if (this._extension && this._extension.destroy) {
+            this._extension.destroy();
+        }
+    }
+    /**
+     * Attach/Create different plugins before the Grid creation.
+     * For example the multi-select have to be added to the column definition before the grid is created to work properly
+     * @param {?} gridOptions
+     * @return {?}
+     */
+    create(gridOptions) {
+        // dynamically import the SlickGrid plugin with requireJS
+        this.extensionUtility.loadExtensionDynamically(ExtensionName.draggableGrouping);
+        if (!this._extension && gridOptions) {
+            this._extension = new Slick.DraggableGrouping(gridOptions.draggableGrouping || {});
+        }
+        return this._extension;
+    }
+    /**
+     * @return {?}
+     */
+    register() {
+        if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+            this.sharedService.grid.registerPlugin(this._extension);
+            // Events
+            if (this.sharedService.grid && this.sharedService.gridOptions.draggableGrouping) {
+                if (this.sharedService.gridOptions.draggableGrouping.onExtensionRegistered) {
+                    this.sharedService.gridOptions.draggableGrouping.onExtensionRegistered(this._extension);
+                }
+                this._eventHandler.subscribe(this._extension.onGroupChanged, (e, args) => {
+                    if (this.sharedService.gridOptions.draggableGrouping && typeof this.sharedService.gridOptions.draggableGrouping.onGroupChanged === 'function') {
+                        this.sharedService.gridOptions.draggableGrouping.onGroupChanged(e, args);
+                    }
+                });
+            }
+            return this._extension;
+        }
+        return null;
+    }
+}
+DraggableGroupingExtension.decorators = [
+    { type: Injectable },
+];
+/** @nocollapse */
+DraggableGroupingExtension.ctorParameters = () => [
     { type: ExtensionUtility, },
     { type: SharedService, },
 ];
@@ -2491,6 +2565,7 @@ class CompoundInputFilter {
     constructor(translate) {
         this.translate = translate;
         this._clearFilterTriggered = false;
+        this._inputType = 'text';
     }
     /**
      * Getter for the Grid Options pulled through the Grid Object
@@ -2500,17 +2575,34 @@ class CompoundInputFilter {
         return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
     }
     /**
+     * Getter of input type (text, number, password)
+     * @return {?}
+     */
+    get inputType() {
+        return this._inputType;
+    }
+    /**
+     * Setter of input type (text, number, password)
+     * @param {?} type
+     * @return {?}
+     */
+    set inputType(type) {
+        this._inputType = type;
+    }
+    /**
+     * Getter of the Operator to use when doing the filter comparing
+     * @return {?}
+     */
+    get operator() {
+        return this._operator || OperatorType.empty;
+    }
+    /**
+     * Getter of the Operator to use when doing the filter comparing
      * @param {?} op
      * @return {?}
      */
     set operator(op) {
         this._operator = op;
-    }
-    /**
-     * @return {?}
-     */
-    get operator() {
-        return this._operator || OperatorType.empty;
     }
     /**
      * Initialize the Filter
@@ -2530,10 +2622,10 @@ class CompoundInputFilter {
         this.$filterElm = this.createDomElement(searchTerm);
         // step 3, subscribe to the keyup event and run the callback when that happens
         // also add/remove "filled" class for styling purposes
-        this.$filterInputElm.keyup((e) => {
+        this.$filterInputElm.on('keyup input change', (e) => {
             this.onTriggerEvent(e);
         });
-        this.$selectOperatorElm.change((e) => {
+        this.$selectOperatorElm.on('change', (e) => {
             this.onTriggerEvent(e);
         });
     }
@@ -2555,9 +2647,9 @@ class CompoundInputFilter {
      * @return {?}
      */
     destroy() {
-        if (this.$filterElm) {
-            this.$filterElm.off('keyup').remove();
-            this.$selectOperatorElm.off('change').remove();
+        if (this.$filterElm && this.$selectOperatorElm) {
+            this.$filterElm.off('keyup input change').remove();
+            this.$selectOperatorElm.off('change');
         }
     }
     /**
@@ -2575,7 +2667,7 @@ class CompoundInputFilter {
      */
     buildInputHtmlString() {
         const /** @type {?} */ placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
-        return `<input class="form-control" type="text" placeholder="${placeholder}" />`;
+        return `<input class="form-control" type="${this._inputType || 'text'}" placeholder="${placeholder}" />`;
     }
     /**
      * @return {?}
@@ -2673,9 +2765,41 @@ class CompoundInputFilter {
         else {
             const /** @type {?} */ selectedOperator = this.$selectOperatorElm.find('option:selected').text();
             const /** @type {?} */ value = this.$filterInputElm.val();
-            (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
+            (value !== null && value !== undefined && value !== '') ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
             this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '' });
         }
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class CompoundInputNumberFilter extends CompoundInputFilter {
+    /**
+     * Initialize the Filter
+     * @param {?} translate
+     */
+    constructor(translate) {
+        super(translate);
+        this.translate = translate;
+        this.inputType = 'number';
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class CompoundInputPasswordFilter extends CompoundInputFilter {
+    /**
+     * Initialize the Filter
+     * @param {?} translate
+     */
+    constructor(translate) {
+        super(translate);
+        this.translate = translate;
+        this.inputType = 'password';
     }
 }
 
@@ -2927,6 +3051,29 @@ class CompoundSliderFilter {
 class InputFilter {
     constructor() {
         this._clearFilterTriggered = false;
+        this._inputType = 'text';
+    }
+    /**
+     * Getter of input type (text, number, password)
+     * @return {?}
+     */
+    get inputType() {
+        return this._inputType;
+    }
+    /**
+     * Setter of input type (text, number, password)
+     * @param {?} type
+     * @return {?}
+     */
+    set inputType(type) {
+        this._inputType = type;
+    }
+    /**
+     * Getter of the Operator to use when doing the filter comparing
+     * @return {?}
+     */
+    get operator() {
+        return this.columnDef && this.columnDef.filter && this.columnDef.filter.operator || '';
     }
     /**
      * Getter for the Grid Options pulled through the Grid Object
@@ -2934,12 +3081,6 @@ class InputFilter {
      */
     get gridOptions() {
         return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
-    }
-    /**
-     * @return {?}
-     */
-    get operator() {
-        return this.columnDef && this.columnDef.filter && this.columnDef.filter.operator || '';
     }
     /**
      * Initialize the Filter
@@ -2959,7 +3100,7 @@ class InputFilter {
         this.$filterElm = this.createDomElement(filterTemplate, searchTerm);
         // step 3, subscribe to the keyup event and run the callback when that happens
         // also add/remove "filled" class for styling purposes
-        this.$filterElm.keyup((e) => {
+        this.$filterElm.on('keyup input change', (e) => {
             const /** @type {?} */ value = e && e.target && e.target.value || '';
             if (this._clearFilterTriggered) {
                 this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
@@ -2990,7 +3131,7 @@ class InputFilter {
      */
     destroy() {
         if (this.$filterElm) {
-            this.$filterElm.off('keyup').remove();
+            this.$filterElm.off('keyup input change').remove();
         }
     }
     /**
@@ -3010,7 +3151,7 @@ class InputFilter {
     buildTemplateHtmlString() {
         const /** @type {?} */ fieldId = this.columnDef && this.columnDef.id;
         const /** @type {?} */ placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
-        return `<input type="text" class="form-control search-filter filter-${fieldId}" placeholder="${placeholder}">`;
+        return `<input type="${this._inputType || 'text'}" class="form-control search-filter filter-${fieldId}" placeholder="${placeholder}">`;
     }
     /**
      * From the html template string, create a DOM element
@@ -3036,6 +3177,34 @@ class InputFilter {
             $filterElm.appendTo($headerElm);
         }
         return $filterElm;
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class InputNumberFilter extends InputFilter {
+    /**
+     * Initialize the Filter
+     */
+    constructor() {
+        super();
+        this.inputType = 'number';
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class InputPasswordFilter extends InputFilter {
+    /**
+     * Initialize the Filter
+     */
+    constructor() {
+        super();
+        this.inputType = 'password';
     }
 }
 
@@ -3767,20 +3936,32 @@ class SliderFilter {
 const Filters = {
     /** Compound Date Filter (compound of Operator + Date picker) */
     compoundDate: CompoundDateFilter,
-    /** Compound Input Filter (compound of Operator + Input) */
+    /** Alias to compoundInputText to Compound Input Filter (compound of Operator + Input Text) */
     compoundInput: CompoundInputFilter,
+    /** Compound Input Number Filter (compound of Operator + Input of type Number) */
+    compoundInputNumber: CompoundInputNumberFilter,
+    /** Compound Input Password Filter (compound of Operator + Input of type Password, also note that only the text shown in the UI will be masked, filter query is still plain text) */
+    compoundInputPassword: CompoundInputPasswordFilter,
+    /** Compound Input Text Filter (compound of Operator + Input Text) */
+    compoundInputText: CompoundInputFilter,
     /** Compound Slider Filter (compound of Operator + Slider) */
     compoundSlider: CompoundSliderFilter,
-    /** Default Filter, input type text filter */
+    /** Alias to inputText, input type text filter */
     input: InputFilter,
-    /** Slider Filter */
-    slider: SliderFilter,
+    /** Input Filter of type Number */
+    inputNumber: InputNumberFilter,
+    /** Input Filter of type Password (note that only the text shown in the UI will be masked, filter query is still plain text) */
+    inputPassword: InputPasswordFilter,
+    /** Default Filter, input type text filter */
+    inputText: InputFilter,
     /** Multiple Select filter, which uses 3rd party lib "multiple-select.js" */
     multipleSelect: MultipleSelectFilter,
+    /** Select filter, which uses native DOM element select */
+    select: NativeSelectFilter,
     /** Single Select filter, which uses 3rd party lib "multiple-select.js" */
     singleSelect: SingleSelectFilter,
-    /** Select filter, which uses native DOM element select */
-    select: NativeSelectFilter
+    /** Slider Filter */
+    slider: SliderFilter,
 };
 
 /**
@@ -3844,6 +4025,7 @@ const GlobalGridOptions = {
         hideRefreshDatasetCommand: false,
         hideSyncResizeButton: true,
         hideToggleFilterCommand: false,
+        hideTogglePreHeaderCommand: false,
         iconCssClass: 'fa fa-bars',
         iconClearAllFiltersCommand: 'fa fa-filter text-danger',
         iconClearAllSortingCommand: 'fa fa-unsorted text-danger',
@@ -3851,6 +4033,7 @@ const GlobalGridOptions = {
         iconExportTextDelimitedCommand: 'fa fa-download',
         iconRefreshDatasetCommand: 'fa fa-refresh',
         iconToggleFilterCommand: 'fa fa-random',
+        iconTogglePreHeaderCommand: 'fa fa-random',
         menuWidth: 16,
         resizeOnShowHeaderRow: true
     },
@@ -4825,6 +5008,9 @@ class GridMenuExtension {
                 case 'toggle-toppanel':
                     this.sharedService.grid.setTopPanelVisibility(!this.sharedService.grid.getOptions().showTopPanel);
                     break;
+                case 'toggle-preheader':
+                    this.sharedService.grid.setPreHeaderPanelVisibility(!this.sharedService.grid.getOptions().showPreHeaderPanel);
+                    break;
                 case 'refresh-dataset':
                     this.refreshBackendDataset();
                     break;
@@ -4917,6 +5103,18 @@ class GridMenuExtension {
                     disabled: false,
                     command: 'refresh-dataset',
                     positionOrder: 54
+                });
+            }
+        }
+        if (this.sharedService.gridOptions.showPreHeaderPanel) {
+            // show grid menu: toggle pre-header row
+            if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideTogglePreHeaderCommand) {
+                gridMenuCustomItems.push({
+                    iconCssClass: this.sharedService.gridOptions.gridMenu.iconTogglePreHeaderCommand || 'fa fa-random',
+                    title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('TOGGLE_PRE_HEADER_ROW') : Constants.TEXT_TOGGLE_PRE_HEADER_ROW,
+                    disabled: false,
+                    command: 'toggle-preheader',
+                    positionOrder: 52
                 });
             }
         }
@@ -5538,6 +5736,7 @@ class ExtensionService {
      * @param {?} cellExternalCopyExtension
      * @param {?} checkboxSelectorExtension
      * @param {?} columnPickerExtension
+     * @param {?} draggableGroupingExtension
      * @param {?} gridMenuExtension
      * @param {?} groupItemMetaExtension
      * @param {?} headerButtonExtension
@@ -5547,11 +5746,12 @@ class ExtensionService {
      * @param {?} sharedService
      * @param {?} translate
      */
-    constructor(autoTooltipExtension, cellExternalCopyExtension, checkboxSelectorExtension, columnPickerExtension, gridMenuExtension, groupItemMetaExtension, headerButtonExtension, headerMenuExtension, rowMoveManagerExtension, rowSelectionExtension, sharedService, translate) {
+    constructor(autoTooltipExtension, cellExternalCopyExtension, checkboxSelectorExtension, columnPickerExtension, draggableGroupingExtension, gridMenuExtension, groupItemMetaExtension, headerButtonExtension, headerMenuExtension, rowMoveManagerExtension, rowSelectionExtension, sharedService, translate) {
         this.autoTooltipExtension = autoTooltipExtension;
         this.cellExternalCopyExtension = cellExternalCopyExtension;
         this.checkboxSelectorExtension = checkboxSelectorExtension;
         this.columnPickerExtension = columnPickerExtension;
+        this.draggableGroupingExtension = draggableGroupingExtension;
         this.gridMenuExtension = gridMenuExtension;
         this.groupItemMetaExtension = groupItemMetaExtension;
         this.headerButtonExtension = headerButtonExtension;
@@ -5636,6 +5836,12 @@ class ExtensionService {
                 this.extensionList.push({ name: ExtensionName.columnPicker, class: this.columnPickerExtension, extension: this.columnPickerExtension.register() });
             }
         }
+        // Draggable Grouping Plugin
+        if (this.sharedService.gridOptions.enableDraggableGrouping) {
+            if (this.draggableGroupingExtension && this.draggableGroupingExtension.register) {
+                this.extensionList.push({ name: ExtensionName.draggableGrouping, class: this.draggableGroupingExtension, extension: this.draggableGroupingExtension.register() });
+            }
+        }
         // Grid Menu Control
         if (this.sharedService.gridOptions.enableGridMenu) {
             if (this.gridMenuExtension && this.gridMenuExtension.register) {
@@ -5701,15 +5907,19 @@ class ExtensionService {
         }
     }
     /**
-     * Attach/Create different plugins before the Grid creation.
-     * For example the multi-select have to be added to the column definition before the grid is created to work properly
+     * Attach/Create certain plugins before the Grid creation, else they might behave oddly.
+     * Mostly because the column definitions might change after the grid creation
      * @param {?} columnDefinitions
      * @param {?} options
      * @return {?}
      */
-    createCheckboxPluginBeforeGridCreation(columnDefinitions, options) {
+    createExtensionsBeforeGridCreation(columnDefinitions, options) {
         if (options.enableCheckboxSelector) {
             this.checkboxSelectorExtension.create(columnDefinitions, options);
+        }
+        if (options.enableDraggableGrouping) {
+            const /** @type {?} */ plugin = this.draggableGroupingExtension.create(options);
+            options.enableColumnReorder = plugin.getSetupColumnReorder;
         }
     }
     /**
@@ -5823,6 +6033,7 @@ ExtensionService.ctorParameters = () => [
     { type: CellExternalCopyManagerExtension, },
     { type: CheckboxSelectorExtension, },
     { type: ColumnPickerExtension, },
+    { type: DraggableGroupingExtension, },
     { type: GridMenuExtension, },
     { type: GroupItemMetaProviderExtension, },
     { type: HeaderButtonExtension, },
@@ -11504,7 +11715,7 @@ class AngularSlickgridComponent {
         this.gridOptions = this.mergeGridOptions(this.gridOptions);
         this.createBackendApiInternalPostProcessCallback(this.gridOptions);
         if (!this.customDataView) {
-            if (this.gridOptions.enableGrouping) {
+            if (this.gridOptions.draggableGrouping || this.gridOptions.enableGrouping) {
                 this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
                 this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
                 this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
@@ -11528,7 +11739,7 @@ class AngularSlickgridComponent {
         // save reference for all columns before they optionally become hidden/visible
         this.sharedService.allColumns = this._columnDefinitions;
         this.sharedService.visibleColumns = this._columnDefinitions;
-        this.extensionService.createCheckboxPluginBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+        this.extensionService.createExtensionsBeforeGridCreation(this._columnDefinitions, this.gridOptions);
         // build SlickGrid Grid, also user might optionally pass a custom dataview (e.g. remote model)
         this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView || this._dataView, this._columnDefinitions, this.gridOptions);
         this.sharedService.dataView = this._dataView;
@@ -11555,7 +11766,7 @@ class AngularSlickgridComponent {
         // attach resize ONLY after the dataView is ready
         this.attachResizeHook(this.grid, this.gridOptions);
         // attach grouping and header grouping colspan service
-        if (this.gridOptions.createPreHeaderPanel) {
+        if (this.gridOptions.createPreHeaderPanel && !this.gridOptions.enableDraggableGrouping) {
             this.groupingAndColspanService.init(this.grid, this._dataView);
         }
         // attach grid  service
@@ -11890,7 +12101,7 @@ class AngularSlickgridComponent {
      * @return {?}
      */
     refreshGridData(dataset, totalCount) {
-        if (dataset && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
+        if (Array.isArray(dataset) && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
             this._dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
             if (!this.gridOptions.backendServiceApi) {
                 this._dataView.reSort();
@@ -12023,6 +12234,7 @@ AngularSlickgridComponent.decorators = [
                     CellExternalCopyManagerExtension,
                     CheckboxSelectorExtension,
                     ColumnPickerExtension,
+                    DraggableGroupingExtension,
                     ExtensionService,
                     ExportService,
                     ExtensionUtility,
@@ -12142,5 +12354,5 @@ AngularSlickgridModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, ExtensionName, FieldType, FileType, FilterMultiplePassType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ExportService, ExtensionService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, getDescendantProperty, getScrollBarWidth, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, uniqueArray, unsubscribeAllObservables, Aggregators, Editors, AutoTooltipExtension, CellExternalCopyManagerExtension, CheckboxSelectorExtension, ColumnPickerExtension, ExtensionUtility, GridMenuExtension, GroupItemMetaProviderExtension, HeaderButtonExtension, HeaderMenuExtension, RowMoveManagerExtension, RowSelectionExtension, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SelectEditor as ɵk, SingleSelectEditor as ɵl, SliderEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵz, CompoundInputFilter as ɵba, CompoundSliderFilter as ɵbb, InputFilter as ɵbc, MultipleSelectFilter as ɵbe, NativeSelectFilter as ɵbh, SelectFilter as ɵbf, SingleSelectFilter as ɵbg, SliderFilter as ɵbd, arrayObjectToCsvFormatter as ɵbi, arrayToCsvFormatter as ɵbj, boldFormatter as ɵbk, checkboxFormatter as ɵbl, checkmarkFormatter as ɵbm, collectionEditorFormatter as ɵbp, collectionFormatter as ɵbo, complexObjectFormatter as ɵbn, dateIsoFormatter as ɵbq, dateTimeIsoAmPmFormatter as ɵbt, dateTimeIsoFormatter as ɵbr, dateTimeShortIsoFormatter as ɵbs, dateTimeShortUsFormatter as ɵbw, dateTimeUsAmPmFormatter as ɵbx, dateTimeUsFormatter as ɵbv, dateUsFormatter as ɵbu, decimalFormatter as ɵbz, deleteIconFormatter as ɵby, dollarColoredBoldFormatter as ɵcc, dollarColoredFormatter as ɵcb, dollarFormatter as ɵca, editIconFormatter as ɵcd, hyperlinkFormatter as ɵce, hyperlinkUriPrefixFormatter as ɵcf, infoIconFormatter as ɵcg, lowercaseFormatter as ɵch, maskFormatter as ɵci, multipleFormatter as ɵcj, percentCompleteBarFormatter as ɵcm, percentCompleteFormatter as ɵcl, percentFormatter as ɵck, percentSymbolFormatter as ɵcn, progressBarFormatter as ɵco, translateBooleanFormatter as ɵcq, translateFormatter as ɵcp, uppercaseFormatter as ɵcr, yesNoFormatter as ɵcs, avgTotalsDollarFormatter as ɵcu, avgTotalsFormatter as ɵct, avgTotalsPercentageFormatter as ɵcv, maxTotalsFormatter as ɵcw, minTotalsFormatter as ɵcx, sumTotalsBoldFormatter as ɵcz, sumTotalsColoredFormatter as ɵda, sumTotalsDollarBoldFormatter as ɵdc, sumTotalsDollarColoredBoldFormatter as ɵde, sumTotalsDollarColoredFormatter as ɵdd, sumTotalsDollarFormatter as ɵdb, sumTotalsFormatter as ɵcy, dateIsoSorter as ɵdg, dateSorter as ɵdf, dateUsShortSorter as ɵdi, dateUsSorter as ɵdh, numericSorter as ɵdj, stringSorter as ɵdk };
+export { SlickgridConfig, SlickPaginationComponent, AngularSlickgridComponent, AngularSlickgridModule, CaseType, DelimiterType, ExtensionName, FieldType, FileType, FilterMultiplePassType, GridStateType, KeyCode, OperatorType, SortDirection, SortDirectionNumber, CollectionService, ExportService, ExtensionService, FilterService, GraphqlService, GridOdataService, GridEventService, GridService, GridStateService, GroupingAndColspanService, OdataService, ResizerService, SharedService, SortService, addWhiteSpaces, htmlEncode, htmlDecode, htmlEntityDecode, htmlEntityEncode, arraysEqual, castToPromise, findOrDefault, decimalFormatted, getDescendantProperty, getScrollBarWidth, mapMomentDateFormatWithFieldType, mapFlatpickrDateFormatWithFieldType, mapOperatorType, mapOperatorByFieldType, parseUtcDate, sanitizeHtmlToText, titleCase, toCamelCase, toKebabCase, uniqueArray, unsubscribeAllObservables, Aggregators, Editors, AutoTooltipExtension, CellExternalCopyManagerExtension, CheckboxSelectorExtension, ColumnPickerExtension, DraggableGroupingExtension, ExtensionUtility, GridMenuExtension, GroupItemMetaProviderExtension, HeaderButtonExtension, HeaderMenuExtension, RowMoveManagerExtension, RowSelectionExtension, FilterConditions, Filters, FilterFactory, Formatters, GroupTotalFormatters, Sorters, AvgAggregator as ɵa, MaxAggregator as ɵc, MinAggregator as ɵb, SumAggregator as ɵd, CheckboxEditor as ɵe, DateEditor as ɵf, FloatEditor as ɵg, IntegerEditor as ɵh, LongTextEditor as ɵi, MultipleSelectEditor as ɵj, SelectEditor as ɵk, SingleSelectEditor as ɵl, SliderEditor as ɵm, TextEditor as ɵn, booleanFilterCondition as ɵp, collectionSearchFilterCondition as ɵq, dateFilterCondition as ɵr, dateIsoFilterCondition as ɵs, dateUsFilterCondition as ɵu, dateUsShortFilterCondition as ɵv, dateUtcFilterCondition as ɵt, executeMappedCondition as ɵo, testFilterCondition as ɵy, numberFilterCondition as ɵw, stringFilterCondition as ɵx, CompoundDateFilter as ɵz, CompoundInputFilter as ɵba, CompoundInputNumberFilter as ɵbb, CompoundInputPasswordFilter as ɵbc, CompoundSliderFilter as ɵbd, InputFilter as ɵbe, InputNumberFilter as ɵbf, InputPasswordFilter as ɵbg, MultipleSelectFilter as ɵbh, NativeSelectFilter as ɵbj, SelectFilter as ɵbi, SingleSelectFilter as ɵbk, SliderFilter as ɵbl, arrayObjectToCsvFormatter as ɵbm, arrayToCsvFormatter as ɵbn, boldFormatter as ɵbo, checkboxFormatter as ɵbp, checkmarkFormatter as ɵbq, collectionEditorFormatter as ɵbt, collectionFormatter as ɵbs, complexObjectFormatter as ɵbr, dateIsoFormatter as ɵbu, dateTimeIsoAmPmFormatter as ɵbx, dateTimeIsoFormatter as ɵbv, dateTimeShortIsoFormatter as ɵbw, dateTimeShortUsFormatter as ɵca, dateTimeUsAmPmFormatter as ɵcb, dateTimeUsFormatter as ɵbz, dateUsFormatter as ɵby, decimalFormatter as ɵcd, deleteIconFormatter as ɵcc, dollarColoredBoldFormatter as ɵcg, dollarColoredFormatter as ɵcf, dollarFormatter as ɵce, editIconFormatter as ɵch, hyperlinkFormatter as ɵci, hyperlinkUriPrefixFormatter as ɵcj, infoIconFormatter as ɵck, lowercaseFormatter as ɵcl, maskFormatter as ɵcm, multipleFormatter as ɵcn, percentCompleteBarFormatter as ɵcq, percentCompleteFormatter as ɵcp, percentFormatter as ɵco, percentSymbolFormatter as ɵcr, progressBarFormatter as ɵcs, translateBooleanFormatter as ɵcu, translateFormatter as ɵct, uppercaseFormatter as ɵcv, yesNoFormatter as ɵcw, avgTotalsDollarFormatter as ɵcy, avgTotalsFormatter as ɵcx, avgTotalsPercentageFormatter as ɵcz, maxTotalsFormatter as ɵda, minTotalsFormatter as ɵdb, sumTotalsBoldFormatter as ɵdd, sumTotalsColoredFormatter as ɵde, sumTotalsDollarBoldFormatter as ɵdg, sumTotalsDollarColoredBoldFormatter as ɵdi, sumTotalsDollarColoredFormatter as ɵdh, sumTotalsDollarFormatter as ɵdf, sumTotalsFormatter as ɵdc, dateIsoSorter as ɵdk, dateSorter as ɵdj, dateUsShortSorter as ɵdm, dateUsSorter as ɵdl, numericSorter as ɵdn, stringSorter as ɵdo };
 //# sourceMappingURL=angular-slickgrid.js.map
