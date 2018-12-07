@@ -1,4 +1,3 @@
-<!--The content below is only a placeholder and can be replaced.-->
 <div class="container">
     <h2>{{title}}</h2>
     <div class="subtitle" [innerHTML]="subTitle"></div>
@@ -44,11 +43,9 @@
     </div>
 
     <angular-slickgrid gridId="grid2"
-        (onAngularGridCreated)="angularGridReady($event)"
-        (onDataviewCreated)="dataviewReady($event)"
-        (onGridCreated)="gridReady($event)"
         [dataset]="dataset"
         [columnDefinitions]="columnDefinitions"
-        [gridOptions]="gridOptions">
+        [gridOptions]="gridOptions"
+        (onAngularGridCreated)="angularGridReady($event)">
     </angular-slickgrid>
 </div>

@@ -344,6 +344,7 @@ input.search-filter {
 // ----------------------------------------------
 // Date Picker Filter
 // ----------------------------------------------
+
 .input-group.flatpickr {
   .flatpickr {
     flex: 1;
@@ -353,6 +354,80 @@ input.search-filter {
         font-family: $filter-placeholder-font-family;
         font-size: $font-size-base;
         border-radius: $compound-filter-border-radius;
+    }
+  }
+}
+
+// ----------------------------------------------
+// Draggable Grouping Plugin
+// ----------------------------------------------
+
+.slick-preheader-panel {
+  .ui-droppable, .ui-droppable-hover {
+    padding: $draggable-group-drop-padding;
+    height: $draggable-group-drop-height;
+    border: $draggable-group-drop-border !important;
+    width: $draggable-group-drop-width !important;
+    border-radius: $draggable-group-drop-radius;
+    background-color: $draggable-group-drop-bgcolor;
+
+    .slick-placeholder {
+      font-style: $draggable-group-placeholder-font-style;
+      color: $draggable-group-placeholder-color;
+    }
+
+    .slick-group-toggle-all {
+      position: absolute;
+      cursor: pointer;
+      font-family: $icon-font-family;
+      color: $draggable-group-toggle-all-color;
+      display: $draggable-group-toggle-all-display !important;
+      top: $draggable-group-toggle-all-pos-top;
+      right: $draggable-group-toggle-all-pos-right;
+
+      &.expanded:before {
+        content: $draggable-group-toggle-expanded-icon;
+      }
+      &.collapsed:before {
+        content: $draggable-group-toggle-collapsed-icon;
+      }
+    }
+
+    .slick-dropped-grouping {
+      display: inline-block;
+      vertical-align: middle;
+      cursor: move;
+    }
+
+    .slick-groupby-remove {
+      cursor: pointer;
+      display: inline-flex;
+      color: $draggable-group-delete-color;
+      padding-left: $draggable-group-delete-padding-left;
+      padding-right: $draggable-group-delete-padding-right;
+      font-size: $draggable-group-delete-font-size;
+      &:hover {
+        color: $draggable-group-delete-hover-color;
+      }
+    }
+  }
+  .ui-droppable-active {
+    background-color: $draggable-group-droppable-active-bgcolor;
+  }
+  .ui-droppable-hover {
+    background-color: $draggable-group-droppable-hover-bgcolor;
+  }
+}
+
+.slick-header {
+  .slick-header-columns {
+    .slick-column-groupable {
+      display: inline-block;
+      font-weight: $draggable-group-column-icon-font-weight;
+      color: $draggable-group-column-icon-color;
+      width: $draggable-group-column-icon-width;
+      height: $draggable-group-column-icon-height;
+      margin-left: $draggable-group-column-icon-margin-left;
     }
   }
 }

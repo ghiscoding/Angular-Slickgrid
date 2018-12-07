@@ -7,6 +7,7 @@ import {
   Filters,
   Formatters,
   GridOption,
+  Grouping,
   GroupTotalFormatters,
   SortDirectionNumber,
   Sorters
@@ -128,11 +129,6 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
         filter: {
           collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
           model: Filters.singleSelect,
-
-          // we could add certain option(s) to the "multiple-select" plugin
-          filterOptions: {
-            autoDropWidth: true
-          },
         }
       }
     ];
@@ -152,8 +148,10 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
     this.loadData(500);
   }
 
-  angularGridReady(angularGrid: any) {
+  angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
+    this.gridObj = angularGrid.slickGrid;
+    this.dataviewObj = angularGrid.dataView;
 
     // display a spinner while downloading
     this.exportBeforeSub = this.angularGrid.exportService.onGridBeforeExportToFile.subscribe(() => this.processing = true);
@@ -184,14 +182,6 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
     }
   }
 
-  gridReady(grid) {
-    this.gridObj = grid;
-  }
-
-  dataviewReady(dataview) {
-    this.dataviewObj = dataview;
-  }
-
   clearGrouping() {
     this.dataviewObj.setGrouping([]);
   }
@@ -217,7 +207,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
       comparer: (a, b) => Sorters.numeric(a.value, b.value, SortDirectionNumber.asc),
       aggregateCollapsed: false,
       lazyTotalsCalculation: true
-    });
+    } as Grouping);
   }
 
   groupByDurationOrderByCount(aggregateCollapsed) {
@@ -235,7 +225,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
       ],
       aggregateCollapsed,
       lazyTotalsCalculation: true
-    });
+    } as Grouping);
   }
 
   groupByDurationEffortDriven() {
@@ -264,7 +254,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
         collapsed: true,
         lazyTotalsCalculation: true
       }
-    ]);
+    ] as Grouping[]);
   }
 
   groupByDurationEffortDrivenPercent() {
@@ -304,6 +294,6 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
         collapsed: true,
         lazyTotalsCalculation: true
       }
-    ]);
+    ] as Grouping[]);
   }
 }

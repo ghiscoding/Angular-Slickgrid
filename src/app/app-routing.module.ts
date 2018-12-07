@@ -3,6 +3,7 @@ import { GridMenuComponent } from './examples/grid-menu.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
+import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridGroupingComponent } from './examples/grid-grouping.component';
@@ -34,6 +35,7 @@ const routes: Routes = [
   { path: 'gridgraphql', component: GridGraphqlComponent },
   { path: 'gridmenu', component: GridMenuComponent },
   { path: 'gridstate', component: GridStateComponent },
+  { path: 'draggrouping', component: GridDraggableGroupingComponent },
   { path: 'grouping', component: GridGroupingComponent },
   { path: 'localization', component: GridLocalizationComponent },
   { path: 'clientside', component: GridClientSideComponent },

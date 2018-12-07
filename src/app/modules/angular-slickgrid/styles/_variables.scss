@@ -47,7 +47,7 @@ $row-checkbox-selector-background:        inherit !default;
 $row-checkbox-selector-border:            none !default;
 
 /* Pre-Header - Header Grouping colspan */
-$preheader-border-left:                   1px solid #c0c0c0 !default;
+$preheader-border-left:                   none !default;
 $preheader-border-right:                  none !default;
 $preheader-border-bottom:                 none !default;
 $preheader-border-top:                    none !default;
@@ -177,6 +177,35 @@ $compound-filter-text-weight:             bold !default;
 $compound-filter-text-color:              $primary-color !default;
 $compound-filter-text-font-size:          13px !default;
 $compound-filter-text-padding:            0 0 0 2px !default;
+
+/* Draggable Grouping Plugin */
+$draggable-group-drop-border:             1px solid #e0e0e0 !default;
+$draggable-group-drop-bgcolor:            #ffffff !default;
+$draggable-group-drop-height:             35px !default;
+$draggable-group-drop-padding:            5px 10px !default;
+$draggable-group-drop-radius:             4px !default;
+$draggable-group-drop-width:              calc(100% - 25px) !default;
+$draggable-group-droppable-active-bgcolor:#fafafa !default;
+$draggable-group-droppable-hover-bgcolor: darken($draggable-group-droppable-active-bgcolor, 5%) !default;
+$draggable-group-placeholder-font-style:  italic !default;
+$draggable-group-placeholder-color:       #616161 !default;
+$draggable-group-delete-color:            pink !default;
+$draggable-group-delete-hover-color:      red !default;
+$draggable-group-delete-padding-left:     5px !default;
+$draggable-group-delete-padding-right:    7px !default;
+$draggable-group-delete-font-size:        16px !default;
+$draggable-group-toggle-all-color:        $icon-group-color !default;
+$draggable-group-toggle-all-display:      none !default;
+$draggable-group-toggle-all-pos-top:      7px !default;
+$draggable-group-toggle-all-pos-right:    40px !default;
+$draggable-group-toggle-collapsed-icon:   "\f0fe" !default;
+$draggable-group-toggle-expanded-icon:    "\f146" !default;
+$draggable-group-column-icon-font-weight: normal !default;
+$draggable-group-column-icon-color:       #707070 !default;
+$draggable-group-column-icon-height:      9px !default;
+$draggable-group-column-icon-width:       9px !default;
+$draggable-group-column-icon-margin-left: 4px !default;
+
 
 /* Input Range Filter */
 $slider-filter-border:                    1px solid #ccc !default;

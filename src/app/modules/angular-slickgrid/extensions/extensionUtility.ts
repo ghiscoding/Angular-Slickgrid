@@ -41,6 +41,9 @@ export class ExtensionUtility {
         case ExtensionName.columnPicker:
           require('slickgrid/controls/slick.columnpicker');
           break;
+        case ExtensionName.draggableGrouping:
+          require('slickgrid/plugins/slick.draggablegrouping.js');
+          break;
         case ExtensionName.gridMenu:
           require('slickgrid/controls/slick.gridmenu');
           break;

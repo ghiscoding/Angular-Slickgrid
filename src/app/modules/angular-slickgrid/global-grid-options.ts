@@ -58,6 +58,7 @@ export const GlobalGridOptions: GridOption = {
     hideRefreshDatasetCommand: false,
     hideSyncResizeButton: true,
     hideToggleFilterCommand: false,
+    hideTogglePreHeaderCommand: false,
     iconCssClass: 'fa fa-bars',
     iconClearAllFiltersCommand: 'fa fa-filter text-danger',
     iconClearAllSortingCommand: 'fa fa-unsorted text-danger',
@@ -65,6 +66,7 @@ export const GlobalGridOptions: GridOption = {
     iconExportTextDelimitedCommand: 'fa fa-download',
     iconRefreshDatasetCommand: 'fa fa-refresh',
     iconToggleFilterCommand: 'fa fa-random',
+    iconTogglePreHeaderCommand: 'fa fa-random',
     menuWidth: 16,
     resizeOnShowHeaderRow: true
   },
