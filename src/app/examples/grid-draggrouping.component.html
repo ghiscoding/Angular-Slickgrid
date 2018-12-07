@@ -1,7 +1,6 @@
-<!--The content below is only a placeholder and can be replaced.-->
 <div class="container">
     <h2>{{title}}</h2>
-    <div class="subtitle" innerhtml.bind="subTitle"></div>
+    <div class="subtitle" [innerHTML]="subTitle"></div>
 
     <form>
         <div class="row col-sm-12">
@@ -11,7 +10,7 @@
           <button class="btn btn-default btn-xs" (click)="loadData(50000)">
             50k rows
           </button>
-          <button class="btn btn-default btn-xs" (click)="clearGroups()">
+          <button class="btn btn-default btn-xs" (click)="clearGroupsAndSelects()">
             Clear grouping
           </button>
           <button class="btn btn-default btn-xs" (click)="collapseAllGroups()">
@@ -35,9 +34,6 @@
           <button class="btn btn-default btn-xs" (click)="groupByDurationEffortDriven()">
             Group by Duration then Effort-Driven
           </button>
-          <!-- <button class="btn btn-default btn-xs" (click)="changeFirstGroupBy()">
-            Change first group by
-          </button> -->
         </div>
         <div class="col-sm-12">
             <br>
@@ -45,26 +41,8 @@
         <div class="row col-sm-12">
             <div class="form-group">
                 <label for="field1" class="col-sm-2 control-label">Group by field(s)</label>
-                <!-- <div class="col-sm-3" *ngFor="let groupField of selectedGroupingFields; let i = index;">
+                <div class="col-sm-3" *ngFor="let groupField of selectedGroupingFields; let i = index; trackBy: selectTrackByFn">
                     <select class="form-control col-sm-6" name="groupField{{i}}" [(ngModel)]="selectedGroupingFields[i]" (ngModelChange)="groupByFieldName($event, i)">
-                        <option value=""></option>
-                        <option [ngValue]="field.id" *ngFor="let field of columnDefinitions">{{field.name}}</option>
-                    </select>
-                </div> -->
-                <div class="col-sm-3">
-                    <select class="form-control col-sm-6" name="groupField1" [(ngModel)]="selectedGroupingFields[0]" (ngModelChange)="groupByFieldName($event, i)">
-                        <option value=""></option>
-                        <option [ngValue]="field.id" *ngFor="let field of columnDefinitions">{{field.name}}</option>
-                    </select>
-                </div>
-                <div class="col-sm-3">
-                    <select class="form-control col-sm-6" name="groupField2" [(ngModel)]="selectedGroupingFields[1]" (ngModelChange)="groupByFieldName($event, i)">
-                        <option value=""></option>
-                        <option [ngValue]="field.id" *ngFor="let field of columnDefinitions">{{field.name}}</option>
-                    </select>
-                </div>
-                <div class="col-sm-3">
-                    <select class="form-control col-sm-6" name="groupField3" [(ngModel)]="selectedGroupingFields[2]" (ngModelChange)="groupByFieldName($event, i)">
                         <option value=""></option>
                         <option [ngValue]="field.id" *ngFor="let field of columnDefinitions">{{field.name}}</option>
                     </select>

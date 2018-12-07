@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import {
   AngularGridInstance,
   Aggregators,
@@ -12,19 +12,23 @@ import {
   SortDirectionNumber,
   Sorters
 } from './../modules/angular-slickgrid';
-import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
 @Component({
   templateUrl: './grid-draggrouping.component.html'
 })
-export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
+export class GridDraggableGroupingComponent implements OnInit {
     title = 'Example 19: Draggable Grouping & Aggregators';
     subTitle = `
       <ul>
         <li><a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grouping-&-Aggregators" target="_blank">Wiki docs</a></li>
-        <li>Drag any Column Header on the top placeholder to group by that column (support multi-columns grouping by adding more columns).</li>
-        <li>Fully dynamic and interactive multi-level grouping with filtering and aggregates over 50'000 items</li>
+        <li>This example shows 3 ways of grouping</li>
+        <ol>
+          <li>Drag any Column Header on the top placeholder to group by that column (support moti-columns grouping by adding more columns to the drop area).</li>
+          <li>Use buttons and defined functions to group by wichever field you want</li>
+          <li>Use the Select dropdown to group, the position of the Selects represent the grouping level</li>
+        </ol>
+        <li>Fully dynamic and interactive multi-level grouping with filtering and aggregates ovor 50'000 items</li>
         <li>Each grouping level can have its own aggregates (over child rows, child groups, or all descendant rows)..</li>
         <li>Use "Aggregators" and "GroupTotalFormatters" directly from Angular-Slickgrid</li>
       </ul>
@@ -40,8 +44,6 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
     gridOptions: GridOption;
     processing = false;
     selectedGroupingFields: string[] = ['', '', ''];
-    subOnBeforeExport: Subscription;
-    subOnAfterExport: Subscription;
 
     constructor() {
       // define the grid options & columns and then create the grid itself
@@ -52,10 +54,6 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
       // populate the dataset once the grid is ready
       this.defineGrid();
-    }
-
-    ngOnDestroy() {
-
     }
 
     angularGridReady(angularGrid: AngularGridInstance) {
@@ -190,8 +188,8 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
             aggregators: [
               new Aggregators.Sum('cost')
             ],
-            aggregateCollapsed: false,
-            collapsed: false
+            aggregateCollapsed: true,
+            collapsed: true
           }
         },
         {
@@ -277,7 +275,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
       }
     }
 
-    clearGroups() {
+    clearGroupsAndSelects() {
       this.selectedGroupingFields.forEach((g, i) => this.selectedGroupingFields[i] = '');
       this.clearGrouping();
     }
@@ -327,15 +325,12 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
       if (this.draggableGroupingPlugin && this.draggableGroupingPlugin.setDroppedGroups) {
         // get the field names from Group By select(s) dropdown, but filter out any empty fields
         const groupedFields = this.selectedGroupingFields.filter((g) => g !== '');
+
         this.showPreHeader();
         this.draggableGroupingPlugin.setDroppedGroups(groupedFields);
         this.gridObj.invalidate();
         this.gridObj.render();
       }
-    }
-
-    changeFirstGroupBy() {
-      this.selectedGroupingFields[0] = 'title';
     }
 
     onGroupChanged(groups: Grouping[]) {
@@ -347,6 +342,10 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
 
     showPreHeader() {
       this.gridObj.setPreHeaderPanelVisibility(true);
+    }
+
+    selectTrackByFn(index, item) {
+      return index;
     }
 
     toggleDraggableGroupingRow() {
