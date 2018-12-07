@@ -1,5 +1,6 @@
 import { AppRoutingRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Injector, APP_INITIALIZER, NgModule } from '@angular/core';
 import { LOCATION_INITIALIZED } from '@angular/common';
@@ -88,6 +89,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
   imports: [
     AppRoutingRoutingModule,
     BrowserModule,
+    FormsModule,
     HttpClientModule,
     TranslateModule.forRoot({
       loader: {

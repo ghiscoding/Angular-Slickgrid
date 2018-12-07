@@ -39,6 +39,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
     gridObj: any;
     gridOptions: GridOption;
     processing = false;
+    selectedGroupingFields: string[] = ['', '', ''];
     subOnBeforeExport: Subscription;
     subOnAfterExport: Subscription;
 
@@ -108,7 +109,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
           }
         },
         {
-          id: '%', name: '% Complete', field: 'percentComplete',
+          id: 'percentComplete', name: '% Complete', field: 'percentComplete',
           minWidth: 70, width: 90,
           formatter: Formatters.percentCompleteBar,
           type: FieldType.number,
@@ -244,6 +245,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
           dropPlaceHolderText: 'Drop a column header here to group by the column',
           // groupIconCssClass: 'fa fa-outdent',
           deleteIconCssClass: 'fa fa-times',
+          onGroupChanged: (e, args) => this.onGroupChanged(args && args.groupColumns),
           onExtensionRegistered: (extension) => this.draggableGroupingPlugin = extension,
         }
       };
@@ -275,6 +277,11 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
       }
     }
 
+    clearGroups() {
+      this.selectedGroupingFields.forEach((g, i) => this.selectedGroupingFields[i] = '');
+      this.clearGrouping();
+    }
+
     clearGrouping() {
       if (this.draggableGroupingPlugin && this.draggableGroupingPlugin.setDroppedGroups) {
         this.draggableGroupingPlugin.clearDroppedGroups();
@@ -290,6 +297,7 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
     }
 
     groupByDuration() {
+      this.clearGrouping();
       if (this.draggableGroupingPlugin && this.draggableGroupingPlugin.setDroppedGroups) {
         this.showPreHeader();
         this.draggableGroupingPlugin.setDroppedGroups('duration');
@@ -305,11 +313,35 @@ export class GridDraggableGroupingComponent implements OnInit, OnDestroy {
     }
 
     groupByDurationEffortDriven() {
+      this.clearGrouping();
       if (this.draggableGroupingPlugin && this.draggableGroupingPlugin.setDroppedGroups) {
         this.showPreHeader();
         this.draggableGroupingPlugin.setDroppedGroups(['duration', 'effortDriven']);
         this.gridObj.invalidate();
         this.gridObj.render();
+      }
+    }
+
+    groupByFieldName(fieldName, index) {
+      this.clearGrouping();
+      if (this.draggableGroupingPlugin && this.draggableGroupingPlugin.setDroppedGroups) {
+        // get the field names from Group By select(s) dropdown, but filter out any empty fields
+        const groupedFields = this.selectedGroupingFields.filter((g) => g !== '');
+        this.showPreHeader();
+        this.draggableGroupingPlugin.setDroppedGroups(groupedFields);
+        this.gridObj.invalidate();
+        this.gridObj.render();
+      }
+    }
+
+    changeFirstGroupBy() {
+      this.selectedGroupingFields[0] = 'title';
+    }
+
+    onGroupChanged(groups: Grouping[]) {
+      if (Array.isArray(this.selectedGroupingFields) && Array.isArray(groups) && groups.length > 0) {
+        // update all Group By select dropdown
+        this.selectedGroupingFields.forEach((g, i) => this.selectedGroupingFields[i] = groups[i] && groups[i].getter || '');
       }
     }
 
