@@ -243,7 +243,7 @@ export class GridDraggableGroupingComponent implements OnInit {
           dropPlaceHolderText: 'Drop a column header here to group by the column',
           // groupIconCssClass: 'fa fa-outdent',
           deleteIconCssClass: 'fa fa-times',
-          onGroupChanged: (e, args) => this.onGroupChanged(args && args.groupColumns),
+          onGroupChanged: (e, args) => this.onGroupChanged(args),
           onExtensionRegistered: (extension) => this.draggableGroupingPlugin = extension,
         }
       };
@@ -276,7 +276,7 @@ export class GridDraggableGroupingComponent implements OnInit {
     }
 
     clearGroupsAndSelects() {
-      this.selectedGroupingFields.forEach((g, i) => this.selectedGroupingFields[i] = '');
+      this.clearGroupingSelects();
       this.clearGrouping();
     }
 
@@ -284,6 +284,10 @@ export class GridDraggableGroupingComponent implements OnInit {
       if (this.draggableGroupingPlugin && this.draggableGroupingPlugin.setDroppedGroups) {
         this.draggableGroupingPlugin.clearDroppedGroups();
       }
+    }
+
+    clearGroupingSelects() {
+      this.selectedGroupingFields.forEach((g, i) => this.selectedGroupingFields[i] = '');
     }
 
     collapseAllGroups() {
@@ -333,10 +337,16 @@ export class GridDraggableGroupingComponent implements OnInit {
       }
     }
 
-    onGroupChanged(groups: Grouping[]) {
+    onGroupChanged(change: { caller?: string; groupColumns: Grouping[] }) {
+      // the "caller" property might not be in the SlickGrid core lib yet, reference PR https://github.com/6pac/SlickGrid/pull/303
+      const caller = change && change.caller || [];
+      const groups = change && change.groupColumns || [];
+
       if (Array.isArray(this.selectedGroupingFields) && Array.isArray(groups) && groups.length > 0) {
         // update all Group By select dropdown
         this.selectedGroupingFields.forEach((g, i) => this.selectedGroupingFields[i] = groups[i] && groups[i].getter || '');
+      } else if (groups.length === 0 && caller === 'remove-group') {
+        this.clearGroupingSelects();
       }
     }
 

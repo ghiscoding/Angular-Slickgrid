@@ -1,3 +1,5 @@
+import { Grouping } from './grouping.interface';
+
 export interface DraggableGrouping {
   /** an extra CSS class to add to the delete button (default undefined), if deleteIconCssClass && deleteIconImage undefined then slick-groupby-remove-image class will be added */
   deleteIconCssClass?: string;
@@ -18,7 +20,7 @@ export interface DraggableGrouping {
   // Events
   // ---------
   /** Fired when grouped columns changed */
-  onGroupChanged?: (e: Event, args: { groupColumns: any[] }) => void;
+  onGroupChanged?: (e: Event, args: { caller?: string; groupColumns: Grouping[] }) => void;
 
   /** Fired after extension (plugin) is registered by SlickGrid */
   onExtensionRegistered?: (plugin: any) => void;
