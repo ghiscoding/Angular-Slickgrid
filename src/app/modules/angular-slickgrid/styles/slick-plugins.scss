@@ -174,28 +174,36 @@
 // ----------------------------------------------
 // Checkbox Selector Plugin
 // ----------------------------------------------
+.slick-headerrow-column,
+.slick-column-name,
+.slick-cell-checkboxsel {
+  input[type=checkbox],
+  #filter-checkbox-selectall-container > input[type=checkbox] {
+    display:none;  /* to hide the checkbox itself */
+  }
 
-.slick-column-name > input[type=checkbox],
-.slick-cell-checkboxsel > input[type=checkbox] {
-  display:none;  /* to hide the checkbox itself */
-}
-.slick-column-name > input[type=checkbox] + label:before,
-.slick-cell-checkboxsel > input[type=checkbox] + label:before {
-  font-family: $icon-font-family;
-  color: $chekbox-selector-color;
-  font-weight: bold;
-  display: inline-block;
-  content: $chekbox-selector-icon;
-  font-size: $chekbox-selector-size;
-  cursor: pointer;
-}
-.slick-column-name > input[type=checkbox] + label:before,
-.slick-cell-checkboxsel > input[type=checkbox] + label:before {
-  opacity: $chekbox-selector-opacity; /* unchecked icon */
-}
-.slick-column-name > input[type=checkbox]:checked + label:before,
-.slick-cell-checkboxsel > input[type=checkbox]:checked + label:before {
-  opacity: 1; /* checked icon */
+  input[type=checkbox],
+  #filter-checkbox-selectall-container > input[type=checkbox] + label {
+    margin-left: 4px;
+    margin-top: 3px;
+  }
+
+  input[type=checkbox] + label:before,
+  #filter-checkbox-selectall-container > input[type=checkbox] + label:before {
+    cursor: pointer;
+    content: $chekbox-selector-icon;
+    color: $chekbox-selector-color;
+    display: inline-block;
+    font-weight: bold;
+    font-family: $icon-font-family;
+    font-size: $chekbox-selector-size;
+    opacity: $chekbox-selector-opacity; /* unchecked icon */
+  }
+
+  input[type=checkbox]:checked + label:before,
+  #filter-checkbox-selectall-container > input[type=checkbox]:checked + label:before {
+    opacity: 1; /* checked icon */
+  }
 }
 
 // ----------------------------------------------

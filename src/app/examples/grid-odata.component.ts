@@ -1,6 +1,13 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Column, FieldType, Filters, GridOdataService, GridOption, Statistic } from './../modules/angular-slickgrid';
+import {
+  Column,
+  FieldType,
+  Filters,
+  GridOdataService,
+  GridOption,
+  Statistic
+} from './../modules/angular-slickgrid';
 
 const defaultPageSize = 20;
 const sampleDataRoot = 'assets/data';
@@ -58,6 +65,11 @@ export class GridOdataComponent implements OnInit {
       autoResize: {
         containerId: 'demo-container',
         sidePadding: 15
+      },
+      checkboxSelector: {
+        // you can toggle these 2 properties to show the "select all" checkbox in different location
+        hideInFilterHeaderRow: false,
+        hideInColumnTitleRow: true
       },
       enableCellNavigation: true,
       enableFiltering: true,
