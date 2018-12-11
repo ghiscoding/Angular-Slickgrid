@@ -200,6 +200,11 @@
     opacity: $chekbox-selector-opacity; /* unchecked icon */
   }
 
+  input[type=checkbox] + label:hover:before,
+  #filter-checkbox-selectall-container > input[type=checkbox] + label:hover:before {
+    opacity: $chekbox-selector-opacity-hover;
+  }
+
   input[type=checkbox]:checked + label:before,
   #filter-checkbox-selectall-container > input[type=checkbox]:checked + label:before {
     opacity: 1; /* checked icon */
