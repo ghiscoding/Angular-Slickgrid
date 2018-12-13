@@ -2190,13 +2190,13 @@ const dateUsShortFilterCondition = (options) => {
  */
 const moment$7 = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 const dateUtcFilterCondition = (options) => {
-    const /** @type {?} */ searchTerms = Array.isArray(options.searchTerms) && options.searchTerms[0] || [];
+    const /** @type {?} */ searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
     const /** @type {?} */ searchDateFormat = mapMomentDateFormatWithFieldType(options.filterSearchType || options.fieldType);
-    if (!moment$7(options.cellValue, moment$7.ISO_8601).isValid() || !moment$7(searchTerms[0], searchDateFormat, true).isValid()) {
+    if (!moment$7(options.cellValue, moment$7.ISO_8601).isValid() || !moment$7(searchTerm, searchDateFormat, true).isValid()) {
         return true;
     }
     const /** @type {?} */ dateCell = moment$7(options.cellValue, moment$7.ISO_8601, true);
-    const /** @type {?} */ dateSearch = moment$7(searchTerms[0], searchDateFormat, true);
+    const /** @type {?} */ dateSearch = moment$7(searchTerm, searchDateFormat, true);
     // run the filter condition with date in Unix Timestamp format
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };

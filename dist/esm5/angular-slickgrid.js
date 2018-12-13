@@ -1504,13 +1504,13 @@ var dateUsShortFilterCondition = function (options) {
 };
 var moment$7 = moment_;
 var dateUtcFilterCondition = function (options) {
-    var searchTerms = Array.isArray(options.searchTerms) && options.searchTerms[0] || [];
+    var searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
     var searchDateFormat = mapMomentDateFormatWithFieldType(options.filterSearchType || options.fieldType);
-    if (!moment$7(options.cellValue, moment$7.ISO_8601).isValid() || !moment$7(searchTerms[0], searchDateFormat, true).isValid()) {
+    if (!moment$7(options.cellValue, moment$7.ISO_8601).isValid() || !moment$7(searchTerm, searchDateFormat, true).isValid()) {
         return true;
     }
     var dateCell = moment$7(options.cellValue, moment$7.ISO_8601, true);
-    var dateSearch = moment$7(searchTerms[0], searchDateFormat, true);
+    var dateSearch = moment$7(searchTerm, searchDateFormat, true);
     return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
 };
 var collectionSearchFilterCondition = function (options) {
