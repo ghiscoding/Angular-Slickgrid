@@ -8,7 +8,7 @@ export const dateUtcFilterCondition: FilterCondition = (options: FilterCondition
   const searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
   const searchDateFormat = mapMomentDateFormatWithFieldType(options.filterSearchType || options.fieldType);
   if (!moment(options.cellValue, moment.ISO_8601).isValid() || !moment(searchTerm, searchDateFormat, true).isValid()) {
-    return true;
+    return false;
   }
   const dateCell = moment(options.cellValue, moment.ISO_8601, true);
   const dateSearch = moment(searchTerm, searchDateFormat, true);
