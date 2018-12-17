@@ -191,18 +191,18 @@
   input[type=checkbox] + label:before,
   #filter-checkbox-selectall-container > input[type=checkbox] + label:before {
     cursor: pointer;
-    content: $chekbox-selector-icon;
-    color: $chekbox-selector-color;
+    content: $checkbox-selector-icon;
+    color: $checkbox-selector-color;
     display: inline-block;
     font-weight: bold;
     font-family: $icon-font-family;
-    font-size: $chekbox-selector-size;
-    opacity: $chekbox-selector-opacity; /* unchecked icon */
+    font-size: $checkbox-selector-size;
+    opacity: $checkbox-selector-opacity; /* unchecked icon */
   }
 
   input[type=checkbox] + label:hover:before,
   #filter-checkbox-selectall-container > input[type=checkbox] + label:hover:before {
-    opacity: $chekbox-selector-opacity-hover;
+    opacity: $checkbox-selector-opacity-hover;
   }
 
   input[type=checkbox]:checked + label:before,
