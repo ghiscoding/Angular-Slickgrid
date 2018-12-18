@@ -3,7 +3,7 @@ import { AfterViewInit, Component, EventEmitter, Injectable, Input, OnDestroy, O
 import { castToPromise } from './../services/utilities';
 import { GridOption } from './../models/index';
 import { FilterService } from './../services/index';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'slick-pagination',

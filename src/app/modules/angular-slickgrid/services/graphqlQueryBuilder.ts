@@ -7,7 +7,7 @@
  * https://github.com/codemeasandwich/graphql-query-builder
  */
 export default class GraphqlQueryBuilder {
-  alias: string;
+  alias: string | Function;
   head: any[] = [];
   body: any;
 

@@ -12,7 +12,7 @@ import {
 } from './../models/index';
 import { getDescendantProperty } from './utilities';
 import { sortByFieldType } from '../sorters/sorterUtilities';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
 declare var Slick: any;

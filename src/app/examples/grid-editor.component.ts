@@ -15,7 +15,7 @@ import {
   OperatorType,
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
 declare var Slick: any;

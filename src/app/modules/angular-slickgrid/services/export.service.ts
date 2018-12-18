@@ -8,7 +8,7 @@ import {
   GridOption
 } from './../models/index';
 import { addWhiteSpaces, htmlEntityDecode, sanitizeHtmlToText } from './../services/utilities';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import { TextEncoder } from 'text-encoding-utf-8';
 
 // using external non-typed js libraries

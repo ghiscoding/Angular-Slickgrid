@@ -60,6 +60,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
   });
 }
 
+// @dynamic
 @NgModule({
   declarations: [
     AppComponent,

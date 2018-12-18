@@ -1,6 +1,6 @@
 import { GridOption } from './../models/index';
 import { getScrollBarWidth } from './utilities';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
 declare var $: any;

@@ -1,4 +1,3 @@
-import { Subscription } from 'rxjs/Subscription';
 import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -16,6 +15,7 @@ import {
   SortDirection,
   Statistic
 } from './../modules/angular-slickgrid';
+import { Subscription } from 'rxjs';
 
 const defaultPageSize = 20;
 const GRAPHQL_QUERY_DATASET_NAME = 'users';

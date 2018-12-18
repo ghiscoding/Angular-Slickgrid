@@ -1,9 +1,9 @@
 import { FieldType, OperatorType } from '../models/index';
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
-import 'rxjs/add/operator/first';
-import 'rxjs/add/operator/take';
-import 'rxjs/add/operator/toPromise';
+import { Observable, Subscription } from 'rxjs';
+import { first, take } from 'rxjs/operators';
+
+
+
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
@@ -103,9 +103,9 @@ export function castToPromise<T>(input: Promise<T> | Observable<T>, fromServiceN
     // if it's already a Promise then return it
     return input;
   } else if (input instanceof Observable) {
-    promise = input.first().toPromise();
+    promise = input.pipe(first()).toPromise();
     if (!(promise instanceof Promise)) {
-      promise = input.take(1).toPromise();
+      promise = input.pipe(take(1)).toPromise();
     }
     if (!(promise instanceof Promise)) {
       throw new Error(

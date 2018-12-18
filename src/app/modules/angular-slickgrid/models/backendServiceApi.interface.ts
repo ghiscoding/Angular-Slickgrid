@@ -2,7 +2,7 @@ import { OdataOption } from './odataOption.interface';
 import { GraphqlResult } from './graphqlResult.interface';
 import { BackendService } from './backendService.interface';
 import { GraphqlServiceOption } from './graphqlServiceOption.interface';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 export interface BackendServiceApi {
   /** Backend Service Options */

@@ -17,7 +17,7 @@ import {
 } from './../models/index';
 import { castToPromise, getDescendantProperty } from './utilities';
 import { FilterFactory } from '../filters/filterFactory';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import * as isequal_ from 'lodash.isequal';
 const isequal = isequal_; // patch to fix rollup to work
 

@@ -6,7 +6,7 @@ import {
   EditorValidator,
   MultipleSelectOption,
 } from './../models/index';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 export interface ColumnEditor {
   /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Editor) */
