@@ -33,15 +33,15 @@ export declare class CompoundDateFilter implements Filter {
      * Set value(s) on the DOM element
      */
     setValues(values: SearchTerm[]): void;
-    private buildDatePickerInput(searchTerm?);
-    private buildSelectOperatorHtmlString();
-    private getOptionValues();
+    private buildDatePickerInput;
+    private buildSelectOperatorHtmlString;
+    private getOptionValues;
     /**
      * Create the DOM element
      */
-    private createDomElement(searchTerm?);
-    private loadFlatpickrLocale(locale);
-    private onTriggerEvent(e);
-    private hide();
-    private show();
+    private createDomElement;
+    private loadFlatpickrLocale;
+    private onTriggerEvent;
+    private hide;
+    private show;
 }

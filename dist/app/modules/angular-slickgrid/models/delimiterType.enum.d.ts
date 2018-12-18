@@ -8,5 +8,5 @@ export declare enum DelimiterType {
     tab = "\t",
     doubleColon = "::",
     doublePipe = "||",
-    doubleSemicolon = ";;",
+    doubleSemicolon = ";;"
 }

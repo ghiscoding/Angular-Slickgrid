@@ -29,5 +29,5 @@ export declare class SliderEditor implements Editor {
     /**
      * Create the HTML template as a string
      */
-    private buildTemplateHtmlString();
+    private buildTemplateHtmlString;
 }

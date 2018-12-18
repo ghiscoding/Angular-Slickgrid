@@ -1,5 +1,5 @@
 export interface SlickEvent {
-    notify: (Function) => (args: any, e: Event, scope: any) => Promise<any>;
-    subscribe: (Function) => (e: any, args: any) => Promise<any>;
+    notify: (Function: any) => (args: any, e: Event, scope: any) => Promise<any>;
+    subscribe: (Function: any) => (e: any, args: any) => Promise<any>;
     unsubscribe: () => void;
 }

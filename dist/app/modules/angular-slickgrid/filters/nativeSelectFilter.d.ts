@@ -26,10 +26,10 @@ export declare class NativeSelectFilter implements Filter {
      * Set value(s) on the DOM element
      */
     setValues(values: SearchTerm | SearchTerm[]): void;
-    private buildTemplateHtmlString();
+    private buildTemplateHtmlString;
     /**
      * From the html template string, create a DOM element
      * @param filterTemplate
      */
-    private createDomElement(filterTemplate, searchTerm?);
+    private createDomElement;
 }

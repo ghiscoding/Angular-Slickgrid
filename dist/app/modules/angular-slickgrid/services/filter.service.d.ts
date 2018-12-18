@@ -1,6 +1,6 @@
 import { Column, ColumnFilters, FilterCallbackArg, CurrentFilter } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 export declare class FilterService {
     private filterFactory;
     private _eventHandler;
@@ -59,6 +59,6 @@ export declare class FilterService {
      * At the end of the day, when creating the Filter (DOM Element), it will use these searchTerm(s) so we can take advantage of that without recoding each Filter type (DOM element)
      */
     populateColumnFilterSearchTerms(): void;
-    private updateColumnFilters(searchTerms, columnDef, operator?);
-    private triggerEvent(slickEvent, args, e);
+    private updateColumnFilters;
+    private triggerEvent;
 }

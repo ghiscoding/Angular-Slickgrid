@@ -32,5 +32,5 @@ export declare enum OperatorType {
      */
     inContains = "IN_CONTAINS",
     /** Inversed (Not In) of substring contained inside a collection */
-    notInContains = "NOT_IN_CONTAINS",
+    notInContains = "NOT_IN_CONTAINS"
 }

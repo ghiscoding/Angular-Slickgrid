@@ -37,12 +37,12 @@ export declare class CompoundInputFilter implements Filter {
      * Set value(s) on the DOM element
      */
     setValues(values: SearchTerm[]): void;
-    private buildInputHtmlString();
-    private buildSelectOperatorHtmlString();
-    private getOptionValues();
+    private buildInputHtmlString;
+    private buildSelectOperatorHtmlString;
+    private getOptionValues;
     /**
      * Create the DOM element
      */
-    private createDomElement(searchTerm?);
-    private onTriggerEvent(e);
+    private createDomElement;
+    private onTriggerEvent;
 }

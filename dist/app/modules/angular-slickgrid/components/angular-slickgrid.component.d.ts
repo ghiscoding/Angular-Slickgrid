@@ -6,7 +6,7 @@ import 'slickgrid/slick.dataview';
 import { AfterViewInit, ElementRef, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AngularGridInstance, Column, GridOption, GridStateChange, Pagination } from './../models/index';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { ExportService } from './../services/export.service';
 import { ExtensionService } from '../services/extension.service';
 import { ExtensionUtility } from '../extensions/extensionUtility';
@@ -107,13 +107,13 @@ export declare class AngularSlickgridComponent implements AfterViewInit, OnDestr
     /** Toggle the filter row displayed on first row */
     toggleHeaderRow(): boolean;
     /** Dispatch of Custom Event, which by default will bubble & is cancelable */
-    private dispatchCustomEvent(eventName, data?, isBubbling?, isCancelable?);
+    private dispatchCustomEvent;
     /** Load the Editor Collection asynchronously and replace the "collection" property when Observable resolves */
-    private loadEditorCollectionAsync(column);
+    private loadEditorCollectionAsync;
     /**
      * Update the Editor "collection" property from an async call resolved
      * Since this is called after the async call resolves, the pointer will not be the same as the "column" argument passed.
      * Once we found the new pointer, we will reassign the "editor" and "collection" to the "internalColumnEditor" so it has newest collection
      */
-    private updateEditorCollection(column, newCollection);
+    private updateEditorCollection;
 }

@@ -1,5 +1,5 @@
 import { GridOption } from './../models/index';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 export interface GridDimension {
     height: number;
     width: number;

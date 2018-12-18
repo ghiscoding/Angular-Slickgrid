@@ -1,0 +1,14 @@
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+import * as moment_ from 'moment-mini';
+/** @type {?} */
+var moment = moment_;
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+import { compareDates } from './compareDateUtility';
+/** @type {?} */
+export var dateSorter = function (value1, value2, sortDirection) {
+    return compareDates(value1, value2, moment.ISO_8601, sortDirection);
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZGF0ZVNvcnRlci5qcyIsInNvdXJjZVJvb3QiOiJuZzovL2FuZ3VsYXItc2xpY2tncmlkLyIsInNvdXJjZXMiOlsiYXBwL21vZHVsZXMvYW5ndWxhci1zbGlja2dyaWQvc29ydGVycy9kYXRlU29ydGVyLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7QUFDQSxPQUFPLEtBQUssT0FBTyxNQUFNLGFBQWEsQ0FBQzs7SUFDakMsTUFBTSxHQUFHLE9BQU87O0FBQ3RCLE9BQU8sRUFBRSxZQUFZLEVBQUUsTUFBTSxzQkFBc0IsQ0FBQzs7QUFFcEQsTUFBTSxLQUFPLFVBQVUsR0FBVyxVQUFDLE1BQU0sRUFBRSxNQUFNLEVBQUUsYUFBYTtJQUM5RCxPQUFPLFlBQVksQ0FBQyxNQUFNLEVBQUUsTUFBTSxFQUFFLE1BQU0sQ0FBQyxRQUFRLEVBQUUsYUFBYSxDQUFDLENBQUM7QUFDdEUsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IFNvcnRlciB9IGZyb20gJy4vLi4vbW9kZWxzL2luZGV4JztcclxuaW1wb3J0ICogYXMgbW9tZW50XyBmcm9tICdtb21lbnQtbWluaSc7XHJcbmNvbnN0IG1vbWVudCA9IG1vbWVudF87IC8vIHBhdGNoIHRvIGZpeCByb2xsdXAgXCJtb21lbnQgaGFzIG5vIGRlZmF1bHQgZXhwb3J0XCIgaXNzdWUsIGRvY3VtZW50IGhlcmUgaHR0cHM6Ly9naXRodWIuY29tL3JvbGx1cC9yb2xsdXAvaXNzdWVzLzY3MFxyXG5pbXBvcnQgeyBjb21wYXJlRGF0ZXMgfSBmcm9tICcuL2NvbXBhcmVEYXRlVXRpbGl0eSc7XHJcblxyXG5leHBvcnQgY29uc3QgZGF0ZVNvcnRlcjogU29ydGVyID0gKHZhbHVlMSwgdmFsdWUyLCBzb3J0RGlyZWN0aW9uKSA9PiB7XHJcbiAgcmV0dXJuIGNvbXBhcmVEYXRlcyh2YWx1ZTEsIHZhbHVlMiwgbW9tZW50LklTT184NjAxLCBzb3J0RGlyZWN0aW9uKTtcclxufTtcclxuIl19

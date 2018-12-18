@@ -30,16 +30,16 @@ export declare class GridMenuExtension implements Extension {
     /** Refresh the dataset through the Backend Service */
     refreshBackendDataset(gridOptions?: GridOption): void;
     /** Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL) */
-    private addGridMenuCustomCommands();
+    private addGridMenuCustomCommands;
     /** Execute the Header Menu Commands that was triggered by the onCommand subscribe */
     executeHeaderMenuInternalCommands(e: Event, args: HeaderMenuOnCommandArgs): void;
     /** Hide a column from the grid */
     hideColumn(column: Column): void;
     /** Translate the Grid Menu titles and column picker */
     translateGridMenu(): void;
-    private emptyGridMenuTitles();
+    private emptyGridMenuTitles;
     /**
     * @return default Grid Menu options
     */
-    private getDefaultGridMenuOptions();
+    private getDefaultGridMenuOptions;
 }

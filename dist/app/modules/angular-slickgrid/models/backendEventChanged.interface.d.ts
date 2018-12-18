@@ -1,6 +1,6 @@
 import { BackendService } from './index';
 import { BackendServiceOption } from './backendServiceOption.interface';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { GraphqlResult } from './graphqlResult.interface';
 export interface BackendEventChanged {
     options?: BackendServiceOption;

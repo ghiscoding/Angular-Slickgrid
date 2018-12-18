@@ -11,5 +11,5 @@ export declare class ColumnPickerExtension implements Extension {
     register(): any;
     /** Translate the Column Picker and it's last 2 checkboxes */
     translateColumnPicker(): void;
-    private emptyColumnPickerTitles();
+    private emptyColumnPickerTitles;
 }

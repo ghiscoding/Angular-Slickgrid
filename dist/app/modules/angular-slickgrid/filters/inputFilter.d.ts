@@ -34,10 +34,10 @@ export declare class InputFilter implements Filter {
     /**
      * Create the HTML template as a string
      */
-    private buildTemplateHtmlString();
+    private buildTemplateHtmlString;
     /**
      * From the html template string, create a DOM element
      * @param filterTemplate
      */
-    private createDomElement(filterTemplate, searchTerm?);
+    private createDomElement;
 }

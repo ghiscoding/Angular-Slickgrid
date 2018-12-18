@@ -5,5 +5,5 @@ export declare enum FileType {
     pdf = "pdf",
     txt = "txt",
     xls = "xls",
-    xlsx = "xlsx",
+    xlsx = "xlsx"
 }

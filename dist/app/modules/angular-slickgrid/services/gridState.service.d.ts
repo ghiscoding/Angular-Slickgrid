@@ -2,7 +2,7 @@ import { Column, CurrentColumn, CurrentFilter, CurrentPagination, CurrentSorter,
 import { ExtensionService } from './extension.service';
 import { FilterService } from './filter.service';
 import { SortService } from './sort.service';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 export declare class GridStateService {
     private _eventHandler;
     private _columns;

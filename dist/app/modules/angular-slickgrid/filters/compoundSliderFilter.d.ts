@@ -37,16 +37,16 @@ export declare class CompoundSliderFilter implements Filter {
      */
     setValues(values: SearchTerm[]): void;
     /** Build HTML Template for the input range (slider) */
-    private buildTemplateHtmlString();
+    private buildTemplateHtmlString;
     /** Build HTML Template for the text (number) that is shown appended to the slider */
-    private buildTemplateSliderTextHtmlString();
+    private buildTemplateSliderTextHtmlString;
     /** Build HTML Template select dropdown (operator) */
-    private buildSelectOperatorHtmlString();
+    private buildSelectOperatorHtmlString;
     /** Get the available operator option values */
-    private getOptionValues();
+    private getOptionValues;
     /**
      * Create the DOM element
      */
-    private createDomElement(searchTerm?);
-    private onTriggerEvent(e);
+    private createDomElement;
+    private onTriggerEvent;
 }

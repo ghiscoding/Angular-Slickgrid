@@ -1,5 +1,5 @@
 import { ColumnSort, CurrentSorter } from './../models/index';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 export declare class SortService {
     private _currentLocalSorters;
     private _eventHandler;

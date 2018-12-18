@@ -1,6 +1,6 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Column, ExportOption, FileType } from './../models/index';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 export interface ExportColumnHeader {
     key: string;
     title: string;

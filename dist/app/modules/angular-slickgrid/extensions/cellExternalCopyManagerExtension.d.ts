@@ -10,7 +10,7 @@ export declare class CellExternalCopyManagerExtension implements Extension {
     dispose(): void;
     register(): any;
     /** Create an undo redo buffer used by the Excel like copy */
-    private createUndoRedoBuffer();
+    private createUndoRedoBuffer;
     /** Attach an undo shortcut key hook that will redo/undo the copy buffer */
-    private hookUndoShortcutKey();
+    private hookUndoShortcutKey;
 }

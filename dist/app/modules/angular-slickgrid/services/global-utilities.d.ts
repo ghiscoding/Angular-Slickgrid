@@ -1,4 +1,4 @@
-interface StringConstructor {
+declare interface StringConstructor {
     allTitleCase(inputStr: string): string;
     format(inputStr: string, args: any): string;
     padZero(length: number): string;

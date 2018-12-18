@@ -25,7 +25,7 @@ export declare class HeaderMenuExtension implements Extension {
      * @param columnDefinitions
      * @return header menu
      */
-    private addHeaderMenuCustomCommands(options, columnDefinitions);
+    private addHeaderMenuCustomCommands;
     /** Execute the Header Menu Commands that was triggered by the onCommand subscribe */
     executeHeaderMenuInternalCommands(e: Event, args: HeaderMenuOnCommandArgs): void;
     /** Hide a column from the grid */
@@ -42,5 +42,5 @@ export declare class HeaderMenuExtension implements Extension {
     /**
      * @return default Header Menu options
      */
-    private getDefaultHeaderMenuOptions();
+    private getDefaultHeaderMenuOptions;
 }

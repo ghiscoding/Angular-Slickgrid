@@ -1,9 +1,7 @@
 import { TranslateService } from '@ngx-translate/core';
 import { CollectionCustomStructure, CollectionOption, Column, ColumnFilter, Filter, FilterArguments, FilterCallback, GridOption, MultipleSelectOption, OperatorType, OperatorString, SearchTerm } from './../models/index';
 import { CollectionService } from './../services/collection.service';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { Subscription } from 'rxjs/Subscription';
+import { Observable, Subject, Subscription } from 'rxjs';
 export declare class SelectFilter implements Filter {
     protected translate: TranslateService;
     protected collectionService: CollectionService;

@@ -1,0 +1,27 @@
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+import { mapMomentDateFormatWithFieldType } from './../services/utilities';
+import { testFilterCondition } from './filterUtilities';
+import * as moment_ from 'moment-mini';
+/** @type {?} */
+var moment = moment_;
+// patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+/** @type {?} */
+export var dateUtcFilterCondition = function (options) {
+    /** @type {?} */
+    var searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
+    /** @type {?} */
+    var searchDateFormat = mapMomentDateFormatWithFieldType(options.filterSearchType || options.fieldType);
+    if (!moment(options.cellValue, moment.ISO_8601).isValid() || !moment(searchTerm, searchDateFormat, true).isValid()) {
+        return false;
+    }
+    /** @type {?} */
+    var dateCell = moment(options.cellValue, moment.ISO_8601, true);
+    /** @type {?} */
+    var dateSearch = moment(searchTerm, searchDateFormat, true);
+    // run the filter condition with date in Unix Timestamp format
+    return testFilterCondition(options.operator || '==', parseInt(dateCell.format('X'), 10), parseInt(dateSearch.format('X'), 10));
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZGF0ZVV0Y0ZpbHRlckNvbmRpdGlvbi5qcyIsInNvdXJjZVJvb3QiOiJuZzovL2FuZ3VsYXItc2xpY2tncmlkLyIsInNvdXJjZXMiOlsiYXBwL21vZHVsZXMvYW5ndWxhci1zbGlja2dyaWQvZmlsdGVyLWNvbmRpdGlvbnMvZGF0ZVV0Y0ZpbHRlckNvbmRpdGlvbi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7O0FBQ0EsT0FBTyxFQUFFLGdDQUFnQyxFQUFFLE1BQU0seUJBQXlCLENBQUM7QUFDM0UsT0FBTyxFQUFFLG1CQUFtQixFQUFFLE1BQU0sbUJBQW1CLENBQUM7QUFDeEQsT0FBTyxLQUFLLE9BQU8sTUFBTSxhQUFhLENBQUM7O0lBQ2pDLE1BQU0sR0FBRyxPQUFPOzs7QUFFdEIsTUFBTSxLQUFPLHNCQUFzQixHQUFvQixVQUFDLE9BQThCOztRQUM5RSxVQUFVLEdBQUcsS0FBSyxDQUFDLE9BQU8sQ0FBQyxPQUFPLENBQUMsV0FBVyxDQUFDLElBQUksT0FBTyxDQUFDLFdBQVcsQ0FBQyxDQUFDLENBQUMsSUFBSSxFQUFFOztRQUMvRSxnQkFBZ0IsR0FBRyxnQ0FBZ0MsQ0FBQyxPQUFPLENBQUMsZ0JBQWdCLElBQUksT0FBTyxDQUFDLFNBQVMsQ0FBQztJQUN4RyxJQUFJLENBQUMsTUFBTSxDQUFDLE9BQU8sQ0FBQyxTQUFTLEVBQUUsTUFBTSxDQUFDLFFBQVEsQ0FBQyxDQUFDLE9BQU8sRUFBRSxJQUFJLENBQUMsTUFBTSxDQUFDLFVBQVUsRUFBRSxnQkFBZ0IsRUFBRSxJQUFJLENBQUMsQ0FBQyxPQUFPLEVBQUUsRUFBRTtRQUNsSCxPQUFPLEtBQUssQ0FBQztLQUNkOztRQUNLLFFBQVEsR0FBRyxNQUFNLENBQUMsT0FBTyxDQUFDLFNBQVMsRUFBRSxNQUFNLENBQUMsUUFBUSxFQUFFLElBQUksQ0FBQzs7UUFDM0QsVUFBVSxHQUFHLE1BQU0sQ0FBQyxVQUFVLEVBQUUsZ0JBQWdCLEVBQUUsSUFBSSxDQUFDO0lBRTdELDhEQUE4RDtJQUM5RCxPQUFPLG1CQUFtQixDQUFDLE9BQU8sQ0FBQyxRQUFRLElBQUksSUFBSSxFQUFFLFFBQVEsQ0FBQyxRQUFRLENBQUMsTUFBTSxDQUFDLEdBQUcsQ0FBQyxFQUFFLEVBQUUsQ0FBQyxFQUFFLFFBQVEsQ0FBQyxVQUFVLENBQUMsTUFBTSxDQUFDLEdBQUcsQ0FBQyxFQUFFLEVBQUUsQ0FBQyxDQUFDLENBQUM7QUFDakksQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IEZpbHRlckNvbmRpdGlvbiwgRmlsdGVyQ29uZGl0aW9uT3B0aW9uIH0gZnJvbSAnLi4vbW9kZWxzL2luZGV4JztcbmltcG9ydCB7IG1hcE1vbWVudERhdGVGb3JtYXRXaXRoRmllbGRUeXBlIH0gZnJvbSAnLi8uLi9zZXJ2aWNlcy91dGlsaXRpZXMnO1xuaW1wb3J0IHsgdGVzdEZpbHRlckNvbmRpdGlvbiB9IGZyb20gJy4vZmlsdGVyVXRpbGl0aWVzJztcbmltcG9ydCAqIGFzIG1vbWVudF8gZnJvbSAnbW9tZW50LW1pbmknO1xuY29uc3QgbW9tZW50ID0gbW9tZW50XzsgLy8gcGF0Y2ggdG8gZml4IHJvbGx1cCBcIm1vbWVudCBoYXMgbm8gZGVmYXVsdCBleHBvcnRcIiBpc3N1ZSwgZG9jdW1lbnQgaGVyZSBodHRwczovL2dpdGh1Yi5jb20vcm9sbHVwL3JvbGx1cC9pc3N1ZXMvNjcwXG5cbmV4cG9ydCBjb25zdCBkYXRlVXRjRmlsdGVyQ29uZGl0aW9uOiBGaWx0ZXJDb25kaXRpb24gPSAob3B0aW9uczogRmlsdGVyQ29uZGl0aW9uT3B0aW9uKSA9PiB7XG4gIGNvbnN0IHNlYXJjaFRlcm0gPSBBcnJheS5pc0FycmF5KG9wdGlvbnMuc2VhcmNoVGVybXMpICYmIG9wdGlvbnMuc2VhcmNoVGVybXNbMF0gfHwgJyc7XG4gIGNvbnN0IHNlYXJjaERhdGVGb3JtYXQgPSBtYXBNb21lbnREYXRlRm9ybWF0V2l0aEZpZWxkVHlwZShvcHRpb25zLmZpbHRlclNlYXJjaFR5cGUgfHwgb3B0aW9ucy5maWVsZFR5cGUpO1xuICBpZiAoIW1vbWVudChvcHRpb25zLmNlbGxWYWx1ZSwgbW9tZW50LklTT184NjAxKS5pc1ZhbGlkKCkgfHwgIW1vbWVudChzZWFyY2hUZXJtLCBzZWFyY2hEYXRlRm9ybWF0LCB0cnVlKS5pc1ZhbGlkKCkpIHtcbiAgICByZXR1cm4gZmFsc2U7XG4gIH1cbiAgY29uc3QgZGF0ZUNlbGwgPSBtb21lbnQob3B0aW9ucy5jZWxsVmFsdWUsIG1vbWVudC5JU09fODYwMSwgdHJ1ZSk7XG4gIGNvbnN0IGRhdGVTZWFyY2ggPSBtb21lbnQoc2VhcmNoVGVybSwgc2VhcmNoRGF0ZUZvcm1hdCwgdHJ1ZSk7XG5cbiAgLy8gcnVuIHRoZSBmaWx0ZXIgY29uZGl0aW9uIHdpdGggZGF0ZSBpbiBVbml4IFRpbWVzdGFtcCBmb3JtYXRcbiAgcmV0dXJuIHRlc3RGaWx0ZXJDb25kaXRpb24ob3B0aW9ucy5vcGVyYXRvciB8fCAnPT0nLCBwYXJzZUludChkYXRlQ2VsbC5mb3JtYXQoJ1gnKSwgMTApLCBwYXJzZUludChkYXRlU2VhcmNoLmZvcm1hdCgnWCcpLCAxMCkpO1xufTtcbiJdfQ==

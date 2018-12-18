@@ -1,9 +1,8 @@
-import { SortDirectionNumber } from './../models/sortDirectionNumber.enum';
 export declare const Sorters: {
-    date: (value1: any, value2: any, sortDirection: SortDirectionNumber) => number;
-    dateIso: (value1: any, value2: any, sortDirection: SortDirectionNumber) => number;
-    dateUs: (value1: any, value2: any, sortDirection: SortDirectionNumber) => number;
-    dateUsShort: (value1: any, value2: any, sortDirection: SortDirectionNumber) => number;
-    numeric: (value1: any, value2: any, sortDirection: SortDirectionNumber) => number;
-    string: (value1: any, value2: any, sortDirection: SortDirectionNumber) => number;
+    date: import("../models/sorter.interface").Sorter;
+    dateIso: import("../models/sorter.interface").Sorter;
+    dateUs: import("../models/sorter.interface").Sorter;
+    dateUsShort: import("../models/sorter.interface").Sorter;
+    numeric: import("../models/sorter.interface").Sorter;
+    string: import("../models/sorter.interface").Sorter;
 };

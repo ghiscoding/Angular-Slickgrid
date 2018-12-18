@@ -8,7 +8,7 @@
  */
 export default class GraphqlQueryBuilder {
     private queryFnName;
-    alias: string;
+    alias: string | Function;
     head: any[];
     body: any;
     constructor(queryFnName: string, aliasOrFilter?: string | object);
@@ -32,7 +32,7 @@ export default class GraphqlQueryBuilder {
      * @return
      */
     toString(): string;
-    private parceFind(_levelA);
-    private getGraphQLValue(value);
-    private objectToString(obj);
+    private parceFind;
+    private getGraphQLValue;
+    private objectToString;
 }

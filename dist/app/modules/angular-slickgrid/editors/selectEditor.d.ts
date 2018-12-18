@@ -1,7 +1,7 @@
 import { TranslateService } from '@ngx-translate/core';
 import { CollectionCustomStructure, CollectionOption, Column, Editor, EditorValidator, EditorValidatorOutput, GridOption, MultipleSelectOption } from './../models/index';
 import { CollectionService } from '../services/index';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 /**
  * Slickgrid editor class for multiple/single select lists
  */

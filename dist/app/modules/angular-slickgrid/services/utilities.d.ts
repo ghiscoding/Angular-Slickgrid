@@ -1,9 +1,5 @@
 import { FieldType, OperatorType } from '../models/index';
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
-import 'rxjs/add/operator/first';
-import 'rxjs/add/operator/take';
-import 'rxjs/add/operator/toPromise';
+import { Observable, Subscription } from 'rxjs';
 /** Simple function to which will loop and create as demanded the number of white spaces,
  * this will be used in the Excel export
  * @param int nbSpaces: number of white spaces to create

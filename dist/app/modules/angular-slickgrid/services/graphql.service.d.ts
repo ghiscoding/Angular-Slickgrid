@@ -87,5 +87,5 @@ export declare class GraphqlService implements BackendService {
      * Cast provided filters (could be in multiple format) into an array of ColumnFilter
      * @param columnFilters
      */
-    private castFilterToColumnFilter(columnFilters);
+    private castFilterToColumnFilter;
 }

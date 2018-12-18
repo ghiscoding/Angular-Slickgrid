@@ -11,5 +11,5 @@ export declare enum ExtensionName {
     headerMenu = "headerMenu",
     noname = "noname",
     rowMoveManager = "rowMoveManager",
-    rowSelection = "rowSelection",
+    rowSelection = "rowSelection"
 }

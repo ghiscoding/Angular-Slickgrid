@@ -1,0 +1,21 @@
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/** @enum {string} */
+const ExtensionName = {
+    autoTooltip: 'autoTooltip',
+    cellExternalCopyManager: 'cellExternalCopyManager',
+    checkboxSelector: 'checkboxSelector',
+    columnPicker: 'columnPicker',
+    draggableGrouping: 'draggableGrouping',
+    groupItemMetaProvider: 'groupItemMetaProvider',
+    gridMenu: 'gridMenu',
+    headerButton: 'headerButton',
+    headerMenu: 'headerMenu',
+    noname: 'noname',
+    rowMoveManager: 'rowMoveManager',
+    rowSelection: 'rowSelection',
+};
+export { ExtensionName };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXh0ZW5zaW9uTmFtZS5lbnVtLmpzIiwic291cmNlUm9vdCI6Im5nOi8vYW5ndWxhci1zbGlja2dyaWQvIiwic291cmNlcyI6WyJhcHAvbW9kdWxlcy9hbmd1bGFyLXNsaWNrZ3JpZC9tb2RlbHMvZXh0ZW5zaW9uTmFtZS5lbnVtLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7OztJQUVFLGFBQWMsYUFBYTtJQUMzQix5QkFBMEIseUJBQXlCO0lBQ25ELGtCQUFtQixrQkFBa0I7SUFDckMsY0FBZSxjQUFjO0lBQzdCLG1CQUFvQixtQkFBbUI7SUFDdkMsdUJBQXdCLHVCQUF1QjtJQUMvQyxVQUFXLFVBQVU7SUFDckIsY0FBZSxjQUFjO0lBQzdCLFlBQWEsWUFBWTtJQUN6QixRQUFTLFFBQVE7SUFDakIsZ0JBQWlCLGdCQUFnQjtJQUNqQyxjQUFlLGNBQWMiLCJzb3VyY2VzQ29udGVudCI6WyIvKiogTGlzdCBvZiBhdmFpbGFibGUgU2xpY2tHcmlkIEV4dGVuc2lvbnMgKENvbnRyb2xzICYgUGx1Z2lucykgKi9cclxuZXhwb3J0IGVudW0gRXh0ZW5zaW9uTmFtZSB7XHJcbiAgYXV0b1Rvb2x0aXAgPSAnYXV0b1Rvb2x0aXAnLFxyXG4gIGNlbGxFeHRlcm5hbENvcHlNYW5hZ2VyID0gJ2NlbGxFeHRlcm5hbENvcHlNYW5hZ2VyJyxcclxuICBjaGVja2JveFNlbGVjdG9yID0gJ2NoZWNrYm94U2VsZWN0b3InLFxyXG4gIGNvbHVtblBpY2tlciA9ICdjb2x1bW5QaWNrZXInLFxyXG4gIGRyYWdnYWJsZUdyb3VwaW5nID0gJ2RyYWdnYWJsZUdyb3VwaW5nJyxcclxuICBncm91cEl0ZW1NZXRhUHJvdmlkZXIgPSAnZ3JvdXBJdGVtTWV0YVByb3ZpZGVyJyxcclxuICBncmlkTWVudSA9ICdncmlkTWVudScsXHJcbiAgaGVhZGVyQnV0dG9uID0gJ2hlYWRlckJ1dHRvbicsXHJcbiAgaGVhZGVyTWVudSA9ICdoZWFkZXJNZW51JyxcclxuICBub25hbWUgPSAnbm9uYW1lJyxcclxuICByb3dNb3ZlTWFuYWdlciA9ICdyb3dNb3ZlTWFuYWdlcicsXHJcbiAgcm93U2VsZWN0aW9uID0gJ3Jvd1NlbGVjdGlvbicsXHJcbn1cclxuIl19

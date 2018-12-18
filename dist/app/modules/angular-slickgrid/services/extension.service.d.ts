@@ -78,5 +78,5 @@ export declare class ExtensionService {
      */
     renderColumnHeaders(newColumnDefinitions?: Column[]): void;
     /** Translate the an array of items from an input key and assign to the output key */
-    private translateItems(items, inputKey, outputKey);
+    private translateItems;
 }

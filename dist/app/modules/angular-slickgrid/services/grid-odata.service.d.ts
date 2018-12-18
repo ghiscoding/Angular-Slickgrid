@@ -49,11 +49,11 @@ export declare class GridOdataService implements BackendService {
      * Cast provided filters (could be in multiple format) into an array of ColumnFilter
      * @param columnFilters
      */
-    private castFilterToColumnFilter(columnFilters);
+    private castFilterToColumnFilter;
     /**
      * Mapper for mathematical operators (ex.: <= is "le", > is "gt")
      * @param string operator
      * @returns string map
      */
-    private mapOdataOperator(operator);
+    private mapOdataOperator;
 }

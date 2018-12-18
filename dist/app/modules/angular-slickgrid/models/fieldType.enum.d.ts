@@ -39,5 +39,5 @@ export declare enum FieldType {
     /** Format: 'M/D/YY h:m:s a' => 2/28/14 1:2:10 pm */
     dateTimeUsShortAmPm = 21,
     /** Format: 'M/D/YY h:m:s A' => 2/28/14 14:1:1 PM */
-    dateTimeUsShortAM_PM = 22,
+    dateTimeUsShortAM_PM = 22
 }
