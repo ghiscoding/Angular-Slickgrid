@@ -14,6 +14,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Publish Library with (Beta Tag) to NPM",
+      "type": "shell",
+      "command": "npm publish dist --tag beta",
+      "problemMatcher": []
+    },
+    {
       "label": "Start Library Development",
       "type": "shell",
       "command": "yarn start",
