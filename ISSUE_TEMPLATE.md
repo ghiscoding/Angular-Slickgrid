@@ -1,5 +1,6 @@
 <!--
-BUGS: Please use this template.
+BUGS: Please USE this template and fill necessary info
+Include it in your issue, do not delete it please.
 
 The HTML comments below are for your reference, and are not displayed
 when your issue is submitted, feel free to leave them.
