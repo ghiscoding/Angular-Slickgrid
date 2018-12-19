@@ -9,17 +9,11 @@ CHOOSE the relevant headings, DELETE the other(s).
 **I'm submitting a bug report**
 **I'm submitting a feature request**
 
-* **Library Version:**
+* **Angular Version:**
 major.minor.patch
 
-<!--
-If you think the environment might have an influence then please provide
-else you can omit.
--->
-**Please tell us about your environment:**
-* **Operating System:**
-OSX 10.x|Linux (distro)|Windows [7|8|8.1|10]
-
+* **Library Version:**
+major.minor.patch
 
 * **Browser:**
 all | Chrome XX | Firefox XX | Edge XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari | iOS XX UIWebView | iOS XX WKWebView
