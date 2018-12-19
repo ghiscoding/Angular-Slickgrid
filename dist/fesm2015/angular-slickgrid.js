@@ -3,6 +3,7 @@ import { TextEncoder } from 'text-encoding-utf-8';
 import 'slickgrid/plugins/slick.cellrangedecorator';
 import 'slickgrid/plugins/slick.cellrangeselector';
 import 'slickgrid/plugins/slick.cellselectionmodel';
+import Flatpickr from 'flatpickr';
 import * as isequal_ from 'lodash.isequal';
 import * as DOMPurify_ from 'dompurify';
 import * as moment_ from 'moment-mini';
@@ -2956,7 +2957,7 @@ class CompoundDateFilter {
      * @return {?}
      */
     setValues(values) {
-        if (values && Array.isArray(values)) {
+        if (this.flatInstance && values && Array.isArray(values)) {
             this.flatInstance.setDate(values[0]);
         }
     }
@@ -3007,7 +3008,7 @@ class CompoundDateFilter {
         const placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
         /** @type {?} */
         const $filterInputElm = $(`<div class="flatpickr"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
-        this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : null;
+        this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : Flatpickr($filterInputElm, pickerOptions);
         return $filterInputElm;
     }
     /**

@@ -25,6 +25,7 @@
     "baseUrl": "./"
   },
   "angularCompilerOptions": {
+    "preserveWhitespaces": false,
     "strictMetadataEmit": true
   }
 }

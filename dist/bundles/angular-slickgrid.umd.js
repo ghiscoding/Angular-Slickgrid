@@ -1,8 +1,10 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/operators'), require('text-encoding-utf-8'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('lodash.isequal'), require('dompurify'), require('moment-mini'), require('jquery-ui-dist/jquery-ui'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.grid'), require('slickgrid/slick.dataview'), require('rxjs'), require('@angular/common'), require('@angular/core'), require('@ngx-translate/core')) :
-    typeof define === 'function' && define.amd ? define('angular-slickgrid', ['exports', 'rxjs/operators', 'text-encoding-utf-8', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'lodash.isequal', 'dompurify', 'moment-mini', 'jquery-ui-dist/jquery-ui', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.grid', 'slickgrid/slick.dataview', 'rxjs', '@angular/common', '@angular/core', '@ngx-translate/core'], factory) :
-    (factory((global['angular-slickgrid'] = {}),global.rxjs.operators,global.textEncodingUtf8,null,null,null,global.lodash.isequal,global.dompurify,global.moment,null,null,null,null,null,global.rxjs,global.ng.common,global.ng.core,global['ngx-translate-core']));
-}(this, (function (exports,operators,textEncodingUtf8,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,isequal_,DOMPurify_,moment_,jqueryUi,jquery_event_drag2_3_0,slick_core,slick_grid,slick_dataview,rxjs,common,core,core$1) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs/operators'), require('text-encoding-utf-8'), require('slickgrid/plugins/slick.cellrangedecorator'), require('slickgrid/plugins/slick.cellrangeselector'), require('slickgrid/plugins/slick.cellselectionmodel'), require('flatpickr'), require('lodash.isequal'), require('dompurify'), require('moment-mini'), require('jquery-ui-dist/jquery-ui'), require('slickgrid/lib/jquery.event.drag-2.3.0'), require('slickgrid/slick.core'), require('slickgrid/slick.grid'), require('slickgrid/slick.dataview'), require('rxjs'), require('@angular/common'), require('@angular/core'), require('@ngx-translate/core')) :
+    typeof define === 'function' && define.amd ? define('angular-slickgrid', ['exports', 'rxjs/operators', 'text-encoding-utf-8', 'slickgrid/plugins/slick.cellrangedecorator', 'slickgrid/plugins/slick.cellrangeselector', 'slickgrid/plugins/slick.cellselectionmodel', 'flatpickr', 'lodash.isequal', 'dompurify', 'moment-mini', 'jquery-ui-dist/jquery-ui', 'slickgrid/lib/jquery.event.drag-2.3.0', 'slickgrid/slick.core', 'slickgrid/slick.grid', 'slickgrid/slick.dataview', 'rxjs', '@angular/common', '@angular/core', '@ngx-translate/core'], factory) :
+    (factory((global['angular-slickgrid'] = {}),global.rxjs.operators,global.textEncodingUtf8,null,null,null,global.flatpickr,global.lodash.isequal,global.dompurify,global.moment,null,null,null,null,null,global.rxjs,global.ng.common,global.ng.core,global['ngx-translate-core']));
+}(this, (function (exports,operators,textEncodingUtf8,slick_cellrangedecorator,slick_cellrangeselector,slick_cellselectionmodel,Flatpickr,isequal_,DOMPurify_,moment_,jqueryUi,jquery_event_drag2_3_0,slick_core,slick_grid,slick_dataview,rxjs,common,core,core$1) { 'use strict';
+
+    Flatpickr = Flatpickr && Flatpickr.hasOwnProperty('default') ? Flatpickr['default'] : Flatpickr;
 
     /**
      * @fileoverview added by tsickle
@@ -3111,7 +3113,7 @@
          * @return {?}
          */
             function (values) {
-                if (values && Array.isArray(values)) {
+                if (this.flatInstance && values && Array.isArray(values)) {
                     this.flatInstance.setDate(values[0]);
                 }
             };
@@ -3175,7 +3177,7 @@
                 var placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
                 /** @type {?} */
                 var $filterInputElm = $("<div class=\"flatpickr\"><input type=\"text\" class=\"form-control\" data-input placeholder=\"" + placeholder + "\"></div>");
-                this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : null;
+                this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : Flatpickr($filterInputElm, pickerOptions);
                 return $filterInputElm;
             };
         /**

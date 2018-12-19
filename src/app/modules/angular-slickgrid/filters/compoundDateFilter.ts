@@ -1,8 +1,9 @@
 import { TranslateService } from '@ngx-translate/core';
 import { mapFlatpickrDateFormatWithFieldType } from '../services/utilities';
 import { Column, Filter, FilterArguments, FilterCallback, FieldType, GridOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
+import Flatpickr from 'flatpickr';
 
-// importing Flatpickr works better with a 'require'
+// use Flatpickr from import or 'require', whichever works first
 declare function require(name: string): any;
 require('flatpickr');
 
@@ -90,7 +91,7 @@ export class CompoundDateFilter implements Filter {
    * Set value(s) on the DOM element
    */
   setValues(values: SearchTerm[]) {
-    if (values && Array.isArray(values)) {
+    if (this.flatInstance && values && Array.isArray(values)) {
       this.flatInstance.setDate(values[0]);
     }
   }
@@ -134,7 +135,7 @@ export class CompoundDateFilter implements Filter {
 
     const placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
     const $filterInputElm: any = $(`<div class="flatpickr"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
-    this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : null;
+    this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : Flatpickr($filterInputElm, pickerOptions);
     return $filterInputElm;
   }
 
