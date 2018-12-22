@@ -7,8 +7,8 @@
 One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. I have used a few datagrids and slickgrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row).
 
 ### Angular Compatibility
-- version `1.x.x` for Angular 4 to 6 (ng6, need to use `rxjs-compat` as shown in this [post](https://github.com/ghiscoding/Angular-Slickgrid/issues/36#issuecomment-395710915))
-- version `2.x.x` for 7
+- version `1.x.x` for Angular 4 to 6 (*ng6, need `rxjs-compat` as shown in this [post](https://github.com/ghiscoding/Angular-Slickgrid/issues/36#issuecomment-395710915))
+- version `2.x.x` for Angular 7+
 
 ### SlickGrid Source
 We will be using [6pac SlickGrid fork](https://github.com/6pac/SlickGrid/) (the most active fork since the original @mleibman fork was closed some time ago by his author personal reasons).
@@ -17,10 +17,14 @@ We will be using [6pac SlickGrid fork](https://github.com/6pac/SlickGrid/) (the 
 The goal is of course to be able to run SlickGrid within Angular 4+ but also to incorporate as much as possible the entire list of functionalities (and more) that SlickGrid offers (you can see a vast list of samples on the [6pac SlickGrid examples](https://github.com/6pac/SlickGrid/wiki/Examples) website).
 
 ### Demo page
-The creation of `Angular-Slickgrid` started with `Bootstrap 3` support and `Bootstrap 4` is now supported as well starting with version `1.2.0`
+`Angular-Slickgrid` supports both `Bootstrap 3` and `Bootstrap 4`, you can demo of both below.
 - [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/Angular-Slickgrid/tree/master/src/app/examples)
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-bs4-demo) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-bs4-demo/tree/master/src/app/examples)
 
+#### Material Theme
+Technically speaking, `Material` theme is not provided, but it should still work. 
+The styling might need some adjustments to make it look like `Material` but there's over 200+ [SASS variables](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/dist/styles/sass/_variables.scss), 
+so I'm sure making a theme is doable and if you do, please, please contribute it as a new theme to the project. Thank you. 
 
 ### NPM Package
 [Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
@@ -65,7 +69,7 @@ This is a work in progress, but so far here are some of the features that `angul
 ## Missing features
 What if `Angular-Slickgrid` is missing feature(s) versus the original `SlickGrid`?
 
-Fear not and directly use the `SlickGrid` and `DataView` objects that are expose from the start through Event Emitters. For more info continue reading on [Wiki - SlickGrid & DataView objects](/ghiscoding/Angular-Slickgrid/wiki/SlickGrid-&-DataView-Objects) and [Wiki - Grid & DataView Events](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-&-DataView-Events)
+Fear not and simply and use the `SlickGrid` and `DataView` objects, just like in the core lib, these are exposed  through Event Emitters. For more info continue reading on [Wiki - SlickGrid & DataView objects](/ghiscoding/Angular-Slickgrid/wiki/SlickGrid-&-DataView-Objects) and [Wiki - Grid & DataView Events](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-&-DataView-Events)
 
 ### License
 [MIT License](LICENSE)
