@@ -69,7 +69,7 @@ This is a work in progress, but so far here are some of the features that `angul
 ## Missing features
 What if `Angular-Slickgrid` is missing feature(s) versus the original `SlickGrid`?
 
-Fear not and directly use the `SlickGrid` and `DataView` objects that are expose from the start through Event Emitters. For more info continue reading on [Wiki - SlickGrid & DataView objects](/ghiscoding/Angular-Slickgrid/wiki/SlickGrid-&-DataView-Objects) and [Wiki - Grid & DataView Events](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-&-DataView-Events)
+Fear not and simply and use the `SlickGrid` and `DataView` objects, just like in the core lib, these are exposed  through Event Emitters. For more info continue reading on [Wiki - SlickGrid & DataView objects](/ghiscoding/Angular-Slickgrid/wiki/SlickGrid-&-DataView-Objects) and [Wiki - Grid & DataView Events](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-&-DataView-Events)
 
 ### License
 [MIT License](LICENSE)
