@@ -79,8 +79,9 @@ $header-resizable-hover:                  1px solid #d0d0d0 !default;
 $header-scroll-width-to-remove:           16px !default;                        // without this, the header (which doesn't have scrolling) will be wider than the data viewport
 
 /* Frozen pinned rows/columns */
-$frozen-border-bottom:                    1px solid #b0b0b0 !default;
-$frozen-border-right:                     1px solid #b0b0b0 !default;
+$frozen-border-bottom:                    1px solid #a5a5a5 !default;
+$frozen-border-right:                     1px solid #a5a5a5 !default;
+$frozen-overflow-right:                   scroll !default;                      // typically we would like to always have the scroll displayed when using hamburger menu (top right)
 
 /* icon font is using Font-Awesome by default but could be changed to any other icon package like Glyphicons, ... */
 $icon-font-family:                        "FontAwesome" !default;               // or Glyphicons Halflings */

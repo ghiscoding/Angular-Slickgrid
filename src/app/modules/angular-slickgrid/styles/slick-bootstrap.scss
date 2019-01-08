@@ -343,7 +343,8 @@
     }
   }
 
-  // Frozen borders
+  /** Frozen/Pinned styling */
+
   .slick-row .slick-cell.frozen:last-child,
   // .slick-header-column.frozen:last-child,
   .slick-headerrow-column.frozen:last-child,
@@ -351,7 +352,10 @@
     border-right: $frozen-border-right;
   }
 
-  .slick-row.frozen:last-child .slick-cell {
-    border-bottom: $frozen-border-bottom;
+  .slick-pane-bottom {
+    border-top: $frozen-border-bottom;
+  }
+  .slick-viewport-bottom.slick-viewport-right {
+    overflow-y: $frozen-overflow-right !important;
   }
 }

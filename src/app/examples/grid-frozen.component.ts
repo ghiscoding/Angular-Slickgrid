@@ -1,16 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AngularGridInstance, Column, FieldType, Formatters, Filters, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-frozen.component.html',
-  styleUrls: ['./grid-frozen.component.scss']
+  styleUrls: ['./grid-frozen.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class GridFrozenComponent implements OnInit {
   title = 'Example 20: Pinned (frozen) Columns/Rows';
   subTitle = `
     This example demonstrates the use of Pinned (aka frozen) Columns and/or Rows<br/>
     <ul>
-      <li>You can dynamically change the frozen columns or rows</li>
+      <li>Option to pin any number of columns (left only) or rows</li>
+      <li>Option to pin the rows at the bottom instead of the top (default)</li>
+      <li>You can also dynamically any of these options, through SlickGrid "setOptions()"</li>
+      <li>Possibility to change the styling of the line border between pinned columns/rows</li>
     </ul>
   `;
 
@@ -20,6 +24,7 @@ export class GridFrozenComponent implements OnInit {
   dataset: any[];
   frozenColumnCount = 2;
   frozenRowCount = 3;
+  isFrozenBottom = false;
   gridObj: any;
 
   ngOnInit(): void {
@@ -35,7 +40,7 @@ export class GridFrozenComponent implements OnInit {
     this.columnDefinitions = [
       {
         id: 'sel', name: '#', field: 'id',
-        minWidth: 35, width: 35, maxWidth: 35,
+        minWidth: 40, width: 40, maxWidth: 40,
         cannotTriggerInsert: true,
         resizable: false,
         unselectable: true,
@@ -117,7 +122,7 @@ export class GridFrozenComponent implements OnInit {
         containerId: 'demo-container',
         sidePadding: 15
       },
-      alwaysShowVerticalScroll: false,
+      alwaysShowVerticalScroll: false, // disable scroll since we don't want it to show on the left pinned columns
       enableCellNavigation: true,
       enableFiltering: true,
       asyncEditorLoading: true,
@@ -125,6 +130,7 @@ export class GridFrozenComponent implements OnInit {
       autoEdit: false,
       frozenColumn: this.frozenColumnCount,
       frozenRow: this.frozenRowCount,
+      // frozenBottom: true, // if you want to freeze the bottom instead of the top, you can enable this property
       showHeaderRow: true,
       syncColumnCellResize: false,
     };
@@ -154,27 +160,31 @@ export class GridFrozenComponent implements OnInit {
     return mockDataset;
   }
 
-  // wire up model events to drive the grid
-  onRowCountChanged(e, args) {
-    if (this.gridObj) {
-      this.gridObj.updateRowCount();
-      this.gridObj.render();
-    }
-  }
-
+  /** change dynamically, through slickgrid "setOptions()" the number of pinned columns */
   changeFrozenColumnCount() {
-    if (this.gridObj) {
+    if (this.gridObj && this.gridObj.setOptions) {
       this.gridObj.setOptions({
         frozenColumn: this.frozenColumnCount
       });
     }
   }
 
+  /** change dynamically, through slickgrid "setOptions()" the number of pinned rows */
   changeFrozenRowCount() {
-    if (this.gridObj) {
+    if (this.gridObj && this.gridObj.setOptions) {
       this.gridObj.setOptions({
         frozenRow: this.frozenRowCount
       });
+    }
+  }
+
+  /** toggle dynamically, through slickgrid "setOptions()" the top/bottom pinned location */
+  toggleFrozenBottomRows() {
+    if (this.gridObj && this.gridObj.setOptions) {
+      this.gridObj.setOptions({
+        frozenBottom: !this.isFrozenBottom
+      });
+      this.isFrozenBottom = !this.isFrozenBottom; // toggle the variable
     }
   }
 }

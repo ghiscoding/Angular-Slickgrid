@@ -220,10 +220,13 @@ export interface GridOption {
   /** Formatter classes factory */
   formatterFactory?: any;
 
-  /** Number of column(s) to freeze in the grid */
+  /** Defaults to false, do we want to freeze (pin) the bottom portion instead of the top */
+  frozenBottom?: boolean;
+
+  /** Number of column(s) to freeze (pin) in the grid */
   frozenColumn?: number;
 
-  /** Number of row(s) to freeze in the grid */
+  /** Number of row(s) to freeze (pin) in the grid */
   frozenRow?: number;
 
   /** Defaults to false, which leads to have row with full width */
