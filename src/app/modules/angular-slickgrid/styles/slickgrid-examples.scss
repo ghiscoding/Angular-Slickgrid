@@ -189,16 +189,3 @@ input.editor-checkbox {
   padding: 0;
   border: 0;
 }
-
-
-.frozen {
-  background: #eeeeee;
-}
-
-.slick-row .slick-cell.frozen:last-child, .slick-header-column.frozen:last-child, .slick-footerrow-column.frozen:last-child {
-  border-right: 1px solid #999;
-}
-
-.slick-row.frozen:last-child .slick-cell {
-  border-bottom: 1px solid #999;
-}

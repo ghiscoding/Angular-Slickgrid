@@ -261,6 +261,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this._dataView.beginUpdate();
       this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
       this._dataView.endUpdate();
+
+      // if you don't want the items that are not visible (due to being filtered out
+      // or being on a different page) to stay selected, pass 'false' to the second arg
+      if (this.gridOptions && this.gridOptions.dataView && this.gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
+        this._dataView.syncGridSelection(this.grid, this.gridOptions.dataView.syncGridSelection);
+      }
     }
 
     // user might want to hide the header row on page load but still have `enableFiltering: true`
