@@ -1,6 +1,17 @@
 import { TranslateService } from '@ngx-translate/core';
 import { mapFlatpickrDateFormatWithFieldType } from '../services/utilities';
-import { Column, Filter, FilterArguments, FilterCallback, FieldType, GridOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
+import {
+  Column,
+  ColumnFilter,
+  Filter,
+  FilterArguments,
+  FilterCallback,
+  FieldType,
+  GridOption,
+  OperatorString,
+  OperatorType,
+  SearchTerm,
+} from './../models/index';
 import Flatpickr from 'flatpickr';
 
 // use Flatpickr from import or 'require', whichever works first
@@ -28,6 +39,11 @@ export class CompoundDateFilter implements Filter {
   /** Getter for the Grid Options pulled through the Grid Object */
   private get gridOptions(): GridOption {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+  }
+
+  /** Getter for the Filter Operator */
+  get columnFilter(): ColumnFilter {
+    return this.columnDef && this.columnDef.filter || {};
   }
 
   set operator(op: OperatorType | OperatorString) {
@@ -133,7 +149,10 @@ export class CompoundDateFilter implements Filter {
       pickerOptions.enableTime = true;
     }
 
-    const placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
+    let placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
+    if (this.columnFilter && this.columnFilter.placeholder) {
+      placeholder = this.columnFilter.placeholder;
+    }
     const $filterInputElm: any = $(`<div class="flatpickr"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
     this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : Flatpickr($filterInputElm, pickerOptions);
     return $filterInputElm;
