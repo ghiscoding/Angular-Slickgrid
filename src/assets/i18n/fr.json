@@ -1,8 +1,8 @@
 {
   "ALL_SELECTED": "Tout sélectionnés",
   "CANCEL": "Annuler",
-  "CLEAR_ALL_FILTERS": "Effacer tous les filtres",
-  "CLEAR_ALL_SORTING": "Effacer tous les tris",
+  "CLEAR_ALL_FILTERS": "Supprimer tous les filtres",
+  "CLEAR_ALL_SORTING": "Supprimer tous les tris",
   "COLUMNS": "Colonnes",
   "COMMANDS": "Commandes",
   "CONTAINS": "Contient",
@@ -23,6 +23,7 @@
   "PAGE": "Page",
   "PAGE_X_OF_Y": "page {{x}} de {{y}}",
   "REFRESH_DATASET": "Rafraîchir les données",
+  "REMOVE_SORT": "Supprimer le tri",
   "SAVE": "Sauvegarder",
   "SELECT_ALL": "Sélectionner tout",
   "SORT_ASCENDING": "Trier par ordre croissant",

@@ -226,8 +226,12 @@ export class SortService {
     }
   }
 
-  onLocalSortChanged(grid: any, dataView: any, sortColumns: ColumnSort[]) {
+  onLocalSortChanged(grid: any, dataView: any, sortColumns: ColumnSort[], forceReSort = false) {
     if (grid && dataView) {
+      if (forceReSort) {
+        dataView.reSort();
+      }
+
       dataView.sort((dataRow1: any, dataRow2: any) => {
         for (let i = 0, l = sortColumns.length; i < l; i++) {
           const columnSortObj = sortColumns[i];
@@ -252,6 +256,7 @@ export class SortService {
         }
         return SortDirectionNumber.neutral;
       });
+
       grid.invalidate();
       grid.render();
     }
