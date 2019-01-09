@@ -1,4 +1,14 @@
-import { Column, Filter, FilterArguments, FilterCallback, SearchTerm, OperatorType, OperatorString } from './../modules/angular-slickgrid';
+import {
+  Column,
+  ColumnFilter,
+  Filter,
+  FilterArguments,
+  FilterCallback,
+  GridOption,
+  OperatorType,
+  OperatorString,
+  SearchTerm,
+} from './../modules/angular-slickgrid';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -13,6 +23,16 @@ export class CustomInputFilter implements Filter {
   operator: OperatorType | OperatorString = OperatorType.equal;
 
   constructor() {}
+
+  /** Getter for the Filter Operator */
+  get columnFilter(): ColumnFilter {
+    return this.columnDef && this.columnDef.filter || {};
+  }
+
+  /** Getter for the Grid Options pulled through the Grid Object */
+  get gridOptions(): GridOption {
+    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+  }
 
   /**
    * Initialize the Filter
@@ -83,7 +103,11 @@ export class CustomInputFilter implements Filter {
    * Create the HTML template as a string
    */
   private buildTemplateHtmlString() {
-    return `<input type="text" class="form-control search-filter" placeholder="Custom Filter">`;
+    let placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
+    if (this.columnFilter && this.columnFilter.placeholder) {
+      placeholder = this.columnFilter.placeholder;
+    }
+    return `<input type="text" class="form-control search-filter" placeholder="${placeholder}">`;
   }
 
   /**

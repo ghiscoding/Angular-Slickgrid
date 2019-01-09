@@ -80,6 +80,12 @@ export interface ColumnFilter {
    */
   params?: any;
 
+  /**
+   * Placeholder text that can be used by some Filters.
+   * Note that this will override the default placeholder configured in the global config
+   */
+  placeholder?: string;
+
   /** Step value of the filter, works only with Filters supporting it (input text, number, float, range, slider) */
   valueStep?: number | string;
 }

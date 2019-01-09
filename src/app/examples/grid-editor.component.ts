@@ -15,6 +15,7 @@ import {
   OperatorType,
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
+import { CustomInputFilter } from './custom-inputFilter';
 import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
@@ -157,6 +158,10 @@ export class GridEditorComponent implements OnInit {
         editor: {
           model: CustomInputEditor,
           validator: myCustomTitleValidator, // use a custom validator
+        },
+        filter: {
+          model: CustomInputFilter,
+          placeholder: '&#128269; custom',
         },
       }, {
         id: 'duration',

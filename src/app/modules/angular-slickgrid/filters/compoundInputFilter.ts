@@ -1,6 +1,16 @@
 import { TranslateService } from '@ngx-translate/core';
 import { FieldType } from './../models/index';
-import { Column, Filter, FilterArguments, FilterCallback, GridOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
+import {
+  Column,
+  ColumnFilter,
+  Filter,
+  FilterArguments,
+  FilterCallback,
+  GridOption,
+  OperatorString,
+  OperatorType,
+  SearchTerm,
+} from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -22,6 +32,11 @@ export class CompoundInputFilter implements Filter {
   /** Getter for the Grid Options pulled through the Grid Object */
   private get gridOptions(): GridOption {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+  }
+
+  /** Getter for the Filter Operator */
+  get columnFilter(): ColumnFilter {
+    return this.columnDef && this.columnDef.filter || {};
   }
 
   /** Getter of input type (text, number, password) */
@@ -108,7 +123,10 @@ export class CompoundInputFilter implements Filter {
   // ------------------
 
   private buildInputHtmlString() {
-    const placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
+    let placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
+    if (this.columnFilter && this.columnFilter.placeholder) {
+      placeholder = this.columnFilter.placeholder;
+    }
     return `<input class="form-control" type="${this._inputType || 'text'}" placeholder="${placeholder}" />`;
   }
 
