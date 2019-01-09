@@ -30,7 +30,7 @@ export interface Filter {
   params?: any | any[];
 
   /** Funtion to initialize the Filter class */
-  init: (args: FilterArguments) => void;
+  init: (args: FilterArguments, isFilterFirstRender?: boolean) => void;
 
   /** Clear filter function */
   clear: () => void;

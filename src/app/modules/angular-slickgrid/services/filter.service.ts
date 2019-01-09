@@ -28,6 +28,8 @@ declare var $: any;
 @Injectable()
 export class FilterService {
   private _eventHandler = new Slick.EventHandler();
+  private _isFilterFirstRender = true;
+  private _firstColumnIdRendered = '';
   private _slickSubscriber: SlickEvent;
   private _filters: any[] = [];
   private _columnFilters: ColumnFilters = {};
@@ -66,7 +68,14 @@ export class FilterService {
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
     this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: Event, args: any) => {
-      this.addFilterTemplateToHeaderRow(args);
+      // firstColumnIdRendered is null at first, so if becomes filled and equal then we know it was already rendered
+      if (args.column.id === this._firstColumnIdRendered) {
+        this._isFilterFirstRender = false;
+      }
+      this.addFilterTemplateToHeaderRow(args, this._isFilterFirstRender);
+      if (this._firstColumnIdRendered === '') {
+        this._firstColumnIdRendered = args.column.id;
+      }
     });
   }
 
@@ -377,7 +386,7 @@ export class FilterService {
     }
   }
 
-  addFilterTemplateToHeaderRow(args: { column: Column; grid: any; node: any }) {
+  addFilterTemplateToHeaderRow(args: { column: Column; grid: any; node: any }, isFilterFirstRender = true) {
     const columnDef = args.column;
     const columnId = columnDef.id || '';
 
@@ -406,7 +415,7 @@ export class FilterService {
       };
 
       if (filter) {
-        filter.init(filterArguments);
+        filter.init(filterArguments, isFilterFirstRender);
         const filterExistIndex = this._filters.findIndex((filt) => filter.columnDef.name === filt.columnDef.name);
 
         // add to the filters arrays or replace it when found
