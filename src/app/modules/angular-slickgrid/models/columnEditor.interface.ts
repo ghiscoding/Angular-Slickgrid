@@ -54,6 +54,12 @@ export interface ColumnEditor {
   /** Any inline editor function that implements Editor for the cell */
   model?: any;
 
+  /**
+   * Placeholder text that can be used by some Editors.
+   * Note that this will override the default placeholder configured in the global config
+   */
+  placeholder?: string;
+
   /** Editor Validator */
   validator?: EditorValidator;
 

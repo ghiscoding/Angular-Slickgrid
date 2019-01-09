@@ -35,7 +35,9 @@ export class CustomInputEditor implements Editor {
   }
 
   init(): void {
-    this.$input = $(`<input type="text" class="editor-text" placeholder="custom" />`)
+    const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
+
+    this.$input = $(`<input type="text" class="editor-text" placeholder="${placeholder}" />`)
       .appendTo(this.args.container)
       .on('keydown.nav', (e) => {
         if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
