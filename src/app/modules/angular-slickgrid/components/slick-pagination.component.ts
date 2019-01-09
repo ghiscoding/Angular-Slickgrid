@@ -2,7 +2,7 @@ import { Pagination } from './../models/pagination.interface';
 import { AfterViewInit, Component, EventEmitter, Injectable, Input, OnDestroy, Output } from '@angular/core';
 import { castToPromise } from './../services/utilities';
 import { GridOption } from './../models/index';
-import { FilterService, SharedService } from './../services/index';
+import { FilterService } from './../services/index';
 import { Subscription } from 'rxjs';
 
 // using external non-typed js libraries
@@ -14,13 +14,12 @@ declare var Slick: any;
 })
 @Injectable()
 export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
-  private _dataView: any;
   private _eventHandler = new Slick.EventHandler();
   private _filterSubcription: Subscription;
   private _gridPaginationOptions: GridOption;
   private _isFirstRender = true;
   @Output() onPaginationChanged = new EventEmitter<Pagination>();
-
+  @Input() dataView: any;
   @Input()
   set gridPaginationOptions(gridPaginationOptions: GridOption) {
     this._gridPaginationOptions = gridPaginationOptions;
@@ -44,9 +43,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   fromToParams: any = { from: this.dataFrom, to: this.dataTo, totalItems: this.totalItems };
 
   /** Constructor */
-  constructor(private filterService: FilterService, private sharedService: SharedService) {
-    this._dataView = this.sharedService && this.sharedService.dataView;
-  }
+  constructor(private filterService: FilterService) {}
 
   ngOnDestroy() {
     this.dispose();
@@ -58,18 +55,15 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
       this.refreshPagination();
     }
 
-    // Subscribe to Event Emitter of Filter & Sort changed, go back to page 1 when that happen
-    this._filterSubcription = this.filterService.onFilterChanged.subscribe((data) => {
-      this.refreshPagination(true);
-    });
-    // Subscribe to Filter clear and go back to page 1 when that happen
-    this._filterSubcription = this.filterService.onFilterCleared.subscribe((data) => {
-      this.refreshPagination(true);
-    });
+    // Subscribe to Filter Clear & Changed and go back to page 1 when that happen
+    this._filterSubcription = this.filterService.onFilterChanged.subscribe(() => this.refreshPagination(true));
+    this._filterSubcription = this.filterService.onFilterCleared.subscribe(() => this.refreshPagination(true));
 
     // Subscribe to any dataview row count changed so that when Adding/Deleting item(s) through the DataView
     // that would trigger a refresh of the pagination numbers
-    this._eventHandler.subscribe(this._dataView.onRowCountChanged, (e: Event, args: any) => this.onDataViewRowCountChanged(args));
+    if (this.dataView) {
+      this._eventHandler.subscribe(this.dataView.onRowCountChanged, (e: Event, args: any) => this.onDataViewRowCountChanged(args));
+    }
   }
 
   ceil(number: number) {
