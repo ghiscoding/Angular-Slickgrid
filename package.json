@@ -70,7 +70,7 @@
     "lodash.isequal": "^4.5.0",
     "moment-mini": "^2.22.1",
     "rxjs": "^6.3.3",
-    "slickgrid": "~2.3.23",
+    "slickgrid": "github:6pac/SlickGrid",
     "text-encoding-utf-8": "^1.0.2",
     "tslib": "^1.9.3",
     "vinyl-paths": "^2.1.0"
@@ -95,6 +95,7 @@
     "@types/moment": "^2.13.0",
     "@types/node": "^10.12.15",
     "@types/text-encoding-utf-8": "^1.0.1",
+    "bootstrap": "3.4.0",
     "codelyzer": "~4.5.0",
     "copyfiles": "^2.1.0",
     "cross-env": "^5.2.0",

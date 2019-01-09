@@ -78,6 +78,11 @@ $header-filter-row-border-left:           0 none !default;
 $header-resizable-hover:                  1px solid #d0d0d0 !default;
 $header-scroll-width-to-remove:           16px !default;                        // without this, the header (which doesn't have scrolling) will be wider than the data viewport
 
+/* Frozen pinned rows/columns */
+$frozen-border-bottom:                    1px solid #a5a5a5 !default;
+$frozen-border-right:                     1px solid #a5a5a5 !default;
+$frozen-overflow-right:                   scroll !default;                      // typically we would like to always have the scroll displayed when using hamburger menu (top right)
+
 /* icon font is using Font-Awesome by default but could be changed to any other icon package like Glyphicons, ... */
 $icon-font-family:                        "FontAwesome" !default;               // or Glyphicons Halflings */
 $icon-font-size:                          14px !default;
@@ -141,11 +146,11 @@ $grid-menu-box-shadow:                    2px 2px 2px silver !default;
 $grid-menu-icon-font-size:                14px !default;
 
 /* Checkbox Selector / Row Selection */
-$checkbox-selector-color:                  $primary-color !default;
-$checkbox-selector-size:                   13px !default;
-$checkbox-selector-icon:                   "\f00c" !default;
-$checkbox-selector-opacity:                0.15 !default;
-$checkbox-selector-opacity-hover:          0.35 !default;
+$checkbox-selector-color:                 $primary-color !default;
+$checkbox-selector-size:                  13px !default;
+$checkbox-selector-icon:                  "\f00c" !default;
+$checkbox-selector-opacity:               0.15 !default;
+$checkbox-selector-opacity-hover:         0.35 !default;
 
 /* Editors */
 $large-editor-background-color:           #ffffff !default;
@@ -241,6 +246,7 @@ $multiselect-icon-unchecked:              "\f096" !default;
 $multiselect-icon-radio-checked:          "\f192" !default;
 $multiselect-icon-radio-unchecked:        "\f10c" !default;
 $multiselect-icon-font-size:              16px !default;
+$multiselect-label-margin-bottom:         5px !default;
 $multiselect-unchecked-opacity:           0.5 !default;
 $multiselect-ok-button-bg-color:          #fff !default;
 $multiselect-ok-button-bg-hover-color:    darken($row-mouse-hover-color, 3%) !default;

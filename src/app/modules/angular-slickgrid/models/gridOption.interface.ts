@@ -92,6 +92,14 @@ export interface GridOption {
   /** Unique property name on the dataset used by Slick.Data.DataView */
   datasetIdPropertyName?: string;
 
+  dataView?: {
+    /**
+     * if you don't want the items that are not visible (due to being filtered out
+     * or being on a different page) to stay selected, the set this property as 'false'
+     */
+    syncGridSelection?: boolean;
+  };
+
   /** Default column width, is set to 80 when null */
   defaultColumnWidth?: number;
 
@@ -212,6 +220,15 @@ export interface GridOption {
   /** Formatter classes factory */
   formatterFactory?: any;
 
+  /** Defaults to false, do we want to freeze (pin) the bottom portion instead of the top */
+  frozenBottom?: boolean;
+
+  /** Number of column(s) to freeze (pin) in the grid */
+  frozenColumn?: number;
+
+  /** Number of row(s) to freeze (pin) in the grid */
+  frozenRow?: number;
+
   /** Defaults to false, which leads to have row with full width */
   fullWidthRows?: boolean;
 
@@ -316,6 +333,9 @@ export interface GridOption {
    * This flag should be enabled especially when mixing these 2 features (Row Selections & Inline Editors)
    */
   suppressActiveCellChangeOnEdit?: boolean;
+
+  /** Defaults to false, when set to True will sync the column cell resize & apply the column width */
+  syncColumnCellResize?: boolean;
 
   /** What is the top panel height in pixels (only type the number) */
   topPanelHeight?: number;

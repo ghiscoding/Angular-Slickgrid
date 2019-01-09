@@ -58,6 +58,7 @@
     .slick-row {
       position: absolute;
       width: 100%;
+
       &:hover {
         background-color: $row-mouse-hover-color;
       }
@@ -332,12 +333,29 @@
       }
       .slick-resizable-handle {
         width: 7px;
-        right: -4px;
+        right: 0px;
+        z-index: 1;
       }
       .slick-resizable-handle:hover {
         border-right: $header-resizable-hover;
         right: 0;
       }
     }
+  }
+
+  /** Frozen/Pinned styling */
+
+  .slick-row .slick-cell.frozen:last-child,
+  // .slick-header-column.frozen:last-child,
+  .slick-headerrow-column.frozen:last-child,
+  .slick-footerrow-column.frozen:last-child {
+    border-right: $frozen-border-right;
+  }
+
+  .slick-pane-bottom {
+    border-top: $frozen-border-bottom;
+  }
+  .slick-viewport-bottom.slick-viewport-right {
+    overflow-y: $frozen-overflow-right !important;
   }
 }

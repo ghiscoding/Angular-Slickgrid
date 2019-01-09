@@ -266,6 +266,8 @@
     }
   }
   label {
+    margin-bottom: $multiselect-label-margin-bottom;
+
     span {
       cursor: pointer;
       margin-left: $multiselect-checkbox-margin-left;

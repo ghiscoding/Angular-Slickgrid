@@ -174,6 +174,9 @@ export interface Column {
   /** What is the Field Type, this can be used in the Formatters/Editors/... */
   type?: FieldType;
 
+  /** Defaults to false, when set to True will lead to the column being unselected in the UI */
+  unselectable?: boolean;
+
   /** Editor Validator */
   validator?: EditorValidator;
 
