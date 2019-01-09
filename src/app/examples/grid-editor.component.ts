@@ -157,6 +157,7 @@ export class GridEditorComponent implements OnInit {
         type: FieldType.string,
         editor: {
           model: CustomInputEditor,
+          placeholder: 'custom',
           validator: myCustomTitleValidator, // use a custom validator
         },
         filter: {
