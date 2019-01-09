@@ -24,6 +24,8 @@ const DOMPurify = DOMPurify_; // patch to fix rollup to work
 declare var $: any;
 
 export class SelectFilter implements Filter {
+  private _isFilterFirstRender = true;
+
   /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
   elementName: string;
 
@@ -126,7 +128,8 @@ export class SelectFilter implements Filter {
   /**
    * Initialize the filter template
    */
-  init(args: FilterArguments) {
+  init(args: FilterArguments, isFilterFirstRender: boolean) {
+    this._isFilterFirstRender = isFilterFirstRender;
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
@@ -288,7 +291,7 @@ export class SelectFilter implements Filter {
     }
 
     // user can optionally add a blank entry at the beginning of the collection
-    if (this.collectionOptions && this.collectionOptions.addBlankEntry) {
+    if (this.collectionOptions && this.collectionOptions.addBlankEntry && this._isFilterFirstRender) {
       collection.unshift(this.createBlankEntry());
     }
 
