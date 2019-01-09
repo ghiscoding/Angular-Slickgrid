@@ -229,7 +229,7 @@ export class SortService {
   onLocalSortChanged(grid: any, dataView: any, sortColumns: ColumnSort[], forceReSort = false) {
     if (grid && dataView) {
       if (forceReSort) {
-        this._dataView.reSort();
+        dataView.reSort();
       }
 
       dataView.sort((dataRow1: any, dataRow2: any) => {

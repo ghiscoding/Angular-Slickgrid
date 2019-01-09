@@ -2,7 +2,6 @@ export class Constants {
   static TEXT_CANCEL = 'Cancel';
   static TEXT_CLEAR_ALL_FILTERS = 'Clear All Filters';
   static TEXT_CLEAR_ALL_SORTING = 'Clear All Sorting';
-  static TEXT_CLEAR_SORT = 'Clear Sort';
   static TEXT_COLUMNS = 'Columns';
   static TEXT_COMMANDS = 'Commands';
   static TEXT_EXPORT_IN_CSV_FORMAT = 'Export in CSV format';
@@ -10,6 +9,7 @@ export class Constants {
   static TEXT_FORCE_FIT_COLUMNS = 'Force fit columns';
   static TEXT_HIDE_COLUMN = 'Hide Column';
   static TEXT_REFRESH_DATASET = 'Refresh Dataset';
+  static TEXT_REMOVE_SORT = 'Remove Sort';
   static TEXT_SAVE = 'Save';
   static TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';
   static TEXT_SORT_ASCENDING = 'Sort Ascending';

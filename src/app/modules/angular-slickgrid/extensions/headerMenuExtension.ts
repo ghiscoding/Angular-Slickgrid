@@ -117,7 +117,7 @@ export class HeaderMenuExtension implements Extension {
             if (!headerMenuOptions.hideClearSortCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'clear-sort').length === 0) {
               columnHeaderMenuItems.push({
                 iconCssClass: headerMenuOptions.iconClearSortCommand || 'fa fa-unsorted',
-                title: options.enableTranslate ? this.translate.instant('CLEAR_SORT') : Constants.TEXT_CLEAR_SORT,
+                title: options.enableTranslate ? this.translate.instant('REMOVE_SORT') : Constants.TEXT_REMOVE_SORT,
                 command: 'clear-sort',
                 positionOrder: 52
               });
@@ -192,11 +192,11 @@ export class HeaderMenuExtension implements Extension {
           const columnHeaderMenuItems: HeaderMenuItem[] = columnDef.header.menu.items || [];
           columnHeaderMenuItems.forEach((item) => {
             switch (item.command) {
+              case 'clear-sort':
+                item.title = this.translate.instant('REMOVE_SORT') || Constants.TEXT_REMOVE_SORT;
+                break;
               case 'sort-asc':
                 item.title = this.translate.instant('SORT_ASCENDING') || Constants.TEXT_SORT_ASCENDING;
-                break;
-              case 'clear-sort':
-                item.title = this.translate.instant('CLEAR_SORT') || Constants.TEXT_CLEAR_SORT;
                 break;
               case 'sort-desc':
                 item.title = this.translate.instant('SORT_DESCENDING') || Constants.TEXT_SORT_DESCENDING;
@@ -240,43 +240,16 @@ export class HeaderMenuExtension implements Extension {
 
   /** Sort the current column */
   private sortColumn(e: Event, args: HeaderMenuOnCommandArgs, isSortingAsc = true) {
-    // get previously sorted columns
-    const cols: ColumnSort[] = this.sortService.getPreviousColumnSorts(args.column.id + '');
+    if (args && args.column) {
+      // get previously sorted columns
+      const sortedColsWithoutCurrent: ColumnSort[] = this.sortService.getPreviousColumnSorts(args.column.id + '');
 
-    // add to the column array, the column sorted by the header menu
-    cols.push({ sortCol: args.column, sortAsc: isSortingAsc });
-    if (this.sharedService.gridOptions.backendServiceApi) {
-      this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: cols, grid: this.sharedService.grid });
-    } else if (this.sharedService.dataView) {
-      this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, cols);
-    } else {
-      // when using customDataView, we will simply send it as a onSort event with notify
-      const isMultiSort = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.multiColumnSort || false;
-      const sortOutput = isMultiSort ? cols : cols[0];
-      args.grid.onSort.notify(sortOutput);
-    }
-
-    // update the this.sharedService.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
-    const newSortColumns: ColumnSort[] = cols.map((col) => {
-      return {
-        columnId: col && col.sortCol && col.sortCol.id,
-        sortAsc: col && col.sortAsc
-      };
-    });
-    this.sharedService.grid.setSortColumns(newSortColumns); // add sort icon in UI
-  }
-
-  /** Clear the Sort on the current column (if it's actually sorted) */
-  private clearColumnSort(e: Event, args: HeaderMenuOnCommandArgs) {
-    // get previously sorted columns
-    const allSortedCols: ColumnSort[] = this.sortService.getPreviousColumnSorts();
-    const sortedColsWithoutCurrent: ColumnSort[] = this.sortService.getPreviousColumnSorts(args.column.id + '');
-
-    if (allSortedCols.length !== sortedColsWithoutCurrent.length) {
+      // add to the column array, the column sorted by the header menu
+      sortedColsWithoutCurrent.push({ sortCol: args.column, sortAsc: isSortingAsc });
       if (this.sharedService.gridOptions.backendServiceApi) {
         this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this.sharedService.grid });
       } else if (this.sharedService.dataView) {
-        this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, sortedColsWithoutCurrent, true);
+        this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, sortedColsWithoutCurrent);
       } else {
         // when using customDataView, we will simply send it as a onSort event with notify
         const isMultiSort = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.multiColumnSort || false;
@@ -285,13 +258,44 @@ export class HeaderMenuExtension implements Extension {
       }
 
       // update the this.sharedService.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
-      const updatedSortColumns: ColumnSort[] = sortedColsWithoutCurrent.map((col) => {
+      const newSortColumns: ColumnSort[] = sortedColsWithoutCurrent.map((col) => {
         return {
           columnId: col && col.sortCol && col.sortCol.id,
           sortAsc: col && col.sortAsc
         };
       });
-      this.sharedService.grid.setSortColumns(updatedSortColumns); // add sort icon in UI
+      this.sharedService.grid.setSortColumns(newSortColumns); // add sort icon in UI
+    }
+  }
+
+  /** Clear the Sort on the current column (if it's actually sorted) */
+  private clearColumnSort(e: Event, args: HeaderMenuOnCommandArgs) {
+    if (args && args.column) {
+      // get previously sorted columns
+      const allSortedCols: ColumnSort[] = this.sortService.getPreviousColumnSorts();
+      const sortedColsWithoutCurrent: ColumnSort[] = this.sortService.getPreviousColumnSorts(args.column.id + '');
+
+      if (allSortedCols.length !== sortedColsWithoutCurrent.length) {
+        if (this.sharedService.gridOptions.backendServiceApi) {
+          this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this.sharedService.grid });
+        } else if (this.sharedService.dataView) {
+          this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, sortedColsWithoutCurrent, true);
+        } else {
+          // when using customDataView, we will simply send it as a onSort event with notify
+          const isMultiSort = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.multiColumnSort || false;
+          const sortOutput = isMultiSort ? sortedColsWithoutCurrent : sortedColsWithoutCurrent[0];
+          args.grid.onSort.notify(sortOutput);
+        }
+
+        // update the this.sharedService.gridObj sortColumns array which will at the same add the visual sort icon(s) on the UI
+        const updatedSortColumns: ColumnSort[] = sortedColsWithoutCurrent.map((col) => {
+          return {
+            columnId: col && col.sortCol && col.sortCol.id,
+            sortAsc: col && col.sortAsc
+          };
+        });
+        this.sharedService.grid.setSortColumns(updatedSortColumns); // add sort icon in UI
+      }
     }
   }
 }
