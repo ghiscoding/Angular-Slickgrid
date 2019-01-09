@@ -5,6 +5,7 @@
     <slick-pagination id="slickPagingContainer-{{gridId}}"
         *ngIf="showPagination"
         (onPaginationChanged)="paginationChanged($event)"
+        [dataView]="dataView"
         [gridPaginationOptions]="gridPaginationOptions">
     </slick-pagination>
 </div>
