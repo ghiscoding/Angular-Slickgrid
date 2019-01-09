@@ -95,11 +95,11 @@ const slickgridEventPrefix = 'sg';
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
   private _dataset: any[];
   private _columnDefinitions: Column[];
-  private _dataView: any;
   private _eventHandler: any = new Slick.EventHandler();
   private _fixedHeight: number | null;
   private _fixedWidth: number | null;
   private _hideHeaderRowAfterPageLoad = false;
+  dataView: any;
   grid: any;
   gridPaginationOptions: GridOption;
   gridHeightString: string;
@@ -147,7 +147,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.refreshGridData(dataset);
   }
   get dataset(): any[] {
-    return this._dataView.getItems();
+    return this.dataView.getItems();
   }
 
   constructor(
@@ -182,7 +182,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   destroy(emptyDomElementContainer = false) {
-    this._dataView = [];
+    this.dataView = [];
     this.gridOptions = {};
     this._eventHandler.unsubscribeAll();
     this.extensionService.dispose();
@@ -218,9 +218,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
         this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
         this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
-        this._dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
+        this.dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
       } else {
-        this._dataView = new Slick.Data.DataView();
+        this.dataView = new Slick.Data.DataView();
       }
     }
 
@@ -242,13 +242,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.extensionService.createExtensionsBeforeGridCreation(this._columnDefinitions, this.gridOptions);
 
     // build SlickGrid Grid, also user might optionally pass a custom dataview (e.g. remote model)
-    this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView || this._dataView, this._columnDefinitions, this.gridOptions);
+    this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView || this.dataView, this._columnDefinitions, this.gridOptions);
 
-    this.sharedService.dataView = this._dataView;
+    this.sharedService.dataView = this.dataView;
     this.sharedService.grid = this.grid;
 
     this.extensionService.attachDifferentExtensions();
-    this.attachDifferentHooks(this.grid, this.gridOptions, this._dataView);
+    this.attachDifferentHooks(this.grid, this.gridOptions, this.dataView);
 
     // emit the Grid & DataView object to make them available in parent component
     this.onGridCreated.emit(this.grid);
@@ -256,16 +256,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // initialize the SlickGrid grid
     this.grid.init();
 
-    if (!this.customDataView && (this._dataView && this._dataView.beginUpdate && this._dataView.setItems && this._dataView.endUpdate)) {
-      this.onDataviewCreated.emit(this._dataView);
-      this._dataView.beginUpdate();
-      this._dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
-      this._dataView.endUpdate();
+    if (!this.customDataView && (this.dataView && this.dataView.beginUpdate && this.dataView.setItems && this.dataView.endUpdate)) {
+      this.onDataviewCreated.emit(this.dataView);
+      this.dataView.beginUpdate();
+      this.dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
+      this.dataView.endUpdate();
 
       // if you don't want the items that are not visible (due to being filtered out
       // or being on a different page) to stay selected, pass 'false' to the second arg
       if (this.gridOptions && this.gridOptions.dataView && this.gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
-        this._dataView.syncGridSelection(this.grid, this.gridOptions.dataView.syncGridSelection);
+        this.dataView.syncGridSelection(this.grid, this.gridOptions.dataView.syncGridSelection);
       }
     }
 
@@ -276,18 +276,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // after the DataView is created & updated execute some processes
-    this.executeAfterDataviewCreated(this.grid, this.gridOptions, this._dataView);
+    this.executeAfterDataviewCreated(this.grid, this.gridOptions, this.dataView);
 
     // attach resize ONLY after the dataView is ready
     this.attachResizeHook(this.grid, this.gridOptions);
 
     // attach grouping and header grouping colspan service
     if (this.gridOptions.createPreHeaderPanel && !this.gridOptions.enableDraggableGrouping) {
-      this.groupingAndColspanService.init(this.grid, this._dataView);
+      this.groupingAndColspanService.init(this.grid, this.dataView);
     }
 
     // attach grid  service
-    this.gridService.init(this.grid, this._dataView);
+    this.gridService.init(this.grid, this.dataView);
 
     // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
     if (this.gridOptions.enableTranslate) {
@@ -296,7 +296,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // if Export is enabled, initialize the service with the necessary grid and other objects
     if (this.gridOptions.enableExport) {
-      this.exportService.init(this.grid, this._dataView);
+      this.exportService.init(this.grid, this.dataView);
     }
 
     // once all hooks are in placed and the grid is initialized, we can emit an event
@@ -312,7 +312,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     this.onAngularGridCreated.emit({
       // Slick Grid & DataView objects
-      dataView: this._dataView,
+      dataView: this.dataView,
       slickGrid: this.grid,
 
       // public methods
@@ -423,7 +423,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (gridOptions.presets && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
         this.filterService.populateColumnFilterSearchTerms();
       }
-      gridOptions.backendServiceApi ? this.filterService.attachBackendOnFilter(grid) : this.filterService.attachLocalOnFilter(grid, this._dataView);
+      gridOptions.backendServiceApi ? this.filterService.attachBackendOnFilter(grid) : this.filterService.attachLocalOnFilter(grid, this.dataView);
     }
 
     // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
@@ -478,8 +478,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // does the user have a colspan callback?
     if (gridOptions.colspanCallback) {
-      this._dataView.getItemMetadata = (rowNumber: number) => {
-        const item = this._dataView.getItem(rowNumber);
+      this.dataView.getItemMetadata = (rowNumber: number) => {
+        const item = this.dataView.getItem(rowNumber);
         return gridOptions.colspanCallback(item);
       };
     }
@@ -631,10 +631,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * @param dataset
    */
   refreshGridData(dataset: any[], totalCount?: number) {
-    if (Array.isArray(dataset) && this.grid && this._dataView && typeof this._dataView.setItems === 'function') {
-      this._dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
+    if (Array.isArray(dataset) && this.grid && this.dataView && typeof this.dataView.setItems === 'function') {
+      this.dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
       if (!this.gridOptions.backendServiceApi) {
-        this._dataView.reSort();
+        this.dataView.reSort();
       }
 
       // this.grid.setData(dataset);

@@ -74,10 +74,12 @@ export const GlobalGridOptions: GridOption = {
     autoAlign: true,
     autoAlignOffset: 12,
     minWidth: 140,
+    iconClearSortCommand: 'fa fa-unsorted',
     iconSortAscCommand: 'fa fa-sort-asc',
     iconSortDescCommand: 'fa fa-sort-desc',
     iconColumnHideCommand: 'fa fa-times',
     hideColumnHideCommand: false,
+    hideClearSortCommand: false,
     hideSortCommands: false
   },
   headerRowHeight: 35,
