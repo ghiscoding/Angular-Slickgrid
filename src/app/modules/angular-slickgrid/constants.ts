@@ -2,6 +2,7 @@ export class Constants {
   static TEXT_CANCEL = 'Cancel';
   static TEXT_CLEAR_ALL_FILTERS = 'Clear All Filters';
   static TEXT_CLEAR_ALL_SORTING = 'Clear All Sorting';
+  static TEXT_CLEAR_SORT = 'Clear Sort';
   static TEXT_COLUMNS = 'Columns';
   static TEXT_COMMANDS = 'Commands';
   static TEXT_EXPORT_IN_CSV_FORMAT = 'Export in CSV format';

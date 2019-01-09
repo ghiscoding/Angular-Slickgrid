@@ -1,8 +1,9 @@
 {
   "ALL_SELECTED": "Tout sélectionnés",
   "CANCEL": "Annuler",
-  "CLEAR_ALL_FILTERS": "Effacer tous les filtres",
-  "CLEAR_ALL_SORTING": "Effacer tous les tris",
+  "CLEAR_ALL_FILTERS": "Supprimer tous les filtres",
+  "CLEAR_ALL_SORTING": "Supprimer tous les tris",
+  "CLEAR_SORT": "Supprimer le tri",
   "COLUMNS": "Colonnes",
   "COMMANDS": "Commandes",
   "CONTAINS": "Contient",

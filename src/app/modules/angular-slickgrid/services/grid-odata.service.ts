@@ -381,8 +381,14 @@ export class GridOdataService implements BackendService {
     }
 
     // transform the sortby array into a CSV string for OData
-    sortByArray = sortByArray as CurrentSorter[];
-    const csvString = sortByArray.map((sorter) => `${sorter.columnId} ${sorter.direction.toLowerCase()}`).join(',');
+    sortByArray = sortByArray || [] as CurrentSorter[];
+    const csvString = sortByArray.map((sorter) => {
+      if (sorter && sorter.columnId) {
+        return `${sorter.columnId} ${sorter && sorter.direction && sorter.direction.toLowerCase() || ''}`;
+      }
+      return '';
+    }).join(',');
+
     this.odataService.updateOptions({
       orderBy: (this.odataService.options.caseType === CaseType.pascalCase) ? String.titleCase(csvString) : csvString
     });
