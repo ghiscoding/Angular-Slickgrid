@@ -102,6 +102,20 @@ $gray-dark:              			            #333 !default;
 $text-color:             			            $gray-dark !default;
 $navbar-default-link-hover-color:	        $gray-dark !default;
 
+/* AutoComplete */
+$autocomplete-bg-color:	                  #ffffff !default;
+$autocomplete-border:	                    1px solid rgba(0, 0, 0, 0.15) !default;
+$autocomplete-border-radius:	            4px !default;
+$autocomplete-box-shadow:	                0 6px 12px rgba(0, 0, 0, 0.175) !default;
+$autocomplete-hover-color:	              #262626 !default;
+$autocomplete-hover-bg-color:	            darken($row-mouse-hover-color, 3%) !default;
+$autocomplete-max-height:	                25vh !default;
+$autocomplete-min-height:	                75px !default;
+$autocomplete-min-width:	                50px !default;
+$autocomplete-text-color:	                #333333 !default;
+$autocomplete-text-padding:	              3px 15px !default;
+$autocomplete-z-index:	                  1000 !default;
+
 /* Sorting */
 $icon-sort-asc:                           "\f0d8" !default;
 $icon-sort-desc:                          "\f0d7" !default;
@@ -211,7 +225,6 @@ $draggable-group-column-icon-color:       #707070 !default;
 $draggable-group-column-icon-height:      9px !default;
 $draggable-group-column-icon-width:       9px !default;
 $draggable-group-column-icon-margin-left: 4px !default;
-
 
 /* Input Range Filter */
 $slider-filter-border:                    1px solid #ccc !default;

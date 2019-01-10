@@ -20,9 +20,12 @@ import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
 declare var Slick: any;
+declare var $: any;
 
 const NB_ITEMS = 100;
 const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_100_numbers.json';
+const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
+const URL_COUNTRY_NAMES = 'assets/data/country_names.json';
 
 // you can create custom validator to pass to an inline editor
 const myCustomTitleValidator: EditorValidator = (value: any, args: EditorArgs) => {
@@ -255,6 +258,88 @@ export class GridEditorComponent implements OnInit {
           model: Editors.date
         },
       }, {
+        id: 'cityOfOrigin', name: 'City of Origin', field: 'cityOfOrigin',
+        filterable: true,
+        minWidth: 100,
+        editor: {
+          model: Editors.autoComplete,
+          placeholder: '&#128269; search city',
+
+          // We can use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
+          // use your own autocomplete options, instead of $.ajax, use http
+          // here we use $.ajax just because I'm not sure how to configure http with JSONP and CORS
+          editorOptions: {
+            minLength: 3,
+            source: (request, response) => {
+              $.ajax({
+                url: 'http://gd.geobytes.com/AutoCompleteCity',
+                dataType: 'jsonp',
+                data: {
+                  q: request.term
+                },
+                success: (data) => {
+                  response(data);
+                }
+              });
+            }
+          },
+        },
+        filter: {
+          model: Filters.autoComplete,
+          // placeholder: '&#128269; search city',
+
+          // We can use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
+          // collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),
+
+          // OR use your own autocomplete options, instead of $.ajax, use http
+          // here we use $.ajax just because I'm not sure how to configure http with JSONP and CORS
+          filterOptions: {
+            minLength: 3,
+            source: (request, response) => {
+              $.ajax({
+                url: 'http://gd.geobytes.com/AutoCompleteCity',
+                dataType: 'jsonp',
+                data: {
+                  q: request.term
+                },
+                success: (data) => {
+                  response(data);
+                }
+              });
+            }
+          },
+        }
+      }, {
+        id: 'countryOfOrigin', name: 'Country of Origin', field: 'countryOfOrigin',
+        formatter: Formatters.complexObject,
+        dataKey: 'code',
+        labelKey: 'name',
+        type: FieldType.object,
+        filterable: true,
+        minWidth: 100,
+        editor: {
+          model: Editors.autoComplete,
+          customStructure: { label: 'name', value: 'code' },
+          collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),
+        },
+        filter: {
+          model: Filters.autoComplete,
+          customStructure: { label: 'name', value: 'code' },
+          collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),
+        }
+      }, {
+        id: 'countryOfOriginName', name: 'Country of Origin Name', field: 'countryOfOriginName',
+        filterable: true,
+        minWidth: 100,
+        editor: {
+          model: Editors.autoComplete,
+          collectionAsync: this.http.get(URL_COUNTRY_NAMES),
+        },
+        filter: {
+          model: Filters.autoComplete,
+          collectionAsync: this.http.get(URL_COUNTRY_NAMES),
+        }
+      }, {
         id: 'effort-driven',
         name: 'Effort Driven',
         field: 'effortDriven',
@@ -429,7 +514,10 @@ export class GridEditorComponent implements OnInit {
         start: new Date(randomYear, randomMonth, randomDay),
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
         effortDriven: (i % 5 === 0),
-        prerequisites: (i % 2 === 0) && i !== 0 && i < 12 ? [i, i - 1] : []
+        prerequisites: (i % 2 === 0) && i !== 0 && i < 12 ? [i, i - 1] : [],
+        countryOfOrigin: (i % 2) ? { code: 'CA', name: 'Canada' } : { code: 'US', name: 'United States' },
+        countryOfOriginName: (i % 2) ? 'Canada' : 'United States',
+        cityOfOrigin: (i % 2) ? 'Vancouver, BC, Canada' : 'Boston, MA, United States',
       });
     }
     return tempDataset;

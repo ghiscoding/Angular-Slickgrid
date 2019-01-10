@@ -203,6 +203,7 @@ export class FilterService {
         return false;
       }
 
+      const dataKey = columnDef.dataKey;
       const fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field;
       const fieldType = columnDef.type || FieldType.string;
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
@@ -216,12 +217,16 @@ export class FilterService {
       // if we find searchTerms use them but make a deep copy so that we don't affect original array
       // we might have to overwrite the value(s) locally that are returned
       // e.g: we don't want to operator within the search value, since it will fail filter condition check trigger afterward
-      const searchValues = (columnFilter && columnFilter.searchTerms) ? [...columnFilter.searchTerms] : null;
+      const searchValues = (columnFilter && columnFilter.searchTerms) ? $.extend(true, [], columnFilter.searchTerms) : null;
 
       let fieldSearchValue = (Array.isArray(searchValues) && searchValues.length === 1) ? searchValues[0] : '';
-      fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
 
-      const matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
+      let matches = null;
+      if (fieldType !== FieldType.object) {
+        fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
+        matches = fieldSearchValue.match(/^([<>!=\*]{0,2})(.*[^<>!=\*])([\*]?)$/); // group 1: Operator, 2: searchValue, 3: last char is '*' (meaning starts with, ex.: abc*)
+      }
+
       let operator = columnFilter.operator || ((matches) ? matches[1] : '');
       const searchTerm = (!!matches) ? matches[2] : '';
       const lastValueChar = (!!matches) ? matches[3] : (operator === '*z' ? '*' : '');
@@ -249,7 +254,7 @@ export class FilterService {
 
       // filter search terms should always be string type (even though we permit the end user to input numbers)
       // so make sure each term are strings, if user has some default search terms, we will cast them to string
-      if (searchValues && Array.isArray(searchValues)) {
+      if (searchValues && Array.isArray(searchValues) && fieldType !== FieldType.object) {
         for (let k = 0, ln = searchValues.length; k < ln; k++) {
           // make sure all search terms are strings
           searchValues[k] = ((searchValues[k] === undefined || searchValues[k] === null) ? '' : searchValues[k]) + '';
@@ -268,6 +273,7 @@ export class FilterService {
       }
 
       const conditionOptions = {
+        dataKey,
         fieldType,
         searchTerms: searchValues,
         cellValue,

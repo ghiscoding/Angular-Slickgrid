@@ -1,4 +1,5 @@
 import { Column, Filter } from './../models/index';
+import { AutoCompleteFilter } from './autoCompleteFilter';
 import { CompoundDateFilter } from './compoundDateFilter';
 import { CompoundInputFilter } from './compoundInputFilter';
 import { CompoundInputNumberFilter } from './compoundInputNumberFilter';
@@ -13,6 +14,9 @@ import { SingleSelectFilter } from './singleSelectFilter';
 import { SliderFilter } from './sliderFilter';
 
 export const Filters = {
+  /** AutoComplete Filter (using jQuery UI autocomplete feature) */
+  autoComplete: AutoCompleteFilter,
+
   /** Compound Date Filter (compound of Operator + Date picker) */
   compoundDate: CompoundDateFilter,
 

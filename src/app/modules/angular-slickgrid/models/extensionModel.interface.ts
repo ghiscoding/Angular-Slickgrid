@@ -8,6 +8,6 @@ export interface ExtensionModel {
   /** Extension is the Control/Plugin coming from SlickGrid */
   extension: any;
 
-  /** Extension Service (in Aurelia-Slickgrid) */
+  /** Extension Service (in Angular-Slickgrid) */
   class: Extension | null;
 }
