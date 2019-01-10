@@ -12,7 +12,7 @@ export const translateBooleanFormatter: Formatter = (row: number, cell: number, 
   }
 
   // make sure the value is a string (for example a boolean value would throw an error)
-  if (value !== undefined && typeof value !== 'string') {
+  if (value !== undefined && value !== null && typeof value !== 'string') {
     value = value + '';
   }
   return value ? translate.instant(value.toUpperCase() as string) : '';
