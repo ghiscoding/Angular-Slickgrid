@@ -64,8 +64,7 @@ export class ExtensionUtility {
           break;
       }
     } catch (e) {
-      // do nothing, we fall here when using Aurelia-CLI and RequireJS
-      // if you do use RequireJS then you need to make sure to include all necessary extensions in your `aurelia.json`
+      // do nothing, we fall here when using Angular and RequireJS
     }
   }
 

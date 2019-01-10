@@ -57,5 +57,8 @@ export enum FieldType {
   dateTimeUsShortAmPm,
 
   /** Format: 'M/D/YY h:m:s A' => 2/28/14 14:1:1 PM */
-  dateTimeUsShortAM_PM
+  dateTimeUsShortAM_PM,
+
+  /** complex object with various properties */
+  object,
 }

@@ -29,6 +29,9 @@ export interface Column {
   /** Column span in pixels or `*`, only input the number value */
   colspan?: number | '*';
 
+  /** Data key, for example this could be used as a property key for complex object comparison (e.g. dataKey: 'id') */
+  dataKey?: any;
+
   /** Do we want default sort to be ascending? True by default */
   defaultSortAsc?: boolean;
 
@@ -116,6 +119,9 @@ export interface Column {
    * @internal used internally by Angular-Slickgrid, to copy over the Column Editor Options
    */
   internalColumnEditor?: ColumnEditor;
+
+  /** Label key, for example this could be used as a property key for complex object label display (e.g. dataKey: 'name') */
+  labelKey?: any;
 
   /** Maximum Width of the column in pixels (number only). */
   maxWidth?: number;

@@ -5,6 +5,11 @@ export const complexObjectFormatter: Formatter = (row: number, cell: number, val
   if (!columnDef) {
     return '';
   }
+
+  if (columnDef.labelKey) {
+    return dataContext[columnDef.field] && dataContext[columnDef.field][columnDef.labelKey];
+  }
+
   const complexField = columnDef.field || '';
   return complexField.split('.').reduce((obj, i) => (obj ? obj[i] : ''), dataContext);
 };

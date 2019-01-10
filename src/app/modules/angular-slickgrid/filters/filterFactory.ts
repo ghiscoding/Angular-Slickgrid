@@ -1,4 +1,4 @@
-import { Injector, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Filter } from '../models/filter.interface';
 import { ColumnFilter } from '../models';
 import { SlickgridConfig } from '../slickgrid-config';

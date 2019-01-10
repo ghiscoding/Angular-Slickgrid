@@ -8,13 +8,14 @@ import { FilterConditionOption } from './../models/filterConditionOption.interfa
 import { FilterCondition } from '../models/filterCondition.interface';
 import { collectionSearchFilterCondition } from './collectionSearchFilterCondition';
 import { numberFilterCondition } from './numberFilterCondition';
+import { objectFilterCondition } from './objectFilterCondition';
 import { stringFilterCondition } from './stringFilterCondition';
 import { FieldType } from '../models/index';
 
 export const executeMappedCondition: FilterCondition = (options: FilterConditionOption) => {
   // when using a multi-select ('IN' operator) we will not use the field type but instead go directly with a collection search
-  const operator = options.operator && options.operator.toUpperCase();
-  if (options && options.operator && (operator === 'IN' || operator === 'NIN' || operator === 'IN_CONTAINS' || operator === 'NIN_CONTAINS')) {
+  const operator = options && options.operator && options.operator.toUpperCase();
+  if (operator === 'IN' || operator === 'NIN' || operator === 'IN_CONTAINS' || operator === 'NIN_CONTAINS') {
     return collectionSearchFilterCondition(options);
   }
 
@@ -36,6 +37,8 @@ export const executeMappedCondition: FilterCondition = (options: FilterCondition
       return dateUsShortFilterCondition(options);
     case FieldType.number:
       return numberFilterCondition(options);
+    case FieldType.object:
+      return objectFilterCondition(options);
     case FieldType.string:
     default:
       return stringFilterCondition(options);
