@@ -9,7 +9,6 @@ import {
   FilterArguments,
   FilterCallback,
   GridOption,
-  MultipleSelectOption,
   OperatorType,
   OperatorString,
   SearchTerm
@@ -92,15 +91,14 @@ export class AutoCompleteFilter implements Filter {
     this.searchTerms = args.searchTerms || [];
 
     if (!this.grid || !this.columnDef || !this.columnFilter || (!this.columnFilter.collection && !this.columnFilter.collectionAsync && !this.columnFilter.filterOptions)) {
-      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" (or "collectionAsync") for the MultipleSelect Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.multipleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
+      throw new Error(`[Angular-SlickGrid] You need to pass a "collection" (or "collectionAsync") for the AutoComplete Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.autoComplete, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
     }
 
     this.enableTranslateLabel = this.columnFilter && this.columnFilter.enableTranslateLabel || false;
     this.labelName = this.customStructure && this.customStructure.label || 'label';
     this.valueName = this.customStructure && this.customStructure.value || 'value';
 
-    // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
-    // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
+    // always render the DOM element, even if user passed a "collectionAsync",
     const newCollection = this.columnFilter.collection || [];
     this.renderDomElement(newCollection);
 
@@ -139,8 +137,7 @@ export class AutoCompleteFilter implements Filter {
    */
   setValues(values: SearchTerm | SearchTerm[]) {
     if (values) {
-      values = Array.isArray(values) ? values : [values];
-      this.$filterElm.multipleSelect('setSelects', values);
+      this.$filterElm.val(values);
     }
   }
 
@@ -215,14 +212,14 @@ export class AutoCompleteFilter implements Filter {
       collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
     }
     if (!Array.isArray(collection)) {
-      throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call in the Select Filter, the collection is not a valid array.');
+      throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call in the AutoComplete Filter, the collection is not a valid array.');
     }
 
     // copy over the array received from the async call to the "collection" as the new collection to use
     // this has to be BEFORE the `collectionObserver().subscribe` to avoid going into an infinite loop
     this.columnFilter.collection = collection;
 
-    // recreate Multiple Select after getting async collection
+    // recreate Filter DOM element after getting async collection
     this.renderDomElement(collection);
   }
 
