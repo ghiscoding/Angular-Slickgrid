@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   CollectionFilterBy,
   CollectionSortBy,
+  Column,
   FilterMultiplePassType,
   FilterMultiplePassTypeString,
   FieldType,
@@ -79,11 +80,12 @@ export class CollectionService {
 
   /**
    * Sort 1 or more items in a collection
+   * @param column definition
    * @param collection
    * @param sortByOptions
    * @param enableTranslateLabel
    */
-  sortCollection(collection: any[], sortByOptions: CollectionSortBy | CollectionSortBy[], enableTranslateLabel?: boolean): any[] {
+  sortCollection(columnDef: Column, collection: any[], sortByOptions: CollectionSortBy | CollectionSortBy[], enableTranslateLabel?: boolean): any[] {
     let sortedCollection: any[] = [];
 
     if (sortByOptions) {
@@ -100,7 +102,7 @@ export class CollectionService {
               const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[propertyName] || ' ') : dataRow1[propertyName];
               const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[propertyName] || ' ') : dataRow2[propertyName];
 
-              const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+              const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection, columnDef);
               if (sortResult !== SortDirectionNumber.neutral) {
                 return sortResult;
               }
@@ -117,7 +119,7 @@ export class CollectionService {
         sortedCollection = collection.sort((dataRow1: any, dataRow2: any) => {
           const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[propertyName] || ' ') : dataRow1[propertyName];
           const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[propertyName] || ' ') : dataRow2[propertyName];
-          const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+          const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection, columnDef);
           if (sortResult !== SortDirectionNumber.neutral) {
             return sortResult;
           }
