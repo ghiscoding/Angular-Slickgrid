@@ -20,10 +20,16 @@ export interface HeaderMenu {
   /** Whether the item is disabled. */
   disabled?: boolean;
 
-  /** Defaults to false, which will hide the "Clear Sort" command in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
+  /** Defaults to false, which will hide the "Remove Filter" command in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
+  hideClearFilterCommand?: boolean;
+
+  /** Defaults to false, which will hide the "Remove Sort" command in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
   hideClearSortCommand?: boolean;
 
-  /** Defaults to false, which will hide both Sort (Asc/Desc) commands in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
+  /** Defaults to false, which will hide the Clear Filter command in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
+  hideFilterCommands?: boolean;
+
+  /** Defaults to false, which will hide Sort (Asc/Desc & Clear Sort) commands in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
   hideSortCommands?: boolean;
 
   /** Defaults to false, which will hide the "Hide Column" command in the Header Menu (Grid Option "enableHeaderMenu: true" has to be enabled) */
@@ -35,7 +41,10 @@ export interface HeaderMenu {
   /** A url to the icon image. */
   iconImage?: string;
 
-  /** icon for the "Clear Sort" command */
+  /** icon for the "Remove Filter" command */
+  iconClearFilterCommand?: string;
+
+  /** icon for the "Remove Sort" command */
   iconClearSortCommand?: string;
 
   /** icon for the "Hide Column" command */

@@ -74,11 +74,13 @@ export const GlobalGridOptions: GridOption = {
     autoAlign: true,
     autoAlignOffset: 12,
     minWidth: 140,
+    iconClearFilterCommand: 'fa fa-filter text-danger',
     iconClearSortCommand: 'fa fa-unsorted',
     iconSortAscCommand: 'fa fa-sort-asc',
     iconSortDescCommand: 'fa fa-sort-desc',
     iconColumnHideCommand: 'fa fa-times',
     hideColumnHideCommand: false,
+    hideClearFilterCommand: false,
     hideClearSortCommand: false,
     hideSortCommands: false
   },

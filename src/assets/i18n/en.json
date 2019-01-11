@@ -23,6 +23,7 @@
   "PAGE": "Page",
   "PAGE_X_OF_Y": "page {{x}} of {{y}}",
   "REFRESH_DATASET": "Refresh Dataset",
+  "REMOVE_FILTER": "Remove Filter",
   "REMOVE_SORT": "Remove Sort",
   "SAVE": "Save",
   "SELECT_ALL": "Select All",

@@ -9,6 +9,7 @@ export class Constants {
   static TEXT_FORCE_FIT_COLUMNS = 'Force fit columns';
   static TEXT_HIDE_COLUMN = 'Hide Column';
   static TEXT_REFRESH_DATASET = 'Refresh Dataset';
+  static TEXT_REMOVE_FILTER = 'Remove Filter';
   static TEXT_REMOVE_SORT = 'Remove Sort';
   static TEXT_SAVE = 'Save';
   static TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';

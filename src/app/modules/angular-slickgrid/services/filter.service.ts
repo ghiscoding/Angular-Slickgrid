@@ -166,6 +166,21 @@ export class FilterService {
     });
   }
 
+  clearFilterByColumnId(columnId: number | string) {
+    const colFilter: Filter = this._filters.find((filter: Filter) => filter.columnDef.id === columnId);
+    if (colFilter && colFilter.clear) {
+      colFilter.clear();
+    }
+
+    // we need to loop through all columnFilters and delete the filter found
+    // only trying to clear columnFilter (without looping through) would not trigger a dataset change
+    for (const colId in this._columnFilters) {
+      if (colId === columnId && this._columnFilters[colId]) {
+        delete this._columnFilters[colId];
+      }
+    }
+  }
+
   /** Clear the search filters (below the column titles) */
   clearFilters() {
     this._filters.forEach((filter: Filter) => {

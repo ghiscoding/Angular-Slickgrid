@@ -23,6 +23,7 @@
   "PAGE": "Page",
   "PAGE_X_OF_Y": "page {{x}} de {{y}}",
   "REFRESH_DATASET": "Rafraîchir les données",
+  "REMOVE_FILTER": "Supprimer le filtre",
   "REMOVE_SORT": "Supprimer le tri",
   "SAVE": "Sauvegarder",
   "SELECT_ALL": "Sélectionner tout",
