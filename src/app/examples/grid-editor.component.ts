@@ -13,6 +13,7 @@ import {
   GridOption,
   OnEventArgs,
   OperatorType,
+  Sorters,
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
 import { CustomInputFilter } from './custom-inputFilter';
@@ -250,9 +251,9 @@ export class GridEditorComponent implements OnInit {
         field: 'finish',
         minWidth: 100,
         filterable: true,
+        sortable: true,
         filter: { model: Filters.compoundDate },
         formatter: Formatters.dateIso,
-        sortable: true,
         type: FieldType.date,
         editor: {
           model: Editors.date
@@ -315,7 +316,9 @@ export class GridEditorComponent implements OnInit {
         dataKey: 'code',
         labelKey: 'name',
         type: FieldType.object,
+        sorter: Sorters.objectString, // this sorter requires the dataKey and assume that obj1[dataKey] will be a string so it can sort it that way
         filterable: true,
+        sortable: true,
         minWidth: 100,
         editor: {
           model: Editors.autoComplete,
@@ -330,6 +333,7 @@ export class GridEditorComponent implements OnInit {
       }, {
         id: 'countryOfOriginName', name: 'Country of Origin Name', field: 'countryOfOriginName',
         filterable: true,
+        sortable: true,
         minWidth: 100,
         editor: {
           model: Editors.autoComplete,

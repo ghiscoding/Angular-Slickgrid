@@ -360,7 +360,7 @@ export class SelectEditor implements Editor {
     // user might want to sort the collection
     if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
       const sortBy = this.columnDef.internalColumnEditor.collectionSortBy;
-      outputCollection = this._collectionService.sortCollection(outputCollection, sortBy, this.enableTranslateLabel);
+      outputCollection = this._collectionService.sortCollection(this.columnDef, outputCollection, sortBy, this.enableTranslateLabel);
     }
 
     return outputCollection;

@@ -248,7 +248,15 @@ export class SortService {
               value2 = getDescendantProperty(dataRow2, sortField);
             }
 
-            const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection);
+            // user could provide his own custom Sorter
+            if (columnSortObj.sortCol && columnSortObj.sortCol.sorter) {
+              const customSortResult = columnSortObj.sortCol.sorter(value1, value2, sortDirection, columnSortObj.sortCol);
+              if (customSortResult !== SortDirectionNumber.neutral) {
+                return customSortResult;
+              }
+            }
+
+            const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection, columnSortObj.sortCol);
             if (sortResult !== SortDirectionNumber.neutral) {
               return sortResult;
             }
