@@ -150,6 +150,16 @@
     border-color: silver;
     background: white;
   }
+
+  &.slick-gridmenu-item-divider {
+    cursor: default;
+    border: none;
+    overflow: hidden;
+    padding: 0;
+    height: $header-menu-divider-height;
+    margin: $header-menu-divider-margin;
+    background-color: $header-menu-divider-color;
+  }
 }
 
 .slick-gridmenu-item-disabled {

@@ -116,6 +116,10 @@ export class HeaderMenuExtension implements Extension {
                 positionOrder: 51
               });
             }
+
+            // add a divider (separator) between the top sort commands and the other clear commands
+            columnHeaderMenuItems.push({ divider: true, command: '', positionOrder: 52 });
+
             if (!headerMenuOptions.hideClearSortCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'clear-sort').length === 0) {
               columnHeaderMenuItems.push({
                 iconCssClass: headerMenuOptions.iconClearSortCommand || 'fa fa-unsorted',

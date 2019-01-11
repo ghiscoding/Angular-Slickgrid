@@ -5,6 +5,9 @@ export interface HeaderMenuItem {
   /** Defaults to false, whether the item is disabled. */
   disabled?: boolean;
 
+  /** Defaults to false, whether the command is actually a divider (separator). */
+  divider?: boolean;
+
   /** CSS class to be added to the menu item icon. */
   iconCssClass?: string;
 
