@@ -5,17 +5,11 @@
 // ---------------------------------------------------------
 
 .ui-autocomplete {
-  display: none;
-  float: left;
   position: absolute;
-  left: 0;
-  top: 100%;
   z-index: $autocomplete-z-index;
-  padding: 5px 0;
-  margin: 2px 0 0;
+  padding: 0;
+  margin-top: 2px;
   list-style: none;
-  font-size: 14px;
-  text-align: left;
   background-color: $autocomplete-bg-color;
   border: $autocomplete-border;
   border-radius: $autocomplete-border-radius;
