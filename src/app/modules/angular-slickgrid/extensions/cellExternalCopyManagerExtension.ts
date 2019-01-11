@@ -40,7 +40,8 @@ export class CellExternalCopyManagerExtension implements Extension {
             if (columnDef.formatter && isEvaluatingFormatter) {
               const formattedOutput = columnDef.formatter(0, 0, item[columnDef.field], columnDef, item, this.sharedService.grid);
               if (columnDef.sanitizeDataExport || (this.sharedService.gridOptions.exportOptions && this.sharedService.gridOptions.exportOptions.sanitizeDataExport)) {
-                return sanitizeHtmlToText(formattedOutput);
+                const outputString = typeof formattedOutput === 'string' ? formattedOutput : formattedOutput.text;
+                return sanitizeHtmlToText(outputString);
               }
               return formattedOutput;
             }
