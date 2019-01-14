@@ -73,19 +73,20 @@
   }
 }
 .slick-header-menu {
-  background: none repeat scroll 0 0 white;
-  border: 1px solid #BFBDBD;
-  min-width: 175px;
-  padding: 4px;
+  position: absolute;
+  margin: 0;
+  background: none repeat scroll 0 0 $header-menu-bg-color;
+  border: $header-menu-border;
+  border-radius: $header-menu-border-radius;
+  min-width: $header-menu-min-width;
+  padding: $header-menu-padding;
   z-index: 100000;
   cursor: default;
   display: inline-block;
-  margin: 0;
-  position: absolute;
 
   button {
-    border: 1px solid #BFBDBD;
-    background-color: white;
+    border: $header-menu-button-border;
+    background-color: $header-menu-button-bg-color;
     width: 45px;
     padding: 4px;
     margin: 4px 4px 4px 0;
@@ -116,21 +117,34 @@
 }
 
 .slick-header-menuitem {
-  border: 1px solid transparent;
-  padding: 2px 4px;
   cursor: pointer;
+  border: $header-menu-item-border;
+  padding: $header-menu-item-padding;
   list-style: none outside none;
   margin: 0;
+
+  &.slick-header-menuitem-divider {
+    cursor: default;
+    border: none;
+    overflow: hidden;
+    padding: 0;
+    height: $header-menu-divider-height;
+    margin: $header-menu-divider-margin;
+    background-color: $header-menu-divider-color;
+  }
+}
+.slick-header-menuitem-divider.slick-header-menuitem:hover {
+  background-color: $header-menu-divider-color;
 }
 
 .slick-header-menuicon {
   background-position: center center;
   background-repeat: no-repeat;
   display: inline-block;
-  height: 16px;
-  margin-right: 4px;
+  height: $header-menu-icon-height;
+  margin-right: $header-menu-icon-margin-right;
   vertical-align: middle;
-  width: 16px;
+  width: $header-menu-icon-width;
 
   /* Font Awesome sorting icons are not aligned in middle, let's align them ourselves */
   &.fa-sort-asc {
@@ -148,7 +162,7 @@
 
 .slick-header-menuitem:hover {
   border-color: #BFBDBD;
-  background-color: rgb(246, 246, 246);
+  background-color: $header-menu-icon-hover-color;
 }
 .slick-header-menuitem-disabled {
   border-color: transparent !important;
