@@ -133,6 +133,9 @@
     background-color: $header-menu-divider-color;
   }
 }
+.slick-header-menuitem-divider.slick-header-menuitem:hover {
+  background-color: $header-menu-divider-color;
+}
 
 .slick-header-menuicon {
   background-position: center center;

@@ -1,3 +1,4 @@
+/* control variables */
 @import './variables';
 
 // ----------------------------------------------
@@ -15,7 +16,7 @@
   min-width: 150px;
   cursor: default;
   position: absolute;
-  z-index: 20;
+  z-index: 2000;
 	overflow: auto;
   resize: both;
 
@@ -160,6 +161,9 @@
     margin: $header-menu-divider-margin;
     background-color: $header-menu-divider-color;
   }
+}
+.slick-gridmenu-item-divider.slick-gridmenu-item:hover {
+  background-color: $header-menu-divider-color;
 }
 
 .slick-gridmenu-item-disabled {

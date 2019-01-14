@@ -137,7 +137,7 @@ export class HeaderMenuExtension implements Extension {
                 iconCssClass: headerMenuOptions.iconClearFilterCommand || 'fa fa-filter',
                 title: options.enableTranslate ? this.translate.instant('REMOVE_FILTER') : Constants.TEXT_REMOVE_FILTER,
                 command: 'clear-filter',
-                positionOrder: 54
+                positionOrder: 52
               });
             }
           }
