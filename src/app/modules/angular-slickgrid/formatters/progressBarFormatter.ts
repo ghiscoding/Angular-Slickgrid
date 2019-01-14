@@ -6,7 +6,7 @@ export const progressBarFormatter: Formatter = (row: number, cell: number, value
     return '';
   }
 
-  let color;
+  let color = '';
 
   if (value < 30) {
     color = 'danger';

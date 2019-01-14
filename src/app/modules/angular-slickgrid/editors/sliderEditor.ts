@@ -158,7 +158,6 @@ export class SliderEditor implements Editor {
     const maxValue = this.columnEditor.hasOwnProperty('maxValue') ? this.columnEditor.maxValue : DEFAULT_MAX_VALUE;
     const defaultValue = this.editorParams.hasOwnProperty('sliderStartValue') ? this.editorParams.sliderStartValue : minValue;
     const step = this.columnEditor.hasOwnProperty('valueStep') ? this.columnEditor.valueStep : DEFAULT_STEP;
-    const itemId = this.args && this.args.item && this.args.item.id;
 
     if (this.editorParams.hideSliderNumber) {
       return `

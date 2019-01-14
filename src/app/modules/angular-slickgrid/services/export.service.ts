@@ -216,8 +216,8 @@ export class ExportService {
       let itemData = '';
 
       if (exportCustomFormatter) {
-        const formattedData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
-        itemData = typeof formattedData === 'string' ? formattedData : formattedData.text;
+        const customFormattedData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+        itemData = typeof customFormattedData === 'string' ? customFormattedData : customFormattedData.text;
       } else if (isEvaluatingFormatter && !!columnDef.formatter) {
         const formattedData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
         itemData = typeof formattedData === 'string' ? formattedData : formattedData.text;

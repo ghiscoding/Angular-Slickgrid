@@ -413,7 +413,6 @@ export class GridOdataService implements BackendService {
 
     return filtersArray.map((filter) => {
       const columnDef = filter.columnDef;
-      const header = (columnDef) ? (columnDef.headerKey || columnDef.name || '') : '';
       const tmpFilter: CurrentFilter = { columnId: filter.columnId || '' };
       if (filter.operator) {
         tmpFilter.operator = filter.operator;

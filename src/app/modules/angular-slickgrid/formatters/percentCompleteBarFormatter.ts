@@ -6,7 +6,7 @@ export const percentCompleteBarFormatter: Formatter = (row: number, cell: number
     return '';
   }
 
-  let color;
+  let color = '';
 
   if (value < 30) {
     color = 'red';
