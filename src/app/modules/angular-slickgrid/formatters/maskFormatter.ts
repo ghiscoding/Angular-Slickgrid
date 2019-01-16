@@ -16,7 +16,16 @@ export const maskFormatter: Formatter = (row: number, cell: number, value: any, 
   if (value && mask) {
     let i = 0;
     const v = value.toString();
-    return mask.replace(/[09A]/g, () => v[i++] || '');
+    return mask.replace(/[09A]/gi, (match) => {
+      // only replace the char when the mask is a 0 or 9 for a digit OR the mask is "A" and the char is a non-digit meaning a string char
+      if (
+        ((match === '0' || match === '9') && /\d*/g.test(v[i]))    // mask is 0 or 9 and value is a digit
+        || (match.toUpperCase() === 'A' && /[^\d]*/gi.test(v[i]))  // OR mask is an "A" and value is non-digit
+      ) {
+        return v[i++] || '';
+      }
+      return '';
+    });
   }
   return '';
 };
