@@ -14,9 +14,9 @@ import {
 declare var $: any;
 
 export class InputFilter implements Filter {
-  private _clearFilterTriggered = false;
-  private _inputType = 'text';
-  private $filterElm: any;
+  protected _clearFilterTriggered = false;
+  protected _inputType = 'text';
+  protected $filterElm: any;
   grid: any;
   searchTerms: SearchTerm[];
   columnDef: Column;
@@ -45,7 +45,7 @@ export class InputFilter implements Filter {
   }
 
   /** Getter for the Grid Options pulled through the Grid Object */
-  private get gridOptions(): GridOption {
+  protected get gridOptions(): GridOption {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
@@ -113,13 +113,13 @@ export class InputFilter implements Filter {
   }
 
   //
-  // private functions
+  // protected functions
   // ------------------
 
   /**
    * Create the HTML template as a string
    */
-  private buildTemplateHtmlString() {
+  protected buildTemplateHtmlString() {
     const fieldId = this.columnDef && this.columnDef.id;
     let placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
     if (this.columnFilter && this.columnFilter.placeholder) {
@@ -132,7 +132,7 @@ export class InputFilter implements Filter {
    * From the html template string, create a DOM element
    * @param filterTemplate
    */
-  private createDomElement(filterTemplate: string, searchTerm?: SearchTerm) {
+  protected createDomElement(filterTemplate: string, searchTerm?: SearchTerm) {
     const fieldId = this.columnDef && this.columnDef.id;
     const $headerElm = this.grid.getHeaderRowColumn(fieldId);
     $($headerElm).empty();

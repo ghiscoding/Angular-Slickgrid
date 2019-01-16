@@ -278,9 +278,7 @@ export class GridEditorComponent implements OnInit {
                 data: {
                   q: request.term
                 },
-                success: (data) => {
-                  response(data);
-                }
+                success: (data) => response(data)
               });
             }
           },
@@ -303,9 +301,7 @@ export class GridEditorComponent implements OnInit {
                 data: {
                   q: request.term
                 },
-                success: (data) => {
-                  response(data);
-                }
+                success: (data) => response(data)
               });
             }
           },

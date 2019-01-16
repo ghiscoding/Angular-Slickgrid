@@ -6,6 +6,7 @@ import { CompoundInputNumberFilter } from './compoundInputNumberFilter';
 import { CompoundInputPasswordFilter } from './compoundInputPasswordFilter';
 import { CompoundSliderFilter } from './compoundSliderFilter';
 import { InputFilter } from './inputFilter';
+import { InputMaskFilter } from './inputMaskFilter';
 import { InputNumberFilter } from './inputNumberFilter';
 import { InputPasswordFilter } from './inputPasswordFilter';
 import { MultipleSelectFilter } from './multipleSelectFilter';
@@ -37,6 +38,12 @@ export const Filters = {
 
   /** Alias to inputText, input type text filter */
   input: InputFilter,
+
+  /**
+   * Input Filter of type text that will be formatted with a mask output
+   * e.g.: column: { filter: { model: Filters.inputMask }, params: { mask: '(000) 000-0000' }}
+   */
+  inputMask: InputMaskFilter,
 
   /** Input Filter of type Number */
   inputNumber: InputNumberFilter,
