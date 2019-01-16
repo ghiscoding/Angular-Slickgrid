@@ -235,6 +235,8 @@
 }
 .ms-choice {
   border: $multiselect-input-filter-border;
+  background-color: transparent;
+
   span {
     font-size: $multiselect-input-filter-font-size;
     font-family: $multiselect-input-filter-font-family
@@ -379,7 +381,7 @@ input.search-filter {
     flex: 1;
 
     .flatpickr-input.form-control {
-        background-color: $flatpickr-bgcolor !important;
+        background-color: $flatpickr-bgcolor;
         font-family: $filter-placeholder-font-family;
         font-size: $font-size-base;
         border-radius: $compound-filter-border-radius;
