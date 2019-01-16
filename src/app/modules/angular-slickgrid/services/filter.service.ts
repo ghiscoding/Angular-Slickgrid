@@ -100,7 +100,7 @@ export class FilterService {
       // call the service to get a query back
       const query = await backendApi.service.processOnFilterChanged(event, args);
 
-      // emit an onFilterChanged event
+      // emit an onFilterChanged event when it's not called by clearAllFilters
       if (args && !args.clearFilterTriggered) {
         this.emitFilterChanged('remote');
       }
@@ -155,6 +155,7 @@ export class FilterService {
       if (columnId != null) {
         dataView.refresh();
       }
+      // emit an onFilterChanged event when it's not called by clearAllFilters
       if (args && !args.clearFilterTriggered) {
         this.emitFilterChanged('local');
       }
@@ -179,6 +180,10 @@ export class FilterService {
         delete this._columnFilters[colId];
       }
     }
+
+    // emit an event when filter is cleared
+    const sender = this._gridOptions && this._gridOptions.backendServiceApi ? 'remote' : 'local';
+    this.emitFilterChanged(sender);
   }
 
   /** Clear the search filters (below the column titles) */
@@ -457,17 +462,17 @@ export class FilterService {
   /**
    * A simple function that is attached to the subscriber and emit a change when the sort is called.
    * Other services, like Pagination, can then subscribe to it.
-   * @param sender
+   * @param caller
    */
-  emitFilterChanged(sender: 'local' | 'remote') {
-    if (sender === 'remote' && this._gridOptions && this._gridOptions.backendServiceApi) {
+  emitFilterChanged(caller: 'local' | 'remote') {
+    if (caller === 'remote' && this._gridOptions && this._gridOptions.backendServiceApi) {
       let currentFilters: CurrentFilter[] = [];
       const backendService = this._gridOptions.backendServiceApi.service;
       if (backendService && backendService.getCurrentFilters) {
         currentFilters = backendService.getCurrentFilters() as CurrentFilter[];
       }
       this.onFilterChanged.next(currentFilters);
-    } else if (sender === 'local') {
+    } else if (caller === 'local') {
       this.onFilterChanged.next(this.getCurrentLocalFilters());
     }
   }
