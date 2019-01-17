@@ -87,6 +87,8 @@ Screenshots from the demo app with the `Bootstrap` theme (that is the only avail
 
 ### Slickgrid example with Formatters (last column shown is a custom Formatter)
 
+#### You can also see the Grid Menu opened (aka hambuger menu)
+
 ![Default Slickgrid Example](/screenshots/formatters.png)
 
 ### Filter and Sort (clientside with DataView)
@@ -97,10 +99,11 @@ Screenshots from the demo app with the `Bootstrap` theme (that is the only avail
 
 ![Editors](/screenshots/editors.png)
 
-### Slickgrid Example with Server Side (Filter/Sort/Pagination)
-
-![Slickgrid Server Side](/screenshots/pagination.png)
-
 ### Pinned (aka frozen) Columns/Rows
 
 ![Slickgrid Server Side](/screenshots/frozen.png)
+
+### Slickgrid Example with Server Side (Filter/Sort/Pagination)
+#### Comes with OData & GraphQL support (you can implement custom too)
+
+![Slickgrid Server Side](/screenshots/pagination.png)
