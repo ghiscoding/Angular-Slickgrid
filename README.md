@@ -17,7 +17,7 @@ We will be using [6pac SlickGrid fork](https://github.com/6pac/SlickGrid/) (the 
 The goal is of course to be able to run SlickGrid within Angular 4+ but also to incorporate as much as possible the entire list of functionalities (and more) that SlickGrid offers (you can see a vast list of samples on the [6pac SlickGrid examples](https://github.com/6pac/SlickGrid/wiki/Examples) website).
 
 ### Demo page
-`Angular-Slickgrid` supports both `Bootstrap 3` and `Bootstrap 4`, you can demo of both below.
+`Angular-Slickgrid` supports both `Bootstrap 3` and `Bootstrap 4`, you can see a demo of each one below.
 - [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/Angular-Slickgrid/tree/master/src/app/examples)
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-bs4-demo) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-bs4-demo/tree/master/src/app/examples)
 
@@ -64,7 +64,7 @@ This is a work in progress, but so far here are some of the features that `angul
 - Localization support with `ngx-translate`, please read the [Wiki - Localization](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Localization)
 - [Export to File](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Export-to-File) CSV or Text file (Tab Delimited or Semicolon Delimited)
   - support Unicode as well, even unicorn emoji shows up in the export and it even works with IE11.
-- ... more to come
+- Pinned (aka frozen) Columns/Rows, see the [Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Pinned-(aka-Frozen)-Columns-Rows)
 
 ## Missing features
 What if `Angular-Slickgrid` is missing feature(s) versus the original `SlickGrid`?
@@ -100,3 +100,7 @@ Screenshots from the demo app with the `Bootstrap` theme (that is the only avail
 ### Slickgrid Example with Server Side (Filter/Sort/Pagination)
 
 ![Slickgrid Server Side](/screenshots/pagination.png)
+
+### Pinned (aka frozen) Columns/Rows
+
+![Slickgrid Server Side](/screenshots/frozen.png)
