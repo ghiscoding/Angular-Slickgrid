@@ -72,7 +72,7 @@ export class SelectFilter implements Filter {
         // we will subscribe to the onClose event for triggering our callback
         // also add/remove "filled" class for styling purposes
         const selectedItems = this.$filterElm.multipleSelect('getSelects');
-        if (Array.isArray(selectedItems) && selectedItems.length > 0) {
+        if (Array.isArray(selectedItems) && selectedItems.length > 1 || (selectedItems.length === 1 && selectedItems[0] !== '')) {
           this.isFilled = true;
           this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
         } else {
