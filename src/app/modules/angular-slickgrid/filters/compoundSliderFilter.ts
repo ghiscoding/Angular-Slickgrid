@@ -114,6 +114,7 @@ export class CompoundSliderFilter implements Filter {
         this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(clearedValue);
       }
       this.onTriggerEvent(undefined);
+      this.$filterElm.removeClass('filled');
     }
   }
 

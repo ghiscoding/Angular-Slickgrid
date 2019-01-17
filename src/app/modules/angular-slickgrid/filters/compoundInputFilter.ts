@@ -127,7 +127,7 @@ export class CompoundInputFilter implements Filter {
     if (this.columnFilter && this.columnFilter.placeholder) {
       placeholder = this.columnFilter.placeholder;
     }
-    return `<input class="form-control" type="${this._inputType || 'text'}" placeholder="${placeholder}" />`;
+    return `<input class="form-control" type="${this._inputType || 'text'}" placeholder="${placeholder}" /><span></span>`;
   }
 
   private buildSelectOperatorHtmlString() {
@@ -227,6 +227,7 @@ export class CompoundInputFilter implements Filter {
     if (this._clearFilterTriggered) {
       this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
       this._clearFilterTriggered = false; // reset flag for next use
+      this.$filterElm.removeClass('filled');
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       const value = this.$filterInputElm.val();

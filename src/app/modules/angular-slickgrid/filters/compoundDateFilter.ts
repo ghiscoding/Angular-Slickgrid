@@ -247,6 +247,7 @@ export class CompoundDateFilter implements Filter {
     if (this._clearFilterTriggered) {
       this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
       this._clearFilterTriggered = false; // reset flag for next use
+      this.$filterElm.removeClass('filled');
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');

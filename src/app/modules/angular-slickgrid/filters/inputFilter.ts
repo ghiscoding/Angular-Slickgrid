@@ -76,7 +76,7 @@ export class InputFilter implements Filter {
         this._clearFilterTriggered = false; // reset flag for next use
         this.$filterElm.removeClass('filled');
       } else {
-        this.$filterElm.addClass('filled');
+        value === '' ? this.$filterElm.removeClass('filled') : this.$filterElm.addClass('filled');
         this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value] });
       }
     });
@@ -125,7 +125,7 @@ export class InputFilter implements Filter {
     if (this.columnFilter && this.columnFilter.placeholder) {
       placeholder = this.columnFilter.placeholder;
     }
-    return `<input type="${this._inputType || 'text'}" class="form-control search-filter filter-${fieldId}" placeholder="${placeholder}">`;
+    return `<input type="${this._inputType || 'text'}" class="form-control search-filter filter-${fieldId}" placeholder="${placeholder}"><span></span>`;
   }
 
   /**

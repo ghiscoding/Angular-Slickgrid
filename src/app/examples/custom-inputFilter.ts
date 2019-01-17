@@ -60,7 +60,7 @@ export class CustomInputFilter implements Filter {
         this._clearFilterTriggered = false; // reset flag for next use
         this.$filterElm.removeClass('filled');
       } else {
-        this.$filterElm.addClass('filled');
+        value === '' ? this.$filterElm.removeClass('filled') : this.$filterElm.addClass('filled');
         this.callback(e, { columnDef: this.columnDef, searchTerms: [value] });
       }
     });

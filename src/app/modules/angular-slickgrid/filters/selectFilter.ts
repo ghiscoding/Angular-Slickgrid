@@ -77,7 +77,8 @@ export class SelectFilter implements Filter {
           this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
         } else {
           this.isFilled = false;
-          this.$filterElm.removeClass('filled').siblings('div .search-filter').removeClass('filled');
+          this.$filterElm.removeClass('filled');
+          this.$filterElm.siblings('div .search-filter').removeClass('filled');
         }
 
         this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems });
@@ -172,6 +173,7 @@ export class SelectFilter implements Filter {
       // reload the filter element by it's id, to make sure it's still a valid element (because of some issue in the GraphQL example)
       this.$filterElm.multipleSelect('setSelects', []);
       this.$filterElm.removeClass('filled');
+      this.$filterElm.siblings('div .search-filter').removeClass('filled');
       this.searchTerms = [];
       this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true });
     }
