@@ -56,6 +56,21 @@ export class GridAddItemComponent implements OnInit {
   ngOnInit(): void {
     this.columnDefinitions = [
       {
+        id: 'delete',
+        field: 'id',
+        excludeFromHeaderMenu: true,
+        formatter: Formatters.deleteIcon,
+        minWidth: 30,
+        maxWidth: 30,
+        // use onCellClick OR grid.onClick.subscribe which you can see down below
+        onCellClick: (e: Event, args: OnEventArgs) => {
+          console.log(args);
+          if (confirm('Are you sure?')) {
+            this.angularGrid.gridService.deleteDataGridItemById(args.dataContext.id);
+          }
+        }
+      },
+      {
         id: 'title', name: 'Title', field: 'title',
         sortable: true,
         type: FieldType.string,
