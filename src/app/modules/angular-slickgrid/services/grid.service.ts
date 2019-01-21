@@ -231,33 +231,70 @@ export class GridService {
    * Add an item (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
    * @param object dataItem: item object holding all properties of that row
    * @param shouldHighlightRow do we want to highlight the row after adding item
+   * @param shouldResortGrid defaults to false, do we want the item to be sorted after insert? When set to False, it will add item on first row (default)
    */
-  addItemToDatagrid(item: any, shouldHighlightRow = true) {
+  addItemToDatagrid(item: any, shouldHighlightRow = true, shouldResortGrid = false) {
     if (!this._grid || !this._gridOptions || !this._dataView) {
       throw new Error('We could not find SlickGrid Grid, DataView objects');
     }
 
     const row = 0;
     this._dataView.insertItem(row, item);
-    this._grid.scrollRowIntoView(0); // scroll to row 0
 
-    // highlight the row we just added, if defined
-    if (shouldHighlightRow) {
-      this.highlightRow(0, 1500);
+    if (!shouldResortGrid) {
+      this._grid.scrollRowIntoView(0); // scroll to row 0
     }
 
     // refresh dataview & grid
     this._dataView.refresh();
+
+    // highlight the row we just added, if highlight is defined
+    if (shouldHighlightRow && !shouldResortGrid) {
+      this.highlightRow(0, 1500);
+    }
+
+    // do we want the item to be sorted in the grid, when set to False it will insert on first row (defaults to false)
+    if (shouldResortGrid) {
+      this._dataView.reSort();
+
+      // if user wanted to see highlighted row
+      // we need to do it here after resort and get each row number because it possibly changes after the sort
+      if (shouldHighlightRow) {
+        const rowNumber = this._dataView.getRowById(item.id);
+        this.highlightRow(rowNumber, 1500);
+      }
+    }
   }
 
   /**
    * Add item array (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
    * @param dataItem array: item object holding all properties of that row
    * @param shouldHighlightRow do we want to highlight the row after adding item
+   * @param shouldResortGrid defaults to false, do we want the item to be sorted after insert? When set to False, it will add item on first row (default)
    */
-  addItemsToDatagrid(items: any[], shouldHighlightRow = true) {
+  addItemsToDatagrid(items: any[], shouldHighlightRow = true, shouldResortGrid = false) {
+    let highlightRow = shouldHighlightRow;
+    if (shouldResortGrid) {
+      highlightRow = false; // don't highlight until later when shouldResortGrid is set to true
+    }
+
+    // loop through all items to add
     if (Array.isArray(items)) {
-      items.forEach((item: any) => this.addItemToDatagrid(item, shouldHighlightRow));
+      items.forEach((item: any) => this.addItemToDatagrid(item, highlightRow));
+    }
+
+    // do we want the item to be sorted in the grid, when set to False it will insert on first row (defaults to false)
+    if (shouldResortGrid) {
+      this._dataView.reSort();
+
+      // if user wanted to see highlighted row
+      // we need to do it here after resort and get each row number because it possibly changes after the sort
+      if (shouldHighlightRow) {
+        items.forEach((item: any) => {
+          const rowNumber = this._dataView.getRowById(item.id);
+          this.highlightRow(rowNumber, 1500);
+        });
+      }
     }
   }
 
@@ -274,6 +311,18 @@ export class GridService {
   }
 
   /**
+   * Delete an array of existing items from the datagrid
+   * @param object item: item object holding all properties of that row
+   */
+  deleteDataGridItems(items: any[]) {
+    // when it's not an array, we can call directly the single item delete
+    if (!Array.isArray(items)) {
+      this.deleteDataGridItem(items);
+    }
+    items.forEach((item: any) => this.deleteDataGridItem(item));
+  }
+
+  /**
    * Delete an existing item from the datagrid (dataView) by it's id
    * @param itemId: item unique id
    */
@@ -285,6 +334,22 @@ export class GridService {
     // delete the item from the dataView
     this._dataView.deleteItem(itemId);
     this._dataView.refresh();
+  }
+
+  /**
+   * Delete an array of existing items from the datagrid
+   * @param object item: item object holding all properties of that row
+   */
+  deleteDataGridItemByIds(itemIds: number[] | string[]) {
+    // when it's not an array, we can call directly the single item delete
+    if (!Array.isArray(itemIds)) {
+      this.deleteDataGridItemById(itemIds);
+    }
+    for (let i = 0; i < itemIds.length; i++) {
+      if (itemIds[i] !== null) {
+        this.deleteDataGridItemById(itemIds[i]);
+      }
+    }
   }
 
   /**
@@ -304,15 +369,16 @@ export class GridService {
 
   /**
    * Update an array of existing items with new properties inside the datagrid
-   * @param object item: item object holding all properties of that row
+   * @param object item: array of item objects
    */
-  updateDataGridItems(items: any[], shouldHighlightRow = true) {
+  updateDataGridItems(items: any | any[], shouldHighlightRow = true) {
+    // when it's not an array, we can call directly the single item update
     if (!Array.isArray(items)) {
-      throw new Error('The function "updateDataGridItems" only support array of items, if you wish to only update 1 item then use "updateDataGridItem"');
+      this.updateDataGridItem(items, shouldHighlightRow);
     }
 
     const gridIndexes: number[] = [];
-    items.forEach((item) => {
+    items.forEach((item: any) => {
       gridIndexes.push(this.updateDataGridItem(item, false));
     });
 
