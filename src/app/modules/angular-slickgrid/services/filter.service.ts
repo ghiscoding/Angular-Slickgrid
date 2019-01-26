@@ -9,11 +9,12 @@ import {
   FilterCallbackArg,
   FieldType,
   GridOption,
+  KeyCode,
   OperatorType,
   CurrentFilter,
   SearchTerm,
   SlickEvent,
-  OperatorString
+  OperatorString,
 } from './../models/index';
 import { castToPromise, getDescendantProperty } from './utilities';
 import { FilterFactory } from '../filters/filterFactory';
@@ -24,6 +25,10 @@ const isequal = isequal_; // patch to fix rollup to work
 // using external non-typed js libraries
 declare var Slick: any;
 declare var $: any;
+
+// timer for keeping track of user typing waits
+let timer: any;
+const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 
 @Injectable()
 export class FilterService {
@@ -59,7 +64,8 @@ export class FilterService {
    * Attach a backend filter hook to the grid
    * @param grid SlickGrid Grid object
    */
-  attachBackendOnFilter(grid: any) {
+  attachBackendOnFilter(grid: any, dataView: any) {
+    this._dataView = dataView;
     this._filters = [];
     this._slickSubscriber = new Slick.Event();
 
@@ -87,7 +93,6 @@ export class FilterService {
     if (!backendApi || !backendApi.process || !backendApi.service) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }
-
     try {
       // keep start time & end timestamps & return it after process execution
       const startTime = new Date();
@@ -97,37 +102,46 @@ export class FilterService {
         backendApi.preProcess();
       }
 
+      // only add a delay when user is typing, on select dropdown filter it will execute right away
+      let debounceTypingDelay = 0;
+      if (event && (event.type === 'input' || event.type === 'keyup' || event.type === 'keydown')) {
+        debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
+      }
+
       // call the service to get a query back
-      const query = await backendApi.service.processOnFilterChanged(event, args);
+      clearTimeout(timer);
+      timer = setTimeout(async () => {
+        const query = await backendApi.service.processOnFilterChanged(event, args);
 
-      // emit an onFilterChanged event when it's not called by clearAllFilters
-      if (args && !args.clearFilterTriggered) {
-        this.emitFilterChanged('remote');
-      }
-
-      // the process could be an Observable (like HttpClient) or a Promise
-      // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-      const observableOrPromise = backendApi.process(query);
-      const processResult = await castToPromise(observableOrPromise);
-      const endTime = new Date();
-
-      // from the result, call our internal post process to update the Dataset and Pagination info
-      if (processResult && backendApi.internalPostProcess) {
-        backendApi.internalPostProcess(processResult);
-      }
-
-      // send the response process to the postProcess callback
-      if (backendApi.postProcess !== undefined) {
-        if (processResult instanceof Object) {
-          processResult.statistics = {
-            startTime,
-            endTime,
-            executionTime: endTime.valueOf() - startTime.valueOf(),
-            totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
-          };
+        // emit an onFilterChanged event when it's not called by clearAllFilters
+        if (args && !args.clearFilterTriggered) {
+          this.emitFilterChanged('remote');
         }
-        backendApi.postProcess(processResult);
-      }
+
+        // the process could be an Observable (like HttpClient) or a Promise
+        // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
+        const observableOrPromise = backendApi.process(query);
+        const processResult = await castToPromise(observableOrPromise);
+        const endTime = new Date();
+
+        // from the result, call our internal post process to update the Dataset and Pagination info
+        if (processResult && backendApi.internalPostProcess) {
+          backendApi.internalPostProcess(processResult);
+        }
+
+        // send the response process to the postProcess callback
+        if (backendApi.postProcess !== undefined) {
+          if (processResult instanceof Object) {
+            processResult.statistics = {
+              startTime,
+              endTime,
+              executionTime: endTime.valueOf() - startTime.valueOf(),
+              totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
+            };
+          }
+          backendApi.postProcess(processResult);
+        }
+      }, debounceTypingDelay);
     } catch (e) {
       if (backendApi && backendApi.onError) {
         backendApi.onError(e);
@@ -367,7 +381,7 @@ export class FilterService {
     return currentFilters;
   }
 
-  callbackSearchEvent(e: Event | undefined, args: FilterCallbackArg) {
+  callbackSearchEvent(e: { target: HTMLInputElement, keyCode: number } | undefined, args: FilterCallbackArg) {
     if (args) {
       const searchTerm = ((e && e.target) ? (e.target as HTMLInputElement).value : undefined);
       const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : (searchTerm ? [searchTerm] : undefined);
@@ -395,8 +409,8 @@ export class FilterService {
         this._columnFilters[colId] = colFilter;
       }
 
-      // trigger an event only if Filters changed
-      if (!isequal(oldColumnFilters, this._columnFilters)) {
+      // trigger an event only if Filters changed or if ENTER key was pressed
+      if (e.keyCode === KeyCode.ENTER || !isequal(oldColumnFilters, this._columnFilters)) {
         this.triggerEvent(this._slickSubscriber, {
           clearFilterTriggered: args && args.clearFilterTriggered,
           columnId,
