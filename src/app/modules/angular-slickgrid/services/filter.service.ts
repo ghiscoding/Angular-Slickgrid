@@ -28,7 +28,7 @@ declare var $: any;
 
 // timer for keeping track of user typing waits
 let timer: any;
-const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
+const DEFAULT_FILTER_TYPING_DEBOUNCE = 500;
 
 @Injectable()
 export class FilterService {
@@ -85,7 +85,7 @@ export class FilterService {
     });
   }
 
-  async attachBackendOnFilterSubscribe(event: Event, args: any) {
+  async attachBackendOnFilterSubscribe(event: any, args: any) {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
     }
@@ -104,7 +104,7 @@ export class FilterService {
 
       // only add a delay when user is typing, on select dropdown filter it will execute right away
       let debounceTypingDelay = 0;
-      if (event && (event.type === 'input' || event.type === 'keyup' || event.type === 'keydown')) {
+      if (event && event.keyCode !== KeyCode.ENTER && (event.type === 'input' || event.type === 'keyup' || event.type === 'keydown')) {
         debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
       }
 
