@@ -85,7 +85,7 @@ export class FilterService {
     });
   }
 
-  async attachBackendOnFilterSubscribe(event: any, args: any) {
+  async attachBackendOnFilterSubscribe(event: KeyboardEvent, args: any) {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
     }
@@ -381,7 +381,7 @@ export class FilterService {
     return currentFilters;
   }
 
-  callbackSearchEvent(e: { target: HTMLInputElement, keyCode: number } | undefined, args: FilterCallbackArg) {
+  callbackSearchEvent(e: KeyboardEvent | undefined, args: FilterCallbackArg) {
     if (args) {
       const searchTerm = ((e && e.target) ? (e.target as HTMLInputElement).value : undefined);
       const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : (searchTerm ? [searchTerm] : undefined);
