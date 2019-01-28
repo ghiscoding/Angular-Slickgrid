@@ -410,7 +410,8 @@ export class FilterService {
       }
 
       // trigger an event only if Filters changed or if ENTER key was pressed
-      if (e.keyCode === KeyCode.ENTER || !isequal(oldColumnFilters, this._columnFilters)) {
+      const eventKeyCode = e && e.keyCode && e.keyCode;
+      if (eventKeyCode === KeyCode.ENTER || !isequal(oldColumnFilters, this._columnFilters)) {
         this.triggerEvent(this._slickSubscriber, {
           clearFilterTriggered: args && args.clearFilterTriggered,
           columnId,
