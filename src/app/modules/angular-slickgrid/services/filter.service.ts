@@ -73,7 +73,7 @@ export class FilterService {
     this._slickSubscriber.subscribe(this.attachBackendOnFilterSubscribe.bind(this));
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
-    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: Event, args: any) => {
+    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: KeyboardEvent, args: any) => {
       // firstColumnIdRendered is null at first, so if becomes filled and equal then we know it was already rendered
       if (args.column.id === this._firstColumnIdRendered) {
         this._isFilterFirstRender = false;
@@ -164,7 +164,7 @@ export class FilterService {
     dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
     dataView.setFilter(this.customLocalFilter.bind(this, dataView));
 
-    this._slickSubscriber.subscribe((e: any, args: any) => {
+    this._slickSubscriber.subscribe((e: KeyboardEvent, args: any) => {
       const columnId = args.columnId;
       if (columnId != null) {
         dataView.refresh();
@@ -176,7 +176,7 @@ export class FilterService {
     });
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
-    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: Event, args: any) => {
+    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: KeyboardEvent, args: any) => {
       this.addFilterTemplateToHeaderRow(args);
     });
   }
