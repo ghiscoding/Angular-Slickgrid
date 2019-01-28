@@ -25,9 +25,6 @@ import {
 } from './../models/index';
 import QueryBuilder from './graphqlQueryBuilder';
 
-// timer for keeping track of user typing waits
-let timer: any;
-const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 const DEFAULT_ITEMS_PER_PAGE = 25;
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -252,12 +249,6 @@ export class GraphqlService implements BackendService {
       throw new Error('Something went wrong in the GraphqlService, "backendServiceApi" is not initialized');
     }
 
-    // only add a delay when user is typing, on select dropdown filter it will execute right away
-    let debounceTypingDelay = 0;
-    if (event && (event.type === 'keyup' || event.type === 'keydown')) {
-      debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
-    }
-
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
     this._currentFilters = this.castFilterToColumnFilter(args.columnFilters);
 
@@ -266,16 +257,11 @@ export class GraphqlService implements BackendService {
         throw new Error('Something went wrong when trying create the GraphQL Backend Service, it seems that "args" is not populated correctly');
       }
 
-      // reset Pagination, then build the GraphQL query which we will use in the WebAPI callback
-      // wait a minimum user typing inactivity before processing any query
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        // loop through all columns to inspect filters & set the query
-        this.updateFilters(args.columnFilters, false);
+      // loop through all columns to inspect filters & set the query
+      this.updateFilters(args.columnFilters, false);
 
-        this.resetPaginationOptions();
-        resolve(this.buildQuery());
-      }, debounceTypingDelay);
+      this.resetPaginationOptions();
+      resolve(this.buildQuery());
     });
 
     return promise;
@@ -550,7 +536,6 @@ export class GraphqlService implements BackendService {
     const filtersArray: ColumnFilter[] = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters;
 
     return filtersArray.map((filter) => {
-      const columnDef = filter.columnDef;
       const tmpFilter: CurrentFilter = { columnId: filter.columnId || '' };
       if (filter.operator) {
         tmpFilter.operator = filter.operator;

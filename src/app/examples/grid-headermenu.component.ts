@@ -16,6 +16,7 @@ export class GridHeaderMenuComponent implements OnInit {
       <li>Hover over any column header to see an arrow showing up on the right</li>
       <li>Try Sorting (multi-sort) the 2 columns "Duration" and "% Complete" (the other ones are disabled)</li>
       <li>Try hiding any columns (you use the "Column Picker" plugin by doing a right+click on the header to show the column back)</li>
+      <li>Note: The "Header Button" & "Header Menu" Plugins cannot be used at the same time</li>
     </ul>
   `;
 

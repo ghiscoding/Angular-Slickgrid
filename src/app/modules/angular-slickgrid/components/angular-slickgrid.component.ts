@@ -358,8 +358,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   /**
-   * Define what our internal Post Process callback, it will execute internally after we get back result from the Process backend call
-   * For now, this is GraphQL Service only feature and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+   * Define our internal Post Process callback, it will execute internally after we get back result from the Process backend call
+   * For now, this is GraphQL Service ONLY feature and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
    */
   createBackendApiInternalPostProcessCallback(gridOptions: GridOption) {
     if (gridOptions && gridOptions.backendServiceApi) {
@@ -423,7 +423,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (gridOptions.presets && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
         this.filterService.populateColumnFilterSearchTerms();
       }
-      gridOptions.backendServiceApi ? this.filterService.attachBackendOnFilter(grid) : this.filterService.attachLocalOnFilter(grid, this.dataView);
+      gridOptions.backendServiceApi ? this.filterService.attachBackendOnFilter(grid, this.dataView) : this.filterService.attachLocalOnFilter(grid, this.dataView);
     }
 
     // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
@@ -637,9 +637,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         this.dataView.reSort();
       }
 
-      // this.grid.setData(dataset);
-      this.grid.invalidate();
-      this.grid.render();
+      if (dataset) {
+        this.grid.invalidate();
+        this.grid.render();
+      }
 
       if (this.gridOptions.backendServiceApi) {
         // do we want to show pagination?

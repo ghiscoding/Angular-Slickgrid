@@ -17,15 +17,12 @@ import {
   OdataOption,
   Pagination,
   PaginationChangedArgs,
-  SearchTerm,
   SortChangedArgs,
   SortDirection,
   SortDirectionString
 } from './../models/index';
 import { OdataService } from './odata.service';
 
-let timer: any;
-const DEFAULT_FILTER_TYPING_DEBOUNCE = 750;
 const DEFAULT_ITEMS_PER_PAGE = 25;
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -127,26 +124,15 @@ export class GridOdataService implements BackendService {
       throw new Error('Something went wrong in the GridOdataService, "backendServiceApi" is not initialized');
     }
 
-    // only add a delay when user is typing, on select dropdown filter it will execute right away
-    let debounceTypingDelay = 0;
-    if (event && (event.type === 'keyup' || event.type === 'keydown')) {
-      debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
-    }
-
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
     this._currentFilters = this.castFilterToColumnFilter(args.columnFilters);
 
     const promise = new Promise<string>((resolve, reject) => {
-      // reset Pagination, then build the OData query which we will use in the WebAPI callback
-      // wait a minimum user typing inactivity before processing any query
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        // loop through all columns to inspect filters & set the query
-        this.updateFilters(args.columnFilters);
+      // loop through all columns to inspect filters & set the query
+      this.updateFilters(args.columnFilters);
 
-        this.resetPaginationOptions();
-        resolve(this.odataService.buildQuery());
-      }, debounceTypingDelay);
+      this.resetPaginationOptions();
+      resolve(this.odataService.buildQuery());
     });
 
     return promise;
