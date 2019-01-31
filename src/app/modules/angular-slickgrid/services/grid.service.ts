@@ -421,9 +421,6 @@ export class GridService {
         this.highlightRow(row, 1500);
       }
 
-      // refresh dataview & grid
-      this._dataView.refresh();
-
       return gridIdx;
     }
   }
