@@ -5,6 +5,7 @@ import { ExtensionService } from './extension.service';
 import { FilterService } from './filter.service';
 import { GridStateService } from './gridState.service';
 import { SortService } from './sort.service';
+import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -14,6 +15,9 @@ declare var Slick: any;
 export class GridService {
   private _grid: any;
   private _dataView: any;
+  onItemAdded = new Subject<any | any[]>();
+  onItemDeleted = new Subject<any | any[]>();
+  onItemUpdated = new Subject<any | any[]>();
 
   constructor(private extensionService: ExtensionService, private filterService: FilterService, private gridStateService: GridStateService, private sortService: SortService, private translate: TranslateService) { }
 
@@ -212,7 +216,6 @@ export class GridService {
       if (Array.isArray(originalColumns) && originalColumns.length > 0) {
         // set the grid columns to it's original column definitions
         this._grid.setColumns(originalColumns);
-        this._dataView.refresh();
         if (this._gridOptions && this._gridOptions.enableAutoSizeColumns) {
           this._grid.autosizeColumns();
         }
@@ -232,8 +235,9 @@ export class GridService {
    * @param object dataItem: item object holding all properties of that row
    * @param shouldHighlightRow do we want to highlight the row after adding item
    * @param shouldResortGrid defaults to false, do we want the item to be sorted after insert? When set to False, it will add item on first row (default)
+   * @param shouldTriggerEvent defaults to true, which will trigger an event (used by at least the pagination component)
    */
-  addItemToDatagrid(item: any, shouldHighlightRow = true, shouldResortGrid = false) {
+  addItemToDatagrid(item: any, shouldHighlightRow = true, shouldResortGrid = false, shouldTriggerEvent = true) {
     if (!this._grid || !this._gridOptions || !this._dataView) {
       throw new Error('We could not find SlickGrid Grid, DataView objects');
     }
@@ -244,9 +248,6 @@ export class GridService {
     if (!shouldResortGrid) {
       this._grid.scrollRowIntoView(0); // scroll to row 0
     }
-
-    // refresh dataview & grid
-    this._dataView.refresh();
 
     // highlight the row we just added, if highlight is defined
     if (shouldHighlightRow && !shouldResortGrid) {
@@ -264,6 +265,11 @@ export class GridService {
         this.highlightRow(rowNumber, 1500);
       }
     }
+
+    // do we want to trigger an event after adding the item
+    if (shouldTriggerEvent) {
+      this.onItemAdded.next(item);
+    }
   }
 
   /**
@@ -271,8 +277,9 @@ export class GridService {
    * @param dataItem array: item object holding all properties of that row
    * @param shouldHighlightRow do we want to highlight the row after adding item
    * @param shouldResortGrid defaults to false, do we want the item to be sorted after insert? When set to False, it will add item on first row (default)
+   * @param shouldTriggerEvent defaults to true, which will trigger an event (used by at least the pagination component)
    */
-  addItemsToDatagrid(items: any[], shouldHighlightRow = true, shouldResortGrid = false) {
+  addItemsToDatagrid(items: any[], shouldHighlightRow = true, shouldResortGrid = false, shouldTriggerEvent = true) {
     let highlightRow = shouldHighlightRow;
     if (shouldResortGrid) {
       highlightRow = false; // don't highlight until later when shouldResortGrid is set to true
@@ -280,7 +287,7 @@ export class GridService {
 
     // loop through all items to add
     if (Array.isArray(items)) {
-      items.forEach((item: any) => this.addItemToDatagrid(item, highlightRow));
+      items.forEach((item: any) => this.addItemToDatagrid(item, highlightRow, false, false));
     }
 
     // do we want the item to be sorted in the grid, when set to False it will insert on first row (defaults to false)
@@ -296,37 +303,50 @@ export class GridService {
         });
       }
     }
+
+    // do we want to trigger an event after adding the item
+    if (shouldTriggerEvent) {
+      this.onItemAdded.next(items);
+    }
   }
 
   /**
    * Delete an existing item from the datagrid (dataView)
    * @param object item: item object holding all properties of that row
+   * @param shouldTriggerEvent defaults to true, which will trigger an event (used by at least the pagination component)
    */
-  deleteDataGridItem(item: any) {
+  deleteDataGridItem(item: any, shouldTriggerEvent = true) {
     if (!item || !item.hasOwnProperty('id')) {
       throw new Error(`deleteDataGridItem() requires an item object which includes the "id" property`);
     }
     const itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
-    this.deleteDataGridItemById(itemId);
+    this.deleteDataGridItemById(itemId, shouldTriggerEvent);
   }
 
   /**
    * Delete an array of existing items from the datagrid
    * @param object item: item object holding all properties of that row
+   * @param shouldTriggerEvent defaults to true, which will trigger an event (used by at least the pagination component)
    */
-  deleteDataGridItems(items: any[]) {
+  deleteDataGridItems(items: any[], shouldTriggerEvent = true) {
     // when it's not an array, we can call directly the single item delete
     if (!Array.isArray(items)) {
       this.deleteDataGridItem(items);
     }
-    items.forEach((item: any) => this.deleteDataGridItem(item));
+    items.forEach((item: any) => this.deleteDataGridItem(item, false));
+
+    // do we want to trigger an event after deleting the item
+    if (shouldTriggerEvent) {
+      this.onItemDeleted.next(items);
+    }
   }
 
   /**
    * Delete an existing item from the datagrid (dataView) by it's id
    * @param itemId: item unique id
+   * @param shouldTriggerEvent defaults to true, which will trigger an event (used by at least the pagination component)
    */
-  deleteDataGridItemById(itemId: string | number) {
+  deleteDataGridItemById(itemId: string | number, shouldTriggerEvent = true) {
     if (itemId === undefined) {
       throw new Error(`Cannot delete a row without a valid "id"`);
     }
@@ -338,45 +358,59 @@ export class GridService {
 
     // delete the item from the dataView
     this._dataView.deleteItem(itemId);
-    this._dataView.refresh();
+
+    // do we want to trigger an event after deleting the item
+    if (shouldTriggerEvent) {
+      this.onItemDeleted.next(itemId);
+    }
   }
 
   /**
    * Delete an array of existing items from the datagrid
    * @param object item: item object holding all properties of that row
+   * @param shouldTriggerEvent defaults to true, which will trigger an event (used by at least the pagination component)
    */
-  deleteDataGridItemByIds(itemIds: number[] | string[]) {
+  deleteDataGridItemByIds(itemIds: number[] | string[], shouldTriggerEvent = true) {
     // when it's not an array, we can call directly the single item delete
     if (!Array.isArray(itemIds)) {
       this.deleteDataGridItemById(itemIds);
     }
     for (let i = 0; i < itemIds.length; i++) {
       if (itemIds[i] !== null) {
-        this.deleteDataGridItemById(itemIds[i]);
+        this.deleteDataGridItemById(itemIds[i], false);
       }
+    }
+
+    // do we want to trigger an event after deleting the item
+    if (shouldTriggerEvent) {
+      this.onItemDeleted.next(itemIds);
     }
   }
 
   /**
    * Update an existing item with new properties inside the datagrid
    * @param object item: item object holding all properties of that row
+   * @param shouldHighlightRow do we want to highlight the row after update
+   * @param shouldTriggerEvent defaults to true, which will trigger an event (used by at least the pagination component)
    * @return grid row index
    */
-  updateDataGridItem(item: any, shouldHighlightRow = true) {
+  updateDataGridItem(item: any, shouldHighlightRow = true, shouldTriggerEvent = true) {
     const itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
 
     if (itemId === undefined) {
       throw new Error(`Could not find the item in the grid or it's associated "id"`);
     }
 
-    return this.updateDataGridItemById(itemId, item, shouldHighlightRow);
+    return this.updateDataGridItemById(itemId, item, shouldHighlightRow, shouldTriggerEvent);
   }
 
   /**
    * Update an array of existing items with new properties inside the datagrid
    * @param object item: array of item objects
+   * @param shouldHighlightRow do we want to highlight the row after update
+   * @param shouldTriggerEvent defaults to true, which will trigger an event (used by at least the pagination component)
    */
-  updateDataGridItems(items: any | any[], shouldHighlightRow = true) {
+  updateDataGridItems(items: any | any[], shouldHighlightRow = true, shouldTriggerEvent = true) {
     // when it's not an array, we can call directly the single item update
     if (!Array.isArray(items)) {
       this.updateDataGridItem(items, shouldHighlightRow);
@@ -384,13 +418,18 @@ export class GridService {
 
     const gridIndexes: number[] = [];
     items.forEach((item: any) => {
-      gridIndexes.push(this.updateDataGridItem(item, false));
+      gridIndexes.push(this.updateDataGridItem(item, false, false));
     });
 
     // only highlight at the end, all at once
     // we have to do this because doing highlight 1 by 1 would only re-select the last highlighted row which is wrong behavior
     if (shouldHighlightRow) {
       this.highlightRow(gridIndexes);
+    }
+
+    // do we want to trigger an event after updating the item
+    if (shouldTriggerEvent) {
+      this.onItemUpdated.next(items);
     }
   }
 
@@ -399,9 +438,10 @@ export class GridService {
    * @param itemId: item unique id
    * @param object item: item object holding all properties of that row
    * @param shouldHighlightRow do we want to highlight the row after update
+   * @param shouldTriggerEvent defaults to true, which will trigger an event (used by at least the pagination component)
    * @return grid row index
    */
-  updateDataGridItemById(itemId: number | string, item: any, shouldHighlightRow = true) {
+  updateDataGridItemById(itemId: number | string, item: any, shouldHighlightRow = true, shouldTriggerEvent = true) {
     if (itemId === undefined) {
       throw new Error(`Cannot update a row without a valid "id"`);
     }
@@ -419,6 +459,11 @@ export class GridService {
       // highlight the row we just updated, if defined
       if (shouldHighlightRow) {
         this.highlightRow(row, 1500);
+      }
+
+      // do we want to trigger an event after updating the item
+      if (shouldTriggerEvent) {
+        this.onItemUpdated.next(item);
       }
 
       return gridIdx;

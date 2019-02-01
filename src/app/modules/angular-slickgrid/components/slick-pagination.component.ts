@@ -2,7 +2,8 @@ import { Pagination } from './../models/pagination.interface';
 import { AfterViewInit, Component, EventEmitter, Injectable, Input, OnDestroy, Output } from '@angular/core';
 import { castToPromise } from './../services/utilities';
 import { GridOption } from './../models/index';
-import { FilterService } from './../services/index';
+import { FilterService } from './../services/filter.service';
+import { GridService } from './../services/grid.service';
 import { Subscription } from 'rxjs';
 
 // using external non-typed js libraries
@@ -43,7 +44,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   fromToParams: any = { from: this.dataFrom, to: this.dataTo, totalItems: this.totalItems };
 
   /** Constructor */
-  constructor(private filterService: FilterService) {}
+  constructor(private filterService: FilterService, private gridService: GridService) {}
 
   ngOnDestroy() {
     this.dispose();
@@ -62,7 +63,8 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     // Subscribe to any dataview row count changed so that when Adding/Deleting item(s) through the DataView
     // that would trigger a refresh of the pagination numbers
     if (this.dataView) {
-      this._eventHandler.subscribe(this.dataView.onRowCountChanged, (e: Event, args: any) => this.onDataViewRowCountChanged(args));
+      this.gridService.onItemAdded.subscribe((items: any | any[]) => this.onItemAddedOrRemoved(items, true));
+      this.gridService.onItemDeleted.subscribe((items: any | any[]) => this.onItemAddedOrRemoved(items, false));
     }
   }
 
@@ -240,22 +242,25 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * When the DataView Row Count changes, we will refresh the numbers on the pagination however we won't trigger a backend change
+   * When item is added or removed, we will refresh the numbers on the pagination however we won't trigger a backend change
    * This will have a side effect though, which is that the "To" count won't be matching the "items per page" count,
    * that is a necessary side effect to avoid triggering a backend query just to refresh the paging,
    * basically we assume that this offset is fine for the time being,
    * until user does an action which will refresh the data hence the pagination which will then become normal again
    */
-  private onDataViewRowCountChanged(args: { current: number; previous: number; }) {
-    if (args && args.hasOwnProperty('current') && args.hasOwnProperty('previous')) {
+  private onItemAddedOrRemoved(items: any | any[], isItemAdded = true) {
+    if (items !== null) {
       const previousDataTo = this.dataTo;
-      const itemCountChanged = args.current - args.previous;
-      this.totalItems = this.totalItems + itemCountChanged;
-      this.recalculateFromToIndexes(); // basically refresh the total count in UI
+      const itemCount = Array.isArray(items) ? items.length : 1;
+      const itemCountWithDirection = isItemAdded ? +itemCount : -itemCount;
+
+      // refresh the total count in the pagination and in the UI
+      this.totalItems += itemCountWithDirection;
+      this.recalculateFromToIndexes();
 
       // finally refresh the "To" count and we know it might be different than the "items per page" count
       // but this is necessary since we don't want an actual backend refresh
-      this.dataTo = previousDataTo + itemCountChanged;
+      this.dataTo = previousDataTo + itemCountWithDirection;
     }
   }
 }
