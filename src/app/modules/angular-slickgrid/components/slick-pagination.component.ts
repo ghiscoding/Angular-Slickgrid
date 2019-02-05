@@ -1,10 +1,9 @@
-import { Pagination } from './../models/pagination.interface';
 import { AfterViewInit, Component, EventEmitter, Injectable, Input, OnDestroy, Output } from '@angular/core';
-import { castToPromise } from './../services/utilities';
-import { GridOption } from './../models/index';
+import { GraphqlResult, GridOption, Pagination } from './../models/index';
+import { executeBackendProcessesCallback, onBackendError } from '../services/backend-utilities';
 import { FilterService } from './../services/filter.service';
 import { GridService } from './../services/grid.service';
-import { Subscription } from 'rxjs';
+import { isObservable, Subscription } from 'rxjs';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -180,42 +179,25 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
         // keep start time & end timestamps & return it after process execution
         const startTime = new Date();
 
+        // run any pre-process, if defined, for example a spinner
         if (backendApi.preProcess) {
           backendApi.preProcess();
         }
 
         const query = backendApi.service.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
 
-        // the process could be an Observable (like HttpClient) or a Promise
-        // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-        const observableOrPromise = backendApi.process(query);
-        const processResult = await castToPromise(observableOrPromise);
-        const endTime = new Date();
-
-        // from the result, call our internal post process to update the Dataset and Pagination info
-        if (processResult && backendApi.internalPostProcess) {
-          backendApi.internalPostProcess(processResult);
+        // the processes can be Observables (like HttpClient) or Promises
+        const process = backendApi.process(query);
+        if (process instanceof Promise && process.then) {
+          process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridPaginationOptions));
+        } else if (isObservable(process)) {
+          process.subscribe(
+            (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridPaginationOptions),
+            (error: any) => onBackendError(error, backendApi)
+          );
         }
-
-        // send the response process to the postProcess callback
-        if (backendApi.postProcess) {
-          if (processResult instanceof Object) {
-            processResult.statistics = {
-              startTime,
-              endTime,
-              executionTime: endTime.valueOf() - startTime.valueOf(),
-              itemCount: this.totalItems,
-              totalItemCount: this.totalItems
-            };
-          }
-          backendApi.postProcess(processResult);
-        }
-      } catch (e) {
-        if (backendApi && backendApi.onError) {
-          backendApi.onError(e);
-        } else {
-          throw e;
-        }
+      } catch (error) {
+        onBackendError(error, backendApi);
       }
     } else {
       throw new Error('Pagination with a backend service requires "BackendServiceApi" to be defined in your grid options');

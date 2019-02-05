@@ -1,18 +1,19 @@
-import { SortDirectionNumber } from './../models/sortDirectionNumber.enum';
-import { castToPromise } from './utilities';
 import {
   Column,
   ColumnSort,
   CurrentSorter,
   FieldType,
+  GraphqlResult,
   GridOption,
   SlickEvent,
   SortDirection,
-  SortDirectionString
+  SortDirectionNumber,
+  SortDirectionString,
 } from './../models/index';
+import { executeBackendProcessesCallback, onBackendError } from './backend-utilities';
 import { getDescendantProperty } from './utilities';
 import { sortByFieldType } from '../sorters/sorterUtilities';
-import { Subject } from 'rxjs';
+import { isObservable, Subject } from 'rxjs';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -74,35 +75,18 @@ export class SortService {
       const query = backendApi.service.processOnSortChanged(event, args);
       this.emitSortChanged('remote');
 
-      // the process could be an Observable (like HttpClient) or a Promise
-      // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-      const observableOrPromise = backendApi.process(query);
-      const processResult = await castToPromise(observableOrPromise);
-      const endTime = new Date();
-
-      // from the result, call our internal post process to update the Dataset and Pagination info
-      if (processResult && backendApi.internalPostProcess) {
-        backendApi.internalPostProcess(processResult);
+      // the processes can be Observables (like HttpClient) or Promises
+      const process = backendApi.process(query);
+      if (process instanceof Promise && process.then) {
+        process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions));
+      } else if (isObservable(process)) {
+        process.subscribe(
+          (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions),
+          (error: any) => onBackendError(error, backendApi)
+        );
       }
-
-      // send the response process to the postProcess callback
-      if (backendApi.postProcess) {
-        if (processResult instanceof Object) {
-          processResult.statistics = {
-            startTime,
-            endTime,
-            executionTime: endTime.valueOf() - startTime.valueOf(),
-            totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
-          };
-        }
-        backendApi.postProcess(processResult);
-      }
-    } catch (e) {
-      if (backendApi && backendApi.onError) {
-        backendApi.onError(e);
-      } else {
-        throw e;
-      }
+    } catch (error) {
+      onBackendError(error, backendApi);
     }
   }
 

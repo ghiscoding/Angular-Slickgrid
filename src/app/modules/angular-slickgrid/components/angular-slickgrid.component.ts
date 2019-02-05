@@ -8,8 +8,9 @@ import 'slickgrid/slick.dataview';
 
 import { AfterViewInit, Component, ElementRef, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { castToPromise, titleCase, unsubscribeAllObservables } from './../services/utilities';
 import { GlobalGridOptions } from './../global-grid-options';
+import { titleCase, unsubscribeAllObservables } from './../services/utilities';
+import { executeBackendProcessesCallback, onBackendError } from '../services/backend-utilities';
 import {
   AngularGridInstance,
   BackendServiceOption,
@@ -23,7 +24,7 @@ import {
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
-import { Observable, Subscription } from 'rxjs';
+import { isObservable, Observable, Subscription } from 'rxjs';
 
 // Services
 import { ExportService } from './../services/export.service';
@@ -518,47 +519,30 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     if (backendApi && backendApi.service && (backendApi.onInit || isExecuteCommandOnInit)) {
       const query = (typeof backendApi.service.buildQuery === 'function') ? backendApi.service.buildQuery() : '';
-      const observableOrPromise = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
+      const process = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
 
       // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
       setTimeout(async () => {
         // keep start time & end timestamps & return it after process execution
         const startTime = new Date();
 
+        // run any pre-process, if defined, for example a spinner
         if (backendApi.preProcess) {
           backendApi.preProcess();
         }
 
         try {
-          // the process could be an Observable (like HttpClient) or a Promise
-          // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-          const processResult: GraphqlResult | any = await castToPromise(observableOrPromise);
-          const endTime = new Date();
-
-          // define what our internal Post Process callback, only available for GraphQL Service for now
-          // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
-          if (processResult && backendApi && backendApi.service instanceof GraphqlService && backendApi.internalPostProcess) {
-            backendApi.internalPostProcess(processResult);
+          // the processes can be Observables (like HttpClient) or Promises
+          if (process instanceof Promise && process.then) {
+            process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions));
+          } else if (isObservable(process)) {
+            process.subscribe(
+              (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions),
+              (error: any) => onBackendError(error, backendApi)
+            );
           }
-
-          // send the response process to the postProcess callback
-          if (backendApi.postProcess) {
-            if (processResult instanceof Object) {
-              processResult.statistics = {
-                startTime,
-                endTime,
-                executionTime: endTime.valueOf() - startTime.valueOf(),
-                totalItemCount: this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems
-              };
-            }
-            backendApi.postProcess(processResult);
-          }
-        } catch (e) {
-          if (backendApi && backendApi.onError) {
-            backendApi.onError(e);
-          } else {
-            throw e;
-          }
+        } catch (error) {
+          onBackendError(error, backendApi);
         }
       });
     }
