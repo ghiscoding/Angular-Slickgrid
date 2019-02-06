@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { FilterConditions } from './../filter-conditions';
 import {
   Column,
   ColumnFilter,
@@ -8,6 +7,7 @@ import {
   FilterArguments,
   FilterCallbackArg,
   FieldType,
+  GraphqlResult,
   GridOption,
   KeyCode,
   OperatorType,
@@ -16,9 +16,11 @@ import {
   SlickEvent,
   OperatorString,
 } from './../models/index';
-import { castToPromise, getDescendantProperty } from './utilities';
+import { executeBackendProcessesCallback, onBackendError } from './backend-utilities';
+import { getDescendantProperty } from './utilities';
+import { FilterConditions } from './../filter-conditions';
 import { FilterFactory } from '../filters/filterFactory';
-import { Subject } from 'rxjs';
+import { isObservable, Subject } from 'rxjs';
 import * as isequal_ from 'lodash.isequal';
 const isequal = isequal_; // patch to fix rollup to work
 
@@ -118,36 +120,19 @@ export class FilterService {
           this.emitFilterChanged('remote');
         }
 
-        // the process could be an Observable (like HttpClient) or a Promise
-        // in any case, we need to have a Promise so that we can await on it (if an Observable, convert it to Promise)
-        const observableOrPromise = backendApi.process(query);
-        const processResult = await castToPromise(observableOrPromise);
-        const endTime = new Date();
-
-        // from the result, call our internal post process to update the Dataset and Pagination info
-        if (processResult && backendApi.internalPostProcess) {
-          backendApi.internalPostProcess(processResult);
-        }
-
-        // send the response process to the postProcess callback
-        if (backendApi.postProcess !== undefined) {
-          if (processResult instanceof Object) {
-            processResult.statistics = {
-              startTime,
-              endTime,
-              executionTime: endTime.valueOf() - startTime.valueOf(),
-              totalItemCount: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems
-            };
-          }
-          backendApi.postProcess(processResult);
+        // the processes can be Observables (like HttpClient) or Promises
+        const process = backendApi.process(query);
+        if (process instanceof Promise && process.then) {
+          process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions));
+        } else if (isObservable(process)) {
+          process.subscribe(
+            (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions),
+            (error: any) => onBackendError(error, backendApi)
+          );
         }
       }, debounceTypingDelay);
-    } catch (e) {
-      if (backendApi && backendApi.onError) {
-        backendApi.onError(e);
-      } else {
-        throw e;
-      }
+    } catch (error) {
+      onBackendError(error, backendApi);
     }
   }
 
