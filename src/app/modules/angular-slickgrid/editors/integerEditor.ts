@@ -59,7 +59,7 @@ export class IntegerEditor implements Editor {
   }
 
   destroy() {
-    this.$input.remove();
+    this.$input.off('keydown.nav focusout').remove();
   }
 
   focus() {

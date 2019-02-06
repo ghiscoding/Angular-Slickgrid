@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  BackendServiceApi,
   Column,
   ColumnFilter,
   ColumnFilters,
@@ -72,11 +73,11 @@ export class FilterService {
     this._slickSubscriber = new Slick.Event();
 
     // subscribe to the SlickGrid event and call the backend execution
-    this._slickSubscriber.subscribe(this.attachBackendOnFilterSubscribe.bind(this));
+    this._slickSubscriber.subscribe(this.onBackendFilterChange.bind(this));
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
     this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: KeyboardEvent, args: any) => {
-      // firstColumnIdRendered is null at first, so if becomes filled and equal then we know it was already rendered
+      // firstColumnIdRendered is null at first, so if it changes to being filled and equal then we know it was already rendered
       if (args.column.id === this._firstColumnIdRendered) {
         this._isFilterFirstRender = false;
       }
@@ -87,7 +88,7 @@ export class FilterService {
     });
   }
 
-  async attachBackendOnFilterSubscribe(event: KeyboardEvent, args: any) {
+  onBackendFilterChange(event: KeyboardEvent, args: any) {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
     }
@@ -111,28 +112,34 @@ export class FilterService {
       }
 
       // call the service to get a query back
-      clearTimeout(timer);
-      timer = setTimeout(async () => {
-        const query = await backendApi.service.processOnFilterChanged(event, args);
-
-        // emit an onFilterChanged event when it's not called by clearAllFilters
-        if (args && !args.clearFilterTriggered) {
-          this.emitFilterChanged('remote');
-        }
-
-        // the processes can be Observables (like HttpClient) or Promises
-        const process = backendApi.process(query);
-        if (process instanceof Promise && process.then) {
-          process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions));
-        } else if (isObservable(process)) {
-          process.subscribe(
-            (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions),
-            (error: any) => onBackendError(error, backendApi)
-          );
-        }
-      }, debounceTypingDelay);
+      if (debounceTypingDelay > 0) {
+        clearTimeout(timer);
+        timer = setTimeout(() => this.executeBackendCallback(args, startTime, backendApi), debounceTypingDelay);
+      } else {
+        this.executeBackendCallback(args, startTime, backendApi);
+      }
     } catch (error) {
       onBackendError(error, backendApi);
+    }
+  }
+
+  async executeBackendCallback(args: any, startTime: Date, backendApi: BackendServiceApi) {
+    const query = await backendApi.service.processOnFilterChanged(event, args);
+
+    // emit an onFilterChanged event when it's not called by clearAllFilters
+    if (args && !args.clearFilterTriggered) {
+      this.emitFilterChanged('remote');
+    }
+
+    // the processes can be Observables (like HttpClient) or Promises
+    const process = backendApi.process(query);
+    if (process instanceof Promise && process.then) {
+      process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions));
+    } else if (isObservable(process)) {
+      process.subscribe(
+        (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions),
+        (error: any) => onBackendError(error, backendApi)
+      );
     }
   }
 
@@ -395,7 +402,7 @@ export class FilterService {
       }
 
       // trigger an event only if Filters changed or if ENTER key was pressed
-      const eventKeyCode = e && e.keyCode && e.keyCode;
+      const eventKeyCode = e && e.keyCode;
       if (eventKeyCode === KeyCode.ENTER || !isequal(oldColumnFilters, this._columnFilters)) {
         this.triggerEvent(this._slickSubscriber, {
           clearFilterTriggered: args && args.clearFilterTriggered,
@@ -460,7 +467,7 @@ export class FilterService {
   }
 
   /**
-   * A simple function that is attached to the subscriber and emit a change when the sort is called.
+   * A simple function that is attached to the subscriber and emit a change when the filter is called.
    * Other services, like Pagination, can then subscribe to it.
    * @param caller
    */

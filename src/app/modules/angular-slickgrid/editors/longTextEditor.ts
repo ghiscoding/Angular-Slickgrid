@@ -137,7 +137,7 @@ export class LongTextEditor implements Editor {
   }
 
   destroy() {
-    this.$wrapper.remove();
+    this.$wrapper.off('keydown focusout').remove();
   }
 
   focus() {
