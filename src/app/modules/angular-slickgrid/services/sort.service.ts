@@ -53,7 +53,7 @@ export class SortService {
     this._slickSubscriber.subscribe(this.onBackendSortChanged.bind(this));
   }
 
-  async onBackendSortChanged(event: Event, args: any) {
+  onBackendSortChanged(event: Event, args: any) {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to attach the "onBackendSortChanged(event, args)" function, it seems that "args" is not populated correctly');
     }

@@ -522,7 +522,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       const process = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
 
       // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
-      setTimeout(async () => {
+      setTimeout(() => {
         // keep start time & end timestamps & return it after process execution
         const startTime = new Date();
 

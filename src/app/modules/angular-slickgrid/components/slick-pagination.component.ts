@@ -159,7 +159,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     this.pageCount = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
-  async onPageChanged(event: Event | undefined, pageNumber: number) {
+  onPageChanged(event: Event | undefined, pageNumber: number) {
     this.recalculateFromToIndexes();
 
     const backendApi = this._gridPaginationOptions.backendServiceApi;
