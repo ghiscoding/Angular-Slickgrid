@@ -186,7 +186,7 @@ export class SelectFilter implements Filter {
     if (this.$filterElm) {
       // remove event watcher
       this.$filterElm.off().remove();
-      $('.ms-drop').remove();
+      $(`[name=${this.elementName}].ms-drop`).remove();
     }
 
     // also dispose of all Subscriptions
@@ -414,6 +414,7 @@ export class SelectFilter implements Filter {
       throw new Error(`multiple-select.js was not found, make sure to modify your "angular-cli.json" file and include "../node_modules/angular-slickgrid/lib/multiple-select/multiple-select.js" and it's css or SASS file`);
     }
     this.$filterElm.attr('id', this.elementName);
+    this.$filterElm.attr('name', this.elementName);
     this.$filterElm.data('columnId', fieldId);
 
     // if there's a search term, we will add the "filled" class for styling purposes

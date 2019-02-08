@@ -78,7 +78,10 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         filterable: true,
         filter: {
           model: Filters.multipleSelect,
-          collection: [{ value: 'acme', label: 'Acme'}, { value: 'abc', label: 'Company ABC'}, { value: 'xyz', label: 'Company XYZ'}]
+          collection: [{ value: 'acme', label: 'Acme'}, { value: 'abc', label: 'Company ABC'}, { value: 'xyz', label: 'Company XYZ'}],
+          filterOptions: {
+            filter: true // adds a filter on top of the multi-select dropdown
+          }
         }
       },
       { id: 'billing.address.street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', width: 60, filterable: true, sortable: true },
