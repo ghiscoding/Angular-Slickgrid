@@ -301,19 +301,19 @@ export class HeaderMenuExtension implements Extension {
 
   /** Clear the Sort on the current column (if it's actually sorted) */
   private clearColumnSort(e: Event, args: HeaderMenuOnCommandArgs) {
-    if (args && args.column) {
+    if (args && args.column && this.sharedService) {
       // get previously sorted columns
       const allSortedCols: ColumnSort[] = this.sortService.getPreviousColumnSorts();
       const sortedColsWithoutCurrent: ColumnSort[] = this.sortService.getPreviousColumnSorts(args.column.id + '');
 
       if (allSortedCols.length !== sortedColsWithoutCurrent.length) {
-        if (this.sharedService.gridOptions.backendServiceApi) {
+        if (this.sharedService.gridOptions && this.sharedService.gridOptions.backendServiceApi) {
           this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this.sharedService.grid });
         } else if (this.sharedService.dataView) {
           this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, sortedColsWithoutCurrent, true);
         } else {
           // when using customDataView, we will simply send it as a onSort event with notify
-          const isMultiSort = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.multiColumnSort || false;
+          const isMultiSort = this.sharedService.gridOptions && this.sharedService.gridOptions.multiColumnSort || false;
           const sortOutput = isMultiSort ? sortedColsWithoutCurrent : sortedColsWithoutCurrent[0];
           args.grid.onSort.notify(sortOutput);
         }
