@@ -215,14 +215,29 @@ export class ExportService {
 
       let itemData = '';
 
-      if (exportCustomFormatter) {
-        const customFormattedData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
-        itemData = typeof customFormattedData === 'string' ? customFormattedData : customFormattedData.text;
-      } else if (isEvaluatingFormatter && !!columnDef.formatter) {
+      if (itemObj && itemObj[fieldId] && exportCustomFormatter !== undefined && exportCustomFormatter !== null) {
+        const formattedData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+        itemData = formattedData as string;
+        if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
+          itemData = formattedData.text;
+        }
+        if (itemData === null) {
+          itemData = '';
+        }
+      } else if (isEvaluatingFormatter && columnDef.formatter !== undefined && columnDef.formatter !== null) {
         const formattedData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
-        itemData = typeof formattedData === 'string' ? formattedData : formattedData.text;
+        itemData = formattedData as string;
+        if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
+          itemData = formattedData.text;
+        }
+        if (itemData === null) {
+          itemData = '';
+        }
       } else {
         itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
+        if (itemData === null) {
+          itemData = '';
+        }
       }
 
       // does the user want to sanitize the output data (remove HTML tags)?
