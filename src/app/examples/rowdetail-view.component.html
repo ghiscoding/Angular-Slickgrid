@@ -1,0 +1,24 @@
+<div class="container-fluid">
+    <h2>{{model?.title}}</h2>
+    <div class="row">
+      <div class="col-xs-3"><label>Assignee:</label> <input class="form-control" [(ngModel)]="model.assignee" /></div>
+      <div class="col-xs-3"><label>Reporter:</label> <span>{{model?.reporter}}</span></div>
+      <div class="col-xs-2"><label>Duration:</label> <span>{{model?.duration}}</span></div>
+      <div class="col-xs-2"><label>% Complete:</label> <span>{{model?.percentComplete}}</span></div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-3"><label>Start:</label> <span>{{model?.start | date: 'yyyy-MM-dd'}}</span></div>
+      <div class="col-xs-3"><label>Finish:</label> <span>{{model?.finish | date: 'yyyy-MM-dd'}}</span></div>
+      <div class="col-xs-2"><label>Effort Driven:</label> <i [class]="model?.effortDriven ? 'fa fa-check' : ''"></i></div>
+    </div>
+
+    <hr>
+
+    <h4>
+      Find out who is the Assignee
+      <small>
+        <button class="btn btn-primary btn-sm" (click)="alertAssignee(model?.assignee)">Click Me</button>
+      </small>
+    </h4>
+  </div>

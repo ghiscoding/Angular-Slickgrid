@@ -50,6 +50,7 @@ import { GridMenuExtension } from '../extensions/gridMenuExtension';
 import { GroupItemMetaProviderExtension } from '../extensions/groupItemMetaProviderExtension';
 import { HeaderButtonExtension } from '../extensions/headerButtonExtension';
 import { HeaderMenuExtension } from '../extensions/headerMenuExtension';
+import { RowDetailViewExtension } from '../extensions/rowDetailViewExtension';
 import { RowMoveManagerExtension } from '../extensions/rowMoveManagerExtension';
 import { RowSelectionExtension } from '../extensions/rowSelectionExtension';
 
@@ -86,6 +87,7 @@ const slickgridEventPrefix = 'sg';
     HeaderButtonExtension,
     HeaderMenuExtension,
     ResizerService,
+    RowDetailViewExtension,
     RowMoveManagerExtension,
     RowSelectionExtension,
     SharedService,

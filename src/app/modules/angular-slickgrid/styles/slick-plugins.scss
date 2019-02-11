@@ -602,3 +602,55 @@ input.slider-editor-input[type=range] {
     }
   }
 }
+
+// ---------------------------------------------------------
+// Row Detail View Plugin
+// ---------------------------------------------------------
+
+.slick-row {
+  .detail-view-toggle {
+    display:          inline-block;
+    cursor:            pointer;
+
+    &.expand {
+      display: inline-block;
+      color: $detail-view-icon-expand-color;
+
+      &:hover {
+        color: darken($detail-view-icon-expand-color, 10%);
+      }
+      &:before {
+        font-family: $icon-font-family;
+        font-size: $detail-view-icon-size;
+        content: $detail-view-icon-expand;
+      }
+    }
+    &.collapse {
+      display: inline-block;
+      color: $detail-view-icon-collapse-color;
+      &:hover {
+        color: darken($detail-view-icon-collapse-color, 10%);
+      }
+      &:before {
+        font-family: $icon-font-family;
+        font-size: $detail-view-icon-size;
+        content: $detail-view-icon-collapse;
+      }
+    }
+  }
+
+  .dynamic-cell-detail {
+    position:           absolute;
+    width:              100%;
+    overflow:           auto;
+    border:             $detail-view-container-border;
+    background-color:   $detail-view-container-bgcolor;
+    padding:            $detail-view-container-padding;
+    z-index:            $detail-view-container-z-index;
+
+    :first-child {
+      vertical-align:     middle;
+      line-height:        13px;
+    }
+  }
+}
