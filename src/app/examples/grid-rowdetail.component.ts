@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewContainerRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
@@ -17,9 +17,6 @@ const NB_ITEMS = 500;
   templateUrl: './grid-rowdetail.component.html'
 })
 export class GridRowDetailComponent implements OnInit {
-  @ViewChild('rowDetail', {read: ViewContainerRef}) rowDetailContainer: ViewContainerRef;
-  @ViewChild('rowDetailPreload', {read: ViewContainerRef}) rowDetailPreloadContainer: ViewContainerRef;
-
   title = 'Example 21: Row Detail View';
   subTitle = `
     Add functionality to show extra information with a Row Detail View
