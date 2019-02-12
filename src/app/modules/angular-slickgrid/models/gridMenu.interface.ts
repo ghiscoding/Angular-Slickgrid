@@ -91,8 +91,11 @@ export interface GridMenu {
   /** Same as "syncResizeTitle", except that it's a translation key which can be used on page load and/or when switching locale */
   syncResizeTitleKey?: string;
 
-  //
+  // --
   // Events
+
+  /** Fired after extension (control) is registered by SlickGrid */
+  onExtensionRegistered?: (plugin: any) => void;
 
   /** SlickGrid Event fired before the menu is shown. */
   onBeforeMenuShow?: (e: Event, args: any) => void;
