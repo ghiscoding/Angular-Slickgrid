@@ -209,7 +209,7 @@
     this.selectItemName = 'data-name="selectItem' + name + '"';
 
     if (!this.options.keepOpen) {
-      $(document).off('click.multiple-select').on('click.multiple-select', function (e) {
+      $('body').off('click').on('click', function (e) {
         if ($(e.target)[0] === that.$choice[0] ||
           $(e.target).parents('.ms-choice')[0] === that.$choice[0]) {
           return;
