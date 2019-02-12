@@ -145,6 +145,17 @@ $column-picker-label-margin:              4px !default;
 $column-picker-label-font-weight:         normal !default;
 $column-picker-link-background-color:     #ffffff !default;
 
+/** Detail View Plugin */
+$detail-view-icon-collapse:               "\f056" !default;
+$detail-view-icon-collapse-color:         $primary-color !default;
+$detail-view-icon-expand:                 "\f055" !default;
+$detail-view-icon-expand-color:           lighten($primary-color, 25%) !default;
+$detail-view-icon-size:                   ($icon-font-size + 2px) !default;
+$detail-view-container-bgcolor:           #f7f7f7 !default;
+$detail-view-container-border:            1px solid #c0c0c0 !default;
+$detail-view-container-padding:           10px !default;
+$detail-view-container-z-index:           1000 !default;
+
 /* Excel copy plugin */
 $copied-cell-bg-color-transition:         rgba(0, 0, 255, 0.2) !default;
 $copied-cell-transition:                  0.5s background !default;

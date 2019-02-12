@@ -24,10 +24,13 @@ import { GridLocalizationComponent } from './examples/grid-localization.componen
 import { GridMenuComponent } from './examples/grid-menu.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
 import { GridRemoteComponent } from './examples/grid-remote.component';
+import { GridRowDetailComponent } from './examples/grid-rowdetail.component';
 import { GridRowMoveComponent } from './examples/grid-rowmove.component';
 import { GridRowSelectionComponent } from './examples/grid-rowselection.component';
 import { GridStateComponent } from './examples/grid-state.component';
 import { HomeComponent } from './examples/home.component';
+import { RowDetailPreloadComponent } from './examples/rowdetail-preload.component';
+import { RowDetailViewComponent } from './examples/rowdetail-view.component';
 
 import { SwtCommonGridTestComponent } from './examples/swt-common-grid-test.component';
 import { SwtCommonGridPaginationComponent } from './examples/swt-common-grid-pagination.component';
@@ -81,9 +84,12 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridMenuComponent,
     GridOdataComponent,
     GridRemoteComponent,
+    GridRowDetailComponent,
     GridRowMoveComponent,
     GridRowSelectionComponent,
     GridStateComponent,
+    RowDetailPreloadComponent,
+    RowDetailViewComponent,
     SwtCommonGridTestComponent,
     SwtCommonGridPaginationComponent,
     SwtCommonGridComponent,
@@ -110,6 +116,11 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
         sidePadding: 15
       }
     })
+  ],
+  entryComponents: [
+    // dynamically created components
+    RowDetailPreloadComponent,
+    RowDetailViewComponent,
   ],
   providers: [
     {
