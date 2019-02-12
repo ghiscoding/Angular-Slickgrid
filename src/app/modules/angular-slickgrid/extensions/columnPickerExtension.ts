@@ -14,12 +14,12 @@ export class ColumnPickerExtension implements Extension {
   constructor(
     private extensionUtility: ExtensionUtility,
     private sharedService: SharedService,
-  ) {}
+  ) { }
 
   dispose() {
     // unsubscribe all SlickGrid events
     this._eventHandler.unsubscribeAll();
-     if (this._extension && this._extension.destroy) {
+    if (this._extension && this._extension.destroy) {
       this._extension.destroy();
     }
   }
@@ -28,15 +28,17 @@ export class ColumnPickerExtension implements Extension {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
       // dynamically import the SlickGrid plugin with requireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.columnPicker);
-       // localization support for the picker
+      // localization support for the picker
       const columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'columnPicker');
       const forceFitTitle = this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
       const syncResizeTitle = this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
-       this.sharedService.gridOptions.columnPicker = this.sharedService.gridOptions.columnPicker || {};
+
+      this.sharedService.gridOptions.columnPicker = this.sharedService.gridOptions.columnPicker || {};
       this.sharedService.gridOptions.columnPicker.columnTitle = this.sharedService.gridOptions.columnPicker.columnTitle || columnTitle;
       this.sharedService.gridOptions.columnPicker.forceFitTitle = this.sharedService.gridOptions.columnPicker.forceFitTitle || forceFitTitle;
       this.sharedService.gridOptions.columnPicker.syncResizeTitle = this.sharedService.gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
-       this._extension = new Slick.Controls.ColumnPicker(this.sharedService.columnDefinitions, this.sharedService.grid, this.sharedService.gridOptions);
+      this._extension = new Slick.Controls.ColumnPicker(this.sharedService.columnDefinitions, this.sharedService.grid, this.sharedService.gridOptions);
+
       if (this.sharedService.grid && this.sharedService.gridOptions.enableColumnPicker) {
         this._eventHandler.subscribe(this._extension.onColumnsChanged, (e: any, args: CellArgs) => {
           if (this.sharedService.gridOptions.columnPicker && typeof this.sharedService.gridOptions.columnPicker.onColumnsChanged === 'function') {
@@ -44,7 +46,7 @@ export class ColumnPickerExtension implements Extension {
           }
         });
       }
-       return this._extension;
+      return this._extension;
     }
   }
 
@@ -54,13 +56,15 @@ export class ColumnPickerExtension implements Extension {
       // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
       if (this.sharedService.gridOptions.columnPicker) {
         this.emptyColumnPickerTitles();
-         this.sharedService.gridOptions.columnPicker.columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'columnPicker');
+        this.sharedService.gridOptions.columnPicker.columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'columnPicker');
         this.sharedService.gridOptions.columnPicker.forceFitTitle = this.extensionUtility.getPickerTitleOutputString('forceFitTitle', 'columnPicker');
         this.sharedService.gridOptions.columnPicker.syncResizeTitle = this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'columnPicker');
       }
-       // translate all columns (including non-visible)
+
+      // translate all columns (including non-visible)
       this.extensionUtility.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
-       // re-initialize the Column Picker, that will recreate all the list
+
+      // re-initialize the Column Picker, that will recreate all the list
       // doing an "init()" won't drop any existing command attached
       if (this._extension.init) {
         this._extension.init(this.sharedService.grid);

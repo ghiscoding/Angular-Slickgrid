@@ -58,19 +58,24 @@ export class HeaderMenuExtension implements Extension {
 
       this._extension = new Slick.Plugins.HeaderMenu(this.sharedService.gridOptions.headerMenu);
       this.sharedService.grid.registerPlugin(this._extension);
-      this._eventHandler.subscribe(this._extension.onCommand, (e: any, args: HeaderMenuOnCommandArgs) => {
-        this.executeHeaderMenuInternalCommands(e, args);
-        if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onCommand === 'function') {
-          this.sharedService.gridOptions.headerMenu.onCommand(e, args);
-        }
-      });
 
-      this._eventHandler.subscribe(this._extension.onBeforeMenuShow, (e: any, args: HeaderMenuOnBeforeMenuShowArgs) => {
-        if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
-          this.sharedService.gridOptions.headerMenu.onBeforeMenuShow(e, args);
+      // hook all events
+      if (this.sharedService.grid && this.sharedService.gridOptions.headerMenu) {
+        if (this.sharedService.gridOptions.headerMenu.onExtensionRegistered) {
+          this.sharedService.gridOptions.headerMenu.onExtensionRegistered(this._extension);
         }
-      });
-
+        this._eventHandler.subscribe(this._extension.onCommand, (e: any, args: HeaderMenuOnCommandArgs) => {
+          this.executeHeaderMenuInternalCommands(e, args);
+          if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onCommand === 'function') {
+            this.sharedService.gridOptions.headerMenu.onCommand(e, args);
+          }
+        });
+        this._eventHandler.subscribe(this._extension.onBeforeMenuShow, (e: any, args: HeaderMenuOnBeforeMenuShowArgs) => {
+          if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
+            this.sharedService.gridOptions.headerMenu.onBeforeMenuShow(e, args);
+          }
+        });
+      }
       return this._extension;
     }
     return null;
