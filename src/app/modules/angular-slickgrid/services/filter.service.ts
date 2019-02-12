@@ -114,16 +114,16 @@ export class FilterService {
       // call the service to get a query back
       if (debounceTypingDelay > 0) {
         clearTimeout(timer);
-        timer = setTimeout(() => this.executeBackendCallback(args, startTime, backendApi), debounceTypingDelay);
+        timer = setTimeout(() => this.executeBackendCallback(event, args, startTime, backendApi), debounceTypingDelay);
       } else {
-        this.executeBackendCallback(args, startTime, backendApi);
+        this.executeBackendCallback(event, args, startTime, backendApi);
       }
     } catch (error) {
       onBackendError(error, backendApi);
     }
   }
 
-  async executeBackendCallback(args: any, startTime: Date, backendApi: BackendServiceApi) {
+  async executeBackendCallback(event: KeyboardEvent, args: any, startTime: Date, backendApi: BackendServiceApi) {
     const query = await backendApi.service.processOnFilterChanged(event, args);
 
     // emit an onFilterChanged event when it's not called by clearAllFilters
