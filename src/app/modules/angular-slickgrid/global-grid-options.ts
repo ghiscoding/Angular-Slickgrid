@@ -95,6 +95,18 @@ export const GlobalGridOptions: GridOption = {
     pageSize: 25,
     totalItems: 0
   },
+  rowDetailView: {
+    cssClass: 'detail-view-toggle',
+    panelRows: 1,
+    keyPrefix: '__',
+    useRowClick: true,
+    useSimpleViewportCalc: true,
+    saveDetailViewOnScroll: false,
+
+    // the following 2 property/method should always be override by the user
+    process: () => new Promise((resolve) => resolve('')),
+    viewComponent: null
+  },
   rowHeight: 35,
   topPanelHeight: 35
 };

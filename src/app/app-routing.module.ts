@@ -14,6 +14,7 @@ import { GridLocalizationComponent } from './examples/grid-localization.componen
 import { GridOdataComponent } from './examples/grid-odata.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
 import { GridRemoteComponent } from './examples/grid-remote.component';
+import { GridRowDetailComponent } from './examples/grid-rowdetail.component';
 import { GridRowMoveComponent } from './examples/grid-rowmove.component';
 import { GridRowSelectionComponent } from './examples/grid-rowselection.component';
 import { GridStateComponent } from './examples/grid-state.component';
@@ -43,6 +44,7 @@ const routes: Routes = [
   { path: 'clientside', component: GridClientSideComponent },
   { path: 'odata', component: GridOdataComponent },
   { path: 'remote', component: GridRemoteComponent },
+  { path: 'rowdetail', component: GridRowDetailComponent },
   { path: 'rowmove', component: GridRowMoveComponent },
   { path: 'selection', component: GridRowSelectionComponent },
   { path: 'swt', component: SwtCommonGridTestComponent },

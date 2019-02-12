@@ -39,6 +39,9 @@ export class RowMoveManagerExtension implements Extension {
 
       // hook all events
       if (this.sharedService.grid && this.sharedService.gridOptions.rowMoveManager) {
+        if (this.sharedService.gridOptions.rowMoveManager.onExtensionRegistered) {
+          this.sharedService.gridOptions.rowMoveManager.onExtensionRegistered(this._extension);
+        }
         this._eventHandler.subscribe(this._extension.onBeforeMoveRows, (e: any, args: CellArgs) => {
           if (this.sharedService.gridOptions.rowMoveManager && typeof this.sharedService.gridOptions.rowMoveManager.onBeforeMoveRows === 'function') {
             this.sharedService.gridOptions.rowMoveManager.onBeforeMoveRows(e, args);

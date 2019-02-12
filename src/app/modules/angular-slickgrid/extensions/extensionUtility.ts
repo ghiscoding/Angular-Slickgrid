@@ -59,6 +59,9 @@ export class ExtensionUtility {
         case ExtensionName.rowSelection:
           require('slickgrid/plugins/slick.rowselectionmodel');
           break;
+        case ExtensionName.rowDetailView:
+          require('slickgrid/plugins/slick.rowdetailview.js');
+          break;
         case ExtensionName.rowMoveManager:
           require('slickgrid/plugins/slick.rowmovemanager.js');
           break;

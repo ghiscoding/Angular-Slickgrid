@@ -21,6 +21,7 @@ import {
   GroupItemMetaProviderExtension,
   HeaderButtonExtension,
   HeaderMenuExtension,
+  RowDetailViewExtension,
   RowMoveManagerExtension,
   RowSelectionExtension,
 } from '../extensions/index';
@@ -43,6 +44,7 @@ export class ExtensionService {
     private groupItemMetaExtension: GroupItemMetaProviderExtension,
     private headerButtonExtension: HeaderButtonExtension,
     private headerMenuExtension: HeaderMenuExtension,
+    private rowDetailViewExtension: RowDetailViewExtension,
     private rowMoveManagerExtension: RowMoveManagerExtension,
     private rowSelectionExtension: RowSelectionExtension,
     private sharedService: SharedService,
@@ -143,6 +145,14 @@ export class ExtensionService {
       }
     }
 
+    // Row Detail View Plugin
+    if (this.sharedService.gridOptions.enableRowDetailView) {
+      if (this.rowDetailViewExtension && this.rowDetailViewExtension.register) {
+        const rowSelectionExtension = this.getExtensionByName(ExtensionName.rowSelection);
+        this.extensionList.push({ name: ExtensionName.rowDetailView, class: this.rowDetailViewExtension, extension: this.rowDetailViewExtension.register(rowSelectionExtension) });
+      }
+    }
+
     // Row Move Manager Plugin
     if (this.sharedService.gridOptions.enableRowMoveManager) {
       if (this.rowMoveManagerExtension && this.rowMoveManagerExtension.register) {
@@ -201,6 +211,9 @@ export class ExtensionService {
   createExtensionsBeforeGridCreation(columnDefinitions: Column[], options: GridOption) {
     if (options.enableCheckboxSelector) {
       this.checkboxSelectorExtension.create(columnDefinitions, options);
+    }
+    if (options.enableRowDetailView) {
+      this.rowDetailViewExtension.create(columnDefinitions, options);
     }
     if (options.enableDraggableGrouping) {
       const plugin = this.draggableGroupingExtension.create(options);
