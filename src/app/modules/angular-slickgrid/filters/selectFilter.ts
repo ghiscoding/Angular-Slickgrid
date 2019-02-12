@@ -186,7 +186,8 @@ export class SelectFilter implements Filter {
     if (this.$filterElm) {
       // remove event watcher
       this.$filterElm.off().remove();
-      $(`[name=${this.elementName}].ms-drop`).remove();
+      const elementClassName = this.elementName.toString().replace('.', '\\.'); // make sure to escape any dot "." from CSS class to avoid console error
+      $(`[name=${elementClassName}].ms-drop`).remove();
     }
 
     // also dispose of all Subscriptions
