@@ -422,7 +422,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (gridOptions.enableFiltering && !this.customDataView) {
       this.filterService.init(grid);
 
-      // if user entered some "presets", we need to reflect them all in the DOM
+      // if user entered some Filter "presets", we need to reflect them all in the DOM
       if (gridOptions.presets && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
         this.filterService.populateColumnFilterSearchTerms();
       }
