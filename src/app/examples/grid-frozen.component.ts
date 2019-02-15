@@ -123,6 +123,7 @@ export class GridFrozenComponent implements OnInit {
         sidePadding: 15
       },
       alwaysShowVerticalScroll: false, // disable scroll since we don't want it to show on the left pinned columns
+      enableExcelCopyBuffer: true,
       enableCellNavigation: true,
       enableFiltering: true,
       asyncEditorLoading: true,
