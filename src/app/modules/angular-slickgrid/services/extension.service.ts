@@ -27,9 +27,6 @@ import {
 } from '../extensions/index';
 import { SharedService } from './shared.service';
 
-// using external non-typed js libraries
-declare var Slick: any;
-
 @Injectable()
 export class ExtensionService {
   extensionList: ExtensionModel[] = [];
