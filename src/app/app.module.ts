@@ -4,16 +4,19 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Injector, APP_INITIALIZER, NgModule } from '@angular/core';
 import { LOCATION_INITIALIZED } from '@angular/common';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppComponent } from './app.component';
+import { EditorNgSelectComponent } from './examples/editor-ng-select.component';
 import { GridAddItemComponent } from './examples/grid-additem.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
+import { GridEditorAngularComponent } from './examples/grid-editor-angular.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridFrozenComponent } from './examples/grid-frozen.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
@@ -68,12 +71,14 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
 @NgModule({
   declarations: [
     AppComponent,
+    EditorNgSelectComponent,
     GridAddItemComponent,
     GridBasicComponent,
     GridClientSideComponent,
     GridColspanComponent,
     GridDraggableGroupingComponent,
     GridEditorComponent,
+    GridEditorAngularComponent,
     GridFormatterComponent,
     GridFrozenComponent,
     GridGraphqlComponent,
@@ -100,6 +105,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     BrowserModule,
     FormsModule,
     HttpClientModule,
+    NgSelectModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -119,6 +125,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
   ],
   entryComponents: [
     // dynamically created components
+    EditorNgSelectComponent,
     RowDetailPreloadComponent,
     RowDetailViewComponent,
   ],

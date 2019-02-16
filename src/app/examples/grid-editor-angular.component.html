@@ -1,0 +1,53 @@
+<div class="container">
+    <h2>{{title}}</h2>
+    <div class="subtitle" [innerHTML]="subTitle"></div>
+
+    <div class="col-sm-6">
+        <label>autoEdit setting</label>
+        <span id="radioAutoEdit">
+            <label class="radio-inline control-label" for="radioTrue">
+                <input type="radio" name="inlineRadioOptions" id="radioTrue" checked [value]="isAutoEdit" (change)="setAutoEdit(true)"> ON (single-click)
+            </label>
+            <label class="radio-inline control-label" for="radioFalse">
+                <input type="radio" name="inlineRadioOptions" id="radioFalse" [value]="isAutoEdit" (change)="setAutoEdit(false)"> OFF (double-click)
+            </label>
+        </span>
+        <div class="row col-sm-12">
+            <span>
+                <button class="btn btn-default btn-sm" (click)="undo()">
+                    <i class="fa fa-undo"></i>
+                    Undo last edit(s)
+                </button>
+                <label class="checkbox-inline control-label" for="autoCommitEdit">
+                    <input type="checkbox" id="autoCommitEdit" [value]="gridOptions.autoCommitEdit" (click)="changeAutoCommit()">
+                    Auto Commit Edit
+                  </label>
+            </span>
+        </div>
+        <div class="row" style="margin-top: 5px">
+            <button class="btn btn-default btn-sm" (click)="angularGrid.filterService.clearFilters()">Clear Filters</button>
+            <button class="btn btn-default btn-sm" (click)="angularGrid.sortService.clearSorting()">Clear Sorting</button>
+            <button class="btn btn-default btn-sm btn-info" (click)="addItem()" title="Clear Filters &amp; Sorting to see it better">Add item</button>
+            <button class="btn btn-default btn-sm btn-danger" (click)="deleteItem()">Delete item</button>
+        </div>
+    </div>
+
+    <div class="col-sm-6">
+        <div class="alert alert-info" *ngIf="updatedObject">
+            <strong>Updated Item:</strong> {{updatedObject | json}}
+        </div>
+        <div class="alert alert-warning" *ngIf="alertWarning">
+            <strong>Updated Item:</strong> {{alertWarning}}
+        </div>
+    </div>
+
+    <div class="col-sm-12">
+        <angular-slickgrid gridId="grid2"
+            (onAngularGridCreated)="angularGridReady($event)"
+            (sgOnCellChange)="onCellChanged($event.detail.eventData, $event.detail.args)"
+            (sgOnClick)="onCellClicked($event.detail.eventData, $event.detail.args)"
+            (sgOnValidationError)="onCellValidation($event.detail.eventData, $event.detail.args)"
+            [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
+        </angular-slickgrid>
+    </div>
+</div>

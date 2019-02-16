@@ -5,6 +5,7 @@ import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
+import { GridEditorAngularComponent } from './examples/grid-editor-angular.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridFrozenComponent } from './examples/grid-frozen.component';
 import { GridGroupingComponent } from './examples/grid-grouping.component';
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: 'basic', component: GridBasicComponent },
   { path: 'colspan', component: GridColspanComponent },
   { path: 'editor', component: GridEditorComponent },
+  { path: 'editor-angular', component: GridEditorAngularComponent },
   { path: 'formatter', component: GridFormatterComponent },
   { path: 'frozen', component: GridFrozenComponent },
   { path: 'headerbutton', component: GridHeaderButtonComponent },
