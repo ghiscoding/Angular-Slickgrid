@@ -1,6 +1,7 @@
-import { ComponentFactoryResolver, ComponentRef, Injectable, Type, ViewChild, ViewContainerRef, ElementRef, Injector, ApplicationRef, EmbeddedViewRef } from '@angular/core';
+import { ApplicationRef, ComponentRef, Injectable, Type, ViewContainerRef } from '@angular/core';
 import { Column, CurrentFilter, Extension, ExtensionName, GridOption } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
+import { AngularUtilService } from '../services/angularUtilService';
 import { FilterService } from '../services/filter.service';
 import { SharedService } from '../services/shared.service';
 import { unsubscribeAllObservables } from '../services/utilities';
@@ -32,12 +33,11 @@ export class RowDetailViewExtension implements Extension {
   private _userProcessFn: (item: any) => Promise<any>;
 
   constructor(
-    private compFactoryResolver: ComponentFactoryResolver,
+    private angularUtilService: AngularUtilService,
+    private appRef: ApplicationRef,
     private extensionUtility: ExtensionUtility,
     private filterService: FilterService,
     private sharedService: SharedService,
-    private appRef: ApplicationRef,
-    private injector: Injector,
   ) { }
 
   dispose() {
@@ -137,7 +137,7 @@ export class RowDetailViewExtension implements Extension {
         this._eventHandler.subscribe(this._extension.onAfterRowDetailToggle, (e: any, args: { grid: any; item: any; expandedRows: any[]; }) => {
           // display preload template & re-render all the other Detail Views after toggling
           // the preload View will eventually go away once the data gets loaded after the "onAsyncEndUpdate" event
-          this.renderPreloadView(args);
+          this.renderPreloadView();
           this.renderAllViewComponents();
 
           if (this.sharedService.gridOptions.rowDetailView && typeof this.sharedService.gridOptions.rowDetailView.onAfterRowDetailToggle === 'function') {
@@ -313,10 +313,10 @@ export class RowDetailViewExtension implements Extension {
   }
 
   /** Render (or rerender) the View Component (Row Detail) */
-  private renderPreloadView(args: any) {
+  private renderPreloadView() {
     const containerElements = document.getElementsByClassName(`${PRELOAD_CONTAINER_PREFIX}`);
     if (containerElements && containerElements.length) {
-      this.appendComponentToHtmlElement(this._preloadComponent, containerElements[0]);
+      this.angularUtilService.appendAngularComponentToDom(this._preloadComponent, containerElements[0]);
     }
   }
 
@@ -324,7 +324,7 @@ export class RowDetailViewExtension implements Extension {
   private renderViewModel(item: any) {
     const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item.id}`);
     if (containerElements && containerElements.length) {
-      const compRef = this.appendComponentToHtmlElement(this._viewComponent, containerElements[0]);
+      const compRef = this.angularUtilService.appendAngularComponentToDom(this._viewComponent, containerElements[0]);
       Object.assign(compRef.instance, { model: item });
 
       const viewObj = this._views.find((obj) => obj.id === item.id);
@@ -332,27 +332,5 @@ export class RowDetailViewExtension implements Extension {
         viewObj.componentRef = compRef;
       }
     }
-  }
-
-  // ref https://hackernoon.com/angular-pro-tip-how-to-dynamically-create-components-in-body-ba200cc289e6
-  private appendComponentToHtmlElement(component: any, appendToElement: HTMLElement | Element) {
-    // Create a component reference from the component
-    const componentRef = this.compFactoryResolver
-      .resolveComponentFactory(component)
-      .create(this.injector);
-
-    // Attach component to the appRef so that it's inside the ng component tree
-    this.appRef.attachView(componentRef.hostView);
-
-    // Get DOM element from component
-    const domElem = (componentRef.hostView as EmbeddedViewRef<any>)
-      .rootNodes[0] as HTMLElement;
-
-    // Append DOM element to the HTML element specified
-    if (appendToElement) {
-      appendToElement.appendChild(domElem);
-    }
-
-    return componentRef;
   }
 }

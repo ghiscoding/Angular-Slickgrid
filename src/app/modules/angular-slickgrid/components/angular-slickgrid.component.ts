@@ -27,6 +27,7 @@ import { SlickgridConfig } from '../slickgrid-config';
 import { isObservable, Observable, Subscription } from 'rxjs';
 
 // Services
+import { AngularUtilService } from './../services/angularUtilService';
 import { ExportService } from './../services/export.service';
 import { ExtensionService } from '../services/extension.service';
 import { ExtensionUtility } from '../extensions/extensionUtility';
@@ -67,6 +68,7 @@ const slickgridEventPrefix = 'sg';
   templateUrl: './angular-slickgrid.component.html',
   providers: [
     // make everything transient (non-singleton)
+    AngularUtilService,
     AutoTooltipExtension,
     CellExternalCopyManagerExtension,
     CheckboxSelectorExtension,
@@ -236,7 +238,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (column.editor && column.editor.collectionAsync) {
         this.loadEditorCollectionAsync(column);
       }
-      return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor  }};
+      return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor }};
     });
 
     // save reference for all columns before they optionally become hidden/visible
@@ -324,17 +326,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       // return all available Services (non-singleton)
       backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
       exportService: this.exportService,
+      extensionService: this.extensionService,
       filterService: this.filterService,
       gridEventService: this.gridEventService,
       gridStateService: this.gridStateService,
       gridService: this.gridService,
       groupingService: this.groupingAndColspanService,
-      extensionService: this.extensionService,
+      resizerService: this.resizer,
+      sortService: this.sortService,
 
       /** @deprecated please use "extensionService" instead */
       pluginService: this.extensionService,
-      resizerService: this.resizer,
-      sortService: this.sortService,
     });
   }
 
@@ -348,7 +350,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       // a timeout must be set or this could come into conflict when slickgrid
       // tries to commit the edit when going from one editor to another on the grid
       // through the click event. If the timeout was not here it would
-      // try to commit/destroy the twice, which would throw a jquery
+      // try to commit/destroy the editor twice, which would throw a jquery
       // error about the element not being in the DOM
       setTimeout(() => {
         // make sure the target is the active editor so we do not

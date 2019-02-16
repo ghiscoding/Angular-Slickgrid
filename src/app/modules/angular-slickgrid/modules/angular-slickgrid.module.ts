@@ -1,3 +1,4 @@
+import { AngularUtilService } from './../services/angularUtilService';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
@@ -31,6 +32,7 @@ export class AngularSlickgridModule {
       ngModule: AngularSlickgridModule,
       providers: [
         { provide: 'config', useValue: config },
+        AngularUtilService,
         CollectionService,
         FilterFactory,
         GraphqlService,

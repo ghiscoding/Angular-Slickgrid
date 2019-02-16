@@ -4,7 +4,15 @@ import { Component } from '@angular/core';
   templateUrl: './rowdetail-view.component.html'
 })
 export class RowDetailViewComponent {
-  model: { duration: Date; percentComplete: number; reporter: string; start: Date; finish: Date; effortDriven: boolean; assignee: string; title: string; };
+  model: {
+    duration: Date;
+    percentComplete: number;
+    reporter: string;
+    start: Date;
+    finish: Date;
+    effortDriven: boolean;
+    assignee: string; title: string;
+  };
 
   constructor() {}
 
