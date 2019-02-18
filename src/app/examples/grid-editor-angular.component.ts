@@ -13,7 +13,6 @@ import {
   OnEventArgs,
   OperatorType,
 } from './../modules/angular-slickgrid';
-import { Subject } from 'rxjs';
 import { EditorNgSelectComponent } from './editor-ng-select.component';
 import { CustomAngularComponentEditor } from './custom-angularComponentEditor';
 
@@ -21,16 +20,6 @@ import { CustomAngularComponentEditor } from './custom-angularComponentEditor';
 declare var Slick: any;
 
 const NB_ITEMS = 100;
-
-// create a custom Formatter to show the Task + value
-const taskFormatter = (row, cell, value, columnDef, dataContext) => {
-  if (value && Array.isArray(value)) {
-    const taskValues = value.map((val) => `Task ${val}`);
-    const values = taskValues.join(', ');
-    return `<span title="${values}">${values}</span>`;
-  }
-  return '';
-};
 
 @Component({
   templateUrl: './grid-editor-angular.component.html'
@@ -43,6 +32,7 @@ export class GridEditorAngularComponent implements OnInit {
   <ul>
     <li>Support of Angular Component as Custom Editor (click on "Assignee" column)</li>
     <li>The column "Assignee" shown below uses <a href="https://github.com/ng-select/ng-select" target="_blank">ng-select</a> as a custom editor with Angular Component
+    <li>Increased rowHeight to 45 so that the "ng-select" fits in the cell. Ideally it would be better to override the ng-select component styling to change it's max height</li>
   </ul>
   `;
 
@@ -102,6 +92,7 @@ export class GridEditorAngularComponent implements OnInit {
         params: {
           complexField: 'assignee.name'
         },
+        exportWithFormatter: true,
         editor: {
           model: CustomAngularComponentEditor,
           collection: this.assignees,
@@ -173,6 +164,7 @@ export class GridEditorAngularComponent implements OnInit {
         filterable: true,
         filter: { model: Filters.compoundDate },
         formatter: Formatters.dateIso,
+        exportWithFormatter: true,
         sortable: true,
         type: FieldType.date,
         editor: {
@@ -187,6 +179,7 @@ export class GridEditorAngularComponent implements OnInit {
         sortable: true,
         filter: { model: Filters.compoundDate },
         formatter: Formatters.dateIso,
+        exportWithFormatter: true,
         type: FieldType.date,
         editor: {
           model: Editors.date
@@ -202,7 +195,7 @@ export class GridEditorAngularComponent implements OnInit {
         containerId: 'demo-container',
         sidePadding: 15
       },
-      rowHeight: 45,
+      rowHeight: 45, // increase row height so that the ng-select fits in the cell
       editable: true,
       enableCellNavigation: true,
       enableColumnPicker: true,
