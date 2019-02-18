@@ -1,13 +1,16 @@
 import { Component } from '@angular/core';
+import { Subject } from 'rxjs';
 
 @Component({
   template: `
   <ng-select class="no-style-select"
-			[items]="collection"
+      [items]="collection"
+      autofocus
       bindValue="id"
       bindLabel="name"
       [clearable]="false"
-      [(ngModel)]="selectedPersonId"
+      (change)="onChange($event)"
+      [(ngModel)]="selectedId"
 		>
 			<ng-template ng-label-tmp ng-option-tmp let-item="item">
 				{{ item?.name }}
@@ -15,6 +18,17 @@ import { Component } from '@angular/core';
 		</ng-select>`
 })
 export class EditorNgSelectComponent {
-  selectedPersonId: string;
+  selectedId: string;
+  selectedItem: any;
   collection; // this will be filled by the collection of your column definition
+  onModelChanged = new Subject<any>();    // object
+
+  onChange(item: any) {
+    this.selectedItem = item;
+    this.onModelChanged.next(item);
+  }
+
+  focus() {
+    // do a focus
+  }
 }

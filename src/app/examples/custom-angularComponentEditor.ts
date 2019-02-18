@@ -1,31 +1,27 @@
+import { ComponentRef } from '@angular/core';
 import {
   AngularUtilService,
   Column,
-  CollectionOption,
   Editor,
   EditorValidator,
   EditorValidatorOutput,
-  GridOption,
 } from './../modules/angular-slickgrid';
-
-// using external non-typed js libraries
-declare var $: any;
 
 /*
  * An example of a 'detached' editor.
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class CustomAngularComponentEditor implements Editor {
-  /** Grid options */
-  gridOptions: GridOption;
+  /** Angular Component Reference */
+  componentRef: ComponentRef<any>;
 
-  $input: any;
-  defaultValue: any;
+  /** default item Id */
+  defaultId: string;
+
+  /** default item object */
+  defaultItem: any;
 
   constructor(private args: any) {
-    this.gridOptions = this.args.grid.getOptions() as GridOption;
-    const gridOptions = this.gridOptions || this.args.column.params || {};
-
     this.init();
   }
 
@@ -37,11 +33,6 @@ export class CustomAngularComponentEditor implements Editor {
   /** Get the Collection */
   get collection(): any[] {
     return this.columnDef && this.columnDef && this.columnDef.internalColumnEditor.collection || [];
-  }
-
-  /** Getter for the Collection Options */
-  get collectionOptions(): CollectionOption {
-    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionOptions;
   }
 
   /** Get Column Definition object */
@@ -69,62 +60,87 @@ export class CustomAngularComponentEditor implements Editor {
       Example: this.columnDefs = [{ id: 'title', field: 'title', editor: { component: MyComponent, model: Editors.angularComponent, collection: [...] },`);
     }
     if (this.columnEditor && this.columnEditor.params.component) {
-      const compRef = this.columnEditor.params.angularUtilService.appendAngularComponentToDom(this.columnEditor.params.component, this.args.container);
-      Object.assign(compRef.instance, { collection: this.collection });
+      this.componentRef = this.columnEditor.params.angularUtilService.createAngularComponentAppendToDom(this.columnEditor.params.component, this.args.container);
+      Object.assign(this.componentRef.instance, { collection: this.collection });
+
+      this.componentRef.instance.onModelChanged.subscribe((item) => {
+        this.save();
+      });
     }
   }
 
   save() {
-
+    const validation = this.validate();
+    if (validation && validation.valid) {
+      if (this.hasAutoCommitEdit) {
+        this.args.grid.getEditorLock().commitCurrentEdit();
+      } else {
+        this.args.commitChanges();
+      }
+    }
   }
 
   cancel() {
-
+    this.componentRef.instance.selectedId = this.defaultId;
+    this.componentRef.instance.selectedItem = this.defaultItem;
+    if (this.args && this.args.cancelChanges) {
+      this.args.cancelChanges();
+    }
   }
 
   hide() {
-
+    // optional, implement a hide method on your Angular Component
+    if (this.componentRef && this.componentRef.instance && typeof this.componentRef.instance.hide === 'function') {
+      this.componentRef.instance.hide();
+    }
   }
 
   show() {
-
-  }
-
-  position(position: any) {
-
+    // optional, implement a show method on your Angular Component
+    if (this.componentRef && this.componentRef.instance && typeof this.componentRef.instance.show === 'function') {
+      this.componentRef.instance.show();
+    }
   }
 
   destroy() {
-    $('#ngSelectContainer').appendTo('#editorsContainer');
+    // destroy the Angular Component
+    if (this.componentRef && this.componentRef.destroy) {
+      this.componentRef.destroy();
+    }
   }
 
   focus() {
-
+    // optional, implement a focus method on your Angular Component
+    if (this.componentRef && this.componentRef.instance && typeof this.componentRef.instance.focus === 'function') {
+      this.componentRef.instance.focus();
+    }
   }
 
   applyValue(item: any, state: any) {
-
+    item[this.columnDef.field] = state;
   }
 
   getValue() {
-    return this.$input.val();
+    return this.componentRef.instance.selectedId;
   }
 
   loadValue(item: any) {
-
+    const itemObject = item && item[this.columnDef.field];
+    this.componentRef.instance.selectedId = itemObject && itemObject.id || '';
+    this.componentRef.instance.selectedItem = itemObject && itemObject;
   }
 
   serializeValue(): any {
-
+    return this.componentRef.instance.selectedItem;
   }
 
-  isValueChanged(): boolean {
-    return false;
+  isValueChanged() {
+    return (!(this.componentRef.instance.selectedId === '' && this.defaultId == null)) && (this.componentRef.instance.selectedId !== this.defaultId);
   }
 
   validate(): EditorValidatorOutput {
     if (this.validator) {
-      const value = this.$input && this.$input.val && this.$input.val();
+      const value = this.componentRef.instance.selectedId;
       const validationResults = this.validator(value, this.args);
       if (!validationResults.valid) {
         return validationResults;
@@ -132,7 +148,7 @@ export class CustomAngularComponentEditor implements Editor {
     }
 
     // by default the editor is always valid
-    // if user want it to be a required checkbox, he would have to provide his own validator
+    // if user want it to be required, he would have to provide his own validator
     return {
       valid: true,
       msg: null

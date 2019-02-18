@@ -59,7 +59,13 @@ export const Formatters = {
   /** When value is filled (true), it will display a Font-Awesome icon (fa-check) */
   checkmark: checkmarkFormatter,
 
-  /** Takes a complex data object and return the data under that property (for example: "user.firstName" will return the first name "John") */
+  /**
+   * Takes a complex data object and return the data under that property (for example: "user.firstName" will return the first name "John")
+   * You can pass the complex structure in the "field" or the "params: { complexField: string }" properties.
+   * For example::
+   * this.columnDefs = [{ id: 'username', field: 'user.firstName', ... }]
+   * OR this.columnDefs = [{ id: 'username', field: 'user', params: { complexField: 'user.firstName' }, ... }]
+   */
   complexObject: complexObjectFormatter,
 
   /**
