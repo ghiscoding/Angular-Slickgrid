@@ -6,10 +6,12 @@ export const complexObjectFormatter: Formatter = (row: number, cell: number, val
     return '';
   }
 
+  const columnParams = columnDef.params || {};
+  const complexField = columnParams && columnParams.complexField || columnDef.field;
+
   if (columnDef.labelKey) {
-    return dataContext[columnDef.field] && dataContext[columnDef.field][columnDef.labelKey];
+    return dataContext[complexField] && dataContext[complexField][columnDef.labelKey];
   }
 
-  const complexField = columnDef.field || '';
   return complexField.split('.').reduce((obj, i) => (obj ? obj[i] : ''), dataContext);
 };

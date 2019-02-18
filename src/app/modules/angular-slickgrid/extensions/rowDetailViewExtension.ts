@@ -316,7 +316,7 @@ export class RowDetailViewExtension implements Extension {
   private renderPreloadView() {
     const containerElements = document.getElementsByClassName(`${PRELOAD_CONTAINER_PREFIX}`);
     if (containerElements && containerElements.length) {
-      this.angularUtilService.appendAngularComponentToDom(this._preloadComponent, containerElements[0]);
+      this.angularUtilService.createAngularComponentAppendToDom(this._preloadComponent, containerElements[0]);
     }
   }
 
@@ -324,7 +324,7 @@ export class RowDetailViewExtension implements Extension {
   private renderViewModel(item: any) {
     const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item.id}`);
     if (containerElements && containerElements.length) {
-      const compRef = this.angularUtilService.appendAngularComponentToDom(this._viewComponent, containerElements[0]);
+      const compRef = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[0]);
       Object.assign(compRef.instance, { model: item });
 
       const viewObj = this._views.find((obj) => obj.id === item.id);

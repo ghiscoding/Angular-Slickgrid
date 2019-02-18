@@ -1,4 +1,4 @@
-import { ApplicationRef, ComponentFactoryResolver, EmbeddedViewRef, Injectable, Injector } from '@angular/core';
+import { ApplicationRef, ComponentFactoryResolver, ComponentRef, EmbeddedViewRef, Injectable, Injector } from '@angular/core';
 
 @Injectable()
 export class AngularUtilService {
@@ -9,7 +9,7 @@ export class AngularUtilService {
   ) { }
 
   // ref https://hackernoon.com/angular-pro-tip-how-to-dynamically-create-components-in-body-ba200cc289e6
-  appendAngularComponentToDom(component: any, targetElement?: HTMLElement | Element) {
+  createAngularComponentAppendToDom(component: any, targetElement?: HTMLElement | Element): ComponentRef<any> {
     // Create a component reference from the component
     const componentRef = this.compFactoryResolver
       .resolveComponentFactory(component)
