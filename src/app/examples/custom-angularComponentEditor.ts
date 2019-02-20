@@ -5,6 +5,7 @@ import {
   Editor,
   EditorValidator,
   EditorValidatorOutput,
+  GridOption,
 } from './../modules/angular-slickgrid';
 
 /*
@@ -21,13 +22,21 @@ export class CustomAngularComponentEditor implements Editor {
   /** default item object */
   defaultItem: any;
 
+  /** SlickGrid grid object */
+  grid: any;
+
   constructor(private args: any) {
+    this.grid = args && args.grid;
     this.init();
   }
 
-  /** Angular Util Service */
+  /** Angular Util Service (could be inside the Grid Options Params or the Editor Params ) */
   get angularUtilService(): AngularUtilService {
-    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.params.angularUtilService;
+    let angularUtilService = this.gridOptions && this.gridOptions.params && this.gridOptions.params.angularUtilService;
+    if (!angularUtilService || !(angularUtilService instanceof AngularUtilService)) {
+      angularUtilService = this.columnEditor && this.columnEditor.params && this.columnEditor.params.angularUtilService;
+    }
+    return angularUtilService;
   }
 
   /** Get the Collection */
@@ -45,8 +54,13 @@ export class CustomAngularComponentEditor implements Editor {
     return this.columnDef && this.columnDef.internalColumnEditor || {};
   }
 
+  /** Getter for the Grid Options pulled through the Grid Object */
+  get gridOptions(): GridOption {
+    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+  }
+
   get hasAutoCommitEdit() {
-    return this.args.grid.getOptions().autoCommitEdit;
+    return this.gridOptions.autoCommitEdit;
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
@@ -55,12 +69,15 @@ export class CustomAngularComponentEditor implements Editor {
   }
 
   init() {
-    if (!this.columnEditor || !this.columnEditor.params.component) {
+    if (!this.columnEditor || !this.columnEditor.params.component || !(this.angularUtilService instanceof AngularUtilService)) {
       throw new Error(`[Angular-Slickgrid] For Editor with Angular Component to work properly, you need to provide your component to the "component" property and make sure to add it to your "entryComponents" array.
-      Example: this.columnDefs = [{ id: 'title', field: 'title', editor: { component: MyComponent, model: Editors.angularComponent, collection: [...] },`);
+      You also need to provide the "AngularUtilService" via the Editor Params OR the Grid Options Params
+      Example: this.columnDefs = [{ id: 'title', field: 'title', editor: { model: CustomAngularComponentEditor, collection: [...], params: { component: MyComponent, angularUtilService: this.angularUtilService }}];
+      OR this.columnDefs = [{ id: 'title', field: 'title', editor: { model: CustomAngularComponentEditor, collection: [...] }]; this.gridOptions = { params: { angularUtilService: this.angularUtilService }}`);
     }
     if (this.columnEditor && this.columnEditor.params.component) {
-      this.componentRef = this.columnEditor.params.angularUtilService.createAngularComponentAppendToDom(this.columnEditor.params.component, this.args.container);
+      const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this.columnEditor.params.component, this.args.container);
+      this.componentRef = componentOutput && componentOutput.componentRef;
       Object.assign(this.componentRef.instance, { collection: this.collection });
 
       this.componentRef.instance.onModelChanged.subscribe((item) => {

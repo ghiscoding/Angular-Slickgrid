@@ -9,6 +9,7 @@ import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-transla
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppComponent } from './app.component';
+import { CustomTitleFormatterComponent } from './examples/custom-titleFormatter.component';
 import { EditorNgSelectComponent } from './examples/editor-ng-select.component';
 import { FilterNgSelectComponent } from './examples/filter-ng-select.component';
 import { GridAddItemComponent } from './examples/grid-additem.component';
@@ -17,7 +18,7 @@ import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
-import { GridEditorAngularComponent } from './examples/grid-editor-angular.component';
+import { GridAngularComponent } from './examples/grid-angular.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridFrozenComponent } from './examples/grid-frozen.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
@@ -72,15 +73,16 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
 @NgModule({
   declarations: [
     AppComponent,
+    CustomTitleFormatterComponent,
     EditorNgSelectComponent,
     FilterNgSelectComponent,
     GridAddItemComponent,
+    GridAngularComponent,
     GridBasicComponent,
     GridClientSideComponent,
     GridColspanComponent,
     GridDraggableGroupingComponent,
     GridEditorComponent,
-    GridEditorAngularComponent,
     GridFormatterComponent,
     GridFrozenComponent,
     GridGraphqlComponent,
@@ -127,6 +129,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
   ],
   entryComponents: [
     // dynamically created components
+    CustomTitleFormatterComponent,
     EditorNgSelectComponent,
     FilterNgSelectComponent,
     RowDetailPreloadComponent,

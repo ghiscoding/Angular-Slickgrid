@@ -1,4 +1,5 @@
 export * from './aggregator.interface';
+export * from './angularComponentOutput.interface';
 export * from './angularGridInstance.interface';
 export * from './autoResizeOption.interface';
 export * from './backendService.interface';

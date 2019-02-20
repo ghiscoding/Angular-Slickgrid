@@ -324,12 +324,14 @@ export class RowDetailViewExtension implements Extension {
   private renderViewModel(item: any) {
     const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item.id}`);
     if (containerElements && containerElements.length) {
-      const compRef = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[0]);
-      Object.assign(compRef.instance, { model: item });
+      const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[0]);
+      if (componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance) {
+        Object.assign(componentOutput.componentRef.instance, { model: item });
 
-      const viewObj = this._views.find((obj) => obj.id === item.id);
-      if (viewObj) {
-        viewObj.componentRef = compRef;
+        const viewObj = this._views.find((obj) => obj.id === item.id);
+        if (viewObj) {
+          viewObj.componentRef = componentOutput.componentRef;
+        }
       }
     }
   }

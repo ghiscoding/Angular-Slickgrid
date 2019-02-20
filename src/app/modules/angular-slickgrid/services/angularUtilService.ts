@@ -1,3 +1,4 @@
+import { AngularComponentOutput } from './../models/angularComponentOutput.interface';
 import { ApplicationRef, ComponentFactoryResolver, ComponentRef, EmbeddedViewRef, Injectable, Injector } from '@angular/core';
 
 @Injectable()
@@ -9,7 +10,7 @@ export class AngularUtilService {
   ) { }
 
   // ref https://hackernoon.com/angular-pro-tip-how-to-dynamically-create-components-in-body-ba200cc289e6
-  createAngularComponentAppendToDom(component: any, targetElement?: HTMLElement | Element): ComponentRef<any> {
+  createAngularComponent(component: any): AngularComponentOutput {
     // Create a component reference from the component
     const componentRef = this.compFactoryResolver
       .resolveComponentFactory(component)
@@ -19,16 +20,26 @@ export class AngularUtilService {
     this.appRef.attachView(componentRef.hostView);
 
     // Get DOM element from component
-    const domElem = (componentRef.hostView as EmbeddedViewRef<any>)
-      .rootNodes[0] as HTMLElement;
+    let domElem;
+    const viewRef = (componentRef.hostView as EmbeddedViewRef<any>);
+    if (viewRef && Array.isArray(viewRef.rootNodes) && viewRef.rootNodes[0]) {
+      domElem = viewRef.rootNodes[0] as HTMLElement;
+    }
+
+    return { componentRef, domElement: domElem };
+  }
+
+  // ref https://hackernoon.com/angular-pro-tip-how-to-dynamically-create-components-in-body-ba200cc289e6
+  createAngularComponentAppendToDom(component: any, targetElement?: HTMLElement | Element): AngularComponentOutput {
+    const componentOutput = this.createAngularComponent(component);
 
     // Append DOM element to the HTML element specified
     if (targetElement && targetElement.appendChild) {
-      targetElement.appendChild(domElem);
+      targetElement.appendChild(componentOutput.domElement);
     } else {
-      document.body.appendChild(domElem); // when no target provided, we'll simply add it to the HTML Body
+      document.body.appendChild(componentOutput.domElement); // when no target provided, we'll simply add it to the HTML Body
     }
 
-    return componentRef;
+    return componentOutput;
   }
 }
