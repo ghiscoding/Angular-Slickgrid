@@ -9,6 +9,7 @@ import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-transla
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppComponent } from './app.component';
+import { CustomTitleFormatterComponent } from './examples/custom-titleFormatter.component';
 import { EditorNgSelectComponent } from './examples/editor-ng-select.component';
 import { GridAddItemComponent } from './examples/grid-additem.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
@@ -71,6 +72,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
 @NgModule({
   declarations: [
     AppComponent,
+    CustomTitleFormatterComponent,
     EditorNgSelectComponent,
     GridAddItemComponent,
     GridBasicComponent,
@@ -125,6 +127,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
   ],
   entryComponents: [
     // dynamically created components
+    CustomTitleFormatterComponent,
     EditorNgSelectComponent,
     RowDetailPreloadComponent,
     RowDetailViewComponent,

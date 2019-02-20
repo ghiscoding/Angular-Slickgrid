@@ -55,12 +55,14 @@ export class CustomAngularComponentEditor implements Editor {
   }
 
   init() {
-    if (!this.columnEditor || !this.columnEditor.params.component) {
+    if (!this.columnEditor || !this.columnEditor.params.component || !(this.columnEditor.params.angularUtilService instanceof AngularUtilService)) {
       throw new Error(`[Angular-Slickgrid] For the Editors.angularComponent to work properly, you need to provide your component to the "component" property and make sure to add it to your "entryComponents" array.
-      Example: this.columnDefs = [{ id: 'title', field: 'title', editor: { component: MyComponent, model: Editors.angularComponent, collection: [...] },`);
+      Example: this.columnDefs = [{ id: 'title', field: 'title', editor: { model: Editors.angularComponent, collection: [...] }, params: { component: MyComponent, angularUtilService: this.angularUtilService }`);
     }
     if (this.columnEditor && this.columnEditor.params.component) {
-      this.componentRef = this.columnEditor.params.angularUtilService.createAngularComponentAppendToDom(this.columnEditor.params.component, this.args.container);
+      const angularUtilService = this.columnEditor.params.angularUtilService as AngularUtilService;
+      const componentOutput = angularUtilService.createAngularComponentAppendToDom(this.columnEditor.params.component, this.args.container);
+      this.componentRef = componentOutput && componentOutput.componentRef;
       Object.assign(this.componentRef.instance, { collection: this.collection });
 
       this.componentRef.instance.onModelChanged.subscribe((item) => {

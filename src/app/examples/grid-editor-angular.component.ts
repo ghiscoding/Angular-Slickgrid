@@ -1,5 +1,4 @@
-import { Component, Injectable, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, Injectable, OnInit, EmbeddedViewRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
@@ -15,9 +14,11 @@ import {
 } from './../modules/angular-slickgrid';
 import { EditorNgSelectComponent } from './editor-ng-select.component';
 import { CustomAngularComponentEditor } from './custom-angularComponentEditor';
+import { CustomTitleFormatterComponent } from './custom-titleFormatter.component';
 
 // using external non-typed js libraries
 declare var Slick: any;
+declare var $: any;
 
 const NB_ITEMS = 100;
 
@@ -52,7 +53,7 @@ export class GridEditorAngularComponent implements OnInit {
     { id: '3', name: 'Paul' },
   ];
 
-  constructor(private angularUtilService: AngularUtilService, private http: HttpClient, private translate: TranslateService) {}
+  constructor(private angularUtilService: AngularUtilService, private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -90,7 +91,7 @@ export class GridEditorAngularComponent implements OnInit {
         type: FieldType.string,
         formatter: Formatters.complexObject,
         params: {
-          complexField: 'assignee.name'
+          complexField: 'assignee.name',
         },
         exportWithFormatter: true,
         editor: {
@@ -105,6 +106,27 @@ export class GridEditorAngularComponent implements OnInit {
           console.log(args);
           this.alertWarning = `Updated Title: ${args.dataContext.title}`;
         }
+      }, {
+        id: 'assignee2',
+        name: 'Assignee with Angular Component',
+        field: 'assignee',
+        minWidth: 100,
+        filterable: true,
+        sortable: true,
+        type: FieldType.string,
+
+        // loading formatter, text to display while Post Render gets processed
+        formatter: () => '...',
+
+        // to load an Angular Component, you cannot use a Formatter since Angular needs at least 1 cycle to render everything
+        // you can use a PostRenderer but you will visually see the data appearing,
+        // which is why it's still better to use regular Formatter (with jQuery if need be) instead of Angular Component
+        asyncPostRender: this.renderAngularComponent.bind(this),
+        params: {
+          component: CustomTitleFormatterComponent,
+          angularUtilService: this.angularUtilService,
+        },
+        exportWithFormatter: true,
       }, {
         id: 'duration',
         name: 'Duration (days)',
@@ -201,6 +223,8 @@ export class GridEditorAngularComponent implements OnInit {
       enableColumnPicker: true,
       enableExcelCopyBuffer: true,
       enableFiltering: true,
+      enableAsyncPostRender: true, // for the Angular PostRenderer, don't forget to enable it
+      asyncPostRenderDelay: 0,    // also make sure to remove any delay to render it
       editCommandHandler: (item, column, editCommand) => {
         this._commandQueue.push(editCommand);
         editCommand.execute();
@@ -281,6 +305,16 @@ export class GridEditorAngularComponent implements OnInit {
     if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
       command.undo();
       this.gridObj.gotoCell(command.row, command.cell, false);
+    }
+  }
+
+  renderAngularComponent(cellNode: HTMLElement, row: number, dataContext: any, colDef: Column) {
+    if (colDef.params.component) {
+      const componentOutput = this.angularUtilService.createAngularComponent(colDef.params.component);
+      Object.assign(componentOutput.componentRef.instance, { item: dataContext });
+
+      // use a delay to make sure Angular ran at least a cycle and it finished rendering the Component
+      setTimeout(() => $(cellNode).empty().html($(componentOutput.domElement).html()));
     }
   }
 }
