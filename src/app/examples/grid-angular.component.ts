@@ -1,5 +1,4 @@
-import { Component, Injectable, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, Injectable, OnInit, EmbeddedViewRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
@@ -15,24 +14,29 @@ import {
 } from './../modules/angular-slickgrid';
 import { EditorNgSelectComponent } from './editor-ng-select.component';
 import { CustomAngularComponentEditor } from './custom-angularComponentEditor';
+import { CustomTitleFormatterComponent } from './custom-titleFormatter.component';
 
 // using external non-typed js libraries
 declare var Slick: any;
+declare var $: any;
 
 const NB_ITEMS = 100;
 
 @Component({
-  templateUrl: './grid-editor-angular.component.html'
+  templateUrl: './grid-angular.component.html'
 })
 @Injectable()
-export class GridEditorAngularComponent implements OnInit {
-  title = 'Example 22: Editors with Angular Components';
+export class GridAngularComponent implements OnInit {
+  title = 'Example 22: Multiple Angular Components';
   subTitle = `
-  Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors" target="_blank">Wiki docs</a>).
+  Grid with usage of Angular Components as Editor &amp; AsyncPostRender (similar to Formatter).
   <ul>
-    <li>Support of Angular Component as Custom Editor (click on "Assignee" column)</li>
-    <li>The column "Assignee" shown below uses <a href="https://github.com/ng-select/ng-select" target="_blank">ng-select</a> as a custom editor with Angular Component
-    <li>Increased rowHeight to 45 so that the "ng-select" fits in the cell. Ideally it would be better to override the ng-select component styling to change it's max height</li>
+    <li>Support of Angular Component as Custom Editor (click on any "Assignee" name cell)</li>
+    <ul>
+      <li>That column uses <a href="https://github.com/ng-select/ng-select" target="_blank">ng-select</a> as a custom editor as an Angular Component
+      <li>Increased Grid Options "rowHeight" to 45 so that the "ng-select" fits in the cell. Ideally it would be better to override the ng-select css styling to change it's max height</li>
+    </ul>
+    <li>The 2nd "Assignee" column (showing in bold text) uses "asyncPostRender" with an Angular Component</li>
   </ul>
   `;
 
@@ -52,7 +56,7 @@ export class GridEditorAngularComponent implements OnInit {
     { id: '3', name: 'Paul' },
   ];
 
-  constructor(private angularUtilService: AngularUtilService, private http: HttpClient, private translate: TranslateService) {}
+  constructor(private angularUtilService: AngularUtilService, private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -90,14 +94,13 @@ export class GridEditorAngularComponent implements OnInit {
         type: FieldType.string,
         formatter: Formatters.complexObject,
         params: {
-          complexField: 'assignee.name'
+          complexField: 'assignee.name',
         },
         exportWithFormatter: true,
         editor: {
           model: CustomAngularComponentEditor,
           collection: this.assignees,
           params: {
-            angularUtilService: this.angularUtilService,
             component: EditorNgSelectComponent,
           }
         },
@@ -106,19 +109,26 @@ export class GridEditorAngularComponent implements OnInit {
           this.alertWarning = `Updated Title: ${args.dataContext.title}`;
         }
       }, {
-        id: 'duration',
-        name: 'Duration (days)',
-        field: 'duration',
+        id: 'assignee2',
+        name: 'Assignee with Angular Component',
+        field: 'assignee',
         minWidth: 100,
         filterable: true,
         sortable: true,
-        type: FieldType.number,
-        filter: { model: Filters.slider, params: { hideSliderNumber: false } },
-        editor: {
-          model: Editors.slider,
-          minValue: 0,
-          maxValue: 100,
-        }
+        type: FieldType.string,
+
+        // loading formatter, text to display while Post Render gets processed
+        formatter: () => '...',
+
+        // to load an Angular Component, you cannot use a Formatter since Angular needs at least 1 cycle to render everything
+        // you can use a PostRenderer but you will visually see the data appearing,
+        // which is why it's still better to use regular Formatter (with jQuery if need be) instead of Angular Component
+        asyncPostRender: this.renderAngularComponent.bind(this),
+        params: {
+          component: CustomTitleFormatterComponent,
+          angularUtilService: this.angularUtilService,
+        },
+        exportWithFormatter: true,
       }, {
         id: 'complete',
         name: '% Complete',
@@ -201,11 +211,16 @@ export class GridEditorAngularComponent implements OnInit {
       enableColumnPicker: true,
       enableExcelCopyBuffer: true,
       enableFiltering: true,
+      enableAsyncPostRender: true, // for the Angular PostRenderer, don't forget to enable it
+      asyncPostRenderDelay: 0,    // also make sure to remove any delay to render it
       editCommandHandler: (item, column, editCommand) => {
         this._commandQueue.push(editCommand);
         editCommand.execute();
       },
-      i18n: this.translate
+      i18n: this.translate,
+      params: {
+        angularUtilService: this.angularUtilService // provide the service to all at once (Editor, Filter, AsyncPostRender)
+      }
     };
 
     this.dataset = this.mockData(NB_ITEMS);
@@ -281,6 +296,16 @@ export class GridEditorAngularComponent implements OnInit {
     if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
       command.undo();
       this.gridObj.gotoCell(command.row, command.cell, false);
+    }
+  }
+
+  renderAngularComponent(cellNode: HTMLElement, row: number, dataContext: any, colDef: Column) {
+    if (colDef.params.component) {
+      const componentOutput = this.angularUtilService.createAngularComponent(colDef.params.component);
+      Object.assign(componentOutput.componentRef.instance, { item: dataContext });
+
+      // use a delay to make sure Angular ran at least a full cycle and it finished rendering the Component
+      setTimeout(() => $(cellNode).empty().html(componentOutput.domElement));
     }
   }
 }
