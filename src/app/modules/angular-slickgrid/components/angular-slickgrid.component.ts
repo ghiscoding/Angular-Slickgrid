@@ -472,12 +472,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     if (dataView && grid) {
       this._eventHandler.subscribe(dataView.onRowCountChanged, (e: any, args: any) => {
-        grid.updateRowCount();
-        grid.render();
-      });
-      this._eventHandler.subscribe(dataView.onRowsChanged, (e: any, args: any) => {
-        grid.invalidateRows(args.rows);
-        grid.render();
+        grid.invalidate();
       });
     }
 

@@ -242,8 +242,7 @@ export class GridService {
       throw new Error('We could not find SlickGrid Grid, DataView objects');
     }
 
-    const row = 0;
-    this._dataView.insertItem(row, item);
+    this._dataView.insertItem(0, item); // insert at index 0
 
     if (!shouldResortGrid) {
       this._grid.scrollRowIntoView(0); // scroll to row 0
@@ -445,9 +444,9 @@ export class GridService {
     if (itemId === undefined) {
       throw new Error(`Cannot update a row without a valid "id"`);
     }
-    const row = this._dataView.getRowById(itemId);
+    const rowNumber = this._dataView.getRowById(itemId);
 
-    if (!item || row === undefined) {
+    if (!item || rowNumber === undefined) {
       throw new Error(`Could not find the item in the grid or it's associated "id"`);
     }
 
@@ -455,10 +454,11 @@ export class GridService {
     if (gridIdx !== undefined) {
       // Update the item itself inside the dataView
       this._dataView.updateItem(itemId, item);
+      this._grid.updateRow(rowNumber);
 
       // highlight the row we just updated, if defined
       if (shouldHighlightRow) {
-        this.highlightRow(row, 1500);
+        this.highlightRow(rowNumber, 1500);
       }
 
       // do we want to trigger an event after updating the item
