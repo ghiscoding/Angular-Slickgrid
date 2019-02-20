@@ -23,17 +23,20 @@ declare var $: any;
 const NB_ITEMS = 100;
 
 @Component({
-  templateUrl: './grid-editor-angular.component.html'
+  templateUrl: './grid-angular.component.html'
 })
 @Injectable()
-export class GridEditorAngularComponent implements OnInit {
-  title = 'Example 22: Editors with Angular Components';
+export class GridAngularComponent implements OnInit {
+  title = 'Example 22: Multiple Angular Components';
   subTitle = `
-  Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors" target="_blank">Wiki docs</a>).
+  Grid with usage of Angular Components as Editor &amp; AsyncPostRender (similar to Formatter).
   <ul>
-    <li>Support of Angular Component as Custom Editor (click on "Assignee" column)</li>
-    <li>The column "Assignee" shown below uses <a href="https://github.com/ng-select/ng-select" target="_blank">ng-select</a> as a custom editor with Angular Component
-    <li>Increased rowHeight to 45 so that the "ng-select" fits in the cell. Ideally it would be better to override the ng-select component styling to change it's max height</li>
+    <li>Support of Angular Component as Custom Editor (click on any "Assignee" name cell)</li>
+    <ul>
+      <li>That column uses <a href="https://github.com/ng-select/ng-select" target="_blank">ng-select</a> as a custom editor as an Angular Component
+      <li>Increased Grid Options "rowHeight" to 45 so that the "ng-select" fits in the cell. Ideally it would be better to override the ng-select css styling to change it's max height</li>
+    </ul>
+    <li>The 2nd "Assignee" column (showing in bold text) uses "asyncPostRender" with an Angular Component</li>
   </ul>
   `;
 
@@ -98,7 +101,6 @@ export class GridEditorAngularComponent implements OnInit {
           model: CustomAngularComponentEditor,
           collection: this.assignees,
           params: {
-            angularUtilService: this.angularUtilService,
             component: EditorNgSelectComponent,
           }
         },
@@ -127,20 +129,6 @@ export class GridEditorAngularComponent implements OnInit {
           angularUtilService: this.angularUtilService,
         },
         exportWithFormatter: true,
-      }, {
-        id: 'duration',
-        name: 'Duration (days)',
-        field: 'duration',
-        minWidth: 100,
-        filterable: true,
-        sortable: true,
-        type: FieldType.number,
-        filter: { model: Filters.slider, params: { hideSliderNumber: false } },
-        editor: {
-          model: Editors.slider,
-          minValue: 0,
-          maxValue: 100,
-        }
       }, {
         id: 'complete',
         name: '% Complete',
@@ -229,7 +217,10 @@ export class GridEditorAngularComponent implements OnInit {
         this._commandQueue.push(editCommand);
         editCommand.execute();
       },
-      i18n: this.translate
+      i18n: this.translate,
+      params: {
+        angularUtilService: this.angularUtilService // provide the service to all at once (Editor, Filter, AsyncPostRender)
+      }
     };
 
     this.dataset = this.mockData(NB_ITEMS);
@@ -313,8 +304,8 @@ export class GridEditorAngularComponent implements OnInit {
       const componentOutput = this.angularUtilService.createAngularComponent(colDef.params.component);
       Object.assign(componentOutput.componentRef.instance, { item: dataContext });
 
-      // use a delay to make sure Angular ran at least a cycle and it finished rendering the Component
-      setTimeout(() => $(cellNode).empty().html($(componentOutput.domElement).html()));
+      // use a delay to make sure Angular ran at least a full cycle and it finished rendering the Component
+      setTimeout(() => $(cellNode).empty().html(componentOutput.domElement));
     }
   }
 }

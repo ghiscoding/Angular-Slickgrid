@@ -17,7 +17,7 @@ import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
-import { GridEditorAngularComponent } from './examples/grid-editor-angular.component';
+import { GridAngularComponent } from './examples/grid-angular.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridFrozenComponent } from './examples/grid-frozen.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
@@ -75,12 +75,12 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     CustomTitleFormatterComponent,
     EditorNgSelectComponent,
     GridAddItemComponent,
+    GridAngularComponent,
     GridBasicComponent,
     GridClientSideComponent,
     GridColspanComponent,
     GridDraggableGroupingComponent,
     GridEditorComponent,
-    GridEditorAngularComponent,
     GridFormatterComponent,
     GridFrozenComponent,
     GridGraphqlComponent,
