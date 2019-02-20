@@ -10,6 +10,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppComponent } from './app.component';
 import { EditorNgSelectComponent } from './examples/editor-ng-select.component';
+import { FilterNgSelectComponent } from './examples/filter-ng-select.component';
 import { GridAddItemComponent } from './examples/grid-additem.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
@@ -72,6 +73,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
   declarations: [
     AppComponent,
     EditorNgSelectComponent,
+    FilterNgSelectComponent,
     GridAddItemComponent,
     GridBasicComponent,
     GridClientSideComponent,
@@ -126,6 +128,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
   entryComponents: [
     // dynamically created components
     EditorNgSelectComponent,
+    FilterNgSelectComponent,
     RowDetailPreloadComponent,
     RowDetailViewComponent,
   ],

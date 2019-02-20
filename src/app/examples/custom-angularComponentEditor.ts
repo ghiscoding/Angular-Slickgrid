@@ -27,12 +27,12 @@ export class CustomAngularComponentEditor implements Editor {
 
   /** Angular Util Service */
   get angularUtilService(): AngularUtilService {
-    return this.columnDef && this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.params.angularUtilService;
+    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.params.angularUtilService;
   }
 
   /** Get the Collection */
   get collection(): any[] {
-    return this.columnDef && this.columnDef && this.columnDef.internalColumnEditor.collection || [];
+    return this.columnDef && this.columnDef.internalColumnEditor.collection || [];
   }
 
   /** Get Column Definition object */
@@ -56,7 +56,7 @@ export class CustomAngularComponentEditor implements Editor {
 
   init() {
     if (!this.columnEditor || !this.columnEditor.params.component) {
-      throw new Error(`[Angular-Slickgrid] For the Editors.angularComponent to work properly, you need to provide your component to the "component" property and make sure to add it to your "entryComponents" array.
+      throw new Error(`[Angular-Slickgrid] For Editor with Angular Component to work properly, you need to provide your component to the "component" property and make sure to add it to your "entryComponents" array.
       Example: this.columnDefs = [{ id: 'title', field: 'title', editor: { component: MyComponent, model: Editors.angularComponent, collection: [...] },`);
     }
     if (this.columnEditor && this.columnEditor.params.component) {
