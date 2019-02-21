@@ -1,4 +1,5 @@
-import { Component, Injectable, OnInit, EmbeddedViewRef } from '@angular/core';
+import { CustomAngularComponentFilter } from './custom-angularComponentFilter';
+import { Component, Injectable, OnInit, ViewEncapsulation } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
@@ -15,6 +16,7 @@ import {
 import { EditorNgSelectComponent } from './editor-ng-select.component';
 import { CustomAngularComponentEditor } from './custom-angularComponentEditor';
 import { CustomTitleFormatterComponent } from './custom-titleFormatter.component';
+import { FilterNgSelectComponent } from './filter-ng-select.component';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -23,20 +25,31 @@ declare var $: any;
 const NB_ITEMS = 100;
 
 @Component({
-  templateUrl: './grid-angular.component.html'
+  templateUrl: './grid-angular.component.html',
+  styleUrls: ['./grid-angular.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 @Injectable()
 export class GridAngularComponent implements OnInit {
-  title = 'Example 22: Multiple Angular Components';
+  title = 'Example 22: Use of Angular Components';
   subTitle = `
+  <h3>Filters, Editors, AsyncPostRender with Angular Components</h3>
   Grid with usage of Angular Components as Editor &amp; AsyncPostRender (similar to Formatter).
   <ul>
     <li>Support of Angular Component as Custom Editor (click on any "Assignee" name cell)</li>
     <ul>
       <li>That column uses <a href="https://github.com/ng-select/ng-select" target="_blank">ng-select</a> as a custom editor as an Angular Component
-      <li>Increased Grid Options "rowHeight" to 45 so that the "ng-select" fits in the cell. Ideally it would be better to override the ng-select css styling to change it's max height</li>
+      <li>Increased Grid Options "rowHeight" &amp; "headerRowHeight" to 45 so that the "ng-select" fits in the cell. Ideally it would be better to override the ng-select css styling to change it's max height</li>
     </ul>
+    <li>Support of Angular Component as Custom Filter ("Assignee" columns), which also uses "ng-select"
     <li>The 2nd "Assignee" column (showing in bold text) uses "asyncPostRender" with an Angular Component</li>
+    <ul>
+      <li>Why can't we use Angular Component as Customer Formatter and why do I see a slight delay in loading the data?</li>
+      <li>It's totally normal since SlickGrid Formatters only accept strings (synchronously),
+      so we cannot use that (Angular requires at least 1 full cycle to render the element), so we are left with SlickGrid "asyncPostRender" and
+      it works but as the name suggest it's async users might see noticeable delay in loading the data
+      </li>
+    </ul>
   </ul>
   `;
 
@@ -51,6 +64,7 @@ export class GridAngularComponent implements OnInit {
   updatedObject: any;
   selectedLanguage = 'en';
   assignees = [
+    { id: '', name: '' },
     { id: '1', name: 'John' },
     { id: '2', name: 'Pierre' },
     { id: '3', name: 'Paul' },
@@ -91,10 +105,18 @@ export class GridAngularComponent implements OnInit {
         minWidth: 100,
         filterable: true,
         sortable: true,
-        type: FieldType.string,
+        filter: {
+          model: new CustomAngularComponentFilter(), // create a new instance to make each Filter independent from each other
+          collection: this.assignees,
+          params: {
+            component: FilterNgSelectComponent,
+          }
+        },
+        queryFieldFilter: 'assignee.id', // for a complex object it's important to tell the Filter which field to query and our CustomAngularComponentFilter returns the "id" property
+        queryFieldSorter: 'assignee.name',
         formatter: Formatters.complexObject,
         params: {
-          complexField: 'assignee.name',
+          complexFieldLabel: 'assignee.name',
         },
         exportWithFormatter: true,
         editor: {
@@ -115,7 +137,15 @@ export class GridAngularComponent implements OnInit {
         minWidth: 100,
         filterable: true,
         sortable: true,
-        type: FieldType.string,
+        filter: {
+          model: new CustomAngularComponentFilter(), // create a new instance to make each Filter independent from each other
+          collection: this.assignees,
+          params: {
+            component: FilterNgSelectComponent,
+          }
+        },
+        queryFieldFilter: 'assignee.id', // for a complex object it's important to tell the Filter which field to query and our CustomAngularComponentFilter returns the "id" property
+        queryFieldSorter: 'assignee.name',
 
         // loading formatter, text to display while Post Render gets processed
         formatter: () => '...',
@@ -205,6 +235,7 @@ export class GridAngularComponent implements OnInit {
         containerId: 'demo-container',
         sidePadding: 15
       },
+      headerRowHeight: 45,
       rowHeight: 45, // increase row height so that the ng-select fits in the cell
       editable: true,
       enableCellNavigation: true,
@@ -238,7 +269,7 @@ export class GridAngularComponent implements OnInit {
       tempDataset.push({
         id: i,
         title: 'Task ' + i,
-        assignee: i % 3 ? this.assignees[2] : i % 2 ? this.assignees[1] : this.assignees[0],
+        assignee: i % 3 ? this.assignees[3] : i % 2 ? this.assignees[2] : this.assignees[1],
         duration: Math.round(Math.random() * 100) + '',
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,

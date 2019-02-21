@@ -4,7 +4,7 @@
     <br>
 
     <div class="col-sm-6">
-        <label>autoEdit setting</label>
+        <label>autoEdit setting: </label>
         <span id="radioAutoEdit">
             <label class="radio-inline control-label" for="radioTrue">
                 <input type="radio" name="inlineRadioOptions" id="radioTrue" checked [value]="isAutoEdit" (change)="setAutoEdit(true)"> ON (single-click)
@@ -19,10 +19,12 @@
                     <i class="fa fa-undo"></i>
                     Undo last edit(s)
                 </button>
+                <button class="btn btn-default btn-sm" (click)="angularGrid.filterService.clearFilters()">Clear Filters</button>
+                <button class="btn btn-default btn-sm" (click)="angularGrid.sortService.clearSorting()">Clear Sorting</button>
                 <label class="checkbox-inline control-label" for="autoCommitEdit">
                     <input type="checkbox" id="autoCommitEdit" [value]="gridOptions.autoCommitEdit" (click)="changeAutoCommit()">
                     Auto Commit Edit
-                  </label>
+                </label>
             </span>
         </div>
     </div>

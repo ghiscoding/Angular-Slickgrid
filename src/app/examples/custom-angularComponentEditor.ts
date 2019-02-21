@@ -78,8 +78,12 @@ export class CustomAngularComponentEditor implements Editor {
     if (this.columnEditor && this.columnEditor.params.component) {
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this.columnEditor.params.component, this.args.container);
       this.componentRef = componentOutput && componentOutput.componentRef;
+
+      // here we override the collection object of the Angular Component
+      // but technically you can pass any values you wish to your Component
       Object.assign(this.componentRef.instance, { collection: this.collection });
 
+      // when our model (item object) changes, we'll call a save of the slickgrid editor
       this.componentRef.instance.onModelChanged.subscribe((item) => {
         this.save();
       });
@@ -105,29 +109,29 @@ export class CustomAngularComponentEditor implements Editor {
     }
   }
 
+  /** optional, implement a hide method on your Angular Component */
   hide() {
-    // optional, implement a hide method on your Angular Component
     if (this.componentRef && this.componentRef.instance && typeof this.componentRef.instance.hide === 'function') {
       this.componentRef.instance.hide();
     }
   }
 
+  /** optional, implement a show method on your Angular Component */
   show() {
-    // optional, implement a show method on your Angular Component
     if (this.componentRef && this.componentRef.instance && typeof this.componentRef.instance.show === 'function') {
       this.componentRef.instance.show();
     }
   }
 
+  /** destroy the Angular Component */
   destroy() {
-    // destroy the Angular Component
     if (this.componentRef && this.componentRef.destroy) {
       this.componentRef.destroy();
     }
   }
 
+  /** optional, implement a focus method on your Angular Component */
   focus() {
-    // optional, implement a focus method on your Angular Component
     if (this.componentRef && this.componentRef.instance && typeof this.componentRef.instance.focus === 'function') {
       this.componentRef.instance.focus();
     }

@@ -24,7 +24,7 @@ export class CustomInputFilter implements Filter {
 
   constructor() {}
 
-  /** Getter for the Filter Operator */
+  /** Getter for the Column Filter */
   get columnFilter(): ColumnFilter {
     return this.columnDef && this.columnDef.filter || {};
   }
