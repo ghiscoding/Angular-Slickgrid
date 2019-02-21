@@ -23,10 +23,10 @@ export class FilterNgSelectComponent {
   selectedId: string;
   selectedItem: any;
   collection; // this will be filled by the collection of your column definition
-  onModelChanged = new Subject<any>();    // object
+  onItemChanged = new Subject<any>();    // object
 
   onChange(item: any) {
     this.selectedItem = item;
-    this.onModelChanged.next(item);
+    this.onItemChanged.next(item);
   }
 }

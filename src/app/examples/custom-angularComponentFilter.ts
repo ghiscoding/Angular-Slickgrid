@@ -1,3 +1,5 @@
+import { ComponentRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import {
   AngularUtilService,
   Column,
@@ -10,12 +12,13 @@ import {
   OperatorString,
   SearchTerm,
 } from './../modules/angular-slickgrid';
-import { ComponentRef } from '@angular/core';
 
 // using external non-typed js libraries
 declare var $: any;
 
 export class CustomAngularComponentFilter implements Filter {
+  changeSubscriber: Subscription;
+
   /** Angular Component Reference */
   componentRef: ComponentRef<any>;
 
@@ -80,7 +83,7 @@ export class CustomAngularComponentFilter implements Filter {
         // but technically you can pass any values you wish to your Component
         Object.assign(componentOuput.componentRef.instance, { collection: this.collection });
 
-        componentOuput.componentRef.instance.onModelChanged.subscribe((item) => {
+        this.changeSubscriber = componentOuput.componentRef.instance.onItemChanged.subscribe((item) => {
           this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: [item.id] });
         });
       });
@@ -96,10 +99,11 @@ export class CustomAngularComponentFilter implements Filter {
     }
   }
 
-  /** destroy the Angular Component */
+  /** destroy the Angular Component & Subscription */
   destroy() {
     if (this.componentRef && this.componentRef.destroy) {
       this.componentRef.destroy();
+      this.changeSubscriber.unsubscribe();
     }
   }
 

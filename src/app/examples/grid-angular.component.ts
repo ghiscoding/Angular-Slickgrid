@@ -157,8 +157,9 @@ export class GridAngularComponent implements OnInit {
         params: {
           component: CustomTitleFormatterComponent,
           angularUtilService: this.angularUtilService,
+          complexFieldLabel: 'assignee.name' // for the exportCustomFormatter
         },
-        exportWithFormatter: true,
+        exportCustomFormatter: Formatters.complexObject,
       }, {
         id: 'complete',
         name: '% Complete',
@@ -178,20 +179,14 @@ export class GridAngularComponent implements OnInit {
             label: 'label',
             labelSuffix: 'symbol'
           },
-
-          // collection: Array.from(Array(101).keys()).map(k => ({ value: k, label: k, labelSuffix: '%' })),
-          collectionSortBy: {
-            property: 'label',
-            sortDesc: true
-          },
-          collectionFilterBy: {
-            property: 'value',
-            value: 0,
-            operator: OperatorType.notEqual
-          },
           elementOptions: {
             maxHeight: 400
           }
+        },
+        filter: {
+          model: Filters.slider,
+          operator: '>=',
+          params: { hideSliderNumber: false }
         },
         params: {
           formatters: [Formatters.collectionEditor, Formatters.percentCompleteBar],

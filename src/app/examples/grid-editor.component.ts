@@ -240,6 +240,7 @@ export class GridEditorComponent implements OnInit {
         filterable: true,
         filter: { model: Filters.compoundDate },
         formatter: Formatters.dateIso,
+        exportWithFormatter: true,
         sortable: true,
         type: FieldType.date,
         editor: {
@@ -254,6 +255,7 @@ export class GridEditorComponent implements OnInit {
         sortable: true,
         filter: { model: Filters.compoundDate },
         formatter: Formatters.dateIso,
+        exportWithFormatter: true,
         type: FieldType.date,
         editor: {
           model: Editors.date
@@ -309,6 +311,7 @@ export class GridEditorComponent implements OnInit {
       }, {
         id: 'countryOfOrigin', name: 'Country of Origin', field: 'countryOfOrigin',
         formatter: Formatters.complexObject,
+        exportWithFormatter: true,
         dataKey: 'code',
         labelKey: 'name',
         type: FieldType.object,

@@ -1,4 +1,5 @@
 import { ComponentRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import {
   AngularUtilService,
   Column,
@@ -13,6 +14,8 @@ import {
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class CustomAngularComponentEditor implements Editor {
+  changeSubscriber: Subscription;
+
   /** Angular Component Reference */
   componentRef: ComponentRef<any>;
 
@@ -84,7 +87,7 @@ export class CustomAngularComponentEditor implements Editor {
       Object.assign(this.componentRef.instance, { collection: this.collection });
 
       // when our model (item object) changes, we'll call a save of the slickgrid editor
-      this.componentRef.instance.onModelChanged.subscribe((item) => {
+      this.changeSubscriber = this.componentRef.instance.onItemChanged.subscribe((item) => {
         this.save();
       });
     }
@@ -123,10 +126,11 @@ export class CustomAngularComponentEditor implements Editor {
     }
   }
 
-  /** destroy the Angular Component */
+  /** destroy the Angular Component & Subscription */
   destroy() {
     if (this.componentRef && this.componentRef.destroy) {
       this.componentRef.destroy();
+      this.changeSubscriber.unsubscribe();
     }
   }
 
