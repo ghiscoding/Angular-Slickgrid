@@ -474,6 +474,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this._eventHandler.subscribe(dataView.onRowCountChanged, (e: any, args: any) => {
         grid.invalidate();
       });
+
+      // without this, filtering data with local dataset will not always show correctly
+      // also don't use "invalidateRows" since it destroys the entire row and as bad user experience when updating a row
+      // see commit: https://github.com/ghiscoding/Angular-Slickgrid/commit/bb62c0aa2314a5d61188ff005ccb564577f08805
+      if (gridOptions && gridOptions.enableFiltering) {
+        this._eventHandler.subscribe(dataView.onRowsChanged, (e: any, args: any) => {
+          if (args && args.rows && Array.isArray(args.rows)) {
+            args.rows.forEach((row) => grid.updateRow(row));
+            grid.render();
+          }
+        });
+      }
     }
 
     // does the user have a colspan callback?
