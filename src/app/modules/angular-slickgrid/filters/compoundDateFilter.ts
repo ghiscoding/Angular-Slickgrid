@@ -41,14 +41,17 @@ export class CompoundDateFilter implements Filter {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
-  /** Getter for the Filter Operator */
+  /** Getter for the Column Filter */
   get columnFilter(): ColumnFilter {
     return this.columnDef && this.columnDef.filter || {};
   }
 
+  /** Setter for the Filter Operator */
   set operator(op: OperatorType | OperatorString) {
     this._operator = op;
   }
+
+  /** Getter for the Filter Operator */
   get operator(): OperatorType | OperatorString {
     return this._operator || OperatorType.empty;
   }

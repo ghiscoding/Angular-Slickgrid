@@ -58,7 +58,7 @@ export class AutoCompleteFilter implements Filter {
     return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions || {};
   }
 
-  /** Getter for the Filter Operator */
+  /** Getter for the Column Filter */
   get columnFilter(): ColumnFilter {
     return this.columnDef && this.columnDef.filter || {};
   }

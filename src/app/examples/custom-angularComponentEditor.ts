@@ -1,4 +1,5 @@
 import { ComponentRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import {
   AngularUtilService,
   Column,
@@ -13,6 +14,8 @@ import {
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class CustomAngularComponentEditor implements Editor {
+  changeSubscriber: Subscription;
+
   /** Angular Component Reference */
   componentRef: ComponentRef<any>;
 
@@ -41,7 +44,7 @@ export class CustomAngularComponentEditor implements Editor {
 
   /** Get the Collection */
   get collection(): any[] {
-    return this.columnDef && this.columnDef && this.columnDef.internalColumnEditor.collection || [];
+    return this.columnDef && this.columnDef.internalColumnEditor.collection || [];
   }
 
   /** Get Column Definition object */
@@ -70,17 +73,21 @@ export class CustomAngularComponentEditor implements Editor {
 
   init() {
     if (!this.columnEditor || !this.columnEditor.params.component || !(this.angularUtilService instanceof AngularUtilService)) {
-      throw new Error(`[Angular-Slickgrid] For the Editors.angularComponent to work properly, you need to provide your component to the "component" property and make sure to add it to your "entryComponents" array.
+      throw new Error(`[Angular-Slickgrid] For Editor with Angular Component to work properly, you need to provide your component to the "component" property and make sure to add it to your "entryComponents" array.
       You also need to provide the "AngularUtilService" via the Editor Params OR the Grid Options Params
-      Example: this.columnDefs = [{ id: 'title', field: 'title', editor: { model: CustomAngularComponentEditor, collection: [...] }, params: { component: MyComponent, angularUtilService: this.angularUtilService }];
+      Example: this.columnDefs = [{ id: 'title', field: 'title', editor: { model: CustomAngularComponentEditor, collection: [...], params: { component: MyComponent, angularUtilService: this.angularUtilService }}];
       OR this.columnDefs = [{ id: 'title', field: 'title', editor: { model: CustomAngularComponentEditor, collection: [...] }]; this.gridOptions = { params: { angularUtilService: this.angularUtilService }}`);
     }
     if (this.columnEditor && this.columnEditor.params.component) {
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this.columnEditor.params.component, this.args.container);
       this.componentRef = componentOutput && componentOutput.componentRef;
+
+      // here we override the collection object of the Angular Component
+      // but technically you can pass any values you wish to your Component
       Object.assign(this.componentRef.instance, { collection: this.collection });
 
-      this.componentRef.instance.onModelChanged.subscribe((item) => {
+      // when our model (item object) changes, we'll call a save of the slickgrid editor
+      this.changeSubscriber = this.componentRef.instance.onItemChanged.subscribe((item) => {
         this.save();
       });
     }
@@ -105,29 +112,30 @@ export class CustomAngularComponentEditor implements Editor {
     }
   }
 
+  /** optional, implement a hide method on your Angular Component */
   hide() {
-    // optional, implement a hide method on your Angular Component
     if (this.componentRef && this.componentRef.instance && typeof this.componentRef.instance.hide === 'function') {
       this.componentRef.instance.hide();
     }
   }
 
+  /** optional, implement a show method on your Angular Component */
   show() {
-    // optional, implement a show method on your Angular Component
     if (this.componentRef && this.componentRef.instance && typeof this.componentRef.instance.show === 'function') {
       this.componentRef.instance.show();
     }
   }
 
+  /** destroy the Angular Component & Subscription */
   destroy() {
-    // destroy the Angular Component
     if (this.componentRef && this.componentRef.destroy) {
       this.componentRef.destroy();
+      this.changeSubscriber.unsubscribe();
     }
   }
 
+  /** optional, implement a focus method on your Angular Component */
   focus() {
-    // optional, implement a focus method on your Angular Component
     if (this.componentRef && this.componentRef.instance && typeof this.componentRef.instance.focus === 'function') {
       this.componentRef.instance.focus();
     }
