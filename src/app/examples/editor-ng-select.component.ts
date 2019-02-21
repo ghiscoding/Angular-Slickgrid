@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 
+// the appendTo="body" (necessary for SlickGrid filter) requires the body to be position relative like so
+// <body style="position: relative">
 @Component({
   template: `
   <ng-select class="no-style-select"
@@ -8,6 +10,7 @@ import { Subject } from 'rxjs';
       autofocus
       bindValue="id"
       bindLabel="name"
+      appendTo="body"
       [clearable]="false"
       (change)="onChange($event)"
       [(ngModel)]="selectedId"

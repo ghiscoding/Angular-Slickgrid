@@ -9,8 +9,8 @@ import { Subject } from 'rxjs';
       [items]="collection"
       bindValue="id"
       bindLabel="name"
-      [clearable]="false"
       appendTo="body"
+      [clearable]="false"
       (change)="onChange($event)"
       [(ngModel)]="selectedId"
 		>

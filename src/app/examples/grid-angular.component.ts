@@ -1,4 +1,3 @@
-import { CustomAngularComponentFilter } from './custom-angularComponentFilter';
 import { Component, Injectable, OnInit, ViewEncapsulation } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -11,10 +10,10 @@ import {
   Formatters,
   GridOption,
   OnEventArgs,
-  OperatorType,
 } from './../modules/angular-slickgrid';
 import { EditorNgSelectComponent } from './editor-ng-select.component';
 import { CustomAngularComponentEditor } from './custom-angularComponentEditor';
+import { CustomAngularComponentFilter } from './custom-angularComponentFilter';
 import { CustomTitleFormatterComponent } from './custom-titleFormatter.component';
 import { FilterNgSelectComponent } from './filter-ng-select.component';
 

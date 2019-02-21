@@ -5,12 +5,9 @@ h3 {
 .subtitle {
   font-size: 18px;
 }
-.ng-select.custom {
-  border:0px;
-  max-height: 27px;
-  border-radius: 0;
-}
-.ng-input {
-  padding-top: -4px !important;
-  padding-left: 4px !important;
+.slick-headerrow-column {
+  .ng-input {
+    padding-top: -4px !important;
+    padding-left: 4px !important;
+  }
 }
