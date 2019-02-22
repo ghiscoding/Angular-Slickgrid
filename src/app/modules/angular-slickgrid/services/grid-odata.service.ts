@@ -55,6 +55,16 @@ export class GridOdataService implements BackendService {
     return this.odataService.buildQuery();
   }
 
+  clearFilters() {
+    this._currentFilters = [];
+    this.updateOptions({ filteringOptions: [] });
+  }
+
+  clearSorters() {
+    this._currentSorters = [];
+    this.updateOptions({ sortingOptions: [] });
+  }
+
   init(options: OdataOption, pagination?: Pagination, grid?: any): void {
     this._grid = grid;
     const mergedOptions = { ...this.defaultOptions, ...options };

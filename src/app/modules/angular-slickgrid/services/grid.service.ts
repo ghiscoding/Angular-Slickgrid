@@ -36,6 +36,17 @@ export class GridService {
     this._dataView = dataView;
   }
 
+  /** Clear all Filters & Sorts */
+  clearAllFiltersAndSorts() {
+    // call both clear Filters & Sort but only trigger the last one to avoid sending multiple backend queries
+    if (this.sortService && this.sortService.clearSorting) {
+      this.sortService.clearSorting(false); // skip event trigger on this one
+    }
+    if (this.filterService && this.filterService.clearFilters) {
+      this.filterService.clearFilters();
+    }
+  }
+
   /**
    * From a SlickGrid Event triggered get the Column Definition and Item Data Context
    *

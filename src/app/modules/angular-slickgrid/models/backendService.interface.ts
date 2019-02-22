@@ -20,6 +20,12 @@ export interface BackendService {
   /** Build and the return the backend service query string */
   buildQuery: (serviceOptions?: BackendServiceOption) => string;
 
+  /** Clear all sorts */
+  clearFilters?: () => void;
+
+  /** Clear all sorts */
+  clearSorters?: () => void;
+
   /** initialize the backend service with certain options */
   init?: (serviceOptions?: BackendServiceOption, pagination?: Pagination, grid?: any) => void;
 

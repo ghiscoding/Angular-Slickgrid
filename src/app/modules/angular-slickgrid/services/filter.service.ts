@@ -111,12 +111,15 @@ export class FilterService {
         debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
       }
 
-      // call the service to get a query back
-      if (debounceTypingDelay > 0) {
-        clearTimeout(timer);
-        timer = setTimeout(() => this.executeBackendCallback(event, args, startTime, backendApi), debounceTypingDelay);
-      } else {
-        this.executeBackendCallback(event, args, startTime, backendApi);
+      // query backend, except when it's called by a ClearFilters then we won't
+      if (args && !args.clearFilterTriggered) {
+        // call the service to get a query back
+        if (debounceTypingDelay > 0) {
+          clearTimeout(timer);
+          timer = setTimeout(() => this.executeBackendCallback(event, args, startTime, backendApi), debounceTypingDelay);
+        } else {
+          this.executeBackendCallback(event, args, startTime, backendApi);
+        }
       }
     } catch (error) {
       onBackendError(error, backendApi);
@@ -126,7 +129,7 @@ export class FilterService {
   async executeBackendCallback(event: KeyboardEvent, args: any, startTime: Date, backendApi: BackendServiceApi) {
     const query = await backendApi.service.processOnFilterChanged(event, args);
 
-    // emit an onFilterChanged event when it's not called by clearAllFilters
+    // emit an onFilterChanged event when it's not called by a clear filter
     if (args && !args.clearFilterTriggered) {
       this.emitFilterChanged('remote');
     }
@@ -161,7 +164,7 @@ export class FilterService {
       if (columnId != null) {
         dataView.refresh();
       }
-      // emit an onFilterChanged event when it's not called by clearAllFilters
+      // emit an onFilterChanged event when it's not called by a clear filter
       if (args && !args.clearFilterTriggered) {
         this.emitFilterChanged('local');
       }
@@ -210,10 +213,14 @@ export class FilterService {
     }
 
     // we also need to refresh the dataView and optionally the grid (it's optional since we use DataView)
-    if (this._dataView) {
+    if (this._dataView && this._grid) {
       this._dataView.refresh();
       this._grid.invalidate();
-      this._grid.render();
+    }
+
+    // when using backend service, we need to query only once so it's better to do it here
+    if (this._gridOptions && this._gridOptions.backendServiceApi) {
+      this.executeBackendCallback(undefined, { clearFilterTriggered: true, grid: this._grid, columnFilters: this._columnFilters }, new Date(), this._gridOptions.backendServiceApi);
     }
 
     // emit an event when filters are all cleared

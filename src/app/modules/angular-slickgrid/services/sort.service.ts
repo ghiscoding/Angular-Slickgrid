@@ -125,7 +125,7 @@ export class SortService {
     });
   }
 
-  clearSorting() {
+  clearSorting(triggerQueryEvent = true) {
     if (this._grid && this._gridOptions && this._dataView) {
       // remove any sort icons (this setSortColumns function call really does only that)
       this._grid.setSortColumns([]);
@@ -133,18 +133,26 @@ export class SortService {
       // we also need to trigger a sort change
       // for a backend grid, we will trigger a backend sort changed with an empty sort columns array
       // however for a local grid, we need to pass a sort column and so we will sort by the 1st column
-      if (this._isBackendGrid) {
-        this.onBackendSortChanged(undefined, { grid: this._grid, sortCols: [] });
-      } else {
-        if (this._columnDefinitions && Array.isArray(this._columnDefinitions)) {
-          this.onLocalSortChanged(this._grid, this._dataView, new Array({sortAsc: true, sortCol: this._columnDefinitions[0] }));
+      if (triggerQueryEvent) {
+        if (this._isBackendGrid) {
+          this.onBackendSortChanged(undefined, { grid: this._grid, sortCols: [] });
+        } else {
+          if (this._columnDefinitions && Array.isArray(this._columnDefinitions)) {
+            this.onLocalSortChanged(this._grid, this._dataView, new Array({sortAsc: true, sortCol: this._columnDefinitions[0] }));
+          }
+        }
+      } else if (this._isBackendGrid) {
+        const backendService = this._gridOptions && this._gridOptions.backendServiceApi && this._gridOptions.backendServiceApi.service;
+        if (backendService && backendService.clearSorters) {
+          backendService.clearSorters();
         }
       }
     }
+
     // set current sorter to empty & emit a sort changed event
     this._currentLocalSorters = [];
 
-    // emit an event when filters are all cleared
+    // emit an event when sorts are all cleared
     this.onSortCleared.next(true);
   }
 
@@ -221,7 +229,7 @@ export class SortService {
           const columnSortObj = sortColumns[i];
           if (columnSortObj && columnSortObj.sortCol) {
             const sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
-            const sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldFilter || columnSortObj.sortCol.field;
+            const sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldSorter || columnSortObj.sortCol.field;
             const fieldType = columnSortObj.sortCol.type || FieldType.string;
             let value1 = dataRow1[sortField];
             let value2 = dataRow2[sortField];

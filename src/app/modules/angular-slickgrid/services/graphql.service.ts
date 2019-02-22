@@ -169,6 +169,16 @@ export class GraphqlService implements BackendService {
       .replace(/\}$/, '');
   }
 
+  clearFilters() {
+    this._currentFilters = [];
+    this.updateOptions({ filteringOptions: [] });
+  }
+
+  clearSorters() {
+    this._currentSorters = [];
+    this.updateOptions({ sortingOptions: [] });
+  }
+
   init(serviceOptions?: GraphqlServiceOption, pagination?: Pagination, grid?: any): void {
     this._grid = grid;
     this.options = serviceOptions || {};
