@@ -1,5 +1,5 @@
 import { Constants } from './../constants';
-import { Column, Editor, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
+import { Column, ColumnEditor, Editor, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -9,6 +9,7 @@ declare var $: any;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class IntegerEditor implements Editor {
+  private _lastInputEvent: KeyboardEvent;
   $input: any;
   defaultValue: any;
 
@@ -22,7 +23,7 @@ export class IntegerEditor implements Editor {
   }
 
   /** Get Column Editor object */
-  get columnEditor(): any {
+  get columnEditor(): ColumnEditor {
     return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
   }
 
@@ -41,9 +42,10 @@ export class IntegerEditor implements Editor {
 
     this.$input = $(`<input type="number" class="editor-text editor-${columnId}" placeholder="${placeholder}" />`)
       .appendTo(this.args.container)
-      .on('keydown.nav', (e) => {
-        if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
-          e.stopImmediatePropagation();
+      .on('keydown.nav', (event: KeyboardEvent) => {
+        this._lastInputEvent = event;
+        if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
+          event.stopImmediatePropagation();
         }
       });
 
@@ -78,7 +80,11 @@ export class IntegerEditor implements Editor {
   }
 
   serializeValue() {
-    return parseInt(this.$input.val() as string, 10) || 0;
+    const elmValue = this.$input.val();
+    if (elmValue === '' || isNaN(elmValue)) {
+      return elmValue;
+    }
+    return parseInt(elmValue, 10) || 0;
   }
 
   applyValue(item: any, state: any) {
@@ -88,39 +94,67 @@ export class IntegerEditor implements Editor {
   isValueChanged() {
     const elmValue = this.$input.val();
     const value = isNaN(elmValue) ? elmValue : parseInt(elmValue, 10);
-    return (!(value === '' && this.defaultValue === null)) && (value !== this.defaultValue);
+    const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
+
+    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
+      return true;
+    }
+    return (!(value === '' && this.defaultValue === null && lastEvent !== KeyCode.ENTER)) && (value !== this.defaultValue);
   }
 
   save() {
-    const validation = this.validate();
-    if (validation && validation.valid) {
-      if (this.hasAutoCommitEdit) {
-        this.args.grid.getEditorLock().commitCurrentEdit();
-      } else {
-        this.args.commitChanges();
-      }
+    if (this.hasAutoCommitEdit) {
+      this.args.grid.getEditorLock().commitCurrentEdit();
+    } else {
+      this.args.commitChanges();
     }
   }
 
   validate(): EditorValidatorOutput {
     const elmValue = this.$input.val();
-    const errorMsg = this.columnEditor.params && this.columnEditor.errorMessage;
+    const intNumber = !isNaN(elmValue as number) ? parseInt(elmValue, 10) : null;
+    const errorMsg = this.columnEditor.errorMessage;
+    const isRequired = this.columnEditor.required;
+    const minValue = this.columnEditor.minValue;
+    const maxValue = this.columnEditor.maxValue;
+    const mapValidation = {
+      '{{minValue}}': minValue,
+      '{{maxValue}}': maxValue
+    };
+    let isValid = true;
+    let outputMsg = '';
 
     if (this.validator) {
-      const validationResults = this.validator(elmValue, this.args);
-      if (!validationResults.valid) {
-        return validationResults;
-      }
+      return this.validator(elmValue, this.args);
+    } else if (isRequired && elmValue === '') {
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_REQUIRED_FIELD;
     } else if (isNaN(elmValue as number) || !/^[+-]?\d+$/.test(elmValue)) {
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_INTEGER
-      };
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_VALID_INTEGER;
+    } else if (minValue !== undefined && maxValue !== undefined && intNumber !== null && (intNumber < minValue || intNumber > maxValue)) {
+      // MIN & MAX Values provided
+      // when decimal value is bigger than 0, we only accept the decimal values as that value set
+      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_INTEGER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => mapValidation[matched]);
+    } else if (minValue !== undefined && intNumber !== null && intNumber <= minValue) {
+      // MIN VALUE ONLY
+      // when decimal value is bigger than 0, we only accept the decimal values as that value set
+      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_INTEGER_MIN.replace(/{{minValue}}/gi, (matched) => mapValidation[matched]);
+    } else if (maxValue !== undefined && intNumber !== null && intNumber >= maxValue) {
+      // MAX VALUE ONLY
+      // when decimal value is bigger than 0, we only accept the decimal values as that value set
+      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_INTEGER_MAX.replace(/{{maxValue}}/gi, (matched) => mapValidation[matched]);
     }
 
     return {
-      valid: true,
-      msg: null
+      valid: isValid,
+      msg: outputMsg
     };
   }
 }

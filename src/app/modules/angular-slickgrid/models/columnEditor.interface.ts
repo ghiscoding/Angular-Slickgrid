@@ -9,6 +9,12 @@ import {
 import { Observable } from 'rxjs';
 
 export interface ColumnEditor {
+  /**
+   * Defaults to false, when set to True and user presses the ENTER key (on Editors that supports it),
+   * it will always call a Save regardless if the current value is null and/or previous value was null
+   */
+  alwaysSaveOnEnterKey?: boolean;
+
   /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Editor) */
   collectionAsync?: Promise<any> | Observable<any>;
 
@@ -59,6 +65,12 @@ export interface ColumnEditor {
    * Note that this will override the default placeholder configured in the global config
    */
   placeholder?: string;
+
+  /**
+   * Defaults to false, is the field required to be valid?
+   * Only on Editors that supports it.
+   */
+  required?: boolean;
 
   /** Editor Validator */
   validator?: EditorValidator;

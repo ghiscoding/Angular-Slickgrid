@@ -1,5 +1,5 @@
 import { Constants } from '../constants';
-import { Column, Editor, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
+import { Column, ColumnEditor, Editor, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -11,6 +11,7 @@ const defaultDecimalPlaces = 0;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class FloatEditor implements Editor {
+  private _lastInputEvent: KeyboardEvent;
   $input: any;
   defaultValue: any;
 
@@ -24,7 +25,7 @@ export class FloatEditor implements Editor {
   }
 
   /** Get Column Editor object */
-  get columnEditor(): any {
+  get columnEditor(): ColumnEditor {
     return this.columnDef && this.columnDef.internalColumnEditor || {};
   }
 
@@ -43,9 +44,13 @@ export class FloatEditor implements Editor {
 
     this.$input = $(`<input type="number" class="editor-text editor-${columnId}" placeholder="${placeholder}" step="${this.getInputDecimalSteps()}" />`)
       .appendTo(this.args.container)
-      .on('keydown.nav', (e) => {
-        if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
-          e.stopImmediatePropagation();
+      .on('keydown.nav', (event: KeyboardEvent) => {
+        this._lastInputEvent = event;
+        if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
+          event.stopImmediatePropagation();
+        } else if (event.keyCode === KeyCode.ENTER) {
+          event.stopImmediatePropagation();
+          this.save();
         }
       });
 
@@ -111,7 +116,12 @@ export class FloatEditor implements Editor {
   }
 
   serializeValue() {
-    let rtn = parseFloat(this.$input.val()) || 0;
+    const elmValue = this.$input.val();
+    if (elmValue === '' || isNaN(elmValue)) {
+      return elmValue;
+    }
+
+    let rtn = parseFloat(elmValue);
     const decPlaces = this.getDecimalPlaces();
     if (decPlaces !== null
       && (rtn || rtn === 0)
@@ -128,17 +138,18 @@ export class FloatEditor implements Editor {
 
   isValueChanged() {
     const elmValue = this.$input.val();
+    const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
+    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
+      return true;
+    }
     return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
   }
 
   save() {
-    const validation = this.validate();
-    if (validation && validation.valid) {
-      if (this.hasAutoCommitEdit) {
-        this.args.grid.getEditorLock().commitCurrentEdit();
-      } else {
-        this.args.commitChanges();
-      }
+    if (this.hasAutoCommitEdit) {
+      this.args.grid.getEditorLock().commitCurrentEdit();
+    } else {
+      this.args.commitChanges();
     }
   }
 
@@ -146,6 +157,7 @@ export class FloatEditor implements Editor {
     const elmValue = this.$input.val();
     const floatNumber = !isNaN(elmValue as number) ? parseFloat(elmValue) : null;
     const decPlaces = this.getDecimalPlaces();
+    const isRequired = this.columnEditor.required;
     const minValue = this.columnEditor.minValue;
     const maxValue = this.columnEditor.maxValue;
     const errorMsg = this.columnEditor.errorMessage;
@@ -155,54 +167,46 @@ export class FloatEditor implements Editor {
       '{{minDecimal}}': 0,
       '{{maxDecimal}}': decPlaces
     };
+    let isValid = true;
+    let outputMsg = '';
 
     if (this.validator) {
-      const validationResults = this.validator(elmValue, this.args);
-      if (!validationResults.valid) {
-        return validationResults;
-      }
+      return this.validator(elmValue, this.args);
+    } else if (isRequired && elmValue === '') {
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_REQUIRED_FIELD;
     } else if (isNaN(elmValue as number) || (decPlaces === 0 && !/^[-+]?(\d+(\.)?(\d)*)$/.test(elmValue))) {
       // when decimal value is 0 (which is the default), we accept 0 or more decimal values
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER
-      };
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER;
     } else if (minValue !== undefined && maxValue !== undefined && floatNumber !== null && (floatNumber < minValue || floatNumber > maxValue)) {
       // MIN & MAX Values provided
       // when decimal value is bigger than 0, we only accept the decimal values as that value set
       // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => mapValidation[matched])
-      };
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => mapValidation[matched]);
     } else if (minValue !== undefined && floatNumber !== null && floatNumber <= minValue) {
       // MIN VALUE ONLY
       // when decimal value is bigger than 0, we only accept the decimal values as that value set
       // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MIN.replace(/{{minValue}}/gi, (matched) => mapValidation[matched])
-      };
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MIN.replace(/{{minValue}}/gi, (matched) => mapValidation[matched]);
     } else if (maxValue !== undefined && floatNumber !== null && floatNumber >= maxValue) {
       // MAX VALUE ONLY
       // when decimal value is bigger than 0, we only accept the decimal values as that value set
       // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MAX.replace(/{{maxValue}}/gi, (matched) => mapValidation[matched])
-      };
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MAX.replace(/{{maxValue}}/gi, (matched) => mapValidation[matched]);
     } else if ((decPlaces > 0 && !new RegExp(`^(\\d*(\\.)?(\\d){0,${decPlaces}})$`).test(elmValue))) {
       // when decimal value is bigger than 0, we only accept the decimal values as that value set
       // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, (matched) => mapValidation[matched])
-      };
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, (matched) => mapValidation[matched]);
     }
 
     return {
-      valid: true,
-      msg: null
+      valid: isValid,
+      msg: outputMsg
     };
   }
 }

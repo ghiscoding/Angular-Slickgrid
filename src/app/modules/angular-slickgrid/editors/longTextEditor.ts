@@ -2,6 +2,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Constants } from './../constants';
 import {
   Column,
+  ColumnEditor,
   Editor,
   EditorValidator,
   EditorValidatorOutput,
@@ -43,7 +44,7 @@ export class LongTextEditor implements Editor {
   }
 
   /** Get Column Editor object */
-  get columnEditor(): any {
+  get columnEditor(): ColumnEditor {
     return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
   }
 
@@ -85,32 +86,21 @@ export class LongTextEditor implements Editor {
     this.$textarea.focus().select();
   }
 
-  handleKeyDown(e: any) {
-    if (e.which === KeyCode.ENTER && e.ctrlKey) {
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.which === KeyCode.ENTER && event.ctrlKey) {
       this.save();
-    } else if (e.which === KeyCode.ESCAPE) {
-      e.preventDefault();
+    } else if (event.which === KeyCode.ESCAPE) {
+      event.preventDefault();
       this.cancel();
-    } else if (e.which === KeyCode.TAB && e.shiftKey) {
-      e.preventDefault();
+    } else if (event.which === KeyCode.TAB && event.shiftKey) {
+      event.preventDefault();
       if (this.args && this.args.grid) {
         this.args.grid.navigatePrev();
       }
-    } else if (e.which === KeyCode.TAB) {
-      e.preventDefault();
+    } else if (event.which === KeyCode.TAB) {
+      event.preventDefault();
       if (this.args && this.args.grid) {
         this.args.grid.navigateNext();
-      }
-    }
-  }
-
-  save() {
-    const validation = this.validate();
-    if (validation && validation.valid) {
-      if (this.hasAutoCommitEdit) {
-        this.args.grid.getEditorLock().commitCurrentEdit();
-      } else {
-        this.args.commitChanges();
       }
     }
   }
@@ -144,6 +134,14 @@ export class LongTextEditor implements Editor {
     this.$textarea.focus();
   }
 
+  getValue() {
+    return this.$textarea.val();
+  }
+
+  setValue(val: string) {
+    this.$textarea.val(val);
+  }
+
   getColumnEditor() {
     return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
   }
@@ -161,21 +159,37 @@ export class LongTextEditor implements Editor {
     item[this.columnDef.field] = state;
   }
 
+
   isValueChanged() {
-    return (!(this.$textarea.val() === '' && this.defaultValue == null)) && (this.$textarea.val() !== this.defaultValue);
+    return (!(this.$textarea.val() === '' && this.defaultValue === null)) && (this.$textarea.val() !== this.defaultValue);
+  }
+
+  save() {
+    if (this.hasAutoCommitEdit) {
+      this.args.grid.getEditorLock().commitCurrentEdit();
+    } else {
+      this.args.commitChanges();
+    }
   }
 
   validate(): EditorValidatorOutput {
+    const isRequired = this.columnEditor.required;
+    const elmValue = this.$textarea && this.$textarea.val && this.$textarea.val();
+    const errorMsg = this.columnEditor.errorMessage;
+
     if (this.validator) {
       const value = this.$textarea && this.$textarea.val && this.$textarea.val();
-      const validationResults = this.validator(value, this.args);
-      if (!validationResults.valid) {
-        return validationResults;
-      }
+      return this.validator(value, this.args);
     }
 
-    // by default the editor is always valid
-    // if user want it to be a required checkbox, he would have to provide his own validator
+    // by default the editor is almost always valid (except when it's required but not provided)
+    if (isRequired && elmValue === '') {
+      return {
+        valid: false,
+        msg: errorMsg || Constants.VALIDATION_REQUIRED_FIELD
+      };
+    }
+
     return {
       valid: true,
       msg: null

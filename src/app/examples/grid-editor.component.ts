@@ -145,6 +145,7 @@ export class GridEditorComponent implements OnInit {
         type: FieldType.string,
         editor: {
           model: Editors.longText,
+          required: true,
           validator: myCustomTitleValidator, // use a custom validator
         },
         onCellChange: (e: Event, args: OnEventArgs) => {
@@ -187,6 +188,7 @@ export class GridEditorComponent implements OnInit {
         editor: {
           // default is 0 decimals, if no decimals is passed it will accept 0 or more decimals
           // however if you pass the "decimalPlaces", it will validate with that maximum
+          alwaysSaveOnEnterKey: true, // defaults to False, when set to true and user presses ENTER it will always call a Save even if value is empty
           model: Editors.float,
           minValue: 0,
           maxValue: 365,
@@ -383,6 +385,7 @@ export class GridEditorComponent implements OnInit {
             separatorBetweenTextLabels: ' '
           },
           model: Editors.multipleSelect,
+          required: true
         },
         filter: {
           collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
@@ -511,7 +514,7 @@ export class GridEditorComponent implements OnInit {
       tempDataset.push({
         id: i,
         title: 'Task ' + i,
-        duration: Math.round(Math.random() * 100) + '',
+        duration: (i % 33 === 0) ? null : Math.round(Math.random() * 100) + '',
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
