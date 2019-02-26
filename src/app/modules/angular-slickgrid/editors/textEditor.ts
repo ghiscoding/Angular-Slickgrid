@@ -1,4 +1,5 @@
-import { Column, Editor, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
+import { Constants } from '../constants';
+import { Column, ColumnEditor, Editor, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -8,6 +9,7 @@ declare var $: any;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class TextEditor implements Editor {
+  private _lastInputEvent: KeyboardEvent;
   $input: any;
   defaultValue: any;
 
@@ -21,7 +23,7 @@ export class TextEditor implements Editor {
   }
 
   /** Get Column Editor object */
-  get columnEditor(): any {
+  get columnEditor(): ColumnEditor {
     return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
   }
 
@@ -40,9 +42,10 @@ export class TextEditor implements Editor {
 
     this.$input = $(`<input type="text" class="editor-text editor-${columnId}" placeholder="${placeholder}" />`)
       .appendTo(this.args.container)
-      .on('keydown.nav', (e) => {
-        if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
-          e.stopImmediatePropagation();
+      .on('keydown.nav', (event: KeyboardEvent) => {
+        this._lastInputEvent = event;
+        if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
+          event.stopImmediatePropagation();
         }
       });
 
@@ -89,31 +92,39 @@ export class TextEditor implements Editor {
   }
 
   isValueChanged() {
+    const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
+    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
+      return true;
+    }
     return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
   }
 
   save() {
-    const validation = this.validate();
-    if (validation && validation.valid) {
-      if (this.hasAutoCommitEdit) {
-        this.args.grid.getEditorLock().commitCurrentEdit();
-      } else {
-        this.args.commitChanges();
-      }
+    if (this.hasAutoCommitEdit) {
+      this.args.grid.getEditorLock().commitCurrentEdit();
+    } else {
+      this.args.commitChanges();
     }
   }
 
   validate(): EditorValidatorOutput {
+    const isRequired = this.columnEditor.required;
+    const elmValue = this.$input && this.$input.val && this.$input.val();
+    const errorMsg = this.columnEditor.errorMessage;
+
     if (this.validator) {
       const value = this.$input && this.$input.val && this.$input.val();
-      const validationResults = this.validator(value, this.args);
-      if (!validationResults.valid) {
-        return validationResults;
-      }
+      return this.validator(value, this.args);
     }
 
-    // by default the editor is always valid
-    // if user want it to be a required checkbox, he would have to provide his own validator
+    // by default the editor is almost always valid (except when it's required but not provided)
+    if (isRequired && elmValue === '') {
+      return {
+        valid: false,
+        msg: errorMsg || Constants.VALIDATION_REQUIRED_FIELD
+      };
+    }
+
     return {
       valid: true,
       msg: null

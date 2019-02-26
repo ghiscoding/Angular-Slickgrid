@@ -1,5 +1,6 @@
 import {
   Column,
+  ColumnEditor,
   Editor,
   EditorValidator,
   EditorValidatorOutput,
@@ -7,6 +8,7 @@ import {
   CollectionCustomStructure,
   FieldType
 } from './../models/index';
+import { Constants } from './../constants';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -18,6 +20,7 @@ declare var $: any;
 export class AutoCompleteEditor implements Editor {
   private _currentValue: any;
   private _defaultTextValue: string;
+  private _lastInputEvent: KeyboardEvent;
   $input: any;
 
   /** The property name for labels in the collection */
@@ -41,13 +44,17 @@ export class AutoCompleteEditor implements Editor {
   }
 
   /** Get Column Editor object */
-  get columnEditor(): any {
+  get columnEditor(): ColumnEditor {
     return this.columnDef && this.columnDef.internalColumnEditor || {};
   }
 
   /** Getter for the Custom Structure if exist */
   get customStructure(): CollectionCustomStructure {
     return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure;
+  }
+
+  get hasAutoCommitEdit() {
+    return this.args.grid.getOptions().autoCommitEdit;
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
@@ -63,9 +70,10 @@ export class AutoCompleteEditor implements Editor {
 
     this.$input = $(`<input type="text" class="autocomplete editor-text editor-${columnId}" placeholder="${placeholder}" />`)
       .appendTo(this.args.container)
-      .on('keydown.nav', (e) => {
-        if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
-          e.stopImmediatePropagation();
+      .on('keydown.nav', (event: KeyboardEvent) => {
+        this._lastInputEvent = event;
+        if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
+          event.stopImmediatePropagation();
         }
       });
 
@@ -124,6 +132,14 @@ export class AutoCompleteEditor implements Editor {
     this.$input.select();
   }
 
+  save() {
+    if (this.hasAutoCommitEdit) {
+      this.args.grid.getEditorLock().commitCurrentEdit();
+    } else {
+      this.args.commitChanges();
+    }
+  }
+
   serializeValue() {
     // if user provided a custom structure, we need to reswap the properties
     // we do this because autocomplete needed label/value pair which might not be what the user provided
@@ -141,20 +157,30 @@ export class AutoCompleteEditor implements Editor {
   }
 
   isValueChanged() {
+    const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
+    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
+      return true;
+    }
     return (!(this.$input.val() === '' && this._defaultTextValue === null)) && (this.$input.val() !== this._defaultTextValue);
   }
 
   validate(): EditorValidatorOutput {
+    const isRequired = this.columnEditor.required;
+    const elmValue = this.$input && this.$input.val && this.$input.val();
+    const errorMsg = this.columnEditor.errorMessage;
+
     if (this.validator) {
-      const value = this.$input && this.$input.val && this.$input.val();
-      const validationResults = this.validator(value, this.args);
-      if (!validationResults.valid) {
-        return validationResults;
-      }
+      return this.validator(elmValue, this.args);
     }
 
-    // by default the editor is always valid
-    // if user want it to be a required checkbox, he would have to provide his own validator
+    // by default the editor is almost always valid (except when it's required but not provided)
+    if (isRequired && elmValue === '') {
+      return {
+        valid: false,
+        msg: errorMsg || Constants.VALIDATION_REQUIRED_FIELD
+      };
+    }
+
     return {
       valid: true,
       msg: null

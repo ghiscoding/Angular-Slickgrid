@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import {
   AngularUtilService,
   Column,
+  ColumnEditor,
   Editor,
   EditorValidator,
   EditorValidatorOutput,
@@ -53,7 +54,7 @@ export class CustomAngularComponentEditor implements Editor {
   }
 
   /** Get Column Editor object */
-  get columnEditor(): any {
+  get columnEditor(): ColumnEditor {
     return this.columnDef && this.columnDef.internalColumnEditor || {};
   }
 
@@ -94,13 +95,10 @@ export class CustomAngularComponentEditor implements Editor {
   }
 
   save() {
-    const validation = this.validate();
-    if (validation && validation.valid) {
-      if (this.hasAutoCommitEdit) {
-        this.args.grid.getEditorLock().commitCurrentEdit();
-      } else {
-        this.args.commitChanges();
-      }
+    if (this.hasAutoCommitEdit) {
+      this.args.grid.getEditorLock().commitCurrentEdit();
+    } else {
+      this.args.commitChanges();
     }
   }
 
@@ -166,10 +164,7 @@ export class CustomAngularComponentEditor implements Editor {
   validate(): EditorValidatorOutput {
     if (this.validator) {
       const value = this.componentRef.instance.selectedId;
-      const validationResults = this.validator(value, this.args);
-      if (!validationResults.valid) {
-        return validationResults;
-      }
+      return this.validator(value, this.args);
     }
 
     // by default the editor is always valid

@@ -1,4 +1,5 @@
-import { Column, Editor, EditorValidator, EditorValidatorOutput } from './../models/index';
+import { Constants } from './../constants';
+import { Column, ColumnEditor, Editor, EditorValidator, EditorValidatorOutput } from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -21,7 +22,7 @@ export class CheckboxEditor implements Editor {
   }
 
   /** Get Column Editor object */
-  get columnEditor(): any {
+  get columnEditor(): ColumnEditor {
     return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
   }
 
@@ -84,16 +85,22 @@ export class CheckboxEditor implements Editor {
   }
 
   validate(): EditorValidatorOutput {
+    const isRequired = this.columnEditor.required;
+    const isChecked = this.$input && this.$input.prop && this.$input.prop('checked');
+    const errorMsg = this.columnEditor.errorMessage;
+
     if (this.validator) {
-      const value = this.$input && this.$input.val && this.$input.val();
-      const validationResults = this.validator(value, this.args);
-      if (!validationResults.valid) {
-        return validationResults;
-      }
+      return this.validator(isChecked, this.args);
     }
 
-    // by default the editor is always valid
-    // if user want it to be a required checkbox, he would have to provide his own validator
+    // by default the editor is almost always valid (except when it's required but not provided)
+    if (isRequired && !isChecked) {
+      return {
+        valid: false,
+        msg: errorMsg || Constants.VALIDATION_REQUIRED_FIELD
+      };
+    }
+
     return {
       valid: true,
       msg: null
