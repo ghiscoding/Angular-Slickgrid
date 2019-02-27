@@ -23,7 +23,12 @@ The goal is of course to be able to run SlickGrid within Angular 4+ but also to 
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-bs4-demo) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-bs4-demo/tree/master/src/app/examples)
 
 #### Working Demo
-For a complete and working demo, you can clone the [Angular-Slickgrid Bootstrap 4](https://github.com/ghiscoding/angular-slickgrid-bs4-demo) repository. That repo is updated frequently and is the actual [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-bs4-demo).
+For a complete and working local demo, you can clone the [Angular-Slickgrid Bootstrap 4](https://github.com/ghiscoding/angular-slickgrid-bs4-demo) repository. That repo is updated frequently and is the actual [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-bs4-demo).
+```bash
+git clone https://github.com/ghiscoding/angular-slickgrid-bs4-demo
+npm install
+npm start
+```
 
 #### Material Theme
 Technically speaking, `Material` theme is not provided, but it should still work. 
