@@ -36,7 +36,6 @@ export class GraphqlService implements BackendService {
   private _grid: any;
   options: GraphqlServiceOption;
   pagination: Pagination | undefined;
-  defaultOrderBy: GraphqlSortingOption = { field: 'id', direction: SortDirection.ASC };
   defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption = {
     first: DEFAULT_ITEMS_PER_PAGE,
     offset: 0
@@ -437,7 +436,7 @@ export class GraphqlService implements BackendService {
    */
   updateSorters(sortColumns?: ColumnSort[], presetSorters?: CurrentSorter[]) {
     let currentSorters: CurrentSorter[] = [];
-    let graphqlSorters: GraphqlSortingOption[] = [];
+    const graphqlSorters: GraphqlSortingOption[] = [];
 
     if (!sortColumns && presetSorters) {
       // make the presets the current sorters, also make sure that all direction are in uppercase for GraphQL
@@ -470,23 +469,18 @@ export class GraphqlService implements BackendService {
     } else if (sortColumns && !presetSorters) {
       // build the orderBy array, it could be multisort, example
       // orderBy:[{field: lastName, direction: ASC}, {field: firstName, direction: DESC}]
-      if (sortColumns && sortColumns.length === 0) {
-        graphqlSorters = new Array(this.defaultOrderBy); // when empty, use the default sort
-        currentSorters = new Array({ columnId: this.defaultOrderBy.field, direction: this.defaultOrderBy.direction });
-      } else {
-        if (sortColumns) {
-          for (const column of sortColumns) {
-            if (column && column.sortCol) {
-              currentSorters.push({
-                columnId: column.sortCol.id + '',
-                direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
-              });
+      if (Array.isArray(sortColumns) && sortColumns.length > 0) {
+        for (const column of sortColumns) {
+          if (column && column.sortCol) {
+            currentSorters.push({
+              columnId: column.sortCol.id + '',
+              direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
+            });
 
-              graphqlSorters.push({
-                field: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '',
-                direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
-              });
-            }
+            graphqlSorters.push({
+              field: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '',
+              direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
+            });
           }
         }
       }

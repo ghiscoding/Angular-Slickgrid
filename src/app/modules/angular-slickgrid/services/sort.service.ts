@@ -2,6 +2,7 @@ import {
   Column,
   ColumnSort,
   CurrentSorter,
+  EmitterType,
   FieldType,
   GraphqlResult,
   GridOption,
@@ -73,7 +74,7 @@ export class SortService {
       }
 
       const query = backendApi.service.processOnSortChanged(event, args);
-      this.emitSortChanged('remote');
+      this.emitSortChanged(EmitterType.remote);
 
       // the processes can be Observables (like HttpClient) or Promises
       const process = backendApi.process(query);
@@ -121,7 +122,7 @@ export class SortService {
       }
 
       this.onLocalSortChanged(grid, dataView, sortColumns);
-      this.emitSortChanged('local');
+      this.emitSortChanged(EmitterType.local);
     });
   }
 
@@ -277,15 +278,15 @@ export class SortService {
    * Other services, like Pagination, can then subscribe to it.
    * @param sender
    */
-  emitSortChanged(sender: 'local' | 'remote') {
-    if (sender === 'remote' && this._gridOptions && this._gridOptions.backendServiceApi) {
+  emitSortChanged(sender: EmitterType) {
+    if (sender === EmitterType.remote && this._gridOptions && this._gridOptions.backendServiceApi) {
       let currentSorters: CurrentSorter[] = [];
       const backendService = this._gridOptions.backendServiceApi.service;
       if (backendService && backendService.getCurrentSorters) {
         currentSorters = backendService.getCurrentSorters() as CurrentSorter[];
       }
       this.onSortChanged.next(currentSorters);
-    } else if (sender === 'local') {
+    } else if (sender === EmitterType.local) {
       this.onSortChanged.next(this.getCurrentLocalSorters());
     }
   }

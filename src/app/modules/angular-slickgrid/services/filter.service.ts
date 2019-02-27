@@ -4,6 +4,7 @@ import {
   Column,
   ColumnFilter,
   ColumnFilters,
+  EmitterType,
   Filter,
   FilterArguments,
   FilterCallbackArg,
@@ -131,7 +132,7 @@ export class FilterService {
 
     // emit an onFilterChanged event when it's not called by a clear filter
     if (args && !args.clearFilterTriggered) {
-      this.emitFilterChanged('remote');
+      this.emitFilterChanged(EmitterType.remote);
     }
 
     // the processes can be Observables (like HttpClient) or Promises
@@ -166,7 +167,7 @@ export class FilterService {
       }
       // emit an onFilterChanged event when it's not called by a clear filter
       if (args && !args.clearFilterTriggered) {
-        this.emitFilterChanged('local');
+        this.emitFilterChanged(EmitterType.local);
       }
     });
 
@@ -176,7 +177,7 @@ export class FilterService {
     });
   }
 
-  clearFilterByColumnId(columnId: number | string) {
+  clearFilterByColumnId(event: Event, columnId: number | string) {
     const colFilter: Filter = this._filters.find((filter: Filter) => filter.columnDef.id === columnId);
     if (colFilter && colFilter.clear) {
       colFilter.clear();
@@ -190,9 +191,17 @@ export class FilterService {
       }
     }
 
+    let emitter: EmitterType = EmitterType.local;
+    const isBackendApi = this._gridOptions && this._gridOptions.backendServiceApi || false;
+
+    // when using a backend service, we need to manually trigger a filter change
+    if (isBackendApi) {
+      emitter = EmitterType.remote;
+      this.onBackendFilterChange(event as KeyboardEvent, { grid: this._grid, columnFilters: this._columnFilters });
+    }
+
     // emit an event when filter is cleared
-    const sender = this._gridOptions && this._gridOptions.backendServiceApi ? 'remote' : 'local';
-    this.emitFilterChanged(sender);
+    this.emitFilterChanged(emitter);
   }
 
   /** Clear the search filters (below the column titles) */
@@ -486,15 +495,15 @@ export class FilterService {
    * Other services, like Pagination, can then subscribe to it.
    * @param caller
    */
-  emitFilterChanged(caller: 'local' | 'remote') {
-    if (caller === 'remote' && this._gridOptions && this._gridOptions.backendServiceApi) {
+  emitFilterChanged(caller: EmitterType) {
+    if (caller === EmitterType.remote && this._gridOptions && this._gridOptions.backendServiceApi) {
       let currentFilters: CurrentFilter[] = [];
       const backendService = this._gridOptions.backendServiceApi.service;
       if (backendService && backendService.getCurrentFilters) {
         currentFilters = backendService.getCurrentFilters() as CurrentFilter[];
       }
       this.onFilterChanged.next(currentFilters);
-    } else if (caller === 'local') {
+    } else if (caller === EmitterType.local) {
       this.onFilterChanged.next(this.getCurrentLocalFilters());
     }
   }

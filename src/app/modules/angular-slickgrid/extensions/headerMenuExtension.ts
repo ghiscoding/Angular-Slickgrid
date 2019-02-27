@@ -172,7 +172,7 @@ export class HeaderMenuExtension implements Extension {
   }
 
   /** Execute the Header Menu Commands that was triggered by the onCommand subscribe */
-  executeHeaderMenuInternalCommands(e: Event, args: HeaderMenuOnCommandArgs) {
+  executeHeaderMenuInternalCommands(event: Event, args: HeaderMenuOnCommandArgs) {
     if (args && args.command) {
       switch (args.command) {
         case 'hide':
@@ -182,15 +182,15 @@ export class HeaderMenuExtension implements Extension {
           }
           break;
         case 'clear-filter':
-          this.clearColumnFilter(e, args);
+          this.clearColumnFilter(event, args);
           break;
         case 'clear-sort':
-          this.clearColumnSort(e, args);
+          this.clearColumnSort(event, args);
           break;
         case 'sort-asc':
         case 'sort-desc':
           const isSortingAsc = (args.command === 'sort-asc');
-          this.sortColumn(e, args, isSortingAsc);
+          this.sortColumn(event, args, isSortingAsc);
           break;
         default:
           break;
@@ -268,7 +268,7 @@ export class HeaderMenuExtension implements Extension {
   }
 
   /** Sort the current column */
-  private sortColumn(e: Event, args: HeaderMenuOnCommandArgs, isSortingAsc = true) {
+  private sortColumn(event: Event, args: HeaderMenuOnCommandArgs, isSortingAsc = true) {
     if (args && args.column) {
       // get previously sorted columns
       const sortedColsWithoutCurrent: ColumnSort[] = this.sortService.getPreviousColumnSorts(args.column.id + '');
@@ -276,7 +276,7 @@ export class HeaderMenuExtension implements Extension {
       // add to the column array, the column sorted by the header menu
       sortedColsWithoutCurrent.push({ sortCol: args.column, sortAsc: isSortingAsc });
       if (this.sharedService.gridOptions.backendServiceApi) {
-        this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this.sharedService.grid });
+        this.sortService.onBackendSortChanged(event, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this.sharedService.grid });
       } else if (this.sharedService.dataView) {
         this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, sortedColsWithoutCurrent);
       } else {
@@ -298,14 +298,14 @@ export class HeaderMenuExtension implements Extension {
   }
 
   /** Clear the Filter on the current column (if it's actually filtered) */
-  private clearColumnFilter(e: Event, args: HeaderMenuOnCommandArgs) {
+  private clearColumnFilter(event: Event, args: HeaderMenuOnCommandArgs) {
     if (args && args.column) {
-      this.filterService.clearFilterByColumnId(args.column.id);
+      this.filterService.clearFilterByColumnId(event, args.column.id);
     }
   }
 
   /** Clear the Sort on the current column (if it's actually sorted) */
-  private clearColumnSort(e: Event, args: HeaderMenuOnCommandArgs) {
+  private clearColumnSort(event: Event, args: HeaderMenuOnCommandArgs) {
     if (args && args.column && this.sharedService) {
       // get previously sorted columns
       const allSortedCols: ColumnSort[] = this.sortService.getPreviousColumnSorts();
@@ -313,7 +313,7 @@ export class HeaderMenuExtension implements Extension {
 
       if (allSortedCols.length !== sortedColsWithoutCurrent.length) {
         if (this.sharedService.gridOptions && this.sharedService.gridOptions.backendServiceApi) {
-          this.sortService.onBackendSortChanged(e, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this.sharedService.grid });
+          this.sortService.onBackendSortChanged(event, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this.sharedService.grid });
         } else if (this.sharedService.dataView) {
           this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, sortedColsWithoutCurrent, true);
         } else {
