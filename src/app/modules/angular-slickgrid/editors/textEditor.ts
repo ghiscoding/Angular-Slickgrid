@@ -100,10 +100,13 @@ export class TextEditor implements Editor {
   }
 
   save() {
-    if (this.hasAutoCommitEdit) {
-      this.args.grid.getEditorLock().commitCurrentEdit();
-    } else {
-      this.args.commitChanges();
+    const validation = this.validate();
+    if (validation && validation.valid) {
+      if (this.hasAutoCommitEdit) {
+        this.args.grid.getEditorLock().commitCurrentEdit();
+      } else {
+        this.args.commitChanges();
+      }
     }
   }
 
