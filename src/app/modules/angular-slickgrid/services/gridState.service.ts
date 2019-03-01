@@ -246,7 +246,7 @@ export class GridStateService {
     if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
       // this also requires the Row Selection Model to be registered as well
       const rowSelectionExtension = this.extensionService && this.extensionService.getExtensionByName && this.extensionService.getExtensionByName(ExtensionName.rowSelection);
-      if (rowSelectionExtension && rowSelectionExtension.extension) {
+      if (rowSelectionExtension && rowSelectionExtension.addon) {
         this._grid.setSelectedRows([]);
       }
     }
@@ -265,12 +265,12 @@ export class GridStateService {
       })
     );
     // Subscribe to Event Emitter of Filter cleared
-      this.subscriptions.push(
-        this.filterService.onFilterCleared.subscribe(() => {
-          this.resetRowSelection();
-          this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.filter }, gridState: this.getCurrentGridState() });
-        })
-      );
+    this.subscriptions.push(
+      this.filterService.onFilterCleared.subscribe(() => {
+        this.resetRowSelection();
+        this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.filter }, gridState: this.getCurrentGridState() });
+      })
+    );
 
     // Subscribe to Event Emitter of Sort changed
     this.subscriptions.push(
