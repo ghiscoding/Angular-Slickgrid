@@ -117,7 +117,6 @@ export class GridFrozenComponent implements OnInit {
     ];
 
     this.gridOptions = {
-      enableAutoResize: true,
       autoResize: {
         containerId: 'demo-container',
         sidePadding: 15
@@ -125,15 +124,9 @@ export class GridFrozenComponent implements OnInit {
       alwaysShowVerticalScroll: false, // disable scroll since we don't want it to show on the left pinned columns
       enableExcelCopyBuffer: true,
       enableCellNavigation: true,
-      enableFiltering: true,
-      asyncEditorLoading: true,
-      forceFitColumns: false,
-      autoEdit: false,
       frozenColumn: this.frozenColumnCount,
       frozenRow: this.frozenRowCount,
       // frozenBottom: true, // if you want to freeze the bottom instead of the top, you can enable this property
-      showHeaderRow: true,
-      syncColumnCellResize: false,
     };
 
     // mock a dataset
