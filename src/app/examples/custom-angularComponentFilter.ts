@@ -17,6 +17,7 @@ import {
 declare var $: any;
 
 export class CustomAngularComponentFilter implements Filter {
+  private _shouldTriggerQuery = true;
   changeSubscriber: Subscription;
 
   /** Angular Component Reference */
@@ -28,7 +29,7 @@ export class CustomAngularComponentFilter implements Filter {
   callback: FilterCallback;
   operator: OperatorType | OperatorString = OperatorType.equal;
 
-  constructor() {}
+  constructor() { }
 
   /** Angular Util Service (could be inside the Grid Options Params or the Filter Params ) */
   get angularUtilService(): AngularUtilService {
@@ -84,7 +85,7 @@ export class CustomAngularComponentFilter implements Filter {
         Object.assign(componentOuput.componentRef.instance, { collection: this.collection });
 
         this.changeSubscriber = componentOuput.componentRef.instance.onItemChanged.subscribe((item) => {
-          this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: [item.id] });
+          this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: [item.id], shouldTriggerQuery: this._shouldTriggerQuery });
         });
       });
     }
@@ -93,7 +94,8 @@ export class CustomAngularComponentFilter implements Filter {
   /**
    * Clear the filter value
    */
-  clear() {
+  clear(shouldTriggerQuery = true) {
+    this._shouldTriggerQuery = shouldTriggerQuery;
     if (this.componentRef && this.componentRef.instance && this.componentRef.instance.hasOwnProperty('selectedId')) {
       this.componentRef.instance.selectedId = 0;
     }

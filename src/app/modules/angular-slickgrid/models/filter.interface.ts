@@ -33,7 +33,7 @@ export interface Filter {
   init: (args: FilterArguments, isFilterFirstRender?: boolean) => void;
 
   /** Clear filter function */
-  clear: () => void;
+  clear: (shouldTriggerQuery?: boolean) => void;
 
   /** Destroy filter function */
   destroy: () => void;

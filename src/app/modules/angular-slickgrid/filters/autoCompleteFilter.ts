@@ -23,6 +23,7 @@ declare var $: any;
 @Injectable()
 export class AutoCompleteFilter implements Filter {
   private _clearFilterTriggered = false;
+  private _shouldTriggerQuery = true;
 
   /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
   elementName: string;
@@ -114,9 +115,10 @@ export class AutoCompleteFilter implements Filter {
   /**
    * Clear the filter value
    */
-  clear() {
+  clear(shouldTriggerQuery = true) {
     if (this.$filterElm) {
       this._clearFilterTriggered = true;
+      this._shouldTriggerQuery = shouldTriggerQuery;
       this.searchTerms = [];
       this.$filterElm.val('');
       this.$filterElm.trigger('keyup');
@@ -253,13 +255,13 @@ export class AutoCompleteFilter implements Filter {
     this.$filterElm.on('keyup input change', (e: any) => {
       const value = e && e.target && e.target.value || '';
       if (this._clearFilterTriggered) {
-        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
         this._clearFilterTriggered = false; // reset flag for next use
         this.$filterElm.removeClass('filled');
       } else {
         if (value === '') {
           this.$filterElm.removeClass('filled');
-          this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value] });
+          this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
         } else {
           this.$filterElm.addClass('filled');
         }
@@ -346,7 +348,7 @@ export class AutoCompleteFilter implements Filter {
       const itemLabel = typeof ui.item === 'string' ? ui.item : ui.item.label;
       const itemValue = typeof ui.item === 'string' ? ui.item : ui.item.value;
       this.$filterElm.val(itemLabel);
-      this.callback(event, { columnDef: this.columnDef, operator: this.operator, searchTerms: [itemValue] });
+      this.callback(event, { columnDef: this.columnDef, operator: this.operator, searchTerms: [itemValue], shouldTriggerQuery: this._shouldTriggerQuery });
     }
     return false;
   }

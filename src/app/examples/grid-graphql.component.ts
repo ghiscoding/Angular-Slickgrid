@@ -78,7 +78,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         filterable: true,
         filter: {
           model: Filters.multipleSelect,
-          collection: [{ value: 'acme', label: 'Acme'}, { value: 'abc', label: 'Company ABC'}, { value: 'xyz', label: 'Company XYZ'}],
+          collection: [{ value: 'acme', label: 'Acme' }, { value: 'abc', label: 'Company ABC' }, { value: 'xyz', label: 'Company XYZ' }],
           filterOptions: {
             filter: true // adds a filter on top of the multi-select dropdown
           }
@@ -92,7 +92,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         filter: {
           model: Filters.compoundInput
         },
-        formatter: Formatters.multiple, params: { formatters: [Formatters.complexObject, Formatters.translate] } },
+        formatter: Formatters.multiple, params: { formatters: [Formatters.complexObject, Formatters.translate] }
+      },
     ];
 
     this.gridOptions = {
@@ -221,6 +222,12 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   gridStateChanged(gridStateChanges: GridStateChange) {
     console.log('Client sample, Grid State changed:: ', gridStateChanges);
     localStorage[LOCAL_STORAGE_KEY] = JSON.stringify(gridStateChanges.gridState);
+  }
+
+  clearAllFiltersAndSorts() {
+    if (this.angularGrid && this.angularGrid.gridService) {
+      this.angularGrid.gridService.clearAllFiltersAndSorts();
+    }
   }
 
   /** Save current Filters, Sorters in LocaleStorage or DB */
