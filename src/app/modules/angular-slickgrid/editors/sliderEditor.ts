@@ -9,7 +9,7 @@ const DEFAULT_MAX_VALUE = 100;
 const DEFAULT_STEP = 1;
 
 export class SliderEditor implements Editor {
-  private _lastInputEvent: KeyboardEvent;
+  private _lastInputEvent: JQueryEventObject;
   private _elementRangeInputId: string;
   private _elementRangeOutputId: string;
   $editorElm: any;
@@ -63,7 +63,7 @@ export class SliderEditor implements Editor {
     // if user chose to display the slider number on the right side, then update it every time it changes
     // we need to use both "input" and "change" event to be all cross-browser
     if (!this.editorParams.hideSliderNumber) {
-      this.$editorElm.on('input change', (event: KeyboardEvent & { target: HTMLInputElement }) => {
+      this.$editorElm.on('input change', (event: JQueryEventObject & { target: HTMLInputElement }) => {
         this._lastInputEvent = event;
         const value = event && event.target && event.target.value || '';
         if (value) {
@@ -98,11 +98,17 @@ export class SliderEditor implements Editor {
   }
 
   loadValue(item: any) {
-    // this.$input.val(this.defaultValue = item[this.columnDef.field]);
-    this.defaultValue = item[this.columnDef.field];
-    this.$input.val(this.defaultValue);
-    this.$input[0].defaultValue = this.defaultValue;
-    this.$sliderNumber.html(this.defaultValue);
+    const fieldName = this.columnDef && this.columnDef.field;
+
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+
+    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || item.hasOwnProperty(fieldNameFromComplexObject))) {
+      this.defaultValue = item[fieldNameFromComplexObject || fieldName];
+      this.$input.val(this.defaultValue);
+      this.$input[0].defaultValue = this.defaultValue;
+      this.$sliderNumber.html(this.defaultValue);
+    }
   }
 
   serializeValue() {
@@ -110,7 +116,10 @@ export class SliderEditor implements Editor {
   }
 
   applyValue(item: any, state: any) {
-    item[this.columnDef.field] = state;
+    const fieldName = this.columnDef && this.columnDef.field;
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+    item[fieldNameFromComplexObject || fieldName] = state;
   }
 
   isValueChanged() {

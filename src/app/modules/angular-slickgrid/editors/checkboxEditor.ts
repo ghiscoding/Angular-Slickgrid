@@ -60,11 +60,18 @@ export class CheckboxEditor implements Editor {
   }
 
   loadValue(item: any) {
-    this.defaultValue = !!item[this.columnDef.field];
-    if (this.defaultValue) {
-      this.$input.prop('checked', true);
-    } else {
-      this.$input.prop('checked', false);
+    const fieldName = this.columnDef && this.columnDef.field;
+
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+
+    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || item.hasOwnProperty(fieldNameFromComplexObject))) {
+      this.defaultValue = !!item[fieldNameFromComplexObject || fieldName];
+      if (this.defaultValue) {
+        this.$input.prop('checked', true);
+      } else {
+        this.$input.prop('checked', false);
+      }
     }
   }
 
@@ -77,7 +84,10 @@ export class CheckboxEditor implements Editor {
   }
 
   applyValue(item: any, state: any) {
-    item[this.columnDef.field] = state;
+    const fieldName = this.columnDef && this.columnDef.field;
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+    item[fieldNameFromComplexObject || fieldName] = state;
   }
 
   isValueChanged() {

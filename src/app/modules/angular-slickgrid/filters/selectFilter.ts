@@ -123,7 +123,7 @@ export class SelectFilter implements Filter {
     if (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) {
       return this.columnDef && this.columnDef.filter && this.columnDef.filter.operator;
     }
-    return  this.isMultipleSelect ? OperatorType.in : OperatorType.equal;
+    return this.isMultipleSelect ? OperatorType.in : OperatorType.equal;
   }
 
   /**

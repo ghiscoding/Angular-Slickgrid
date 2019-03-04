@@ -1,3 +1,4 @@
+/// <reference types="jquery" />
 // import 3rd party vendor libs
 // only import the necessary core lib, each will be imported on demand when enabled (via require)
 import 'jquery-ui-dist/jquery-ui';
@@ -170,7 +171,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private sortService: SortService,
     private translate: TranslateService,
     @Inject('config') private forRootConfig: GridOption
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.onBeforeGridCreate.emit(true);
@@ -238,7 +239,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (column.editor && column.editor.collectionAsync) {
         this.loadEditorCollectionAsync(column);
       }
-      return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor }};
+      return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor } };
     });
 
     // save reference for all columns before they optionally become hidden/visible
@@ -338,6 +339,28 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       /** @deprecated please use "extensionService" instead */
       pluginService: this.extensionService,
     });
+  }
+
+  /**
+   * Commits the current edit to the grid
+   */
+  commitEdit(target: Element) {
+    if (this.grid.getOptions().autoCommitEdit) {
+      const activeNode = this.grid.getActiveCellNode();
+
+      // a timeout must be set or this could come into conflict when slickgrid
+      // tries to commit the edit when going from one editor to another on the grid
+      // through the click event. If the timeout was not here it would
+      // try to commit/destroy the editor twice, which would throw a jquery
+      // error about the element not being in the DOM
+      setTimeout(() => {
+        // make sure the target is the active editor so we do not
+        // commit prematurely
+        if (activeNode && activeNode.contains(target) && this.grid.getEditorLock().isActive()) {
+          this.grid.getEditorLock().commitCurrentEdit();
+        }
+      });
+    }
   }
 
   /**
@@ -486,8 +509,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
       // if user entered some any "presets", we need to reflect them all in the grid
       if (gridOptions && gridOptions.presets) {
-         // Filters "presets"
-         if (backendService && backendService.updateFilters && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
+        // Filters "presets"
+        if (backendService && backendService.updateFilters && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
           backendService.updateFilters(gridOptions.presets.filters, true);
         }
         // Sorters "presets"

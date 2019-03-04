@@ -131,8 +131,15 @@ export class DateEditor implements Editor {
   }
 
   loadValue(item: any) {
-    this.defaultDate = item[this.args.column.field];
-    this.flatInstance.setDate(item[this.args.column.field]);
+    const fieldName = this.columnDef && this.columnDef.field;
+
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+
+    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || item.hasOwnProperty(fieldNameFromComplexObject))) {
+      this.defaultDate = item[fieldNameFromComplexObject || fieldName];
+      this.flatInstance.setDate(item[this.args.column.field]);
+    }
   }
 
   serializeValue() {
@@ -152,9 +159,12 @@ export class DateEditor implements Editor {
     if (!state) {
       return;
     }
-
+    const fieldName = this.columnDef && this.columnDef.field;
     const outputFormat = mapMomentDateFormatWithFieldType(this.args.column.type || FieldType.dateIso);
-    item[this.args.column.field] = moment(state, outputFormat).toDate();
+
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+    item[fieldNameFromComplexObject || fieldName] = moment(state, outputFormat).toDate();
   }
 
   isValueChanged() {

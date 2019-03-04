@@ -77,7 +77,7 @@ export class FilterService {
     this._slickSubscriber.subscribe(this.onBackendFilterChange.bind(this));
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
-    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: KeyboardEvent, args: any) => {
+    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: JQueryEventObject, args: any) => {
       // firstColumnIdRendered is null at first, so if it changes to being filled and equal then we know it was already rendered
       if (args.column.id === this._firstColumnIdRendered) {
         this._isFilterFirstRender = false;
@@ -89,7 +89,7 @@ export class FilterService {
     });
   }
 
-  onBackendFilterChange(event: KeyboardEvent, args: any) {
+  onBackendFilterChange(event: JQueryEventObject, args: any) {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
     }
@@ -127,7 +127,7 @@ export class FilterService {
     }
   }
 
-  async executeBackendCallback(event: KeyboardEvent, args: any, startTime: Date, backendApi: BackendServiceApi) {
+  async executeBackendCallback(event: JQueryEventObject, args: any, startTime: Date, backendApi: BackendServiceApi) {
     const query = await backendApi.service.processOnFilterChanged(event, args);
 
     // emit an onFilterChanged event when it's not called by a clear filter
@@ -160,7 +160,7 @@ export class FilterService {
     dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
     dataView.setFilter(this.customLocalFilter.bind(this, dataView));
 
-    this._slickSubscriber.subscribe((e: KeyboardEvent, args: any) => {
+    this._slickSubscriber.subscribe((e: JQueryEventObject, args: any) => {
       const columnId = args.columnId;
       if (columnId != null) {
         dataView.refresh();
@@ -172,7 +172,7 @@ export class FilterService {
     });
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
-    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: KeyboardEvent, args: any) => {
+    this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: JQueryEventObject, args: any) => {
       this.addFilterTemplateToHeaderRow(args);
     });
   }
@@ -197,7 +197,7 @@ export class FilterService {
     // when using a backend service, we need to manually trigger a filter change
     if (isBackendApi) {
       emitter = EmitterType.remote;
-      this.onBackendFilterChange(event as KeyboardEvent, { grid: this._grid, columnFilters: this._columnFilters });
+      this.onBackendFilterChange(event as JQueryEventObject, { grid: this._grid, columnFilters: this._columnFilters });
     }
 
     // emit an event when filter is cleared
@@ -397,7 +397,7 @@ export class FilterService {
     return currentFilters;
   }
 
-  callbackSearchEvent(e: KeyboardEvent | undefined, args: FilterCallbackArg) {
+  callbackSearchEvent(e: JQueryEventObject | undefined, args: FilterCallbackArg) {
     if (args) {
       const searchTerm = ((e && e.target) ? (e.target as HTMLInputElement).value : undefined);
       const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : (searchTerm ? [searchTerm] : undefined);
@@ -517,7 +517,7 @@ export class FilterService {
   populateColumnFilterSearchTerms() {
     if (this._gridOptions.presets && Array.isArray(this._gridOptions.presets.filters) && this._gridOptions.presets.filters.length > 0) {
       const filters = this._gridOptions.presets.filters;
-      this._columnDefinitions.forEach((columnDef: Column) =>  {
+      this._columnDefinitions.forEach((columnDef: Column) => {
         // clear any columnDef searchTerms before applying Presets
         if (columnDef.filter && columnDef.filter.searchTerms) {
           delete columnDef.filter.searchTerms;
