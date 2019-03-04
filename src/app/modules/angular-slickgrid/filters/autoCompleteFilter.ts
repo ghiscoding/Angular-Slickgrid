@@ -51,7 +51,7 @@ export class AutoCompleteFilter implements Filter {
   /**
    * Initialize the Filter
    */
-  constructor(protected translate: TranslateService, protected collectionService: CollectionService) {}
+  constructor(protected translate: TranslateService, protected collectionService: CollectionService) { }
 
   /** Getter for the Collection Options */
   protected get collectionOptions(): CollectionOption {
@@ -276,7 +276,7 @@ export class AutoCompleteFilter implements Filter {
     if (this.columnFilter && this.columnFilter.placeholder) {
       placeholder = this.columnFilter.placeholder;
     }
-    return `<input type="text" class="form-control autocomplete search-filter filter-${columnId}" placeholder="${placeholder}">`;
+    return `<input type="text" autocomplete="off" class="form-control autocomplete search-filter filter-${columnId}" placeholder="${placeholder}">`;
   }
 
   /**
@@ -301,7 +301,7 @@ export class AutoCompleteFilter implements Filter {
     }
 
     // user might pass his own autocomplete options
-    const autoCompleteOptions = this.columnDef && this.columnDef.filter && this.columnDef.filter.filterOptions;
+    const autoCompleteOptions = this.columnFilter.filterOptions;
 
     // when user passes it's own autocomplete options
     // we still need to provide our own "select" callback implementation

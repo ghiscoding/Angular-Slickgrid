@@ -94,7 +94,7 @@ export class GridEditorComponent implements OnInit {
   updatedObject: any;
   selectedLanguage = 'en';
 
-  constructor(private http: HttpClient, private translate: TranslateService) {}
+  constructor(private http: HttpClient, private translate: TranslateService) { }
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -178,14 +178,13 @@ export class GridEditorComponent implements OnInit {
         sortable: true,
         type: FieldType.number,
         filter: { model: Filters.slider, params: { hideSliderNumber: false } },
-        /*
         editor: {
           model: Editors.slider,
           minValue: 0,
           maxValue: 100,
           // params: { hideSliderNumber: true },
         },
-        */
+        /*
         editor: {
           // default is 0 decimals, if no decimals is passed it will accept 0 or more decimals
           // however if you pass the "decimalPlaces", it will validate with that maximum
@@ -197,7 +196,7 @@ export class GridEditorComponent implements OnInit {
           // errorMessage: this.i18n.tr('INVALID_FLOAT', { maxDecimal: 2 }),
           params: { decimalPlaces: 2 },
         },
-
+        */
       }, {
         id: 'complete',
         name: '% Complete',

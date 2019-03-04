@@ -20,7 +20,7 @@ declare var $: any;
 export class AutoCompleteEditor implements Editor {
   private _currentValue: any;
   private _defaultTextValue: string;
-  private _lastInputEvent: KeyboardEvent;
+  private _lastInputEvent: JQueryEventObject;
   $input: any;
 
   /** The property name for labels in the collection */
@@ -70,7 +70,7 @@ export class AutoCompleteEditor implements Editor {
 
     this.$input = $(`<input type="text" class="autocomplete editor-text editor-${columnId}" placeholder="${placeholder}" />`)
       .appendTo(this.args.container)
-      .on('keydown.nav', (event: KeyboardEvent) => {
+      .on('keydown.nav', (event: JQueryEventObject) => {
         this._lastInputEvent = event;
         if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
           event.stopImmediatePropagation();
@@ -124,12 +124,20 @@ export class AutoCompleteEditor implements Editor {
   }
 
   loadValue(item: any) {
-    const data = item[this.args.column.field] || '';
-    this._currentValue = data;
-    this._defaultTextValue = typeof data === 'string' ? data : data[this.labelName];
-    this.$input.val(this._defaultTextValue);
-    this.$input[0].defaultValue = this._defaultTextValue;
-    this.$input.select();
+    const fieldName = this.columnDef && this.columnDef.field;
+
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+
+    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || item.hasOwnProperty(fieldNameFromComplexObject))) {
+      const data = item[fieldNameFromComplexObject || fieldName];
+      this._currentValue = data;
+      this._defaultTextValue = typeof data === 'string' ? data : data[this.labelName];
+      this.$input.val(this._defaultTextValue);
+      this.$input[0].defaultValue = this._defaultTextValue;
+      this.$input.select();
+    }
+
   }
 
   save() {
@@ -144,19 +152,26 @@ export class AutoCompleteEditor implements Editor {
   }
 
   serializeValue() {
-    // if user provided a custom structure, we need to reswap the properties
-    // we do this because autocomplete needed label/value pair which might not be what the user provided
-    if (this.customStructure && this._currentValue.label && this._currentValue.value) {
-      return {
-        [this.labelName]: this._currentValue.label,
-        [this.valueName]: this._currentValue.value
-      };
+    // if user provided a custom structure, we will serialize the value returned from the object with custom structure
+    if (this.customStructure && this._currentValue.hasOwnProperty(this.labelName)) {
+      return this._currentValue[this.labelName];
+    } else if (this._currentValue.label) {
+      if (this.columnDef.type === FieldType.object) {
+        return {
+          [this.labelName]: this._currentValue.label,
+          [this.valueName]: this._currentValue.value
+        };
+      }
+      return this._currentValue.label;
     }
-    return this.columnDef.type === FieldType.object ? this._currentValue : this._currentValue.label;
+    return this._currentValue;
   }
 
   applyValue(item: any, state: any) {
-    item[this.args.column.field] = state;
+    const fieldName = this.columnDef && this.columnDef.field;
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+    item[fieldNameFromComplexObject || fieldName] = state;
   }
 
   isValueChanged() {

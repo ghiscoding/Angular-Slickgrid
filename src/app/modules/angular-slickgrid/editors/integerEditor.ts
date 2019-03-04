@@ -9,7 +9,7 @@ declare var $: any;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class IntegerEditor implements Editor {
-  private _lastInputEvent: KeyboardEvent;
+  private _lastInputEvent: JQueryEventObject;
   $input: any;
   defaultValue: any;
 
@@ -42,7 +42,7 @@ export class IntegerEditor implements Editor {
 
     this.$input = $(`<input type="number" class="editor-text editor-${columnId}" placeholder="${placeholder}" />`)
       .appendTo(this.args.container)
-      .on('keydown.nav', (event: KeyboardEvent) => {
+      .on('keydown.nav', (event: JQueryEventObject) => {
         this._lastInputEvent = event;
         if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
           event.stopImmediatePropagation();
@@ -73,10 +73,17 @@ export class IntegerEditor implements Editor {
   }
 
   loadValue(item: any) {
-    this.defaultValue = parseInt(item[this.args.column.field], 10);
-    this.$input.val(this.defaultValue);
-    this.$input[0].defaultValue = this.defaultValue;
-    this.$input.select();
+    const fieldName = this.columnDef && this.columnDef.field;
+
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+
+    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || item.hasOwnProperty(fieldNameFromComplexObject))) {
+      this.defaultValue = parseInt(item[fieldNameFromComplexObject || fieldName], 10);
+      this.$input.val(this.defaultValue);
+      this.$input[0].defaultValue = this.defaultValue;
+      this.$input.select();
+    }
   }
 
   serializeValue() {
@@ -88,7 +95,10 @@ export class IntegerEditor implements Editor {
   }
 
   applyValue(item: any, state: any) {
-    item[this.args.column.field] = state;
+    const fieldName = this.columnDef && this.columnDef.field;
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+    item[fieldNameFromComplexObject || fieldName] = state;
   }
 
   isValueChanged() {

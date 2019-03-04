@@ -175,6 +175,13 @@ export class SelectEditor implements Editor {
         let prefixText = c[this.labelPrefixName] || '';
         let suffixText = c[this.labelSuffixName] || '';
 
+        // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+        const fieldName = this.columnDef && this.columnDef.field;
+        const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+        if (fieldNameFromComplexObject && typeof c === 'object') {
+          return c;
+        }
+
         // also translate prefix/suffix if enableTranslateLabel is true and text is a string
         prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
         suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
@@ -202,7 +209,12 @@ export class SelectEditor implements Editor {
     const isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
     const itemFound = findOrDefault(this.collection, (c: any) => c[this.valueName].toString() === this.$editorElm.val());
 
-    if (itemFound) {
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldName = this.columnDef && this.columnDef.field;
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+    if (fieldNameFromComplexObject && typeof itemFound === 'object') {
+      return itemFound;
+    } else if (itemFound) {
       const labelText = itemFound[this.valueName];
 
       if (isIncludingPrefixSuffix) {
@@ -259,7 +271,10 @@ export class SelectEditor implements Editor {
   }
 
   applyValue(item: any, state: any): void {
-    item[this.columnDef.field] = state;
+    const fieldName = this.columnDef && this.columnDef.field;
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+    item[fieldNameFromComplexObject || fieldName] = state;
   }
 
   destroy() {
@@ -274,27 +289,37 @@ export class SelectEditor implements Editor {
   }
 
   loadValue(item: any): void {
-    if (this.isMultipleSelect) {
-      this.loadMultipleValues(item);
-    } else {
-      this.loadSingleValue(item);
+    const fieldName = this.columnDef && this.columnDef.field;
+
+    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+
+    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || item.hasOwnProperty(fieldNameFromComplexObject))) {
+      const currentValue = item[fieldNameFromComplexObject || fieldName];
+      const loadValue = fieldNameFromComplexObject && currentValue.hasOwnProperty(this.valueName) ? currentValue[this.valueName] : currentValue;
+      if (this.isMultipleSelect && Array.isArray(loadValue)) {
+        this.loadMultipleValues(loadValue);
+      } else {
+        this.loadSingleValue(loadValue);
+      }
+      this.refresh();
     }
-
-    this.refresh();
   }
 
-  loadMultipleValues(items: any[]) {
+  loadMultipleValues(currentValues: any[]) {
     // convert to string because that is how the DOM will return these values
-    this.defaultValue = items[this.columnDef.field].map((i: any) => i.toString());
-    this.$editorElm.find('option').each((i: number, $e: any) => {
-      $e.selected = (this.defaultValue.indexOf($e.value) !== -1);
-    });
+    if (Array.isArray(currentValues)) {
+      this.defaultValue = currentValues.map((i: any) => i.toString());
+      this.$editorElm.find('option').each((i: number, $e: any) => {
+        $e.selected = (this.defaultValue.indexOf($e.value) !== -1);
+      });
+    }
   }
 
-  loadSingleValue(item: any) {
+  loadSingleValue(currentValue: any) {
     // convert to string because that is how the DOM will return these values
     // make sure the prop exists first
-    this.defaultValue = item[this.columnDef.field] && item[this.columnDef.field].toString();
+    this.defaultValue = currentValue && currentValue.toString();
 
     this.$editorElm.find('option').each((i: number, $e: any) => {
       $e.selected = (this.defaultValue === $e.value);

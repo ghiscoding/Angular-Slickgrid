@@ -7,7 +7,7 @@ export interface CollectionCustomStructure {
 
   /**
    * defaults to "value", optional text that can be added to each <option label=""> attribute, which can then be used when showing selected text
-   * Can be used with `filterOptions: { useSelectOptionTitle: true }` when user want to show different text as selected values
+   * Can be used with `filterOptions: { useSelectOptionTitle: true }` (or with "editorOptions") when user want to show different text as selected values
    */
   optionLabel?: string;
 
