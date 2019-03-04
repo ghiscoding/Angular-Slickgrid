@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -20,8 +20,8 @@
     "build-lib-demo": "npm-run-all build-lib del-demo:dist copy-demo:dist",
     "copy:i18n": "cross-env copyfiles -f src/assets/i18n/*.json dist/i18n",
     "copy:lib": "cross-env copyfiles --up 2 src/assets/lib/** dist",
-    "copy-demo:dist": "cross-env copyfiles --up 1 dist/**/*.* ../angular-slickgrid-bs4-demo/node_modules/angular-slickgrid",
-    "del-demo:dist": "cross-env rimraf ../angular-slickgrid-bs4-demo/node_modules/angular-slickgrid",
+    "copy-demo:dist": "cross-env copyfiles --up 1 dist/**/*.* ../Angular-Slickgrid-demo/node_modules/angular-slickgrid",
+    "del-demo:dist": "cross-env rimraf ../Angular-Slickgrid-demo/node_modules/angular-slickgrid",
     "pack-lib": "npm pack ./dist",
     "packagr": "ng-packagr -p package.json",
     "sass-build-task:scss-compile": "node-sass --source-map true src/app/modules/angular-slickgrid/styles/ -o dist/styles/css",
@@ -51,6 +51,7 @@
         "@ngx-translate/core/index": "ngx-translate-core",
         "dompurify": "dompurify",
         "flatpickr": "flatpickr",
+        "jquery": "jquery",
         "lodash.isequal": "lodash.isequal",
         "moment-mini": "moment",
         "text-encoding-utf-8": "textEncodingUtf8"
@@ -92,6 +93,7 @@
     "@types/flatpickr": "^3.1.2",
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.6",
+    "@types/jquery": "^3.3.29",
     "@types/moment": "^2.13.0",
     "@types/node": "^10.12.15",
     "@types/text-encoding-utf-8": "^1.0.1",
