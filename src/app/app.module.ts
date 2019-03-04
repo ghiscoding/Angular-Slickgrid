@@ -13,6 +13,7 @@ import { CustomTitleFormatterComponent } from './examples/custom-titleFormatter.
 import { EditorNgSelectComponent } from './examples/editor-ng-select.component';
 import { FilterNgSelectComponent } from './examples/filter-ng-select.component';
 import { GridAddItemComponent } from './examples/grid-additem.component';
+import { GridAutoHeightComponent } from './examples/grid-autoheight.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
@@ -78,6 +79,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     FilterNgSelectComponent,
     GridAddItemComponent,
     GridAngularComponent,
+    GridAutoHeightComponent,
     GridBasicComponent,
     GridClientSideComponent,
     GridColspanComponent,

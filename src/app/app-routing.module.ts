@@ -1,6 +1,7 @@
 import { HomeComponent } from './examples/home.component';
 import { GridAddItemComponent } from './examples/grid-additem.component';
 import { GridAngularComponent } from './examples/grid-angular.component';
+import { GridAutoHeightComponent } from './examples/grid-autoheight.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
@@ -30,6 +31,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'angular-components', component: GridAngularComponent },
   { path: 'additem', component: GridAddItemComponent },
+  { path: 'autoheight', component: GridAutoHeightComponent },
   { path: 'basic', component: GridBasicComponent },
   { path: 'colspan', component: GridColspanComponent },
   { path: 'editor', component: GridEditorComponent },
