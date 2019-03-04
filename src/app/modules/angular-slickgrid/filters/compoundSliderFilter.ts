@@ -19,6 +19,7 @@ const DEFAULT_STEP = 1;
 
 export class CompoundSliderFilter implements Filter {
   private _clearFilterTriggered = false;
+  private _shouldTriggerQuery = true;
   private _elementRangeInputId: string;
   private _elementRangeOutputId: string;
   private _operator: OperatorType | OperatorString;
@@ -103,9 +104,10 @@ export class CompoundSliderFilter implements Filter {
   /**
    * Clear the filter value
    */
-  clear() {
+  clear(shouldTriggerQuery = true) {
     if (this.$filterElm && this.$selectOperatorElm) {
       this._clearFilterTriggered = true;
+      this._shouldTriggerQuery = shouldTriggerQuery;
       this.searchTerms = [];
       const clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
       this.$selectOperatorElm.val(0);
@@ -246,13 +248,13 @@ export class CompoundSliderFilter implements Filter {
 
   private onTriggerEvent(e: Event | undefined) {
     if (this._clearFilterTriggered) {
-      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
       this._clearFilterTriggered = false; // reset flag for next use
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       const value = this.$filterInputElm.val();
       (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-      this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '' });
+      this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '', shouldTriggerQuery: this._shouldTriggerQuery });
     }
   }
 }

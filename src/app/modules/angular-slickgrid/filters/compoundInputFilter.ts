@@ -17,6 +17,7 @@ declare var $: any;
 
 export class CompoundInputFilter implements Filter {
   private _clearFilterTriggered = false;
+  private _shouldTriggerQuery = true;
   private _inputType = 'text';
   private $filterElm: any;
   private $filterInputElm: any;
@@ -27,7 +28,7 @@ export class CompoundInputFilter implements Filter {
   columnDef: Column;
   callback: FilterCallback;
 
-  constructor(protected translate: TranslateService) {}
+  constructor(protected translate: TranslateService) { }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get gridOptions(): GridOption {
@@ -89,9 +90,10 @@ export class CompoundInputFilter implements Filter {
   /**
    * Clear the filter value
    */
-  clear() {
+  clear(shouldTriggerQuery = true) {
     if (this.$filterElm && this.$selectOperatorElm) {
       this._clearFilterTriggered = true;
+      this._shouldTriggerQuery = shouldTriggerQuery;
       this.searchTerms = [];
       this.$selectOperatorElm.val(0);
       this.$filterInputElm.val('');
@@ -140,7 +142,7 @@ export class CompoundInputFilter implements Filter {
     return `<select class="form-control">${optionValueString}</select>`;
   }
 
-  private getOptionValues(): {operator: OperatorString, description: string }[] {
+  private getOptionValues(): { operator: OperatorString, description: string }[] {
     const type = (this.columnDef.type && this.columnDef.type) ? this.columnDef.type : FieldType.string;
     let optionValues = [];
 
@@ -225,14 +227,14 @@ export class CompoundInputFilter implements Filter {
 
   private onTriggerEvent(e: Event | undefined) {
     if (this._clearFilterTriggered) {
-      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
       this._clearFilterTriggered = false; // reset flag for next use
       this.$filterElm.removeClass('filled');
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       const value = this.$filterInputElm.val();
       (value !== null && value !== undefined && value !== '') ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-      this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '' });
+      this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '', shouldTriggerQuery: this._shouldTriggerQuery });
     }
   }
 }

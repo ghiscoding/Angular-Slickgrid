@@ -14,13 +14,14 @@ declare var $: any;
 
 export class NativeSelectFilter implements Filter {
   private _clearFilterTriggered = false;
+  private _shouldTriggerQuery = true;
   $filterElm: any;
   grid: any;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
 
-  constructor(private translate: TranslateService) {}
+  constructor(private translate: TranslateService) { }
 
   get operator(): OperatorType | OperatorString {
     return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
@@ -52,12 +53,12 @@ export class NativeSelectFilter implements Filter {
     this.$filterElm.change((e: any) => {
       const value = e && e.target && e.target.value || '';
       if (this._clearFilterTriggered) {
-        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
+        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
         this._clearFilterTriggered = false; // reset flag for next use
         this.$filterElm.removeClass('filled');
       } else {
         value === '' ? this.$filterElm.removeClass('filled') : this.$filterElm.addClass('filled');
-        this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value] });
+        this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
       }
     });
   }
@@ -65,9 +66,10 @@ export class NativeSelectFilter implements Filter {
   /**
    * Clear the filter values
    */
-  clear() {
+  clear(shouldTriggerQuery = true) {
     if (this.$filterElm) {
       this._clearFilterTriggered = true;
+      this._shouldTriggerQuery = shouldTriggerQuery;
       this.searchTerms = [];
       this.$filterElm.val('');
       this.$filterElm.trigger('change');

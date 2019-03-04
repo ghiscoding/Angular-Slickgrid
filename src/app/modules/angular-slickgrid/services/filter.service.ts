@@ -113,7 +113,7 @@ export class FilterService {
       }
 
       // query backend, except when it's called by a ClearFilters then we won't
-      if (args && !args.clearFilterTriggered) {
+      if (args && args.shouldTriggerQuery) {
         // call the service to get a query back
         if (debounceTypingDelay > 0) {
           clearTimeout(timer);
@@ -180,7 +180,7 @@ export class FilterService {
   clearFilterByColumnId(event: Event, columnId: number | string) {
     const colFilter: Filter = this._filters.find((filter: Filter) => filter.columnDef.id === columnId);
     if (colFilter && colFilter.clear) {
-      colFilter.clear();
+      colFilter.clear(true);
     }
 
     // we need to loop through all columnFilters and delete the filter found
@@ -209,7 +209,7 @@ export class FilterService {
     this._filters.forEach((filter: Filter) => {
       if (filter && filter.clear) {
         // clear element and trigger a change
-        filter.clear();
+        filter.clear(false);
       }
     });
 
@@ -229,7 +229,8 @@ export class FilterService {
 
     // when using backend service, we need to query only once so it's better to do it here
     if (this._gridOptions && this._gridOptions.backendServiceApi) {
-      this.executeBackendCallback(undefined, { clearFilterTriggered: true, grid: this._grid, columnFilters: this._columnFilters }, new Date(), this._gridOptions.backendServiceApi);
+      const callbackArgs = { clearFilterTriggered: true, shouldTriggerQuery: true, grid: this._grid, columnFilters: this._columnFilters };
+      this.executeBackendCallback(undefined, callbackArgs, new Date(), this._gridOptions.backendServiceApi);
     }
 
     // emit an event when filters are all cleared
@@ -429,7 +430,8 @@ export class FilterService {
       const eventKeyCode = e && e.keyCode;
       if (eventKeyCode === KeyCode.ENTER || !isequal(oldColumnFilters, this._columnFilters)) {
         this.triggerEvent(this._slickSubscriber, {
-          clearFilterTriggered: args && args.clearFilterTriggered,
+          clearFilterTriggered: args.clearFilterTriggered,
+          shouldTriggerQuery: args.shouldTriggerQuery,
           columnId,
           columnDef: args.columnDef || null,
           columnFilters: this._columnFilters,
