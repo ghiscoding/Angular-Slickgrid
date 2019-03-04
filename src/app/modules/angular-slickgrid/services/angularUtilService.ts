@@ -30,11 +30,14 @@ export class AngularUtilService {
   }
 
   // ref https://hackernoon.com/angular-pro-tip-how-to-dynamically-create-components-in-body-ba200cc289e6
-  createAngularComponentAppendToDom(component: any, targetElement?: HTMLElement | Element): AngularComponentOutput {
+  createAngularComponentAppendToDom(component: any, targetElement?: HTMLElement | Element, clearTargetContent = false): AngularComponentOutput {
     const componentOutput = this.createAngularComponent(component);
 
     // Append DOM element to the HTML element specified
     if (targetElement && targetElement.appendChild) {
+      if (clearTargetContent && targetElement.innerHTML) {
+        targetElement.innerHTML = '';
+      }
       targetElement.appendChild(componentOutput.domElement);
     } else {
       document.body.appendChild(componentOutput.domElement); // when no target provided, we'll simply add it to the HTML Body
