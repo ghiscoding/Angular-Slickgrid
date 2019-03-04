@@ -86,7 +86,7 @@ export class LongTextEditor implements Editor {
     this.$textarea.focus().select();
   }
 
-  handleKeyDown(event: JQueryEventObject) {
+  handleKeyDown(event: KeyboardEvent) {
     if (event.which === KeyCode.ENTER && event.ctrlKey) {
       this.save();
     } else if (event.which === KeyCode.ESCAPE) {

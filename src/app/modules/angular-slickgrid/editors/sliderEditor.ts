@@ -9,7 +9,7 @@ const DEFAULT_MAX_VALUE = 100;
 const DEFAULT_STEP = 1;
 
 export class SliderEditor implements Editor {
-  private _lastInputEvent: JQueryEventObject;
+  private _lastInputEvent: KeyboardEvent;
   private _elementRangeInputId: string;
   private _elementRangeOutputId: string;
   $editorElm: any;
@@ -63,7 +63,7 @@ export class SliderEditor implements Editor {
     // if user chose to display the slider number on the right side, then update it every time it changes
     // we need to use both "input" and "change" event to be all cross-browser
     if (!this.editorParams.hideSliderNumber) {
-      this.$editorElm.on('input change', (event: JQueryEventObject & { target: HTMLInputElement }) => {
+      this.$editorElm.on('input change', (event: KeyboardEvent & { target: HTMLInputElement }) => {
         this._lastInputEvent = event;
         const value = event && event.target && event.target.value || '';
         if (value) {

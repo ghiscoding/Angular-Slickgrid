@@ -20,7 +20,7 @@ declare var $: any;
 export class AutoCompleteEditor implements Editor {
   private _currentValue: any;
   private _defaultTextValue: string;
-  private _lastInputEvent: JQueryEventObject;
+  private _lastInputEvent: KeyboardEvent;
   $input: any;
 
   /** The property name for labels in the collection */
@@ -70,7 +70,7 @@ export class AutoCompleteEditor implements Editor {
 
     this.$input = $(`<input type="text" class="autocomplete editor-text editor-${columnId}" placeholder="${placeholder}" />`)
       .appendTo(this.args.container)
-      .on('keydown.nav', (event: JQueryEventObject) => {
+      .on('keydown.nav', (event: KeyboardEvent) => {
         this._lastInputEvent = event;
         if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
           event.stopImmediatePropagation();

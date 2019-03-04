@@ -9,7 +9,7 @@ declare var $: any;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class TextEditor implements Editor {
-  private _lastInputEvent: JQueryEventObject;
+  private _lastInputEvent: KeyboardEvent;
   $input: any;
   defaultValue: any;
 
@@ -42,7 +42,7 @@ export class TextEditor implements Editor {
 
     this.$input = $(`<input type="text" class="editor-text editor-${columnId}" placeholder="${placeholder}" />`)
       .appendTo(this.args.container)
-      .on('keydown.nav', (event: JQueryEventObject) => {
+      .on('keydown.nav', (event: KeyboardEvent) => {
         this._lastInputEvent = event;
         if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
           event.stopImmediatePropagation();
