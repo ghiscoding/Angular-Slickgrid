@@ -101,28 +101,28 @@ export class ExtensionService {
     // Auto Tooltip Plugin
     if (this.sharedService.gridOptions.enableAutoTooltip) {
       if (this.autoTooltipExtension && this.autoTooltipExtension.register) {
-        this.extensionList.push({ name: ExtensionName.autoTooltip, class: this.autoTooltipExtension, extension: this.autoTooltipExtension.register() });
+        this.extensionList.push({ name: ExtensionName.autoTooltip, class: this.autoTooltipExtension, addon: this.autoTooltipExtension.register() });
       }
     }
 
     // Column Picker Control
     if (this.sharedService.gridOptions.enableColumnPicker) {
       if (this.columnPickerExtension && this.columnPickerExtension.register) {
-        this.extensionList.push({ name: ExtensionName.columnPicker, class: this.columnPickerExtension, extension: this.columnPickerExtension.register() });
+        this.extensionList.push({ name: ExtensionName.columnPicker, class: this.columnPickerExtension, addon: this.columnPickerExtension.register() });
       }
     }
 
     // Draggable Grouping Plugin
     if (this.sharedService.gridOptions.enableDraggableGrouping) {
       if (this.draggableGroupingExtension && this.draggableGroupingExtension.register) {
-        this.extensionList.push({ name: ExtensionName.draggableGrouping, class: this.draggableGroupingExtension, extension: this.draggableGroupingExtension.register() });
+        this.extensionList.push({ name: ExtensionName.draggableGrouping, class: this.draggableGroupingExtension, addon: this.draggableGroupingExtension.register() });
       }
     }
 
     // Grid Menu Control
     if (this.sharedService.gridOptions.enableGridMenu) {
       if (this.gridMenuExtension && this.gridMenuExtension.register) {
-        this.extensionList.push({ name: ExtensionName.gridMenu, class: this.gridMenuExtension, extension: this.gridMenuExtension.register() });
+        this.extensionList.push({ name: ExtensionName.gridMenu, class: this.gridMenuExtension, addon: this.gridMenuExtension.register() });
       }
     }
 
@@ -130,7 +130,7 @@ export class ExtensionService {
     // register the group item metadata provider to add expand/collapse group handlers
     if (this.sharedService.gridOptions.enableDraggableGrouping || this.sharedService.gridOptions.enableGrouping) {
       if (this.groupItemMetaExtension && this.groupItemMetaExtension.register) {
-        this.extensionList.push({ name: ExtensionName.groupItemMetaProvider, class: this.groupItemMetaExtension, extension: this.groupItemMetaExtension.register() });
+        this.extensionList.push({ name: ExtensionName.groupItemMetaProvider, class: this.groupItemMetaExtension, addon: this.groupItemMetaExtension.register() });
       }
     }
 
@@ -138,7 +138,7 @@ export class ExtensionService {
     if (this.sharedService.gridOptions.enableCheckboxSelector) {
       if (this.checkboxSelectorExtension && this.checkboxSelectorExtension.register) {
         const rowSelectionExtension = this.getExtensionByName(ExtensionName.rowSelection);
-        this.extensionList.push({ name: ExtensionName.checkboxSelector, class: this.checkboxSelectorExtension, extension: this.checkboxSelectorExtension.register(rowSelectionExtension) });
+        this.extensionList.push({ name: ExtensionName.checkboxSelector, class: this.checkboxSelectorExtension, addon: this.checkboxSelectorExtension.register(rowSelectionExtension) });
       }
     }
 
@@ -146,42 +146,42 @@ export class ExtensionService {
     if (this.sharedService.gridOptions.enableRowDetailView) {
       if (this.rowDetailViewExtension && this.rowDetailViewExtension.register) {
         const rowSelectionExtension = this.getExtensionByName(ExtensionName.rowSelection);
-        this.extensionList.push({ name: ExtensionName.rowDetailView, class: this.rowDetailViewExtension, extension: this.rowDetailViewExtension.register(rowSelectionExtension) });
+        this.extensionList.push({ name: ExtensionName.rowDetailView, class: this.rowDetailViewExtension, addon: this.rowDetailViewExtension.register(rowSelectionExtension) });
       }
     }
 
     // Row Move Manager Plugin
     if (this.sharedService.gridOptions.enableRowMoveManager) {
       if (this.rowMoveManagerExtension && this.rowMoveManagerExtension.register) {
-        this.extensionList.push({ name: ExtensionName.rowMoveManager, class: this.rowMoveManagerExtension, extension: this.rowMoveManagerExtension.register() });
+        this.extensionList.push({ name: ExtensionName.rowMoveManager, class: this.rowMoveManagerExtension, addon: this.rowMoveManagerExtension.register() });
       }
     }
 
     // Row Selection Plugin
     if (!this.sharedService.gridOptions.enableCheckboxSelector && this.sharedService.gridOptions.enableRowSelection) {
       if (this.rowSelectionExtension && this.rowSelectionExtension.register) {
-        this.extensionList.push({ name: ExtensionName.rowSelection, class: this.rowSelectionExtension, extension: this.rowSelectionExtension.register() });
+        this.extensionList.push({ name: ExtensionName.rowSelection, class: this.rowSelectionExtension, addon: this.rowSelectionExtension.register() });
       }
     }
 
     // Header Button Plugin
     if (this.sharedService.gridOptions.enableHeaderButton) {
       if (this.headerButtonExtension && this.headerButtonExtension.register) {
-        this.extensionList.push({ name: ExtensionName.headerButton, class: this.headerButtonExtension, extension: this.headerButtonExtension.register() });
+        this.extensionList.push({ name: ExtensionName.headerButton, class: this.headerButtonExtension, addon: this.headerButtonExtension.register() });
       }
     }
 
     // Header Menu Plugin
     if (this.sharedService.gridOptions.enableHeaderMenu) {
       if (this.headerMenuExtension && this.headerMenuExtension.register) {
-        this.extensionList.push({ name: ExtensionName.headerMenu, class: this.headerMenuExtension, extension: this.headerMenuExtension.register() });
+        this.extensionList.push({ name: ExtensionName.headerMenu, class: this.headerMenuExtension, addon: this.headerMenuExtension.register() });
       }
     }
 
     // Cell External Copy Manager Plugin (Excel Like)
     if (this.sharedService.gridOptions.enableExcelCopyBuffer) {
       if (this.cellExternalCopyExtension && this.cellExternalCopyExtension.register) {
-        this.extensionList.push({ name: ExtensionName.cellExternalCopyManager, class: this.cellExternalCopyExtension, extension: this.cellExternalCopyExtension.register() });
+        this.extensionList.push({ name: ExtensionName.cellExternalCopyManager, class: this.cellExternalCopyExtension, addon: this.cellExternalCopyExtension.register() });
       }
     }
 
@@ -190,11 +190,11 @@ export class ExtensionService {
       if (Array.isArray(this.sharedService.gridOptions.registerPlugins)) {
         this.sharedService.gridOptions.registerPlugins.forEach((plugin) => {
           this.sharedService.grid.registerPlugin(plugin);
-          this.extensionList.push({ name: ExtensionName.noname, class: null, extension: plugin });
+          this.extensionList.push({ name: ExtensionName.noname, class: null, addon: plugin });
         });
       } else {
         this.sharedService.grid.registerPlugin(this.sharedService.gridOptions.registerPlugins);
-        this.extensionList.push({ name: ExtensionName.noname, class: null, extension: this.sharedService.gridOptions.registerPlugins });
+        this.extensionList.push({ name: ExtensionName.noname, class: null, addon: this.sharedService.gridOptions.registerPlugins });
       }
     }
   }

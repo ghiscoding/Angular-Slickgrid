@@ -2,11 +2,11 @@ import { Extension } from './extension.interface';
 import { ExtensionName } from './extensionName.enum';
 
 export interface ExtensionModel {
-  /** Name of the Extension */
+  /** Name of the Angular-Slickgrid Extension */
   name: ExtensionName;
 
-  /** Extension is the Control/Plugin coming from SlickGrid */
-  extension: any;
+  /** Addon is the object reference of the 3rd party SlickGrid Control or Plugin */
+  addon: any;
 
   /** Extension Service (in Angular-Slickgrid) */
   class: Extension | null;

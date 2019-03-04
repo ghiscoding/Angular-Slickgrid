@@ -2,6 +2,10 @@
     <h2>{{title}}</h2>
     <div class="subtitle" [innerHTML]="subTitle"></div>
 
+    <button class="btn btn-default btn-sm" (click)="toggleGridMenu($event)">
+        <i class="fa fa-bars"></i>
+        Grid Menu
+    </button>
     <button class="btn btn-default btn-sm" (click)="switchLanguage()">
         <i class="fa fa-language"></i>
         Switch Language
