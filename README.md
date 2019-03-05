@@ -17,6 +17,9 @@ We will be using [6pac SlickGrid fork](https://github.com/6pac/SlickGrid/), this
 ### Goal
 The goal is of course to be able to run SlickGrid within Angular 4+ but also to incorporate as much as possible the entire list of functionalities (and more) that SlickGrid offers (you can see a vast list of samples on the [6pac SlickGrid examples](https://github.com/6pac/SlickGrid/wiki/Examples) website).
 
+### NPM Package
+[Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
+
 ### Demo page
 `Angular-Slickgrid` supports both `Bootstrap 3` and `Bootstrap 4`, you can see a demo of each one below.
 - [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/Angular-Slickgrid/tree/master/src/app/examples)
@@ -34,9 +37,6 @@ npm start
 Technically speaking, `Material` theme is not provided, but it should still work. 
 The styling might need some adjustments to make it look like `Material` but there's over 300+ [SASS variables](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/dist/styles/sass/_variables.scss), 
 so I'm sure making a Material Theme is totally doable and if you do, please contribute it as a new theme to the project. Thank you. 
-
-### NPM Package
-[Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
 
 ### Installation
 Refer to the [Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)
