@@ -2,6 +2,14 @@
     <h2>{{title}}</h2>
     <div class="subtitle" [innerHTML]="subTitle"></div>
 
+    <span>
+        <label for="">Detail View Rows Shown: </label>
+        <input type="number" [(ngModel)]="detailViewRowCount">
+        <button class="btn btn-outline-secondary btn-xs" (click)="changeDetailViewRowCount()">
+            Set
+        </button>
+    </span>
+
     <angular-slickgrid gridId="grid21"
               [columnDefinitions]="columnDefinitions"
               [gridOptions]="gridOptions"

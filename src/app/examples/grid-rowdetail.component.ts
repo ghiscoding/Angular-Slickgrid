@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
   Column,
+  ExtensionName,
   FieldType,
   Filters,
   Formatters,
@@ -30,6 +31,7 @@ export class GridRowDetailComponent implements OnInit {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
+  detailViewRowCount = 7;
   selectedLanguage: string;
 
   constructor(private translate: TranslateService) {
@@ -96,7 +98,7 @@ export class GridRowDetailComponent implements OnInit {
         // how many grid rows do we want to use for the row detail panel (this is only set once and will be used for all row detail)
         // also note that the detail view adds an extra 1 row for padding purposes
         // so if you choose 4 panelRows, the display will in fact use 5 rows
-        panelRows: 7,
+        panelRows: this.detailViewRowCount,
 
         // Preload View Template
         preloadComponent: RowDetailPreloadComponent,
@@ -129,6 +131,16 @@ export class GridRowDetailComponent implements OnInit {
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
         effortDriven: (i % 5 === 0)
       };
+    }
+  }
+
+  changeDetailViewRowCount() {
+    if (this.angularGrid && this.angularGrid.extensionService) {
+      const extension = this.angularGrid.extensionService.getExtensionByName(ExtensionName.rowDetailView);
+      const rowDetailPlugin = extension.addon;
+      const options = rowDetailPlugin.getOptions();
+      options.panelRows = this.detailViewRowCount; // change number of rows dynamically
+      rowDetailPlugin.setOptions(options);
     }
   }
 
