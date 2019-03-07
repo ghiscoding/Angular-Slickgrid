@@ -41,20 +41,23 @@ export class GridClientSideComponent implements OnInit {
   dataset: any[];
   statistics: Statistic;
 
-  constructor(private http: HttpClient, private translate: TranslateService) {}
+  constructor(private http: HttpClient, private translate: TranslateService) { }
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'title', sortable: true, minWidth: 55,
+      {
+        id: 'title', name: 'Title', field: 'title', sortable: true, minWidth: 55,
         type: FieldType.string, filterable: true, filter: { model: Filters.compoundInputText }
       },
-      { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80,
+      {
+        id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80,
         type: FieldType.string,
         filter: {
           model: new CustomInputFilter() // create a new instance to make each Filter independent from each other
         }
       },
-      { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, exportCsvForceToKeepAsString: true,
+      {
+        id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, exportCsvForceToKeepAsString: true,
         minWidth: 55,
         filterable: true,
         filter: {
@@ -98,17 +101,31 @@ export class GridClientSideComponent implements OnInit {
           }
         }
       },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 70, type: FieldType.number, sortable: true,
+      {
+        id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 70, type: FieldType.number, sortable: true,
         filterable: true, filter: { model: Filters.compoundInputNumber }
       },
-      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true,
+      {
+        id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true,
         type: FieldType.date, filterable: true, filter: { model: Filters.compoundDate }
       },
-      { id: 'usDateShort', name: 'US Date Short', field: 'usDateShort', sortable: true, minWidth: 70, width: 70,
+      {
+        id: 'usDateShort', name: 'US Date Short', field: 'usDateShort', sortable: true, minWidth: 70, width: 70,
         type: FieldType.dateUsShort, exportWithFormatter: true, filterable: true, filter: { model: Filters.compoundDate }
       },
-      { id: 'utcDate', name: 'UTC Date', field: 'utcDate', formatter: Formatters.dateTimeIsoAmPm, sortable: true, minWidth: 115,
-        type: FieldType.dateUtc, exportWithFormatter: true, outputType: FieldType.dateTimeIsoAmPm, filterable: true, filter: { model: Filters.compoundDate } },
+      {
+        id: 'utcDate', name: 'UTC Date', field: 'utcDate', formatter: Formatters.dateTimeIsoAmPm, sortable: true, minWidth: 115,
+        type: FieldType.dateUtc, exportWithFormatter: true, outputType: FieldType.dateTimeIsoAmPm, filterable: true,
+        filter: {
+          model: Filters.compoundDate,
+          // override any of the Flatpickr options through "filterOptions"
+          // please note that there's no TSlint on this property since it's generic for any filter, so make sure you entered the correct filter option(s)
+          filterOptions: {
+            defaultHour: 0,
+            minDate: '2000-01-01'
+          }
+        }
+      },
       {
         id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven.isEffort', minWidth: 85, maxWidth: 85,
         type: FieldType.boolean,
@@ -127,7 +144,7 @@ export class GridClientSideComponent implements OnInit {
           // enableRenderHtml: true,
           // collection: [{ value: '', label: '' }, { value: true, label: 'True', labelPrefix: `<i class="fa fa-check"></i> ` }, { value: false, label: 'False' }],
 
-          collection: [ { isEffort: '', label: '' }, { isEffort: true, label: 'True' }, { isEffort: false, label: 'False' } ],
+          collection: [{ isEffort: '', label: '' }, { isEffort: true, label: 'True' }, { isEffort: false, label: 'False' }],
           customStructure: {
             value: 'isEffort',
             label: 'label'

@@ -194,9 +194,9 @@ export class ResizerService {
       // apply these new height/width to the datagrid
       if (!this._gridOptions.autoHeight) {
         gridElm.height(newHeight);
+        gridContainerElm.height(newHeight);
       }
       gridElm.width(newWidth);
-      gridContainerElm.height(newHeight);
       gridContainerElm.width(newWidth);
 
       // resize the slickgrid canvas on all browser except some IE versions

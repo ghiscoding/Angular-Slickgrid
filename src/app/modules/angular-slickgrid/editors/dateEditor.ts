@@ -64,9 +64,12 @@ export class DateEditor implements Editor {
         },
       };
 
+      // merge options with optional user's custom options
+      const pickerMergedOptions = { ...pickerOptions, ...this.columnEditor.editorOptions };
+
       this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text editor-${columnId} flatpickr" placeholder="${placeholder}" />`);
       this.$input.appendTo(this.args.container);
-      this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerOptions) : null;
+      this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerMergedOptions) : null;
       this.show();
     }
   }
