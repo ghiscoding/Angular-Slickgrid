@@ -255,13 +255,15 @@ export class CompoundDateFilter implements Filter {
   private onTriggerEvent(e: Event | undefined) {
     if (this._clearFilterTriggered) {
       this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
-      this._clearFilterTriggered = false; // reset flag for next use
       this.$filterElm.removeClass('filled');
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
       this.callback(e, { columnDef: this.columnDef, searchTerms: (this._currentValue ? [this._currentValue] : null), operator: selectedOperator || '', shouldTriggerQuery: this._shouldTriggerQuery });
     }
+    // reset both flags for next use
+    this._clearFilterTriggered = false;
+    this._shouldTriggerQuery = true;
   }
 
   private hide() {

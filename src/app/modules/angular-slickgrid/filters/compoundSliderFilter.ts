@@ -249,12 +249,14 @@ export class CompoundSliderFilter implements Filter {
   private onTriggerEvent(e: Event | undefined) {
     if (this._clearFilterTriggered) {
       this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
-      this._clearFilterTriggered = false; // reset flag for next use
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       const value = this.$filterInputElm.val();
       (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
       this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '', shouldTriggerQuery: this._shouldTriggerQuery });
     }
+    // reset both flags for next use
+    this._clearFilterTriggered = false;
+    this._shouldTriggerQuery = true;
   }
 }

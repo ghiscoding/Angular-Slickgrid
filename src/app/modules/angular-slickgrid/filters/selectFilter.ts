@@ -83,6 +83,8 @@ export class SelectFilter implements Filter {
         }
 
         this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems, shouldTriggerQuery: this._shouldTriggerQuery });
+        // reset flag for next use
+        this._shouldTriggerQuery = true;
       }
     };
 
@@ -178,6 +180,8 @@ export class SelectFilter implements Filter {
       this.searchTerms = [];
       this._shouldTriggerQuery = shouldTriggerQuery;
       this.callback(undefined, { columnDef: this.columnDef, clearFilterTriggered: true, shouldTriggerQuery: this._shouldTriggerQuery });
+      // reset both flags for next use
+      this._shouldTriggerQuery = true;
     }
   }
 
