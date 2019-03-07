@@ -260,7 +260,12 @@ export class GridEditorComponent implements OnInit {
         exportWithFormatter: true,
         type: FieldType.date,
         editor: {
-          model: Editors.date
+          model: Editors.date,
+          // override any of the Flatpickr options through "filterOptions"
+          // please note that there's no TSlint on this property since it's generic for any filter, so make sure you entered the correct filter option(s)
+          editorOptions: {
+            minDate: new Date()
+          }
         },
       }, {
         id: 'cityOfOrigin', name: 'City of Origin', field: 'cityOfOrigin',
