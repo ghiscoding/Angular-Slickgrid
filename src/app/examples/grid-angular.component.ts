@@ -69,7 +69,7 @@ export class GridAngularComponent implements OnInit {
     { id: '3', name: 'Paul' },
   ];
 
-  constructor(private angularUtilService: AngularUtilService, private translate: TranslateService) {}
+  constructor(private angularUtilService: AngularUtilService, private translate: TranslateService) { }
 
   ngOnInit(): void {
     this.prepareGrid();
