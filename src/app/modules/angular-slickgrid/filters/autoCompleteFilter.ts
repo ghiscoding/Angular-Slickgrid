@@ -256,7 +256,6 @@ export class AutoCompleteFilter implements Filter {
       const value = e && e.target && e.target.value || '';
       if (this._clearFilterTriggered) {
         this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
-        this._clearFilterTriggered = false; // reset flag for next use
         this.$filterElm.removeClass('filled');
       } else {
         if (value === '') {
@@ -266,6 +265,9 @@ export class AutoCompleteFilter implements Filter {
           this.$filterElm.addClass('filled');
         }
       }
+      // reset both flags for next use
+      this._clearFilterTriggered = false;
+      this._shouldTriggerQuery = true;
     });
   }
 
@@ -349,6 +351,9 @@ export class AutoCompleteFilter implements Filter {
       const itemValue = typeof ui.item === 'string' ? ui.item : ui.item.value;
       this.$filterElm.val(itemLabel);
       this.callback(event, { columnDef: this.columnDef, operator: this.operator, searchTerms: [itemValue], shouldTriggerQuery: this._shouldTriggerQuery });
+      // reset both flags for next use
+      this._clearFilterTriggered = false;
+      this._shouldTriggerQuery = true;
     }
     return false;
   }

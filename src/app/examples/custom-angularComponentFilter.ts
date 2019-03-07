@@ -86,6 +86,8 @@ export class CustomAngularComponentFilter implements Filter {
 
         this.changeSubscriber = componentOuput.componentRef.instance.onItemChanged.subscribe((item) => {
           this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: [item.id], shouldTriggerQuery: this._shouldTriggerQuery });
+          // reset flag for next use
+          this._shouldTriggerQuery = true;
         });
       });
     }

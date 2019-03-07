@@ -173,8 +173,8 @@ export class GridMenuComponent implements OnInit {
 
   toggleGridMenu(e) {
     if (this.angularGrid && this.angularGrid.extensionService) {
-      const extension = this.angularGrid.extensionService.getExtensionByName(ExtensionName.gridMenu);
-      extension.addon.showGridMenu(e);
+      const gridMenuInstance = this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.gridMenu);
+      gridMenuInstance.showGridMenu(e);
     }
   }
 }
