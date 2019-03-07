@@ -17,6 +17,9 @@ We will be using [6pac SlickGrid fork](https://github.com/6pac/SlickGrid/), this
 ### Goal
 The goal is of course to be able to run SlickGrid within Angular 4+ but also to incorporate as much as possible the entire list of functionalities (and more) that SlickGrid offers (you can see a vast list of samples on the [6pac SlickGrid examples](https://github.com/6pac/SlickGrid/wiki/Examples) website).
 
+### Who is using Angular-Slickgrid?
+Are you using Angular-Slickgrid? Add your company/site/project to the [Used by Who](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Used-by-Who%3F) list.
+
 ### NPM Package
 [Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
 
