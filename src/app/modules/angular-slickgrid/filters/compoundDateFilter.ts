@@ -149,17 +149,21 @@ export class CompoundDateFilter implements Filter {
       }
     };
 
+
     // add the time picker when format is UTC (Z) or has the 'h' (meaning hours)
     if (outputFormat && (outputFormat === 'Z' || outputFormat.toLowerCase().includes('h'))) {
       pickerOptions.enableTime = true;
     }
+
+    // merge options with optional user's custom options
+    const pickerMergedOptions = { ...pickerOptions, ...this.columnFilter.filterOptions };
 
     let placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
     if (this.columnFilter && this.columnFilter.placeholder) {
       placeholder = this.columnFilter.placeholder;
     }
     const $filterInputElm: any = $(`<div class="flatpickr"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
-    this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : Flatpickr($filterInputElm, pickerOptions);
+    this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerMergedOptions) : Flatpickr($filterInputElm, pickerMergedOptions);
     return $filterInputElm;
   }
 
