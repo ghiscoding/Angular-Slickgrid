@@ -85,6 +85,19 @@ export class ExtensionService {
     return this.extensionList.find((p) => p.name === name);
   }
 
+  /**
+   * Get the instance of the SlickGrid addon (control or plugin).
+   * This is the raw addon coming directly from SlickGrid itself, not to confuse with Angular-Slickgrid extension
+   *  @param name
+   */
+  getSlickgridAddonInstance(name: ExtensionName) {
+    const extension = this.getExtensionByName(name);
+    if (extension && extension.addon) {
+      return extension.addon;
+    }
+    return null;
+  }
+
   /** Auto-resize all the column in the grid to fit the grid width */
   autoResizeColumns() {
     this.sharedService.grid.autosizeColumns();

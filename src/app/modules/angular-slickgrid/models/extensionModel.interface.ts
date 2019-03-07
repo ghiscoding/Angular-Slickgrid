@@ -5,7 +5,7 @@ export interface ExtensionModel {
   /** Name of the Angular-Slickgrid Extension */
   name: ExtensionName;
 
-  /** Addon is the object reference of the 3rd party SlickGrid Control or Plugin */
+  /** Addon is the object instance of the 3rd party SlickGrid Control or Plugin */
   addon: any;
 
   /** Extension Service (in Angular-Slickgrid) */

@@ -136,11 +136,10 @@ export class GridRowDetailComponent implements OnInit {
 
   changeDetailViewRowCount() {
     if (this.angularGrid && this.angularGrid.extensionService) {
-      const extension = this.angularGrid.extensionService.getExtensionByName(ExtensionName.rowDetailView);
-      const rowDetailPlugin = extension.addon;
-      const options = rowDetailPlugin.getOptions();
+      const rowDetailInstance = this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.rowDetailView);
+      const options = rowDetailInstance.getOptions();
       options.panelRows = this.detailViewRowCount; // change number of rows dynamically
-      rowDetailPlugin.setOptions(options);
+      rowDetailInstance.setOptions(options);
     }
   }
 
