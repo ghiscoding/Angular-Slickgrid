@@ -472,7 +472,7 @@ input.slider-filter-input[type=range] {
   -webkit-appearance: none;
   height: $slider-filter-height;
 
-  padding: $slider-filter-runnable-track-padding !important;
+  padding: $slider-filter-runnable-track-padding;
 
   /* change runnable track color while in focus on all browsers */
   &:focus {
@@ -575,28 +575,28 @@ input.slider-filter-input[type=range] {
   .slider-value {
     padding: 0;
     .input-group-text {
-      padding: $slider-filter-number-padding !important;
-      font-size: $slider-filter-number-font-size !important;
+      padding: $slider-filter-number-padding;
+      font-size: $slider-filter-number-font-size;
     }
   }
 }
 input.slider-filter-input[type=range] {
-  padding: $slider-filter-runnable-track-padding !important;
-  height: $slider-filter-height !important;
+  padding: $slider-filter-runnable-track-padding;
+  height: $slider-filter-height;
 }
 
 /* Slider Editor */
 input.slider-editor-input[type=range] {
-  padding: $slider-editor-runnable-track-padding !important;
-  height: $slider-editor-height !important;
+  padding: $slider-editor-runnable-track-padding;
+  height: $slider-editor-height;
 }
 
 .slider-editor {
   .slider-value {
     padding: 0;
     .input-group-text {
-      padding: $slider-editor-number-padding !important;
-      font-size: $slider-filter-number-font-size !important;
+      padding: $slider-editor-number-padding;
+      font-size: $slider-filter-number-font-size;
       height: $slider-editor-height;
     }
   }
