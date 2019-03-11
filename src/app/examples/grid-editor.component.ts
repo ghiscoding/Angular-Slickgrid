@@ -68,6 +68,7 @@ export class GridEditorComponent implements OnInit {
   subTitle = `
   Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors" target="_blank">Wiki docs</a>).
   <ul>
+    <li>Multiple Editors & Filters are available: AutoComplete, Checkbox, Date, Slider, SingleSelect, MultipleSelect, Float, Text, LongText... even Custom Editor</li>
     <li>When using "enableCellNavigation: true", clicking on a cell will automatically make it active &amp; selected.</li>
     <ul><li>If you don't want this behavior, then you should disable "enableCellNavigation"</li></ul>
     <li>Inline Editors requires "enableCellNavigation: true" (not sure why though)</li>
@@ -261,10 +262,10 @@ export class GridEditorComponent implements OnInit {
         type: FieldType.date,
         editor: {
           model: Editors.date,
-          // override any of the Flatpickr options through "filterOptions"
+          // override any of the Flatpickr options through "editorOptions"
           // please note that there's no TSlint on this property since it's generic for any filter, so make sure you entered the correct filter option(s)
           editorOptions: {
-            minDate: new Date()
+            minDate: 'today'
           }
         },
       }, {

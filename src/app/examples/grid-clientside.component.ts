@@ -121,8 +121,7 @@ export class GridClientSideComponent implements OnInit {
           // override any of the Flatpickr options through "filterOptions"
           // please note that there's no TSlint on this property since it's generic for any filter, so make sure you entered the correct filter option(s)
           filterOptions: {
-            defaultHour: 0,
-            minDate: '2000-01-01'
+            minDate: 'today'
           }
         }
       },
