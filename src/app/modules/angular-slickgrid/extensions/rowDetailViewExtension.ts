@@ -50,6 +50,7 @@ export class RowDetailViewExtension implements Extension {
 
     // also unsubscribe all RxJS subscriptions
     this._subscriptions = unsubscribeAllObservables(this._subscriptions);
+    this.disposeAllViewComponents();
   }
 
   /**
