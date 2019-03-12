@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="C:\sourcecode\GitHub\Angular-Slickgrid\src\app\app.component.spec.ts">
+    <testCase name="AppComponent should create the app" duration="226"/>
+    <testCase name="AppComponent should have as title &apos;Angular SlickGrid Demo&apos;" duration="124"/>
+  </file>
+  <file path="C:\sourcecode\GitHub\Angular-Slickgrid\src\app\modules\angular-slickgrid\components\angular-slickgrid.component.spec.ts">
+  </file>
+</testExecutions>

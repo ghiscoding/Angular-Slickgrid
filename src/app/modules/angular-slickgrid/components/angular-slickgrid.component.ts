@@ -1,12 +1,17 @@
-/// <reference types="jquery" />
 // import 3rd party vendor libs
 // only import the necessary core lib, each will be imported on demand when enabled (via require)
-import 'jquery-ui-dist/jquery-ui';
-import 'slickgrid/lib/jquery.event.drag-2.3.0';
-import 'slickgrid/slick.core';
-import 'slickgrid/slick.grid';
-import 'slickgrid/slick.dataview';
-
+// import 'jquery-ui-dist/jquery-ui';
+declare function require(name: string): any;
+import $ from 'jquery';
+declare var window: any;
+declare var global: any;
+window.$ = window.jQuery = $;
+global.$ = global.jQuery = $;
+require('jquery-ui-dist/jquery-ui');
+require('slickgrid/lib/jquery.event.drag-2.3.0');
+require('slickgrid/slick.core');
+require('slickgrid/slick.grid');
+require('slickgrid/slick.dataview');
 import { AfterViewInit, Component, ElementRef, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { GlobalGridOptions } from './../global-grid-options';
@@ -56,10 +61,9 @@ import { RowDetailViewExtension } from '../extensions/rowDetailViewExtension';
 import { RowMoveManagerExtension } from '../extensions/rowMoveManagerExtension';
 import { RowSelectionExtension } from '../extensions/rowSelectionExtension';
 
-
 // using external non-typed js libraries
 declare var Slick: any;
-declare var $: any;
+// declare var $: any;
 
 const slickgridEventPrefix = 'sg';
 
