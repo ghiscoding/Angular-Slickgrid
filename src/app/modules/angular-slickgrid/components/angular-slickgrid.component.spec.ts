@@ -1,18 +1,25 @@
-jest.unmock('jquery');
-jest.unmock('jquery-ui');
 import { TestBed, async } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AngularSlickgridComponent } from './angular-slickgrid.component';
+import { SlickPaginationComponent } from './slick-pagination.component';
+import { CollectionService } from '../services/collection.service';
+
+// still missing this constructor inject:: @Inject('config') private forRootConfig: GridOption
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        AngularSlickgridComponent
+        AngularSlickgridComponent,
+        SlickPaginationComponent
       ],
-      providers: [],
-      imports: [RouterTestingModule]
+      providers: [CollectionService, TranslateService],
+      imports: [
+        RouterTestingModule,
+        TranslateModule.forRoot()
+      ]
     }).compileComponents();
   }));
 
