@@ -12,6 +12,7 @@ module.exports = {
     '^.+\\.(ts|html)$': '<rootDir>/node_modules/jest-preset-angular/preprocessor.js',
   },
   transformIgnorePatterns: ['node_modules/(?!@ngrx)'],
+  testPathIgnorePatterns: ['cypress/'],
   moduleDirectories: [
     "node_modules",
     "src/app",

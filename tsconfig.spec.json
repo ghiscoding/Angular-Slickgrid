@@ -4,6 +4,7 @@
     "outDir": "../out-tsc/spec",
     "baseUrl": "./",
     "types": [
+      "cypress",
       "jest",
       "node"
     ]
