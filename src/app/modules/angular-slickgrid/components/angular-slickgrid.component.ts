@@ -58,7 +58,7 @@ import { RowSelectionExtension } from '../extensions/rowSelectionExtension';
 
 // using external non-typed js libraries
 declare var Slick: any;
-// declare var $: any;
+declare var $: any;
 
 const slickgridEventPrefix = 'sg';
 
