@@ -65,7 +65,6 @@
   "dependencies": {
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
-    "bootstrap": "3.4.1",
     "core-js": "^2.6.1",
     "dompurify": "^1.0.9",
     "flatpickr": "^4.5.0",
