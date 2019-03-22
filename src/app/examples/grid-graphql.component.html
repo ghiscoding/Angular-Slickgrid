@@ -4,7 +4,7 @@
 
     <div class="row">
         <div class="col-sm-5">
-            <div [class]="status.class" role="alert">
+            <div [class]="status.class" role="alert" data-test="status">
                 <strong>Status: </strong> {{status.text}}
                 <span [hidden]="!processing">
                     <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
@@ -27,15 +27,15 @@
             </span>
         </div>
         <div class="col-sm-7">
-            <div class="alert alert-info">
+            <div class="alert alert-info" data-test="alert-graphql-query">
                 <strong>GraphQL Query:</strong>
-                <div [innerHTML]="graphqlQuery"></div>
+                <div [innerHTML]="graphqlQuery" data-test="graphql-query-result"></div>
             </div>
         </div>
     </div>
 
-    <angular-slickgrid gridId="grid4"
-        [gridHeight]="250"
+    <angular-slickgrid gridId="grid6"
+        [gridHeight]="200"
         [gridWidth]="800"
         [columnDefinitions]="columnDefinitions"
         [gridOptions]="gridOptions"
