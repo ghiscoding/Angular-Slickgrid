@@ -48,3 +48,6 @@ Thumbs.db
 
 # Distribution folder
 dist
+
+# tests
+test-report.xml
