@@ -40,7 +40,7 @@ export class TextEditor implements Editor {
     const columnId = this.columnDef && this.columnDef.id;
     const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
 
-    this.$input = $(`<input type="text" class="editor-text editor-${columnId}" placeholder="${placeholder}" />`)
+    this.$input = $(`<input type="text" autocomplete="nope" class="editor-text editor-${columnId}" placeholder="${placeholder}" />`)
       .appendTo(this.args.container)
       .on('keydown.nav', (event: KeyboardEvent) => {
         this._lastInputEvent = event;

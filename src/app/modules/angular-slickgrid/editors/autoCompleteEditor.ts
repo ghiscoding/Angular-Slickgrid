@@ -68,7 +68,7 @@ export class AutoCompleteEditor implements Editor {
     this.labelName = this.customStructure && this.customStructure.label || 'label';
     this.valueName = this.customStructure && this.customStructure.value || 'value';
 
-    this.$input = $(`<input type="text" class="autocomplete editor-text editor-${columnId}" placeholder="${placeholder}" />`)
+    this.$input = $(`<input type="text" autocomplete="nope" class="autocomplete editor-text editor-${columnId}" placeholder="${placeholder}" />`)
       .appendTo(this.args.container)
       .on('keydown.nav', (event: KeyboardEvent) => {
         this._lastInputEvent = event;
