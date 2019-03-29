@@ -64,6 +64,9 @@ export interface RowDetailView {
   /** Async server function call */
   process: (item: any) => Promise<any>;
 
+  /** Override the logic for showing (or not) the expand icon (use case example: only every 2nd row is expandable) */
+  expandableOverride?: (row: number, dataContext: any, grid: any) => boolean;
+
   // --
   // SlickGrid Events
 

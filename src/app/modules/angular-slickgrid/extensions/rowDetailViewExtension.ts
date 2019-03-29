@@ -90,6 +90,11 @@ export class RowDetailViewExtension implements Extension {
 
           // finally register the Row Detail View Plugin
           this._extension = new Slick.Plugins.RowDetailView(gridOptions.rowDetailView);
+
+          // user can override the expand icon logic
+          if (gridOptions.rowDetailView.expandableOverride) {
+            this._extension.expandableOverride(gridOptions.rowDetailView.expandableOverride);
+          }
         }
         const selectionColumn: Column = this._extension.getColumnDefinition();
         selectionColumn.excludeFromExport = true;
