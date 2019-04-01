@@ -598,6 +598,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // use jquery extend to deep merge & copy to avoid immutable properties being changed in GlobalGridOptions after a route change
     const options = $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
 
+    // using jQuery extend to do a deep clone has an unwanted side on objects and pageSizes but ES6 spread has other worst side effects
+    // so we will just overwrite the pageSizes when needed, this is the only one causing issues so far.
+    // jQuery wrote this on their docs:: On a deep extend, Object and Array are extended, but object wrappers on primitive types such as String, Boolean, and Number are not.
+    if (gridOptions && gridOptions.backendServiceApi) {
+      if (gridOptions.pagination && Array.isArray(gridOptions.pagination.pageSizes) && gridOptions.pagination.pageSizes.length > 0) {
+        options.pagination.pageSizes = gridOptions.pagination.pageSizes;
+      }
+    }
+
     // also make sure to show the header row if user have enabled filtering
     this._hideHeaderRowAfterPageLoad = (options.showHeaderRow === false);
     if (options.enableFiltering && !options.showHeaderRow) {
