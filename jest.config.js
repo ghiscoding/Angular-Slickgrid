@@ -11,6 +11,8 @@ module.exports = {
   ],
   coveragePathIgnorePatterns: [
     '!*.d.ts',
+    '!*.enum.ts',
+    '!*.interface.ts',
     'constants.ts',
     'environment.ts',
     'example-data.js',
