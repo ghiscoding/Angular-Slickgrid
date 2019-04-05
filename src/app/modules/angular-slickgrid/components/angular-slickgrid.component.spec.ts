@@ -36,7 +36,7 @@ import {
   RowSelectionExtension
 } from '..';
 
-describe('AppComponent', () => {
+describe('App Component', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [

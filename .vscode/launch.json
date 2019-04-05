@@ -18,13 +18,54 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Jest Test",
-      "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+      "name": "Jest All Tests",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
       "args": [
-        "--runInBand"
+        "--runInBand",
+        "--config",
+        "${workspaceFolder}/jest.config.js"
       ],
       "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "internalConsoleOptions": "neverOpen",
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest Current File",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": [
+        "--runInBand",
+        "${fileBasename}",
+        "--config",
+        "${workspaceFolder}/jest.config.js"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "disableOptimisticBPs": true,
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest Selected Test Name",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": [
+        "${fileBasename}",
+        "--config",
+        "${workspaceFolder}/jest.config.js",
+        "-t=${selectedText}$",
+        "--watch"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+      }
     }
   ]
 }
