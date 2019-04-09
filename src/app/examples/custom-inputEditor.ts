@@ -37,8 +37,9 @@ export class CustomInputEditor implements Editor {
 
   init(): void {
     const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
+    const title = this.columnEditor && this.columnEditor.title || '';
 
-    this.$input = $(`<input type="text" class="editor-text" placeholder="${placeholder}" />`)
+    this.$input = $(`<input type="text" class="editor-text" placeholder="${placeholder}" title="${title}" />`)
       .appendTo(this.args.container)
       .on('keydown.nav', (event: KeyboardEvent) => {
         this._lastInputEvent = event;

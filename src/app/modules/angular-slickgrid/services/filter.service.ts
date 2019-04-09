@@ -106,9 +106,11 @@ export class FilterService {
         backendApi.preProcess();
       }
 
-      // only add a delay when user is typing, on select dropdown filter it will execute right away
+      // only add a delay when user is typing, on select dropdown filter (or "Clear Filter") it will execute right away
       let debounceTypingDelay = 0;
-      if (event && event.keyCode !== KeyCode.ENTER && (event.type === 'input' || event.type === 'keyup' || event.type === 'keydown')) {
+      const isTriggeredByClearFilter = args && args.clearFilterTriggered; // was it trigger by a "Clear Filter" command?
+
+      if (!isTriggeredByClearFilter && event && event.keyCode !== KeyCode.ENTER && (event.type === 'input' || event.type === 'keyup' || event.type === 'keydown')) {
         debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
       }
 

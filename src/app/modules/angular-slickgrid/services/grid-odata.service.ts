@@ -28,9 +28,9 @@ const DEFAULT_PAGE_SIZE = 20;
 
 @Injectable()
 export class GridOdataService implements BackendService {
-  private _currentFilters: CurrentFilter[];
+  private _currentFilters: CurrentFilter[] = [];
   private _currentPagination: CurrentPagination;
-  private _currentSorters: CurrentSorter[];
+  private _currentSorters: CurrentSorter[] = [];
   private _columnDefinitions: Column[];
   private _grid: any;
   odataService: OdataService;
@@ -179,6 +179,11 @@ export class GridOdataService implements BackendService {
   updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset?: boolean) {
     let searchBy = '';
     const searchByArray: string[] = [];
+
+    // on filter preset load, we need to keep current filters
+    if (isUpdatedByPreset) {
+      this._currentFilters = this.castFilterToColumnFilter(columnFilters);
+    }
 
     // loop through all columns to inspect filters
     for (const columnId in columnFilters) {

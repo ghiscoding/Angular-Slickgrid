@@ -38,10 +38,6 @@ yarn-error.log
 package-lock.json
 yarn.lock
 
-# e2e
-/e2e/*.js
-/e2e/*.map
-
 # System Files
 .DS_Store
 Thumbs.db
@@ -51,3 +47,4 @@ dist
 
 # tests
 test-report.xml
+coverage

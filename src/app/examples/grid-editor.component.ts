@@ -191,6 +191,8 @@ export class GridEditorComponent implements OnInit {
           // however if you pass the "decimalPlaces", it will validate with that maximum
           alwaysSaveOnEnterKey: true, // defaults to False, when set to true and user presses ENTER it will always call a Save even if value is empty
           model: Editors.float,
+          placeholder: 'enter number',
+          title: 'Your number must be bigger than 5', title: 'show a custom title', // add a custom title, to see it as a real tooltip you'll need to implement something like tipsy jquery lib
           minValue: 5,
           maxValue: 365,
           // the default validation error message is in English but you can override it by using "errorMessage"

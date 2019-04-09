@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "2.4.2",
+  "version": "2.4.7",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -20,7 +20,6 @@
     "test:snapshot": "jest --coverage -u",
     "test:watch": "npm-run-all jest:clear jest:watch",
     "lint": "ng lint",
-    "e2e": "ng e2e",
     "cypress:open": "cypress open",
     "build-lib": "npm-run-all packagr sass:build sass:copy copy:i18n copy:lib",
     "build-lib-demo": "npm-run-all build-lib del-demo:dist copy-demo:dist",
