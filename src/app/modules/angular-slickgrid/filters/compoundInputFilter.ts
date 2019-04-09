@@ -231,7 +231,11 @@ export class CompoundInputFilter implements Filter {
       this.$filterElm.removeClass('filled');
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
-      const value = this.$filterInputElm.val();
+      let value = this.$filterInputElm.val();
+      if (typeof value === 'string' && this.columnFilter && this.columnFilter.enableTrimWhiteSpace) {
+        value = value.trim();
+      }
+
       (value !== null && value !== undefined && value !== '') ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
       this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '', shouldTriggerQuery: this._shouldTriggerQuery });
     }
