@@ -19,4 +19,7 @@ export interface CheckboxSelector {
 
   /** Defaults to 30, width of the Row Selection checkbox column */
   width?: number;
+
+  /** Override the logic for showing (or not) the expand icon (use case example: only every 2nd row is expandable) */
+  selectableOverride?: (row: number, dataContext: any, grid: any) => boolean;
 }
