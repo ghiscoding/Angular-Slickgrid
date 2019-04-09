@@ -253,7 +253,11 @@ export class AutoCompleteFilter implements Filter {
     // step 3, subscribe to the keyup event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
     this.$filterElm.on('keyup input change', (e: any) => {
-      const value = e && e.target && e.target.value || '';
+      let value = e && e.target && e.target.value || '';
+      if (typeof value === 'string' && this.columnFilter && this.columnFilter.enableTrimWhiteSpace) {
+        value = value.trim();
+      }
+
       if (this._clearFilterTriggered) {
         this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
         this.$filterElm.removeClass('filled');

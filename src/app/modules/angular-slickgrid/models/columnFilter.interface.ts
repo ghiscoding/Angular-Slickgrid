@@ -68,7 +68,10 @@ export interface ColumnFilter {
    * Defaults to false, when set it will render any HTML code instead of removing it
    * So far only used in the MultipleSelect & SingleSelect Filters will support it
    */
-  enableRenderHtml ?: boolean;
+  enableRenderHtml?: boolean;
+
+  /** Defaults to false, do we want to trim white spaces from the filter value typed by the user? */
+  enableTrimWhiteSpace?: boolean;
 
   /** Do we want the Filter to handle translation (localization)? */
   enableTranslateLabel?: boolean;

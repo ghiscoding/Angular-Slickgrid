@@ -40,7 +40,10 @@ export class InputMaskFilter extends InputFilter {
     this.$filterElm.on('keyup input change', (e: any) => {
       let value = '';
       if (e && e.target && e.target.value) {
-        const targetValue = e.target.value;
+        let targetValue = e.target.value;
+        if (typeof targetValue === 'string' && this.columnFilter && this.columnFilter.enableTrimWhiteSpace) {
+          targetValue = targetValue.trim();
+        }
 
         // if it has a mask, we need to do a bit more work
         // and replace the filter string by the masked output without triggering an event
