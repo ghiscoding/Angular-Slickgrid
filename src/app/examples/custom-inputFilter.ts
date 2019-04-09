@@ -56,7 +56,8 @@ export class CustomInputFilter implements Filter {
     // step 3, subscribe to the keyup event and run the callback when that happens
     this.$filterElm.keyup((e: any) => {
       let value = e && e.target && e.target.value || '';
-      if (typeof value === 'string' && this.columnFilter.enableTrimWhiteSpace) {
+      const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
+      if (typeof value === 'string' && enableWhiteSpaceTrim) {
         value = value.trim();
       }
 

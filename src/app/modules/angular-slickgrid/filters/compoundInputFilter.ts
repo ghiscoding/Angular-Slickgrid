@@ -232,7 +232,8 @@ export class CompoundInputFilter implements Filter {
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       let value = this.$filterInputElm.val();
-      if (typeof value === 'string' && this.columnFilter && this.columnFilter.enableTrimWhiteSpace) {
+      const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
+      if (typeof value === 'string' && enableWhiteSpaceTrim) {
         value = value.trim();
       }
 

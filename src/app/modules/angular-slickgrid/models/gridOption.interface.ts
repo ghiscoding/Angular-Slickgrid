@@ -107,11 +107,11 @@ export interface GridOption {
   /** Default column width, is set to 80 when null */
   defaultColumnWidth?: number;
 
-  /** Default placeholder to use in Filters that support placeholder (input, flatpickr) */
-  defaultFilterPlaceholder?: string;
-
   /** The default filter model to use when none is specified */
   defaultFilter?: any;
+
+  /** Default placeholder to use in Filters that support placeholder (input, flatpickr) */
+  defaultFilterPlaceholder?: string;
 
   /** Draggable Grouping Plugin options & events */
   draggableGrouping?: DraggableGrouping;
@@ -172,6 +172,12 @@ export interface GridOption {
 
   /** Do we want to enable Filters? */
   enableFiltering?: boolean;
+
+  /**
+   * Defaults to false, do we want to globally trim white spaces on all filter values typed by the user?
+   * User can choose to override the default
+   */
+  enableFilterTrimWhiteSpace?: boolean;
 
   /** Do we want to enable Grid Menu (aka hamburger menu) */
   enableGridMenu?: boolean;

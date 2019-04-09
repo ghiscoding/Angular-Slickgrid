@@ -72,7 +72,8 @@ export class InputFilter implements Filter {
     // also add/remove "filled" class for styling purposes
     this.$filterElm.on('keyup input change', (e: any) => {
       let value = e && e.target && e.target.value || '';
-      if (typeof value === 'string' && this.columnFilter && this.columnFilter.enableTrimWhiteSpace) {
+      const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
+      if (typeof value === 'string' && enableWhiteSpaceTrim) {
         value = value.trim();
       }
 

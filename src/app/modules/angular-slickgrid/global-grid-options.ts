@@ -24,8 +24,9 @@ export const GlobalGridOptions: GridOption = {
     hideSyncResizeButton: true
   },
   datasetIdPropertyName: 'id',
-  defaultFilterPlaceholder: '&#128269;',
   defaultFilter: Filters.input,
+  enableFilterTrimWhiteSpace: false, // do we want to trim white spaces on all Filters?
+  defaultFilterPlaceholder: '&#128269;',
   editable: false,
   enableAutoResize: true,
   enableAutoSizeColumns: true,

@@ -41,7 +41,8 @@ export class InputMaskFilter extends InputFilter {
       let value = '';
       if (e && e.target && e.target.value) {
         let targetValue = e.target.value;
-        if (typeof targetValue === 'string' && this.columnFilter && this.columnFilter.enableTrimWhiteSpace) {
+        const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
+        if (typeof targetValue === 'string' && enableWhiteSpaceTrim) {
           targetValue = targetValue.trim();
         }
 

@@ -54,7 +54,7 @@ export class GridClientSideComponent implements OnInit {
         type: FieldType.string,
         filter: {
           model: new CustomInputFilter(), // create a new instance to make each Filter independent from each other
-          enableTrimWhiteSpace: true
+          enableTrimWhiteSpace: true // or use global "enableFilterTrimWhiteSpace" to trim on all Filters
         }
       },
       {
@@ -166,6 +166,7 @@ export class GridClientSideComponent implements OnInit {
       },
       enableExcelCopyBuffer: true,
       enableFiltering: true,
+      // enableFilterTrimWhiteSpace: true,
       i18n: this.translate,
 
       // use columnDef searchTerms OR use presets as shown below
