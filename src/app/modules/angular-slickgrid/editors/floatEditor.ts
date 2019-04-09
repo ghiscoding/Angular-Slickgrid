@@ -41,8 +41,9 @@ export class FloatEditor implements Editor {
   init(): void {
     const columnId = this.columnDef && this.columnDef.id;
     const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
+    const title = this.columnEditor && this.columnEditor.title || '';
 
-    this.$input = $(`<input type="number" autocomplete="nope" class="editor-text editor-${columnId}" placeholder="${placeholder}" step="${this.getInputDecimalSteps()}" />`)
+    this.$input = $(`<input type="number" autocomplete="nope" class="editor-text editor-${columnId}" placeholder="${placeholder}" title="${title}" step="${this.getInputDecimalSteps()}" />`)
       .appendTo(this.args.container)
       .on('keydown.nav', (event: KeyboardEvent) => {
         this._lastInputEvent = event;

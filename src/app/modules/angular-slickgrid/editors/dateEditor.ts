@@ -43,6 +43,7 @@ export class DateEditor implements Editor {
     if (this.args && this.args.column) {
       const columnId = this.columnDef && this.columnDef.id;
       const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
+      const title = this.columnEditor && this.columnEditor.title || '';
       const gridOptions = this.args.grid.getOptions() as GridOption;
       this.defaultDate = (this.args.item) ? this.args.item[this.args.column.field] : null;
       const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
@@ -67,7 +68,7 @@ export class DateEditor implements Editor {
       // merge options with optional user's custom options
       const pickerMergedOptions = { ...pickerOptions, ...this.columnEditor.editorOptions };
 
-      this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text editor-${columnId} flatpickr" placeholder="${placeholder}" />`);
+      this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="editor-text editor-${columnId} flatpickr" placeholder="${placeholder}" title="${title}" />`);
       this.$input.appendTo(this.args.container);
       this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerMergedOptions) : null;
       this.show();
