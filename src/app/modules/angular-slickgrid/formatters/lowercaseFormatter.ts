@@ -6,6 +6,5 @@ export const lowercaseFormatter: Formatter = (row: number, cell: number, value: 
   if (value !== undefined && typeof value !== 'string') {
     value = value + '';
   }
-
   return value ? value.toLowerCase() : '';
 };

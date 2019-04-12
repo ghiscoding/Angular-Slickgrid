@@ -3,8 +3,7 @@ import { Column, Formatter } from './../models/index';
 /** Takes a cell value and translates it with the "ngx-translate" service */
 export const translateFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
   const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
-  const options = gridOptions || columnDef.params || {};
-  const translate = options.i18n;
+  const translate = gridOptions.i18n || (columnDef && columnDef.params && columnDef.params.i18n);
 
   if (!translate || typeof translate.instant !== 'function') {
     throw new Error(`The translate formatter requires the "ngx-translate" Service to be provided as a Grid Options or Column Definition "i18n".

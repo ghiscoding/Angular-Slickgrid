@@ -7,7 +7,10 @@ module.exports = {
   },
   collectCoverage: false,
   collectCoverageFrom: [
-    'src/**/*ts'
+    'src/**/*.{js,ts}',
+    '!src/assets/**',
+    '!**/node_modules/**',
+    '!**/test/**'
   ],
   coveragePathIgnorePatterns: [
     '!*.d.ts',
@@ -20,6 +23,8 @@ module.exports = {
     'index.ts',
     'jest-global-mocks.ts',
     'main.ts',
+    'polyfills.ts',
+    'public_api.ts',
     'setup-jest.ts',
     'test-env.ts',
   ],
