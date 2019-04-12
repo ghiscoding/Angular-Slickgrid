@@ -129,7 +129,7 @@ export class CompoundInputFilter implements Filter {
     if (this.columnFilter && this.columnFilter.placeholder) {
       placeholder = this.columnFilter.placeholder;
     }
-    return `<input type="${this._inputType || 'text'}" autocomplete="nope" class="form-control" placeholder="${placeholder}" /><span></span>`;
+    return `<input type="${this._inputType || 'text'}" role="presentation"  autocomplete="off" class="form-control" placeholder="${placeholder}" /><span></span>`;
   }
 
   private buildSelectOperatorHtmlString() {
