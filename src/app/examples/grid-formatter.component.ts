@@ -45,6 +45,7 @@ export class GridFormatterComponent implements OnInit {
         sidePadding: 15
       },
       enableAutoResize: true,
+      enableCellNavigation: true,
       enableExcelCopyBuffer: true
     };
 
