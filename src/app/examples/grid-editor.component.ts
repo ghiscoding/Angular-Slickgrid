@@ -97,7 +97,7 @@ export class GridEditorComponent implements OnInit {
 
   constructor(private http: HttpClient, private translate: TranslateService) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.prepareGrid();
   }
 
