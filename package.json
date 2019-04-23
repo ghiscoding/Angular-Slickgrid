@@ -78,7 +78,7 @@
     "lodash.isequal": "^4.5.0",
     "moment-mini": "^2.22.1",
     "rxjs": "^6.3.3",
-    "slickgrid": "^2.4.6",
+    "slickgrid": "^2.4.7",
     "text-encoding-utf-8": "^1.0.2",
     "tslib": "^1.9.3",
     "vinyl-paths": "^2.1.0"
