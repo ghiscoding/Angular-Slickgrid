@@ -174,7 +174,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   ngOnInit(): void {
     this.onBeforeGridCreate.emit(true);
-    if (this.gridOptions && !this.gridOptions.enableAutoResize && !this.gridOptions.autoResize) {
+
+    if (this.gridOptions && !this.gridOptions.enableAutoResize && (this._fixedHeight || this._fixedWidth)) {
       this.gridHeightString = `${this._fixedHeight}px`;
       this.gridWidthString = `${this._fixedWidth}px`;
     }
@@ -187,9 +188,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   destroy(emptyDomElementContainer = false) {
+    const gridContainerId = this.gridOptions && this.gridOptions.gridContainerId;
     this.dataView = [];
     this.gridOptions = {};
-    this._eventHandler.unsubscribeAll();
     this.extensionService.dispose();
     this.filterService.dispose();
     this.gridEventService.dispose();
@@ -197,10 +198,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.groupingAndColspanService.dispose();
     this.resizer.dispose();
     this.sortService.dispose();
-    this.grid.destroy();
+    if (this._eventHandler && this._eventHandler.unsubscribeAll) {
+      this._eventHandler.unsubscribeAll();
+    }
+    if (this.grid && this.grid.destroy) {
+      this.grid.destroy();
+    }
 
     if (emptyDomElementContainer) {
-      $(this.gridOptions.gridContainerId).empty();
+      $(gridContainerId).empty();
     }
 
     // also unsubscribe all RxJS subscriptions
@@ -210,6 +216,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   ngAfterViewInit() {
     this.initialization();
     this.isGridInitialized = true;
+
+    // user must provide a "gridHeight" or use "autoResize: true" in the grid options
+    if (!this._fixedHeight && !this.gridOptions.enableAutoResize) {
+      throw new Error(
+        `[Angular-Slickgrid] requires a "grid-height" or the "autoResize" grid option to be enabled.
+        Without that the grid will seem empty while in fact it just does not have any height define.`
+      );
+    }
   }
 
   initialization() {

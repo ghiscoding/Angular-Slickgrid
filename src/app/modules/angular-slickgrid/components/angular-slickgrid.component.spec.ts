@@ -1,7 +1,7 @@
 import { AngularUtilService } from './../services/angularUtilService';
 import { SlickgridConfig } from './../slickgrid-config';
 import { FilterFactory } from './../filters/filterFactory';
-import { async, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -37,6 +37,9 @@ import {
 } from '..';
 
 describe('App Component', () => {
+  let fixture: ComponentFixture<AngularSlickgridComponent>;
+  let component: AngularSlickgridComponent;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
@@ -82,11 +85,33 @@ describe('App Component', () => {
         set: { providers: [{ provide: 'config', useValue: {} }] },
       })
       .compileComponents();
+
+    // create the component
+    fixture = TestBed.createComponent(AngularSlickgridComponent);
+    component = fixture.debugElement.componentInstance;
+
+    // setup bindable properties
+    component.gridId = 'grid1';
+    component.gridOptions = {};
+    component.columnDefinitions = [];
+    component.dataset = [];
   }));
 
-  it('should create the app', async(() => {
-    const fixture = TestBed.createComponent(AngularSlickgridComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
-  }));
+  it('should make sure Angular-Slickgrid is defined', () => {
+    expect(component).toBeTruthy();
+    expect(component.constructor).toBeDefined();
+  });
+
+  it('should create a grid and a slickgrid container in the DOM', () => {
+    fixture.detectChanges();
+    const gridElement = document.querySelector('.gridPane');
+    expect(gridElement.innerHTML).toContain('grid1');
+  });
+
+  it('should throw an error when the "enableAutoResize" is disabled and no "grid-height" is provided', () => {
+    component.gridHeight = null;
+    component.gridOptions = { enableAutoResize: false };
+
+    expect(() => fixture.detectChanges()).toThrowError('[Angular-Slickgrid] requires a "grid-height" or the "autoResize"');
+  });
 });

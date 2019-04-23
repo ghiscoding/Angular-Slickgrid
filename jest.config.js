@@ -10,23 +10,23 @@ module.exports = {
     'src/**/*.{js,ts}',
     '!src/assets/**',
     '!**/node_modules/**',
-    '!**/test/**'
+    '!**/test/**',
+    '!src/app/modules/angular-slickgrid/models/**',
   ],
   coveragePathIgnorePatterns: [
-    '!*.d.ts',
-    '!*.enum.ts',
-    '!*.interface.ts',
     'constants.ts',
     'environment.ts',
     'example-data.js',
     'globals.ts',
     'index.ts',
     'jest-global-mocks.ts',
+    'jest-pretest.ts',
     'main.ts',
     'polyfills.ts',
     'public_api.ts',
     'setup-jest.ts',
-    'test-env.ts',
+    '\\.d\\.ts$',
+    '<rootDir>/node_modules/'
   ],
   moduleDirectories: [
     'node_modules',
@@ -45,7 +45,7 @@ module.exports = {
     'dist',
     'node_modules'
   ],
-  setupFiles: ['<rootDir>/test-env.ts'],
+  setupFiles: ['<rootDir>/jest-pretest.ts'],
   setupTestFrameworkScriptFile: '<rootDir>/setup-jest.ts',
   transform: {
     '^.+\\.(ts|html)$': '<rootDir>/node_modules/jest-preset-angular/preprocessor.js',
