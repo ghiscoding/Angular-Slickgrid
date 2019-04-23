@@ -46,18 +46,18 @@ describe('the Translate Formatter', () => {
     expect(output).toBe('Vrai');
   });
 
-  it('should return the translated value when value passed is a string and ngx-translate service is passed as a ColumnDef Params', async () => {
+  it('should return the translated value when value passed is a string and ngx-translate service is passed as a ColumnDef Params', () => {
     gridStub.getOptions.mockReturnValueOnce({});
     const output = translateBooleanFormatter(1, 1, 'TRUE', { params: { i18n: translate } } as Column, {}, gridStub);
     expect(output).toBe('Vrai');
   });
 
-  it('should return the translated value when value passed is a string and ngx-translate service is passed as a ColumnDef Params without any Grid object', async () => {
+  it('should return the translated value when value passed is a string and ngx-translate service is passed as a ColumnDef Params without any Grid object', () => {
     const output = translateBooleanFormatter(1, 1, 'TRUE', { params: { i18n: translate } } as Column, {});
     expect(output).toBe('Vrai');
   });
 
-  it('should convert any type of value to string', async () => {
+  it('should convert any type of value to string', () => {
     gridStub.getOptions.mockReturnValueOnce({ i18n: translate });
     const output = translateBooleanFormatter(1, 1, 99, {} as Column, {}, gridStub);
     expect(output).toBe('99');
@@ -65,6 +65,6 @@ describe('the Translate Formatter', () => {
 
   it('should throw an error when no ngx-translate service is not provided to Column Definition and/or Grid Options', () => {
     gridStub.getOptions.mockReturnValueOnce({});
-    expect(() => { translateBooleanFormatter(1, 1, null, {} as Column, {}, gridStub); }).toThrowError('formatter requires the "ngx-translate" Service to be provided');
+    expect(() => translateBooleanFormatter(1, 1, null, {} as Column, {}, gridStub)).toThrowError('formatter requires the "ngx-translate" Service to be provided');
   });
 });

@@ -7,17 +7,17 @@ describe('the Lowercase Formatter', () => {
     expect(output).toBe('');
   });
 
-  it('should return a string all in lowercase', async () => {
+  it('should return a string all in lowercase', () => {
     const output = lowercaseFormatter(1, 1, 'HeLlo', {} as Column, {});
     expect(output).toBe('hello');
   });
 
-  it('should return a number as a string', async () => {
+  it('should return a number as a string', () => {
     const output = lowercaseFormatter(1, 1, 99, {} as Column, {});
     expect(output).toBe('99');
   });
 
-  it('should return a boolean as a string all in lowercase', async () => {
+  it('should return a boolean as a string all in lowercase', () => {
     const output = lowercaseFormatter(1, 1, false, {} as Column, {});
     expect(output).toBe('false');
   });

@@ -1,4 +1,3 @@
-import { Column } from './../models/index';
 import { arrayObjectToCsvFormatter } from './arrayObjectToCsvFormatter';
 import { arrayToCsvFormatter } from './arrayToCsvFormatter';
 import { boldFormatter } from './boldFormatter';
@@ -24,6 +23,7 @@ import { editIconFormatter } from './editIconFormatter';
 import { hyperlinkFormatter } from './hyperlinkFormatter';
 import { hyperlinkUriPrefixFormatter } from './hyperlinkUriPrefixFormatter';
 import { infoIconFormatter } from './infoIconFormatter';
+import { italicFormatter } from './italicFormatter';
 import { lowercaseFormatter } from './lowercaseFormatter';
 import { maskFormatter } from './maskFormatter';
 import { multipleFormatter } from './multipleFormatter';
@@ -50,7 +50,7 @@ export const Formatters = {
   /** Takes an array of string and converts it to a comma delimited string */
   arrayToCsv: arrayToCsvFormatter,
 
-  /** show value in bold font weight as well */
+  /** show value in bold font weight */
   bold: boldFormatter,
 
   /** When value is filled (true), it will display a checkbox Unicode icon */
@@ -141,6 +141,9 @@ export const Formatters = {
 
   /** Displays a Font-Awesome edit icon (fa-info-circle) */
   infoIcon: infoIconFormatter,
+
+  /** show input text value as italic text */
+  italic: italicFormatter,
 
   /** Takes a value and displays it all lowercase */
   lowercase: lowercaseFormatter,

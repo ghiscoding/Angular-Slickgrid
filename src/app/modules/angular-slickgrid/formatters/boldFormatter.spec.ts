@@ -11,6 +11,6 @@ describe('the Bold Formatter', () => {
   it('should return a bold html formatted string when value is filled', () => {
     const value = 'john';
     const result = boldFormatter(0, 0, value, {} as Column, {});
-    expect(result).toBe(`<span style="font-weight: bold">${value}</span>`);
+    expect(result).toBe(`<b>${value}</b>`);
   });
 });

@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "angular.ng-template",
+    "editorconfig.editorconfig",
+    "msjsdiag.debugger-for-chrome",
+    "ms-vscode.vscode-typescript-tslint-plugin"
+  ]
+}

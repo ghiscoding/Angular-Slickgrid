@@ -21,11 +21,6 @@ export class GridService {
 
   constructor(private extensionService: ExtensionService, private filterService: FilterService, private gridStateService: GridStateService, private sortService: SortService, private translate: TranslateService) { }
 
-  /** Getter for the Column Definitions pulled through the Grid Object */
-  private get _columnDefinitions(): Column[] {
-    return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
-  }
-
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
@@ -139,8 +134,8 @@ export class GridService {
 
       // highlight the row for a user defined timeout
       $(`#${gridOptions.gridId}`)
-          .find(`.highlight.row${rowNumber}`)
-          .first();
+        .find(`.highlight.row${rowNumber}`)
+        .first();
 
       // delete the row's CSS that was attached for highlighting
       setTimeout(() => {
@@ -223,7 +218,6 @@ export class GridService {
     // reset columns to original states & refresh the grid
     if (this._grid && this._dataView) {
       const originalColumns = this.extensionService.getAllColumns();
-      // const originalColumns = columnDefinitions || this._columnDefinitions;
       if (Array.isArray(originalColumns) && originalColumns.length > 0) {
         // set the grid columns to it's original column definitions
         this._grid.setColumns(originalColumns);
