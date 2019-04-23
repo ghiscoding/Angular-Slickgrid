@@ -220,7 +220,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // user must provide a "gridHeight" or use "autoResize: true" in the grid options
     if (!this._fixedHeight && !this.gridOptions.enableAutoResize) {
       throw new Error(
-        `[Angular-Slickgrid] requires a "grid-height" or the "autoResize" grid option to be enabled.
+        `[Angular-Slickgrid] requires a "grid-height" or the "enableAutoResize" grid option to be enabled.
         Without that the grid will seem empty while in fact it just does not have any height define.`
       );
     }

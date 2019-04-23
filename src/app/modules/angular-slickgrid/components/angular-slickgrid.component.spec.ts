@@ -112,6 +112,6 @@ describe('App Component', () => {
     component.gridHeight = null;
     component.gridOptions = { enableAutoResize: false };
 
-    expect(() => fixture.detectChanges()).toThrowError('[Angular-Slickgrid] requires a "grid-height" or the "autoResize"');
+    expect(() => fixture.detectChanges()).toThrowError('[Angular-Slickgrid] requires a "grid-height" or the "enableAutoResize"');
   });
 });
