@@ -46,5 +46,7 @@ Thumbs.db
 dist
 
 # tests
+mochawesome-report
 test-report.xml
+testresult.xml
 coverage

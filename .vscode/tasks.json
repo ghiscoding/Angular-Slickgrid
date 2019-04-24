@@ -4,7 +4,13 @@
     {
       "label": "Build Library",
       "type": "shell",
-      "command": "yarn run build-lib",
+      "command": "yarn run build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Library (with E2E Cypress tests)",
+      "type": "shell",
+      "command": "yarn run build:with-e2e",
       "problemMatcher": []
     },
     {
@@ -29,6 +35,12 @@
       "label": "Cypress Open Tool",
       "type": "shell",
       "command": "yarn run cypress open",
+      "problemMatcher": []
+    },
+    {
+      "label": "Cypress CI (mochawesome)",
+      "type": "shell",
+      "command": "yarn run cypress:ci:mochawesome",
       "problemMatcher": []
     },
     {

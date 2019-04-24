@@ -16,3 +16,9 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 .chrome
+
+# tests
+mochawesome-report
+test-report.xml
+testresult.xml
+coverage
