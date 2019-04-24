@@ -69,9 +69,6 @@
         background-color: $row-highlight-background-color;
         animation: highlight-fade $row-highlight-fade-animation;
         .slick-cell {
-          &.selected {
-            background-color: inherit !important;
-          }
           &.copied {
             background: $copied-cell-bg-color-transition;
             transition: $copied-cell-transition;
@@ -82,9 +79,6 @@
           animation: highlight-fade $row-highlight-fade-animation;
         }
         &.odd .slick-cell {
-          &.selected {
-            background-color: inherit !important;
-          }
           &.copied {
             background: $copied-cell-bg-color-transition;
             transition: $copied-cell-transition;
