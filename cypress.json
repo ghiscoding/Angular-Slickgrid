@@ -1,12 +1,6 @@
 {
   "baseUrl": "http://localhost:4300",
   "baseExampleUrl": "http://localhost:4300",
-  "reporter": "mochawesome",
-  "reporterOptions": {
-    "overwrite": false,
-    "html": false,
-    "json": true
-  },
   "video": false,
   "viewportWidth": 1200,
   "viewportHeight": 800

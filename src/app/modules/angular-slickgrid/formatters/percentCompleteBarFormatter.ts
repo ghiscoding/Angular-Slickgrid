@@ -1,8 +1,8 @@
-import { Column } from './../models/column.interface';
-import { Formatter } from './../models/formatter.interface';
+import { Column, Formatter } from './../models/index';
 
 export const percentCompleteBarFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any): string => {
-  if (value === null || value === '') {
+  const isNumber = (value === null || value === undefined || value === '') ? false : !isNaN(+value);
+  if (!isNumber) {
     return '';
   }
 
