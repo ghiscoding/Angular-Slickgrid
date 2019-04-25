@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -15,9 +15,10 @@
     "prebuild": "npm-run-all delete:dist test:jest",
     "build": "npm run packagr",
     "postbuild": "npm-run-all sass:build sass:copy copy:i18n copy:lib",
-    "build-lib-demo": "npm run build",
-    "postbuild-lib-demo": "npm-run-all del-demo:dist copy-demo:dist",
-    "build:with-e2e": "npm-run-all build cypress:ci:awesome",
+    "build:with-e2e": "npm-run-all build cypress:ci:mochawesome",
+    "build:gh-demo": "npm run build",
+    "postbuild:gh-demo": "npm-run-all del-demo:dist copy-demo:dist",
+    "build:gh-demo:with-e2e": "npm run build:gh-demo cypress:ci:mochawesome",
     "delete:dist": "cross-env rimraf dist",
     "cypress:ci:mochawesome": "node cypress.js",
     "cypress:ci:xml": "node node_modules/cypress/bin/cypress run --reporter xunit --reporter-options output=testresult.xml",

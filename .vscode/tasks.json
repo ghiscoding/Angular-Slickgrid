@@ -8,7 +8,7 @@
       "problemMatcher": []
     },
     {
-      "label": "Build Library (with E2E Cypress tests)",
+      "label": "Build Library (with E2E Cypress tests, Dev Site must be running)",
       "type": "shell",
       "command": "yarn run build:with-e2e",
       "problemMatcher": []
