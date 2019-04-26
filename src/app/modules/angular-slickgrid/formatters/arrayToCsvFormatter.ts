@@ -6,5 +6,5 @@ export const arrayToCsvFormatter: Formatter = (row: number, cell: number, value:
     const values = value.join(', ');
     return `<span title="${values}">${values}</span>`;
   }
-  return '';
+  return value;
 };
