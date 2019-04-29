@@ -40,6 +40,13 @@ export class GridEventService {
         return;
       }
       const column = grid.getColumns()[args.cell];
+      const gridOptions = grid.getOptions();
+
+      // only when using autoCommitEdit, we will make the cell active (in focus) when clicked
+      // setting the cell as active as a side effect and if autoCommitEdit is set to false then the Editors won't save correctly
+      if (gridOptions && gridOptions.enableCellNavigation && !gridOptions.editable || (gridOptions.editable && gridOptions.autoCommitEdit)) {
+        grid.setActiveCell(args.row, args.cell);
+      }
 
       // if the column definition has a onCellClick property (a callback function), then run it
       if (typeof column.onCellClick === 'function') {

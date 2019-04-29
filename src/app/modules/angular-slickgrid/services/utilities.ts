@@ -403,6 +403,11 @@ export function mapOperatorByFieldType(fieldType: FieldType | string): OperatorT
   return map;
 }
 
+/** Parse any input (bool, number, string) and return a boolean or False when not possible */
+export function parseBoolean(input: boolean | number | string) {
+  return /(true|1)/i.test(input + '');
+}
+
 /**
  * Parse a date passed as a string and return a Date object (if valid)
  * @param inputDateString

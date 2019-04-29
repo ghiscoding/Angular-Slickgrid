@@ -9,6 +9,7 @@ import {
   FieldType
 } from './../models/index';
 import { Constants } from './../constants';
+import { findOrDefault } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -169,10 +170,22 @@ export class AutoCompleteEditor implements Editor {
   }
 
   applyValue(item: any, state: any) {
+    let newValue = state;
     const fieldName = this.columnDef && this.columnDef.field;
+
+    // if we have a collection defined, we will try to find the string within the collection and return it
+    if (Array.isArray(this.collection) && this.collection.length > 0) {
+      newValue = findOrDefault(this.collection, (collectionItem: any) => {
+        if (collectionItem && collectionItem.hasOwnProperty(this.labelName)) {
+          return collectionItem[this.labelName].toString() === state;
+        }
+        return collectionItem.toString() === state;
+      });
+    }
+
     // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
     const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
-    item[fieldNameFromComplexObject || fieldName] = state;
+    item[fieldNameFromComplexObject || fieldName] = newValue;
   }
 
   isValueChanged() {
