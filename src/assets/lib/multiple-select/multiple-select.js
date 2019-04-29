@@ -897,9 +897,8 @@
     },
 
     destroy: function () {
-      this.$el.show();
+      this.$el.before(this.$parent).show();
       this.$parent.remove();
-      delete $.fn.multipleSelect;
     },
 
     checkAll: function () {

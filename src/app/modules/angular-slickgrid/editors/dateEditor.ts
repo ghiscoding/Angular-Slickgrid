@@ -74,7 +74,6 @@ export class DateEditor implements Editor {
       this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="${inputCssClasses.replace(/\./g, ' ')}" placeholder="${placeholder}" title="${title}" />`);
       this.$input.appendTo(this.args.container);
       this.flatInstance = (this.$input[0] && typeof this.$input[0].flatpickr === 'function') ? this.$input[0].flatpickr(pickerMergedOptions) : null;
-      this.show();
 
       // when we're using an alternate input to display data, we'll consider this input as the one to do the focus later on
       // else just use the top one
@@ -106,6 +105,9 @@ export class DateEditor implements Editor {
   destroy() {
     this.hide();
     this.$input.remove();
+    if (this._$inputWithData && typeof this._$inputWithData.remove === 'function') {
+      this._$inputWithData.remove();
+    }
   }
 
   show() {

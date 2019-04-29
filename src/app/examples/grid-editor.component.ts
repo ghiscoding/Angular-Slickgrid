@@ -515,9 +515,11 @@ export class GridEditorComponent implements OnInit {
     const tempDataset = [];
     for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
+      const randomFinishYear = (new Date().getFullYear() - 3) + Math.floor(Math.random() * 10); // use only years not lower than 3 years ago
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
       const randomPercent = Math.round(Math.random() * 100);
+      const randomFinish = new Date(randomFinishYear, (randomMonth + 1), randomDay);
 
       tempDataset.push({
         id: i,
@@ -526,7 +528,7 @@ export class GridEditorComponent implements OnInit {
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
-        finish: new Date(randomYear, (randomMonth + 1), randomDay),
+        finish: randomFinish < new Date() ? '' : randomFinish, // make sure the random date is earlier than today
         effortDriven: (i % 5 === 0),
         prerequisites: (i % 2 === 0) && i !== 0 && i < 12 ? [i, i - 1] : [],
         countryOfOrigin: (i % 2) ? { code: 'CA', name: 'Canada' } : { code: 'US', name: 'United States' },
