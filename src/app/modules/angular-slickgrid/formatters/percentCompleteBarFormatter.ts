@@ -7,14 +7,18 @@ export const percentCompleteBarFormatter: Formatter = (row: number, cell: number
   }
 
   let color = '';
+  let inputNumber = parseFloat(value);
+  if (inputNumber > 100) {
+    inputNumber = 100;
+  }
 
-  if (value < 30) {
+  if (inputNumber < 30) {
     color = 'red';
-  } else if (value < 70) {
+  } else if (inputNumber < 70) {
     color = 'silver';
   } else {
     color = 'green';
   }
 
-  return `<span class="percent-complete-bar" style="background:${color}; width:${value}%"></span>`;
+  return `<span class="percent-complete-bar" style="background:${color}; width:${inputNumber}%"></span>`;
 };

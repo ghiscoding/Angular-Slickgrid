@@ -21,7 +21,6 @@ import { dollarColoredFormatter } from './dollarColoredFormatter';
 import { dollarFormatter } from './dollarFormatter';
 import { editIconFormatter } from './editIconFormatter';
 import { hyperlinkFormatter } from './hyperlinkFormatter';
-import { hyperlinkUriPrefixFormatter } from './hyperlinkUriPrefixFormatter';
 import { infoIconFormatter } from './infoIconFormatter';
 import { italicFormatter } from './italicFormatter';
 import { lowercaseFormatter } from './lowercaseFormatter';
@@ -133,11 +132,13 @@ export const Formatters = {
   /** Displays a Font-Awesome edit icon (fa-pencil) */
   editIcon: editIconFormatter,
 
-  /** Takes an hyperlink cell value and transforms it into a real hyperlink, given that the value starts with 1 of these (http|ftp|https). The structure will be "<a href="hyperlink">hyperlink</a>" */
+  /**
+   * Takes an hyperlink cell value and transforms it into a real hyperlink, given that the value starts with 1 of these (http|ftp|https).
+   * The structure will be "<a href="hyperlink">hyperlink</a>"
+   * You can optionally change the hyperlink text displayed by using the generic params "hyperlinkText" in the column definition
+   * For example: { id: 'link', field: 'link', params: { hyperlinkText: 'Company Website' } } will display "<a href="link">Company Website</a>"
+   */
   hyperlink: hyperlinkFormatter,
-
-  /** Takes an hyperlink URI prefix (passed in column definition "params.uriPrefix") and adds the cell value. The structure will be "<a href="uriPrefix">value</a>"  */
-  hyperlinkUriPrefix: hyperlinkUriPrefixFormatter,
 
   /** Displays a Font-Awesome edit icon (fa-info-circle) */
   infoIcon: infoIconFormatter,

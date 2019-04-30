@@ -7,6 +7,7 @@ describe('the Info Icon Formatter', () => {
     const result = infoIconFormatter(0, 0, value, {} as Column, {});
     expect(result).toBe('<i class="fa fa-info-circle pointer info-icon" aria-hidden="true"></i>');
   });
+
   it('should return the Font Awesome Info icon when input is filled with any string', () => {
     const value = 'anything';
     const result = infoIconFormatter(0, 0, value, {} as Column, {});

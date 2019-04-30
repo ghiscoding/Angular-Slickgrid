@@ -8,6 +8,7 @@ export const percentCompleteFormatter: Formatter = (row: number, cell: number, v
   } else if (value < 50) {
     return `<span style='color:red;font-weight:bold;'>${value}%</span>`;
   } else {
-    return `<span style='color:green'>${value}%</span>`;
+    const outputValue = value > 100 ? 100 : value;
+    return `<span style='color:green'>${outputValue}%</span>`;
   }
 };
