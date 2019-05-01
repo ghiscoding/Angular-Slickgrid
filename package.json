@@ -21,7 +21,7 @@
     "build:gh-demo:with-e2e": "npm run build:gh-demo",
     "postbuild:gh-demo:with-e2e": "npm run cypress:ci:mochawesome",
     "delete:dist": "cross-env rimraf dist",
-    "coveralls": "cross-env node_modules/.bin/jest --coverage && cat ./coverage/lcov.info | coveralls",
+    "coveralls": "cross-env node_modules/.bin/jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "test-ci": "cross-env NODE_ICU_DATA=node_modules/full-icu node_modules/.bin/jest && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "cypress:ci:mochawesome": "node cypress-mochawesome.js",
     "cypress:ci:xml": "node node_modules/cypress/bin/cypress run --reporter xunit --reporter-options output=testresult.xml",
