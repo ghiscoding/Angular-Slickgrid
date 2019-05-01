@@ -43,6 +43,7 @@ module.exports = {
     'dist',
     'node_modules'
   ],
+  reporters: ['default', 'jest-junit'],
   setupFiles: ['<rootDir>/jest-pretest.ts'],
   setupTestFrameworkScriptFile: '<rootDir>/setup-jest.ts',
   transform: {
