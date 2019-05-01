@@ -1,9 +1,23 @@
-steps:
-  - run:
-      name: Install JUnit coverage reporter
-      command: yarn add --dev jest-junit
-  - run:
-      name: Run tests with JUnit as reporter
-      command: jest --ci --runInBand --reporters=default --reporters=jest-junit
-      environment:
-        JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+version: 2
+jobs:
+  build:
+    working_directory: ~/my-project
+    docker:
+      - image: circleci/node:8-browsers
+    steps:
+      - checkout
+      - restore_cache:
+          key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - "node_modules"
+      - run:
+          name: Install JUnit coverage reporter
+          command: yarn add --dev jest-junit
+      - run:
+          name: Run tests with JUnit as reporter
+          command: jest --ci --runInBand --reporters=default --reporters=jest-junit
+          environment:
+              JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
