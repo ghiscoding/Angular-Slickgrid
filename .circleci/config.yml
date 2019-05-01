@@ -15,4 +15,4 @@ jobs:
             - "node_modules"
       - run:
           name: Tests
-          command: 'npm run test-ci'
+          command: 'npm run coveralls'
