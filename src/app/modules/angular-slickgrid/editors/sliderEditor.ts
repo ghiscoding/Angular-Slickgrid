@@ -119,7 +119,8 @@ export class SliderEditor implements Editor {
     const fieldName = this.columnDef && this.columnDef.field;
     // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
     const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
-    item[fieldNameFromComplexObject || fieldName] = state;
+    const validation = this.validate(state);
+    item[fieldNameFromComplexObject || fieldName] = (validation && validation.valid) ? state : '';
   }
 
   isValueChanged() {
@@ -131,8 +132,8 @@ export class SliderEditor implements Editor {
     return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
   }
 
-  validate(): EditorValidatorOutput {
-    const elmValue = this.$input.val();
+  validate(inputValue?: any): EditorValidatorOutput {
+    const elmValue = (inputValue !== undefined) ? inputValue : this.$input && this.$input.val && this.$input.val();
     const isRequired = this.columnEditor.required;
     const minValue = this.columnEditor.minValue;
     const maxValue = this.columnEditor.maxValue;

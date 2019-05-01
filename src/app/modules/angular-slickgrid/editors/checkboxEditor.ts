@@ -89,16 +89,17 @@ export class CheckboxEditor implements Editor {
     const fieldName = this.columnDef && this.columnDef.field;
     // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
     const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
-    item[fieldNameFromComplexObject || fieldName] = state;
+    const validation = this.validate(state);
+    item[fieldNameFromComplexObject || fieldName] = (validation && validation.valid) ? state : '';
   }
 
   isValueChanged() {
     return (this.serializeValue() !== this.defaultValue);
   }
 
-  validate(): EditorValidatorOutput {
+  validate(inputValue?: any): EditorValidatorOutput {
     const isRequired = this.columnEditor.required;
-    const isChecked = this.$input && this.$input.prop && this.$input.prop('checked');
+    const isChecked = (inputValue !== undefined) ? inputValue : this.$input && this.$input.prop && this.$input.prop('checked');
     const errorMsg = this.columnEditor.errorMessage;
 
     if (this.validator) {
