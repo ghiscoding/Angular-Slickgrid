@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "2.5.3",
+  "version": "2.5.4",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -18,7 +18,8 @@
     "build:with-e2e": "npm-run-all build cypress:ci:mochawesome",
     "build:gh-demo": "npm run build",
     "postbuild:gh-demo": "npm-run-all del-demo:dist copy-demo:dist",
-    "build:gh-demo:with-e2e": "npm run build:gh-demo cypress:ci:mochawesome",
+    "build:gh-demo:with-e2e": "npm run build:gh-demo",
+    "postbuild:gh-demo:with-e2e": "npm run cypress:ci:mochawesome",
     "delete:dist": "cross-env rimraf dist",
     "cypress:ci:mochawesome": "node cypress-mochawesome.js",
     "cypress:ci:xml": "node node_modules/cypress/bin/cypress run --reporter xunit --reporter-options output=testresult.xml",
