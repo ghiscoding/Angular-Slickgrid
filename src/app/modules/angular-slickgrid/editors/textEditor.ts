@@ -99,7 +99,8 @@ export class TextEditor implements Editor {
     const fieldName = this.columnDef && this.columnDef.field;
     // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
     const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
-    item[fieldNameFromComplexObject || fieldName] = state;
+    const validation = this.validate(state);
+    item[fieldNameFromComplexObject || fieldName] = (validation && validation.valid) ? state : '';
   }
 
   isValueChanged() {
@@ -121,9 +122,9 @@ export class TextEditor implements Editor {
     }
   }
 
-  validate(): EditorValidatorOutput {
+  validate(inputValue?: any): EditorValidatorOutput {
     const isRequired = this.columnEditor.required;
-    const elmValue = this.$input && this.$input.val && this.$input.val();
+    const elmValue = (inputValue !== undefined) ? inputValue : this.$input && this.$input.val && this.$input.val();
     const errorMsg = this.columnEditor.errorMessage;
 
     if (this.validator) {

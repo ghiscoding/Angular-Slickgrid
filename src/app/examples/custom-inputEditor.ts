@@ -87,7 +87,8 @@ export class CustomInputEditor implements Editor {
   }
 
   applyValue(item: any, state: any) {
-    item[this.args.column.field] = state;
+    const validation = this.validate(state);
+    item[this.args.column.field] = (validation && validation.valid) ? state : '';
   }
 
   isValueChanged() {
@@ -109,9 +110,9 @@ export class CustomInputEditor implements Editor {
     }
   }
 
-  validate(): EditorValidatorOutput {
+  validate(inputValue?: any): EditorValidatorOutput {
     if (this.validator) {
-      const value = this.$input && this.$input.val && this.$input.val();
+      const value = (inputValue !== undefined) ? inputValue : this.$input && this.$input.val && this.$input.val();
       return this.validator(value, this.args);
     }
 

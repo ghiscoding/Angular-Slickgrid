@@ -168,7 +168,8 @@ export class LongTextEditor implements Editor {
     const fieldName = this.columnDef && this.columnDef.field;
     // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
     const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
-    item[fieldNameFromComplexObject || fieldName] = state;
+    const validation = this.validate(state);
+    item[fieldNameFromComplexObject || fieldName] = (validation && validation.valid) ? state : '';
   }
 
 
@@ -189,14 +190,13 @@ export class LongTextEditor implements Editor {
     }
   }
 
-  validate(): EditorValidatorOutput {
+  validate(inputValue?: any): EditorValidatorOutput {
     const isRequired = this.columnEditor.required;
-    const elmValue = this.$textarea && this.$textarea.val && this.$textarea.val();
+    const elmValue = (inputValue !== undefined) ? inputValue : this.$textarea && this.$textarea.val && this.$textarea.val();
     const errorMsg = this.columnEditor.errorMessage;
 
     if (this.validator) {
-      const value = this.$textarea && this.$textarea.val && this.$textarea.val();
-      return this.validator(value, this.args);
+      return this.validator(elmValue, this.args);
     }
 
     // by default the editor is almost always valid (except when it's required but not provided)

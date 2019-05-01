@@ -274,22 +274,23 @@ export class SelectEditor implements Editor {
   applyValue(item: any, state: any): void {
     const fieldName = this.columnDef && this.columnDef.field;
     const fieldType = this.columnDef && this.columnDef.type;
-    let value = state;
+    let newValue = state;
 
     // when the provided user defined the column field type as a possible number then try parsing the state value as that
     if (fieldType === FieldType.number || fieldType === FieldType.integer || fieldType === FieldType.boolean) {
-      value = parseFloat(state);
+      newValue = parseFloat(state);
     }
 
     // when set as a multiple selection, we can assume that the 3rd party lib multiple-select will return a CSV string
     // we need to re-split that into an array to be the same as the original column
     if (this.isMultipleSelect && typeof state === 'string' && state.indexOf(',') >= 0) {
-      value = state.split(',');
+      newValue = state.split(',');
     }
 
     // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
     const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
-    item[fieldNameFromComplexObject || fieldName] = value;
+    const validation = this.validate(newValue);
+    item[fieldNameFromComplexObject || fieldName] = (validation && validation.valid) ? newValue : '';
   }
 
   destroy() {
@@ -365,13 +366,13 @@ export class SelectEditor implements Editor {
     return this.$editorElm.val() !== this.defaultValue;
   }
 
-  validate(): EditorValidatorOutput {
+  validate(inputValue?: any): EditorValidatorOutput {
     const isRequired = this.columnEditor.required;
-    const elmValue = this.$editorElm && this.$editorElm.val && this.$editorElm.val();
+    const elmValue = (inputValue !== undefined) ? inputValue : this.$editorElm && this.$editorElm.val && this.$editorElm.val();
     const errorMsg = this.columnEditor.errorMessage;
 
     if (this.validator) {
-      const value = this.isMultipleSelect ? this.currentValues : this.currentValue;
+      const value = (inputValue !== undefined) ? inputValue : (this.isMultipleSelect ? this.currentValues : this.currentValue);
       return this.validator(value, this.args);
     }
 
