@@ -8,7 +8,7 @@ jobs:
       - checkout
       - restore_cache:
           key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
-      - run: npm install
+      - run: yarn install
       - save_cache:
           key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
@@ -21,8 +21,10 @@ jobs:
           command: ./node_modules/.bin/jest --ci --runInBand --collectCoverage=true --reporters=default --reporters=jest-junit
           environment:
               JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+      - store_test_results:
+          path: reports/junit
       - store_artifacts:
-          path: tests/jest-coverage
+          path: reports/junit
       - run:
           name: Upload coverage to Codecov
           command: ./node_modules/.bin/codecov --token="${CODECOV_TOKEN}"

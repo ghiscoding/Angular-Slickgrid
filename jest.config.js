@@ -56,6 +56,5 @@ module.exports = {
     '/node_modules/',
     '<rootDir>/cypress/',
     '<rootDir>/node_modules/',
-  ],
-  testResultsProcessor: 'jest-sonar-reporter'
+  ]
 };
