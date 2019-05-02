@@ -11,6 +11,7 @@ module.exports = {
     '!**/node_modules/**',
     '!src/app/modules/angular-slickgrid/models/**',
   ],
+  coverageDirectory: './coverage/',
   coveragePathIgnorePatterns: [
     'constants.ts',
     'example-data.js',
