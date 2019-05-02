@@ -277,12 +277,12 @@ export class GridEditorComponent implements OnInit {
         editor: {
           model: Editors.autoComplete,
           placeholder: '&#128269; search city',
-          forceUserInput: true,
 
           // We can use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
           // use your own autocomplete options, instead of $.ajax, use http
           // here we use $.ajax just because I'm not sure how to configure http with JSONP and CORS
           editorOptions: {
+            forceUserInput: true,
             minLength: 3,
             source: (request, response) => {
               $.ajax({
