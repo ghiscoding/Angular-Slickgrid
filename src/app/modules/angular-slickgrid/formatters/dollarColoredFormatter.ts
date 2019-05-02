@@ -5,11 +5,11 @@ export const dollarColoredFormatter: Formatter = (row: number, cell: number, val
   const isNumber = (value === null || value === undefined || value === '') ? false : !isNaN(+value);
   const params = columnDef && columnDef.params || {};
   const minDecimal = params.minDecimal || 2;
-  const maxDecimal = params.minDecimal || 4;
+  const maxDecimal = params.maxDecimal || 4;
   const outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
 
   if (!isNumber) {
-    return '';
+    return value;
   } else if (value >= 0) {
     return `<span style="color:green;">$${outputValue}</span>`;
   } else {
