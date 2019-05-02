@@ -22,7 +22,7 @@ jobs:
           environment:
               JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - store_artifacts:
-          path: coverage
+          path: tests/jest-coverage
       - run:
           name: Upload coverage to Codecov
           command: ./node_modules/.bin/codecov --token="${CODECOV_TOKEN}"
