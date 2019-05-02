@@ -1,4 +1,6 @@
 version: 2
+orbs:
+  codecov: codecov/codecov@1.0.4
 jobs:
   build:
     working_directory: ~/angular-slickgrid
@@ -14,5 +16,13 @@ jobs:
           paths:
             - "node_modules"
       - run:
-          name: Tests
-          command: 'npm run coveralls'
+          name: Install JUnit coverage reporter
+          command: yarn add --dev jest-junit
+      - run:
+          name: Run tests with JUnit as reporter
+          command: ./node_modules/.bin/jest --ci --runInBand --reporters=default --reporters=jest-junit
+          environment:
+              JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+      - codecov/upload:
+          file: coverage/*.json
+          flags: frontend
