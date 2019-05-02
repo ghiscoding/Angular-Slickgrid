@@ -26,6 +26,3 @@ jobs:
       - run:
           name: Upload coverage to Codecov
           command: ./node_modules/.bin/codecov --token="${CODECOV_TOKEN}"
-test:
-  post:
-    - ./bin/codecov -f tests/jest-coverage/*.json
