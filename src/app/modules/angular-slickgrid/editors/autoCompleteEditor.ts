@@ -30,6 +30,8 @@ export class AutoCompleteEditor implements Editor {
   /** The property name for values in the collection */
   valueName: string;
 
+  forceUserInput: boolean;
+
   constructor(private args: any) {
     this.init();
   }
@@ -63,13 +65,16 @@ export class AutoCompleteEditor implements Editor {
     return this.columnEditor.validator || this.columnDef.validator;
   }
 
+  get editorOptions() {
+    return this.columnEditor && this.columnEditor.editorOptions || {};
+  }
+
   init(): void {
     const columnId = this.columnDef && this.columnDef.id;
     const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
     const title = this.columnEditor && this.columnEditor.title || '';
     this.labelName = this.customStructure && this.customStructure.label || 'label';
     this.valueName = this.customStructure && this.customStructure.value || 'value';
-
     this.$input = $(`<input type="text" role="presentation" autocomplete="off" class="autocomplete editor-text editor-${columnId}" placeholder="${placeholder}" title="${title}" />`)
       .appendTo(this.args.container)
       .on('keydown.nav', (event: KeyboardEvent) => {
@@ -155,6 +160,9 @@ export class AutoCompleteEditor implements Editor {
 
   serializeValue() {
     // if user provided a custom structure, we will serialize the value returned from the object with custom structure
+    if (this.editorOptions.forceUserInput) {
+      this._currentValue = this.$input.val().length > 3 ? this.$input.val() : this._currentValue;
+    }
     if (this.customStructure && this._currentValue.hasOwnProperty(this.labelName)) {
       return this._currentValue[this.labelName];
     } else if (this._currentValue.label) {
