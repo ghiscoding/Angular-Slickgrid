@@ -65,8 +65,8 @@ export class AutoCompleteEditor implements Editor {
     return this.columnEditor.validator || this.columnDef.validator;
   }
 
-  get forceUserInputChecker() {
-    return this.columnEditor && this.columnEditor.editorOptions && this.columnEditor.editorOptions.forceUserInput ? this.columnEditor.editorOptions.forceUserInput : false;
+  get editorOptions() {
+    return this.columnEditor && this.columnEditor.editorOptions || {};
   }
 
   init(): void {
@@ -75,7 +75,6 @@ export class AutoCompleteEditor implements Editor {
     const title = this.columnEditor && this.columnEditor.title || '';
     this.labelName = this.customStructure && this.customStructure.label || 'label';
     this.valueName = this.customStructure && this.customStructure.value || 'value';
-    this.forceUserInput = this.forceUserInputChecker;
     this.$input = $(`<input type="text" role="presentation" autocomplete="off" class="autocomplete editor-text editor-${columnId}" placeholder="${placeholder}" title="${title}" />`)
       .appendTo(this.args.container)
       .on('keydown.nav', (event: KeyboardEvent) => {
@@ -161,7 +160,7 @@ export class AutoCompleteEditor implements Editor {
 
   serializeValue() {
     // if user provided a custom structure, we will serialize the value returned from the object with custom structure
-    if (this.forceUserInput) {
+    if (this.editorOptions.forceUserInput) {
       this._currentValue = this.$input.val().length > 3 ? this.$input.val() : this._currentValue;
     }
     if (this.customStructure && this._currentValue.hasOwnProperty(this.labelName)) {
