@@ -1,6 +1,4 @@
 version: 2
-orbs:
-  codecov: codecov/codecov@1.0.4
 jobs:
   build:
     working_directory: ~/angular-slickgrid
@@ -23,6 +21,3 @@ jobs:
           command: ./node_modules/.bin/jest --ci --runInBand --reporters=default --reporters=jest-junit
           environment:
               JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
-      - codecov/upload:
-          file: coverage/*.json
-          flags: frontend
