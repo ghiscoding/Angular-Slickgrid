@@ -14,14 +14,6 @@ jobs:
           paths:
             - "node_modules"
       - run:
-          name: Install JUnit coverage reporter
-          command: yarn add --dev jest-junit
-      - run:
-          name: Run tests with JUnit as reporter
-          command: ./node_modules/.bin/jest --ci --runInBand --collectCoverage=true --reporters=default --reporters=jest-junit
-          environment:
-              JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
-      - run:
           name: "Run Jest and Collect Coverage Reports"
           command: ./node_modules/.bin/jest --collectCoverage=true
       - store_artifacts:
