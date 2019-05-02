@@ -46,7 +46,8 @@ Thumbs.db
 dist
 
 # tests
+/tests
 mochawesome-report
+junit.xml
 test-report.xml
 testresult.xml
-coverage

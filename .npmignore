@@ -19,7 +19,8 @@
 
 # Tests & Coverage
 *.spec.ts
+/tests
+junit.xml
 mochawesome-report
 test-report.xml
 testresult.xml
-coverage

@@ -22,8 +22,8 @@ jobs:
           environment:
               JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - run:
-          name: Update coverage to Codecov
+          name: Upload coverage to Codecov
           command: ./node_modules/.bin/codecov --token="${CODECOV_TOKEN}"
 test:
   post:
-    - ./bin/codecov -f coverage/*.json
+    - ./bin/codecov -f tests/jest-coverage/*.json
