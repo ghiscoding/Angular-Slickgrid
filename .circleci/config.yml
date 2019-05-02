@@ -23,7 +23,7 @@ jobs:
               JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - run:
           name: Upload coverage to Codecov
-          command: ./node_modules/.bin/codecov --token="${CODECOV_TOKEN}" --file tests/jest-coverage
+          command: ./node_modules/.bin/codecov --token="${CODECOV_TOKEN}" --file reports/junit/js-test-results.xml
 test:
   post:
     - ./bin/codecov -f tests/jest-coverage/*.json
