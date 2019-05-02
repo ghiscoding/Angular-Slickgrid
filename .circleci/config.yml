@@ -23,7 +23,7 @@ jobs:
               JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - run:
           name: "Run Jest and Collect Coverage Reports"
-          command: jest --collectCoverage=true
+          command: ./node_modules/.bin/jest --collectCoverage=true
       - store_artifacts:
           path: coverage
       - run:
