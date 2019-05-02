@@ -282,6 +282,7 @@ export class GridEditorComponent implements OnInit {
           // use your own autocomplete options, instead of $.ajax, use http
           // here we use $.ajax just because I'm not sure how to configure http with JSONP and CORS
           editorOptions: {
+            forceUserInput: true,
             minLength: 3,
             source: (request, response) => {
               $.ajax({
