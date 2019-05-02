@@ -97,4 +97,10 @@ export interface ColumnEditor {
    * params: { decimalPlaces: 2 }
    */
   params?: any;
+
+  /**
+   * Defaults to false, forces the user input on the auto-complete editor
+   * Only on Editors that supports it
+   */
+  forceUserInput?: boolean;
 }
