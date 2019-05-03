@@ -21,6 +21,7 @@ import { dollarColoredFormatter } from './dollarColoredFormatter';
 import { dollarFormatter } from './dollarFormatter';
 import { editIconFormatter } from './editIconFormatter';
 import { hyperlinkFormatter } from './hyperlinkFormatter';
+import { iconFormatter } from './iconFormatter';
 import { infoIconFormatter } from './infoIconFormatter';
 import { italicFormatter } from './italicFormatter';
 import { lowercaseFormatter } from './lowercaseFormatter';
@@ -139,6 +140,9 @@ export const Formatters = {
    * For example: { id: 'link', field: 'link', params: { hyperlinkText: 'Company Website' } } will display "<a href="link">Company Website</a>"
    */
   hyperlink: hyperlinkFormatter,
+
+  /** Display whichever icon you want (library agnostic, it could be Font-Awesome or any other) */
+  icon: iconFormatter,
 
   /** Displays a Font-Awesome edit icon (fa-info-circle) */
   infoIcon: infoIconFormatter,

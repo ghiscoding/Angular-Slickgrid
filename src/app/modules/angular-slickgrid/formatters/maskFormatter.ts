@@ -24,6 +24,7 @@ export const maskFormatter: Formatter = (row: number, cell: number, value: any, 
       ) {
         return v[i++] || '';
       }
+      return '';
     });
   }
   return value;
