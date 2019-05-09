@@ -23,6 +23,7 @@ export class ResizerService {
   private _grid: any;
   private _lastDimensions: GridDimension;
   private _timer: any;
+  onGridAfterResize = new Subject<GridDimension>();
   onGridBeforeResize = new Subject<boolean>();
 
   /** Getter for the Grid Options pulled through the Grid Object */
@@ -177,15 +178,17 @@ export class ResizerService {
 
       if (delay > 0) {
         clearTimeout(this._timer);
-        this._timer = setTimeout(() => {
-          this.resizeGridWithDimensions(newSizes);
-          resolve(this._lastDimensions);
-        }, delay);
+        this._timer = setTimeout(() => resolve(this.resizeGridCallback(newSizes)), delay);
       } else {
-        this.resizeGridWithDimensions(newSizes);
-        resolve(this._lastDimensions);
+        resolve(this.resizeGridCallback(newSizes));
       }
     });
+  }
+
+  resizeGridCallback(newSizes: GridDimension) {
+    const lastDimensions = this.resizeGridWithDimensions(newSizes);
+    this.onGridAfterResize.next(lastDimensions);
+    return lastDimensions;
   }
 
   resizeGridWithDimensions(newSizes?: GridDimension): GridDimension {

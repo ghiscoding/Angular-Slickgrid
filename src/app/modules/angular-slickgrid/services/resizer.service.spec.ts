@@ -72,6 +72,8 @@ describe('Resizer Service', () => {
     // arrange
     const newHeight = 500;
     const previousHeight = window.innerHeight;
+    const subjectBeforeSpy = jest.spyOn(service.onGridBeforeResize, 'next');
+    const subjectAfterSpy = jest.spyOn(service.onGridAfterResize, 'next');
     const gridSpy = jest.spyOn(gridStub, 'getOptions');
     const serviceCalculateSpy = jest.spyOn(service, 'calculateGridNewDimensions');
     const serviceResizeSpy = jest.spyOn(service, 'resizeGrid');
@@ -93,7 +95,8 @@ describe('Resizer Service', () => {
     expect(window.innerHeight).not.toEqual(previousHeight);
     expect(serviceCalculateSpy).toReturnWith(dimensionResult);
     expect(lastDimensions).toEqual(dimensionResult);
-    service.onGridBeforeResize.subscribe((result) => expect(result).toBe(true));
+    expect(subjectBeforeSpy).toHaveBeenCalledWith(true);
+    expect(subjectAfterSpy).toHaveBeenCalledWith(dimensionResult);
   });
 
   it('should resize grid to a defined height and width when fixed dimensions are provided to the init method', () => {
