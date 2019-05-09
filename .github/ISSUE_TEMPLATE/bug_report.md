@@ -4,7 +4,6 @@ Thanks for filing an issue! However, before you submit, please read the followin
 2. Is it really an issue or is it a question? If it's a question, have you considered asking on Stack Overflow?
 -->
 
-<!-- CHOOSE the relevant heading, DELETE the other. -->
 ## I'm submitting a Bug report
 
 ### Your Environment

@@ -4,7 +4,7 @@ Thanks for filing an issue! However, before you submit, please read the followin
 2. If it's a question, have you considered asking on Stack Overflow?
 -->
 
-## General Question, Topic or Documentation
+## General Question, Topic
 
 ### Your Environment
 <!--- Include as many relevant details as possible about the environment you experienced the bug in -->
