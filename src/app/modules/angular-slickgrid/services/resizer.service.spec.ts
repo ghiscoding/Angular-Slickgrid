@@ -6,7 +6,7 @@ const DATAGRID_MIN_WIDTH = 300;
 const DATAGRID_BOTTOM_PADDING = 20;
 const DATAGRID_PAGINATION_HEIGHT = 35;
 const gridId = 'grid1';
-const gridUid = 'abc123';
+const gridUid = 'slickgrid_124343';
 const containerId = 'demo-container';
 
 const gridOptionMock = {
@@ -27,7 +27,7 @@ const gridStub = {
 const template =
   `<div id="${containerId}" style="height: 800px; width: 600px; overflow: hidden; display: block;">
     <div id="slickGridContainer-${gridId}" class="gridPane" style="width: 100%;">
-      <div id="${gridId}" class="slickgrid_${gridUid}" style="width: 100%"></div>
+    <div id="${gridId}" class="${gridUid}" style="width: 100%"></div>
     </div>
   </div>`;
 

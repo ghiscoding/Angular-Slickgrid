@@ -219,7 +219,7 @@ export class ResizerService {
       // also call the grid auto-size columns so that it takes available when going bigger
       if (this._gridOptions && this._gridOptions.enableAutoSizeColumns && this._grid.autosizeColumns) {
         // make sure that the grid still exist (by looking if the Grid UID is found in the DOM tree) to avoid SlickGrid error "missing stylesheet"
-        if (this._gridUid && $(`.slickgrid_${this._gridUid}`).length > 0) {
+        if (this._gridUid && $(`.${this._gridUid}`).length > 0) {
           this._grid.autosizeColumns();
         }
 
