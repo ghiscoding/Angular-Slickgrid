@@ -1,5 +1,5 @@
 ---
-name: Custom issue template
+name: General
 about: General Questions and Topics
 title: ''
 labels: ''
