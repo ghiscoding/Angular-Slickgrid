@@ -144,15 +144,17 @@ describe('Resizer Service', () => {
     const newOptions = { ...gridOptionMock, enablePagination: true };
     const newGridStub = { ...gridStub, getOptions: () => newOptions };
     service.init(newGridStub);
+    const subjectAfterSpy = jest.spyOn(service.onGridAfterResize, 'next');
     const serviceCalculateSpy = jest.spyOn(service, 'calculateGridNewDimensions');
 
     Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: newHeight });
     window.dispatchEvent(new Event('resize'));
-    service.resizeGrid(100).then((newGridDimensions) => {
+    service.resizeGrid(2).then((newGridDimensions) => {
       // same comment as previous test, the height dimension will work because calculateGridNewDimensions() uses "window.innerHeight"
       const calculatedDimensions = { height: (newHeight - DATAGRID_BOTTOM_PADDING - DATAGRID_PAGINATION_HEIGHT), width: DATAGRID_MIN_WIDTH };
       expect(serviceCalculateSpy).toReturnWith(calculatedDimensions);
       expect(newGridDimensions).toEqual({ ...calculatedDimensions, heightWithPagination: (calculatedDimensions.height + DATAGRID_PAGINATION_HEIGHT) });
+      expect(subjectAfterSpy).toHaveBeenCalledWith(newGridDimensions);
       done();
     });
   });
