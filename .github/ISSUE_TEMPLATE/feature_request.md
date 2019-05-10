@@ -1,3 +1,12 @@
+---
+name: Feature request
+about: Suggest an idea for this project
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 <!---
 Thanks for filing an issue! However, before you submit, please read the following:
 1. Search open/closed issues before submitting since someone might have asked the same thing before!

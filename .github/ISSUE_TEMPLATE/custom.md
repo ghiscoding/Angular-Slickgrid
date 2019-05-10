@@ -1,6 +1,6 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: Custom issue template
+about: General Questions and Topics
 title: ''
 labels: ''
 assignees: ''
@@ -10,10 +10,10 @@ assignees: ''
 <!---
 Thanks for filing an issue! However, before you submit, please read the following:
 1. Search open/closed issues before submitting since someone might have asked the same thing before!
-2. Is it really an issue or is it a question? If it's a question, have you considered asking on Stack Overflow?
+2. If it's a question, have you considered asking on Stack Overflow?
 -->
 
-## I'm submitting a Bug report
+## General Question, Topic
 
 ### Your Environment
 <!--- Include as many relevant details as possible about the environment you experienced the bug in -->
@@ -37,7 +37,7 @@ Thanks for filing an issue! However, before you submit, please read the followin
 <!--- If you are seeing an error, please include the full error message and stack trace -->
 
 ### Possible Solution
-<!--- Not obligatory, but suggest a fix/reason for the bug -->
+<!--- Not obligatory, but suggest a fix/reason for the bug/feature -->
 
 ### Code Sample
 <!-- Please provide Stackblitz, Gist or Code Sample to reproduce the issue -->
