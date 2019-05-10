@@ -8,7 +8,7 @@ import { findOrDefault } from '../services/utilities';
 export const collectionEditorFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => {
   if (!value || !columnDef || !columnDef.internalColumnEditor || !columnDef.internalColumnEditor.collection
     || !columnDef.internalColumnEditor.collection.length) {
-    return '';
+    return value;
   }
 
   const { internalColumnEditor, internalColumnEditor: { collection } } = columnDef;
