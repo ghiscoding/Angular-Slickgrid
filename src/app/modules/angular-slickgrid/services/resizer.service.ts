@@ -23,6 +23,7 @@ export class ResizerService {
   private _grid: any;
   private _lastDimensions: GridDimension;
   private _timer: any;
+  onGridAfterResize = new Subject<GridDimension>();
   onGridBeforeResize = new Subject<boolean>();
 
   /** Getter for the Grid Options pulled through the Grid Object */
@@ -31,7 +32,7 @@ export class ResizerService {
   }
 
   private get _gridUid(): string {
-    return (this._grid && this._grid.getUID) ? this._grid.getUID() : this._gridOptions.gridId;
+    return (this._grid && this._grid.getUID) ? this._grid.getUID() : this._gridOptions && this._gridOptions.gridId;
   }
 
   init(grid: any, fixedDimensions?: GridDimension): void {
@@ -45,7 +46,7 @@ export class ResizerService {
   /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
    * Options: we could also provide a % factor to resize on each height/width independently
    */
-  attachAutoResizeDataGrid(newSizes?: GridDimension) {
+  bindAutoResizeDataGrid(newSizes?: GridDimension) {
     // if we can't find the grid to resize, return without attaching anything
     const gridDomElm = $(`#${this._gridOptions && this._gridOptions.gridId ? this._gridOptions.gridId : 'grid1'}`);
     if (gridDomElm === undefined || gridDomElm.offset() === undefined) {
@@ -70,10 +71,9 @@ export class ResizerService {
    */
   calculateGridNewDimensions(gridOptions: GridOption): GridDimension | null {
     const gridDomElm = $(`#${gridOptions.gridId}`);
-    const autoResizeOptions = gridOptions && gridOptions.autoResize;
+    const autoResizeOptions = gridOptions && gridOptions.autoResize || {};
     const containerElm = (autoResizeOptions && autoResizeOptions.containerId) ? $(`#${autoResizeOptions.containerId}`) : $(`#${gridOptions.gridContainerId}`);
-    const windowElm = $(window);
-    if (windowElm === undefined || containerElm === undefined || gridDomElm === undefined) {
+    if (!window || containerElm === undefined || gridDomElm === undefined) {
       return null;
     }
 
@@ -84,9 +84,20 @@ export class ResizerService {
       bottomPadding += DATAGRID_PAGINATION_HEIGHT;
     }
 
-    const gridHeight = windowElm.height() || 0;
-    const coordOffsetTop = gridDomElm.offset();
-    const gridOffsetTop = (coordOffsetTop !== undefined) ? coordOffsetTop.top : 0;
+    let gridHeight = 0;
+    let gridOffsetTop = 0;
+
+    // which DOM element are we using to calculate the available size for the grid?
+    if (autoResizeOptions.calculateAvailableSizeBy === 'container') {
+      // uses the container's height to calculate grid height without any top offset
+      gridHeight = containerElm.height() || 0;
+    } else {
+      // uses the browser's window height with its top offset to calculate grid height
+      gridHeight = window.innerHeight || 0;
+      const coordOffsetTop = gridDomElm.offset();
+      gridOffsetTop = (coordOffsetTop !== undefined) ? coordOffsetTop.top : 0;
+    }
+
     const availableHeight = gridHeight - gridOffsetTop - bottomPadding;
     const availableWidth = containerElm.width() || 0;
     const maxHeight = autoResizeOptions && autoResizeOptions.maxHeight || undefined;
@@ -158,7 +169,7 @@ export class ResizerService {
     if (!this._grid || !this._gridOptions) {
       throw new Error(`
       Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined.
-      You can fix this by setting your gridOption to use "enableAutoResize" or create an instance of the ResizerService by calling attachAutoResizeDataGrid()`);
+      You can fix this by setting your gridOption to use "enableAutoResize" or create an instance of the ResizerService by calling bindAutoResizeDataGrid()`);
     }
 
     return new Promise((resolve) => {
@@ -167,15 +178,17 @@ export class ResizerService {
 
       if (delay > 0) {
         clearTimeout(this._timer);
-        this._timer = setTimeout(() => {
-          this.resizeGridWithDimensions(newSizes);
-          resolve(this._lastDimensions);
-        }, delay);
+        this._timer = setTimeout(() => resolve(this.resizeGridCallback(newSizes)), delay);
       } else {
-        this.resizeGridWithDimensions(newSizes);
-        resolve(this._lastDimensions);
+        resolve(this.resizeGridCallback(newSizes));
       }
     });
+  }
+
+  resizeGridCallback(newSizes: GridDimension) {
+    const lastDimensions = this.resizeGridWithDimensions(newSizes);
+    this.onGridAfterResize.next(lastDimensions);
+    return lastDimensions;
   }
 
   resizeGridWithDimensions(newSizes?: GridDimension): GridDimension {
