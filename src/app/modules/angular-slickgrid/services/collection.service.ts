@@ -125,6 +125,19 @@ export class CollectionService {
           }
           return SortDirectionNumber.neutral;
         });
+      } else if (sortByOptions && !sortByOptions.property) {
+        const sortDirection = sortByOptions.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
+        const fieldType = sortByOptions.fieldType || FieldType.string;
+
+        sortedCollection = collection.sort((dataRow1: any, dataRow2: any) => {
+          const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1 || ' ') : dataRow1;
+          const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2 || ' ') : dataRow2;
+          const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection, columnDef);
+          if (sortResult !== SortDirectionNumber.neutral) {
+            return sortResult;
+          }
+          return SortDirectionNumber.neutral;
+        });
       }
     }
 
