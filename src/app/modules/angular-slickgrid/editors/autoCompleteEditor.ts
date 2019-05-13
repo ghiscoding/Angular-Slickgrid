@@ -160,7 +160,7 @@ export class AutoCompleteEditor implements Editor {
 
   serializeValue() {
     // if user provided a custom structure, we will serialize the value returned from the object with custom structure
-    const minLength = this.editorOptions.minLength || this.editorOptions.minLength === 0 ? this.editorOptions.minLength : 3;
+    const minLength = typeof this.editorOptions.minLength !== 'undefined' ? this.editorOptions.minLength : 3;
     if (this.editorOptions.forceUserInput) {
       this._currentValue = this.$input.val().length >= minLength ? this.$input.val() : this._currentValue;
     }
