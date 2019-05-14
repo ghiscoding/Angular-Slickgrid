@@ -1,7 +1,7 @@
-import { Column } from '../models';
-import { avgTotalsDollarFormatter } from './avgTotalsDollarFormatter';
+import { Column } from '../../models';
+import { avgTotalsDollarFormatter } from '../avgTotalsDollarFormatter';
 
-describe('avgTotalsavgTotalsDollarFormatter', () => {
+describe('avgTotalsDollarFormatter', () => {
   it('should display an empty string when no value is provided', () => {
     const output = avgTotalsDollarFormatter({}, {} as Column);
     expect(output).toBe('');
@@ -17,6 +17,13 @@ describe('avgTotalsavgTotalsDollarFormatter', () => {
   it('should display an empty string when the average number is null', () => {
     const columnDef = { id: 'column1', field: 'column1' } as Column;
     const totals = { avg: { column1: null } };
+    const output = avgTotalsDollarFormatter(totals, columnDef, {});
+    expect(output).toBe('');
+  });
+
+  it('should display an empty string when the average input is not a number', () => {
+    const columnDef = { id: 'column1', field: 'column1' } as Column;
+    const totals = { avg: { column1: 'abc' } };
     const output = avgTotalsDollarFormatter(totals, columnDef, {});
     expect(output).toBe('');
   });

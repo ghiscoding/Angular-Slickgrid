@@ -1,7 +1,7 @@
-import { Column } from '../models';
-import { avgTotalsPercentageFormatter } from './avgTotalsPercentageFormatter';
+import { Column } from '../../models';
+import { avgTotalsPercentageFormatter } from '../avgTotalsPercentageFormatter';
 
-describe('avgTotalsavgTotalsPercentageFormatter', () => {
+describe('avgTotalsPercentageFormatter', () => {
   it('should display an empty string when no value is provided', () => {
     const output = avgTotalsPercentageFormatter({}, {} as Column);
     expect(output).toBe('');
@@ -17,6 +17,13 @@ describe('avgTotalsavgTotalsPercentageFormatter', () => {
   it('should display an empty string when the average number is null', () => {
     const columnDef = { id: 'column1', field: 'column1' } as Column;
     const totals = { avg: { column1: null } };
+    const output = avgTotalsPercentageFormatter(totals, columnDef, {});
+    expect(output).toBe('');
+  });
+
+  it('should display an empty string when the average input is not a number', () => {
+    const columnDef = { id: 'column1', field: 'column1' } as Column;
+    const totals = { avg: { column1: 'abc' } };
     const output = avgTotalsPercentageFormatter(totals, columnDef, {});
     expect(output).toBe('');
   });
@@ -41,7 +48,7 @@ describe('avgTotalsavgTotalsPercentageFormatter', () => {
     expect(output2).toBe('(34.57%)');
   });
 
-  it('should display a rounded percentage average number without decimals when no min/maxDecimal is defined and when a positive number is provided', () => {
+  it('should display a rounded percentage average number without decimals when no min/maxDecimal is defined and a number with decimals is provided', () => {
     const totals = { avg: { column1: 123.55678, column2: 345.2, column3: -2.45 } };
 
     const output1 = avgTotalsPercentageFormatter(totals, { id: 'column1', field: 'column1' } as Column, {});

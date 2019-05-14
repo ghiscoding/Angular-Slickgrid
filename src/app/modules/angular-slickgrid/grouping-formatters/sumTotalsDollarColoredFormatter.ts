@@ -1,17 +1,20 @@
 import { Column, GroupTotalsFormatter } from './../models/index';
-import { decimalFormatted } from './../services/utilities';
+import { formatNumber } from './../services/utilities';
 
 export const sumTotalsDollarColoredFormatter: GroupTotalsFormatter = (totals: any, columnDef: Column, grid?: any) => {
   const field = columnDef.field || '';
   const val = totals.sum && totals.sum[field];
-  const prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
-  const suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+  const params = columnDef && columnDef.params;
+  const prefix = params && params.groupFormatterPrefix || '';
+  const suffix = params && params.groupFormatterSuffix || '';
+  const minDecimal = params && params.minDecimal !== undefined ? params.minDecimal : 2;
+  const maxDecimal = params && params.maxDecimal !== undefined ? params.maxDecimal : 4;
+  const displayNegativeWithParentheses = params && params.displayNegativeWithParentheses;
 
-  if (isNaN(+val)) {
-    return '';
-  } else if (val >= 0) {
-    return `<span style="color:green;">${prefix + '$' + decimalFormatted(val, 2, 2) + suffix}</span>`;
-  } else {
-    return `<span style="color:red;">${prefix + '$' + decimalFormatted(val, 2, 2) + suffix}</span>`;
+  if (val != null && !isNaN(+val)) {
+    const colorStyle = (val >= 0) ? 'green' : 'red';
+    const formattedNumber = formatNumber(val, minDecimal, maxDecimal, displayNegativeWithParentheses, '$');
+    return `<span style="color:${colorStyle}">${prefix}${formattedNumber}${suffix}</span>`;
   }
+  return '';
 };

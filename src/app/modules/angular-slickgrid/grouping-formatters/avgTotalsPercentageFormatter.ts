@@ -18,7 +18,7 @@ export const avgTotalsPercentageFormatter: GroupTotalsFormatter = (totals: any, 
     maxDecimal = params.maxDecimal;
   }
 
-  if (val != null) {
+  if (val != null && !isNaN(+val)) {
     if (val < 0) {
       val = Math.abs(val);
       if (!displayNegativeWithParentheses) {
