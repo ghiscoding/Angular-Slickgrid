@@ -21,7 +21,7 @@ export const arrayObjectToCsvFormatter: Formatter = (row: number, cell: number, 
     // we will 1st get the object from the dataContext, then
     if (Array.isArray(dataContext[parentObjectKeyName]) && dataContext[parentObjectKeyName].length > 0) {
       const outputStrings = [];
-      dataContext[parentObjectKeyName].forEach((data) => {
+      dataContext[parentObjectKeyName].forEach((data: any) => {
         const strings = [];
 
         // 2nd from that data loop through all propertyNames we want to use (e.g.: ['firstName', 'lastName'])
