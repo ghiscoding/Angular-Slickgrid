@@ -1,9 +1,6 @@
 import { FieldType, OperatorType } from '../models/index';
 import { Observable, Subscription } from 'rxjs';
 import { first, take } from 'rxjs/operators';
-
-
-
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 

@@ -3,12 +3,24 @@ import { decimalFormatted } from './../services/utilities';
 
 export const avgTotalsDollarFormatter: GroupTotalsFormatter = (totals: any, columnDef: Column, grid?: any) => {
   const field = columnDef.field || '';
-  const val = totals.avg && totals.avg[field];
-  const prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
-  const suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+  const params = columnDef && columnDef.params;
+  let val = totals && totals.avg && totals.avg[field];
+  let prefix = params && params.groupFormatterPrefix || '';
+  const suffix = params && params.groupFormatterSuffix || '';
+  const minDecimal = params && params.minDecimal !== undefined ? params.minDecimal : 2;
+  const maxDecimal = params && params.maxDecimal !== undefined ? params.maxDecimal : 4;
+  const displayNegativeWithParentheses = params && params.displayNegativeWithParentheses;
 
   if (val != null) {
-    return prefix + '$' + decimalFormatted(val, 2, 4) + suffix;
+    if (val < 0) {
+      val = Math.abs(val);
+      if (!displayNegativeWithParentheses) {
+        prefix += '-';
+      } else {
+        return `${prefix}($${decimalFormatted(val, minDecimal, maxDecimal)})${suffix}`;
+      }
+    }
+    return `${prefix}$${decimalFormatted(val, minDecimal, maxDecimal)}${suffix}`;
   }
   return '';
 };
