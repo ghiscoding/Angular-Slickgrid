@@ -1,9 +1,6 @@
 import { FieldType, OperatorType } from '../models/index';
 import { Observable, Subscription } from 'rxjs';
 import { first, take } from 'rxjs/operators';
-
-
-
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
@@ -153,6 +150,34 @@ export function decimalFormatted(input: number | string, minDecimal?: number, ma
     amount += '0';
   }
   return amount;
+}
+
+export function formatNumber(input: number | string, minDecimal?: number, maxDecimal?: number, displayNegativeWithParentheses?: boolean, symbolPrefix = '', symbolSuffix = '') {
+  if (isNaN(+input)) {
+    return input;
+  }
+
+  const calculatedValue = ((Math.round(parseFloat(input as string) * 1000000) / 1000000));
+
+  if (calculatedValue < 0) {
+    const absValue = Math.abs(calculatedValue);
+    if (displayNegativeWithParentheses) {
+      if (!isNaN(minDecimal) || !isNaN(maxDecimal)) {
+        return `(${symbolPrefix}${decimalFormatted(absValue, minDecimal, maxDecimal)})${symbolSuffix}`;
+      }
+      return `(${symbolPrefix}${absValue})${symbolSuffix}`;
+    } else {
+      if (!isNaN(minDecimal) || !isNaN(maxDecimal)) {
+        return `-${symbolPrefix}${decimalFormatted(absValue, minDecimal, maxDecimal)}${symbolSuffix}`;
+      }
+      return `-${symbolPrefix}${absValue}${symbolSuffix}`;
+    }
+  } else {
+    if (!isNaN(minDecimal) || !isNaN(maxDecimal)) {
+      return `${symbolPrefix}${decimalFormatted(input, minDecimal, maxDecimal)}${symbolSuffix}`;
+    }
+    return `${symbolPrefix}${input}${symbolSuffix}`;
+  }
 }
 
 /** From a dot (.) notation find and return a property within an object given a path */
