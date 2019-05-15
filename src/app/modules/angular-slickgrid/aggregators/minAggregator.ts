@@ -16,13 +16,13 @@ export class MinAggregator implements Aggregator {
     const val = item[this._field];
     if (val != null && val !== '' && !isNaN(val)) {
       if (this._min == null || val < this._min) {
-        this._min = val;
+        this._min = parseFloat(val);
       }
     }
   }
 
   storeResult(groupTotals) {
-    if (!groupTotals.min) {
+    if (!groupTotals || groupTotals.min === undefined) {
       groupTotals.min = {};
     }
     groupTotals.min[this._field] = this._min;

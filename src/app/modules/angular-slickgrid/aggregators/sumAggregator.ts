@@ -20,7 +20,7 @@ export class SumAggregator implements Aggregator {
   }
 
   storeResult(groupTotals) {
-    if (!groupTotals.sum) {
+    if (!groupTotals || groupTotals.sum === undefined) {
       groupTotals.sum = {};
     }
     groupTotals.sum[this._field] = this._sum;

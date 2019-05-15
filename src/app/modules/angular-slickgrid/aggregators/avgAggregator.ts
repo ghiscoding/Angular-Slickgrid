@@ -26,7 +26,7 @@ export class AvgAggregator implements Aggregator {
   }
 
   storeResult(groupTotals) {
-    if (!groupTotals.avg) {
+    if (!groupTotals || groupTotals.avg === undefined) {
       groupTotals.avg = {};
     }
     if (this._nonNullCount !== 0) {
