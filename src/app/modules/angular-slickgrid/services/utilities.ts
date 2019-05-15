@@ -152,7 +152,7 @@ export function decimalFormatted(input: number | string, minDecimal?: number, ma
   return amount;
 }
 
-export function formatNumber(input: number | string, minDecimal?: number, maxDecimal?: number, displayNegativeNumberWithParentheses?: boolean, symbolPrefix = '', symbolSuffix = '') {
+export function formatNumber(input: number | string, minDecimal?: number, maxDecimal?: number, displayNegativeNumberWithParentheses?: boolean, symbolPrefix = '', symbolSuffix = ''): string {
   if (isNaN(+input)) {
     return input;
   }
@@ -163,9 +163,9 @@ export function formatNumber(input: number | string, minDecimal?: number, maxDec
     const absValue = Math.abs(calculatedValue);
     if (displayNegativeNumberWithParentheses) {
       if (!isNaN(minDecimal) || !isNaN(maxDecimal)) {
-        return `(${symbolPrefix}${decimalFormatted(absValue, minDecimal, maxDecimal)})${symbolSuffix}`;
+        return `(${symbolPrefix}${decimalFormatted(absValue, minDecimal, maxDecimal)}${symbolSuffix})`;
       }
-      return `(${symbolPrefix}${absValue})${symbolSuffix}`;
+      return `(${symbolPrefix}${absValue}${symbolSuffix})`;
     } else {
       if (!isNaN(minDecimal) || !isNaN(maxDecimal)) {
         return `-${symbolPrefix}${decimalFormatted(absValue, minDecimal, maxDecimal)}${symbolSuffix}`;
