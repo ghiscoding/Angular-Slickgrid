@@ -1,5 +1,5 @@
-import { SortDirectionNumber } from './../models/sortDirectionNumber.enum';
-import { numericSorter } from './numericSorter';
+import { SortDirectionNumber } from '../../models/sortDirectionNumber.enum';
+import { numericSorter } from '../numericSorter';
 
 describe('the Numeric Sorter', () => {
   it('should return an array of numbers sorted ascending when only numbers are provided', () => {

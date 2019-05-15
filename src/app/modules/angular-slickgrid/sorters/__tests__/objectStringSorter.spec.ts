@@ -1,5 +1,5 @@
-import { SortDirectionNumber } from './../models/sortDirectionNumber.enum';
-import { objectStringSorter } from './objectStringSorter';
+import { SortDirectionNumber } from '../../models/sortDirectionNumber.enum';
+import { objectStringSorter } from '../objectStringSorter';
 
 describe('the Object w/String Sorter', () => {
   let collection = [];
@@ -73,13 +73,11 @@ describe('the Object w/String Sorter', () => {
   it(`should return an array with sorted characters showing at the beginning then comes the objects sorted ascending`, () => {
     const direction = SortDirectionNumber.asc;
     const columnDef = { id: 'users', field: 'users', dataKey: 'lastName' };
-    collection.unshift('e');
     collection.push('a');
 
     collection.sort((value1, value2) => objectStringSorter(value1, value2, direction, columnDef));
     expect(collection).toEqual([
       // entries with same LastName comes by order of entry in the array
-      'e',
       'a',
       { firstName: 'Ava', lastName: null },
       { firstName: '', lastName: 'Cash' },

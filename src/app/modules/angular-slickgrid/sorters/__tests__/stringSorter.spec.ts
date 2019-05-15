@@ -1,5 +1,5 @@
-import { SortDirectionNumber } from './../models/sortDirectionNumber.enum';
-import { stringSorter } from './stringSorter';
+import { SortDirectionNumber } from '../../models/sortDirectionNumber.enum';
+import { stringSorter } from '../stringSorter';
 
 describe('the String Sorter', () => {
   it('should return original unsorted array when no direction is provided', () => {
