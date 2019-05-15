@@ -47,6 +47,7 @@ export * from './filterConditionOption.interface';
 export * from './filterMultiplePassType.enum';
 export * from './filterMultiplePassTypeString';
 export * from './formatter.interface';
+export * from './formatterOption.interface';
 export * from './formatterResultObject.interface';
 export * from './graphqlDatasetFilter.interface';
 export * from './graphqlCursorPaginationOption.interface';
