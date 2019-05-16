@@ -1,7 +1,7 @@
 import { Aggregator } from './../models/aggregator.interface';
 
 export class MaxAggregator implements Aggregator {
-  private _max: number;
+  private _max: number | null;
   private _field: number | string;
 
   constructor(field: number | string) {
@@ -12,8 +12,8 @@ export class MaxAggregator implements Aggregator {
     this._max = null;
   }
 
-  accumulate(item) {
-    const val = item[this._field];
+  accumulate(item: any) {
+    const val = (item && item.hasOwnProperty(this._field)) ? item[this._field] : null;
     if (val != null && val !== '' && !isNaN(val)) {
       if (this._max == null || val > this._max) {
         this._max = parseFloat(val);
@@ -21,7 +21,7 @@ export class MaxAggregator implements Aggregator {
     }
   }
 
-  storeResult(groupTotals) {
+  storeResult(groupTotals: any) {
     if (!groupTotals || groupTotals.max === undefined) {
       groupTotals.max = {};
     }

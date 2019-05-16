@@ -26,7 +26,7 @@ describe('sumAggregator', () => {
     aggregator.storeResult(groupTotals);
 
     // assert
-    expect(null).toBe(groupTotals['sum'][fieldName]);
+    expect(0).toBe(groupTotals['sum'][fieldName]);
   });
 
   it('should return the sum value when the chosen field from the dataset contains only numbers', () => {

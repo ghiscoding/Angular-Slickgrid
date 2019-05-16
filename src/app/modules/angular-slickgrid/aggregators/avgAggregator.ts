@@ -1,7 +1,7 @@
 import { Aggregator } from './../models/aggregator.interface';
 
 export class AvgAggregator implements Aggregator {
-  private _count: number;
+  private _count = 0;
   private _nonNullCount: number;
   private _sum: number;
   private _field: number | string;
@@ -16,8 +16,8 @@ export class AvgAggregator implements Aggregator {
     this._sum = 0;
   }
 
-  accumulate(item) {
-    const val = item[this._field];
+  accumulate(item: any) {
+    const val = (item && item.hasOwnProperty(this._field)) ? item[this._field] : null;
     this._count++;
     if (val != null && val !== '' && !isNaN(val)) {
       this._nonNullCount++;
@@ -25,7 +25,7 @@ export class AvgAggregator implements Aggregator {
     }
   }
 
-  storeResult(groupTotals) {
+  storeResult(groupTotals: any) {
     if (!groupTotals || groupTotals.avg === undefined) {
       groupTotals.avg = {};
     }

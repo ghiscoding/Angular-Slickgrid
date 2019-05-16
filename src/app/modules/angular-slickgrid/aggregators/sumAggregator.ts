@@ -1,7 +1,7 @@
 import { Aggregator } from './../models/aggregator.interface';
 
 export class SumAggregator implements Aggregator {
-  private _sum: number;
+  private _sum: number = 0;
   private _field: number | string;
 
   constructor(field: number | string) {
@@ -9,17 +9,17 @@ export class SumAggregator implements Aggregator {
   }
 
   init() {
-    this._sum = null;
+    this._sum = 0;
   }
 
-  accumulate(item) {
-    const val = item[this._field];
+  accumulate(item: any) {
+    const val = (item && item.hasOwnProperty(this._field)) ? item[this._field] : null;
     if (val != null && val !== '' && !isNaN(val)) {
       this._sum += parseFloat(val);
     }
   }
 
-  storeResult(groupTotals) {
+  storeResult(groupTotals: any) {
     if (!groupTotals || groupTotals.sum === undefined) {
       groupTotals.sum = {};
     }
