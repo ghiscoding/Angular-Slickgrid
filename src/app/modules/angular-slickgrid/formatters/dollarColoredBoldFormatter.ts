@@ -1,18 +1,17 @@
 import { Column, Formatter } from './../models/index';
-import { decimalFormatted } from './../services/utilities';
+import { formatNumber } from './../services/utilities';
+import { getValueFromParamsOrGridOptions } from './formatterUtility';
 
-export const dollarColoredBoldFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) => {
+export const dollarColoredBoldFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
   const isNumber = (value === null || value === undefined || value === '') ? false : !isNaN(+value);
-  const params = columnDef && columnDef.params || {};
-  const minDecimal = params.minDecimal || 2;
-  const maxDecimal = params.maxDecimal || 4;
-  const outputValue = (isNumber && (params.minDecimal || params.maxDecimal)) ? decimalFormatted(value, minDecimal, maxDecimal) : value;
+  const minDecimal = getValueFromParamsOrGridOptions('minDecimal', columnDef, grid, 2);
+  const maxDecimal = getValueFromParamsOrGridOptions('maxDecimal', columnDef, grid, 4);
+  const displayNegativeNumberWithParentheses = getValueFromParamsOrGridOptions('displayNegativeNumberWithParentheses', columnDef, grid, false);
 
-  if (!isNumber) {
-    return value;
-  } else if (value >= 0) {
-    return `<span style="color:green; font-weight:bold;">$${outputValue}</span>`;
-  } else {
-    return `<span style="color:red; font-weight:bold;">$${outputValue}</span>`;
+  if (isNumber) {
+    const colorStyle = (value >= 0) ? 'green' : 'red';
+    const formattedNumber = formatNumber(value, minDecimal, maxDecimal, displayNegativeNumberWithParentheses, '$');
+    return `<span style="color:${colorStyle}; font-weight:bold;">${formattedNumber}</span>`;
   }
+  return value;
 };

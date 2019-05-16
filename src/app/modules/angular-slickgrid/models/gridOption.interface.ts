@@ -8,6 +8,7 @@ import {
   DraggableGrouping,
   EditCommand,
   ExportOption,
+  FormatterOption,
   GridMenu,
   GridState,
   HeaderButton,
@@ -232,6 +233,9 @@ export interface GridOption {
 
   /** Formatter classes factory */
   formatterFactory?: any;
+
+  /** Formatter commonly used options defined for the entire grid */
+  formatterOptions?: FormatterOption;
 
   /** Defaults to false, do we want to freeze (pin) the bottom portion instead of the top */
   frozenBottom?: boolean;
