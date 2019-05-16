@@ -154,7 +154,7 @@ export function decimalFormatted(input: number | string, minDecimal?: number, ma
 
 export function formatNumber(input: number | string, minDecimal?: number, maxDecimal?: number, displayNegativeNumberWithParentheses?: boolean, symbolPrefix = '', symbolSuffix = ''): string {
   if (isNaN(+input)) {
-    return input;
+    return input as string;
   }
 
   const calculatedValue = ((Math.round(parseFloat(input as string) * 1000000) / 1000000));
@@ -214,6 +214,32 @@ export function mapMomentDateFormatWithFieldType(fieldType: FieldType): string {
     case FieldType.dateTimeIsoAM_PM:
       map = 'YYYY-MM-DD hh:mm:ss A';
       break;
+    // all Euro Formats (date/month/year)
+    case FieldType.dateEuro:
+      map = 'DD/MM/YYYY';
+      break;
+    case FieldType.dateEuroShort:
+      map = 'D/M/YY';
+      break;
+    case FieldType.dateTimeEuro:
+      map = 'DD/MM/YYYY HH:mm:ss';
+      break;
+    case FieldType.dateTimeShortEuro:
+      map = 'DD/MM/YYYY HH:mm';
+      break;
+    case FieldType.dateTimeEuroAmPm:
+      map = 'DD/MM/YYYY hh:mm:ss a';
+      break;
+    case FieldType.dateTimeEuroAM_PM:
+      map = 'DD/MM/YYYY hh:mm:ss A';
+      break;
+    case FieldType.dateTimeEuroShort:
+      map = 'D/M/YY H:m:s';
+      break;
+    case FieldType.dateTimeEuroShortAmPm:
+      map = 'D/M/YY h:m:s a';
+      break;
+    // all US Formats (month/date/year)
     case FieldType.dateUs:
       map = 'MM/DD/YYYY';
       break;
@@ -293,6 +319,32 @@ export function mapFlatpickrDateFormatWithFieldType(fieldType: FieldType): strin
     case FieldType.dateTimeIsoAM_PM:
       map = 'Y-m-d h:i:S K';
       break;
+    // all Euro Formats (date/month/year)
+    case FieldType.dateEuro:
+      map = 'd/m/Y';
+      break;
+    case FieldType.dateEuroShort:
+      map = 'd/m/y';
+      break;
+    case FieldType.dateTimeEuro:
+      map = 'd/m/Y H:i:S';
+      break;
+    case FieldType.dateTimeShortEuro:
+      map = 'd/m/y H:i';
+      break;
+    case FieldType.dateTimeEuroAmPm:
+      map = 'd/m/Y h:i:S K'; // there is no lowercase in Flatpickr :(
+      break;
+    case FieldType.dateTimeEuroAM_PM:
+      map = 'd/m/Y h:i:s K';
+      break;
+    case FieldType.dateTimeEuroShort:
+      map = 'd/m/y H:i:s';
+      break;
+    case FieldType.dateTimeEuroShortAmPm:
+      map = 'd/m/y h:i:s K'; // there is no lowercase in Flatpickr :(
+      break;
+    // all US Formats (month/date/year)
     case FieldType.dateUs:
       map = 'm/d/Y';
       break;
@@ -412,6 +464,14 @@ export function mapOperatorByFieldType(fieldType: FieldType | string): OperatorT
     case FieldType.dateTimeIso:
     case FieldType.dateTimeIsoAmPm:
     case FieldType.dateTimeIsoAM_PM:
+    case FieldType.dateEuro:
+    case FieldType.dateEuroShort:
+    case FieldType.dateTimeEuro:
+    case FieldType.dateTimeEuroAmPm:
+    case FieldType.dateTimeEuroAM_PM:
+    case FieldType.dateTimeEuroShort:
+    case FieldType.dateTimeEuroShortAmPm:
+    case FieldType.dateTimeEuroShortAM_PM:
     case FieldType.dateUs:
     case FieldType.dateUsShort:
     case FieldType.dateTimeUs:

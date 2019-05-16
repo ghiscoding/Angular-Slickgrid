@@ -1,7 +1,9 @@
 import { SortDirectionNumber } from './../models/sortDirectionNumber.enum';
-import { dateUsShortSorter } from './dateUsShortSorter';
-import { dateSorter } from './dateSorter';
+import { dateEuroShortSorter } from './dateEuroShortSorter';
+import { dateEuroSorter } from './dateEuroSorter';
 import { dateIsoSorter } from './dateIsoSorter';
+import { dateSorter } from './dateSorter';
+import { dateUsShortSorter } from './dateUsShortSorter';
 import { dateUsSorter } from './dateUsSorter';
 import { numericSorter } from './numericSorter';
 import { objectStringSorter } from './objectStringSorter';
@@ -16,6 +18,12 @@ export const Sorters = {
    * If you wish to optionally include time simply use the "Sorters.date" which work with/without time
    */
   dateIso: dateIsoSorter,
+
+  /** Sorter method to sort values by Date formatted as Euro date (dd/mm/yyyy) */
+  dateEuro: dateEuroSorter,
+
+  /** Sorter method to sort values by Date formatted as Euro short date (d/m/yy) */
+  dateEuroShort: dateEuroShortSorter,
 
   /** Sorter method to sort values by Date formatted as US date (mm/dd/yyyy) */
   dateUs: dateUsSorter,
