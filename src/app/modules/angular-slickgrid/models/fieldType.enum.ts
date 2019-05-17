@@ -32,6 +32,33 @@ export enum FieldType {
   /** Format: 'YYYY-MM-DD HH:mm' => 2001-01-01 14:01 */
   dateTimeShortIso,
 
+  /** Format (Euro): 'DD/MM/YYYY' => 02/28/2001 */
+  dateEuro,
+
+  /** Format (Euro): 'D/M/YY' => 2/28/12 */
+  dateEuroShort,
+
+  /** Format (Euro): 'DD/MM/YYYY HH:mm' => 02/28/2001 13:01 */
+  dateTimeShortEuro,
+
+  /** Format (Euro): 'DD/MM/YYYY HH:mm:ss' => 02/28/2001 13:01:01 */
+  dateTimeEuro,
+
+  /** Format (Euro): 'DD/MM/YYYY hh:mm:ss a' => 02/28/2001 11:01:01 pm */
+  dateTimeEuroAmPm,
+
+  /** Format (Euro): 'DD/MM/YYYY hh:mm:ss A' => 02/28/2001 11:01:01 PM */
+  dateTimeEuroAM_PM,
+
+  /** Format (Euro): 'D/M/YY H:m:s' => 2/28/14 14:1:2 */
+  dateTimeEuroShort,
+
+  /** Format (Euro): 'D/M/YY h:m:s a' => 2/28/14 1:2:10 pm */
+  dateTimeEuroShortAmPm,
+
+  /** Format (Euro): 'D/M/YY h:m:s A' => 2/28/14 14:1:1 PM */
+  dateTimeEuroShortAM_PM,
+
   /** Format: 'MM/DD/YYYY' => 02/28/2001 */
   dateUs,
 

@@ -6,11 +6,15 @@ import { checkmarkFormatter } from './checkmarkFormatter';
 import { collectionFormatter } from './collectionFormatter';
 import { collectionEditorFormatter } from './collectionEditorFormatter';
 import { complexObjectFormatter } from './complexObjectFormatter';
+import { dateEuroFormatter } from './dateEuroFormatter';
 import { dateIsoFormatter } from './dateIsoFormatter';
+import { dateTimeEuroAmPmFormatter } from './dateTimeEuroAmPmFormatter';
+import { dateTimeEuroFormatter } from './dateTimeEuroFormatter';
 import { dateTimeIsoFormatter } from './dateTimeIsoFormatter';
 import { dateTimeIsoAmPmFormatter } from './dateTimeIsoAmPmFormatter';
 import { dateTimeUsAmPmFormatter } from './dateTimeUsAmPmFormatter';
 import { dateTimeUsFormatter } from './dateTimeUsFormatter';
+import { dateTimeShortEuroFormatter } from './dateTimeShortEuroFormatter';
 import { dateTimeShortIsoFormatter } from './dateTimeShortIsoFormatter';
 import { dateTimeShortUsFormatter } from './dateTimeShortUsFormatter';
 import { dateUsFormatter } from './dateUsFormatter';
@@ -98,6 +102,18 @@ export const Formatters = {
 
   /** Takes a Date object and displays it as an ISO Date+Time+(am/pm) format */
   dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
+
+  /** Takes a Date object and displays it as an Euro Date format */
+  dateEuro: dateEuroFormatter,
+
+  /** Takes a Date object and displays it as an Euro Date+Time format */
+  dateTimeEuro: dateTimeEuroFormatter,
+
+  /** Takes a Date object and displays it as an Euro Date+Time (without seconds) format */
+  dateTimeShortEuro: dateTimeShortEuroFormatter,
+
+  /** Takes a Date object and displays it as an Euro Date+Time+(am/pm) format */
+  dateTimeEuroAmPm: dateTimeEuroAmPmFormatter,
 
   /** Takes a Date object and displays it as an US Date format */
   dateUs: dateUsFormatter,
