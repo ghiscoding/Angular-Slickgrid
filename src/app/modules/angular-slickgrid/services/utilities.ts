@@ -7,8 +7,9 @@ const moment = moment_; // patch to fix rollup "moment has no default export" is
 // using external non-typed js libraries
 declare var $: any;
 
-/** Simple function to which will loop and create as demanded the number of white spaces,
- * this will be used in the Excel export
+/**
+ * Simple function to which will loop and create as demanded the number of white spaces,
+ * this is used in the CSV export
  * @param int nbSpaces: number of white spaces to create
  */
 export function addWhiteSpaces(nbSpaces): string {
@@ -20,16 +21,42 @@ export function addWhiteSpaces(nbSpaces): string {
   return result;
 }
 
-/** HTML encode using jQuery */
-export function htmlEncode(value) {
-  // create a in-memory div, set it's inner text(which jQuery automatically encodes)
-  // then grab the encoded contents back out.  The div never exists on the page.
-  return $('<div/>').text(value).html();
+/** HTML decode using jQuery with a <div>
+ * Create a in-memory div, set it's inner text(which jQuery automatically encodes)
+ * then grab the encoded contents back out.  The div never exists on the page.
+*/
+export function htmlDecode(encodedStr) {
+  const parser = new DOMParser;
+  if (parser && parser.parseFromString) {
+    const dom = parser.parseFromString(
+      '<!doctype html><body>' + encodedStr,
+      'text/html');
+    return dom && dom.body && dom.body.textContent;
+  } else {
+    // for some browsers that might not support DOMParser, use jQuery instead
+    return $('<div/>').html(encodedStr).text();
+  }
 }
 
-/** HTML decode using jQuery */
-export function htmlDecode(value) {
-  return $('<div/>').html(value).text();
+/** HTML encode using jQuery with a <div>
+ * Create a in-memory div, set it's inner text(which jQuery automatically encodes)
+ * then grab the encoded contents back out.  The div never exists on the page.
+*/
+export function htmlEncode(inputValue: string) {
+  const entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    '\'': '&#39;',
+    // '/': '&#x2F;',
+    // '`': '&#x60;',
+    // '=': '&#x3D;'
+  };
+  // all symbols::  /[&<>"'`=\/]/g
+  return inputValue.replace(/[&<>"']/g, (s) => {
+    return entityMap[s];
+  });
 }
 
 /** decode text into html entity
@@ -55,18 +82,14 @@ export function htmlEntityEncode(input: any): string {
 }
 
 /**
- * Compares two arrays to determine if all the items are equal
+ * Compares two arrays of characters to determine if all the items are equal
  * @param a first array
  * @param b second array to compare with a
- * @param [orderMatters=false] flag if the order matters, if not arrays will be sorted
+ * @param [orderMatters=false] flag if the order matters, if not arrays will be sorted before comparison
  * @return boolean true if equal, else false
  */
-export function arraysEqual(a: any[], b: any[], orderMatters: boolean = false): boolean {
-  if (a === b) {
-    return true;
-  }
-
-  if (!a || !b) {
+export function charArraysEqual(a: any[], b: any[], orderMatters: boolean = false): boolean {
+  if (!Array.isArray(a) || !Array.isArray(a)) {
     return false;
   }
 
@@ -104,13 +127,13 @@ export function castToPromise<T>(input: Promise<T> | Observable<T>, fromServiceN
     if (!(promise instanceof Promise)) {
       promise = input.pipe(take(1)).toPromise();
     }
-    if (!(promise instanceof Promise)) {
-      throw new Error(
-        `Something went wrong, Angular-Slickgrid ${fromServiceName} is not able to convert the Observable into a Promise.
-        If you are using Angular HttpClient, you could try converting your http call to a Promise with ".toPromise()"
-        for example::  this.http.post('graphql', { query: graphqlQuery }).toPromise()
-        `);
-    }
+  }
+  if (!(promise instanceof Promise)) {
+    throw new Error(
+      `Something went wrong, Angular-Slickgrid ${fromServiceName} is not able to convert the Observable into a Promise.
+      If you are using Angular HttpClient, you could try converting your http call to a Promise with ".toPromise()"
+      for example::  this.http.post('graphql', { query: graphqlQuery }).toPromise()
+      `);
   }
 
   return promise;
@@ -494,11 +517,11 @@ export function parseBoolean(input: boolean | number | string) {
 }
 
 /**
- * Parse a date passed as a string and return a Date object (if valid)
+ * Parse a date passed as a string (Date only, without time) and return a Date object (if valid)
  * @param inputDateString
  * @returns string date formatted
  */
-export function parseUtcDate(inputDateString: string, useUtc: boolean): string | null {
+export function parseUtcDate(inputDateString: string, useUtc?: boolean): string | null {
   let date = null;
 
   if (/^[0-9\-\/]*$/.test(inputDateString)) {
@@ -525,28 +548,40 @@ export function sanitizeHtmlToText(htmlString: string) {
 }
 
 /**
- * Title case the complete sentence (upper case first char of each word while changing everything else to lower case)
- * @param string
+ * Title case (or capitalize) first char of a string
+ * Optionall title case the complete sentence (upper case first char of each word while changing everything else to lower case)
+ * @param inputStr
  * @returns string
  */
-export function titleCase(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+export function titleCase(inputStr: string, caseEveryWords = false) {
+  if (typeof inputStr === 'string') {
+    if (caseEveryWords) {
+      return inputStr.replace(/\w\S*/g, (outputStr) => {
+        return outputStr.charAt(0).toUpperCase() + outputStr.substr(1).toLowerCase();
+      });
+    }
+    return inputStr.charAt(0).toUpperCase() + inputStr.slice(1);
+  }
+  return inputStr;
 }
 
 /**
- * Converts a string to camel case
- * @param str the string to convert
+ * Converts a string to camel case (camelCase)
+ * @param inputStr the string to convert
  * @return the string in camel case
  */
-export function toCamelCase(str: string): string {
-  return str.replace(/(?:^\w|[A-Z]|\b\w|[\s+\-_\/])/g, (match: string, offset: number) => {
-    // remove white space or hypens or underscores
-    if (/[\s+\-_\/]/.test(match)) {
-      return '';
-    }
+export function toCamelCase(inputStr: string): string {
+  if (typeof inputStr === 'string') {
+    return inputStr.replace(/(?:^\w|[A-Z]|\b\w|[\s+\-_\/])/g, (match: string, offset: number) => {
+      // remove white space or hypens or underscores
+      if (/[\s+\-_\/]/.test(match)) {
+        return '';
+      }
 
-    return offset === 0 ? match.toLowerCase() : match.toUpperCase();
-  });
+      return offset === 0 ? match.toLowerCase() : match.toUpperCase();
+    });
+  }
+  return inputStr;
 }
 
 /**
@@ -554,19 +589,64 @@ export function toCamelCase(str: string): string {
  * @param str the string to convert
  * @return the string in kebab case
  */
-export function toKebabCase(str: string): string {
-  return toCamelCase(str).replace(/([A-Z])/g, '-$1').toLowerCase();
+export function toKebabCase(inputStr: string): string {
+  if (typeof inputStr === 'string') {
+    return toCamelCase(inputStr).replace(/([A-Z])/g, '-$1').toLowerCase();
+  }
+  return inputStr;
+}
+
+/**
+ * Converts a string from camelCase to snake_case (underscore) case
+ * @param str the string to convert
+ * @return the string in kebab case
+ */
+export function toSnakeCase(inputStr: string): string {
+  if (typeof inputStr === 'string') {
+    return toCamelCase(inputStr).replace(/([A-Z])/g, '_$1').toLowerCase();
+  }
+  return inputStr;
 }
 
 /**
  * Takes an input array and makes sure the array has unique values by removing duplicates
  * @param array input with possible duplicates
+ * @param objectProperty optionally provide an object property to compare (example: 'id')
  * @return array output without duplicates
  */
 export function uniqueArray(arr: any[]): any[] {
-  return arr.filter((item: any, index: number) => {
-    return arr.indexOf(item) >= index;
-  });
+  if (Array.isArray(arr) && arr.length > 0) {
+    return arr.filter((item: any, index: number) => {
+      return arr.indexOf(item) >= index;
+    });
+  }
+  return arr;
+}
+
+/**
+ * Takes an input array of objects and makes sure the array has unique object values by removing duplicates
+ * it will loop through the array using a property name (or "id" when is not provided) to compare uniqueness
+ * @param array input with possible duplicates
+ * @param propertyName defaults to "id"
+ * @return array output without duplicates
+ */
+export function uniqueObjectArray(arr: any[], propertyName = 'id'): any[] {
+  if (Array.isArray(arr) && arr.length > 0) {
+    const result = [];
+    const map = new Map();
+
+    for (const item of arr) {
+      if (!map.has(item[propertyName])) {
+        map.set(item[propertyName], true);    // set any value to Map
+        result.push({
+          id: item[propertyName],
+          name: item.name
+        });
+      }
+    }
+    return result;
+  }
+  return arr;
 }
 
 /**
