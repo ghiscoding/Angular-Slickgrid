@@ -46,7 +46,13 @@ export class GridFormatterComponent implements OnInit {
       },
       enableAutoResize: true,
       enableCellNavigation: true,
-      enableExcelCopyBuffer: true
+      enableExcelCopyBuffer: true,
+      // you customize the date separator through "formatterOptions"
+      /*
+      formatterOptions: {
+        dateSeparator: '.'
+      },
+      */
     };
 
     // mock a dataset

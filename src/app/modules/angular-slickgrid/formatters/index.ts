@@ -82,40 +82,40 @@ export const Formatters = {
   collectionEditor: collectionEditorFormatter,
 
   /** Takes a Date object and displays it as an ISO Date format (YYYY-MM-DD) */
-  dateIso: getAssociatedDateFormatter(FieldType.dateIso),
+  dateIso: getAssociatedDateFormatter(FieldType.dateIso, '-'),
 
   /** Takes a Date object and displays it as an ISO Date+Time format (YYYY-MM-DD HH:mm:ss) */
-  dateTimeIso: getAssociatedDateFormatter(FieldType.dateTimeIso),
+  dateTimeIso: getAssociatedDateFormatter(FieldType.dateTimeIso, '-'),
 
   /** Takes a Date object and displays it as an ISO Date+Time (without seconds) format (YYYY-MM-DD HH:mm) */
-  dateTimeShortIso: getAssociatedDateFormatter(FieldType.dateTimeShortIso),
+  dateTimeShortIso: getAssociatedDateFormatter(FieldType.dateTimeShortIso, '-'),
 
   /** Takes a Date object and displays it as an ISO Date+Time+(am/pm) format (YYYY-MM-DD h:mm:ss a) */
-  dateTimeIsoAmPm: getAssociatedDateFormatter(FieldType.dateTimeIsoAmPm),
+  dateTimeIsoAmPm: getAssociatedDateFormatter(FieldType.dateTimeIsoAmPm, '-'),
 
   /** Takes a Date object and displays it as an Euro Date format (DD/MM/YYYY) */
-  dateEuro: getAssociatedDateFormatter(FieldType.dateEuro),
+  dateEuro: getAssociatedDateFormatter(FieldType.dateEuro, '/'),
 
   /** Takes a Date object and displays it as an Euro Date+Time format (DD/MM/YYYY HH:mm:ss) */
-  dateTimeEuro: getAssociatedDateFormatter(FieldType.dateTimeEuro),
+  dateTimeEuro: getAssociatedDateFormatter(FieldType.dateTimeEuro, '/'),
 
   /** Takes a Date object and displays it as an Euro Date+Time (without seconds) format (DD/MM/YYYY HH:mm) */
-  dateTimeShortEuro: getAssociatedDateFormatter(FieldType.dateTimeShortEuro),
+  dateTimeShortEuro: getAssociatedDateFormatter(FieldType.dateTimeShortEuro, '/'),
 
   /** Takes a Date object and displays it as an Euro Date+Time+(am/pm) format (DD/MM/YYYY hh:mm:ss a) */
-  dateTimeEuroAmPm: getAssociatedDateFormatter(FieldType.dateTimeEuroAmPm),
+  dateTimeEuroAmPm: getAssociatedDateFormatter(FieldType.dateTimeEuroAmPm, '/'),
 
   /** Takes a Date object and displays it as an US Date format (MM/DD/YYYY) */
-  dateUs: getAssociatedDateFormatter(FieldType.dateUs),
+  dateUs: getAssociatedDateFormatter(FieldType.dateUs, '/'),
 
   /** Takes a Date object and displays it as an US Date+Time format (MM/DD/YYYY HH:mm:ss) */
-  dateTimeUs: getAssociatedDateFormatter(FieldType.dateTimeUs),
+  dateTimeUs: getAssociatedDateFormatter(FieldType.dateTimeUs, '/'),
 
   /** Takes a Date object and displays it as an US Date+Time (without seconds) format (MM/DD/YYYY HH:mm:ss) */
-  dateTimeShortUs: getAssociatedDateFormatter(FieldType.dateTimeShortUs),
+  dateTimeShortUs: getAssociatedDateFormatter(FieldType.dateTimeShortUs, '/'),
 
   /** Takes a Date object and displays it as an US Date+Time+(am/pm) format (MM/DD/YYYY hh:mm:ss a) */
-  dateTimeUsAmPm: getAssociatedDateFormatter(FieldType.dateTimeUsAmPm),
+  dateTimeUsAmPm: getAssociatedDateFormatter(FieldType.dateTimeUsAmPm, '/'),
 
   /** Displays a Font-Awesome delete icon (fa-trash) */
   deleteIcon: deleteIconFormatter,
