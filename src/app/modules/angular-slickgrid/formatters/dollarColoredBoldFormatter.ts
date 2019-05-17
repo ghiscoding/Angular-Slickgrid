@@ -1,6 +1,6 @@
 import { Column, Formatter } from './../models/index';
 import { formatNumber } from './../services/utilities';
-import { getValueFromParamsOrGridOptions } from './formatterUtility';
+import { getValueFromParamsOrGridOptions } from './formatterUtilities';
 
 export const dollarColoredBoldFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
   const isNumber = (value === null || value === undefined || value === '') ? false : !isNaN(+value);
