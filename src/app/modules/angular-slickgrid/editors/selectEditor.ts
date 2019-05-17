@@ -14,7 +14,7 @@ import {
   SelectOption,
 } from './../models/index';
 import { CollectionService } from '../services/index';
-import { arraysEqual, findOrDefault, getDescendantProperty, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
+import { charArraysEqual, findOrDefault, getDescendantProperty, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
 import { Subscription } from 'rxjs';
 import * as DOMPurify_ from 'dompurify';
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
@@ -361,7 +361,7 @@ export class SelectEditor implements Editor {
 
   isValueChanged(): boolean {
     if (this.isMultipleSelect) {
-      return !arraysEqual(this.$editorElm.val(), this.defaultValue);
+      return !charArraysEqual(this.$editorElm.val(), this.defaultValue);
     }
     return this.$editorElm.val() !== this.defaultValue;
   }
