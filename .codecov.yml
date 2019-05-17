@@ -2,3 +2,10 @@ coverage:
   precision: 2
   round: up
   range: "40...75"
+
+  status:
+    project:
+      default:
+        target: auto
+        threshold: .05
+        branches: null

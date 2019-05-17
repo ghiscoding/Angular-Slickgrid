@@ -1,6 +1,6 @@
 import { Column, GroupTotalsFormatter } from './../models/index';
 import { decimalFormatted } from '../services/utilities';
-import { getValueFromParamsOrGridOptions } from '../formatters/formatterUtility';
+import { getValueFromParamsOrGridOptions } from '../formatters/formatterUtilities';
 
 export const avgTotalsFormatter: GroupTotalsFormatter = (totals: any, columnDef: Column, grid?: any) => {
   const field = columnDef.field || '';

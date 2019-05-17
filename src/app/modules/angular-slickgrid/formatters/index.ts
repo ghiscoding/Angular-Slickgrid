@@ -1,3 +1,5 @@
+import { FieldType } from '../models/index';
+import { getAssociatedDateFormatter } from './formatterUtilities';
 import { arrayObjectToCsvFormatter } from './arrayObjectToCsvFormatter';
 import { arrayToCsvFormatter } from './arrayToCsvFormatter';
 import { boldFormatter } from './boldFormatter';
@@ -6,18 +8,6 @@ import { checkmarkFormatter } from './checkmarkFormatter';
 import { collectionFormatter } from './collectionFormatter';
 import { collectionEditorFormatter } from './collectionEditorFormatter';
 import { complexObjectFormatter } from './complexObjectFormatter';
-import { dateEuroFormatter } from './dateEuroFormatter';
-import { dateIsoFormatter } from './dateIsoFormatter';
-import { dateTimeEuroAmPmFormatter } from './dateTimeEuroAmPmFormatter';
-import { dateTimeEuroFormatter } from './dateTimeEuroFormatter';
-import { dateTimeIsoFormatter } from './dateTimeIsoFormatter';
-import { dateTimeIsoAmPmFormatter } from './dateTimeIsoAmPmFormatter';
-import { dateTimeUsAmPmFormatter } from './dateTimeUsAmPmFormatter';
-import { dateTimeUsFormatter } from './dateTimeUsFormatter';
-import { dateTimeShortEuroFormatter } from './dateTimeShortEuroFormatter';
-import { dateTimeShortIsoFormatter } from './dateTimeShortIsoFormatter';
-import { dateTimeShortUsFormatter } from './dateTimeShortUsFormatter';
-import { dateUsFormatter } from './dateUsFormatter';
 import { decimalFormatter } from './decimalFormatter';
 import { deleteIconFormatter } from './deleteIconFormatter';
 import { dollarColoredBoldFormatter } from './dollarColoredBoldFormatter';
@@ -91,41 +81,41 @@ export const Formatters = {
    */
   collectionEditor: collectionEditorFormatter,
 
-  /** Takes a Date object and displays it as an ISO Date format */
-  dateIso: dateIsoFormatter,
+  /** Takes a Date object and displays it as an ISO Date format (YYYY-MM-DD) */
+  dateIso: getAssociatedDateFormatter(FieldType.dateIso),
 
-  /** Takes a Date object and displays it as an ISO Date+Time format */
-  dateTimeIso: dateTimeIsoFormatter,
+  /** Takes a Date object and displays it as an ISO Date+Time format (YYYY-MM-DD HH:mm:ss) */
+  dateTimeIso: getAssociatedDateFormatter(FieldType.dateTimeIso),
 
-  /** Takes a Date object and displays it as an ISO Date+Time (without seconds) format */
-  dateTimeShortIso: dateTimeShortIsoFormatter,
+  /** Takes a Date object and displays it as an ISO Date+Time (without seconds) format (YYYY-MM-DD HH:mm) */
+  dateTimeShortIso: getAssociatedDateFormatter(FieldType.dateTimeShortIso),
 
-  /** Takes a Date object and displays it as an ISO Date+Time+(am/pm) format */
-  dateTimeIsoAmPm: dateTimeIsoAmPmFormatter,
+  /** Takes a Date object and displays it as an ISO Date+Time+(am/pm) format (YYYY-MM-DD h:mm:ss a) */
+  dateTimeIsoAmPm: getAssociatedDateFormatter(FieldType.dateTimeIsoAmPm),
 
-  /** Takes a Date object and displays it as an Euro Date format */
-  dateEuro: dateEuroFormatter,
+  /** Takes a Date object and displays it as an Euro Date format (DD/MM/YYYY) */
+  dateEuro: getAssociatedDateFormatter(FieldType.dateEuro),
 
-  /** Takes a Date object and displays it as an Euro Date+Time format */
-  dateTimeEuro: dateTimeEuroFormatter,
+  /** Takes a Date object and displays it as an Euro Date+Time format (DD/MM/YYYY HH:mm:ss) */
+  dateTimeEuro: getAssociatedDateFormatter(FieldType.dateTimeEuro),
 
-  /** Takes a Date object and displays it as an Euro Date+Time (without seconds) format */
-  dateTimeShortEuro: dateTimeShortEuroFormatter,
+  /** Takes a Date object and displays it as an Euro Date+Time (without seconds) format (DD/MM/YYYY HH:mm) */
+  dateTimeShortEuro: getAssociatedDateFormatter(FieldType.dateTimeShortEuro),
 
-  /** Takes a Date object and displays it as an Euro Date+Time+(am/pm) format */
-  dateTimeEuroAmPm: dateTimeEuroAmPmFormatter,
+  /** Takes a Date object and displays it as an Euro Date+Time+(am/pm) format (DD/MM/YYYY hh:mm:ss a) */
+  dateTimeEuroAmPm: getAssociatedDateFormatter(FieldType.dateTimeEuroAmPm),
 
-  /** Takes a Date object and displays it as an US Date format */
-  dateUs: dateUsFormatter,
+  /** Takes a Date object and displays it as an US Date format (MM/DD/YYYY) */
+  dateUs: getAssociatedDateFormatter(FieldType.dateUs),
 
-  /** Takes a Date object and displays it as an US Date+Time format */
-  dateTimeUs: dateTimeUsFormatter,
+  /** Takes a Date object and displays it as an US Date+Time format (MM/DD/YYYY HH:mm:ss) */
+  dateTimeUs: getAssociatedDateFormatter(FieldType.dateTimeUs),
 
-  /** Takes a Date object and displays it as an US Date+Time (without seconds) format */
-  dateTimeShortUs: dateTimeShortUsFormatter,
+  /** Takes a Date object and displays it as an US Date+Time (without seconds) format (MM/DD/YYYY HH:mm:ss) */
+  dateTimeShortUs: getAssociatedDateFormatter(FieldType.dateTimeShortUs),
 
-  /** Takes a Date object and displays it as an US Date+Time+(am/pm) format */
-  dateTimeUsAmPm: dateTimeUsAmPmFormatter,
+  /** Takes a Date object and displays it as an US Date+Time+(am/pm) format (MM/DD/YYYY hh:mm:ss a) */
+  dateTimeUsAmPm: getAssociatedDateFormatter(FieldType.dateTimeUsAmPm),
 
   /** Displays a Font-Awesome delete icon (fa-trash) */
   deleteIcon: deleteIconFormatter,

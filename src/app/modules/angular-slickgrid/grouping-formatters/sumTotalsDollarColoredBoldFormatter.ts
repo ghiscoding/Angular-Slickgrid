@@ -1,6 +1,6 @@
 import { Column, GroupTotalsFormatter } from './../models/index';
 import { formatNumber } from './../services/utilities';
-import { getValueFromParamsOrGridOptions } from '../formatters/formatterUtility';
+import { getValueFromParamsOrGridOptions } from '../formatters/formatterUtilities';
 
 export const sumTotalsDollarColoredBoldFormatter: GroupTotalsFormatter = (totals: any, columnDef: Column, grid?: any) => {
   const field = columnDef.field || '';
