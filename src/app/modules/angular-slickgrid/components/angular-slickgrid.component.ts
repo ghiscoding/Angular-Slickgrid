@@ -281,10 +281,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
       this.dataView.endUpdate();
 
-      // if you don't want the items that are not visible (due to being filtered out
-      // or being on a different page) to stay selected, pass 'false' to the second arg
+      // if you don't want the items that are not visible (due to being filtered out or being on a different page)
+      // to stay selected, pass 'false' to the second arg
       if (this.gridOptions && this.gridOptions.dataView && this.gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
-        this.dataView.syncGridSelection(this.grid, this.gridOptions.dataView.syncGridSelection);
+        const syncGridSelection = this.gridOptions.dataView.syncGridSelection;
+        if (typeof syncGridSelection === 'boolean') {
+          this.dataView.syncGridSelection(this.grid, this.gridOptions.dataView.syncGridSelection);
+        } else {
+          this.dataView.syncGridSelection(this.grid, syncGridSelection.preserveHidden, syncGridSelection.preserveHiddenOnSelectionChange);
+        }
       }
     }
 
