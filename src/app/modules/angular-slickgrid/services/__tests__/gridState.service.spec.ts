@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { BackendServiceApi, BackendService, GridOption, CurrentPagination, CurrentSorter, CurrentFilter } from '../../models';
+import { BackendServiceApi, BackendService, GridOption, CurrentPagination, CurrentSorter, CurrentFilter, Column, CurrentColumn, GridStateChange, GridStateType, GridState, ExtensionName } from '../../models';
 import { FilterService } from '../filter.service';
 import { GridStateService } from '../gridState.service';
 import { ExtensionService } from '../extension.service';
 import { SortService } from '../sort.service';
 import { of } from 'rxjs';
+
+declare var Slick: any;
 
 const gridOptionMock = {
   enableAutoResize: true
@@ -19,7 +21,11 @@ const backendServiceStub = {
 const gridStub = {
   autosizeColumns: jest.fn(),
   getScrollbarDimensions: jest.fn(),
-  getOptions: () => gridOptionMock
+  getOptions: () => gridOptionMock,
+  getColumns: jest.fn(),
+  onColumnsReordered: new Slick.Event(),
+  onColumnsResized: new Slick.Event(),
+  setSelectedRows: jest.fn(),
 };
 
 const extensionServiceStub = {
@@ -55,16 +61,155 @@ describe('GridStateService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should have called the "subscribeToAllGridChanges" method while initializing', () => {
-    const gridStateSpy = jest.spyOn(service, 'subscribeToAllGridChanges');
-    const filterSpy = jest.spyOn(filterServiceStub.onFilterChanged, 'subscribe');
-    const sortSpy = jest.spyOn(sortServiceStub.onSortChanged, 'subscribe');
+  describe('init method', () => {
+    let slickgridEvent;
+    beforeEach(() => {
+      slickgridEvent = new Slick.Event();
+    });
+    afterEach(() => {
+      slickgridEvent.unsubscribe();
+    });
 
-    service.init(gridStub, extensionServiceStub, filterServiceStub, sortServiceStub);
+    it('should have called the "subscribeToAllGridChanges" method while initializing', () => {
+      const gridStateSpy = jest.spyOn(service, 'subscribeToAllGridChanges');
+      const filterSpy = jest.spyOn(filterServiceStub.onFilterChanged, 'subscribe');
+      const sortSpy = jest.spyOn(sortServiceStub.onSortChanged, 'subscribe');
 
-    expect(gridStateSpy).toHaveBeenCalled();
-    expect(filterSpy).toHaveBeenCalled();
-    expect(sortSpy).toHaveBeenCalled();
+      service.init(gridStub, extensionServiceStub, filterServiceStub, sortServiceStub);
+
+      expect(gridStateSpy).toHaveBeenCalled();
+      expect(filterSpy).toHaveBeenCalled();
+      expect(sortSpy).toHaveBeenCalled();
+    });
+
+    describe('getCurrentColumns method', () => {
+      it('should call "getCurrentColumns" and return empty array when no columns is defined', () => {
+        const output = service.getCurrentColumns();
+        expect(output).toEqual([]);
+      });
+
+      it('should call "getCurrentColumns" and return Columns when the method is called', () => {
+        const columnsMock = [
+          { id: 'field1', field: 'field1', width: 100, cssClass: 'red' },
+          { id: 'field2', field: 'field2', width: 150, headerCssClass: 'blue' },
+          { id: 'field3', field: 'field3' },
+        ] as Column[];
+        const gridSpy = jest.spyOn(gridStub, 'getColumns').mockReturnValue(columnsMock);
+
+        const output = service.getCurrentColumns();
+
+        expect(gridSpy).toHaveBeenCalled();
+        expect(output).toEqual([
+          { columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 },
+          { columnId: 'field2', cssClass: '', headerCssClass: 'blue', width: 150 },
+          { columnId: 'field3', cssClass: '', headerCssClass: '', width: 0 },
+        ] as CurrentColumn[]);
+      });
+    });
+
+    describe('bindExtensionAddonEventToGridStateChange tests', () => {
+      it('should subscribe to some Extension Addon SlickGrid events and expect the event to be triggered when a notify is triggered after service was initialized', () => {
+        const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
+        const associatedColumnsMock = [{ columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 }] as CurrentColumn[];
+        const extensionMock = { name: ExtensionName.columnPicker, addon: { onColumnsChanged: slickgridEvent }, class: null };
+        const gridStateMock = { columns: associatedColumnsMock, filters: [], sorters: [] } as GridState;
+        const stateChangeMock = { change: { newValues: associatedColumnsMock, type: GridStateType.columns }, gridState: gridStateMock } as GridStateChange;
+
+        const gridStateSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
+        const extensionSpy = jest.spyOn(extensionServiceStub, 'getExtensionByName').mockReturnValue(extensionMock);
+        const rxOnChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
+
+        service.init(gridStub, extensionServiceStub, filterServiceStub, sortServiceStub);
+        slickgridEvent.notify({ columns: columnsMock }, new Slick.EventData(), gridStub);
+
+        expect(gridStateSpy).toHaveBeenCalled();
+        expect(rxOnChangeSpy).toHaveBeenCalledWith(stateChangeMock);
+        expect(extensionSpy).toHaveBeenCalledWith(ExtensionName.columnPicker);
+        expect(extensionSpy).toHaveBeenLastCalledWith(ExtensionName.gridMenu);
+      });
+    });
+
+    describe('bindSlickGridEventToGridStateChange tests', () => {
+      it('should subscribe to some SlickGrid events and expect the event to be triggered when a notify is triggered after service was initialized', () => {
+        const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
+        const associatedColumnsMock = [{ columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 }] as CurrentColumn[];
+        const gridStateMock = { columns: associatedColumnsMock, filters: [], sorters: [] } as GridState;
+        const stateChangeMock = { change: { newValues: associatedColumnsMock, type: GridStateType.columns }, gridState: gridStateMock } as GridStateChange;
+
+        const gridColumnSpy = jest.spyOn(gridStub, 'getColumns').mockReturnValue(columnsMock);
+        const gridColumnReorderSpy = jest.spyOn(gridStub.onColumnsReordered, 'subscribe');
+        const gridColumnResizeSpy = jest.spyOn(gridStub.onColumnsResized, 'subscribe');
+        const gridStateSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
+        const rxOnChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
+
+        service.init(gridStub, extensionServiceStub, filterServiceStub, sortServiceStub);
+        gridStub.onColumnsReordered.notify({ impactedColumns: columnsMock }, new Slick.EventData(), gridStub);
+        service.resetColumns();
+
+        expect(gridColumnSpy).toHaveBeenCalled();
+        expect(gridColumnReorderSpy).toHaveBeenCalled();
+        expect(gridColumnResizeSpy).toHaveBeenCalled();
+        expect(gridStateSpy).toHaveBeenCalled();
+        expect(rxOnChangeSpy).toHaveBeenCalledWith(stateChangeMock);
+      });
+    });
+  });
+
+  describe('getAssociatedCurrentColumns method', () => {
+    it('should call "getAssociatedCurrentColumns" and expect "getCurrentColumns" to return current cached Columns', () => {
+      const columnsMock = [
+        { id: 'field1', field: 'field1', width: 100, cssClass: 'red' },
+        { id: 'field2', field: 'field2', width: 150, headerCssClass: 'blue' },
+        { id: 'field3', field: 'field3' },
+      ] as Column[];
+      const associatedColumnsMock = [
+        { columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 },
+        { columnId: 'field2', cssClass: '', headerCssClass: 'blue', width: 150 },
+        { columnId: 'field3', cssClass: '', headerCssClass: '', width: 0 },
+      ] as CurrentColumn[];
+
+      const associatedColumns = service.getAssociatedCurrentColumns(columnsMock);
+      const currentColumns = service.getCurrentColumns();
+
+      expect(associatedColumns).toEqual(associatedColumnsMock);
+      expect(currentColumns).toEqual(associatedColumnsMock);
+    });
+  });
+
+  describe('getAssociatedGridColumns method', () => {
+    it('should call "getAssociatedGridColumns" and return empty array when empty array is provided as current columns', () => {
+      const associatedGridColumns = service.getAssociatedGridColumns(gridStub, []);
+      const columns = service.getColumns();
+
+      expect(associatedGridColumns).toEqual([]);
+      expect(columns).toEqual([]);
+    });
+
+    it('should call "getAssociatedGridColumns" and return empty array when empty array is provided as current columns', () => {
+      const columnsMock = [
+        { id: 'field1', field: 'field1', width: 100, cssClass: 'red' },
+        { id: 'field2', field: 'field2', width: 150, headerCssClass: 'blue' },
+        { id: 'field3', field: 'field3' },
+      ] as Column[];
+      const columnsWithClassesMock = [
+        { id: 'field1', field: 'field1', width: 100, cssClass: 'red', headerCssClass: '' },
+        { id: 'field2', field: 'field2', width: 150, cssClass: '', headerCssClass: 'blue' },
+        { id: 'field3', field: 'field3', width: 0, cssClass: '', headerCssClass: '' },
+      ] as Column[];
+      const currentColumnsMock = [
+        { columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 },
+        { columnId: 'field2', cssClass: '', headerCssClass: 'blue', width: 150 },
+        { columnId: 'field3', cssClass: '', headerCssClass: '', width: 0 },
+      ] as CurrentColumn[];
+      const gridSpy = jest.spyOn(gridStub, 'getColumns').mockReturnValue(columnsMock);
+
+      const associatedGridColumns = service.getAssociatedGridColumns(gridStub, currentColumnsMock);
+      const columns = service.getColumns();
+
+      expect(gridSpy).toHaveBeenCalled();
+      expect(associatedGridColumns).toEqual(columnsWithClassesMock);
+      expect(columns).toEqual(columnsWithClassesMock);
+    });
   });
 
   describe('getCurrentPagination method', () => {
@@ -126,7 +271,7 @@ describe('GridStateService', () => {
 
   describe('getCurrentFilters method', () => {
     it('should return null when no BackendService is used and FilterService is missing the "getCurrentLocalFilters" method', () => {
-      const gridSpy = jest.spyOn(gridStub, 'getOptions').mockReturnValue({});
+      const gridSpy = jest.spyOn(gridStub, 'getOptions');
 
       const output = service.getCurrentFilters();
 
@@ -158,6 +303,57 @@ describe('GridStateService', () => {
       expect(gridSpy).toHaveBeenCalled();
       expect(filterSpy).toHaveBeenCalled();
       expect(output).toBe(filterMock);
+    });
+  });
+
+  describe('resetColumns method', () => {
+    it('should call the method without any column definitions and expect "onGridStateChanged" to be triggered with empty changes', () => {
+      const gridStateMock = { columns: [], filters: [], sorters: [] } as GridState;
+      const stateChangeMock = { change: { newValues: [], type: GridStateType.columns }, gridState: gridStateMock } as GridStateChange;
+      const onChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
+      const serviceSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
+
+      service.resetColumns();
+
+      expect(serviceSpy).toHaveBeenCalled();
+      expect(onChangeSpy).toHaveBeenCalledWith(stateChangeMock);
+    });
+
+    it(`should call the method with column definitions and expect "onGridStateChanged" to be triggered
+      with "newValues" property being the columns and still empty "gridState" property`, () => {
+        const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
+        const currentColumnsMock = [{ columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 }] as CurrentColumn[];
+        const gridStateMock = { columns: [], filters: [], sorters: [] } as GridState;
+        const stateChangeMock = { change: { newValues: currentColumnsMock, type: GridStateType.columns }, gridState: gridStateMock } as GridStateChange;
+        const onChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
+        const serviceSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
+
+        service.resetColumns(columnsMock);
+
+        expect(serviceSpy).toHaveBeenCalled();
+        expect(onChangeSpy).toHaveBeenCalledWith(stateChangeMock);
+      });
+  });
+
+  describe('resetRowSelection method', () => {
+    it('should call the method and do nothing when row selection is not in use', () => {
+      const gridSpy = jest.spyOn(gridStub, 'setSelectedRows');
+      service.resetRowSelection();
+      expect(gridSpy).not.toHaveBeenCalled();
+    });
+
+    it('should call the method and call the grid selection reset when the selection extension is used', () => {
+      const extensionMock = { name: ExtensionName.rowSelection, addon: {}, class: null };
+      const gridOptionsMock = { enableRowSelection: true } as GridOption;
+      const gridOptionSpy = jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
+      const setSelectionSpy = jest.spyOn(gridStub, 'setSelectedRows');
+      const extensionSpy = jest.spyOn(extensionServiceStub, 'getExtensionByName').mockReturnValue(extensionMock);
+
+      service.resetRowSelection();
+
+      expect(gridOptionSpy).toHaveBeenCalled();
+      expect(extensionSpy).toHaveBeenCalledWith(ExtensionName.rowSelection);
+      expect(setSelectionSpy).toHaveBeenCalled();
     });
   });
 });
