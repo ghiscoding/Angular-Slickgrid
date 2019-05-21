@@ -20,7 +20,7 @@ import {
   uniqueArray,
   uniqueObjectArray,
   unsubscribeAllObservables,
-} from './utilities';
+} from '../utilities';
 import * as moment from 'moment-mini';
 import { of, Subscription } from 'rxjs';
 
