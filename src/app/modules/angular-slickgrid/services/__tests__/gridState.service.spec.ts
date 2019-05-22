@@ -243,6 +243,26 @@ describe('GridStateService', () => {
       expect(backendSpy).toHaveBeenCalled();
       expect(output).toBe(paginationMock);
     });
+
+    it('should call "getCurrentGridState" method and return Pagination', () => {
+      const paginationMock = { pageNumber: 2, pageSize: 50 } as CurrentPagination;
+      const columnMock = [{ columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 }] as CurrentColumn[];
+      const filterMock = [{ columnId: 'field1', operator: 'EQ', searchTerms: [] }] as CurrentFilter[];
+      const sorterMock = [{ columnId: 'field1', direction: 'ASC' }, { columnId: 'field2', direction: 'DESC' }] as CurrentSorter[];
+
+      const columnSpy = jest.spyOn(service, 'getCurrentColumns').mockReturnValue(columnMock);
+      const filterSpy = jest.spyOn(service, 'getCurrentFilters').mockReturnValue(filterMock);
+      const sorterSpy = jest.spyOn(service, 'getCurrentSorters').mockReturnValue(sorterMock);
+      const paginationSpy = jest.spyOn(service, 'getCurrentPagination').mockReturnValue(paginationMock);
+
+      const output = service.getCurrentGridState();
+
+      expect(columnSpy).toHaveBeenCalled();
+      expect(filterSpy).toHaveBeenCalled();
+      expect(sorterSpy).toHaveBeenCalled();
+      expect(paginationSpy).toHaveBeenCalled();
+      expect(output).toEqual({ columns: columnMock, filters: filterMock, sorters: sorterMock, pagination: paginationMock } as GridState);
+    });
   });
 
   describe('getCurrentSorters method', () => {
