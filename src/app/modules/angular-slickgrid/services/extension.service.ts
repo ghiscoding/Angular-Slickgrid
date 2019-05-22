@@ -312,7 +312,7 @@ export class ExtensionService {
     }
   }
 
-  /** Translate the an array of items from an input key and assign to the output key */
+  /** Translate an array of items from an input key and assign translated value to the output key */
   private translateItems(items: any[], inputKey: string, outputKey: string) {
     for (const item of items) {
       if (item[inputKey]) {
