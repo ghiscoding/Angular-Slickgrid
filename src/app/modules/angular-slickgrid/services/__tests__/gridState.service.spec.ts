@@ -1,10 +1,23 @@
 import { TestBed } from '@angular/core/testing';
-import { BackendServiceApi, BackendService, GridOption, CurrentPagination, CurrentSorter, CurrentFilter, Column, CurrentColumn, GridStateChange, GridStateType, GridState, ExtensionName } from '../../models';
+import { Subject } from 'rxjs';
+
+import { ExtensionService } from '../extension.service';
 import { FilterService } from '../filter.service';
 import { GridStateService } from '../gridState.service';
-import { ExtensionService } from '../extension.service';
 import { SortService } from '../sort.service';
-import { of } from 'rxjs';
+import {
+  BackendService,
+  CurrentFilter,
+  CurrentPagination,
+  CurrentSorter,
+  Column,
+  CurrentColumn,
+  ExtensionName,
+  GridOption,
+  GridState,
+  GridStateChange,
+  GridStateType,
+} from '../../models';
 
 declare var Slick: any;
 
@@ -33,13 +46,13 @@ const extensionServiceStub = {
 } as ExtensionService;
 
 const filterServiceStub = {
-  onFilterChanged: of([]),
-  onFilterCleared: of(false)
+  onFilterChanged: new Subject<CurrentFilter[]>(),
+  onFilterCleared: new Subject<boolean>()
 } as FilterService;
 
 const sortServiceStub = {
-  onSortChanged: of([]),
-  onSortCleared: of(false)
+  onSortChanged: new Subject<CurrentSorter[]>(),
+  onSortCleared: new Subject<boolean>()
 } as SortService;
 
 describe('GridStateService', () => {
@@ -230,6 +243,26 @@ describe('GridStateService', () => {
       expect(backendSpy).toHaveBeenCalled();
       expect(output).toBe(paginationMock);
     });
+
+    it('should call "getCurrentGridState" method and return Pagination', () => {
+      const paginationMock = { pageNumber: 2, pageSize: 50 } as CurrentPagination;
+      const columnMock = [{ columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 }] as CurrentColumn[];
+      const filterMock = [{ columnId: 'field1', operator: 'EQ', searchTerms: [] }] as CurrentFilter[];
+      const sorterMock = [{ columnId: 'field1', direction: 'ASC' }, { columnId: 'field2', direction: 'DESC' }] as CurrentSorter[];
+
+      const columnSpy = jest.spyOn(service, 'getCurrentColumns').mockReturnValue(columnMock);
+      const filterSpy = jest.spyOn(service, 'getCurrentFilters').mockReturnValue(filterMock);
+      const sorterSpy = jest.spyOn(service, 'getCurrentSorters').mockReturnValue(sorterMock);
+      const paginationSpy = jest.spyOn(service, 'getCurrentPagination').mockReturnValue(paginationMock);
+
+      const output = service.getCurrentGridState();
+
+      expect(columnSpy).toHaveBeenCalled();
+      expect(filterSpy).toHaveBeenCalled();
+      expect(sorterSpy).toHaveBeenCalled();
+      expect(paginationSpy).toHaveBeenCalled();
+      expect(output).toEqual({ columns: columnMock, filters: filterMock, sorters: sorterMock, pagination: paginationMock } as GridState);
+    });
   });
 
   describe('getCurrentSorters method', () => {
@@ -354,6 +387,59 @@ describe('GridStateService', () => {
       expect(gridOptionSpy).toHaveBeenCalled();
       expect(extensionSpy).toHaveBeenCalledWith(ExtensionName.rowSelection);
       expect(setSelectionSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('subscribeToAllGridChanges events', () => {
+    let columnsMock: Column[];
+    let currentColumnsMock: CurrentColumn[];
+    let filterMock: CurrentFilter[];
+    let sorterMock: CurrentSorter[];
+
+    beforeEach(() => {
+      columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
+      filterMock = [{ columnId: 'field1', operator: 'EQ', searchTerms: [] }, { columnId: 'field2', operator: '>=', searchTerms: [2] }] as CurrentFilter[];
+      sorterMock = [{ columnId: 'field1', direction: 'ASC' }] as CurrentSorter[];
+      currentColumnsMock = [{ columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 }] as CurrentColumn[];
+      jest.spyOn(filterServiceStub, 'getCurrentLocalFilters').mockReturnValue(filterMock);
+      jest.spyOn(sortServiceStub, 'getCurrentLocalSorters').mockReturnValue(sorterMock);
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(columnsMock);
+    });
+
+    it('should trigger a "onGridStateChanged" event when "onFilterChanged" is triggered', () => {
+      const gridStateMock = { columns: currentColumnsMock, filters: filterMock, sorters: sorterMock } as GridState;
+      const stateChangeMock = { change: { newValues: filterMock, type: GridStateType.filter }, gridState: gridStateMock } as GridStateChange;
+      const rxOnChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
+
+      filterServiceStub.onFilterChanged.next(filterMock);
+      expect(rxOnChangeSpy).toHaveBeenCalledWith(stateChangeMock);
+    });
+
+    it('should trigger a "onGridStateChanged" event when "onFilterCleared" is triggered', () => {
+      const gridStateMock = { columns: currentColumnsMock, filters: filterMock, sorters: sorterMock } as GridState;
+      const stateChangeMock = { change: { newValues: [], type: GridStateType.filter }, gridState: gridStateMock } as GridStateChange;
+      const rxOnChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
+
+      filterServiceStub.onFilterCleared.next(true);
+      expect(rxOnChangeSpy).toHaveBeenCalledWith(stateChangeMock);
+    });
+
+    it('should trigger a "onGridStateChanged" event when "onSortChanged" is triggered', () => {
+      const gridStateMock = { columns: currentColumnsMock, filters: filterMock, sorters: sorterMock } as GridState;
+      const stateChangeMock = { change: { newValues: sorterMock, type: GridStateType.sorter }, gridState: gridStateMock } as GridStateChange;
+      const rxOnChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
+
+      sortServiceStub.onSortChanged.next(sorterMock);
+      expect(rxOnChangeSpy).toHaveBeenCalledWith(stateChangeMock);
+    });
+
+    it('should trigger a "onGridStateChanged" event when "onSortCleared" is triggered', () => {
+      const gridStateMock = { columns: currentColumnsMock, filters: filterMock, sorters: sorterMock } as GridState;
+      const stateChangeMock = { change: { newValues: [], type: GridStateType.sorter }, gridState: gridStateMock } as GridStateChange;
+      const rxOnChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
+
+      sortServiceStub.onSortCleared.next(true);
+      expect(rxOnChangeSpy).toHaveBeenCalledWith(stateChangeMock);
     });
   });
 });
