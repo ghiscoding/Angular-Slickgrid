@@ -24,7 +24,7 @@ export class GridRowMoveComponent implements OnInit {
     this.selectedLanguage = this.translate.getDefaultLang();
   }
 
-  angularGridReady(angularGrid: any) {
+  angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
   }
 

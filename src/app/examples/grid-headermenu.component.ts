@@ -108,7 +108,7 @@ export class GridHeaderMenuComponent implements OnInit {
     this.dataset = mockDataset;
   }
 
-  angularGridReady(angularGrid: any) {
+  angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
   }
 

@@ -188,7 +188,7 @@ export class GridClientSideComponent implements OnInit {
     this.dataset = this.mockData(NB_ITEMS);
   }
 
-  angularGridReady(angularGrid: any) {
+  angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
   }
 
