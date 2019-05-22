@@ -67,13 +67,14 @@ export class GridLocalizationComponent implements OnInit {
       },
       { id: 'start', name: 'Start', field: 'start', headerKey: 'START', formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date, minWidth: 100, filterable: true, filter: { model: Filters.compoundDate } },
       { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date, minWidth: 100, filterable: true, filter: { model: Filters.compoundDate } },
-      { id: 'completedBool', name: 'Completed', field: 'completedBool', headerKey: 'COMPLETED', minWidth: 100,
+      {
+        id: 'completedBool', name: 'Completed', field: 'completedBool', headerKey: 'COMPLETED', minWidth: 100,
         sortable: true,
         formatter: Formatters.checkmark,
         exportCustomFormatter: Formatters.translateBoolean,
         filterable: true,
         filter: {
-          collection: [ { value: '', label: '' }, { value: true, labelKey: 'TRUE' }, { value: false, labelKey: 'FALSE' } ],
+          collection: [{ value: '', label: '' }, { value: true, labelKey: 'TRUE' }, { value: false, labelKey: 'FALSE' }],
           model: Filters.singleSelect,
           enableTranslateLabel: true,
           filterOptions: {
@@ -81,12 +82,13 @@ export class GridLocalizationComponent implements OnInit {
           }
         }
       },
-      { id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', formatter: Formatters.translate, sortable: true,
+      {
+        id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', formatter: Formatters.translate, sortable: true,
         minWidth: 100,
         exportWithFormatter: true, // you can set this property in the column definition OR in the grid options, column def has priority over grid options
         filterable: true,
         filter: {
-          collection: [ { value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' } ],
+          collection: [{ value: '', label: '' }, { value: 'TRUE', labelKey: 'TRUE' }, { value: 'FALSE', labelKey: 'FALSE' }],
           collectionSortBy: {
             property: 'labelKey' // will sort by translated value since "enableTranslateLabel" is true
           },
@@ -144,7 +146,7 @@ export class GridLocalizationComponent implements OnInit {
     }
   }
 
-  angularGridReady(angularGrid: any) {
+  angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
   }
 

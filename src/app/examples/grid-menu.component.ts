@@ -136,7 +136,7 @@ export class GridMenuComponent implements OnInit {
     this.getData();
   }
 
-  angularGridReady(angularGrid: any) {
+  angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
   }
 

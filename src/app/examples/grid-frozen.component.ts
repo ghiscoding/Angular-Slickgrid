@@ -31,7 +31,7 @@ export class GridFrozenComponent implements OnInit {
     this.prepareDataGrid();
   }
 
-  angularGridReady(angularGrid: any) {
+  angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
     this.gridObj = angularGrid.slickGrid;
   }

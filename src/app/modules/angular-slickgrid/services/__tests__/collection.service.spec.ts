@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { CollectionService } from './collection.service';
+import { CollectionService } from '../collection.service';
 import {
   CollectionFilterBy,
   CollectionSortBy,
@@ -8,17 +8,12 @@ import {
   OperatorType,
   Column,
   FieldType,
-} from './../models/index';
+} from '../../models/index';
 
 describe('CollectionService', () => {
   let collection = [];
   let translate: TranslateService;
   let service: CollectionService;
-
-  // stub some methods of the SlickGrid Grid instance
-  const gridStub = {
-    getOptions: jest.fn()
-  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
