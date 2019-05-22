@@ -26,15 +26,38 @@ import {
   CellExternalCopyManagerExtension,
   CheckboxSelectorExtension,
   ColumnPickerExtension,
+  CurrentSorter,
   DraggableGroupingExtension,
   GridMenuExtension,
+  GridOption,
   GroupItemMetaProviderExtension,
   HeaderButtonExtension,
   HeaderMenuExtension,
   RowDetailViewExtension,
   RowMoveManagerExtension,
-  RowSelectionExtension
+  RowSelectionExtension,
 } from '..';
+import { Subject } from 'rxjs';
+
+const sharedServiceStub = {} as SharedService;
+Object.defineProperty(sharedServiceStub, 'dataView', {
+  get: jest.fn(() => 'bar'),
+  set: jest.fn()
+});
+
+const sortServiceStub = {
+  attachLocalOnSort: jest.fn(),
+  dispose: jest.fn(),
+  loadLocalPresets: jest.fn(),
+  onSortChanged: new Subject<CurrentSorter[]>(),
+  onSortCleared: new Subject<boolean>()
+};
+
+// jest.mock('slickgrid/slick.dataview', () => ({
+//   Slick: {
+//     Data: mockDataView
+//   }
+// }));
 
 describe('App Component', () => {
   let fixture: ComponentFixture<AngularSlickgridComponent>;
@@ -60,7 +83,6 @@ describe('App Component', () => {
         GroupingAndColspanService,
         ResizerService,
         SharedService,
-        SortService,
         TranslateService,
         AutoTooltipExtension,
         CellExternalCopyManagerExtension,
@@ -75,6 +97,7 @@ describe('App Component', () => {
         RowMoveManagerExtension,
         RowSelectionExtension,
         SlickgridConfig,
+        { provide: SortService, useValue: sortServiceStub },
       ],
       imports: [
         RouterTestingModule,
@@ -113,5 +136,54 @@ describe('App Component', () => {
     component.gridOptions = { enableAutoResize: false };
 
     expect(() => fixture.detectChanges()).toThrowError('[Angular-Slickgrid] requires a "grid-height" or the "enableAutoResize"');
+  });
+
+  describe('dataView options', () => {
+    let dataView;
+    let dataViewSpy;
+
+    it('should call the onDataviewCreated emitter', () => {
+      const spy = jest.spyOn(component.onDataviewCreated, 'emit');
+      fixture.detectChanges();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call the "executeAfterDataviewCreated" and "loadLocalPresets" methods and Sorter Presets are provided in the Grid Options', () => {
+      const compSpy = jest.spyOn(component, 'executeAfterDataviewCreated');
+      const sortSpy = jest.spyOn(sortServiceStub, 'loadLocalPresets');
+
+      component.gridOptions = { presets: { sorters: [{ columnId: 'field1', direction: 'DESC' }] } } as GridOption;
+      fixture.detectChanges();
+
+      expect(compSpy).toHaveBeenCalled();
+      expect(sortSpy).toHaveBeenCalled();
+    });
+
+    it('should call the DataView syncGridSelection method with 2nd argument as True when the "dataView" grid option is a boolean and is set to True', () => {
+      component.onDataviewCreated.subscribe((internalDataView) => {
+        dataView = internalDataView;
+        dataViewSpy = jest.spyOn(internalDataView, 'syncGridSelection');
+      });
+      component.gridOptions = { dataView: { syncGridSelection: true }, enableRowSelection: true } as GridOption;
+      fixture.detectChanges();
+
+      expect(dataView).toBeTruthy();
+      expect(dataViewSpy).toHaveBeenCalledWith(component.grid, true);
+    });
+
+    it('should call the DataView syncGridSelection method with 3 arguments when the "dataView" grid option is provided as an object', () => {
+      component.onDataviewCreated.subscribe((internalDataView) => {
+        dataView = internalDataView;
+        dataViewSpy = jest.spyOn(internalDataView, 'syncGridSelection');
+      });
+      component.gridOptions = {
+        dataView: { syncGridSelection: { preserveHidden: true, preserveHiddenOnSelectionChange: false } },
+        enableRowSelection: true
+      } as GridOption;
+      fixture.detectChanges();
+
+      expect(dataView).toBeTruthy();
+      expect(dataViewSpy).toHaveBeenCalledWith(component.grid, true, false);
+    });
   });
 });

@@ -189,7 +189,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   destroy(emptyDomElementContainer = false) {
     const gridContainerId = this.gridOptions && this.gridOptions.gridContainerId;
-    this.dataView = [];
+    this.dataView = undefined;
     this.gridOptions = {};
     this.extensionService.dispose();
     this.filterService.dispose();
