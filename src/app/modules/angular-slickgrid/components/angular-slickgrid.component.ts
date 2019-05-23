@@ -266,7 +266,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.sharedService.dataView = this.dataView;
     this.sharedService.grid = this.grid;
 
-    this.extensionService.attachDifferentExtensions();
+    this.extensionService.bindDifferentExtensions();
     this.attachDifferentHooks(this.grid, this.gridOptions, this.dataView);
 
     // emit the Grid & DataView object to make them available in parent component
