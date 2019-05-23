@@ -27,4 +27,4 @@ jobs:
           path: reports/junit
       - run:
           name: Upload coverage to Codecov
-          command: ./node_modules/.bin/codecov --token="${CODECOV_TOKEN}"
+          command: bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
