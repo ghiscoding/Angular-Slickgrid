@@ -25,7 +25,7 @@
         "--config",
         "${workspaceFolder}/jest.config.js"
       ],
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "internalConsoleOptions": "neverOpen",
       "windows": {
         "program": "${workspaceFolder}/node_modules/jest/bin/jest",
@@ -42,7 +42,7 @@
         "--config",
         "${workspaceFolder}/jest.config.js"
       ],
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true,
       "windows": {
@@ -61,7 +61,7 @@
         "-t=${selectedText}$",
         "--watch"
       ],
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "internalConsoleOptions": "neverOpen",
       "windows": {
         "program": "${workspaceFolder}/node_modules/jest/bin/jest",
