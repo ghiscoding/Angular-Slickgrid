@@ -97,12 +97,13 @@ export interface GridOption {
   /** Unique property name on the dataset used by Slick.Data.DataView */
   datasetIdPropertyName?: string;
 
+  /** Some of the SlickGrid DataView options */
   dataView?: {
     /**
-     * if you don't want the items that are not visible (due to being filtered out
-     * or being on a different page) to stay selected, the set this property as 'false'
+     * If you don't want the items that are not visible (due to being filtered out or being on a different page)
+     * to stay selected, the set this property as 'false'. You can also set any of the preserve options instead of a boolean value.
      */
-    syncGridSelection?: boolean;
+    syncGridSelection?: boolean | { preserveHidden: boolean; preserveHiddenOnSelectionChange: boolean; };
   };
 
   /** Default column width, is set to 80 when null */
