@@ -91,6 +91,9 @@ export class GridRowDetailComponent implements OnInit {
         // load only once and reuse the same item detail without calling process method
         loadOnce: true,
 
+        // limit expanded row to only 1 at a time
+        singleRowExpand: false,
+
         // false by default, clicking anywhere on the row will open the detail view
         // when set to false, only the "+" icon would open the row detail
         // if you use editor or cell navigation you would want this flag set to false (default)
