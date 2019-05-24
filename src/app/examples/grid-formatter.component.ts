@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Column, FieldType, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
+import { Column, FieldType, Formatter, Formatters, GridOption, SelectedRange } from './../modules/angular-slickgrid';
 
 // create my custom Formatter with the Formatter type
 const myCustomCheckmarkFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
@@ -46,13 +46,21 @@ export class GridFormatterComponent implements OnInit {
       },
       enableAutoResize: true,
       enableCellNavigation: true,
-      enableExcelCopyBuffer: true,
+
       // you customize the date separator through "formatterOptions"
       /*
       formatterOptions: {
         dateSeparator: '.'
       },
       */
+
+      // when using the ExcelCopyBuffer, you can see what the selection range is
+      enableExcelCopyBuffer: true,
+      excelCopyBufferOptions: {
+        onCopyCells: (e, args: { ranges: SelectedRange[] }) => console.log('onCopyCells', args.ranges),
+        onPasteCells: (e, args: { ranges: SelectedRange[] }) => console.log('onPasteCells', args.ranges),
+        onCopyCancelled: (e, args: { ranges: SelectedRange[] }) => console.log('onCopyCancelled', args.ranges),
+      }
     };
 
     // mock a dataset
