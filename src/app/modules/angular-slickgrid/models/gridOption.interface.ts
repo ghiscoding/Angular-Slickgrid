@@ -7,6 +7,7 @@ import {
   CheckboxSelector,
   DraggableGrouping,
   EditCommand,
+  ExcelCopyBufferOption,
   ExportOption,
   FormatterOption,
   GridMenu,
@@ -216,6 +217,9 @@ export interface GridOption {
 
   /** Do we want to enable localization translation (i18n)? */
   enableTranslate?: boolean;
+
+  /** Options for the ExcelCopyBuffer Extension */
+  excelCopyBufferOptions?: ExcelCopyBufferOption;
 
   /** Do we want explicit grid initialization? */
   explicitInitialization?: boolean;
