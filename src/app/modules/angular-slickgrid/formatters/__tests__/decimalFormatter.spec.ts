@@ -46,10 +46,12 @@ describe('the Decimal Formatter', () => {
     expect(output).toBe('99.10');
   });
 
-  it('should display a number with dollar sign and use "minDecimalPlaces" params', () => {
+  it('should display a number with dollar sign and use "minDecimalPlaces" (or the deprecated "decimalPlaces") params', () => {
     const input = 99.1;
-    const output = decimalFormatter(1, 1, input, { params: { minDecimalPlaces: 2 } } as Column, {});
-    expect(output).toBe('99.10');
+    const output1 = decimalFormatter(1, 1, input, { params: { minDecimalPlaces: 2 } } as Column, {});
+    const output2 = decimalFormatter(1, 1, input, { params: { decimalPlaces: 2 } } as Column, {});
+    expect(output1).toBe('99.10');
+    expect(output2).toBe('99.10');
   });
 
   it('should display a number with dollar sign and use "maxDecimal" params', () => {

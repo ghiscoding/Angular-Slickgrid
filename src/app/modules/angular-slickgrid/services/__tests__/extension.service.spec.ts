@@ -56,7 +56,7 @@ const extensionHeaderMenuStub = {
   translateHeaderMenu: jest.fn()
 };
 
-describe('GridStateService', () => {
+describe('ExtensionService', () => {
   let service: ExtensionService;
   let translate: TranslateService;
 
