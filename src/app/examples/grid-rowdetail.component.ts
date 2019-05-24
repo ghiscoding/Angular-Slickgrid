@@ -32,7 +32,7 @@ export class GridRowDetailComponent implements OnInit {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
-  detailViewRowCount = 7;
+  detailViewRowCount = 9;
   selectedLanguage: string;
 
   constructor(private translate: TranslateService) {
