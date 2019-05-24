@@ -26,11 +26,13 @@ export class CheckboxSelectorExtension implements Extension {
     if (columnDefinitions && gridOptions) {
       // dynamically import the SlickGrid plugin with requireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.checkboxSelector);
-       if (!this._extension) {
+      if (!this._extension) {
         this._extension = new Slick.CheckboxSelectColumn(gridOptions.checkboxSelector || {});
       }
       const selectionColumn: Column = this._extension.getColumnDefinition();
       selectionColumn.excludeFromExport = true;
+      selectionColumn.excludeFromColumnPicker = true;
+      selectionColumn.excludeFromGridMenu = true;
       selectionColumn.excludeFromQuery = true;
       selectionColumn.excludeFromHeaderMenu = true;
       columnDefinitions.unshift(selectionColumn);

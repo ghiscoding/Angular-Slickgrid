@@ -93,6 +93,8 @@ export class RowDetailViewExtension implements Extension {
         }
         const selectionColumn: Column = this._extension.getColumnDefinition();
         selectionColumn.excludeFromExport = true;
+        selectionColumn.excludeFromColumnPicker = true;
+        selectionColumn.excludeFromGridMenu = true;
         selectionColumn.excludeFromQuery = true;
         selectionColumn.excludeFromHeaderMenu = true;
         columnDefinitions.unshift(selectionColumn);

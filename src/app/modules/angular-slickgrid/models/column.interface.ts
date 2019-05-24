@@ -38,8 +38,14 @@ export interface Column {
   /** Any inline editor function that implements Editor for the cell value or ColumnEditor */
   editor?: any | ColumnEditor;
 
-  /** Default to false, which leads to exclude the column from the export? */
+  /** Default to false, which leads to exclude the column title from the Column Picker. */
+  excludeFromColumnPicker?: boolean;
+
+  /** Default to false, which leads to exclude the column from the export. */
   excludeFromExport?: boolean;
+
+  /** Default to false, which leads to exclude the column title from the Grid Menu. */
+  excludeFromGridMenu?: boolean;
 
   /** Defaults to false, which leads to exclude the field from the query (mostly a backend service query) */
   excludeFromQuery?: boolean;
