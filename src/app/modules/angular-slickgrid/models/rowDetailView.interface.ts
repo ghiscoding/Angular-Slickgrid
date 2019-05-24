@@ -32,6 +32,9 @@ export interface RowDetailView {
   /** Defaults to true, which will save the row detail view in a cache when it detects that it will become out of the viewport buffer */
   saveDetailViewOnScroll?: boolean;
 
+  /** Defaults to false, which will limit expanded row to only 1 at a time (it will close all other rows before opening new one). */
+  singleRowExpand?: boolean;
+
   /**
    * Defaults to false, which will use a simpler way of calculating when rows become out (or back) of viewport range.
    * It is recommended to enable this flag since it seems to work correctly with Aurelia-Slickgrid while the inverse is misbehaving
