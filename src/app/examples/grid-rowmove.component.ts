@@ -35,7 +35,10 @@ export class GridRowMoveComponent implements OnInit {
         behavior: 'selectAndMove',
         selectable: false, resizable: false,
         cssClass: 'cell-reorder dnd',
-        excludeFromExport: true
+        excludeFromExport: true,
+        excludeFromColumnPicker: true,
+        excludeFromHeaderMenu: true,
+        excludeFromGridMenu: true
       },
       { id: 'title', name: 'Title', field: 'title' },
       { id: 'duration', name: 'Duration', field: 'duration', sortable: true },
