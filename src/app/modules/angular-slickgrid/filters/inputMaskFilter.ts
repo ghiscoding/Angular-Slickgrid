@@ -18,7 +18,7 @@ export class InputMaskFilter extends InputFilter {
    */
   init(args: FilterArguments) {
     if (!args) {
-      throw new Error('[Aurelia-SlickGrid] A filter must always have an "init()" with valid arguments.');
+      throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
     }
     this.grid = args.grid;
     this.callback = args.callback;

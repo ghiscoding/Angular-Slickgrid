@@ -84,7 +84,7 @@ export class GridRowDetailComponent implements OnInit {
         selectActiveRow: true
       },
       rowDetailView: {
-        // We can load the "process" asynchronously in 3 different ways (aurelia-http-client, aurelia-fetch-client OR even Promise)
+        // We can load the "process" asynchronously in 2 different ways (httpClient OR even Promise)
         process: (item) => this.simulateServerAsyncCall(item),
         // process: this.httpFetch.fetch(`api/item/${item.id}`),
 

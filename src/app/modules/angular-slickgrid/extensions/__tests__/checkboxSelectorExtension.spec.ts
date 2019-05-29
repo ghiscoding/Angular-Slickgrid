@@ -1,4 +1,5 @@
-import { I18N } from 'aurelia-i18n';
+import { TestBed } from '@angular/core/testing';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { GridOption } from '../../models/gridOption.interface';
 import { CheckboxSelectorExtension } from '../checkboxSelectorExtension';
 import { ExtensionUtility } from '../extensionUtility';
@@ -32,15 +33,17 @@ jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModel)
 Slick.RowSelectionModel = mockSelectionModel;
 
 describe('checkboxSelectorExtension', () => {
+  let translate: TranslateService;
   let extension: CheckboxSelectorExtension;
-  let extensionUtility: ExtensionUtility;
-  let sharedService: SharedService;
   const gridOptionsMock = { enableCheckboxSelector: true } as GridOption;
 
   beforeEach(() => {
-    extensionUtility = new ExtensionUtility({} as I18N, sharedService);
-    sharedService = new SharedService();
-    extension = new CheckboxSelectorExtension(extensionUtility, sharedService);
+    TestBed.configureTestingModule({
+      providers: [CheckboxSelectorExtension, ExtensionUtility, SharedService],
+      imports: [TranslateModule.forRoot()]
+    });
+    extension = TestBed.get(CheckboxSelectorExtension);
+    translate = TestBed.get(TranslateService);
   });
 
   it('should return null after calling "create" method when either the column definitions or the grid options is missing', () => {

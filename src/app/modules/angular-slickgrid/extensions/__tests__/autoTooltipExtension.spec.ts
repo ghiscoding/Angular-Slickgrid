@@ -1,4 +1,5 @@
-import { I18N } from 'aurelia-i18n';
+import { TestBed } from '@angular/core/testing';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { GridOption } from '../../models/gridOption.interface';
 import { AutoTooltipExtension } from '../autoTooltipExtension';
 import { ExtensionUtility } from '../extensionUtility';
@@ -20,15 +21,17 @@ jest.mock('slickgrid/plugins/slick.autotooltips', () => mockAddon);
 Slick.AutoTooltips = mockAddon;
 
 describe('autoTooltipExtension', () => {
+  let translate: TranslateService;
   let extension: AutoTooltipExtension;
-  let extensionUtility: ExtensionUtility;
-  let sharedService: SharedService;
   const gridOptionsMock = { enableAutoTooltip: true } as GridOption;
 
   beforeEach(() => {
-    extensionUtility = new ExtensionUtility({} as I18N, sharedService);
-    sharedService = new SharedService();
-    extension = new AutoTooltipExtension(extensionUtility, sharedService);
+    TestBed.configureTestingModule({
+      providers: [AutoTooltipExtension, ExtensionUtility, SharedService],
+      imports: [TranslateModule.forRoot()]
+    });
+    extension = TestBed.get(AutoTooltipExtension);
+    translate = TestBed.get(TranslateService);
   });
 
   it('should return null when either the grid object or the grid options is missing', () => {

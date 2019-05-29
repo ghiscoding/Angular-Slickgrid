@@ -1,4 +1,5 @@
-import { I18N } from 'aurelia-i18n';
+import { TestBed } from '@angular/core/testing';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { GridOption } from '../../models/gridOption.interface';
 import { RowSelectionExtension } from '../rowSelectionExtension';
 import { ExtensionUtility } from '../extensionUtility';
@@ -22,15 +23,17 @@ jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockAddon);
 Slick.RowSelectionModel = mockAddon;
 
 describe('rowSelectionExtension', () => {
+  let translate: TranslateService;
   let extension: RowSelectionExtension;
-  let extensionUtility: ExtensionUtility;
-  let sharedService: SharedService;
   const gridOptionsMock = { enableRowSelection: true } as GridOption;
 
   beforeEach(() => {
-    extensionUtility = new ExtensionUtility({} as I18N, sharedService);
-    sharedService = new SharedService();
-    extension = new RowSelectionExtension(extensionUtility, sharedService);
+    TestBed.configureTestingModule({
+      providers: [RowSelectionExtension, ExtensionUtility, SharedService],
+      imports: [TranslateModule.forRoot()]
+    });
+    extension = TestBed.get(RowSelectionExtension);
+    translate = TestBed.get(TranslateService);
   });
 
   it('should return null when either the grid object or the grid options is missing', () => {

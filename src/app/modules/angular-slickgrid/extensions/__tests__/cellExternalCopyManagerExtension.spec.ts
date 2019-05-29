@@ -1,4 +1,5 @@
-import { I18N } from 'aurelia-i18n';
+import { TestBed } from '@angular/core/testing';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { GridOption } from '../../models/gridOption.interface';
 import { CellExternalCopyManagerExtension } from '../cellExternalCopyManagerExtension';
 import { ExtensionUtility } from '../extensionUtility';
@@ -33,13 +34,12 @@ jest.mock('slickgrid/plugins/slick.cellselectionmodel', () => mockSelectionModel
 Slick.CellSelectionModel = mockSelectionModel;
 
 describe('cellExternalCopyManagerExtension', () => {
+  let translate: TranslateService;
   const mockEventCallback = (e, args: { ranges: SelectedRange[] }) => { };
   const mockSelectRange = [{ fromCell: 1, fromRow: 1, toCell: 1, toRow: 1 }] as SelectedRange[];
   const mockSelectRangeEvent = { ranges: mockSelectRange };
 
   let extension: CellExternalCopyManagerExtension;
-  let extensionUtility: ExtensionUtility;
-  let sharedService: SharedService;
   const gridOptionsMock = {
     enableCheckboxSelector: true,
     excelCopyBufferOptions: {
@@ -51,9 +51,12 @@ describe('cellExternalCopyManagerExtension', () => {
   } as GridOption;
 
   beforeEach(() => {
-    extensionUtility = new ExtensionUtility({} as I18N, sharedService);
-    sharedService = new SharedService();
-    extension = new CellExternalCopyManagerExtension(extensionUtility, sharedService);
+    TestBed.configureTestingModule({
+      providers: [CellExternalCopyManagerExtension, ExtensionUtility, SharedService],
+      imports: [TranslateModule.forRoot()]
+    });
+    extension = TestBed.get(CellExternalCopyManagerExtension);
+    translate = TestBed.get(TranslateService);
   });
 
   afterEach(() => {
