@@ -94,6 +94,7 @@ export class GridEditorComponent implements OnInit {
   alertWarning: any;
   updatedObject: any;
   selectedLanguage = 'en';
+  duplicateTitleHeaderCount = 1;
 
   constructor(private http: HttpClient, private translate: TranslateService) { }
 
@@ -573,6 +574,22 @@ export class GridEditorComponent implements OnInit {
       autoCommitEdit: this.gridOptions.autoCommitEdit
     });
     return true;
+  }
+
+  dynamicallyAddTitleHeader() {
+    const newCol = {
+      id: `title${this.duplicateTitleHeaderCount++}`,
+      name: 'Title',
+      field: 'title',
+      editor: {
+        model: Editors.text,
+        required: true,
+        validator: myCustomTitleValidator, // use a custom validator
+      },
+      sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true }
+    };
+    this.columnDefinitions.push(newCol);
+    this.columnDefinitions = this.columnDefinitions.slice();
   }
 
   setAutoEdit(isAutoEdit) {
