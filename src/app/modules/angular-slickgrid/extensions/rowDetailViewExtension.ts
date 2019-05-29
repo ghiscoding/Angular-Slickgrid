@@ -59,7 +59,7 @@ export class RowDetailViewExtension implements Extension {
    */
   create(columnDefinitions: Column[], gridOptions: GridOption) {
     if (columnDefinitions && gridOptions) {
-      // dynamically import the SlickGrid plugin with requireJS
+      // dynamically import the SlickGrid plugin (addon) with RequireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.rowDetailView);
 
       if (!gridOptions.rowDetailView) {

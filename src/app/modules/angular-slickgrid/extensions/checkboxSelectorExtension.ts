@@ -8,13 +8,13 @@ declare var Slick: any;
 
 @Injectable()
 export class CheckboxSelectorExtension implements Extension {
-  private _extension: any;
+  private _addon: any;
 
   constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) { }
 
   dispose() {
-    if (this._extension && this._extension.destroy) {
-      this._extension.destroy();
+    if (this._addon && this._addon.destroy) {
+      this._addon.destroy();
     }
   }
 
@@ -23,20 +23,22 @@ export class CheckboxSelectorExtension implements Extension {
    * Mostly because the column definitions might change after the grid creation
    */
   create(columnDefinitions: Column[], gridOptions: GridOption) {
-    if (columnDefinitions && gridOptions) {
-      // dynamically import the SlickGrid plugin with requireJS
+    if (Array.isArray(columnDefinitions) && gridOptions) {
+      // dynamically import the SlickGrid plugin (addon) with RequireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.checkboxSelector);
-      if (!this._extension) {
-        this._extension = new Slick.CheckboxSelectColumn(gridOptions.checkboxSelector || {});
+      if (!this._addon) {
+        this._addon = new Slick.CheckboxSelectColumn(gridOptions.checkboxSelector || {});
       }
-      const selectionColumn: Column = this._extension.getColumnDefinition();
-      selectionColumn.excludeFromExport = true;
-      selectionColumn.excludeFromColumnPicker = true;
-      selectionColumn.excludeFromGridMenu = true;
-      selectionColumn.excludeFromQuery = true;
-      selectionColumn.excludeFromHeaderMenu = true;
-      columnDefinitions.unshift(selectionColumn);
-      return this._extension;
+      const selectionColumn: Column = this._addon.getColumnDefinition();
+      if (typeof selectionColumn === 'object') {
+        selectionColumn.excludeFromExport = true;
+        selectionColumn.excludeFromColumnPicker = true;
+        selectionColumn.excludeFromGridMenu = true;
+        selectionColumn.excludeFromQuery = true;
+        selectionColumn.excludeFromHeaderMenu = true;
+        columnDefinitions.unshift(selectionColumn);
+      }
+      return this._addon;
     }
     return null;
   }
@@ -44,7 +46,7 @@ export class CheckboxSelectorExtension implements Extension {
   register(rowSelectionPlugin?: any) {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
       // the plugin has to be created BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created
-      this.sharedService.grid.registerPlugin(this._extension);
+      this.sharedService.grid.registerPlugin(this._addon);
 
       // this also requires the Row Selection Model to be registered as well
       if (!rowSelectionPlugin || !this.sharedService.grid.getSelectionModel()) {
@@ -56,7 +58,7 @@ export class CheckboxSelectorExtension implements Extension {
       // user might want to pre-select some rows
       // the setTimeout is because of timing issue with styling (row selection happen but rows aren't highlighted properly)
       if (this.sharedService.gridOptions.preselectedRows && rowSelectionPlugin && this.sharedService.grid.getSelectionModel()) {
-        setTimeout(() => this._extension.selectRows(this.sharedService.gridOptions.preselectedRows), 0);
+        setTimeout(() => this._addon.selectRows(this.sharedService.gridOptions.preselectedRows), 0);
       }
 
       return rowSelectionPlugin;

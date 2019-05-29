@@ -122,9 +122,10 @@ describe('GridStateService', () => {
 
     describe('bindExtensionAddonEventToGridStateChange tests', () => {
       it('should subscribe to some Extension Addon SlickGrid events and expect the event to be triggered when a notify is triggered after service was initialized', () => {
+        const instanceMock = { onColumnsChanged: slickgridEvent };
         const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
         const associatedColumnsMock = [{ columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 }] as CurrentColumn[];
-        const extensionMock = { name: ExtensionName.columnPicker, addon: { onColumnsChanged: slickgridEvent }, class: null };
+        const extensionMock = { name: ExtensionName.columnPicker, addon: instanceMock, instance: instanceMock, class: null };
         const gridStateMock = { columns: associatedColumnsMock, filters: [], sorters: [] } as GridState;
         const stateChangeMock = { change: { newValues: associatedColumnsMock, type: GridStateType.columns }, gridState: gridStateMock } as GridStateChange;
 
@@ -376,7 +377,7 @@ describe('GridStateService', () => {
     });
 
     it('should call the method and call the grid selection reset when the selection extension is used', () => {
-      const extensionMock = { name: ExtensionName.rowSelection, addon: {}, class: null };
+      const extensionMock = { name: ExtensionName.rowSelection, addon: {}, instance: {}, class: null };
       const gridOptionsMock = { enableRowSelection: true } as GridOption;
       const gridOptionSpy = jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
       const setSelectionSpy = jest.spyOn(gridStub, 'setSelectedRows');

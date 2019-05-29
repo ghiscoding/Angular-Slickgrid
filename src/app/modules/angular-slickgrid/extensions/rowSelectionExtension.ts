@@ -8,24 +8,24 @@ declare var Slick: any;
 
 @Injectable()
 export class RowSelectionExtension implements Extension {
-  private _extension: any;
+  private _addon: any;
 
   constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) { }
 
   dispose() {
-    if (this._extension && this._extension.destroy) {
-      this._extension.destroy();
+    if (this._addon && this._addon.destroy) {
+      this._addon.destroy();
     }
   }
 
   register(): any {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
-      // dynamically import the SlickGrid plugin with requireJS
+      // dynamically import the SlickGrid plugin (addon) with RequireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.rowSelection);
 
-      this._extension = new Slick.RowSelectionModel(this.sharedService.gridOptions.rowSelectionOptions || {});
-      this.sharedService.grid.setSelectionModel(this._extension);
-      return this._extension;
+      this._addon = new Slick.RowSelectionModel(this.sharedService.gridOptions.rowSelectionOptions || {});
+      this.sharedService.grid.setSelectionModel(this._addon);
+      return this._addon;
     }
     return null;
   }

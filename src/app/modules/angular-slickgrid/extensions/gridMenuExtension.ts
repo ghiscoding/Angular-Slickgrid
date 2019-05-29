@@ -60,7 +60,7 @@ export class GridMenuExtension implements Extension {
     this._userOriginalGridMenu = { ...this.sharedService.gridOptions.gridMenu };
 
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
-      // dynamically import the SlickGrid plugin with requireJS
+      // dynamically import the SlickGrid plugin (addon) with RequireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.gridMenu);
       this.sharedService.gridOptions.gridMenu = { ...this.getDefaultGridMenuOptions(), ...this.sharedService.gridOptions.gridMenu };
 

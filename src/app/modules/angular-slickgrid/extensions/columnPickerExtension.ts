@@ -26,7 +26,7 @@ export class ColumnPickerExtension implements Extension {
 
   register(): any {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
-      // dynamically import the SlickGrid plugin with requireJS
+      // dynamically import the SlickGrid plugin (addon) with RequireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.columnPicker);
       // localization support for the picker
       const columnTitle = this.extensionUtility.getPickerTitleOutputString('columnTitle', 'columnPicker');
