@@ -4,22 +4,22 @@ import { SharedService } from '../services/shared.service';
 
 @Injectable()
 export class GroupItemMetaProviderExtension implements Extension {
-  private _extension: any;
+  private _addon: any;
 
   constructor(private sharedService: SharedService) { }
 
   dispose() {
-    if (this._extension && this._extension.destroy) {
-      this._extension.destroy();
+    if (this._addon && this._addon.destroy) {
+      this._addon.destroy();
     }
   }
 
   /** register the group item metadata provider to add expand/collapse group handlers */
   register(): any {
     if (this.sharedService && this.sharedService.grid) {
-      this._extension = this.sharedService.groupItemMetadataProvider || {};
-      this.sharedService.grid.registerPlugin(this._extension);
-      return this._extension;
+      this._addon = this.sharedService.groupItemMetadataProvider || {};
+      this.sharedService.grid.registerPlugin(this._addon);
+      return this._addon;
     }
     return null;
   }

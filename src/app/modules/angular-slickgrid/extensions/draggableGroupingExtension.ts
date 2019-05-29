@@ -28,7 +28,7 @@ export class DraggableGroupingExtension implements Extension {
    * For example the multi-select have to be added to the column definition before the grid is created to work properly
    */
   create(gridOptions: GridOption) {
-    // dynamically import the SlickGrid plugin with requireJS
+    // dynamically import the SlickGrid plugin (addon) with RequireJS
     this.extensionUtility.loadExtensionDynamically(ExtensionName.draggableGrouping);
 
     if (!this._extension && gridOptions) {
