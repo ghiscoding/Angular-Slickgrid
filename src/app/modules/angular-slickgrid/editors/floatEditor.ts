@@ -30,7 +30,7 @@ export class FloatEditor implements Editor {
   }
 
   get hasAutoCommitEdit() {
-    return this.args.grid.getOptions().autoCommitEdit;
+    return this.args && this.args.grid && this.args.grid.getOptions && this.args.grid.getOptions().autoCommitEdit;
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
@@ -72,7 +72,7 @@ export class FloatEditor implements Editor {
   }
 
   getColumnEditor() {
-    return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+    return this.args && this.args.column && this.args.column.internalColumnEditor;
   }
 
   getDecimalPlaces(): number {

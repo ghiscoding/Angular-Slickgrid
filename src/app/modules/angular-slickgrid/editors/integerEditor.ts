@@ -28,7 +28,7 @@ export class IntegerEditor implements Editor {
   }
 
   get hasAutoCommitEdit() {
-    return this.args.grid.getOptions().autoCommitEdit;
+    return this.args && this.args.grid && this.args.grid.getOptions && this.args.grid.getOptions().autoCommitEdit;
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
@@ -70,7 +70,7 @@ export class IntegerEditor implements Editor {
   }
 
   getColumnEditor() {
-    return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+    return this.args && this.args.column && this.args.column.internalColumnEditor;
   }
 
   loadValue(item: any) {
@@ -80,7 +80,7 @@ export class IntegerEditor implements Editor {
     const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
 
     if (item && this.columnDef && (item.hasOwnProperty(fieldName) || item.hasOwnProperty(fieldNameFromComplexObject))) {
-      this.defaultValue = parseInt(item[fieldNameFromComplexObject || fieldName], 10);
+      this.defaultValue = item[fieldNameFromComplexObject || fieldName];
       this.$input.val(this.defaultValue);
       this.$input[0].defaultValue = this.defaultValue;
       this.$input.select();
@@ -92,7 +92,7 @@ export class IntegerEditor implements Editor {
     if (elmValue === '' || isNaN(elmValue)) {
       return elmValue;
     }
-    return parseInt(elmValue, 10) || 0;
+    return isNaN(elmValue) ? elmValue : parseInt(elmValue, 10);
   }
 
   applyValue(item: any, state: any) {
@@ -105,13 +105,11 @@ export class IntegerEditor implements Editor {
 
   isValueChanged() {
     const elmValue = this.$input.val();
-    const value = isNaN(elmValue) ? elmValue : parseInt(elmValue, 10);
     const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
-
     if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
       return true;
     }
-    return (!(value === '' && this.defaultValue === null && lastEvent !== KeyCode.ENTER)) && (value !== this.defaultValue);
+    return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
   }
 
   save() {
