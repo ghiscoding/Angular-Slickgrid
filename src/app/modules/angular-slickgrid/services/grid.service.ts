@@ -1,4 +1,3 @@
-import { TranslateService } from '@ngx-translate/core';
 import { Injectable } from '@angular/core';
 import { CellArgs, Column, GridOption, OnEventArgs } from './../models/index';
 import { ExtensionService } from './extension.service';
@@ -18,8 +17,14 @@ export class GridService {
   onItemAdded = new Subject<any | any[]>();
   onItemDeleted = new Subject<any | any[]>();
   onItemUpdated = new Subject<any | any[]>();
+  onItemUpserted = new Subject<any | any[]>();
 
-  constructor(private extensionService: ExtensionService, private filterService: FilterService, private gridStateService: GridStateService, private sortService: SortService, private translate: TranslateService) { }
+  constructor(
+    private extensionService: ExtensionService,
+    private filterService: FilterService,
+    private gridStateService: GridStateService,
+    private sortService: SortService
+  ) { }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
@@ -360,7 +365,7 @@ export class GridService {
    */
   deleteItem(item: any, shouldTriggerEvent = true) {
     if (!item || !item.hasOwnProperty('id')) {
-      throw new Error(`deleteItem() requires an item object which includes the "id" property`);
+      throw new Error(`Deleting an item requires the item to include an "id" property`);
     }
     const itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
     this.deleteItemById(itemId, shouldTriggerEvent);
@@ -374,7 +379,7 @@ export class GridService {
   deleteItems(items: any[], shouldTriggerEvent = true) {
     // when it's not an array, we can call directly the single item delete
     if (!Array.isArray(items)) {
-      this.deleteItem(items);
+      this.deleteItem(items, shouldTriggerEvent);
     }
     items.forEach((item: any) => this.deleteItem(item, false));
 
@@ -456,7 +461,7 @@ export class GridService {
     const itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
 
     if (itemId === undefined) {
-      throw new Error(`Could not find the item in the grid or it's associated "id"`);
+      throw new Error(`Calling Update of an item requires the item to include an "id" property`);
     }
 
     return this.updateItemById(itemId, item, shouldHighlightRow, shouldTriggerEvent);
@@ -472,7 +477,7 @@ export class GridService {
   updateItems(items: any | any[], shouldHighlightRow = true, shouldTriggerEvent = true): number[] {
     // when it's not an array, we can call directly the single item update
     if (!Array.isArray(items)) {
-      this.updateItem(items, shouldHighlightRow);
+      this.updateItem(items, shouldHighlightRow, shouldTriggerEvent);
     }
 
     const gridIndexes: number[] = [];
@@ -509,7 +514,7 @@ export class GridService {
     const rowNumber = this._dataView.getRowById(itemId);
 
     if (!item || rowNumber === undefined) {
-      throw new Error(`Could not find the item in the grid or it's associated "id"`);
+      throw new Error(`Deleting an item requires the item to include an "id" property`);
     }
 
     const gridIdx = this._dataView.getIdxById(itemId);
@@ -537,38 +542,35 @@ export class GridService {
    * Insert a row into the grid if it doesn't already exist or update if it does.
    * @param item object which must contain a unique "id" property and any other suitable properties
    * @param shouldHighlightRow do we want to highlight the row after update
+   * @param shouldResortGrid defaults to false, do we want the item to be sorted after insert? When set to False, it will add item on first row (default)
    * @param shouldTriggerEvent defaults to true, which will trigger an event (used by at least the pagination component)
    */
-  upsertItem(item: any, shouldHighlightRow = true, shouldTriggerEvent = true): number {
+  upsertItem(item: any, shouldHighlightRow = true, shouldResortGrid = false, shouldTriggerEvent = true): number {
     const itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
+
     if (itemId === undefined) {
-      throw new Error(`The item to be Upsert in the grid must have an associated "id" for it to be valid`);
+      throw new Error(`Calling Upsert of an item requires the item to include an "id" property`);
     }
 
-    const rowNumber = this._dataView.getRowById(itemId);
-
-    if (rowNumber === undefined) {
-      return this.addItem(item, shouldHighlightRow, shouldTriggerEvent);
-    } else {
-      return this.updateItem(item, shouldHighlightRow, shouldTriggerEvent);
-    }
+    return this.upsertItemById(itemId, item, shouldHighlightRow, shouldResortGrid, shouldTriggerEvent);
   }
 
   /**
  * Update an array of existing items with new properties inside the datagrid
  * @param item object arrays, which must contain unique "id" property and any other suitable properties
  * @param shouldHighlightRow do we want to highlight the row after update
+ * @param shouldResortGrid defaults to false, do we want the item to be sorted after insert? When set to False, it will add item on first row (default)
  * @param shouldTriggerEvent defaults to true, which will trigger an event (used by at least the pagination component)
  */
-  upsertItems(items: any | any[], shouldHighlightRow = true, shouldTriggerEvent = true): number[] {
+  upsertItems(items: any | any[], shouldHighlightRow = true, shouldResortGrid = false, shouldTriggerEvent = true): number[] {
     // when it's not an array, we can call directly the single item update
     if (!Array.isArray(items)) {
-      return [this.upsertItem(items, shouldHighlightRow)];
+      return [this.upsertItem(items, shouldHighlightRow, shouldResortGrid, shouldTriggerEvent)];
     }
 
     const gridIndexes: number[] = [];
     items.forEach((item: any) => {
-      gridIndexes.push(this.upsertItem(item, false, false));
+      gridIndexes.push(this.upsertItem(item, false, false, false));
     });
 
     // only highlight at the end, all at once
@@ -579,8 +581,36 @@ export class GridService {
 
     // do we want to trigger an event after updating the item
     if (shouldTriggerEvent) {
-      this.onItemUpdated.next(items);
+      this.onItemUpserted.next(items);
     }
     return gridIndexes;
+  }
+
+  /**
+ * Update an existing item in the datagrid by it's id and new properties
+ * @param itemId: item unique id
+ * @param item object which must contain a unique "id" property and any other suitable properties
+ * @param shouldHighlightRow do we want to highlight the row after update
+ * @param shouldResortGrid defaults to false, do we want the item to be sorted after insert? When set to False, it will add item on first row (default)
+ * @param shouldTriggerEvent defaults to true, which will trigger an event (used by at least the pagination component)
+ * @return grid row index
+ */
+  upsertItemById(itemId: number | string, item: any, shouldHighlightRow = true, shouldResortGrid = false, shouldTriggerEvent = true): number {
+    if (itemId === undefined) {
+      throw new Error(`Calling Upsert of an item requires the item to include a valid and unique "id" property`);
+    }
+
+    let rowNumber: number;
+    if (this._dataView.getRowById(itemId) === undefined) {
+      rowNumber = this.addItem(item, shouldHighlightRow, shouldResortGrid, shouldTriggerEvent);
+    } else {
+      rowNumber = this.updateItem(item, shouldHighlightRow, shouldTriggerEvent);
+    }
+
+    // do we want to trigger an event after updating the item
+    if (shouldTriggerEvent) {
+      this.onItemUpserted.next(item);
+    }
+    return rowNumber;
   }
 }
