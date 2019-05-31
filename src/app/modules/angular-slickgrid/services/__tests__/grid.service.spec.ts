@@ -1,10 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { GridService, ExtensionService, FilterService, GridStateService, SortService } from '..';
-import { GridOption } from '../..';
+import { CellArgs, Column, OnEventArgs, GridOption } from './../../models';
 
 declare var Slick: any;
-const HIGHLIGHT_TIMEOUT = 1500;
 
 const mockSelectionModel = jest.fn().mockImplementation(() => ({
   init: jest.fn(),
@@ -14,17 +13,19 @@ const mockSelectionModel = jest.fn().mockImplementation(() => ({
 jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModel);
 Slick.RowSelectionModel = mockSelectionModel;
 
-let extensionServiceStub = {
+const extensionServiceStub = {
 } as ExtensionService;
 
-let filterServiceStub = {
-} as FilterService;
+const filterServiceStub = {
+  clearFilters: jest.fn(),
+} as unknown as FilterService;
 
-let gridStateServiceStub = {
+const gridStateServiceStub = {
 } as GridStateService;
 
-let sortServiceStub = {
-} as SortService;
+const sortServiceStub = {
+  clearSorting: jest.fn(),
+} as unknown as SortService;
 
 const dataviewStub = {
   deleteItem: jest.fn(),
@@ -38,6 +39,7 @@ const dataviewStub = {
 
 const gridStub = {
   insertItem: jest.fn(),
+  getDataItem: jest.fn(),
   getOptions: jest.fn(),
   getColumns: jest.fn(),
   getSelectionModel: jest.fn(),
@@ -77,6 +79,8 @@ describe('Grid Service', () => {
   });
 
   describe('upsertItem methods', () => {
+    jest.clearAllMocks();
+
     it('should throw an error when 1st argument for the item object is missing', () => {
       expect(() => service.upsertItem(null)).toThrowError('Calling Upsert of an item requires the item to include an "id" property');
     });
@@ -506,6 +510,169 @@ describe('Grid Service', () => {
     });
   });
 
+  describe('clearAllFiltersAndSorts method', () => {
+    it('should clear sorting & filters via the Sort & Filter Services, while the clear sort is specifically not triggering any sort event', () => {
+      const sortSpy = jest.spyOn(sortServiceStub, 'clearSorting');
+      const filterSpy = jest.spyOn(filterServiceStub, 'clearFilters');
+
+      service.clearAllFiltersAndSorts();
+
+      expect(sortSpy).toBeCalledWith(false);
+      expect(filterSpy).toBeCalledWith();
+    });
+  });
+
+  describe('getColumnFromEventArguments method', () => {
+    it('should throw an error when slickgrid getColumns method is not available', () => {
+      gridStub.getColumns = undefined;
+      expect(() => service.getColumnFromEventArguments({} as CellArgs))
+        .toThrowError('To get the column definition and data, we need to have these arguments passed as objects (row, cell, grid)');
+
+      gridStub.getColumns = jest.fn(); // put it back as a valid mock for later tests
+    });
+
+    it('should throw an error when slickgrid getDataItem method is not available', () => {
+      gridStub.getDataItem = undefined;
+      expect(() => service.getColumnFromEventArguments({} as CellArgs))
+        .toThrowError('To get the column definition and data, we need to have these arguments passed as objects (row, cell, grid)');
+
+      gridStub.getDataItem = jest.fn(); // put it back as a valid mock for later tests
+    });
+
+    it('should return an object including all extra properties', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      const mockItem = { id: 3, user: { firstName: 'John', lastName: 'Doe' } };
+      const args = { row: 3, cell: 1, grid: gridStub } as CellArgs;
+      const mockOutput = { row: 3, cell: 1, columnDef: mockColumns[1], dataContext: mockItem, dataView: dataviewStub, grid: gridStub } as OnEventArgs;
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
+      jest.spyOn(gridStub, 'getDataItem').mockReturnValue(mockItem);
+
+      const output = service.getColumnFromEventArguments(args);
+
+      expect(output).toEqual(mockOutput);
+    });
+  });
+
+  describe('getDataItemByRowNumber method', () => {
+    it('should throw an error when slickgrid "getDataItem" method is not available', () => {
+      gridStub.getDataItem = undefined;
+      expect(() => service.getDataItemByRowNumber(0)).toThrowError(`We could not find SlickGrid Grid object or it's "getDataItem" method`);
+      gridStub.getDataItem = jest.fn(); // put it back as a valid mock for later tests
+    });
+
+    it('should call the grid "getDataItem" method and return that output', () => {
+      const rowNumber = 2;
+      const mockItem = { id: 3, user: { firstName: 'John', lastName: 'Doe' } };
+      const spy = jest.spyOn(gridStub, 'getDataItem').mockReturnValue(mockItem);
+
+      const output = service.getDataItemByRowNumber(rowNumber);
+
+      expect(spy).toHaveBeenCalledWith(rowNumber);
+      expect(output).toEqual(mockItem);
+    });
+  });
+
+  describe('getItemRowMetadataToHighlight method', () => {
+    const options = { groupItemMetadataProvider: { getGroupRowMetadata: jest.fn(), getTotalsRowMetadata: jest.fn() } };
+    const columnDefinitions = [
+      { id: 'field1', width: 100, __group: {}, __groupTotals: {} },
+      { id: 'field2', width: 150, rowClass: 'red' },
+      { id: 'field3', field: 'field3', cssClasses: 'highlight', _dirty: true }
+    ];
+
+    // this mock is a typical callback function returned by SlickGrid internally, without anything changed to it's logic
+    const mockItemMetadataFn = (i: number) => {
+      const columnDef = columnDefinitions[i];
+      if (columnDef === undefined) {
+        return null;
+      }
+      if (columnDef.__group) { // overrides for grouping rows
+        return options.groupItemMetadataProvider.getGroupRowMetadata(columnDef);
+      }
+      if (columnDef.__groupTotals) { // overrides for totals rows
+        return options.groupItemMetadataProvider.getTotalsRowMetadata(columnDef);
+      }
+      return null;
+    };
+
+    it('should return a callback function when method is called', () => {
+      const callback = service.getItemRowMetadataToHighlight(mockItemMetadataFn);
+      expect(typeof callback === 'function').toBe(true);
+    });
+
+    it('should return an Item Metadata object with empty "cssClasses" property after executing the callback function', () => {
+      const rowNumber = 0;
+      const dataviewSpy = jest.spyOn(dataviewStub, 'getItem').mockReturnValue(columnDefinitions[rowNumber]);
+
+      const callback = service.getItemRowMetadataToHighlight(mockItemMetadataFn);
+      const output = callback(rowNumber); // execute callback with a row number
+
+      expect(dataviewSpy).toHaveBeenCalled();
+      expect(typeof callback === 'function').toBe(true);
+      expect(output).toEqual({ cssClasses: '' });
+    });
+
+    it('should return an Item Metadata object with a "dirty" string in the "cssClasses" property after executing the callback function', () => {
+      const rowNumber = 2;
+      const dataviewSpy = jest.spyOn(dataviewStub, 'getItem').mockReturnValue(columnDefinitions[rowNumber]);
+
+      const callback = service.getItemRowMetadataToHighlight(mockItemMetadataFn);
+      const output = callback(rowNumber); // execute callback with a row number
+
+      expect(dataviewSpy).toHaveBeenCalled();
+      expect(typeof callback === 'function').toBe(true);
+      expect(output).toEqual({ cssClasses: ' dirty' });
+    });
+
+    it('should return an Item Metadata object with filled "cssClasses" property when callback provided already returns a "cssClasses" property', () => {
+      const rowNumber = 2;
+      const dataviewSpy = jest.spyOn(dataviewStub, 'getItem').mockReturnValue(columnDefinitions[rowNumber]);
+
+      const callback = service.getItemRowMetadataToHighlight(() => {
+        return { cssClasses: 'highlight' };
+      });
+      const output = callback(rowNumber); // execute callback with a row number
+
+      expect(dataviewSpy).toHaveBeenCalled();
+      expect(typeof callback === 'function').toBe(true);
+      expect(output).toEqual({ cssClasses: 'highlight dirty' });
+    });
+
+    it(`should return an Item Metadata object with filled "cssClasses" property including a row number in the string
+    when the column definition has a "rowClass" property and when callback provided already returns a "cssClasses" property`, () => {
+        const rowNumber = 1;
+        const dataviewSpy = jest.spyOn(dataviewStub, 'getItem').mockReturnValue(columnDefinitions[rowNumber]);
+
+        const callback = service.getItemRowMetadataToHighlight(mockItemMetadataFn);
+        const output = callback(rowNumber); // execute callback with a row number
+
+        expect(dataviewSpy).toHaveBeenCalled();
+        expect(typeof callback === 'function').toBe(true);
+        expect(output).toEqual({ cssClasses: ' red row1' });
+      });
+  });
+
+  describe('highlightRowByMetadata method', () => {
+    it('should hightlight a row with a fading start & end delay', (done) => {
+      const mockColumn = { id: 'field2', field: 'field2', width: 150, rowClass: 'red' } as Column;
+      const getItemSpy = jest.spyOn(dataviewStub, 'getItem').mockReturnValue(mockColumn);
+      const getIndexSpy = jest.spyOn(dataviewStub, 'getIdxById').mockReturnValue(0);
+      const updateSpy = jest.spyOn(dataviewStub, 'updateItem');
+      const renderSpy = jest.spyOn(service, 'renderGrid');
+
+      service.highlightRowByMetadata(2, 1, 1);
+
+      setTimeout(() => {
+        expect(getItemSpy).toHaveBeenCalledWith(2);
+        expect(updateSpy).toHaveBeenCalledWith(mockColumn.id, mockColumn);
+        expect(renderSpy).toHaveBeenCalled();
+        expect(getIndexSpy).toHaveBeenCalled();
+        done();
+      }, 2);
+    });
+  });
+
+  /* DEPRECATED methods */
   describe('deprecated methods', () => {
     it('should call "addItem" when "addItemToDatagrid" is originally called', () => {
       const mockItem = { id: 0 };

@@ -66,8 +66,7 @@ export class GridService {
       columnDef: args.grid.getColumns()[args.cell],
       dataContext: args.grid.getDataItem(args.row),
       dataView: this._dataView,
-      grid: this._grid,
-      gridDefinition: this._gridOptions
+      grid: this._grid
     };
   }
 
@@ -132,14 +131,14 @@ export class GridService {
     if (item && item.id) {
       item.rowClass = 'highlight';
       this._dataView.updateItem(item.id, item);
-      this._grid.invalidate();
+      this.renderGrid();
 
       // fade out
       clearTimeout(highlightTimerEnd);
       highlightTimerEnd = setTimeout(() => {
         item.rowClass = 'highlight-end';
         this._dataView.updateItem(item.id, item);
-        this._grid.invalidate();
+        this.renderGrid();
       }, fadeOutDelay);
 
       // delete the row's CSS highlight classes once the delay is passed
@@ -148,7 +147,7 @@ export class GridService {
           delete item.rowClass;
           if (this._dataView.getIdxById(item.id) !== undefined) {
             this._dataView.updateItem(item.id, item);
-            this._grid.invalidate();
+            this.renderGrid();
           }
         }
       }, fadeDelay + fadeOutDelay);
