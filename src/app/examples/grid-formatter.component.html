@@ -5,6 +5,7 @@
     <angular-slickgrid gridId="grid2"
               [columnDefinitions]="columnDefinitions"
               [gridOptions]="gridOptions"
-              [dataset]="dataset">
+              [dataset]="dataset"
+              (onAngularGridCreated)="angularGridReady($event)" >
     </angular-slickgrid>
   </div>
