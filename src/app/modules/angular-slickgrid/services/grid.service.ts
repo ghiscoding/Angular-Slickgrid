@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CellArgs, Column, GridOption, GridServiceCrudOption, GridServiceInsertOption, GridServiceUpdateOption, OnEventArgs } from './../models/index';
+import { CellArgs, Column, GridOption, GridServiceDeleteOption, GridServiceInsertOption, GridServiceUpdateOption, OnEventArgs } from './../models/index';
 import { ExtensionService } from './extension.service';
 import { FilterService } from './filter.service';
 import { GridStateService } from './gridState.service';
@@ -9,6 +9,11 @@ import { Subject } from 'rxjs';
 // using external non-typed js libraries
 declare var Slick: any;
 let highlightTimerEnd: any;
+
+const GridServiceDeleteOptionDefaults: GridServiceDeleteOption = { triggerEvent: true };
+const GridServiceInsertOptionDefaults: GridServiceInsertOption = { highlightRow: true, resortGrid: false, selectRow: false, triggerEvent: true };
+const GridServiceUpdateOptionDefaults: GridServiceUpdateOption = { highlightRow: true, selectRow: false, triggerEvent: true };
+
 
 @Injectable()
 export class GridService {
@@ -249,22 +254,24 @@ export class GridService {
   }
 
   /** @deprecated please use "addItem" method instead */
-  addItemToDatagrid(item: any, shouldHighlightRow = true, shouldResortGrid = false, shouldTriggerEvent = true): number {
-    return this.addItem(item, { highlightRow: shouldHighlightRow, resortGrid: shouldResortGrid, triggerEvent: shouldTriggerEvent });
+  addItemToDatagrid(item: any, shouldHighlightRow = true, shouldResortGrid = false, shouldTriggerEvent = true, shouldSelectRow = true): number {
+    return this.addItem(item, { highlightRow: shouldHighlightRow, resortGrid: shouldResortGrid, triggerEvent: shouldTriggerEvent, selectRow: shouldSelectRow });
   }
 
   /** @deprecated please use "addItems" method instead */
-  addItemsToDatagrid(items: any[], shouldHighlightRow = true, shouldResortGrid = false, shouldTriggerEvent = true): number[] {
-    return this.addItems(items, { highlightRow: shouldHighlightRow, resortGrid: shouldResortGrid, triggerEvent: shouldTriggerEvent });
+  addItemsToDatagrid(items: any[], shouldHighlightRow = true, shouldResortGrid = false, shouldTriggerEvent = true, shouldSelectRow = true): number[] {
+    return this.addItems(items, { highlightRow: shouldHighlightRow, resortGrid: shouldResortGrid, triggerEvent: shouldTriggerEvent, selectRow: shouldSelectRow });
   }
 
   /**
    * Add an item (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
    * @param item object which must contain a unique "id" property and any other suitable properties
-   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, triggerEvent)
+   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, selectRow, triggerEvent)
    * @return rowIndex: typically index 0
    */
-  addItem(item: any, options: GridServiceInsertOption = { highlightRow: true, resortGrid: false, triggerEvent: true }): number {
+  addItem(item: any, options?: GridServiceInsertOption): number {
+    options = { ...GridServiceInsertOptionDefaults, ...options };
+
     if (!this._grid || !this._gridOptions || !this._dataView) {
       throw new Error('We could not find SlickGrid Grid, DataView objects');
     }
@@ -293,6 +300,11 @@ export class GridService {
       this.highlightRow(rowNumber);
     }
 
+    // select the row in the grid
+    if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
+      this._grid.setSelectedRows(rowNumber);
+    }
+
     // do we want to trigger an event after adding the item
     if (options.triggerEvent) {
       this.onItemAdded.next(item);
@@ -304,16 +316,17 @@ export class GridService {
   /**
    * Add item array (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
    * @param item object arrays, which must contain unique "id" property and any other suitable properties
-   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, triggerEvent)
+   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, selectRow, triggerEvent)
    */
-  addItems(items: any | any[], options: GridServiceInsertOption = { highlightRow: true, resortGrid: false, triggerEvent: true }): number[] {
+  addItems(items: any | any[], options?: GridServiceInsertOption): number[] {
+    options = { ...GridServiceInsertOptionDefaults, ...options };
     const rowNumbers: number[] = [];
 
     // loop through all items to add
     if (!Array.isArray(items)) {
       return [this.addItem(items, options)];
     } else {
-      items.forEach((item: any) => this.addItem(item, { highlightRow: false, resortGrid: false, triggerEvent: false }));
+      items.forEach((item: any) => this.addItem(item, { highlightRow: false, resortGrid: false, selectRow: false, triggerEvent: false }));
     }
 
     // do we want the item to be sorted in the grid, when set to False it will insert on first row (defaults to false)
@@ -338,6 +351,11 @@ export class GridService {
     // do user want to highlight the rows
     if (options.highlightRow) {
       this.highlightRow(rowNumbers);
+    }
+
+    // select the row in the grid
+    if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
+      this._grid.setSelectedRows(rowNumbers);
     }
 
     // do we want to trigger an event after adding the item
@@ -374,7 +392,9 @@ export class GridService {
    * @param options: provide the possibility to do certain actions after or during the upsert (triggerEvent)
    * @return item id deleted
    */
-  deleteItem(item: any, options: GridServiceCrudOption = { triggerEvent: true }): number | string {
+  deleteItem(item: any, options?: GridServiceDeleteOption): number | string {
+    options = { ...GridServiceDeleteOptionDefaults, ...options };
+
     if (!item || !item.hasOwnProperty('id')) {
       throw new Error(`Deleting an item requires the item to include an "id" property`);
     }
@@ -387,7 +407,9 @@ export class GridService {
    * @param options: provide the possibility to do certain actions after or during the upsert (triggerEvent)
    * @return item id deleted
    */
-  deleteItems(items: any | any[], options: GridServiceCrudOption = { triggerEvent: true }): number[] | string[] {
+  deleteItems(items: any | any[], options?: GridServiceDeleteOption): number[] | string[] {
+    options = { ...GridServiceDeleteOptionDefaults, ...options };
+
     // when it's not an array, we can call directly the single item delete
     if (!Array.isArray(items)) {
       this.deleteItem(items, options);
@@ -414,7 +436,9 @@ export class GridService {
    * @param options: provide the possibility to do certain actions after or during the upsert (triggerEvent)
    * @return item id deleted
    */
-  deleteItemById(itemId: string | number, options: GridServiceCrudOption = { triggerEvent: true }): number | string {
+  deleteItemById(itemId: string | number, options?: GridServiceDeleteOption): number | string {
+    options = { ...GridServiceDeleteOptionDefaults, ...options };
+
     if (itemId === null || itemId === undefined) {
       throw new Error(`Cannot delete a row without a valid "id"`);
     }
@@ -439,7 +463,9 @@ export class GridService {
    * @param itemIds array of item unique IDs
    * @param options: provide the possibility to do certain actions after or during the upsert (triggerEvent)
    */
-  deleteItemByIds(itemIds: number[] | string[], options: GridServiceCrudOption = { triggerEvent: true }): number[] | string[] {
+  deleteItemByIds(itemIds: number[] | string[], options?: GridServiceDeleteOption): number[] | string[] {
+    options = { ...GridServiceDeleteOptionDefaults, ...options };
+
     // when it's not an array, we can call directly the single item delete
     if (Array.isArray(itemIds)) {
       for (let i = 0; i < itemIds.length; i++) {
@@ -458,27 +484,28 @@ export class GridService {
   }
 
   /** @deprecated please use "updateItem" method instead */
-  updateDataGridItem(item: any, shouldHighlightRow = true, shouldTriggerEvent = true): number {
-    return this.updateItem(item, { highlightRow: shouldHighlightRow, triggerEvent: shouldTriggerEvent });
+  updateDataGridItem(item: any, shouldHighlightRow = true, shouldTriggerEvent = true, shouldSelectRow = true): number {
+    return this.updateItem(item, { highlightRow: shouldHighlightRow, triggerEvent: shouldTriggerEvent, selectRow: shouldSelectRow });
   }
 
   /** @deprecated please use "updateItems" method instead */
-  updateDataGridItems(items: any | any[], shouldHighlightRow = true, shouldTriggerEvent = true): number[] {
-    return this.updateItems(items, { highlightRow: shouldHighlightRow, triggerEvent: shouldTriggerEvent });
+  updateDataGridItems(items: any | any[], shouldHighlightRow = true, shouldTriggerEvent = true, shouldSelectRow = true): number[] {
+    return this.updateItems(items, { highlightRow: shouldHighlightRow, triggerEvent: shouldTriggerEvent, selectRow: shouldSelectRow });
   }
 
   /** @deprecated please use "updateItemById" method instead */
-  updateDataGridItemById(itemId: number | string, item: any, shouldHighlightRow = true, shouldTriggerEvent = true): number {
-    return this.updateItemById(itemId, item, { highlightRow: shouldHighlightRow, triggerEvent: shouldTriggerEvent });
+  updateDataGridItemById(itemId: number | string, item: any, shouldHighlightRow = true, shouldTriggerEvent = true, shouldSelectRow = true): number {
+    return this.updateItemById(itemId, item, { highlightRow: shouldHighlightRow, triggerEvent: shouldTriggerEvent, selectRow: shouldSelectRow });
   }
 
   /**
    * Update an existing item with new properties inside the datagrid
    * @param item object which must contain a unique "id" property and any other suitable properties
-   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, triggerEvent)
+   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, selectRow, triggerEvent)
    * @return grid row index
    */
-  updateItem(item: any, options: GridServiceUpdateOption = { highlightRow: true, triggerEvent: true }): number {
+  updateItem(item: any, options?: GridServiceUpdateOption): number {
+    options = { ...GridServiceUpdateOptionDefaults, ...options };
     const itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
 
     if (itemId === undefined) {
@@ -491,24 +518,31 @@ export class GridService {
   /**
    * Update an array of existing items with new properties inside the datagrid
    * @param item object arrays, which must contain unique "id" property and any other suitable properties
-   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, triggerEvent)
+   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, selectRow, triggerEvent)
    * @return grid row indexes
    */
-  updateItems(items: any | any[], options: GridServiceUpdateOption = { highlightRow: true, triggerEvent: true }): number[] {
+  updateItems(items: any | any[], options?: GridServiceUpdateOption): number[] {
+    options = { ...GridServiceUpdateOptionDefaults, ...options };
+
     // when it's not an array, we can call directly the single item update
     if (!Array.isArray(items)) {
       return [this.updateItem(items, options)];
     }
 
-    const gridIndexes: number[] = [];
+    const gridRowNumbers: number[] = [];
     items.forEach((item: any) => {
-      gridIndexes.push(this.updateItem(item, { highlightRow: false, triggerEvent: false }));
+      gridRowNumbers.push(this.updateItem(item, { highlightRow: false, selectRow: false, triggerEvent: false }));
     });
 
     // only highlight at the end, all at once
     // we have to do this because doing highlight 1 by 1 would only re-select the last highlighted row which is wrong behavior
     if (options.highlightRow) {
-      this.highlightRow(gridIndexes);
+      this.highlightRow(gridRowNumbers);
+    }
+
+    // select the row in the grid
+    if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
+      this._grid.setSelectedRows(gridRowNumbers);
     }
 
     // do we want to trigger an event after updating the item
@@ -516,17 +550,18 @@ export class GridService {
       this.onItemUpdated.next(items);
     }
 
-    return gridIndexes;
+    return gridRowNumbers;
   }
 
   /**
    * Update an existing item in the datagrid by it's id and new properties
    * @param itemId: item unique id
    * @param item object which must contain a unique "id" property and any other suitable properties
-   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, triggerEvent)
-   * @return grid row index
+   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, selectRow, triggerEvent)
+   * @return grid row number
    */
-  updateItemById(itemId: number | string, item: any, options: GridServiceUpdateOption = { highlightRow: true, triggerEvent: true }): number {
+  updateItemById(itemId: number | string, item: any, options?: GridServiceUpdateOption): number {
+    options = { ...GridServiceUpdateOptionDefaults, ...options };
     if (itemId === undefined) {
       throw new Error(`Cannot update a row without a valid "id"`);
     }
@@ -536,8 +571,7 @@ export class GridService {
       throw new Error(`The item to update in the grid was not found with id: ${itemId}`);
     }
 
-    const gridIdx = this._dataView.getIdxById(itemId);
-    if (gridIdx !== undefined) {
+    if (this._dataView.getIdxById(itemId) !== undefined) {
       // Update the item itself inside the dataView
       this._dataView.updateItem(itemId, item);
       this._grid.updateRow(rowNumber);
@@ -547,12 +581,15 @@ export class GridService {
         this.highlightRow(rowNumber);
       }
 
+      // select the row in the grid
+      if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
+        this._grid.setSelectedRows(rowNumber);
+      }
+
       // do we want to trigger an event after updating the item
       if (options.triggerEvent) {
         this.onItemUpdated.next(item);
       }
-
-      return gridIdx;
     }
     return rowNumber;
   }
@@ -560,9 +597,10 @@ export class GridService {
   /**
    * Insert a row into the grid if it doesn't already exist or update if it does.
    * @param item object which must contain a unique "id" property and any other suitable properties
-   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, triggerEvent)
+   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, selectRow, triggerEvent)
    */
-  upsertItem(item: any, options: GridServiceInsertOption = { highlightRow: true, resortGrid: false, triggerEvent: true }): number {
+  upsertItem(item: any, options?: GridServiceInsertOption): number {
+    options = { ...GridServiceInsertOptionDefaults, ...options };
     const itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
 
     if (itemId === undefined) {
@@ -575,40 +613,48 @@ export class GridService {
   /**
    * Update an array of existing items with new properties inside the datagrid
    * @param item object arrays, which must contain unique "id" property and any other suitable properties
-   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, triggerEvent)
+   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, selectRow, triggerEvent)
+   * @return row numbers in the grid
    */
-  upsertItems(items: any | any[], options: GridServiceInsertOption = { highlightRow: true, resortGrid: false, triggerEvent: true }): number[] {
+  upsertItems(items: any | any[], options?: GridServiceInsertOption): number[] {
+    options = { ...GridServiceInsertOptionDefaults, ...options };
     // when it's not an array, we can call directly the single item update
     if (!Array.isArray(items)) {
       return [this.upsertItem(items, options)];
     }
 
-    const gridIndexes: number[] = [];
+    const gridRowNumbers: number[] = [];
     items.forEach((item: any) => {
-      gridIndexes.push(this.upsertItem(item, { highlightRow: false, resortGrid: false, triggerEvent: false }));
+      gridRowNumbers.push(this.upsertItem(item, { highlightRow: false, resortGrid: false, selectRow: false, triggerEvent: false }));
     });
 
     // only highlight at the end, all at once
     // we have to do this because doing highlight 1 by 1 would only re-select the last highlighted row which is wrong behavior
     if (options.highlightRow) {
-      this.highlightRow(gridIndexes);
+      this.highlightRow(gridRowNumbers);
+    }
+
+    // select the row in the grid
+    if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
+      this._grid.setSelectedRows(gridRowNumbers);
     }
 
     // do we want to trigger an event after updating the item
     if (options.triggerEvent) {
       this.onItemUpserted.next(items);
     }
-    return gridIndexes;
+    return gridRowNumbers;
   }
 
   /**
    * Update an existing item in the datagrid by it's id and new properties
    * @param itemId: item unique id
    * @param item object which must contain a unique "id" property and any other suitable properties
-   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, triggerEvent)
-   * @return grid row index
+   * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, selectRow, triggerEvent)
+   * @return grid row number in the grid
    */
-  upsertItemById(itemId: number | string, item: any, options: GridServiceInsertOption = { highlightRow: true, resortGrid: false, triggerEvent: true }): number {
+  upsertItemById(itemId: number | string, item: any, options?: GridServiceInsertOption): number {
+    options = { ...GridServiceInsertOptionDefaults, ...options };
     if (itemId === undefined) {
       throw new Error(`Calling Upsert of an item requires the item to include a valid and unique "id" property`);
     }
@@ -617,7 +663,7 @@ export class GridService {
     if (this._dataView.getRowById(itemId) === undefined) {
       rowNumber = this.addItem(item, options);
     } else {
-      rowNumber = this.updateItem(item, { highlightRow: options.highlightRow, triggerEvent: options.triggerEvent });
+      rowNumber = this.updateItem(item, { highlightRow: options.highlightRow, selectRow: options.selectRow, triggerEvent: options.triggerEvent });
     }
 
     // do we want to trigger an event after updating the item
