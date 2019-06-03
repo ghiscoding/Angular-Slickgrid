@@ -14,14 +14,16 @@ jest.mock('slickgrid/plugins/slick.rowselectionmodel', () => mockSelectionModel)
 Slick.RowSelectionModel = mockSelectionModel;
 
 const extensionServiceStub = {
-} as ExtensionService;
+  getAllColumns: jest.fn(),
+} as unknown as ExtensionService;
 
 const filterServiceStub = {
   clearFilters: jest.fn(),
 } as unknown as FilterService;
 
 const gridStateServiceStub = {
-} as GridStateService;
+  resetColumns: jest.fn(),
+} as unknown as GridStateService;
 
 const sortServiceStub = {
   clearSorting: jest.fn(),
@@ -38,12 +40,17 @@ const dataviewStub = {
 };
 
 const gridStub = {
+  autosizeColumns: jest.fn(),
   insertItem: jest.fn(),
+  invalidate: jest.fn(),
   getDataItem: jest.fn(),
   getOptions: jest.fn(),
   getColumns: jest.fn(),
   getSelectionModel: jest.fn(),
   setSelectionModel: jest.fn(),
+  getSelectedRows: jest.fn(),
+  render: jest.fn(),
+  setColumns: jest.fn(),
   setSelectedRows: jest.fn(),
   scrollRowIntoView: jest.fn(),
   updateRow: jest.fn(),
@@ -672,7 +679,162 @@ describe('Grid Service', () => {
     });
   });
 
-  /* DEPRECATED methods */
+  describe('getDataItemByRowIndex method', () => {
+    afterEach(() => {
+      gridStub.getDataItem = jest.fn(); // put it back as a valid mock for later tests
+    });
+
+    it('should throw an error when the grid "getDataItem" method is not available', () => {
+      gridStub.getDataItem = undefined;
+      expect(() => service.getDataItemByRowIndex(0))
+        .toThrowError('We could not find SlickGrid Grid object and/or "getDataItem" method');
+    });
+
+    it('should return data item object when method is called', () => {
+      const mockColumn = { id: 'field2', field: 'field2', width: 150, rowClass: 'red' } as Column;
+      const spy = jest.spyOn(gridStub, 'getDataItem').mockReturnValue(mockColumn);
+
+      const output = service.getDataItemByRowIndex(0);
+
+      expect(spy).toHaveBeenCalled();
+      expect(output).toEqual(mockColumn);
+    });
+  });
+
+  describe('getDataItemByRowIndexes method', () => {
+    afterEach(() => {
+      gridStub.getDataItem = jest.fn(); // put it back as a valid mock for later tests
+    });
+
+    it('should throw an error when the grid "getDataItem" method is not available', () => {
+      gridStub.getDataItem = undefined;
+      expect(() => service.getDataItemByRowIndexes([0]))
+        .toThrowError('We could not find SlickGrid Grid object and/or "getDataItem" method');
+    });
+
+    it('should return data item object when method is called', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      const spy = jest.spyOn(gridStub, 'getDataItem').mockReturnValueOnce(mockColumns[0]).mockReturnValueOnce(mockColumns[2]);
+
+      const output = service.getDataItemByRowIndexes([0, 2]);
+
+      expect(spy).toHaveBeenCalled();
+      expect(output).toEqual([{ id: 'field1', width: 100 }, { id: 'field3', field: 'field3' }]);
+    });
+  });
+
+  describe('getSelectedRows method', () => {
+    afterEach(() => {
+      gridStub.getSelectedRows = jest.fn(); // put it back as a valid mock for later tests
+    });
+
+    it('should throw an error when the grid "getSelectedRows" method is not available', () => {
+      gridStub.getSelectedRows = undefined;
+      expect(() => service.getSelectedRows())
+        .toThrowError('We could not find SlickGrid Grid object and/or "getSelectedRows" method');
+    });
+
+    it('should return selected row indexes', () => {
+      const spy = jest.spyOn(gridStub, 'getSelectedRows').mockReturnValue([0, 1]);
+      const output = service.getSelectedRows();
+
+      expect(spy).toHaveBeenCalled();
+      expect(output).toEqual([0, 1]);
+    });
+  });
+
+  describe('getSelectedRowsDataItem method', () => {
+    afterEach(() => {
+      gridStub.getSelectedRows = jest.fn(); // put it back as a valid mock for later tests
+    });
+
+    it('should throw an error when the grid "getSelectedRows" method is not available', () => {
+      gridStub.getSelectedRows = undefined;
+      expect(() => service.getSelectedRowsDataItem())
+        .toThrowError('We could not find SlickGrid Grid object and/or "getSelectedRows" method');
+    });
+
+    it('should return selected row indexes', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      const mockSelectedColumns = [{ id: 'field1', width: 100 }, { id: 'field3', field: 'field3' }] as Column[];
+      const gridSpy = jest.spyOn(gridStub, 'getSelectedRows').mockReturnValue([0, 2]);
+      const serviceSpy = jest.spyOn(service, 'getDataItemByRowIndexes').mockReturnValue(mockSelectedColumns);
+
+      const output = service.getSelectedRowsDataItem();
+
+      expect(gridSpy).toHaveBeenCalled();
+      expect(serviceSpy).toHaveBeenCalled();
+      expect(output).toEqual(mockSelectedColumns);
+    });
+  });
+
+  describe('setSelectedRow method', () => {
+    it('should select the row with index provided', () => {
+      const spy = jest.spyOn(gridStub, 'setSelectedRows');
+      service.setSelectedRow(2);
+      expect(spy).toHaveBeenCalledWith([2]);
+    });
+  });
+
+  describe('setSelectedRows method', () => {
+    it('should select the row with index provided', () => {
+      const spy = jest.spyOn(gridStub, 'setSelectedRows');
+      service.setSelectedRows([0, 2, 5]);
+      expect(spy).toHaveBeenCalledWith([0, 2, 5]);
+    });
+  });
+
+  describe('renderGrid method', () => {
+    it('should invalidate the grid and call render after', () => {
+      const invalidateSpy = jest.spyOn(gridStub, 'invalidate');
+      const renderSpy = jest.spyOn(gridStub, 'render');
+
+      service.renderGrid();
+
+      expect(invalidateSpy).toHaveBeenCalled();
+      expect(renderSpy).toHaveBeenCalled();
+      expect(gridStub.invalidate).toHaveBeenCalledBefore(gridStub.render);
+    });
+  });
+
+  describe('resetGrid method', () => {
+    it('should call a reset and expect a few grid methods to be called', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      jest.spyOn(gridStub, 'getOptions').mockReturnValue({ enableAutoResize: true, enableAutoSizeColumns: true } as GridOption);
+      const extensionSpy = jest.spyOn(extensionServiceStub, 'getAllColumns').mockReturnValue(mockColumns);
+      const setColSpy = jest.spyOn(gridStub, 'setColumns');
+      const autosizeSpy = jest.spyOn(gridStub, 'autosizeColumns');
+      const gridStateSpy = jest.spyOn(gridStateServiceStub, 'resetColumns');
+      const filterSpy = jest.spyOn(filterServiceStub, 'clearFilters');
+      const sortSpy = jest.spyOn(sortServiceStub, 'clearSorting');
+
+      service.resetGrid();
+
+      expect(extensionSpy).toHaveBeenCalled();
+      expect(setColSpy).toHaveBeenCalled();
+      expect(autosizeSpy).toHaveBeenCalled();
+      expect(gridStateSpy).toHaveBeenCalled();
+      expect(filterSpy).toHaveBeenCalled();
+      expect(sortSpy).toHaveBeenCalled();
+    });
+
+    it('should call a reset and expect the grid "resetColumns" method to be called with the column definitions provided to the method', () => {
+      const mockColumns = [{ id: 'field1', width: 100 }, { id: 'field2', width: 150 }, { id: 'field3', field: 'field3' }] as Column[];
+      jest.spyOn(gridStub, 'getOptions').mockReturnValue({ enableAutoResize: true, enableAutoSizeColumns: true } as GridOption);
+      const extensionSpy = jest.spyOn(extensionServiceStub, 'getAllColumns').mockReturnValue(mockColumns);
+      const gridStateSpy = jest.spyOn(gridStateServiceStub, 'resetColumns');
+
+      service.resetGrid(mockColumns);
+
+      expect(extensionSpy).toHaveBeenCalled();
+      expect(gridStateSpy).toHaveBeenCalledWith(mockColumns);
+    });
+  });
+
+  // --
+  // DEPRECATED methods, to be removed eventually
+  // ----------------------
+
   describe('deprecated methods', () => {
     it('should call "addItem" when "addItemToDatagrid" is originally called', () => {
       const mockItem = { id: 0 };

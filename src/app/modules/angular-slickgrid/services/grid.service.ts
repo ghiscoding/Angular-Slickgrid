@@ -155,18 +155,18 @@ export class GridService {
   }
 
   /** Get the Data Item from a grid row index */
-  getDataItemByRowIndex(index: number) {
+  getDataItemByRowIndex(index: number): any {
     if (!this._grid || typeof this._grid.getDataItem !== 'function') {
-      throw new Error('We could not find SlickGrid Grid object');
+      throw new Error('We could not find SlickGrid Grid object and/or "getDataItem" method');
     }
 
     return this._grid.getDataItem(index);
   }
 
   /** Get the Data Item from an array of grid row indexes */
-  getDataItemByRowIndexes(indexes: number[]) {
+  getDataItemByRowIndexes(indexes: number[]): any[] {
     if (!this._grid || typeof this._grid.getDataItem !== 'function') {
-      throw new Error('We could not find SlickGrid Grid object');
+      throw new Error('We could not find SlickGrid Grid object and/or "getDataItem" method');
     }
 
     const dataItems = [];
@@ -181,14 +181,17 @@ export class GridService {
   }
 
   /** Get the currently selected row indexes */
-  getSelectedRows() {
+  getSelectedRows(): number[] {
+    if (!this._grid || typeof this._grid.getSelectedRows !== 'function') {
+      throw new Error('We could not find SlickGrid Grid object and/or "getSelectedRows" method');
+    }
     return this._grid.getSelectedRows();
   }
 
   /** Get the currently selected rows item data */
-  getSelectedRowsDataItem() {
+  getSelectedRowsDataItem(): any[] {
     if (!this._grid || typeof this._grid.getSelectedRows !== 'function') {
-      throw new Error('We could not find SlickGrid Grid object');
+      throw new Error('We could not find SlickGrid Grid object and/or "getSelectedRows" method');
     }
 
     const selectedRowIndexes = this._grid.getSelectedRows();
@@ -197,12 +200,16 @@ export class GridService {
 
   /** Select the selected row by a row index */
   setSelectedRow(rowIndex: number) {
-    this._grid.setSelectedRows([rowIndex]);
+    if (this._grid && this._grid.setSelectedRows) {
+      this._grid.setSelectedRows([rowIndex]);
+    }
   }
 
   /** Set selected rows with provided array of row indexes */
   setSelectedRows(rowIndexes: number[]) {
-    this._grid.setSelectedRows(rowIndexes);
+    if (this._grid && this._grid.setSelectedRows) {
+      this._grid.setSelectedRows(rowIndexes);
+    }
   }
 
   /** Re-Render the Grid */
@@ -222,6 +229,7 @@ export class GridService {
     // reset columns to original states & refresh the grid
     if (this._grid && this._dataView) {
       const originalColumns = this.extensionService.getAllColumns();
+
       if (Array.isArray(originalColumns) && originalColumns.length > 0) {
         // set the grid columns to it's original column definitions
         this._grid.setColumns(originalColumns);
@@ -231,6 +239,7 @@ export class GridService {
         this.gridStateService.resetColumns(columnDefinitions);
       }
     }
+
     if (this.filterService && this.filterService.clearFilters) {
       this.filterService.clearFilters();
     }

@@ -42,7 +42,7 @@ module.exports = {
   ],
   reporters: ['default', 'jest-junit'],
   setupFiles: ['<rootDir>/jest-pretest.ts'],
-  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
+  setupFilesAfterEnv: ['jest-extended', '<rootDir>/setup-jest.ts'],
   transform: {
     '^.+\\.(ts|html)$': '<rootDir>/node_modules/jest-preset-angular/preprocessor.js',
   },
