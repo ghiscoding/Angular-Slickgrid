@@ -95,7 +95,7 @@ describe('Resizer Service', () => {
     expect(window.innerHeight).not.toEqual(previousHeight);
     expect(serviceCalculateSpy).toReturnWith(dimensionResult);
     expect(lastDimensions).toEqual(dimensionResult);
-    expect(subjectBeforeSpy).toHaveBeenCalledWith(true);
+    expect(subjectBeforeSpy).toHaveBeenCalledWith(expect.any(Object));
     expect(subjectAfterSpy).toHaveBeenCalledWith(dimensionResult);
   });
 
@@ -186,5 +186,19 @@ describe('Resizer Service', () => {
     // with JSDOM the height is always 0 so we can assume that the height will be the minimum height (without the padding)
     expect(serviceCalculateSpy).toHaveBeenCalled();
     expect(gridAutosizeSpy).toHaveBeenCalled();
+  });
+
+  it('should stop resizing when user called "pauseResizer" with true', () => {
+    service.bindAutoResizeDataGrid();
+    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 450 });
+    window.dispatchEvent(new Event('resize'));
+
+    service.pauseResizer(true);
+    const spy = jest.spyOn(service, 'resizeGrid');
+
+    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 550 });
+    window.dispatchEvent(new Event('resize'));
+
+    expect(spy).not.toHaveBeenCalled();
   });
 });
