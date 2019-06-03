@@ -122,7 +122,7 @@ export class GridFormatterComponent implements OnInit {
 
       // simulate a backend http call and refresh the grid row after delay
       setTimeout(() => {
-        this.angularGrid.gridService.updateItemById(item.id, item, false);
+        this.angularGrid.gridService.updateItemById(item.id, item, { highlightRow: false });
       }, 250);
     }
   }
