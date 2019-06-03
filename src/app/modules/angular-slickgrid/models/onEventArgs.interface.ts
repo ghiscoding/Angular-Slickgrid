@@ -8,5 +8,4 @@ export interface OnEventArgs {
   dataContext: any;
   dataView: any; // TODO replace by a DataView interface
   grid: any;    // TODO replace by a SlickGrid interface
-  gridDefinition: GridOption;
 }

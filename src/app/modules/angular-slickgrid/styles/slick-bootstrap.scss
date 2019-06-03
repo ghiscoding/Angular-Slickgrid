@@ -7,14 +7,24 @@
 /* Mixins for SlickGrid */
 @import './variables';
 
-@-webkit-keyframes highlight-fade {
+@-webkit-keyframes highlight-start {
   to {background: $row-highlight-background-color;}
   from {background: none;}
 }
 
-@keyframes highlight-fade {
+@keyframes highlight-start {
   to {background: $row-highlight-background-color;}
   from {background: none;}
+}
+
+@-webkit-keyframes highlight-end {
+  from {background: $row-highlight-fade-out-animation;}
+  to {background: none;}
+}
+
+@keyframes highlight-end {
+  from {background: $row-highlight-fade-out-animation;}
+  to {background: none;}
 }
 
 .slickgrid-container {
@@ -67,7 +77,7 @@
       }
       &.highlight {
         background-color: $row-highlight-background-color;
-        animation: highlight-fade $row-highlight-fade-animation;
+        animation: highlight-start $row-highlight-fade-animation;
         .slick-cell {
           &.copied {
             background: $copied-cell-bg-color-transition;
@@ -76,13 +86,21 @@
         }
         &.odd {
           background-color: $row-highlight-background-color;
-          animation: highlight-fade $row-highlight-fade-animation;
+          animation: highlight-start $row-highlight-fade-animation;
         }
         &.odd .slick-cell {
           &.copied {
             background: $copied-cell-bg-color-transition;
             transition: $copied-cell-transition;
           }
+        }
+      }
+      &.highlight-end {
+        background-color: $row-highlight-background-color;
+        animation: highlight-end $row-highlight-fade-animation;
+        &.odd {
+          background-color: $row-highlight-background-color;
+          animation: highlight-end $row-highlight-fade-animation;
         }
       }
       &.highlighter {

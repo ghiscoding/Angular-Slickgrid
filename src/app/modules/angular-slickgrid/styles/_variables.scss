@@ -43,6 +43,7 @@ $row-mouse-hover-color:                   #eff5fc !default;
 $row-selected-color:                      #dae8f1 !default;
 $row-highlight-background-color:          darken($row-selected-color, 5%) !default;
 $row-highlight-fade-animation:            1.5s ease 1 !default;
+$row-highlight-fade-out-animation:        0.3s ease 1 !default;
 $row-checkbox-selector-background:        inherit !default;
 $row-checkbox-selector-border:            none !default;
 
