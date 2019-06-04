@@ -23,8 +23,9 @@ export class ResizerService {
   private _grid: any;
   private _lastDimensions: GridDimension;
   private _timer: any;
+  private _resizePaused = false;
   onGridAfterResize = new Subject<GridDimension>();
-  onGridBeforeResize = new Subject<boolean>();
+  onGridBeforeResize = new Subject<Event>();
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
@@ -59,9 +60,11 @@ export class ResizerService {
 
     // -- 2nd attach a trigger on the Window DOM element, so that it happens also when resizing after first load
     // -- attach auto-resize to Window object only if it exist
-    $(window).on(`resize.grid.${this._gridUid}`, () => {
-      this.onGridBeforeResize.next(true);
-      this.resizeGrid(0, newSizes);
+    $(window).on(`resize.grid.${this._gridUid}`, (event: Event) => {
+      this.onGridBeforeResize.next(event);
+      if (!this._resizePaused) {
+        this.resizeGrid(0, newSizes);
+      }
     });
   }
 
@@ -162,6 +165,11 @@ export class ResizerService {
    */
   getLastResizeDimensions(): GridDimension {
     return this._lastDimensions;
+  }
+
+  /** Provide the possibility to pause the resizer for some time, until user decides to re-enabled it later if he wish to. */
+  pauseResizer(isResizePaused: boolean) {
+    this._resizePaused = isResizePaused;
   }
 
   /** Resize the datagrid to fit the browser height & width */

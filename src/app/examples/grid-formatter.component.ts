@@ -29,6 +29,7 @@ export class GridFormatterComponent implements OnInit {
         Support Excel Copy Buffer (SlickGrid Copy Manager Plugin), you can use it by simply enabling "enableExcelCopyBuffer" flag.
         Note that it will only evaluate Formatter when the "exportWithFormatter" flag is enabled (through "ExportOptions" or the column definition)
       </li>
+      <li>This example also has auto-resize enabled, and we also demo how you can pause the resizer if you wish to</li>
     </ul>
   `;
 
@@ -36,6 +37,7 @@ export class GridFormatterComponent implements OnInit {
   gridOptions: GridOption;
   dataset: any[];
   angularGrid: AngularGridInstance;
+  resizerPaused = false;
 
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
@@ -113,6 +115,11 @@ export class GridFormatterComponent implements OnInit {
       phone += Math.round(Math.random() * 9) + '';
     }
     return phone;
+  }
+
+  togglePauseResizer() {
+    this.resizerPaused = !this.resizerPaused;
+    this.angularGrid.resizerService.pauseResizer(this.resizerPaused);
   }
 
   toggleCompletedProperty(item) {
