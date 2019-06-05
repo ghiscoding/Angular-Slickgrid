@@ -127,9 +127,11 @@ export class ExtensionUtility {
 
   /** Translate the an array of items from an input key and assign to the output key */
   translateItems(items: any[], inputKey: string, outputKey: string) {
-    for (const item of items) {
-      if (item[inputKey]) {
-        item[outputKey] = this.translate.instant(item[inputKey]);
+    if (Array.isArray(items)) {
+      for (const item of items) {
+        if (item[inputKey]) {
+          item[outputKey] = this.translate.instant(item[inputKey]);
+        }
       }
     }
   }

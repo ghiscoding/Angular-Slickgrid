@@ -76,11 +76,11 @@ describe('cellExternalCopyManagerExtension', () => {
 
     it('should register the addon', () => {
       const pluginSpy = jest.spyOn(SharedService.prototype.grid, 'registerPlugin');
-      const optionSpy = jest.spyOn(SharedService.prototype.gridOptions.excelCopyBufferOptions, 'onExtensionRegistered');
+      const onRegisteredSpy = jest.spyOn(SharedService.prototype.gridOptions.excelCopyBufferOptions, 'onExtensionRegistered');
 
       const instance = extension.register();
 
-      expect(optionSpy).toHaveBeenCalledWith(instance);
+      expect(onRegisteredSpy).toHaveBeenCalledWith(instance);
       expect(pluginSpy).toHaveBeenCalledWith(instance);
       expect(mockSelectionModel).toHaveBeenCalled();
       expect(mockAddon).toHaveBeenCalledWith({

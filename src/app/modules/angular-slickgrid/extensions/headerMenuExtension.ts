@@ -11,6 +11,7 @@ import {
   HeaderMenuItem,
   HeaderMenuOnCommandArgs,
   HeaderMenuOnBeforeMenuShowArgs,
+  SlickEventHandler,
 } from '../models/index';
 import { FilterService } from '../services/filter.service';
 import { SortService } from '../services/sort.service';
@@ -22,8 +23,8 @@ declare var Slick: any;
 
 @Injectable()
 export class HeaderMenuExtension implements Extension {
-  private _eventHandler: any = new Slick.EventHandler();
-  private _extension: any;
+  private _addon: any;
+  private _eventHandler: SlickEventHandler;
 
   constructor(
     private extensionUtility: ExtensionUtility,
@@ -31,13 +32,19 @@ export class HeaderMenuExtension implements Extension {
     private sharedService: SharedService,
     private sortService: SortService,
     private translate: TranslateService,
-  ) { }
+  ) {
+    this._eventHandler = new Slick.EventHandler();
+  }
+
+  get eventHandler(): SlickEventHandler {
+    return this._eventHandler;
+  }
 
   dispose() {
     // unsubscribe all SlickGrid events
     this._eventHandler.unsubscribeAll();
-    if (this._extension && this._extension.destroy) {
-      this._extension.destroy();
+    if (this._addon && this._addon.destroy) {
+      this._addon.destroy();
     }
   }
 
@@ -56,37 +63,37 @@ export class HeaderMenuExtension implements Extension {
         this.sharedService.gridOptions.headerMenu = this.addHeaderMenuCustomCommands(this.sharedService.gridOptions, this.sharedService.columnDefinitions);
       }
 
-      this._extension = new Slick.Plugins.HeaderMenu(this.sharedService.gridOptions.headerMenu);
-      this.sharedService.grid.registerPlugin(this._extension);
+      this._addon = new Slick.Plugins.HeaderMenu(this.sharedService.gridOptions.headerMenu);
+      this.sharedService.grid.registerPlugin(this._addon);
 
       // hook all events
       if (this.sharedService.grid && this.sharedService.gridOptions.headerMenu) {
         if (this.sharedService.gridOptions.headerMenu.onExtensionRegistered) {
-          this.sharedService.gridOptions.headerMenu.onExtensionRegistered(this._extension);
+          this.sharedService.gridOptions.headerMenu.onExtensionRegistered(this._addon);
         }
-        this._eventHandler.subscribe(this._extension.onCommand, (e: any, args: HeaderMenuOnCommandArgs) => {
+        this._eventHandler.subscribe(this._addon.onCommand, (e: any, args: HeaderMenuOnCommandArgs) => {
           this.executeHeaderMenuInternalCommands(e, args);
           if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onCommand === 'function') {
             this.sharedService.gridOptions.headerMenu.onCommand(e, args);
           }
         });
-        this._eventHandler.subscribe(this._extension.onBeforeMenuShow, (e: any, args: HeaderMenuOnBeforeMenuShowArgs) => {
+        this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (e: any, args: HeaderMenuOnBeforeMenuShowArgs) => {
           if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
             this.sharedService.gridOptions.headerMenu.onBeforeMenuShow(e, args);
           }
         });
       }
-      return this._extension;
+      return this._addon;
     }
     return null;
   }
 
- /**
-  * Create Header Menu with Custom Commands if user has enabled Header Menu
-  * @param options
-  * @param columnDefinitions
-  * @return header menu
-  */
+  /**
+   * Create Header Menu with Custom Commands if user has enabled Header Menu
+   * @param options
+   * @param columnDefinitions
+   * @return header menu
+   */
   private addHeaderMenuCustomCommands(options: GridOption, columnDefinitions: Column[]): HeaderMenu {
     const headerMenuOptions = options.headerMenu || {};
 
@@ -123,7 +130,9 @@ export class HeaderMenuExtension implements Extension {
             }
 
             // add a divider (separator) between the top sort commands and the other clear commands
-            columnHeaderMenuItems.push({ divider: true, command: '', positionOrder: 52 });
+            if (columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.positionOrder === 52).length === 0) {
+              columnHeaderMenuItems.push({ divider: true, command: '', positionOrder: 52 });
+            }
 
             if (!headerMenuOptions.hideClearSortCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'clear-sort').length === 0) {
               columnHeaderMenuItems.push({
@@ -169,33 +178,6 @@ export class HeaderMenuExtension implements Extension {
       });
     }
     return headerMenuOptions;
-  }
-
-  /** Execute the Header Menu Commands that was triggered by the onCommand subscribe */
-  executeHeaderMenuInternalCommands(event: Event, args: HeaderMenuOnCommandArgs) {
-    if (args && args.command) {
-      switch (args.command) {
-        case 'hide':
-          this.hideColumn(args.column);
-          if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableAutoSizeColumns) {
-            this.sharedService.grid.autosizeColumns();
-          }
-          break;
-        case 'clear-filter':
-          this.clearColumnFilter(event, args);
-          break;
-        case 'clear-sort':
-          this.clearColumnSort(event, args);
-          break;
-        case 'sort-asc':
-        case 'sort-desc':
-          const isSortingAsc = (args.command === 'sort-asc');
-          this.sortColumn(event, args, isSortingAsc);
-          break;
-        default:
-          break;
-      }
-    }
   }
 
   /** Hide a column from the grid */
@@ -253,6 +235,10 @@ export class HeaderMenuExtension implements Extension {
       this.resetHeaderMenuTranslations(this.sharedService.visibleColumns);
     }
   }
+
+  // --
+  // private functions
+  // ------------------
 
   /**
    * @return default Header Menu options
@@ -331,6 +317,33 @@ export class HeaderMenuExtension implements Extension {
           };
         });
         this.sharedService.grid.setSortColumns(updatedSortColumns); // add sort icon in UI
+      }
+    }
+  }
+
+  /** Execute the Header Menu Commands that was triggered by the onCommand subscribe */
+  private executeHeaderMenuInternalCommands(event: Event, args: HeaderMenuOnCommandArgs) {
+    if (args && args.command) {
+      switch (args.command) {
+        case 'hide':
+          this.hideColumn(args.column);
+          if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableAutoSizeColumns) {
+            this.sharedService.grid.autosizeColumns();
+          }
+          break;
+        case 'clear-filter':
+          this.clearColumnFilter(event, args);
+          break;
+        case 'clear-sort':
+          this.clearColumnSort(event, args);
+          break;
+        case 'sort-asc':
+        case 'sort-desc':
+          const isSortingAsc = (args.command === 'sort-asc');
+          this.sortColumn(event, args, isSortingAsc);
+          break;
+        default:
+          break;
       }
     }
   }
