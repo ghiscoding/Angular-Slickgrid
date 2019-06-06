@@ -42,7 +42,7 @@ export class ExtensionUtility {
           require('slickgrid/controls/slick.columnpicker');
           break;
         case ExtensionName.draggableGrouping:
-          require('slickgrid/plugins/slick.draggablegrouping.js');
+          require('slickgrid/plugins/slick.draggablegrouping');
           break;
         case ExtensionName.gridMenu:
           require('slickgrid/controls/slick.gridmenu');

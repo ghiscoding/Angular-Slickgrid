@@ -1,6 +1,6 @@
 
 import { SharedService } from '../services/shared.service';
-import { Extension, ExtensionName, GridOption, Grouping } from '../models/index';
+import { Extension, ExtensionName, GridOption, Grouping, SlickEventHandler } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
 import { Injectable } from '@angular/core';
 
@@ -9,17 +9,23 @@ declare var Slick: any;
 
 @Injectable()
 export class DraggableGroupingExtension implements Extension {
-  private _eventHandler: any = new Slick.EventHandler();
-  private _extension: any;
+  private _eventHandler: SlickEventHandler;
+  private _addon: any;
 
-  constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) { }
+  constructor(private extensionUtility: ExtensionUtility, private sharedService: SharedService) {
+    this._eventHandler = new Slick.EventHandler();
+  }
+
+  get eventHandler(): SlickEventHandler {
+    return this._eventHandler;
+  }
 
   dispose() {
     // unsubscribe all SlickGrid events
     this._eventHandler.unsubscribeAll();
 
-    if (this._extension && this._extension.destroy) {
-      this._extension.destroy();
+    if (this._addon && this._addon.destroy) {
+      this._addon.destroy();
     }
   }
 
@@ -31,29 +37,29 @@ export class DraggableGroupingExtension implements Extension {
     // dynamically import the SlickGrid plugin (addon) with RequireJS
     this.extensionUtility.loadExtensionDynamically(ExtensionName.draggableGrouping);
 
-    if (!this._extension && gridOptions) {
-      this._extension = new Slick.DraggableGrouping(gridOptions.draggableGrouping || {});
+    if (!this._addon && gridOptions) {
+      this._addon = new Slick.DraggableGrouping(gridOptions.draggableGrouping || {});
     }
-    return this._extension;
+    return this._addon;
   }
 
   register(): any {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
-      this.sharedService.grid.registerPlugin(this._extension);
+      this.sharedService.grid.registerPlugin(this._addon);
 
       // Events
       if (this.sharedService.grid && this.sharedService.gridOptions.draggableGrouping) {
         if (this.sharedService.gridOptions.draggableGrouping.onExtensionRegistered) {
-          this.sharedService.gridOptions.draggableGrouping.onExtensionRegistered(this._extension);
+          this.sharedService.gridOptions.draggableGrouping.onExtensionRegistered(this._addon);
         }
-        this._eventHandler.subscribe(this._extension.onGroupChanged, (e: any, args: { caller?: string; groupColumns: Grouping[] }) => {
+        this._eventHandler.subscribe(this._addon.onGroupChanged, (e: any, args: { caller?: string; groupColumns: Grouping[] }) => {
           if (this.sharedService.gridOptions.draggableGrouping && typeof this.sharedService.gridOptions.draggableGrouping.onGroupChanged === 'function') {
             this.sharedService.gridOptions.draggableGrouping.onGroupChanged(e, args);
           }
         });
       }
 
-      return this._extension;
+      return this._addon;
     }
     return null;
   }
