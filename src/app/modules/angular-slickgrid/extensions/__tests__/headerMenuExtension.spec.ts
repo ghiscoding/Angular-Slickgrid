@@ -4,7 +4,7 @@ import { GridOption } from '../../models/gridOption.interface';
 import { HeaderMenuExtension } from '../headerMenuExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
-import { Column, DelimiterType, FileType } from '../../models';
+import { Column, ColumnSort } from '../../models';
 import { ExportService, FilterService, SortService } from '../../services';
 
 declare var Slick: any;
@@ -19,6 +19,9 @@ const filterServiceStub = {
 
 const sortServiceStub = {
   clearSorting: jest.fn(),
+  getPreviousColumnSorts: jest.fn(),
+  onBackendSortChanged: jest.fn(),
+  onLocalSortChanged: jest.fn(),
 } as unknown as SortService;
 
 const dataViewStub = {
@@ -35,6 +38,8 @@ const gridStub = {
   setHeaderRowVisibility: jest.fn(),
   setTopPanelVisibility: jest.fn(),
   setPreHeaderPanelVisibility: jest.fn(),
+  setSortColumns: jest.fn(),
+  onSort: new Slick.Event(),
 };
 
 const mockAddon = jest.fn().mockImplementation(() => ({
@@ -75,6 +80,7 @@ describe('headerMenuExtension', () => {
       onCommand: (e, args: { command: any, item: any, grid: any }) => { },
       onBeforeMenuShow: (e, args: { menu: any, grid: any }) => { },
     },
+    multiColumnSort: true,
     pagination: {
       totalItems: 0
     },
@@ -110,7 +116,18 @@ describe('headerMenuExtension', () => {
       SORT_ASCENDING: 'Trier par ordre croissant',
       SORT_DESCENDING: 'Trier par ordre décroissant',
     });
-    translate.setTranslation('en', { TITLE: 'Title', COMMANDS: 'Commands', COLUMNS: 'Columns', FORCE_FIT_COLUMNS: 'Force fit columns', SYNCHRONOUS_RESIZE: 'Synchronous resize' });
+    translate.setTranslation('en', {
+      TITLE: 'Title',
+      COMMANDS: 'Commands',
+      COLUMNS: 'Columns',
+      FORCE_FIT_COLUMNS: 'Force fit columns',
+      SYNCHRONOUS_RESIZE: 'Synchronous resize',
+      HIDE_COLUMN: 'Hide Column',
+      REMOVE_FILTER: 'Remove Filter',
+      REMOVE_SORT: 'Remove Sort',
+      SORT_ASCENDING: 'Sort Ascending',
+      SORT_DESCENDING: 'Sort Descending',
+    });
     translate.use('fr');
   });
 
@@ -211,8 +228,7 @@ describe('headerMenuExtension', () => {
     });
 
     it('should have the command "hide-column" in the header menu list', () => {
-      const copyGridOptionsMock = { ...gridOptionsMock } as unknown as GridOption;
-      copyGridOptionsMock.headerMenu.hideColumnHideCommand = false;
+      const copyGridOptionsMock = { ...gridOptionsMock, headerMenu: { hideColumnHideCommand: false } } as unknown as GridOption;
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       extension.register();
 
@@ -223,8 +239,7 @@ describe('headerMenuExtension', () => {
     });
 
     it('should expect all menu related to Sorting when "enableSorting" is set', () => {
-      const copyGridOptionsMock = { ...gridOptionsMock, enableSorting: true } as unknown as GridOption;
-      copyGridOptionsMock.headerMenu.hideColumnHideCommand = true;
+      const copyGridOptionsMock = { ...gridOptionsMock, enableSorting: true, headerMenu: { hideColumnHideCommand: true } } as unknown as GridOption;
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
 
       extension.register();
@@ -233,7 +248,7 @@ describe('headerMenuExtension', () => {
         { iconCssClass: 'fa fa-sort-asc', title: 'Trier par ordre croissant', command: 'sort-asc', positionOrder: 50 },
         { iconCssClass: 'fa fa-sort-desc', title: 'Trier par ordre décroissant', command: 'sort-desc', positionOrder: 51 },
         { divider: true, command: '', positionOrder: 52 },
-        { iconCssClass: 'fa fa-unsorted', title: 'Supprimer le tri', command: 'clear-sort', positionOrder: 53 }
+        { iconCssClass: 'fa fa-unsorted', title: 'Supprimer le tri', command: 'clear-sort', positionOrder: 54 }
       ];
       expect(mockColumn.header.menu.items).not.toBeNull();
       expect(mockColumn.header.menu.items).toEqual(headerMenuExpected);
@@ -258,13 +273,12 @@ describe('headerMenuExtension', () => {
     });
 
     it('should expect all menu related to Filtering when "enableFiltering" is set', () => {
-      const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true } as unknown as GridOption;
-      copyGridOptionsMock.headerMenu.hideColumnHideCommand = true;
+      const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, headerMenu: { hideColumnHideCommand: true } } as unknown as GridOption;
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
 
       extension.register();
 
-      const headerMenuExpected = [{ iconCssClass: 'fa fa-filter', title: 'Supprimer le filtre', command: 'clear-filter', positionOrder: 52 }];
+      const headerMenuExpected = [{ iconCssClass: 'fa fa-filter', title: 'Supprimer le filtre', command: 'clear-filter', positionOrder: 53 }];
       expect(mockColumn.header.menu.items).not.toBeNull();
       expect(mockColumn.header.menu.items).toEqual(headerMenuExpected);
 
@@ -274,8 +288,78 @@ describe('headerMenuExtension', () => {
     });
   });
 
+  describe('hideColumn method', () => {
+    it('should call hideColumn and expect "visibleColumns" to be updated accordingly', () => {
+      jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
+      jest.spyOn(gridStub, 'getColumnIndex').mockReturnValue(1);
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue(columnsMock);
+      const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
+      const visibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+      const updatedColumnsMock = [{
+        id: 'field1', field: 'field1', headerKey: 'TITLE', width: 100,
+        header: { menu: { items: [{ command: 'hide', iconCssClass: 'fa fa-times', positionOrder: 55, title: 'Cacher la colonne' }] } }
+      }] as Column[];
+
+      extension.hideColumn(columnsMock[1]);
+
+      expect(visibleSpy).toHaveBeenCalledWith(updatedColumnsMock);
+      expect(setColumnsSpy).toHaveBeenCalledWith(updatedColumnsMock);
+    });
+  });
+
+  describe('translateHeaderMenu method', () => {
+    it('should call the resetHeaderMenuTranslations and have all header menu translated', () => {
+      const mockColumns: Column[] = [{
+        id: 'field1', field: 'field1', width: 100,
+        header: {
+          menu: {
+            items: [
+              { iconCssClass: 'fa fa-sort-asc', title: 'Trier par ordre croissant', command: 'sort-asc', positionOrder: 50 },
+              { iconCssClass: 'fa fa-sort-desc', title: 'Trier par ordre décroissant', command: 'sort-desc', positionOrder: 51 },
+              { divider: true, command: '', positionOrder: 52 },
+              { iconCssClass: 'fa fa-filter', title: 'Supprimer le filtre', command: 'clear-filter', positionOrder: 53 },
+              { iconCssClass: 'fa fa-unsorted', title: 'Supprimer le tri', command: 'clear-sort', positionOrder: 54 },
+              { iconCssClass: 'fa fa-times', command: 'hide', positionOrder: 55, title: 'Cacher la colonne' },
+            ]
+          }
+        }
+      }];
+      jest.spyOn(SharedService.prototype, 'visibleColumns', 'get').mockReturnValue(mockColumns);
+
+      translate.use('en');
+      extension.translateHeaderMenu();
+
+      expect(mockColumns).toEqual([{
+        id: 'field1', field: 'field1', width: 100,
+        header: {
+          menu: {
+            items: [
+              { iconCssClass: 'fa fa-sort-asc', title: 'Sort Ascending', command: 'sort-asc', positionOrder: 50 },
+              { iconCssClass: 'fa fa-sort-desc', title: 'Sort Descending', command: 'sort-desc', positionOrder: 51 },
+              { divider: true, command: '', positionOrder: 52 },
+              { iconCssClass: 'fa fa-filter', title: 'Remove Filter', command: 'clear-filter', positionOrder: 53 },
+              { iconCssClass: 'fa fa-unsorted', title: 'Remove Sort', command: 'clear-sort', positionOrder: 54 },
+              { iconCssClass: 'fa fa-times', command: 'hide', positionOrder: 55, title: 'Hide Column' },
+            ]
+          }
+        }
+      }]);
+    });
+  });
+
   describe('executeHeaderMenuInternalCommands method', () => {
-    it('should call "clearColumnFilter" and dataview refresh when the command triggered is "clear-filter"', () => {
+    it('should trigger the command "hide" and expect the grid "autosizeColumns" method being called', () => {
+      const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
+      const autosizeSpy = jest.spyOn(SharedService.prototype.grid, 'autosizeColumns');
+
+      const instance = extension.register();
+      instance.onCommand.notify({ column: columnsMock[0], grid: gridStub, command: 'hide' }, new Slick.EventData(), gridStub);
+
+      expect(onCommandSpy).toHaveBeenCalled();
+      expect(autosizeSpy).toHaveBeenCalled();
+    });
+
+    it('should trigger the command "clear-filter" and expect "clearColumnFilter" method being called with dataview refresh', () => {
       const filterSpy = jest.spyOn(filterServiceStub, 'clearFilterByColumnId');
       const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
 
@@ -284,6 +368,136 @@ describe('headerMenuExtension', () => {
 
       expect(onCommandSpy).toHaveBeenCalled();
       expect(filterSpy).toHaveBeenCalledWith(expect.anything(), columnsMock[0].id);
+    });
+
+    it('should trigger the command "clear-sort" and expect Sort Service to call "onBackendSortChanged" being called without the sorted column', () => {
+      const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[1]]).mockReturnValueOnce(mockSortedCols).mockRejectedValueOnce([mockSortedCols[1]]);
+      const backendSortSpy = jest.spyOn(sortServiceStub, 'onBackendSortChanged');
+      const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
+      const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
+
+      const instance = extension.register();
+      instance.onCommand.notify({ column: columnsMock[0], grid: gridStub, command: 'clear-sort' }, new Slick.EventData(), gridStub);
+
+      expect(previousSortSpy).toHaveBeenCalled();
+      expect(backendSortSpy).toHaveBeenCalledWith(expect.anything(), { multiColumnSort: true, sortCols: [mockSortedCols[1]], grid: gridStub });
+      expect(onCommandSpy).toHaveBeenCalled();
+      expect(setSortSpy).toHaveBeenCalled();
+    });
+
+    it('should trigger the command "clear-sort" and expect Sort Service to call "onLocalSortChanged" being called without the sorted column', () => {
+      const copyGridOptionsMock = { ...gridOptionsMock, backendServiceApi: undefined } as unknown as GridOption;
+      jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+      const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[1]]).mockReturnValueOnce(mockSortedCols).mockRejectedValueOnce([mockSortedCols[1]]);
+      const localSortSpy = jest.spyOn(sortServiceStub, 'onLocalSortChanged');
+      const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
+      const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
+
+      const instance = extension.register();
+      instance.onCommand.notify({ column: columnsMock[0], grid: gridStub, command: 'clear-sort' }, new Slick.EventData(), gridStub);
+
+      expect(previousSortSpy).toHaveBeenCalled();
+      expect(localSortSpy).toHaveBeenCalledWith(gridStub, dataViewStub, [mockSortedCols[1]], true);
+      expect(onCommandSpy).toHaveBeenCalled();
+      expect(setSortSpy).toHaveBeenCalled();
+    });
+
+    it('should trigger the command "clear-sort" and expect "onSort" event triggered when no DataView is provided', () => {
+      const copyGridOptionsMock = { ...gridOptionsMock, backendServiceApi: undefined } as unknown as GridOption;
+      const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
+
+      jest.spyOn(SharedService.prototype, 'dataView', 'get').mockReturnValue(undefined);
+      jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[1]]).mockReturnValueOnce(mockSortedCols).mockRejectedValueOnce([mockSortedCols[1]]);
+      const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
+      const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
+      const gridSortSpy = jest.spyOn(gridStub.onSort, 'notify');
+
+      const instance = extension.register();
+      instance.onCommand.notify({ column: columnsMock[0], grid: gridStub, command: 'clear-sort' }, new Slick.EventData(), gridStub);
+
+      expect(previousSortSpy).toHaveBeenCalled();
+      expect(onCommandSpy).toHaveBeenCalled();
+      expect(setSortSpy).toHaveBeenCalled();
+      expect(gridSortSpy).toHaveBeenCalledWith([mockSortedCols[1]]);
+    });
+
+    it('should trigger the command "sort-asc" and expect Sort Service to call "onBackendSortChanged" being called without the sorted column', () => {
+      jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
+      const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
+      const mockSortedOuput: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: true, sortCol: { id: 'field2', field: 'field2' } }];
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[0]]);
+      const backendSortSpy = jest.spyOn(sortServiceStub, 'onBackendSortChanged');
+      const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
+      const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
+
+      const instance = extension.register();
+      instance.onCommand.notify({ column: mockSortedCols[1].sortCol, grid: gridStub, command: 'sort-asc' }, new Slick.EventData(), gridStub);
+
+      expect(previousSortSpy).toHaveBeenCalled();
+      expect(backendSortSpy).toHaveBeenCalledWith(expect.anything(), { multiColumnSort: true, sortCols: mockSortedOuput, grid: gridStub });
+      expect(onCommandSpy).toHaveBeenCalled();
+      expect(setSortSpy).toHaveBeenCalled();
+    });
+
+    it('should trigger the command "sort-desc" and expect Sort Service to call "onBackendSortChanged" being called without the sorted column', () => {
+      jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
+      const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: true, sortCol: { id: 'field2', field: 'field2' } }];
+      const mockSortedOuput: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[0]]);
+      const backendSortSpy = jest.spyOn(sortServiceStub, 'onBackendSortChanged');
+      const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
+      const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
+
+      const instance = extension.register();
+      instance.onCommand.notify({ column: mockSortedCols[1].sortCol, grid: gridStub, command: 'sort-desc' }, new Slick.EventData(), gridStub);
+
+      expect(previousSortSpy).toHaveBeenCalled();
+      expect(backendSortSpy).toHaveBeenCalledWith(expect.anything(), { multiColumnSort: true, sortCols: mockSortedOuput, grid: gridStub });
+      expect(onCommandSpy).toHaveBeenCalled();
+      expect(setSortSpy).toHaveBeenCalled();
+    });
+
+    it('should trigger the command "sort-desc" and expect Sort Service to call "onLocalSortChanged" being called without the sorted column', () => {
+      const copyGridOptionsMock = { ...gridOptionsMock, backendServiceApi: undefined } as unknown as GridOption;
+      jest.spyOn(SharedService.prototype, 'dataView', 'get').mockReturnValue(dataViewStub);
+      jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+      const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: true, sortCol: { id: 'field2', field: 'field2' } }];
+      const mockSortedOuput: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[0]]);
+      const localSortSpy = jest.spyOn(sortServiceStub, 'onLocalSortChanged');
+      const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
+      const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
+
+      const instance = extension.register();
+      instance.onCommand.notify({ column: mockSortedCols[1].sortCol, grid: gridStub, command: 'sort-desc' }, new Slick.EventData(), gridStub);
+
+      expect(previousSortSpy).toHaveBeenCalled();
+      expect(localSortSpy).toHaveBeenCalledWith(gridStub, dataViewStub, mockSortedOuput);
+      expect(onCommandSpy).toHaveBeenCalled();
+      expect(setSortSpy).toHaveBeenCalled();
+    });
+
+    it('should trigger the command "sort-desc" and expect "onSort" event triggered when no DataView is provided', () => {
+      const copyGridOptionsMock = { ...gridOptionsMock, backendServiceApi: undefined } as unknown as GridOption;
+      jest.spyOn(SharedService.prototype, 'dataView', 'get').mockReturnValue(undefined);
+      jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+      const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: true, sortCol: { id: 'field2', field: 'field2' } }];
+      const mockSortedOuput: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[0]]);
+      const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
+      const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
+      const gridSortSpy = jest.spyOn(gridStub.onSort, 'notify');
+
+      const instance = extension.register();
+      instance.onCommand.notify({ column: mockSortedCols[1].sortCol, grid: gridStub, command: 'sort-desc' }, new Slick.EventData(), gridStub);
+
+      expect(previousSortSpy).toHaveBeenCalled();
+      expect(gridSortSpy).toHaveBeenCalledWith(mockSortedOuput);
+      expect(onCommandSpy).toHaveBeenCalled();
+      expect(setSortSpy).toHaveBeenCalled();
     });
   });
 });
