@@ -16,9 +16,7 @@ export class ExtensionUtility {
    * @param index
    */
   arrayRemoveItemByIndex(array: any[], index: number) {
-    return array.filter((el: any, i: number) => {
-      return index !== i;
-    });
+    return array.filter((el: any, i: number) => index !== i);
   }
 
   /**
@@ -42,7 +40,7 @@ export class ExtensionUtility {
           require('slickgrid/controls/slick.columnpicker');
           break;
         case ExtensionName.draggableGrouping:
-          require('slickgrid/plugins/slick.draggablegrouping.js');
+          require('slickgrid/plugins/slick.draggablegrouping');
           break;
         case ExtensionName.gridMenu:
           require('slickgrid/controls/slick.gridmenu');
@@ -60,10 +58,10 @@ export class ExtensionUtility {
           require('slickgrid/plugins/slick.rowselectionmodel');
           break;
         case ExtensionName.rowDetailView:
-          require('slickgrid/plugins/slick.rowdetailview.js');
+          require('slickgrid/plugins/slick.rowdetailview');
           break;
         case ExtensionName.rowMoveManager:
-          require('slickgrid/plugins/slick.rowmovemanager.js');
+          require('slickgrid/plugins/slick.rowmovemanager');
           break;
       }
     } catch (e) {
@@ -110,10 +108,9 @@ export class ExtensionUtility {
   }
 
   /**
-   * Sort items in an array by a property name
+   * Sort items (by pointers) in an array by a property name
    * @params items array
    * @param property name to sort with
-   * @return sorted array
    */
   sortItems(items: any[], propertyName: string) {
     // sort the custom items by their position in the list
@@ -121,15 +118,17 @@ export class ExtensionUtility {
       if (itemA && itemB && itemA.hasOwnProperty(propertyName) && itemB.hasOwnProperty(propertyName)) {
         return itemA[propertyName] - itemB[propertyName];
       }
-      return 0;
+      return -1;
     });
   }
 
   /** Translate the an array of items from an input key and assign to the output key */
   translateItems(items: any[], inputKey: string, outputKey: string) {
-    for (const item of items) {
-      if (item[inputKey]) {
-        item[outputKey] = this.translate.instant(item[inputKey]);
+    if (Array.isArray(items)) {
+      for (const item of items) {
+        if (item[inputKey]) {
+          item[outputKey] = this.translate.instant(item[inputKey]);
+        }
       }
     }
   }

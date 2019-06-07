@@ -9,11 +9,9 @@ import { Subject } from 'rxjs';
 // using external non-typed js libraries
 declare var Slick: any;
 let highlightTimerEnd: any;
-
 const GridServiceDeleteOptionDefaults: GridServiceDeleteOption = { triggerEvent: true };
 const GridServiceInsertOptionDefaults: GridServiceInsertOption = { highlightRow: true, resortGrid: false, selectRow: false, triggerEvent: true };
 const GridServiceUpdateOptionDefaults: GridServiceUpdateOption = { highlightRow: true, selectRow: false, triggerEvent: true };
-
 
 @Injectable()
 export class GridService {
