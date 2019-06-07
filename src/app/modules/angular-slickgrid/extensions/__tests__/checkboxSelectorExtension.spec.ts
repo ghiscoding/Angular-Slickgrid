@@ -21,6 +21,7 @@ const mockAddon = jest.fn().mockImplementation(() => ({
   getColumnDefinition: jest.fn(),
   selectRows: jest.fn(),
 }));
+
 const mockSelectionModel = jest.fn().mockImplementation(() => ({
   init: jest.fn(),
   destroy: jest.fn()
