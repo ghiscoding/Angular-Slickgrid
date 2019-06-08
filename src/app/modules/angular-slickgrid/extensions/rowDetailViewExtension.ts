@@ -124,9 +124,6 @@ export class RowDetailViewExtension implements Extension {
         this.sharedService.grid.setSelectionModel(rowSelectionPlugin);
       }
 
-      // this._extension = this.create(this.sharedService.allColumns, this.sharedService.gridOptions);
-      this.sharedService.grid.registerPlugin(this._addon);
-
       // hook all events
       if (this.sharedService.grid && this.sharedService.gridOptions.rowDetailView) {
         if (this.sharedService.gridOptions.rowDetailView.onExtensionRegistered) {
@@ -283,23 +280,19 @@ export class RowDetailViewExtension implements Extension {
     // expanding
     if (args && args.item && args.item.__collapsed) {
       // expanding row detail
-      if (args && args.item) {
-        const viewInfo: CreatedView = {
-          id: args.item.id,
-          dataContext: args.item
-        };
-        this.addToArrayWhenNotFound(this._views, viewInfo);
-      }
+      const viewInfo: CreatedView = {
+        id: args.item.id,
+        dataContext: args.item
+      };
+      this.addToArrayWhenNotFound(this._views, viewInfo);
     } else {
       // collapsing, so dispose of the View/Component
       const foundViewIndex = this._views.findIndex((view: CreatedView) => view.id === args.item.id);
-      if (foundViewIndex >= 0) {
-        if (this._views.hasOwnProperty(foundViewIndex)) {
-          const compRef = this._views[foundViewIndex].componentRef;
-          this.appRef.detachView(compRef.hostView);
-          compRef.destroy();
-          this._views.splice(foundViewIndex, 1);
-        }
+      if (foundViewIndex >= 0 && this._views.hasOwnProperty(foundViewIndex)) {
+        const compRef = this._views[foundViewIndex].componentRef;
+        this.appRef.detachView(compRef.hostView);
+        compRef.destroy();
+        this._views.splice(foundViewIndex, 1);
       }
     }
   }

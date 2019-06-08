@@ -41,10 +41,10 @@ export interface RowDetailView {
    */
   useSimpleViewportCalc?: boolean;
 
-  /** View Component of the preload template which shows after opening row detail & before row detail data shows up */
+  /** View Component of the preload template (typically a spinner) which shows after opening on the row detail but before the row detail is ready */
   preloadComponent?: Type<object>;
 
-  /** View Component that will be loaded once the async function finishes */
+  /** View Component that will be loaded in the row detail after the async function completed */
   viewComponent: Type<object>;
 
   // --
@@ -80,17 +80,17 @@ export interface RowDetailView {
   onAsyncResponse?: (e: Event, args: { item: any; detailView?: any }) => void;
 
   /** Fired when the async response finished */
-  onAsyncEndUpdate?: (e: Event, args: { grid: any; item: any }) => void;
+  onAsyncEndUpdate?: (e: Event, args: { item: any; grid: any; }) => void;
 
   /** Fired after the row detail gets toggled */
-  onAfterRowDetailToggle?: (e: Event, args: { grid: any; item: any; expandedRows: any[] }) => void;
+  onAfterRowDetailToggle?: (e: Event, args: { item: any; expandedRows: any[]; grid: any; }) => void;
 
   /** Fired before the row detail gets toggled */
-  onBeforeRowDetailToggle?: (e: Event, args: { grid: any; item: any }) => void;
+  onBeforeRowDetailToggle?: (e: Event, args: { item: any; grid: any; }) => void;
 
   /** Fired after the row detail gets toggled */
-  onRowBackToViewportRange?: (e: Event, args: { grid: any; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => void;
+  onRowBackToViewportRange?: (e: Event, args: { item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; grid: any; }) => void;
 
   /** Fired after a row becomes out of viewport range (user can't see the row anymore) */
-  onRowOutOfViewportRange?: (e: Event, args: { grid: any; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => void;
+  onRowOutOfViewportRange?: (e: Event, args: { item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; grid: any; }) => void;
 }
