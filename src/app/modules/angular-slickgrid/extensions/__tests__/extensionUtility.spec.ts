@@ -1,17 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { GridOption } from '../../models/gridOption.interface';
-import { AutoTooltipExtension } from '../autoTooltipExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
 import { ExtensionName } from '../../models';
 
 declare var Slick: any;
-
-const gridStub = {
-  getOptions: jest.fn(),
-  registerPlugin: jest.fn(),
-};
 
 const mockAddon = jest.fn().mockImplementation(() => ({
   init: jest.fn(),

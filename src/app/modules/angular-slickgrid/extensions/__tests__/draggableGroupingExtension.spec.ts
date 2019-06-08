@@ -45,7 +45,12 @@ describe('draggableGroupingExtension', () => {
     translate = TestBed.get(TranslateService);
   });
 
-  it('should return null when either the grid object or the grid options is missing', () => {
+  it('should return null after calling "create" method when the grid options is missing', () => {
+    const output = extension.create(null);
+    expect(output).toBeNull();
+  });
+
+  it('should return null after calling "register" method when either the grid object or the grid options is missing', () => {
     const output = extension.register();
     expect(output).toBeNull();
   });
