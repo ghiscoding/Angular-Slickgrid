@@ -1,11 +1,11 @@
 import { ApplicationRef, ComponentRef, Injectable, Type, ViewContainerRef } from '@angular/core';
-import { Column, CurrentFilter, Extension, ExtensionName, GridOption, SlickEventHandler } from '../models/index';
+import { Column, Extension, ExtensionName, GridOption, SlickEventHandler } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
 import { AngularUtilService } from '../services/angularUtilService';
 import { FilterService } from '../services/filter.service';
 import { SharedService } from '../services/shared.service';
-import { unsubscribeAllObservables } from '../services/utilities';
-import { Subscription } from 'rxjs';
+import { addToArrayWhenNotExists, castToPromise, unsubscribeAllObservables } from '../services/utilities';
+import { Observable, Subject, Subscription } from 'rxjs';
 import * as DOMPurify_ from 'dompurify';
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
 
@@ -30,7 +30,7 @@ export class RowDetailViewExtension implements Extension {
   private _views: CreatedView[] = [];
   private _viewComponent: Type<object>;
   private _subscriptions: Subscription[] = [];
-  private _userProcessFn: (item: any) => Promise<any>;
+  private _userProcessFn: (item: any) => Promise<any> | Observable<any> | Subject<any>;
 
   constructor(
     private angularUtilService: AngularUtilService,
@@ -46,6 +46,7 @@ export class RowDetailViewExtension implements Extension {
     return this._eventHandler;
   }
 
+  /** Dispose of the RowDetailView Extension */
   dispose() {
     // unsubscribe all SlickGrid events
     this._eventHandler.unsubscribeAll();
@@ -57,6 +58,12 @@ export class RowDetailViewExtension implements Extension {
     // also unsubscribe all RxJS subscriptions
     this._subscriptions = unsubscribeAllObservables(this._subscriptions);
     this.disposeAllViewComponents();
+  }
+
+  /** Dispose of all the opened Row Detail Panels Angular View Components */
+  disposeAllViewComponents() {
+    this._views.forEach((compRef) => this.disposeViewComponent(compRef));
+    this._views = [];
   }
 
   /**
@@ -184,7 +191,7 @@ export class RowDetailViewExtension implements Extension {
 
         // on filter changed, we need to re-render all Views
         this._subscriptions.push(
-          this.filterService.onFilterChanged.subscribe((currentFilters: CurrentFilter[]) => this.redrawAllViewComponents())
+          this.filterService.onFilterChanged.subscribe(() => this.redrawAllViewComponents())
         );
       }
       return this._addon;
@@ -195,18 +202,6 @@ export class RowDetailViewExtension implements Extension {
   // --
   // private functions
   // ------------------
-
-  private addToArrayWhenNotFound(inputArray: any[], inputObj: any) {
-    const arrayRowIndex = inputArray.findIndex((obj) => obj.id === inputObj.id);
-    if (arrayRowIndex < 0) {
-      inputArray.push(inputObj);
-    }
-  }
-
-  private disposeAllViewComponents() {
-    this._views.forEach((compRef) => this.disposeViewComponent(compRef));
-    this._views = [];
-  }
 
   private disposeViewComponent(expandedView: CreatedView) {
     const compRef = expandedView && expandedView.componentRef;
@@ -235,39 +230,26 @@ export class RowDetailViewExtension implements Extension {
    */
   private async onProcessing(item: any) {
     if (item && typeof this._userProcessFn === 'function') {
+      let awaitedItemDetail: any;
       const userProcessFn = this._userProcessFn(item);
 
       // wait for the "userProcessFn", once resolved we will save it into the "collection"
       const response: any | any[] = await userProcessFn;
-      let awaitedItemDetail: any;
 
       if (response.hasOwnProperty('id')) {
         awaitedItemDetail = response; // from Promise
-      } else if (response instanceof Response && typeof response['json'] === 'function') {
-        awaitedItemDetail = await response['json'](); // from Fetch
-      } else if (response && response['content']) {
-        awaitedItemDetail = response['content']; // from Angular-http-client
+      } else if (response && response instanceof Observable || response instanceof Promise) {
+        awaitedItemDetail = await castToPromise(response); // from Angular-http-client
+      }
+
+      if (!awaitedItemDetail || !awaitedItemDetail.hasOwnProperty('id')) {
+        throw new Error(`[Angular-Slickgrid] could not process the Row Detail, you must make sure that your "process" callback
+          (a Promise or an HttpClient call returning an Observable) returns an item object that has an "id" property`);
       }
 
       // notify the plugin with the new item details
       this.notifyTemplate(awaitedItemDetail || {});
     }
-  }
-
-  /** Redraw (re-render) all the expanded row detail View Components */
-  private redrawAllViewComponents() {
-    this._views.forEach((compRef) => {
-      this.redrawViewComponent(compRef);
-    });
-  }
-
-  /** Render all the expanded row detail View Components */
-  private renderAllViewComponents() {
-    this._views.forEach((view) => {
-      if (view && view.dataContext) {
-        this.renderViewModel(view.dataContext);
-      }
-    });
   }
 
   /**
@@ -284,7 +266,7 @@ export class RowDetailViewExtension implements Extension {
         id: args.item.id,
         dataContext: args.item
       };
-      this.addToArrayWhenNotFound(this._views, viewInfo);
+      addToArrayWhenNotExists(this._views, viewInfo);
     } else {
       // collapsing, so dispose of the View/Component
       const foundViewIndex = this._views.findIndex((view: CreatedView) => view.id === args.item.id);
@@ -306,6 +288,22 @@ export class RowDetailViewExtension implements Extension {
         }
       });
     }
+  }
+
+  /** Redraw (re-render) all the expanded row detail View Components */
+  private redrawAllViewComponents() {
+    this._views.forEach((compRef) => {
+      this.redrawViewComponent(compRef);
+    });
+  }
+
+  /** Render all the expanded row detail View Components */
+  private renderAllViewComponents() {
+    this._views.forEach((view) => {
+      if (view && view.dataContext) {
+        this.renderViewModel(view.dataContext);
+      }
+    });
   }
 
   /** Redraw the necessary View Component */

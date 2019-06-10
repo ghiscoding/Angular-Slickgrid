@@ -1,4 +1,5 @@
 import {
+  addToArrayWhenNotExists,
   addWhiteSpaces,
   castToPromise,
   charArraysEqual,
@@ -10,6 +11,10 @@ import {
   htmlEncode,
   htmlEntityDecode,
   htmlEntityEncode,
+  mapMomentDateFormatWithFieldType,
+  mapFlatpickrDateFormatWithFieldType,
+  mapOperatorType,
+  mapOperatorByFieldType,
   parseBoolean,
   parseUtcDate,
   sanitizeHtmlToText,
@@ -21,10 +26,36 @@ import {
   uniqueObjectArray,
   unsubscribeAllObservables,
 } from '../utilities';
-import * as moment from 'moment-mini';
+import { FieldType, OperatorType } from '../../models';
 import { of, Subscription } from 'rxjs';
 
 describe('Service/Utilies', () => {
+  describe('addToArrayWhenNotExists', () => {
+    it('should add an item to the array when input item has an "id" and is not in the array', () => {
+      const array = [{ id: 1, firstName: 'John' }];
+      addToArrayWhenNotExists(array, { id: 2, firstName: 'Jane' });
+      expect(array).toEqual([{ id: 1, firstName: 'John' }, { id: 2, firstName: 'Jane' }]);
+    });
+
+    it('should add an item to the array when input item is not an object and and is not in the array', () => {
+      const array = ['John'];
+      addToArrayWhenNotExists(array, 'Jane');
+      expect(array).toEqual(['John', 'Jane']);
+    });
+
+    it('should NOT add an item to the array when input item has an "id" and is not in the array', () => {
+      const array = [{ id: 1, firstName: 'John' }];
+      addToArrayWhenNotExists(array, { id: 1, firstName: 'John' });
+      expect(array).toEqual([{ id: 1, firstName: 'John' }]);
+    });
+
+    it('should NOT add an item to the array when input item is not an object and and is not in the array', () => {
+      const array = [0];
+      addToArrayWhenNotExists(array, 0);
+      expect(array).toEqual([0]);
+    });
+  });
+
   describe('addWhiteSpaces method', () => {
     it('should return the an empty string when argument provided is lower or equal to 0', () => {
       expect(addWhiteSpaces(-2)).toBe('');
@@ -43,6 +74,12 @@ describe('Service/Utilies', () => {
     });
 
     it('should return a decoded HTML string with single quotes encoded as well', () => {
+      const result = htmlDecode(`&lt;div class=&#39;color: blue&#39;&gt;Something&lt;/div&gt;`);
+      expect(result).toBe(`<div class='color: blue'>Something</div>`);
+    });
+
+    it('should use jQuery and return a decoded HTML string with single quotes encoded as well when DOMParser is not available in older browser', () => {
+      DOMParser = undefined;
       const result = htmlDecode(`&lt;div class=&#39;color: blue&#39;&gt;Something&lt;/div&gt;`);
       expect(result).toBe(`<div class='color: blue'>Something</div>`);
     });
@@ -146,7 +183,7 @@ describe('Service/Utilies', () => {
       const observable = of(inputArray);
 
       castToPromise(observable).then((outputArray) => {
-        expect(outputArray).toBe(inputArray)
+        expect(outputArray).toBe(inputArray);
       });
     });
   });
@@ -315,6 +352,391 @@ describe('Service/Utilies', () => {
     it('should return the object descendant when using multiple levels of dot notation', () => {
       const output = getDescendantProperty(obj, 'user.address.street');
       expect(output).toEqual('Broadway');
+    });
+  });
+
+  describe('mapMomentDateFormatWithFieldType method', () => {
+    it('should return a moment.js dateTime/dateTimeIso format', () => {
+      const output1 = mapMomentDateFormatWithFieldType(FieldType.dateTime);
+      const output2 = mapMomentDateFormatWithFieldType(FieldType.dateTimeIso);
+      expect(output1).toBe('YYYY-MM-DD HH:mm:ss');
+      expect(output2).toBe('YYYY-MM-DD HH:mm:ss');
+    });
+
+    it('should return a moment.js dateTimeShortIso format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeShortIso);
+      expect(output).toBe('YYYY-MM-DD HH:mm');
+    });
+
+    it('should return a moment.js dateTimeIsoAmPm format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
+      expect(output).toBe('YYYY-MM-DD hh:mm:ss a');
+    });
+
+    it('should return a moment.js dateTimeIsoAM_PM format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeIsoAM_PM);
+      expect(output).toBe('YYYY-MM-DD hh:mm:ss A');
+    });
+
+    it('should return a moment.js dateEuro format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateEuro);
+      expect(output).toBe('DD/MM/YYYY');
+    });
+
+    it('should return a moment.js dateEuroShort format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateEuroShort);
+      expect(output).toBe('D/M/YY');
+    });
+
+    it('should return a moment.js dateTimeEuro format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeEuro);
+      expect(output).toBe('DD/MM/YYYY HH:mm:ss');
+    });
+
+    it('should return a moment.js dateTimeShortEuro format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeShortEuro);
+      expect(output).toBe('DD/MM/YYYY HH:mm');
+    });
+
+    it('should return a moment.js dateTimeEuroAmPm format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeEuroAmPm);
+      expect(output).toBe('DD/MM/YYYY hh:mm:ss a');
+    });
+
+    it('should return a moment.js dateTimeEuroAM_PM format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeEuroAM_PM);
+      expect(output).toBe('DD/MM/YYYY hh:mm:ss A');
+    });
+
+    it('should return a moment.js dateTimeEuroShort format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeEuroShort);
+      expect(output).toBe('D/M/YY H:m:s');
+    });
+
+    it('should return a moment.js dateTimeEuroShortAmPm format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeEuroShortAmPm);
+      expect(output).toBe('D/M/YY h:m:s a');
+    });
+
+    it('should return a moment.js dateUs format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateUs);
+      expect(output).toBe('MM/DD/YYYY');
+    });
+
+    it('should return a moment.js dateUsShort format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateUsShort);
+      expect(output).toBe('M/D/YY');
+    });
+
+    it('should return a moment.js dateTimeUs format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeUs);
+      expect(output).toBe('MM/DD/YYYY HH:mm:ss');
+    });
+
+    it('should return a moment.js dateTimeShortUs format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeShortUs);
+      expect(output).toBe('MM/DD/YYYY HH:mm');
+    });
+
+    it('should return a moment.js dateTimeUsAmPm format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
+      expect(output).toBe('MM/DD/YYYY hh:mm:ss a');
+    });
+
+    it('should return a moment.js dateTimeUsAM_PM format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsAM_PM);
+      expect(output).toBe('MM/DD/YYYY hh:mm:ss A');
+    });
+
+    it('should return a moment.js dateTimeUsShort format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsShort);
+      expect(output).toBe('M/D/YY H:m:s');
+    });
+
+    it('should return a moment.js dateTimeUsShortAmPm format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateTimeUsShortAmPm);
+      expect(output).toBe('M/D/YY h:m:s a');
+    });
+
+    it('should return a moment.js dateUtc format', () => {
+      const output = mapMomentDateFormatWithFieldType(FieldType.dateUtc);
+      expect(output).toBe('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    });
+
+    it('should return a moment.js date/dateIso format', () => {
+      const output1 = mapMomentDateFormatWithFieldType(FieldType.date);
+      const output2 = mapMomentDateFormatWithFieldType(FieldType.dateIso);
+      expect(output1).toBe('YYYY-MM-DD');
+      expect(output2).toBe('YYYY-MM-DD');
+    });
+  });
+
+  describe('mapFlatpickrDateFormatWithFieldType method', () => {
+    it('should return a Flatpickr dateTime format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTime);
+      expect(output).toBe('Y-m-d H:i:S');
+    });
+
+    it('should return a Flatpickr dateTimeShortIso format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeShortIso);
+      expect(output).toBe('Y-m-d H:i');
+    });
+
+    it('should return a Flatpickr dateTimeIsoAmPm/dateTimeIsoAM_PM format', () => {
+      const output1 = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeIsoAmPm);
+      const output2 = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeIsoAM_PM);
+      expect(output1).toBe('Y-m-d h:i:S K');
+      expect(output2).toBe('Y-m-d h:i:S K');
+    });
+
+    it('should return a Flatpickr dateEuro format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateEuro);
+      expect(output).toBe('d/m/Y');
+    });
+
+    it('should return a Flatpickr dateEuroShort format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateEuroShort);
+      expect(output).toBe('d/m/y');
+    });
+
+    it('should return a Flatpickr dateTimeEuro format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeEuro);
+      expect(output).toBe('d/m/Y H:i:S');
+    });
+
+    it('should return a Flatpickr dateTimeShortEuro format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeShortEuro);
+      expect(output).toBe('d/m/y H:i');
+    });
+
+    it('should return a Flatpickr dateTimeEuroAmPm format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeEuroAmPm);
+      expect(output).toBe('d/m/Y h:i:S K');
+    });
+
+    it('should return a Flatpickr dateTimeEuroAM_PM format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeEuroAM_PM);
+      expect(output).toBe('d/m/Y h:i:s K');
+    });
+
+    it('should return a Flatpickr dateTimeEuroShort format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeEuroShort);
+      expect(output).toBe('d/m/y H:i:s');
+    });
+
+    it('should return a Flatpickr dateTimeEuroShortAmPm format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeEuroShortAmPm);
+      expect(output).toBe('d/m/y h:i:s K');
+    });
+
+    it('should return a Flatpickr dateUs format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateUs);
+      expect(output).toBe('m/d/Y');
+    });
+
+    it('should return a Flatpickr dateUsShort format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateUsShort);
+      expect(output).toBe('m/d/y');
+    });
+
+    it('should return a Flatpickr dateTimeUs format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeUs);
+      expect(output).toBe('m/d/Y H:i:S');
+    });
+
+    it('should return a Flatpickr dateTimeShortUs format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeShortUs);
+      expect(output).toBe('m/d/y H:i');
+    });
+
+    it('should return a Flatpickr dateTimeUsAmPm format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeUsAmPm);
+      expect(output).toBe('m/d/Y h:i:S K');
+    });
+
+    it('should return a Flatpickr dateTimeUsAM_PM format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeUsAM_PM);
+      expect(output).toBe('m/d/Y h:i:s K');
+    });
+
+    it('should return a Flatpickr dateTimeUsShort format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeUsShort);
+      expect(output).toBe('m/d/y H:i:s');
+    });
+
+    it('should return a Flatpickr dateTimeUsShortAmPm format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateTimeUsShortAmPm);
+      expect(output).toBe('m/d/y h:i:s K');
+    });
+
+    it('should return a Flatpickr dateUtc format', () => {
+      const output = mapFlatpickrDateFormatWithFieldType(FieldType.dateUtc);
+      expect(output).toBe('Z');
+    });
+
+    it('should return a Flatpickr dateédateIso format', () => {
+      const output1 = mapFlatpickrDateFormatWithFieldType(FieldType.date);
+      const output2 = mapFlatpickrDateFormatWithFieldType(FieldType.dateIso);
+      expect(output1).toBe('Y-m-d');
+      expect(output2).toBe('Y-m-d');
+    });
+  });
+
+  describe('mapOperatorType method', () => {
+    it('should return OperatoryType associated to "<"', () => {
+      const output = mapOperatorType('<');
+      expect(output).toBe(OperatorType.lessThan);
+    });
+
+    it('should return OperatoryType associated to "<="', () => {
+      const output = mapOperatorType('<=');
+      expect(output).toBe(OperatorType.lessThanOrEqual);
+    });
+
+    it('should return OperatoryType associated to ">"', () => {
+      const output = mapOperatorType('>');
+      expect(output).toBe(OperatorType.greaterThan);
+    });
+
+    it('should return OperatoryType associated to ">="', () => {
+      const output = mapOperatorType('>=');
+      expect(output).toBe(OperatorType.greaterThanOrEqual);
+    });
+
+    it('should return OperatoryType associated to "<>", "!=", "neq" or "NEQ"', () => {
+      const output1 = mapOperatorType('<>');
+      const output2 = mapOperatorType('!=');
+      const output3 = mapOperatorType('neq');
+      const output4 = mapOperatorType('NEQ');
+
+      expect(output1).toBe(OperatorType.notEqual);
+      expect(output2).toBe(OperatorType.notEqual);
+      expect(output3).toBe(OperatorType.notEqual);
+      expect(output4).toBe(OperatorType.notEqual);
+    });
+
+    it('should return OperatoryType associated to "*", ".*", "startsWith"', () => {
+      const output1 = mapOperatorType('*');
+      const output2 = mapOperatorType('.*');
+      const output3 = mapOperatorType('startsWith');
+
+      expect(output1).toBe(OperatorType.startsWith);
+      expect(output2).toBe(OperatorType.startsWith);
+      expect(output3).toBe(OperatorType.startsWith);
+    });
+
+    it('should return OperatoryType associated to "*.", "endsWith"', () => {
+      const output1 = mapOperatorType('*.');
+      const output2 = mapOperatorType('endsWith');
+
+      expect(output1).toBe(OperatorType.endsWith);
+      expect(output2).toBe(OperatorType.endsWith);
+    });
+
+    it('should return OperatoryType associated to "=", "==", "eq" or "EQ"', () => {
+      const output1 = mapOperatorType('=');
+      const output2 = mapOperatorType('==');
+      const output3 = mapOperatorType('eq');
+      const output4 = mapOperatorType('EQ');
+
+      expect(output1).toBe(OperatorType.equal);
+      expect(output2).toBe(OperatorType.equal);
+      expect(output3).toBe(OperatorType.equal);
+      expect(output4).toBe(OperatorType.equal);
+    });
+
+    it('should return OperatoryType associated to "in", "IN"', () => {
+      const output1 = mapOperatorType('in');
+      const output2 = mapOperatorType('IN');
+
+      expect(output1).toBe(OperatorType.in);
+      expect(output2).toBe(OperatorType.in);
+    });
+
+    it('should return OperatoryType associated to "notIn", "NIN", "NOT_IN"', () => {
+      const output1 = mapOperatorType('notIn');
+      const output2 = mapOperatorType('NIN');
+      const output3 = mapOperatorType('NOT_IN');
+
+      expect(output1).toBe(OperatorType.notIn);
+      expect(output2).toBe(OperatorType.notIn);
+      expect(output3).toBe(OperatorType.notIn);
+    });
+
+    it('should return default OperatoryType associated to contains', () => {
+      const output = mapOperatorType('');
+      expect(output).toBe(OperatorType.contains);
+    });
+  });
+
+  describe('mapOperatorByFieldType method', () => {
+    it('should return default OperatoryType associated to contains', () => {
+      const output1 = mapOperatorByFieldType(FieldType.string);
+      const output2 = mapOperatorByFieldType(FieldType.unknown);
+
+      expect(output1).toBe(OperatorType.contains);
+      expect(output2).toBe(OperatorType.contains);
+    });
+
+    it('should return default OperatoryType associated to equal', () => {
+      const output2 = mapOperatorByFieldType(FieldType.float);
+      const output3 = mapOperatorByFieldType(FieldType.number);
+      const output4 = mapOperatorByFieldType(FieldType.date);
+      const output5 = mapOperatorByFieldType(FieldType.dateIso);
+      const output6 = mapOperatorByFieldType(FieldType.date);
+      const output7 = mapOperatorByFieldType(FieldType.dateUtc);
+      const output8 = mapOperatorByFieldType(FieldType.dateTime);
+      const output9 = mapOperatorByFieldType(FieldType.dateTimeIso);
+      const output10 = mapOperatorByFieldType(FieldType.dateTimeIsoAmPm);
+      const output11 = mapOperatorByFieldType(FieldType.dateTimeIsoAM_PM);
+      const output12 = mapOperatorByFieldType(FieldType.dateEuro);
+      const output13 = mapOperatorByFieldType(FieldType.dateEuroShort);
+      const output14 = mapOperatorByFieldType(FieldType.dateTimeEuro);
+      const output15 = mapOperatorByFieldType(FieldType.dateTimeEuroAmPm);
+      const output16 = mapOperatorByFieldType(FieldType.dateTimeEuroAM_PM);
+      const output17 = mapOperatorByFieldType(FieldType.dateTimeEuroShort);
+      const output18 = mapOperatorByFieldType(FieldType.dateTimeEuroShortAmPm);
+      const output19 = mapOperatorByFieldType(FieldType.dateTimeEuroShortAM_PM);
+      const output20 = mapOperatorByFieldType(FieldType.dateUs);
+      const output21 = mapOperatorByFieldType(FieldType.dateUsShort);
+      const output22 = mapOperatorByFieldType(FieldType.dateTimeUs);
+      const output23 = mapOperatorByFieldType(FieldType.dateTimeUsAmPm);
+      const output24 = mapOperatorByFieldType(FieldType.dateTimeUsAM_PM);
+      const output25 = mapOperatorByFieldType(FieldType.dateTimeUsShort);
+      const output26 = mapOperatorByFieldType(FieldType.dateTimeUsShortAmPm);
+      const output27 = mapOperatorByFieldType(FieldType.dateTimeUsShortAM_PM);
+
+      expect(output2).toBe(OperatorType.equal);
+      expect(output3).toBe(OperatorType.equal);
+      expect(output4).toBe(OperatorType.equal);
+      expect(output5).toBe(OperatorType.equal);
+      expect(output6).toBe(OperatorType.equal);
+      expect(output7).toBe(OperatorType.equal);
+      expect(output8).toBe(OperatorType.equal);
+      expect(output9).toBe(OperatorType.equal);
+      expect(output10).toBe(OperatorType.equal);
+      expect(output11).toBe(OperatorType.equal);
+      expect(output12).toBe(OperatorType.equal);
+      expect(output13).toBe(OperatorType.equal);
+      expect(output14).toBe(OperatorType.equal);
+      expect(output15).toBe(OperatorType.equal);
+      expect(output16).toBe(OperatorType.equal);
+      expect(output17).toBe(OperatorType.equal);
+      expect(output18).toBe(OperatorType.equal);
+      expect(output19).toBe(OperatorType.equal);
+      expect(output20).toBe(OperatorType.equal);
+      expect(output21).toBe(OperatorType.equal);
+      expect(output22).toBe(OperatorType.equal);
+      expect(output23).toBe(OperatorType.equal);
+      expect(output24).toBe(OperatorType.equal);
+      expect(output25).toBe(OperatorType.equal);
+      expect(output26).toBe(OperatorType.equal);
+      expect(output27).toBe(OperatorType.equal);
+    });
+
+    it('should return default OperatoryType associated to contains', () => {
+      const output = mapOperatorByFieldType('');
+      expect(output).toBe(OperatorType.equal);
     });
   });
 

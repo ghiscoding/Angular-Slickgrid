@@ -1,4 +1,5 @@
-import { Type, ViewContainerRef } from '@angular/core';
+import { Type } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 
 export interface RowDetailView {
   /** A CSS class to be added to the row detail */
@@ -65,7 +66,7 @@ export interface RowDetailView {
   postTemplate?: (item: any) => string;
 
   /** Async server function call */
-  process: (item: any) => Promise<any>;
+  process: (item: any) => Promise<any> | Observable<any> | Subject<any>;
 
   /** Override the logic for showing (or not) the expand icon (use case example: only every 2nd row is expandable) */
   expandableOverride?: (row: number, dataContext: any, grid: any) => boolean;

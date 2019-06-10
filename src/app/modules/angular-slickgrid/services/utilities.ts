@@ -8,6 +8,24 @@ const moment = moment_; // patch to fix rollup "moment has no default export" is
 declare var $: any;
 
 /**
+ * Add an item to an array only when the item does not exists, when the item is an object we will be using their "id" to compare
+ * @param inputArray
+ * @param inputItem
+ */
+export function addToArrayWhenNotExists(inputArray: any[], inputItem: any) {
+  let arrayRowIndex = -1;
+  if (typeof inputItem === 'object' && inputItem.hasOwnProperty('id')) {
+    arrayRowIndex = inputArray.findIndex((item) => item.id === inputItem.id);
+  } else {
+    arrayRowIndex = inputArray.findIndex((item) => item === inputItem);
+  }
+
+  if (arrayRowIndex < 0) {
+    inputArray.push(inputItem);
+  }
+}
+
+/**
  * Simple function to which will loop and create as demanded the number of white spaces,
  * this is used in the CSV export
  * @param int nbSpaces: number of white spaces to create
@@ -26,7 +44,7 @@ export function addWhiteSpaces(nbSpaces: number): string {
  * then grab the encoded contents back out.  The div never exists on the page.
 */
 export function htmlDecode(encodedStr: string): string {
-  const parser = new DOMParser;
+  const parser = DOMParser && new DOMParser;
   if (parser && parser.parseFromString) {
     const dom = parser.parseFromString(
       '<!doctype html><body>' + encodedStr,
@@ -124,10 +142,8 @@ export function castToPromise<T>(input: Promise<T> | Observable<T>, fromServiceN
     return input;
   } else if (input instanceof Observable) {
     promise = input.pipe(first()).toPromise();
-    if (!(promise instanceof Promise)) {
-      promise = input.pipe(take(1)).toPromise();
-    }
   }
+
   if (!(promise instanceof Promise)) {
     throw new Error(
       `Something went wrong, Angular-Slickgrid ${fromServiceName} is not able to convert the Observable into a Promise.
@@ -337,10 +353,8 @@ export function mapFlatpickrDateFormatWithFieldType(fieldType: FieldType): strin
       map = 'Y-m-d H:i';
       break;
     case FieldType.dateTimeIsoAmPm:
-      map = 'Y-m-d h:i:S K'; // there is no lowercase in Flatpickr :(
-      break;
     case FieldType.dateTimeIsoAM_PM:
-      map = 'Y-m-d h:i:S K';
+      map = 'Y-m-d h:i:S K'; // there is no lowercase in Flatpickr :(
       break;
     // all Euro Formats (date/month/year)
     case FieldType.dateEuro:
@@ -544,7 +558,7 @@ export function parseUtcDate(inputDateString: string, useUtc?: boolean): string 
 export function sanitizeHtmlToText(htmlString: string) {
   const temp = document.createElement('div');
   temp.innerHTML = htmlString;
-  return temp.textContent || temp.innerText;
+  return temp.textContent || temp.innerText || '';
 }
 
 /**
