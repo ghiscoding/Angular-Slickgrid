@@ -19,6 +19,6 @@ export interface EditCommand {
   /** Call to commit changes */
   execute: () => void;
 
-  /** Call to rollback changes */
+  /** Call to undo (rollback) changes */
   undo: () => void;
 }

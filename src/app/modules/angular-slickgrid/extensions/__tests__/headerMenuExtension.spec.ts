@@ -5,13 +5,9 @@ import { HeaderMenuExtension } from '../headerMenuExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
 import { Column, ColumnSort } from '../../models';
-import { ExportService, FilterService, SortService } from '../../services';
+import { FilterService, SortService } from '../../services';
 
 declare var Slick: any;
-
-const exportServiceStub = {
-  exportToFile: jest.fn(),
-} as unknown as ExportService;
 
 const filterServiceStub = {
   clearFilterByColumnId: jest.fn(),
@@ -95,7 +91,6 @@ describe('headerMenuExtension', () => {
         HeaderMenuExtension,
         ExtensionUtility,
         SharedService,
-        { provide: ExportService, useValue: exportServiceStub },
         { provide: FilterService, useValue: filterServiceStub },
         { provide: SortService, useValue: sortServiceStub },
       ],

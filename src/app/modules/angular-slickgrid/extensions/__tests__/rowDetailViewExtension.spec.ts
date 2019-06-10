@@ -6,8 +6,8 @@ import { RowDetailViewExtension } from '../rowDetailViewExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
 import { FilterService, SortService, AngularUtilService } from '../../services';
-import { Column } from '../../models';
-import { of } from 'rxjs';
+import { Column, CurrentFilter } from '../../models';
+import { of, Subject } from 'rxjs';
 
 declare var Slick: any;
 const ROW_DETAIL_CONTAINER_PREFIX = 'container_';
@@ -24,7 +24,7 @@ const angularUtilServiceStub = {
 
 const filterServiceStub = {
   clearFilters: jest.fn(),
-  onFilterChanged: of([]),
+  onFilterChanged: new Subject<CurrentFilter[]>(),
 } as unknown as FilterService;
 
 const sortServiceStub = {
@@ -131,12 +131,10 @@ describe('rowDetailViewExtension', () => {
   });
 
   describe('create method', () => {
-    let columnSelectionMock: Column;
     let columnsMock: Column[];
 
     beforeEach(() => {
       columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }];
-      columnSelectionMock = { id: '_checkbox_selector', field: 'sel' };
       jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
       jest.clearAllMocks();
@@ -206,14 +204,12 @@ describe('rowDetailViewExtension', () => {
   });
 
   describe('registered addon', () => {
-    let columnSelectionMock: Column;
     let columnsMock: Column[];
 
     beforeEach(() => {
       gridOptionsMock.rowDetailView.preloadComponent = TestPreloadComponent;
       gridOptionsMock.rowDetailView.viewComponent = TestPreloadComponent;
       columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }];
-      columnSelectionMock = { id: '_checkbox_selector', field: 'sel' };
       jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
       jest.clearAllMocks();
@@ -410,7 +406,7 @@ describe('rowDetailViewExtension', () => {
     it('should call Angular Util "createAngularComponentAppendToDom" when grid "onColumnsReordered" is triggered', (done) => {
       const mockColumn = { id: 'field1', field: 'field1', width: 100, cssClass: 'red', __collapsed: true };
       const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
-      const appendSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom');
+      const appendSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom').mockReturnValue({ componentRef: { instance: jest.fn() } } as any);
 
       const instance = extension.create(columnsMock, gridOptionsMock);
       extension.register();
@@ -424,17 +420,114 @@ describe('rowDetailViewExtension', () => {
       expect(handlerSpy).toHaveBeenCalled();
     });
 
-    xit('should call Angular Util "detachView" when grid "onSort" is triggered', (done) => {
+    it('should call "redrawAllViewComponents" when event "filterChanged" is triggered', (done) => {
       const mockColumn = { id: 'field1', field: 'field1', width: 100, cssClass: 'red', __collapsed: true };
-      jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom').mockReturnValue({ componentRef: { instance: {} } } as any);
       const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
-      const detachSpy = jest.spyOn(applicationRefStub, 'detachView');
+      const appendSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom').mockReturnValue({ componentRef: { instance: jest.fn(), destroy: jest.fn() } } as any);
+
+      const instance = extension.create(columnsMock, gridOptionsMock);
+
+      extension.register();
+      instance.onBeforeRowDetailToggle.subscribe(() => {
+        filterServiceStub.onFilterChanged.next([{ columnId: 'field1', operator: '=', searchTerms: [] }]);
+        expect(appendSpy).toHaveBeenCalledWith(undefined, expect.objectContaining({ className: 'container_field1' }), true);
+        done();
+      });
+      instance.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new Slick.EventData(), gridStub);
+      instance.onBeforeRowDetailToggle.notify({ item: { ...mockColumn, __collapsed: false }, grid: gridStub }, new Slick.EventData(), gridStub);
+
+      expect(handlerSpy).toHaveBeenCalled();
+    });
+
+    it('should call "renderAllViewComponents" when grid event "onAfterRowDetailToggle" is triggered', (done) => {
+      const mockColumn = { id: 'field1', field: 'field1', width: 100, cssClass: 'red', __collapsed: true };
+      const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
+      const getElementSpy = jest.spyOn(document, 'getElementsByClassName');
+      const appendSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom').mockReturnValue({ componentRef: { instance: jest.fn(), destroy: jest.fn() } } as any);
+
+      const instance = extension.create(columnsMock, gridOptionsMock);
+
+      extension.register();
+      instance.onAfterRowDetailToggle.subscribe(() => {
+        expect(getElementSpy).toHaveBeenCalledWith('container_field1');
+        expect(appendSpy).toHaveBeenCalledWith(undefined, expect.objectContaining({ className: 'container_field1' }), true);
+        done();
+      });
+      instance.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new Slick.EventData(), gridStub);
+      instance.onAfterRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new Slick.EventData(), gridStub);
+
+      expect(handlerSpy).toHaveBeenCalled();
+    });
+
+    it('should call "redrawViewComponent" when grid event "onRowBackToViewportRange" is triggered', (done) => {
+      const mockColumn = { id: 'field1', field: 'field1', width: 100, cssClass: 'red', __collapsed: true };
+      const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
+      const getElementSpy = jest.spyOn(document, 'getElementsByClassName');
+      const appendSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom').mockReturnValue({ componentRef: { instance: jest.fn(), destroy: jest.fn() } } as any);
+
+      const instance = extension.create(columnsMock, gridOptionsMock);
+
+      extension.register();
+      instance.onRowBackToViewportRange.subscribe(() => {
+        expect(getElementSpy).toHaveBeenCalledWith('container_field1');
+        expect(appendSpy).toHaveBeenCalledWith(undefined, expect.objectContaining({ className: 'container_field1' }), true);
+        done();
+      });
+      instance.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new Slick.EventData(), gridStub);
+      instance.onRowBackToViewportRange.notify({ item: mockColumn, grid: gridStub }, new Slick.EventData(), gridStub);
+
+      expect(handlerSpy).toHaveBeenCalled();
+    });
+
+    it('should run the internal "onProcessing" and call "notifyTemplate" with a Promise when "process" method is defined and executed', (done) => {
+      const mockItem = { id: 2, firstName: 'John', lastName: 'Doe' };
+      gridOptionsMock.rowDetailView.process = () => new Promise((resolve) => resolve(mockItem));
+      const instance = extension.create(columnsMock, gridOptionsMock);
+
+      instance.onAsyncResponse.subscribe((e, response) => {
+        expect(response).toEqual(expect.objectContaining({ item: mockItem }));
+        done();
+      });
+
+      gridOptionsMock.rowDetailView.process({ id: 'field1', field: 'field1' });
+    });
+
+    it('should run the internal "onProcessing" and call "notifyTemplate" with an Object to simular HttpClient call when "process" method is defined and executed', (done) => {
+      const mockItem = { id: 2, firstName: 'John', lastName: 'Doe' };
+      gridOptionsMock.rowDetailView.process = () => of(mockItem);
+      const instance = extension.create(columnsMock, gridOptionsMock);
+
+      instance.onAsyncResponse.subscribe((e, response) => {
+        expect(response).toEqual(expect.objectContaining({ item: mockItem }));
+        done();
+      });
+
+      gridOptionsMock.rowDetailView.process({ id: 'field1', field: 'field1' });
+    });
+
+    it('should run the internal "onProcessing" and call "notifyTemplate" with an Object to simular HttpClient call when "process" method is defined and executed', async () => {
+      const mockItem = { firstName: 'John', lastName: 'Doe' };
+      gridOptionsMock.rowDetailView.process = () => new Promise((resolve) => resolve(mockItem));
+      extension.create(columnsMock, gridOptionsMock);
+
+      try {
+        await gridOptionsMock.rowDetailView.process({ id: 'field1', field: 'field1' });
+      } catch (e) {
+        expect(e.toString()).toContain(`[Angular-Slickgrid] could not process the Row Detail, you must make sure that your "process" callback`);
+      }
+    });
+
+    it('should call Angular Util "disposeAllViewComponents" when grid "onSort" is triggered', (done) => {
+      const mockColumn = { id: 'field1', field: 'field1', width: 100, cssClass: 'red', __collapsed: true };
+      jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom').mockReturnValue({ componentRef: { instance: jest.fn(), destroy: jest.fn() } } as any);
+      const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
+      const disposeSpy = jest.spyOn(extension, 'disposeAllViewComponents');
 
       const instance = extension.create(columnsMock, gridOptionsMock);
       extension.register();
       instance.onBeforeRowDetailToggle.subscribe(() => {
         gridStub.onSort.notify({ impactedColumns: mockColumn }, new Slick.EventData(), gridStub);
-        expect(detachSpy).toHaveBeenCalledWith(undefined, expect.objectContaining({ className: 'container_field1' }), true);
+        expect(disposeSpy).toHaveBeenCalled();
         done();
       });
       instance.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new Slick.EventData(), gridStub);
