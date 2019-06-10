@@ -44,7 +44,7 @@ export function addWhiteSpaces(nbSpaces: number): string {
  * then grab the encoded contents back out.  The div never exists on the page.
 */
 export function htmlDecode(encodedStr: string): string {
-  const parser = new DOMParser;
+  const parser = DOMParser && new DOMParser;
   if (parser && parser.parseFromString) {
     const dom = parser.parseFromString(
       '<!doctype html><body>' + encodedStr,
@@ -142,10 +142,8 @@ export function castToPromise<T>(input: Promise<T> | Observable<T>, fromServiceN
     return input;
   } else if (input instanceof Observable) {
     promise = input.pipe(first()).toPromise();
-    if (!(promise instanceof Promise)) {
-      promise = input.pipe(take(1)).toPromise();
-    }
   }
+
   if (!(promise instanceof Promise)) {
     throw new Error(
       `Something went wrong, Angular-Slickgrid ${fromServiceName} is not able to convert the Observable into a Promise.
@@ -355,10 +353,8 @@ export function mapFlatpickrDateFormatWithFieldType(fieldType: FieldType): strin
       map = 'Y-m-d H:i';
       break;
     case FieldType.dateTimeIsoAmPm:
-      map = 'Y-m-d h:i:S K'; // there is no lowercase in Flatpickr :(
-      break;
     case FieldType.dateTimeIsoAM_PM:
-      map = 'Y-m-d h:i:S K';
+      map = 'Y-m-d h:i:S K'; // there is no lowercase in Flatpickr :(
       break;
     // all Euro Formats (date/month/year)
     case FieldType.dateEuro:
