@@ -4,7 +4,7 @@ import { ExtensionUtility } from './extensionUtility';
 import { AngularUtilService } from '../services/angularUtilService';
 import { FilterService } from '../services/filter.service';
 import { SharedService } from '../services/shared.service';
-import { unsubscribeAllObservables, castToPromise } from '../services/utilities';
+import { addToArrayWhenNotExists, castToPromise, unsubscribeAllObservables } from '../services/utilities';
 import { Observable, Subject, Subscription } from 'rxjs';
 import * as DOMPurify_ from 'dompurify';
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
@@ -203,13 +203,6 @@ export class RowDetailViewExtension implements Extension {
   // private functions
   // ------------------
 
-  private addToArrayWhenNotFound(inputArray: any[], inputObj: any) {
-    const arrayRowIndex = inputArray.findIndex((obj) => obj.id === inputObj.id);
-    if (arrayRowIndex < 0) {
-      inputArray.push(inputObj);
-    }
-  }
-
   private disposeViewComponent(expandedView: CreatedView) {
     const compRef = expandedView && expandedView.componentRef;
     if (compRef) {
@@ -273,7 +266,7 @@ export class RowDetailViewExtension implements Extension {
         id: args.item.id,
         dataContext: args.item
       };
-      this.addToArrayWhenNotFound(this._views, viewInfo);
+      addToArrayWhenNotExists(this._views, viewInfo);
     } else {
       // collapsing, so dispose of the View/Component
       const foundViewIndex = this._views.findIndex((view: CreatedView) => view.id === args.item.id);

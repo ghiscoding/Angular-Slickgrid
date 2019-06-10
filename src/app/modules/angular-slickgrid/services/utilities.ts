@@ -8,6 +8,24 @@ const moment = moment_; // patch to fix rollup "moment has no default export" is
 declare var $: any;
 
 /**
+ * Add an item to an array only when the item does not exists, when the item is an object we will be using their "id" to compare
+ * @param inputArray
+ * @param inputItem
+ */
+export function addToArrayWhenNotExists(inputArray: any[], inputItem: any) {
+  let arrayRowIndex = -1;
+  if (typeof inputItem === 'object' && inputItem.hasOwnProperty('id')) {
+    arrayRowIndex = inputArray.findIndex((item) => item.id === inputItem.id);
+  } else {
+    arrayRowIndex = inputArray.findIndex((item) => item === inputItem);
+  }
+
+  if (arrayRowIndex < 0) {
+    inputArray.push(inputItem);
+  }
+}
+
+/**
  * Simple function to which will loop and create as demanded the number of white spaces,
  * this is used in the CSV export
  * @param int nbSpaces: number of white spaces to create

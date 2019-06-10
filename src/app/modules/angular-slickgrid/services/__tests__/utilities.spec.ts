@@ -1,4 +1,5 @@
 import {
+  addToArrayWhenNotExists,
   addWhiteSpaces,
   castToPromise,
   charArraysEqual,
@@ -21,10 +22,35 @@ import {
   uniqueObjectArray,
   unsubscribeAllObservables,
 } from '../utilities';
-import * as moment from 'moment-mini';
 import { of, Subscription } from 'rxjs';
 
 describe('Service/Utilies', () => {
+  describe('addToArrayWhenNotExists', () => {
+    it('should add an item to the array when input item has an "id" and is not in the array', () => {
+      const array = [{ id: 1, firstName: 'John' }];
+      addToArrayWhenNotExists(array, { id: 2, firstName: 'Jane' });
+      expect(array).toEqual([{ id: 1, firstName: 'John' }, { id: 2, firstName: 'Jane' }]);
+    });
+
+    it('should add an item to the array when input item is not an object and and is not in the array', () => {
+      const array = ['John'];
+      addToArrayWhenNotExists(array, 'Jane');
+      expect(array).toEqual(['John', 'Jane']);
+    });
+
+    it('should NOT add an item to the array when input item has an "id" and is not in the array', () => {
+      const array = [{ id: 1, firstName: 'John' }];
+      addToArrayWhenNotExists(array, { id: 1, firstName: 'John' });
+      expect(array).toEqual([{ id: 1, firstName: 'John' }]);
+    });
+
+    it('should NOT add an item to the array when input item is not an object and and is not in the array', () => {
+      const array = [0];
+      addToArrayWhenNotExists(array, 0);
+      expect(array).toEqual([0]);
+    });
+  });
+
   describe('addWhiteSpaces method', () => {
     it('should return the an empty string when argument provided is lower or equal to 0', () => {
       expect(addWhiteSpaces(-2)).toBe('');
