@@ -1,8 +1,5 @@
 import { FilterCondition, FilterConditionOption } from './../models/index';
-
-function parseBoolean(str: number | string) {
-  return /(true|1)/i.test(str + '');
-}
+import { parseBoolean } from '../services/utilities';
 
 export const booleanFilterCondition: FilterCondition = (options: FilterConditionOption) => {
   const searchTerm = Array.isArray(options.searchTerms) && options.searchTerms[0] || '';
