@@ -13,14 +13,14 @@ export default class GraphqlQueryBuilder {
 
   /* Constructor, query/mutator you wish to use, and an alias or filter arguments. */
   constructor(private queryFnName: string, aliasOrFilter?: string | object) {
-    if (typeof aliasOrFilter === 'function') {
+    if (typeof aliasOrFilter === 'string') {
       this.alias = aliasOrFilter;
     } else if (typeof aliasOrFilter === 'object') {
       this.filter(aliasOrFilter);
-    } else if (undefined === aliasOrFilter && 2 === arguments.length) {
+    } else if (aliasOrFilter === undefined && arguments.length === 2) {
       throw new TypeError(`You have passed undefined as Second argument to "Query"`);
-    } else if (undefined !== aliasOrFilter) {
-      throw new TypeError(`Second argument to "Query" should be an alias name(String) or filter arguments(Object). was passed ${aliasOrFilter}`);
+    } else if (aliasOrFilter !== undefined) {
+      throw new TypeError(`Second argument to "Query" should be an alias name(String) or filter arguments(Object). What was passed is: ${aliasOrFilter}`);
     }
   }
 
@@ -47,7 +47,7 @@ export default class GraphqlQueryBuilder {
    * @param properties representing each attribute you want Returned
    */
   find(...searches: any[]) { // THIS NEED TO BE A "FUNCTION" to scope 'arguments'
-    if (!searches) {
+    if (!searches || !Array.isArray(searches) || searches.length === 0) {
       throw new TypeError(`find value can not be >>falsy<<`);
     }
     // if its a string.. it may have other values
