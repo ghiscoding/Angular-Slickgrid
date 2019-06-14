@@ -2,7 +2,7 @@ import { SearchTerm } from './searchTerm.type';
 import { Column } from './column.interface';
 import { ColumnFilters } from './columnFilters.interface';
 import { OperatorType } from './operatorType.enum';
-import { OperatorString } from 'dist/public_api';
+import { OperatorString } from './operatorString';
 
 export interface FilterChangedArgs {
   clearFilterTriggered?: boolean;
