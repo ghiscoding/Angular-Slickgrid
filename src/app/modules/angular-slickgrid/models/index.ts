@@ -79,6 +79,7 @@ export * from './headerMenuOnCommandArgs.interface';
 export * from './headerMenuOnBeforeMenuShowArgs.interface';
 export * from './htmlElementPosition.interface';
 export * from './keyCode.enum';
+export * from './multiColumnSort.interface';
 export * from './multipleSelectOption.interface';
 export * from './odataOption.interface';
 export * from './onEventArgs.interface';

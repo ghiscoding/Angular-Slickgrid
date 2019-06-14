@@ -17,6 +17,7 @@ import {
   GraphqlServiceOption,
   GraphqlSortingOption,
   GridOption,
+  MultiColumnSort,
   Pagination,
   PaginationChangedArgs,
   SortChangedArgs,
@@ -41,9 +42,25 @@ export class GraphqlService implements BackendService {
     offset: 0
   };
 
+  /** Getter for the Column Definitions */
+  get columnDefinitions() {
+    return this._columnDefinitions;
+  }
+
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
+
+  /** Initialization of the service, which acts as a constructor */
+  init(serviceOptions?: GraphqlServiceOption, pagination?: Pagination, grid?: any): void {
+    this._grid = grid;
+    this.options = serviceOptions || {};
+    this.pagination = pagination;
+
+    if (grid && grid.getColumns) {
+      this._columnDefinitions = serviceOptions.columnDefinitions || grid.getColumns();
+    }
   }
 
   /**
@@ -51,7 +68,7 @@ export class GraphqlService implements BackendService {
    * @param serviceOptions GraphqlServiceOption
    */
   buildQuery() {
-    if (!this.options || !this.options.datasetName || (!this._columnDefinitions && !this.options.columnDefinitions)) {
+    if (!this.options || !this.options.datasetName || (!this._columnDefinitions && !Array.isArray(this.options.columnDefinitions))) {
       throw new Error('GraphQL Service requires "datasetName" & "columnDefinitions" properties for it to work');
     }
 
@@ -64,7 +81,7 @@ export class GraphqlService implements BackendService {
     const dataQb = (this.options.isWithCursor) ? new QueryBuilder('edges') : new QueryBuilder('nodes');
 
     // get all the columnds Ids for the filters to work
-    let columnIds: string[] = [];
+    const columnIds: string[] = [];
     if (columnDefinitions && Array.isArray(columnDefinitions)) {
       for (const column of columnDefinitions) {
         columnIds.push(column.field);
@@ -74,9 +91,6 @@ export class GraphqlService implements BackendService {
           columnIds.push(...column.fields);
         }
       }
-      // columnIds = columnDefinitions.map((column) => column.field);
-    } else {
-      columnIds = this.options.columnIds || [];
     }
 
     // Slickgrid also requires the "id" field to be part of DataView
@@ -178,22 +192,13 @@ export class GraphqlService implements BackendService {
     this.updateOptions({ sortingOptions: [] });
   }
 
-  init(serviceOptions?: GraphqlServiceOption, pagination?: Pagination, grid?: any): void {
-    this._grid = grid;
-    this.options = serviceOptions || {};
-    this.pagination = pagination;
-
-    if (grid && grid.getColumns) {
-      this._columnDefinitions = serviceOptions.columnDefinitions || grid.getColumns();
-    }
-  }
-
   /**
    * Get an initialization of Pagination options
    * @return Pagination Options
    */
   getInitPaginationOptions(): GraphqlDatasetFilter {
-    return (this.options.isWithCursor) ? { first: (this.pagination ? this.pagination.pageSize : DEFAULT_ITEMS_PER_PAGE) } : { first: (this.pagination ? this.pagination.pageSize : DEFAULT_ITEMS_PER_PAGE), offset: 0 };
+    const paginationFirst = this.pagination ? this.pagination.pageSize : DEFAULT_ITEMS_PER_PAGE;
+    return (this.options && this.options.isWithCursor) ? { first: paginationFirst } : { first: paginationFirst, offset: 0 };
   }
 
   /** Get the GraphQL dataset name */
@@ -220,8 +225,9 @@ export class GraphqlService implements BackendService {
    * Reset the pagination options
    */
   resetPaginationOptions() {
-    let paginationOptions;
-    if (this.options.isWithCursor) {
+    let paginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption;
+
+    if (this.options && this.options.isWithCursor) {
       // first, last, after, before
       paginationOptions = {
         after: '',
@@ -231,7 +237,7 @@ export class GraphqlService implements BackendService {
     } else {
       // first, last, offset
       paginationOptions = (this.options.paginationOptions || this.getInitPaginationOptions()) as GraphqlPaginationOption;
-      paginationOptions.offset = 0;
+      (paginationOptions as GraphqlPaginationOption).offset = 0;
     }
 
     // save current pagination as Page 1 and page size as "first" set size
@@ -250,8 +256,8 @@ export class GraphqlService implements BackendService {
   /*
    * FILTERING
    */
-  processOnFilterChanged(event: Event, args: FilterChangedArgs): Promise<string> {
-    const gridOptions: GridOption = this._gridOptions || args.grid.getOptions();
+  processOnFilterChanged(event: Event, args: FilterChangedArgs): string {
+    const gridOptions: GridOption = this._gridOptions;
     const backendApi = gridOptions.backendServiceApi;
 
     if (backendApi === undefined) {
@@ -259,21 +265,17 @@ export class GraphqlService implements BackendService {
     }
 
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
-    this._currentFilters = this.castFilterToColumnFilter(args.columnFilters);
+    this._currentFilters = this.castFilterToColumnFilters(args.columnFilters);
 
-    const promise = new Promise<string>((resolve, reject) => {
-      if (!args || !args.grid) {
-        throw new Error('Something went wrong when trying create the GraphQL Backend Service, it seems that "args" is not populated correctly');
-      }
+    if (!args || !args.grid) {
+      throw new Error('Something went wrong when trying create the GraphQL Backend Service, it seems that "args" is not populated correctly');
+    }
 
-      // loop through all columns to inspect filters & set the query
-      this.updateFilters(args.columnFilters, false);
+    // loop through all columns to inspect filters & set the query
+    this.updateFilters(args.columnFilters, false);
 
-      this.resetPaginationOptions();
-      resolve(this.buildQuery());
-    });
-
-    return promise;
+    this.resetPaginationOptions();
+    return this.buildQuery();
   }
 
   /*
@@ -302,7 +304,7 @@ export class GraphqlService implements BackendService {
    *     }
    *   }
    */
-  processOnPaginationChanged(event: Event, args: PaginationChangedArgs) {
+  processOnPaginationChanged(event: Event, args: PaginationChangedArgs): string {
     const pageSize = +(args.pageSize || ((this.pagination) ? this.pagination.pageSize : DEFAULT_PAGE_SIZE));
     this.updatePagination(args.newPage, pageSize);
 
@@ -314,9 +316,18 @@ export class GraphqlService implements BackendService {
    * SORTING
    * we will use sorting as per a Facebook suggestion on a Github issue (with some small changes)
    * https://github.com/graphql/graphql-relay-js/issues/20#issuecomment-220494222
+   *
+   *  users (first: 20, offset: 10, orderBy: [{field: lastName, direction: ASC}, {field: firstName, direction: DESC}]) {
+   *    totalCount
+   *    nodes {
+   *      name
+   *      gender
+   *    }
+   *  }
    */
-  processOnSortChanged(event: Event, args: SortChangedArgs) {
-    const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortCol: args.sortCol, sortAsc: args.sortAsc });
+  // @deprecated note, we should remove "SortChangedArgs" and only use: ColumnSort | MultiColumnSort
+  processOnSortChanged(event: Event, args: SortChangedArgs | ColumnSort | MultiColumnSort): string {
+    const sortColumns = (args.multiColumnSort) ? (args as MultiColumnSort).sortCols : new Array({ sortCol: (args as ColumnSort).sortCol, sortAsc: (args as ColumnSort).sortAsc });
 
     // loop through all columns to inspect sorters & set the query
     this.updateSorters(sortColumns);
@@ -335,7 +346,7 @@ export class GraphqlService implements BackendService {
 
     // on filter preset load, we need to keep current filters
     if (isUpdatedByPreset) {
-      this._currentFilters = this.castFilterToColumnFilter(columnFilters);
+      this._currentFilters = this.castFilterToColumnFilters(columnFilters);
     }
 
     for (const columnId in columnFilters) {
@@ -350,18 +361,18 @@ export class GraphqlService implements BackendService {
           columnDef = columnFilter.columnDef;
         }
         if (!columnDef) {
-          throw new Error('[Backend Service API]: Something went wrong in trying to get the column definition of the specified filter (or preset filters). Did you make a typo on the filter columnId?');
+          throw new Error('[GraphQL Service]: Something went wrong in trying to get the column definition of the specified filter (or preset filters). Did you make a typo on the filter columnId?');
         }
 
         const fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field || columnDef.name || '';
-        const searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
+        const searchTerms = columnFilter && columnFilter.searchTerms || [];
         let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
         if (typeof fieldSearchValue === 'undefined') {
           fieldSearchValue = '';
         }
 
-        if (typeof fieldSearchValue !== 'string' && !searchTerms) {
-          throw new Error(`GraphQL filter searchTerm property must be provided as type "string", if you use filter with options then make sure your IDs are also string. For example: filter: {model: Filters.select, collection: [{ id: "0", value: "0" }, { id: "1", value: "1" }]`);
+        if (!fieldName) {
+          throw new Error(`GraphQL filter could not find the field name to query the search, your column definition must include a valid "field" or "name" (optionally you can also use the "queryfield" or "queryFieldFilter").`);
         }
 
         fieldSearchValue = '' + fieldSearchValue; // make sure it's a string
@@ -386,7 +397,7 @@ export class GraphqlService implements BackendService {
           }
         }
 
-        // if we didn't find an Operator but we have a Filter Type, we should use default Operator
+        // if we didn't find an Operator but we have a Column Operator inside the Filter (DOM Element), we should use its default Operator
         // multipleSelect is "IN", while singleSelect is "EQ", else don't map any operator
         if (!operator && columnDef.filter) {
           operator = columnDef.filter.operator;
@@ -453,7 +464,7 @@ export class GraphqlService implements BackendService {
         const columnDef = this._columnDefinitions.find((column: Column) => column.id === sorter.columnId);
 
         graphqlSorters.push({
-          field: columnDef ? ((columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '') : (sorter.columnId + ''),
+          field: columnDef ? ((columnDef.queryField || columnDef.queryFieldSorter || columnDef.field) + '') : (sorter.columnId + ''),
           direction: sorter.direction
         });
 
@@ -483,7 +494,7 @@ export class GraphqlService implements BackendService {
             });
 
             graphqlSorters.push({
-              field: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field || column.sortCol.id) + '',
+              field: (column.sortCol.queryField || column.sortCol.queryFieldSorter || column.sortCol.field) + '',
               direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
             });
           }
@@ -537,10 +548,14 @@ export class GraphqlService implements BackendService {
   // private functions
   // -------------------
   /**
-   * Cast provided filters (could be in multiple format) into an array of ColumnFilter
+   * Cast provided filters (could be in multiple formats) into an array of ColumnFilter
    * @param columnFilters
    */
-  private castFilterToColumnFilter(columnFilters: ColumnFilters | CurrentFilter[]): CurrentFilter[] {
+  private castFilterToColumnFilters(columnFilters: ColumnFilters | CurrentFilter[]): CurrentFilter[] {
+    if (!Array.isArray(columnFilters)) {
+      return null;
+    }
+
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
     const filtersArray: ColumnFilter[] = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters;
 

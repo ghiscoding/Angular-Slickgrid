@@ -447,11 +447,15 @@ export function mapOperatorType(operator: string): OperatorType {
       break;
     case '*':
     case '.*':
+    case 'a*':
     case 'startsWith':
+    case 'StartsWith':
       map = OperatorType.startsWith;
       break;
     case '*.':
+    case '*z':
     case 'endsWith':
+    case 'EndsWith':
       map = OperatorType.endsWith;
       break;
     case '=':
