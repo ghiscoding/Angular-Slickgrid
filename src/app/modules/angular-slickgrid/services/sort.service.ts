@@ -106,7 +106,7 @@ export class SortService {
     this._slickSubscriber.subscribe((e: any, args: any) => {
       // multiSort and singleSort are not exactly the same, but we want to structure it the same for the (for loop) after
       // also to avoid having to rewrite the for loop in the sort, we will make the singleSort an array of 1 object
-      const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({sortAsc: args.sortAsc, sortCol: args.sortCol});
+      const sortColumns = (args.multiColumnSort) ? args.sortCols : new Array({ sortAsc: args.sortAsc, sortCol: args.sortCol });
 
       // keep current sorters
       this._currentLocalSorters = []; // reset current local sorters
@@ -139,7 +139,7 @@ export class SortService {
           this.onBackendSortChanged(undefined, { grid: this._grid, sortCols: [] });
         } else {
           if (this._columnDefinitions && Array.isArray(this._columnDefinitions)) {
-            this.onLocalSortChanged(this._grid, this._dataView, new Array({sortAsc: true, sortCol: this._columnDefinitions[0] }));
+            this.onLocalSortChanged(this._grid, this._dataView, new Array({ sortAsc: true, sortCol: this._columnDefinitions[0] }));
           }
         }
       } else if (this._isBackendGrid) {
@@ -230,7 +230,7 @@ export class SortService {
           const columnSortObj = sortColumns[i];
           if (columnSortObj && columnSortObj.sortCol) {
             const sortDirection = columnSortObj.sortAsc ? SortDirectionNumber.asc : SortDirectionNumber.desc;
-            const sortField = columnSortObj.sortCol.queryField || columnSortObj.sortCol.queryFieldSorter || columnSortObj.sortCol.field;
+            const sortField = columnSortObj.sortCol.queryFieldSorter || columnSortObj.sortCol.queryField || columnSortObj.sortCol.field;
             const fieldType = columnSortObj.sortCol.type || FieldType.string;
             let value1 = dataRow1[sortField];
             let value2 = dataRow2[sortField];
