@@ -12,9 +12,6 @@ export interface GraphqlServiceOption extends BackendServiceOption {
    */
   addLocaleIntoQuery?: boolean;
 
-  /** Array of column ids that are included in the column definitions */
-  columnIds?: string[];
-
   /** What is the dataset, this is required for the GraphQL query to be built */
   datasetName?: string;
 

@@ -615,22 +615,30 @@ describe('Service/Utilies', () => {
       expect(output4).toBe(OperatorType.notEqual);
     });
 
-    it('should return OperatoryType associated to "*", ".*", "startsWith"', () => {
+    it('should return OperatoryType associated to "*", "a*", ".*", "startsWith"', () => {
       const output1 = mapOperatorType('*');
       const output2 = mapOperatorType('.*');
-      const output3 = mapOperatorType('startsWith');
+      const output3 = mapOperatorType('a*');
+      const output4 = mapOperatorType('startsWith');
+      const output5 = mapOperatorType('StartsWith');
 
       expect(output1).toBe(OperatorType.startsWith);
       expect(output2).toBe(OperatorType.startsWith);
       expect(output3).toBe(OperatorType.startsWith);
+      expect(output4).toBe(OperatorType.startsWith);
+      expect(output5).toBe(OperatorType.startsWith);
     });
 
-    it('should return OperatoryType associated to "*.", "endsWith"', () => {
+    it('should return OperatoryType associated to "*.", "*z", "endsWith"', () => {
       const output1 = mapOperatorType('*.');
-      const output2 = mapOperatorType('endsWith');
+      const output2 = mapOperatorType('*z');
+      const output3 = mapOperatorType('endsWith');
+      const output4 = mapOperatorType('EndsWith');
 
       expect(output1).toBe(OperatorType.endsWith);
       expect(output2).toBe(OperatorType.endsWith);
+      expect(output3).toBe(OperatorType.endsWith);
+      expect(output4).toBe(OperatorType.endsWith);
     });
 
     it('should return OperatoryType associated to "=", "==", "eq" or "EQ"', () => {
