@@ -277,7 +277,8 @@ export class HeaderMenuExtension implements Extension {
         const updatedSortColumns: ColumnSort[] = sortedColsWithoutCurrent.map((col) => {
           return {
             columnId: col && col.sortCol && col.sortCol.id,
-            sortAsc: col && col.sortAsc
+            sortAsc: col && col.sortAsc,
+            sortCol: col && col.sortCol,
           };
         });
         this.sharedService.grid.setSortColumns(updatedSortColumns); // add sort icon in UI
@@ -335,7 +336,8 @@ export class HeaderMenuExtension implements Extension {
       const newSortColumns: ColumnSort[] = sortedColsWithoutCurrent.map((col) => {
         return {
           columnId: col && col.sortCol && col.sortCol.id,
-          sortAsc: col && col.sortAsc
+          sortAsc: col && col.sortAsc,
+          sortCol: col && col.sortCol,
         };
       });
       this.sharedService.grid.setSortColumns(newSortColumns); // add sort icon in UI

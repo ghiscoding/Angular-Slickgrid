@@ -203,7 +203,7 @@ export class GridOdataService implements BackendService {
           throw new Error('[Backend Service API]: Something went wrong in trying to get the column definition of the specified filter (or preset filters). Did you make a typo on the filter columnId?');
         }
 
-        let fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field || columnDef.name || '';
+        let fieldName = columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || columnDef.name || '';
         const fieldType = columnDef.type || 'string';
         const searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
         let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
@@ -341,7 +341,7 @@ export class GridOdataService implements BackendService {
         const columnDef = this._columnDefinitions.find((column: Column) => column.id === sorter.columnId);
 
         sorterArray.push({
-          columnId: columnDef ? ((columnDef.queryField || columnDef.queryFieldSorter || columnDef.field || columnDef.id) + '') : (sorter.columnId + ''),
+          columnId: columnDef ? ((columnDef.queryFieldSorter || columnDef.queryField || columnDef.field || columnDef.id) + '') : (sorter.columnId + ''),
           direction: sorter.direction
         });
 
@@ -363,7 +363,7 @@ export class GridOdataService implements BackendService {
         if (sortColumns) {
           for (const columnDef of sortColumns) {
             if (columnDef.sortCol) {
-              let fieldName = (columnDef.sortCol.queryField || columnDef.sortCol.queryFieldSorter || columnDef.sortCol.field || columnDef.sortCol.id) + '';
+              let fieldName = (columnDef.sortCol.queryFieldSorter || columnDef.sortCol.queryField || columnDef.sortCol.field || columnDef.sortCol.id) + '';
               let columnFieldName = (columnDef.sortCol.field || columnDef.sortCol.id) + '';
               if (this.odataService.options.caseType === CaseType.pascalCase) {
                 fieldName = String.titleCase(fieldName);

@@ -821,8 +821,8 @@ describe('CollectionService', () => {
     });
 
     it('should return a query using a different field to query when the column has a "queryFieldFilter" defined in its definition', () => {
-      const expectation = `query{users(first:10, offset:0, filterBy:[{field:isFemale, operator:EQ, value:"female"}]) { totalCount,nodes{ id,company,gender,name } }}`;
-      const mockColumn = { id: 'gender', field: 'gender', queryFieldFilter: 'isFemale' } as Column;
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:hasPriority, operator:EQ, value:"female"}]) { totalCount,nodes{ id,company,gender,name } }}`;
+      const mockColumn = { id: 'gender', field: 'gender', queryField: 'isAfter', queryFieldFilter: 'hasPriority' } as Column;
       const mockColumnFilters = {
         gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['female'], operator: 'EQ' },
       } as ColumnFilters;
@@ -914,7 +914,7 @@ describe('CollectionService', () => {
                             totalCount,nodes{ id, company, gender, name } }}`;
       const mockColumnSort = [
         { columnId: 'gender', sortCol: { id: 'gender', field: 'gender' }, sortAsc: false },
-        { columnId: 'name', sortCol: { id: 'name', field: 'name', queryFieldSorter: 'lastName' }, sortAsc: true }
+        { columnId: 'name', sortCol: { id: 'name', field: 'name', queryField: 'isAfter', queryFieldSorter: 'lastName' }, sortAsc: true }
       ] as ColumnSort[];
 
       service.init(serviceOptions, paginationOptions, gridStub);

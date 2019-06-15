@@ -257,7 +257,7 @@ export class FilterService {
       }
 
       const dataKey = columnDef.dataKey;
-      const fieldName = columnDef.queryField || columnDef.queryFieldFilter || columnDef.field;
+      const fieldName = columnDef.queryFieldFilter || columnDef.queryField || columnDef.field;
       const fieldType = columnDef.type || FieldType.string;
       const filterSearchType = (columnDef.filterSearchType) ? columnDef.filterSearchType : null;
       let cellValue = item[fieldName];

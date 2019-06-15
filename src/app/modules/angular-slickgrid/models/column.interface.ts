@@ -153,13 +153,22 @@ export interface Column {
   /** The previous column width in pixels (number only) */
   previousWidth?: number;
 
-  /** Useful when you want to display a certain field to the UI, but you want to use another field to query for Filtering/Sorting. */
+  /**
+   * Useful when you want to display a certain field to the UI, but you want to use another field to query when Filtering/Sorting.
+   * Please note that it has higher precendence over the "field" property.
+   */
   queryField?: string;
 
-  /** Similar to "queryField" but only used with Filtering. Useful when you want to display a certain field to the UI, but you want to use another field to query for Filtering. */
+  /**
+   * Similar to "queryField" but only used when Filtering (please note that it has higher precendence over "queryField").
+   * Useful when you want to display a certain field to the UI, but you want to use another field to query for Filtering.
+   */
   queryFieldFilter?: string;
 
-  /** Similar to "queryField" but only used with Sorting. Useful when you want to display a certain field to the UI, but you want to use another field to query for Sorting. */
+  /**
+   * Similar to "queryField" but only used when Sorting (please note that it has higher precendence over "queryField").
+   * Useful when you want to display a certain field to the UI, but you want to use another field to query for Sorting.
+   */
   queryFieldSorter?: string;
 
   /** Is the column resizable, can we make it wider/thinner? A resize cursor will show on the right side of the column when enabled. */
