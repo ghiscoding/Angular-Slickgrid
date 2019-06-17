@@ -98,10 +98,6 @@ export class GridOdataService implements BackendService {
     this.updateSorters([]);
   }
 
-  updateOptions(serviceOptions?: OdataOption) {
-    this.options = { ...this.options, ...serviceOptions };
-  }
-
   removeColumnFilter(fieldName: string): void {
     this._odataService.removeColumnFilter(fieldName);
   }
