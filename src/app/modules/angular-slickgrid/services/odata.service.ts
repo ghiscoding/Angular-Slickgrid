@@ -35,7 +35,7 @@ export class OdataService {
     if (this._odataOptions.orderBy) {
       let argument = '';
       if (Array.isArray(this._odataOptions.orderBy)) {
-        argument = this._odataOptions.orderBy.join(','); // csv, that will form a query example like: $orderby=RoleName asc, Id desc
+        argument = this._odataOptions.orderBy.join(','); // csv, that will form a query, for example: $orderby=RoleName asc, Id desc
       } else {
         argument = this._odataOptions.orderBy;
       }

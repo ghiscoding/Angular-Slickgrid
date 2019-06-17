@@ -90,12 +90,12 @@ export class GridOdataService implements BackendService {
 
   clearFilters() {
     this._currentFilters = [];
-    this.updateOptions({ filteringOptions: [] });
+    this.updateFilters([]);
   }
 
   clearSorters() {
     this._currentSorters = [];
-    this.updateOptions({ sortingOptions: [] });
+    this.updateSorters([]);
   }
 
   updateOptions(serviceOptions?: OdataOption) {
@@ -218,7 +218,7 @@ export class GridOdataService implements BackendService {
   }
 
   /**
-   * loop through all columns to inspect filters & update backend service filteringOptions
+   * loop through all columns to inspect filters & update backend service filters
    * @param columnFilters
    */
   updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset?: boolean) {
@@ -475,7 +475,6 @@ export class GridOdataService implements BackendService {
 
     // keep current Sorters and update the service options with the new sorting
     this._currentSorters = currentSorters;
-    // this.updateOptions({ sortingOptions: odataSorters });
 
     // build the OData query which we will use in the WebAPI callback
     return this._odataService.buildQuery();

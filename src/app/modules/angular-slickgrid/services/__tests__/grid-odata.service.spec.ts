@@ -152,17 +152,17 @@ describe('GridOdataService', () => {
 
   describe('clearFilters method', () => {
     it('should call "updateOptions" to clear all filters', () => {
-      const spy = jest.spyOn(service, 'updateOptions');
+      const spy = jest.spyOn(service, 'updateFilters');
       service.clearFilters();
-      expect(spy).toHaveBeenCalledWith({ filteringOptions: [] });
+      expect(spy).toHaveBeenCalledWith([]);
     });
   });
 
   describe('clearSorters method', () => {
     it('should call "updateOptions" to clear all sorting', () => {
-      const spy = jest.spyOn(service, 'updateOptions');
+      const spy = jest.spyOn(service, 'updateSorters');
       service.clearSorters();
-      expect(spy).toHaveBeenCalledWith({ sortingOptions: [] });
+      expect(spy).toHaveBeenCalledWith([]);
     });
   });
 
@@ -658,6 +658,23 @@ describe('GridOdataService', () => {
 
       expect(query).toBe(expectation);
     });
+
+    it('should return a query without any sorting after clearFilters was called', () => {
+      const expectation = `$top=10`;
+      const mockColumn = { id: 'gender', field: 'gender' } as Column;
+      const mockColumnFilters = {
+        gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['female'], operator: 'EQ' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      service.clearFilters();
+      const currentFilters = service.getCurrentFilters();
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+      expect(currentFilters).toEqual([]);
+    });
   });
 
   describe('updateSorters method', () => {
@@ -743,6 +760,23 @@ describe('GridOdataService', () => {
 
       expect(query).toBe(expectation);
       expect(currentSorters).toEqual([{ columnId: 'Gender', direction: 'desc' }, { columnId: 'FirstName', direction: 'asc' }]);
+    });
+
+    it('should return a query without any sorting after clearSorters was called', () => {
+      const expectation = `$top=10`;
+      const mockColumnSort = [
+        { columnId: 'gender', sortCol: { id: 'gender', field: 'gender' }, sortAsc: false },
+        { columnId: 'firstName', sortCol: { id: 'firstName', field: 'firstName' }, sortAsc: true }
+      ] as ColumnSort[];
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateSorters(mockColumnSort);
+      service.clearSorters();
+      const query = service.buildQuery();
+      const currentSorters = service.getCurrentSorters();
+
+      expect(query).toBe(expectation);
+      expect(currentSorters).toEqual([]);
     });
   });
 

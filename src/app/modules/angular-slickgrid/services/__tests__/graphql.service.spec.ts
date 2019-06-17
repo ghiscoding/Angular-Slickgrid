@@ -848,6 +848,23 @@ describe('GraphqlService', () => {
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
     });
+
+    it('should return a query without any sorting after clearFilters was called', () => {
+      const expectation = `query{ users(first:10,offset:0) { totalCount,nodes{id, company, gender,name} }}`;
+      const mockColumn = { id: 'gender', field: 'gender' } as Column;
+      const mockColumnFilters = {
+        gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['female'], operator: 'EQ' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      service.clearFilters();
+      const currentFilters = service.getCurrentFilters();
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+      expect(currentFilters).toEqual([]);
+    });
   });
 
   describe('updateSorters method', () => {
@@ -927,7 +944,6 @@ describe('GraphqlService', () => {
       expect(currentSorters).toEqual([{ columnId: 'gender', direction: 'DESC' }, { columnId: 'name', direction: 'ASC' }]);
     });
 
-
     it('should return a query without the field sorter when its field property is missing', () => {
       const expectation = `query { users(first:10, offset:0, orderBy:[{field:gender, direction:DESC}]) {
                           totalCount, nodes { id,company,gender,name }}}`;
@@ -943,6 +959,24 @@ describe('GraphqlService', () => {
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
       expect(currentSorters).toEqual([{ columnId: 'gender', direction: 'DESC' }, { columnId: 'firstName', direction: 'ASC' }]);
+    });
+
+    it('should return a query without any sorting after clearSorters was called', () => {
+      const expectation = `query { users(first:10, offset:0) {
+        totalCount, nodes { id,company,gender,name }}}`;
+      const mockColumnSort = [
+        { columnId: 'gender', sortCol: { id: 'gender', field: 'gender' }, sortAsc: false },
+        { columnId: 'firstName', sortCol: { id: 'firstName', field: 'firstName' }, sortAsc: true }
+      ] as ColumnSort[];
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateSorters(mockColumnSort);
+      service.clearSorters();
+      const query = service.buildQuery();
+      const currentSorters = service.getCurrentSorters();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+      expect(currentSorters).toEqual([]);
     });
   });
 });
