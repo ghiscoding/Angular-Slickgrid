@@ -59,7 +59,7 @@ export class GraphqlService implements BackendService {
     this.pagination = pagination;
 
     if (grid && grid.getColumns) {
-      this._columnDefinitions = serviceOptions.columnDefinitions || grid.getColumns();
+      this._columnDefinitions = (serviceOptions && serviceOptions.columnDefinitions) || grid.getColumns();
     }
   }
 
@@ -478,7 +478,7 @@ export class GraphqlService implements BackendService {
         return null;
       });
 
-      // set the sort icons, but also make sure to filter out null values (happens when no columnDef found)
+      // set the sort icons, but also make sure to filter out null values (that happens when columnDef is not found)
       if (Array.isArray(tmpSorterArray)) {
         this._grid.setSortColumns(tmpSorterArray.filter((sorter) => sorter));
       }
@@ -493,10 +493,13 @@ export class GraphqlService implements BackendService {
               direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
             });
 
-            graphqlSorters.push({
-              field: (column.sortCol.queryFieldSorter || column.sortCol.queryField || column.sortCol.field) + '',
-              direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
-            });
+            const fieldName = (column.sortCol.queryFieldSorter || column.sortCol.queryField || column.sortCol.field || '') + '';
+            if (fieldName) {
+              graphqlSorters.push({
+                field: fieldName,
+                direction: column.sortAsc ? SortDirection.ASC : SortDirection.DESC
+              });
+            }
           }
         }
       }

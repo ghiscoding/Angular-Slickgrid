@@ -6,7 +6,9 @@ import {
   Filters,
   GridOdataService,
   GridOption,
-  Statistic
+  Statistic,
+  SortDirection,
+  OperatorType
 } from './../modules/angular-slickgrid';
 
 const defaultPageSize = 20;
@@ -41,20 +43,22 @@ export class GridOdataComponent implements OnInit {
   processing = true;
   status = { text: 'processing...', class: 'alert alert-danger' };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'name', name: 'Name', field: 'name', sortable: true, type: FieldType.string,
+      {
+        id: 'name', name: 'Name', field: 'name', sortable: true, type: FieldType.string,
         filterable: true,
         filter: {
           model: Filters.compoundInput
         }
       },
-      { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
+      {
+        id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
         filter: {
           model: Filters.singleSelect,
-          collection: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
+          collection: [{ value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' }]
         }
       },
       { id: 'company', name: 'Company', field: 'company' }
@@ -79,6 +83,18 @@ export class GridOdataComponent implements OnInit {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
         pageSize: defaultPageSize,
         totalItems: 0
+      },
+      presets: {
+        // you can also type operator as string, e.g.: operator: 'EQ'
+        filters: [
+          { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
+        ],
+        sorters: [
+          // direction can be written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
+          { columnId: 'name', direction: 'asc' },
+          { columnId: 'gender', direction: SortDirection.DESC }
+        ],
+        pagination: { pageNumber: 2, pageSize: 20 }
       },
       backendServiceApi: {
         service: new GridOdataService(),
@@ -200,7 +216,7 @@ export class GridOdataComponent implements OnInit {
       }
 
       this.http.get(url).subscribe(data => {
-        const dataArray = <any[]> data;
+        const dataArray = <any[]>data;
 
         // Read the result field from the JSON response.
         const firstRow = skip;

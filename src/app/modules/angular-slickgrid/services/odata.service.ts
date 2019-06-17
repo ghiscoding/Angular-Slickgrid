@@ -1,5 +1,5 @@
-import './global-utilities';
 import { CaseType, OdataOption } from './../models/index';
+import { titleCase } from './utilities';
 
 export class OdataService {
   _columnFilters: any;
@@ -20,6 +20,9 @@ export class OdataService {
     * @return string OData query
     */
   buildQuery(): string {
+    if (!this._odataOptions) {
+      throw new Error('GridOdata Service requires certain options like "top" for it to work');
+    }
     this._odataOptions.filterQueue = [];
     const queryTmpArray = [];
 
@@ -45,7 +48,11 @@ export class OdataService {
         if (Array.isArray(this._odataOptions.filter)) {
           filterStr = this._odataOptions.filter.join(` ${this._odataOptions.filterBySeparator || 'and'} `);
         }
-        this._odataOptions.filterQueue.push(`(${filterStr})`);
+        if (!(typeof filterStr === 'string' && filterStr[0] === '(' && filterStr.slice(-1) === ')')) {
+          this._odataOptions.filterQueue.push(`(${filterStr})`);
+        } else {
+          this._odataOptions.filterQueue.push(filterStr);
+        }
       }
       // filterBy are passed manually by the user, however we will only add it if the column wasn't yet filtered
       if (!!this._odataOptions.filterBy && !!this._odataOptions.filterBy.fieldName && !this._columnFilters[this._odataOptions.filterBy.fieldName.toLowerCase()]) {
@@ -130,7 +137,7 @@ export class OdataService {
         }
         searchBy = tmpSearchTerms.join(' or ');
         searchBy = `$(${searchBy})`;
-      } else if (operator === 'NIN' || operator === 'NOTIN' || operator === 'NOT IN') {
+      } else if (operator === 'NIN' || operator === 'NOTIN' || operator === 'NOT IN' || operator === 'NOT_IN') {
         // example:: (Stage ne "Expired" and Stage ne "Renewal")
         for (let k = 0, lnk = fieldSearchTerms.length; k < lnk; k++) {
           tmpSearchTerms.push(`${fieldName} ne '${fieldSearchTerms[k]}'`);
@@ -141,7 +148,7 @@ export class OdataService {
     }
 
     // push to our temp array and also trim white spaces
-    tmpSearchByArray.push(String.trim(searchBy));
+    tmpSearchByArray.push(searchBy.trim());
 
     // add to the filter queue only if it doesn't exist in the queue
     const filter = (tmpSearchByArray.length > 0) ? tmpSearchByArray.join(' and ') : '';
@@ -169,10 +176,10 @@ export class OdataService {
         if (this._odataOptions.caseType === CaseType.pascalCase) {
           if (Array.isArray(sortBy)) {
             sortBy.forEach((field, index, inputArray) => {
-              inputArray[index] = String.titleCase(field);
+              inputArray[index] = titleCase(field);
             });
           } else {
-            sortBy = String.titleCase(options[property]);
+            sortBy = titleCase(options[property]);
           }
         }
         this._odataOptions.orderBy = sortBy;

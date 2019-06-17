@@ -82,6 +82,7 @@ export * from './keyCode.enum';
 export * from './multiColumnSort.interface';
 export * from './multipleSelectOption.interface';
 export * from './odataOption.interface';
+export * from './odataSortingOption.interface';
 export * from './onEventArgs.interface';
 export * from './operatorString';
 export * from './operatorType.enum';
