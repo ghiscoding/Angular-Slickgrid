@@ -22,7 +22,7 @@ import {
   OdataSortingOption,
   OperatorType
 } from './../models/index';
-import { OdataService } from './odata.service';
+import { OdataQueryBuilderService } from './odataQueryBuilder.service';
 
 const DEFAULT_ITEMS_PER_PAGE = 25;
 const DEFAULT_PAGE_SIZE = 20;
@@ -34,7 +34,7 @@ export class GridOdataService implements BackendService {
   private _currentSorters: CurrentSorter[] = [];
   private _columnDefinitions: Column[];
   private _grid: any;
-  private _odataService: OdataService;
+  private _odataService: OdataQueryBuilderService;
   options: OdataOption;
   pagination: Pagination | undefined;
   defaultOptions: OdataOption = {
@@ -59,7 +59,7 @@ export class GridOdataService implements BackendService {
   }
 
   constructor() {
-    this._odataService = new OdataService();
+    this._odataService = new OdataQueryBuilderService();
   }
 
   init(serviceOptions: OdataOption, pagination?: Pagination, grid?: any): void {
@@ -96,6 +96,11 @@ export class GridOdataService implements BackendService {
   clearSorters() {
     this._currentSorters = [];
     this.updateSorters([]);
+  }
+
+  updateOptions(serviceOptions?: OdataOption) {
+    this.options = { ...this.options, ...serviceOptions };
+    this._odataService.options = this.options;
   }
 
   removeColumnFilter(fieldName: string): void {
@@ -264,7 +269,7 @@ export class GridOdataService implements BackendService {
         const bypassOdataQuery = columnFilter.bypassBackendQuery || false;
 
         // no need to query if search value is empty
-        if (fieldName && searchValue === '' && searchTerms.length === 0) {
+        if (fieldName && searchValue === '' && searchTerms.length <= 1) {
           this.removeColumnFilter(fieldName);
           continue;
         }

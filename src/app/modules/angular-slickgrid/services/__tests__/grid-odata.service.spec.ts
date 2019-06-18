@@ -1,5 +1,4 @@
 import { CaseType } from './../../models/caseType';
-import { TranslateService } from '@ngx-translate/core';
 import { GridOdataService } from '../grid-odata.service';
 import {
   Column,
@@ -127,7 +126,7 @@ describe('GridOdataService', () => {
       expect(query).toBe(expectation);
     });
 
-    it('should be able to provide "orderBy" and see the query string include the sorting', () => {
+    it('should be able to provide "orderBy" through the "init" and see the query string include the sorting', () => {
       const expectation = `$top=20&$skip=40&$orderby=Name desc`;
       const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
 
@@ -138,12 +137,36 @@ describe('GridOdataService', () => {
       expect(query).toBe(expectation);
     });
 
-    it('should be able to provide "filter" and see the query string include the sorting', () => {
+    it('should be able to provide "orderBy" through the "updateOptions" and see the query string include the sorting', () => {
+      const expectation = `$top=20&$skip=40&$orderby=Name desc`;
+      const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+
+      service.init({ columnDefinitions: columns }, paginationOptions, gridStub);
+      service.updatePagination(3, 20);
+      service.updateOptions({ orderBy: 'Name desc' });
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should be able to provide "filter" through the "init" and see the query string include the filter', () => {
       const expectation = `$top=20&$skip=40&$filter=(IsActive eq true)`;
       const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
 
-      service.init({ columnDefinitions: columns, filter: `IsActive eq true` }, paginationOptions, gridStub);
+      service.init({ columnDefinitions: columns, filterBy: `IsActive eq true` }, paginationOptions, gridStub);
       service.updatePagination(3, 20);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should be able to provide "filter" through the "updateOptions" and see the query string include the filter', () => {
+      const expectation = `$top=20&$skip=40&$filter=(IsActive eq true)`;
+      const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+
+      service.init({ columnDefinitions: columns }, paginationOptions, gridStub);
+      service.updatePagination(3, 20);
+      service.updateOptions({ filterBy: `IsActive eq true` });
       const query = service.buildQuery();
 
       expect(query).toBe(expectation);
@@ -571,11 +594,25 @@ describe('GridOdataService', () => {
       expect(query).toBe(expectation);
     });
 
-    it('should return a query with the new filter search value of empty string when searchTerms has an undefined value', () => {
-      const expectation = `$top=10&$filter=(Gender eq '')`;
+    it('should return a query without any filters when the "searchTerms" has an undefined value', () => {
+      const expectation = `$top=10`;
       const mockColumn = { id: 'gender', field: 'gender' } as Column;
       const mockColumnFilters = {
         gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: [undefined], operator: 'EQ' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query without any filters when the "searchTerms" has an empty string', () => {
+      const expectation = `$top=10`;
+      const mockColumn = { id: 'gender', field: 'gender' } as Column;
+      const mockColumnFilters = {
+        gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: [''], operator: 'EQ' },
       } as ColumnFilters;
 
       service.init(serviceOptions, paginationOptions, gridStub);

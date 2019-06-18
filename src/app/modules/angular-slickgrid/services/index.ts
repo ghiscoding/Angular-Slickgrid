@@ -11,7 +11,7 @@ export * from './gridEvent.service';
 export * from './grid.service';
 export * from './gridState.service';
 export * from './groupingAndColspan.service';
-export * from './odata.service';
+export * from './odataQueryBuilder.service';
 export * from './resizer.service';
 export * from './shared.service';
 export * from './sort.service';
