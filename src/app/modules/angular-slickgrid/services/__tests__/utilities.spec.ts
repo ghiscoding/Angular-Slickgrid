@@ -671,9 +671,26 @@ describe('Service/Utilies', () => {
       expect(output3).toBe(OperatorType.notIn);
     });
 
+    it('should return OperatoryType associated to "not_contains", "Not_Contains", "notContains"', () => {
+      const output1 = mapOperatorType('not_contains');
+      const output2 = mapOperatorType('Not_Contains');
+      const output3 = mapOperatorType('notContains');
+      const output4 = mapOperatorType('NotContains');
+      const output5 = mapOperatorType('NOT_CONTAINS');
+
+      expect(output1).toBe(OperatorType.notContains);
+      expect(output2).toBe(OperatorType.notContains);
+      expect(output3).toBe(OperatorType.notContains);
+      expect(output4).toBe(OperatorType.notContains);
+      expect(output5).toBe(OperatorType.notContains);
+    });
+
     it('should return default OperatoryType associated to contains', () => {
-      const output = mapOperatorType('');
-      expect(output).toBe(OperatorType.contains);
+      const output1 = mapOperatorType('');
+      const output2 = mapOperatorType('Contains');
+
+      expect(output1).toBe(OperatorType.contains);
+      expect(output2).toBe(OperatorType.contains);
     });
   });
 

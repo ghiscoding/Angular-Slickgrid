@@ -135,7 +135,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' }
         ],
         sorters: [
-          // direction can typed as 'asc' (uppercase or lowercase) and/or use the SortDirection type
+          // direction can written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
           { columnId: 'name', direction: 'asc' },
           { columnId: 'company', direction: SortDirection.DESC }
         ],

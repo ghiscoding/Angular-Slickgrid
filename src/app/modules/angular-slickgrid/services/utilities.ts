@@ -473,6 +473,14 @@ export function mapOperatorType(operator: string): OperatorType {
     case 'NOT_IN':
       map = OperatorType.notIn;
       break;
+    case 'not_contains':
+    case 'Not_Contains':
+    case 'notContains':
+    case 'NotContains':
+    case 'NOT_CONTAINS':
+      map = OperatorType.notContains;
+      break;
+    case 'Contains':
     default:
       map = OperatorType.contains;
       break;
