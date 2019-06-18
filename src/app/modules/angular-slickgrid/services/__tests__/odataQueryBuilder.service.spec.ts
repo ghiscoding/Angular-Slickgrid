@@ -1,52 +1,10 @@
 import { CaseType } from '../../models/caseType';
 import { OdataQueryBuilderService } from '../odataQueryBuilder.service';
-import {
-  Column,
-  ColumnFilter,
-  ColumnSort,
-  CurrentFilter,
-  FilterChangedArgs,
-  GridOption,
-  MultiColumnSort,
-  Pagination,
-  ColumnFilters,
-  OperatorType,
-  FieldType,
-  CurrentSorter,
-  OdataOption,
-} from '../../models';
 
-const DEFAULT_ITEMS_PER_PAGE = 25;
-const DEFAULT_PAGE_SIZE = 20;
-
-const gridOptionMock = {
-  enablePagination: true,
-  backendServiceApi: {
-    service: undefined,
-    preProcess: jest.fn(),
-    process: jest.fn(),
-    postProcess: jest.fn(),
-  }
-} as GridOption;
-
-const gridStub = {
-  autosizeColumns: jest.fn(),
-  getColumnIndex: jest.fn(),
-  getScrollbarDimensions: jest.fn(),
-  getOptions: () => gridOptionMock,
-  getColumns: jest.fn(),
-  setColumns: jest.fn(),
-  registerPlugin: jest.fn(),
-  setSelectedRows: jest.fn(),
-  setSortColumns: jest.fn(),
-};
-
-describe('OdataService', () => {
-  let mockColumns: Column[];
+describe('OdataQueryBuilderService', () => {
   let service: OdataQueryBuilderService;
 
   beforeEach(() => {
-    mockColumns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
     service = new OdataQueryBuilderService();
   });
 

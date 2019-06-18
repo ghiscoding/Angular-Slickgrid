@@ -556,7 +556,7 @@ export class GraphqlService implements BackendService {
    */
   private castFilterToColumnFilters(columnFilters: ColumnFilters | CurrentFilter[]): CurrentFilter[] {
     if (!Array.isArray(columnFilters)) {
-      return null;
+      return [];
     }
 
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)

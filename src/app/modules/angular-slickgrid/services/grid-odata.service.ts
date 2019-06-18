@@ -75,7 +75,7 @@ export class GridOdataService implements BackendService {
     // save current pagination as Page 1 and page size as "top"
     this._currentPagination = {
       pageNumber: 1,
-      pageSize: this._odataService.options.top || this.defaultOptions.top
+      pageSize: this._odataService.options.top || this.defaultOptions.top || DEFAULT_PAGE_SIZE
     };
 
     if (grid && grid.getColumns) {
@@ -490,7 +490,7 @@ export class GridOdataService implements BackendService {
    */
   private castFilterToColumnFilters(columnFilters: ColumnFilters | CurrentFilter[]): CurrentFilter[] {
     if (!Array.isArray(columnFilters)) {
-      return null;
+      return [];
     }
 
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
