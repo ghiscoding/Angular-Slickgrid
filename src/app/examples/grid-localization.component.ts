@@ -12,6 +12,14 @@ import {
   GridOption
 } from './../modules/angular-slickgrid';
 
+// create a custom translate Formatter (typically you would move that a separate file, for separation of concerns)
+const taskTranslateFormatter: Formatter = (row: number, cell: number, value: any, columnDef: any, dataContext: any, grid: any) => {
+  const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
+  const translate = gridOptions.i18n;
+
+  return translate.instant('TASK_X', { x: value });
+};
+
 @Component({
   templateUrl: './grid-localization.component.html'
 })
@@ -57,7 +65,7 @@ export class GridLocalizationComponent implements OnInit {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'id', headerKey: 'TITLE', formatter: this.taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true } },
+      { id: 'title', name: 'Title', field: 'id', headerKey: 'TITLE', formatter: taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true } },
       { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80 },
       {
         id: 'duration', name: 'Duration (days)', field: 'duration', headerKey: 'DURATION', sortable: true,
@@ -151,7 +159,7 @@ export class GridLocalizationComponent implements OnInit {
   }
 
   dynamicallyAddTitleHeader() {
-    const newCol = { id: `title${this.duplicateTitleHeaderCount++}`, field: 'id', headerKey: 'TITLE', formatter: this.taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true } };
+    const newCol = { id: `title${this.duplicateTitleHeaderCount++}`, field: 'id', headerKey: 'TITLE', formatter: taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true } };
     this.columnDefinitions.push(newCol);
     this.columnDefinitions = this.columnDefinitions.slice();
   }
@@ -167,10 +175,5 @@ export class GridLocalizationComponent implements OnInit {
   switchLanguage() {
     this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
     this.translate.use(this.selectedLanguage);
-  }
-
-  // create a custom translate Formatter
-  taskTranslateFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
-    return this.translate.instant('TASK_X', { x: value });
   }
 }
