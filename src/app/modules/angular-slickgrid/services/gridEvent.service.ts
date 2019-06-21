@@ -1,10 +1,18 @@
-import { OnEventArgs, CellArgs, GridOption } from './../models/index';
+import { OnEventArgs, CellArgs, SlickEventHandler } from './../models/index';
 
 // using external non-typed js libraries
 declare var Slick: any;
 
 export class GridEventService {
-  private _eventHandler: any = new Slick.EventHandler();
+  private _eventHandler: SlickEventHandler;
+
+  get eventHandler(): SlickEventHandler {
+    return this._eventHandler;
+  }
+
+  constructor() {
+    this._eventHandler = new Slick.EventHandler();
+  }
 
   /* OnCellChange Event */
   attachOnCellChange(grid: any, dataView: any) {
@@ -32,18 +40,19 @@ export class GridEventService {
       }
     });
   }
+
   /* OnClick Event */
   attachOnClick(grid: any, dataView: any) {
     this._eventHandler.subscribe(grid.onClick, (e: Event, args: CellArgs) => {
       if (!e || !args || !grid || args.cell === undefined || !grid.getColumns || !grid.getDataItem) {
         return;
       }
-      const column = grid.getColumns()[args.cell];
-      const gridOptions = grid.getOptions();
+      const column = grid && grid.getColumns && grid.getColumns()[args.cell];
+      const gridOptions = grid && grid.getOptions && grid.getOptions() || {};
 
       // only when using autoCommitEdit, we will make the cell active (in focus) when clicked
       // setting the cell as active as a side effect and if autoCommitEdit is set to false then the Editors won't save correctly
-      if (gridOptions && gridOptions.enableCellNavigation && !gridOptions.editable || (gridOptions.editable && gridOptions.autoCommitEdit)) {
+      if (gridOptions.enableCellNavigation && (!gridOptions.editable || (gridOptions.editable && gridOptions.autoCommitEdit))) {
         grid.setActiveCell(args.row, args.cell);
       }
 
