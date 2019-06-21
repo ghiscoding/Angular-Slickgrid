@@ -76,6 +76,7 @@ describe('GridStateService', () => {
 
   describe('init method', () => {
     let slickgridEvent;
+
     beforeEach(() => {
       slickgridEvent = new Slick.Event();
     });

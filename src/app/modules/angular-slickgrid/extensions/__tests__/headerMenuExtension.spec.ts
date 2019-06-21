@@ -15,7 +15,7 @@ const filterServiceStub = {
 
 const sortServiceStub = {
   clearSorting: jest.fn(),
-  getPreviousColumnSorts: jest.fn(),
+  getCurrentColumnSorts: jest.fn(),
   onBackendSortChanged: jest.fn(),
   onLocalSortChanged: jest.fn(),
 } as unknown as SortService;
@@ -367,7 +367,7 @@ describe('headerMenuExtension', () => {
 
     it('should trigger the command "clear-sort" and expect Sort Service to call "onBackendSortChanged" being called without the sorted column', () => {
       const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
-      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[1]]).mockReturnValueOnce(mockSortedCols).mockRejectedValueOnce([mockSortedCols[1]]);
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getCurrentColumnSorts').mockReturnValue([mockSortedCols[1]]).mockReturnValueOnce(mockSortedCols).mockRejectedValueOnce([mockSortedCols[1]]);
       const backendSortSpy = jest.spyOn(sortServiceStub, 'onBackendSortChanged');
       const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
       const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
@@ -385,7 +385,7 @@ describe('headerMenuExtension', () => {
       const copyGridOptionsMock = { ...gridOptionsMock, backendServiceApi: undefined } as unknown as GridOption;
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
-      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[1]]).mockReturnValueOnce(mockSortedCols).mockRejectedValueOnce([mockSortedCols[1]]);
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getCurrentColumnSorts').mockReturnValue([mockSortedCols[1]]).mockReturnValueOnce(mockSortedCols).mockRejectedValueOnce([mockSortedCols[1]]);
       const localSortSpy = jest.spyOn(sortServiceStub, 'onLocalSortChanged');
       const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
       const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
@@ -405,7 +405,7 @@ describe('headerMenuExtension', () => {
 
       jest.spyOn(SharedService.prototype, 'dataView', 'get').mockReturnValue(undefined);
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
-      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[1]]).mockReturnValueOnce(mockSortedCols).mockRejectedValueOnce([mockSortedCols[1]]);
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getCurrentColumnSorts').mockReturnValue([mockSortedCols[1]]).mockReturnValueOnce(mockSortedCols).mockRejectedValueOnce([mockSortedCols[1]]);
       const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
       const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
       const gridSortSpy = jest.spyOn(gridStub.onSort, 'notify');
@@ -423,7 +423,7 @@ describe('headerMenuExtension', () => {
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
       const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
       const mockSortedOuput: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: true, sortCol: { id: 'field2', field: 'field2' } }];
-      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[0]]);
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getCurrentColumnSorts').mockReturnValue([mockSortedCols[0]]);
       const backendSortSpy = jest.spyOn(sortServiceStub, 'onBackendSortChanged');
       const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
       const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
@@ -441,7 +441,7 @@ describe('headerMenuExtension', () => {
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
       const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: true, sortCol: { id: 'field2', field: 'field2' } }];
       const mockSortedOuput: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
-      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[0]]);
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getCurrentColumnSorts').mockReturnValue([mockSortedCols[0]]);
       const backendSortSpy = jest.spyOn(sortServiceStub, 'onBackendSortChanged');
       const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
       const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
@@ -461,7 +461,7 @@ describe('headerMenuExtension', () => {
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: true, sortCol: { id: 'field2', field: 'field2' } }];
       const mockSortedOuput: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
-      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[0]]);
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getCurrentColumnSorts').mockReturnValue([mockSortedCols[0]]);
       const localSortSpy = jest.spyOn(sortServiceStub, 'onLocalSortChanged');
       const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
       const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
@@ -481,7 +481,7 @@ describe('headerMenuExtension', () => {
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       const mockSortedCols: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: true, sortCol: { id: 'field2', field: 'field2' } }];
       const mockSortedOuput: ColumnSort[] = [{ sortAsc: true, sortCol: { id: 'field1', field: 'field1' } }, { sortAsc: false, sortCol: { id: 'field2', field: 'field2' } }];
-      const previousSortSpy = jest.spyOn(sortServiceStub, 'getPreviousColumnSorts').mockReturnValue([mockSortedCols[0]]);
+      const previousSortSpy = jest.spyOn(sortServiceStub, 'getCurrentColumnSorts').mockReturnValue([mockSortedCols[0]]);
       const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onCommand');
       const setSortSpy = jest.spyOn(SharedService.prototype.grid, 'setSortColumns');
       const gridSortSpy = jest.spyOn(gridStub.onSort, 'notify');
