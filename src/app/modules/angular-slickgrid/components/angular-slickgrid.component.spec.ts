@@ -46,9 +46,9 @@ Object.defineProperty(sharedServiceStub, 'dataView', {
 });
 
 const sortServiceStub = {
-  attachLocalOnSort: jest.fn(),
+  bindLocalOnSort: jest.fn(),
   dispose: jest.fn(),
-  loadLocalPresets: jest.fn(),
+  loadLocalGridPresets: jest.fn(),
   onSortChanged: new Subject<CurrentSorter[]>(),
   onSortCleared: new Subject<boolean>()
 };
@@ -148,9 +148,9 @@ describe('App Component', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should call the "executeAfterDataviewCreated" and "loadLocalPresets" methods and Sorter Presets are provided in the Grid Options', () => {
+    it('should call the "executeAfterDataviewCreated" and "loadLocalGridPresets" methods and Sorter Presets are provided in the Grid Options', () => {
       const compSpy = jest.spyOn(component, 'executeAfterDataviewCreated');
-      const sortSpy = jest.spyOn(sortServiceStub, 'loadLocalPresets');
+      const sortSpy = jest.spyOn(sortServiceStub, 'loadLocalGridPresets');
 
       component.gridOptions = { presets: { sorters: [{ columnId: 'field1', direction: 'DESC' }] } } as GridOption;
       fixture.detectChanges();

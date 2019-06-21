@@ -28,7 +28,7 @@ export function executeBackendProcessesCallback(startTime: Date, processResult: 
 }
 
 /** On a backend service api error, we will run the "onError" if there is 1 provided or just throw back the error when nothing is provided */
-export function  onBackendError(e: any, backendApi: BackendServiceApi) {
+export function onBackendError(e: any, backendApi: BackendServiceApi) {
   if (backendApi && backendApi.onError) {
     backendApi.onError(e);
   } else {

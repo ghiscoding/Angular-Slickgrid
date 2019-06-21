@@ -430,7 +430,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // attach external sorting (backend) when available or default onSort (dataView)
     if (gridOptions.enableSorting && !this.customDataView) {
-      gridOptions.backendServiceApi ? this.sortService.attachBackendOnSort(grid, dataView) : this.sortService.attachLocalOnSort(grid, dataView);
+      gridOptions.backendServiceApi ? this.sortService.bindBackendOnSort(grid, dataView) : this.sortService.bindLocalOnSort(grid, dataView);
     }
 
     // attach external filter (backend) when available or default onFilter (dataView)
@@ -599,7 +599,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // if user entered some Sort "presets", we need to reflect them all in the DOM
     if (gridOptions.enableSorting) {
       if (gridOptions.presets && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
-        this.sortService.loadLocalPresets(grid, dataView);
+        this.sortService.loadLocalGridPresets(grid, dataView);
       }
     }
   }
