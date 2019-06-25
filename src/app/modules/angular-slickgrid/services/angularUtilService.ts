@@ -1,5 +1,5 @@
 import { AngularComponentOutput } from './../models/angularComponentOutput.interface';
-import { ApplicationRef, ComponentFactoryResolver, ComponentRef, EmbeddedViewRef, Injectable, Injector } from '@angular/core';
+import { ApplicationRef, ComponentFactoryResolver, EmbeddedViewRef, Injectable, Injector } from '@angular/core';
 
 @Injectable()
 export class AngularUtilService {
