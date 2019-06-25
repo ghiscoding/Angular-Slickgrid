@@ -4,8 +4,20 @@ import { compareObjects } from './filterUtilities';
 export const objectFilterCondition: FilterCondition = (options: FilterConditionOption) => {
   const searchTerm = (Array.isArray(options.searchTerms) && options.searchTerms[0] || '');
 
+  // @ts-ignore
   if (!searchTerm && (!options.operator || options.operator === '')) {
     return true;
   }
-  return compareObjects(options.cellValue, searchTerm, options.dataKey);
+
+  switch (options.operator) {
+    case '!=':
+    case '<>':
+    case 'NE':
+      return !compareObjects(options.cellValue, searchTerm, options.dataKey);
+    case '=':
+    case '==':
+    case 'EQ':
+    default:
+      return compareObjects(options.cellValue, searchTerm, options.dataKey);
+  }
 };
