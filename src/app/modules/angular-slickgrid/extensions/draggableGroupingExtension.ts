@@ -30,7 +30,7 @@ export class DraggableGroupingExtension implements Extension {
   }
 
   /**
-   * Attach/Create different plugins before the Grid creation.
+   * Bind/Create different plugins before the Grid creation.
    * For example the multi-select have to be added to the column definition before the grid is created to work properly
    */
   create(gridOptions: GridOption) {

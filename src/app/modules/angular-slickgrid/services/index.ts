@@ -1,4 +1,4 @@
-export * from './angularUtilService';
+export * from './angularUtil.service';
 export * from './backend-utilities';
 export * from './collection.service';
 export * from './export.service';

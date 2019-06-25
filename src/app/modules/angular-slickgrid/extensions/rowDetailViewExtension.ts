@@ -1,7 +1,7 @@
 import { ApplicationRef, ComponentRef, Injectable, Type, ViewContainerRef } from '@angular/core';
 import { Column, Extension, ExtensionName, GridOption, SlickEventHandler } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
-import { AngularUtilService } from '../services/angularUtilService';
+import { AngularUtilService } from '../services/angularUtil.service';
 import { FilterService } from '../services/filter.service';
 import { SharedService } from '../services/shared.service';
 import { addToArrayWhenNotExists, castToPromise, unsubscribeAllObservables } from '../services/utilities';

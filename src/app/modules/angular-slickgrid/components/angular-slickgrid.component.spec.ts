@@ -1,4 +1,4 @@
-import { AngularUtilService } from './../services/angularUtilService';
+import { AngularUtilService } from '../services/angularUtil.service';
 import { SlickgridConfig } from './../slickgrid-config';
 import { FilterFactory } from './../filters/filterFactory';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';

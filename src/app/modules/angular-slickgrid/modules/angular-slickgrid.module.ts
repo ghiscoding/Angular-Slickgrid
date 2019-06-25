@@ -1,7 +1,7 @@
-import { AngularUtilService } from './../services/angularUtilService';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { AngularUtilService } from '../services/angularUtil.service';
 import { AngularSlickgridComponent } from './../components/angular-slickgrid.component';
 import { CollectionService } from './../services/collection.service';
 import { FilterFactory } from '../filters/filterFactory';

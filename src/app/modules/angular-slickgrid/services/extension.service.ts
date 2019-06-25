@@ -103,7 +103,7 @@ export class ExtensionService {
     this.sharedService.grid.autosizeColumns();
   }
 
-  /** Attach/Create different Controls or Plugins after the Grid is created */
+  /** Bind/Create different Controls or Plugins after the Grid is created */
   bindDifferentExtensions() {
     if (this.sharedService && this.sharedService.gridOptions) {
       // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
@@ -229,7 +229,7 @@ export class ExtensionService {
   }
 
   /**
-   * Attach/Create certain plugins before the Grid creation, else they might behave oddly.
+   * Bind/Create certain plugins before the Grid creation, else they might behave oddly.
    * Mostly because the column definitions might change after the grid creation
    * @param columnDefinitions
    * @param options

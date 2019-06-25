@@ -171,7 +171,7 @@ export class CellExternalCopyManagerExtension implements Extension {
     };
   }
 
-  /** Attach an undo shortcut key hook that will redo/undo the copy buffer using Ctrl+(Shift)+Z keyboard events */
+  /** Hook an undo shortcut key hook that will redo/undo the copy buffer using Ctrl+(Shift)+Z keyboard events */
   private hookUndoShortcutKey() {
     document.addEventListener('keydown', (e: KeyboardEvent) => {
       const keyCode = e.keyCode || e.code;
