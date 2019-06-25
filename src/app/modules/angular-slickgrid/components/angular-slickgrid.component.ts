@@ -480,8 +480,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
 
     // on cell click, mainly used with the columnDef.action callback
-    this.gridEventService.attachOnCellChange(grid, dataView);
-    this.gridEventService.attachOnClick(grid, dataView);
+    this.gridEventService.bindOnCellChange(grid, dataView);
+    this.gridEventService.bindOnClick(grid, dataView);
 
     if (dataView && grid) {
       this._eventHandler.subscribe(dataView.onRowCountChanged, (e: any, args: any) => {

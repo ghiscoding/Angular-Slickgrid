@@ -305,6 +305,25 @@ describe('GridStateService', () => {
   });
 
   describe('getCurrentFilters method', () => {
+    afterEach(() => {
+      gridStub.getOptions = () => gridOptionMock;
+    });
+
+    it('should return null when no BackendService is used and FilterService is missing the "getCurrentLocalFilters" method', () => {
+      gridStub.getOptions = undefined;
+      const output = service.getCurrentFilters();
+      expect(output).toBeNull();
+    });
+
+    it('should return null when no BackendService is used and FilterService is missing the "getCurrentLocalFilters" method', () => {
+      const gridSpy = jest.spyOn(gridStub, 'getOptions');
+
+      const output = service.getCurrentFilters();
+
+      expect(gridSpy).toHaveBeenCalled();
+      expect(output).toBeNull();
+    });
+
     it('should return null when no BackendService is used and FilterService is missing the "getCurrentLocalFilters" method', () => {
       const gridSpy = jest.spyOn(gridStub, 'getOptions');
 

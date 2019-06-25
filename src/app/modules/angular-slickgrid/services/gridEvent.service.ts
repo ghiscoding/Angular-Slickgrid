@@ -15,7 +15,7 @@ export class GridEventService {
   }
 
   /* OnCellChange Event */
-  attachOnCellChange(grid: any, dataView: any) {
+  bindOnCellChange(grid: any, dataView: any) {
     // subscribe to this Slickgrid event of onCellChange
     this._eventHandler.subscribe(grid.onCellChange, (e: Event, args: CellArgs) => {
       if (!e || !args || !grid || args.cell === undefined || !grid.getColumns || !grid.getDataItem) {
@@ -42,7 +42,7 @@ export class GridEventService {
   }
 
   /* OnClick Event */
-  attachOnClick(grid: any, dataView: any) {
+  bindOnClick(grid: any, dataView: any) {
     this._eventHandler.subscribe(grid.onClick, (e: Event, args: CellArgs) => {
       if (!e || !args || !grid || args.cell === undefined || !grid.getColumns || !grid.getDataItem) {
         return;
