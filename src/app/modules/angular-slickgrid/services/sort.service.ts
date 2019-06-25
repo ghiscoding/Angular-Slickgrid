@@ -28,6 +28,15 @@ export class SortService {
   onSortChanged = new Subject<CurrentSorter[]>();
   onSortCleared = new Subject<boolean>();
 
+  constructor() {
+    this._eventHandler = new Slick.EventHandler();
+  }
+
+  /** Getter of the SlickGrid Event Handler */
+  get eventHandler(): SlickEventHandler {
+    return this._eventHandler;
+  }
+
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
@@ -36,14 +45,6 @@ export class SortService {
   /** Getter for the Column Definitions pulled through the Grid Object */
   private get _columnDefinitions(): Column[] {
     return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
-  }
-
-  get eventHandler(): SlickEventHandler {
-    return this._eventHandler;
-  }
-
-  constructor() {
-    this._eventHandler = new Slick.EventHandler();
   }
 
   /**
@@ -264,11 +265,11 @@ export class SortService {
             if (customSortResult !== SortDirectionNumber.neutral) {
               return customSortResult;
             }
-          }
-
-          const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection, columnSortObj.sortCol);
-          if (sortResult !== SortDirectionNumber.neutral) {
-            return sortResult;
+          } else {
+            const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection, columnSortObj.sortCol);
+            if (sortResult !== SortDirectionNumber.neutral) {
+              return sortResult;
+            }
           }
         }
       }

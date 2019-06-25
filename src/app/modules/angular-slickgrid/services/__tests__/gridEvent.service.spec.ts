@@ -33,7 +33,7 @@ describe('GridEventService', () => {
     jest.clearAllMocks();
   });
 
-  describe('attachOnCellChange method', () => {
+  describe('bindOnCellChange method', () => {
     let mockColumn;
     let mockRowData;
 
@@ -45,7 +45,7 @@ describe('GridEventService', () => {
     it('should not do anything when no arguments are provided to the event', () => {
       const spyGetCols = jest.spyOn(gridStub, 'getColumns').mockReturnValue([mockColumn]);
 
-      service.attachOnCellChange(gridStub, dataViewStub);
+      service.bindOnCellChange(gridStub, dataViewStub);
       gridStub.onCellChange.notify(undefined, new Slick.EventData(), gridStub);
 
       expect(spyGetCols).not.toHaveBeenCalled();
@@ -54,7 +54,7 @@ describe('GridEventService', () => {
     it('should not do anything when "cell" property is missing', () => {
       const spyGetCols = jest.spyOn(gridStub, 'getColumns').mockReturnValue([mockColumn]);
 
-      service.attachOnCellChange(gridStub, dataViewStub);
+      service.bindOnCellChange(gridStub, dataViewStub);
       gridStub.onCellChange.notify({ cell: undefined, row: undefined }, new Slick.EventData(), gridStub);
 
       expect(spyGetCols).not.toHaveBeenCalled();
@@ -65,7 +65,7 @@ describe('GridEventService', () => {
       const spyGetData = jest.spyOn(gridStub, 'getDataItem').mockReturnValue(mockRowData);
       const spyOnChange = jest.spyOn(mockColumn, 'onCellChange');
 
-      service.attachOnCellChange(gridStub, dataViewStub);
+      service.bindOnCellChange(gridStub, dataViewStub);
       gridStub.onCellChange.notify({ cell: 0, row: 0 }, new Slick.EventData(), gridStub);
 
       expect(spyGetCols).toHaveBeenCalled();
@@ -81,7 +81,7 @@ describe('GridEventService', () => {
     });
   });
 
-  describe('attachOnClick method', () => {
+  describe('bindOnClick method', () => {
     let mockColumn;
     let mockRowData;
 
@@ -93,7 +93,7 @@ describe('GridEventService', () => {
     it('should not do anything when no arguments are provided to the event', () => {
       const spyGetCols = jest.spyOn(gridStub, 'getColumns').mockReturnValue([mockColumn]);
 
-      service.attachOnClick(gridStub, dataViewStub);
+      service.bindOnClick(gridStub, dataViewStub);
       gridStub.onClick.notify(undefined, new Slick.EventData(), gridStub);
 
       expect(spyGetCols).not.toHaveBeenCalled();
@@ -102,7 +102,7 @@ describe('GridEventService', () => {
     it('should not do anything when "cell" property is missing', () => {
       const spyGetCols = jest.spyOn(gridStub, 'getColumns').mockReturnValue([mockColumn]);
 
-      service.attachOnClick(gridStub, dataViewStub);
+      service.bindOnClick(gridStub, dataViewStub);
       gridStub.onClick.notify({ cell: undefined, row: undefined }, new Slick.EventData(), gridStub);
 
       expect(spyGetCols).not.toHaveBeenCalled();
@@ -114,7 +114,7 @@ describe('GridEventService', () => {
       const spyGetData = jest.spyOn(gridStub, 'getDataItem').mockReturnValue(mockRowData);
       const spyOnChange = jest.spyOn(mockColumn, 'onCellClick');
 
-      service.attachOnClick(gridStub, dataViewStub);
+      service.bindOnClick(gridStub, dataViewStub);
       gridStub.onClick.notify({ cell: 0, row: 0 }, new Slick.EventData(), gridStub);
 
       expect(spyGetCols).toHaveBeenCalled();
@@ -137,7 +137,7 @@ describe('GridEventService', () => {
       const spyGetData = jest.spyOn(gridStub, 'getDataItem').mockReturnValue(mockRowData);
       const spyOnChange = jest.spyOn(mockColumn, 'onCellClick');
 
-      service.attachOnClick(gridStub, dataViewStub);
+      service.bindOnClick(gridStub, dataViewStub);
       gridStub.onClick.notify({ cell: 0, row: 0 }, new Slick.EventData(), gridStub);
 
       expect(spyActive).toHaveBeenCalled();
@@ -161,7 +161,7 @@ describe('GridEventService', () => {
       const spyGetData = jest.spyOn(gridStub, 'getDataItem').mockReturnValue(mockRowData);
       const spyOnChange = jest.spyOn(mockColumn, 'onCellClick');
 
-      service.attachOnClick(gridStub, dataViewStub);
+      service.bindOnClick(gridStub, dataViewStub);
       gridStub.onClick.notify({ cell: 0, row: 0 }, new Slick.EventData(), gridStub);
 
       expect(spyActive).toHaveBeenCalled();
