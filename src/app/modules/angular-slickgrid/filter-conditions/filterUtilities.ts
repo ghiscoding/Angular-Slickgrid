@@ -1,3 +1,5 @@
+import { OperatorString } from '../models';
+
 /**
  * Compare 2 objects,
  * we will loop through all properties of the object to compare the entire content of both objects
@@ -13,15 +15,9 @@ export const compareObjects = (o1: any, o2: any, compareKey?: string) => {
   }
 
   // loop through all object properties to compare the full content of the object
+  // we'll return false as soon as a difference is detected
   for (const p in o1) {
     if (o1.hasOwnProperty(p)) {
-      if (o1[p] !== o2[p]) {
-        return false;
-      }
-    }
-  }
-  for (const p in o2) {
-    if (o2.hasOwnProperty(p)) {
       if (o1[p] !== o2[p]) {
         return false;
       }
@@ -30,7 +26,7 @@ export const compareObjects = (o1: any, o2: any, compareKey?: string) => {
   return true;
 };
 
-export const testFilterCondition = (operator: string, value1: any, value2: any): boolean => {
+export const testFilterCondition = (operator: OperatorString, value1: any, value2: any): boolean => {
   switch (operator) {
     case '<':
     case 'LT': return (value1 < value2);
@@ -57,10 +53,10 @@ export const testFilterCondition = (operator: string, value1: any, value2: any):
       return false;
     case 'NIN_CONTAINS':
     case 'NOT_IN_CONTAINS':
-    if (value2 && Array.isArray(value2) && value2.findIndex) {
-      return !((value2.findIndex((val) => value1.indexOf(val) > -1)) > -1);
-    }
-    return false;
-}
-return true;
+      if (value2 && Array.isArray(value2) && value2.findIndex) {
+        return !((value2.findIndex((val) => value1.indexOf(val) > -1)) > -1);
+      }
+      return false;
+  }
+  return true;
 };
