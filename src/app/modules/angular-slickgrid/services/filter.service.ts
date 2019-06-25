@@ -17,6 +17,7 @@ import {
   SearchTerm,
   SlickEvent,
   OperatorString,
+  SlickEventHandler,
 } from './../models/index';
 import { executeBackendProcessesCallback, onBackendError } from './backend-utilities';
 import { getDescendantProperty } from './utilities';
@@ -36,19 +37,31 @@ const DEFAULT_FILTER_TYPING_DEBOUNCE = 500;
 
 @Injectable()
 export class FilterService {
-  private _eventHandler = new Slick.EventHandler();
+  private _eventHandler: SlickEventHandler;
   private _isFilterFirstRender = true;
   private _firstColumnIdRendered = '';
-  private _slickSubscriber: SlickEvent;
   private _filters: any[] = [];
   private _columnFilters: ColumnFilters = {};
   private _dataView: any;
   private _grid: any;
-  private _onFilterChangedOptions: any;
+  private _onSearchChange: SlickEvent;
   onFilterChanged = new Subject<CurrentFilter[]>();
   onFilterCleared = new Subject<boolean>();
 
-  constructor(private filterFactory: FilterFactory) { }
+  constructor(private filterFactory: FilterFactory) {
+    this._eventHandler = new Slick.EventHandler();
+    this._onSearchChange = new Slick.Event();
+  }
+
+  /** Getter of the SlickGrid Event Handler */
+  get eventHandler(): SlickEventHandler {
+    return this._eventHandler;
+  }
+
+  /** Getter of the SlickGrid Event Handler */
+  get onSearchChange(): SlickEvent {
+    return this._onSearchChange;
+  }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get _gridOptions(): GridOption {
@@ -64,21 +77,51 @@ export class FilterService {
     this._grid = grid;
   }
 
+  dispose() {
+    this.disposeColumnFilters();
+
+    // unsubscribe all SlickGrid events
+    if (this._eventHandler && this._eventHandler.unsubscribeAll) {
+      this._eventHandler.unsubscribeAll();
+    }
+  }
+
   /**
-   * Attach a backend filter hook to the grid
+   * Dispose of the filters, since it's a singleton, we don't want to affect other grids with same columns
+   */
+  disposeColumnFilters() {
+    // we need to loop through all columnFilters and delete them 1 by 1
+    // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
+    if (typeof this._columnFilters === 'object') {
+      for (const columnId in this._columnFilters) {
+        if (columnId && this._columnFilters[columnId]) {
+          delete this._columnFilters[columnId];
+        }
+      }
+    }
+
+    // also destroy each Filter instances
+    if (Array.isArray(this._filters)) {
+      this._filters.forEach((filter) => {
+        if (filter && filter.destroy) {
+          filter.destroy(true);
+        }
+      });
+    }
+  }
+
+  /**
+   * Bind a backend filter hook to the grid
    * @param grid SlickGrid Grid object
    */
-  attachBackendOnFilter(grid: any, dataView: any) {
+  bindBackendOnFilter(grid: any, dataView: any) {
     this._dataView = dataView;
     this._filters = [];
-    this._slickSubscriber = new Slick.Event();
-
-    // subscribe to the SlickGrid event and call the backend execution
-    this._slickSubscriber.subscribe(this.onBackendFilterChange.bind(this));
 
     // subscribe to SlickGrid onHeaderRowCellRendered event to create filter template
     this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: KeyboardEvent, args: any) => {
-      // firstColumnIdRendered is null at first, so if it changes to being filled and equal then we know it was already rendered
+      // firstColumnIdRendered is null at first, so if it changes to being filled and equal, then we would know that it was already rendered
+      // this is to avoid rendering the filter twice, rendering it again also clears the filter which has unwanted side effect
       if (args.column.id === this._firstColumnIdRendered) {
         this._isFilterFirstRender = false;
       }
@@ -87,82 +130,24 @@ export class FilterService {
         this._firstColumnIdRendered = args.column.id;
       }
     });
-  }
 
-  onBackendFilterChange(event: KeyboardEvent, args: any) {
-    if (!args || !args.grid) {
-      throw new Error('Something went wrong when trying to attach the "attachBackendOnFilterSubscribe(event, args)" function, it seems that "args" is not populated correctly');
-    }
-    const backendApi = this._gridOptions.backendServiceApi;
-    if (!backendApi || !backendApi.process || !backendApi.service) {
-      throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
-    }
-    try {
-      // keep start time & end timestamps & return it after process execution
-      const startTime = new Date();
-
-      // run a preProcess callback if defined
-      if (backendApi.preProcess) {
-        backendApi.preProcess();
-      }
-
-      // only add a delay when user is typing, on select dropdown filter (or "Clear Filter") it will execute right away
-      let debounceTypingDelay = 0;
-      const isTriggeredByClearFilter = args && args.clearFilterTriggered; // was it trigger by a "Clear Filter" command?
-
-      if (!isTriggeredByClearFilter && event && event.keyCode !== KeyCode.ENTER && (event.type === 'input' || event.type === 'keyup' || event.type === 'keydown')) {
-        debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
-      }
-
-      // query backend, except when it's called by a ClearFilters then we won't
-      if (args && args.shouldTriggerQuery) {
-        // call the service to get a query back
-        if (debounceTypingDelay > 0) {
-          clearTimeout(timer);
-          timer = setTimeout(() => this.executeBackendCallback(event, args, startTime, backendApi), debounceTypingDelay);
-        } else {
-          this.executeBackendCallback(event, args, startTime, backendApi);
-        }
-      }
-    } catch (error) {
-      onBackendError(error, backendApi);
-    }
-  }
-
-  async executeBackendCallback(event: KeyboardEvent, args: any, startTime: Date, backendApi: BackendServiceApi) {
-    const query = await backendApi.service.processOnFilterChanged(event, args);
-
-    // emit an onFilterChanged event when it's not called by a clear filter
-    if (args && !args.clearFilterTriggered) {
-      this.emitFilterChanged(EmitterType.remote);
-    }
-
-    // the processes can be Observables (like HttpClient) or Promises
-    const process = backendApi.process(query);
-    if (process instanceof Promise && process.then) {
-      process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions));
-    } else if (isObservable(process)) {
-      process.subscribe(
-        (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions),
-        (error: any) => onBackendError(error, backendApi)
-      );
-    }
+    // subscribe to the SlickGrid event and call the backend execution
+    this._eventHandler.subscribe(this._onSearchChange, this.onBackendFilterChange.bind(this));
   }
 
   /**
-   * Attach a local filter hook to the grid
+   * Bind a local filter hook to the grid
    * @param grid SlickGrid Grid object
    * @param dataView
    */
-  attachLocalOnFilter(grid: any, dataView: any) {
+  bindLocalOnFilter(grid: any, dataView: any) {
     this._filters = [];
     this._dataView = dataView;
-    this._slickSubscriber = new Slick.Event();
 
     dataView.setFilterArgs({ columnFilters: this._columnFilters, grid: this._grid });
     dataView.setFilter(this.customLocalFilter.bind(this, dataView));
 
-    this._slickSubscriber.subscribe((e: KeyboardEvent, args: any) => {
+    this._eventHandler.subscribe(this._onSearchChange, (e: KeyboardEvent, args: any) => {
       const columnId = args.columnId;
       if (columnId != null) {
         dataView.refresh();
@@ -177,6 +162,51 @@ export class FilterService {
     this._eventHandler.subscribe(grid.onHeaderRowCellRendered, (e: KeyboardEvent, args: any) => {
       this.addFilterTemplateToHeaderRow(args);
     });
+  }
+
+  callbackSearchEvent(e: KeyboardEvent | undefined, args: FilterCallbackArg) {
+    if (args) {
+      const searchTerm = ((e && e.target) ? (e.target as HTMLInputElement).value : undefined);
+      const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : (searchTerm ? [searchTerm] : undefined);
+      const columnDef = args.columnDef || null;
+      const columnId = columnDef ? (columnDef.id || '') : '';
+      const operator = args.operator || undefined;
+      const hasSearchTerms = searchTerms && Array.isArray(searchTerms);
+      const termsCount = hasSearchTerms && searchTerms.length;
+      const oldColumnFilters = { ...this._columnFilters };
+
+      if (!hasSearchTerms || termsCount === 0 || (termsCount === 1 && searchTerms[0] === '')) {
+        // delete the property from the columnFilters when it becomes empty
+        // without doing this, it would leave an incorrect state of the previous column filters when filtering on another column
+        delete this._columnFilters[columnId];
+      } else {
+        const colId = '' + columnId as string;
+        const colFilter: ColumnFilter = {
+          columnId: colId,
+          columnDef,
+          searchTerms,
+        };
+        if (operator) {
+          colFilter.operator = operator;
+        }
+        this._columnFilters[colId] = colFilter;
+      }
+
+      // trigger an event only if Filters changed or if ENTER key was pressed
+      const eventKeyCode = e && e.keyCode;
+      if (eventKeyCode === KeyCode.ENTER || !isequal(oldColumnFilters, this._columnFilters)) {
+        this._onSearchChange.notify({
+          clearFilterTriggered: args.clearFilterTriggered,
+          shouldTriggerQuery: args.shouldTriggerQuery,
+          columnId,
+          columnDef: args.columnDef || null,
+          columnFilters: this._columnFilters,
+          operator,
+          searchTerms,
+          grid: this._grid
+        }, e);
+      }
+    }
   }
 
   clearFilterByColumnId(event: Event, columnId: number | string) {
@@ -343,36 +373,24 @@ export class FilterService {
     return true;
   }
 
-  dispose() {
-    this.disposeColumnFilters();
+  async executeBackendCallback(event: KeyboardEvent, args: any, startTime: Date, backendApi: BackendServiceApi) {
+    const query = await backendApi.service.processOnFilterChanged(event, args);
 
-    // unsubscribe all SlickGrid events
-    this._eventHandler.unsubscribeAll();
-
-    // unsubscribe local event
-    if (this._slickSubscriber && typeof this._slickSubscriber.unsubscribe === 'function') {
-      this._slickSubscriber.unsubscribe();
-    }
-  }
-
-  /**
-   * Dispose of the filters, since it's a singleton, we don't want to affect other grids with same columns
-   */
-  disposeColumnFilters() {
-    // we need to loop through all columnFilters and delete them 1 by 1
-    // only trying to make columnFilter an empty (without looping) would not trigger a dataset change
-    for (const columnId in this._columnFilters) {
-      if (columnId && this._columnFilters[columnId]) {
-        delete this._columnFilters[columnId];
-      }
+    // emit an onFilterChanged event when it's not called by a clear filter
+    if (args && !args.clearFilterTriggered) {
+      this.emitFilterChanged(EmitterType.remote);
     }
 
-    // also destroy each Filter instances
-    this._filters.forEach((filter, index) => {
-      if (filter && filter.destroy) {
-        filter.destroy(true);
-      }
-    });
+    // the processes can be Observables (like HttpClient) or Promises
+    const process = backendApi.process(query);
+    if (process instanceof Promise && process.then) {
+      process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions));
+    } else if (isObservable(process)) {
+      process.subscribe(
+        (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions),
+        (error: any) => onBackendError(error, backendApi)
+      );
+    }
   }
 
   getColumnFilters() {
@@ -400,53 +418,98 @@ export class FilterService {
     return currentFilters;
   }
 
-  callbackSearchEvent(e: KeyboardEvent | undefined, args: FilterCallbackArg) {
-    if (args) {
-      const searchTerm = ((e && e.target) ? (e.target as HTMLInputElement).value : undefined);
-      const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : (searchTerm ? [searchTerm] : undefined);
-      const columnDef = args.columnDef || null;
-      const columnId = columnDef ? (columnDef.id || '') : '';
-      const operator = args.operator || undefined;
-      const hasSearchTerms = searchTerms && Array.isArray(searchTerms);
-      const termsCount = hasSearchTerms && searchTerms.length;
-      const oldColumnFilters = { ...this._columnFilters };
-
-      if (!hasSearchTerms || termsCount === 0 || (termsCount === 1 && searchTerms[0] === '')) {
-        // delete the property from the columnFilters when it becomes empty
-        // without doing this, it would leave an incorrect state of the previous column filters when filtering on another column
-        delete this._columnFilters[columnId];
-      } else {
-        const colId = '' + columnId as string;
-        const colFilter: ColumnFilter = {
-          columnId: colId,
-          columnDef,
-          searchTerms,
-        };
-        if (operator) {
-          colFilter.operator = operator;
-        }
-        this._columnFilters[colId] = colFilter;
+  /**
+   * A simple function that is binded to the subscriber and emit a change when the filter is called.
+   * Other services, like Pagination, can then subscribe to it.
+   * @param caller
+   */
+  emitFilterChanged(caller: EmitterType) {
+    if (caller === EmitterType.remote && this._gridOptions && this._gridOptions.backendServiceApi) {
+      let currentFilters: CurrentFilter[] = [];
+      const backendService = this._gridOptions.backendServiceApi.service;
+      if (backendService && backendService.getCurrentFilters) {
+        currentFilters = backendService.getCurrentFilters() as CurrentFilter[];
       }
-
-      // trigger an event only if Filters changed or if ENTER key was pressed
-      const eventKeyCode = e && e.keyCode;
-      if (eventKeyCode === KeyCode.ENTER || !isequal(oldColumnFilters, this._columnFilters)) {
-        this.triggerEvent(this._slickSubscriber, {
-          clearFilterTriggered: args.clearFilterTriggered,
-          shouldTriggerQuery: args.shouldTriggerQuery,
-          columnId,
-          columnDef: args.columnDef || null,
-          columnFilters: this._columnFilters,
-          operator,
-          searchTerms,
-          serviceOptions: this._onFilterChangedOptions,
-          grid: this._grid
-        }, e);
-      }
+      this.onFilterChanged.next(currentFilters);
+    } else if (caller === EmitterType.local) {
+      this.onFilterChanged.next(this.getCurrentLocalFilters());
     }
   }
 
-  addFilterTemplateToHeaderRow(args: { column: Column; grid: any; node: any }, isFilterFirstRender = true) {
+  onBackendFilterChange(event: KeyboardEvent, args: any) {
+    if (!args || !args.grid) {
+      throw new Error('Something went wrong when trying to bind the "onBackendFilterChange(event, args)" function, it seems that "args" is not populated correctly');
+    }
+    const backendApi = this._gridOptions.backendServiceApi;
+    if (!backendApi || !backendApi.process || !backendApi.service) {
+      throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
+    }
+    try {
+      // keep start time & end timestamps & return it after process execution
+      const startTime = new Date();
+
+      // run a preProcess callback if defined
+      if (backendApi.preProcess) {
+        backendApi.preProcess();
+      }
+
+      // only add a delay when user is typing, on select dropdown filter (or "Clear Filter") it will execute right away
+      let debounceTypingDelay = 0;
+      const isTriggeredByClearFilter = args && args.clearFilterTriggered; // was it trigger by a "Clear Filter" command?
+
+      if (!isTriggeredByClearFilter && event && event.keyCode !== KeyCode.ENTER && (event.type === 'input' || event.type === 'keyup' || event.type === 'keydown')) {
+        debounceTypingDelay = backendApi.filterTypingDebounce || DEFAULT_FILTER_TYPING_DEBOUNCE;
+      }
+
+      // query backend, except when it's called by a ClearFilters then we won't
+      if (args && args.shouldTriggerQuery) {
+        // call the service to get a query back
+        if (debounceTypingDelay > 0) {
+          clearTimeout(timer);
+          timer = setTimeout(() => this.executeBackendCallback(event, args, startTime, backendApi), debounceTypingDelay);
+        } else {
+          this.executeBackendCallback(event, args, startTime, backendApi);
+        }
+      }
+    } catch (error) {
+      onBackendError(error, backendApi);
+    }
+  }
+
+  /**
+   * When user passes an array of preset filters, we need to pre-populate each column filter searchTerm(s)
+   * The process is to loop through the preset filters array, find the associated column from columnDefinitions and fill in the filter object searchTerm(s)
+   * This is basically the same as if we would manually add searchTerm(s) to a column filter object in the column definition, but we do it programmatically.
+   * At the end of the day, when creating the Filter (DOM Element), it will use these searchTerm(s) so we can take advantage of that without recoding each Filter type (DOM element)
+   */
+  populateColumnFilterSearchTerms() {
+    if (this._gridOptions.presets && Array.isArray(this._gridOptions.presets.filters) && this._gridOptions.presets.filters.length > 0) {
+      const filters = this._gridOptions.presets.filters;
+      this._columnDefinitions.forEach((columnDef: Column) => {
+        // clear any columnDef searchTerms before applying Presets
+        if (columnDef.filter && columnDef.filter.searchTerms) {
+          delete columnDef.filter.searchTerms;
+        }
+
+        // from each presets, we will find the associated columnDef and apply the preset searchTerms & operator if there is
+        const columnPreset = filters.find((presetFilter: CurrentFilter) => {
+          return presetFilter.columnId === columnDef.id;
+        });
+        if (columnPreset && columnPreset.searchTerms && Array.isArray(columnPreset.searchTerms)) {
+          columnDef.filter = columnDef.filter || {};
+          columnDef.filter.operator = columnPreset.operator || columnDef.filter.operator || '';
+          columnDef.filter.searchTerms = columnPreset.searchTerms;
+        }
+      });
+    }
+  }
+
+  // --
+  // private functions
+  // -------------------
+
+  /** Add all created filters (from their template) to the header row section area */
+  private addFilterTemplateToHeaderRow(args: { column: Column; grid: any; node: HTMLElement }, isFilterFirstRender = true) {
     const columnDef = args.column;
     const columnId = columnDef.id || '';
 
@@ -494,52 +557,6 @@ export class FilterService {
     }
   }
 
-  /**
-   * A simple function that is attached to the subscriber and emit a change when the filter is called.
-   * Other services, like Pagination, can then subscribe to it.
-   * @param caller
-   */
-  emitFilterChanged(caller: EmitterType) {
-    if (caller === EmitterType.remote && this._gridOptions && this._gridOptions.backendServiceApi) {
-      let currentFilters: CurrentFilter[] = [];
-      const backendService = this._gridOptions.backendServiceApi.service;
-      if (backendService && backendService.getCurrentFilters) {
-        currentFilters = backendService.getCurrentFilters() as CurrentFilter[];
-      }
-      this.onFilterChanged.next(currentFilters);
-    } else if (caller === EmitterType.local) {
-      this.onFilterChanged.next(this.getCurrentLocalFilters());
-    }
-  }
-
-  /**
-   * When user passes an array of preset filters, we need to pre-populate each column filter searchTerm(s)
-   * The process is to loop through the preset filters array, find the associated column from columnDefinitions and fill in the filter object searchTerm(s)
-   * This is basically the same as if we would manually add searchTerm(s) to a column filter object in the column definition, but we do it programmatically.
-   * At the end of the day, when creating the Filter (DOM Element), it will use these searchTerm(s) so we can take advantage of that without recoding each Filter type (DOM element)
-   */
-  populateColumnFilterSearchTerms() {
-    if (this._gridOptions.presets && Array.isArray(this._gridOptions.presets.filters) && this._gridOptions.presets.filters.length > 0) {
-      const filters = this._gridOptions.presets.filters;
-      this._columnDefinitions.forEach((columnDef: Column) => {
-        // clear any columnDef searchTerms before applying Presets
-        if (columnDef.filter && columnDef.filter.searchTerms) {
-          delete columnDef.filter.searchTerms;
-        }
-
-        // from each presets, we will find the associated columnDef and apply the preset searchTerms & operator if there is
-        const columnPreset = filters.find((presetFilter: CurrentFilter) => {
-          return presetFilter.columnId === columnDef.id;
-        });
-        if (columnPreset && columnPreset.searchTerms && Array.isArray(columnPreset.searchTerms)) {
-          columnDef.filter = columnDef.filter || {};
-          columnDef.filter.operator = columnPreset.operator || columnDef.filter.operator || '';
-          columnDef.filter.searchTerms = columnPreset.searchTerms;
-        }
-      });
-    }
-  }
-
   private updateColumnFilters(searchTerms: SearchTerm[] | undefined, columnDef: any, operator?: OperatorType | OperatorString) {
     if (searchTerms && columnDef) {
       // this._columnFilters.searchTerms = searchTerms;
@@ -550,17 +567,5 @@ export class FilterService {
         operator
       };
     }
-  }
-
-  private triggerEvent(slickEvent: any, args: any, e: any) {
-    slickEvent = slickEvent || new Slick.Event();
-
-    // event might have been created as a CustomEvent (e.g. CompoundDateFilter), without being a valid Slick.EventData.
-    // if so we will create a new Slick.EventData and merge it with that CustomEvent to avoid having SlickGrid errors
-    let event = e;
-    if (e && typeof e.isPropagationStopped !== 'function') {
-      event = $.extend({}, new Slick.EventData(), e);
-    }
-    slickEvent.notify(args, event, args.grid);
   }
 }

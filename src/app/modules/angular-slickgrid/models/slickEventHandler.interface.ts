@@ -1,5 +1,12 @@
+import { SlickEvent } from '..';
+
 export interface SlickEventHandler {
-  subscribe: (event: string, fn: any) => SlickEventHandler;
-  unsubscribe: (event: string, fn: any) => SlickEventHandler;
+  /** Subscribe to a SlickGrid Event and execute its handler callback */
+  subscribe: (slickEvent: SlickEvent, handler: any) => SlickEventHandler;
+
+  /** Unsubscribe to a SlickGrid Event and execute its handler callback */
+  unsubscribe: (slickEvent: SlickEvent, handler: any) => SlickEventHandler;
+
+  /** Unsubscribe and remove all SlickGrid Event Handlers */
   unsubscribeAll: () => SlickEventHandler;
 }
