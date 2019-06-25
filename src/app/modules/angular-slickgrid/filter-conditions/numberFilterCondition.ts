@@ -8,7 +8,7 @@ export const numberFilterCondition: FilterCondition = (options: FilterConditionO
     searchTerm = parseFloat(searchTerm);
   }
 
-  if (!searchTerm && (!options.operator || options.operator === '')) {
+  if (!searchTerm && !options.operator) {
     return true;
   }
   return testFilterCondition(options.operator || '==', cellValue, searchTerm);

@@ -1,4 +1,4 @@
-import { onBackendError, BackendService, GridOption, executeBackendProcessesCallback } from '../..';
+import { onBackendError, GridOption, executeBackendProcessesCallback } from '../..';
 
 const gridOptionMock = {
   enablePagination: true,
@@ -9,31 +9,6 @@ const gridOptionMock = {
     postProcess: jest.fn(),
   }
 } as GridOption;
-
-const dataViewStub = {
-  refresh: jest.fn(),
-  sort: jest.fn(),
-  reSort: jest.fn(),
-};
-
-const backendServiceStub = {
-  clearSorters: jest.fn(),
-  getCurrentFilters: jest.fn(),
-  getCurrentPagination: jest.fn(),
-  getCurrentSorters: jest.fn(),
-} as unknown as BackendService;
-
-const gridStub = {
-  autosizeColumns: jest.fn(),
-  getColumnIndex: jest.fn(),
-  getOptions: () => gridOptionMock,
-  getColumns: jest.fn(),
-  getSortColumns: jest.fn(),
-  invalidate: jest.fn(),
-  onLocalSortChanged: jest.fn(),
-  render: jest.fn(),
-  setSortColumns: jest.fn(),
-};
 
 describe('backend-utilities', () => {
   describe('executeBackendProcessesCallback method', () => {
@@ -53,8 +28,8 @@ describe('backend-utilities', () => {
         data: { users: [{ firstName: 'John', lastName: 'Doe' }], },
         statistics: {
           startTime: now,
-          endTime: now,
-          executionTime: 0,
+          endTime: expect.any(Date),
+          executionTime: expect.any(Number),
           itemCount: 1,
           totalItemCount: 1
         }
