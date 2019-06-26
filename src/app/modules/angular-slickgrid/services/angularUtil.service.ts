@@ -1,4 +1,4 @@
-import { AngularComponentOutput } from './../models/angularComponentOutput.interface';
+import { AngularComponentOutput } from '../models/angularComponentOutput.interface';
 import { ApplicationRef, ComponentFactoryResolver, EmbeddedViewRef, Injectable, Injector } from '@angular/core';
 
 @Injectable()

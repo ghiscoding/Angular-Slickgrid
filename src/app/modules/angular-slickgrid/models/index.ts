@@ -95,6 +95,7 @@ export * from './searchTerm.type';
 export * from './selectedRange.interface';
 export * from './selectOption.interface';
 export * from './slickEvent.interface';
+export * from './slickEventData.interface';
 export * from './slickEventHandler.interface';
 export * from './sortChangedArgs.interface';
 export * from './sortDirection.enum';

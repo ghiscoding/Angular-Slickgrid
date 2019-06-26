@@ -44,11 +44,11 @@ export class ResizerService {
     }
   }
 
-  /** Attach an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
+  /** Bind an auto resize trigger on the datagrid, if that is enable then it will resize itself to the available space
    * Options: we could also provide a % factor to resize on each height/width independently
    */
   bindAutoResizeDataGrid(newSizes?: GridDimension) {
-    // if we can't find the grid to resize, return without attaching anything
+    // if we can't find the grid to resize, return without binding anything
     const gridDomElm = $(`#${this._gridOptions && this._gridOptions.gridId ? this._gridOptions.gridId : 'grid1'}`);
     if (gridDomElm === undefined || gridDomElm.offset() === undefined) {
       return null;
@@ -58,8 +58,8 @@ export class ResizerService {
     // -- also we add a slight delay (in ms) so that we resize after the grid render is done
     this.resizeGrid(10, newSizes);
 
-    // -- 2nd attach a trigger on the Window DOM element, so that it happens also when resizing after first load
-    // -- attach auto-resize to Window object only if it exist
+    // -- 2nd bind a trigger on the Window DOM element, so that it happens also when resizing after first load
+    // -- bind auto-resize to Window object only if it exist
     $(window).on(`resize.grid.${this._gridUid}`, (event: Event) => {
       this.onGridBeforeResize.next(event);
       if (!this._resizePaused) {

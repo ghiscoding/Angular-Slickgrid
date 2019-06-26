@@ -1,5 +1,31 @@
+import { SlickEventData } from './slickEventData.interface';
+
 export interface SlickEvent {
-  notify: (Function) => (args: any, e: Event, scope: any) => Promise<any>;
-  subscribe: (Function) => (e: any, args: any) => Promise<any>;
-  unsubscribe: () => void;
+  /**
+   * Fires an event notifying all subscribers.
+   * @param args {Object} Additional data object to be passed to all handlers.
+   * @param e {EventData}
+   *      Optional.
+   *      An EventData object to be passed to all handlers.
+   *      For DOM events, an existing W3C/jQuery event object can be passed in.
+   * @param scope {Object}
+   *      Optional.
+   *      The scope ("this") within which the handler will be executed.
+   *      If not specified, the scope will be set to the Event instance.
+   **/
+  notify: (args: any, e?: SlickEventData | Event | KeyboardEvent, scope?: any) => Promise<any>;
+
+  /**
+   * Adds an event handler to be called when the event is fired.
+   * Event handler will receive two arguments - an EventData and the Data
+   * object the event was fired with.
+   * @param fn {Function} Event handler.
+   **/
+  subscribe: (fn: Function) => Promise<any>;
+
+  /**
+   * Removes an event handler added with <code>subscribe(fn).
+   * @param fn {Function} Event handler to be removed.
+   **/
+  unsubscribe: (fn: any) => void;
 }

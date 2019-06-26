@@ -28,7 +28,7 @@ import { SlickgridConfig } from '../slickgrid-config';
 import { isObservable, Observable, Subscription } from 'rxjs';
 
 // Services
-import { AngularUtilService } from './../services/angularUtilService';
+import { AngularUtilService } from '../services/angularUtil.service';
 import { ExportService } from './../services/export.service';
 import { ExtensionService } from '../services/extension.service';
 import { ExtensionUtility } from '../extensions/extensionUtility';
@@ -261,7 +261,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.sharedService.grid = this.grid;
 
     this.extensionService.bindDifferentExtensions();
-    this.attachDifferentHooks(this.grid, this.gridOptions, this.dataView);
+    this.bindDifferentHooks(this.grid, this.gridOptions, this.dataView);
 
     // emit the Grid & DataView object to make them available in parent component
     this.onGridCreated.emit(this.grid);
@@ -296,18 +296,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // after the DataView is created & updated execute some processes
     this.executeAfterDataviewCreated(this.grid, this.gridOptions, this.dataView);
 
-    // attach resize ONLY after the dataView is ready
-    this.attachResizeHook(this.grid, this.gridOptions);
+    // bind resize ONLY after the dataView is ready
+    this.bindResizeHook(this.grid, this.gridOptions);
 
-    // attach grouping and header grouping colspan service
+    // bind & initialize grouping and header grouping colspan service
     if (this.gridOptions.createPreHeaderPanel && !this.gridOptions.enableDraggableGrouping) {
       this.groupingAndColspanService.init(this.grid, this.dataView);
     }
 
-    // attach grid  service
+    // bind & initialize the grid service
     this.gridService.init(this.grid, this.dataView);
 
-    // when user enables translation, we need to translate Headers on first pass & subsequently in the attachDifferentHooks
+    // when user enables translation, we need to translate Headers on first pass & subsequently in the bindDifferentHooks
     if (this.gridOptions.enableTranslate) {
       this.extensionService.translateColumnHeaders();
     }
@@ -320,10 +320,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // once all hooks are in placed and the grid is initialized, we can emit an event
     this.onGridInitialized.emit(this.grid);
 
-    // attach the Backend Service API callback functions only after the grid is initialized
+    // bind the Backend Service API callback functions only after the grid is initialized
     // because the preProcess() and onInit() might get triggered
     if (this.gridOptions && this.gridOptions.backendServiceApi) {
-      this.attachBackendCallbackFunctions(this.gridOptions);
+      this.bindBackendCallbackFunctions(this.gridOptions);
     }
 
     this.gridStateService.init(this.grid, this.extensionService, this.filterService, this.sortService);
@@ -398,7 +398,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  attachDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
+  bindDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
     // on locale change, we have to manually translate the Headers, GridMenu
     this.subscriptions.push(
       this.translate.onLangChange.subscribe((event) => {
@@ -428,12 +428,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
     }
 
-    // attach external sorting (backend) when available or default onSort (dataView)
+    // bind external sorting (backend) when available or default onSort (dataView)
     if (gridOptions.enableSorting && !this.customDataView) {
       gridOptions.backendServiceApi ? this.sortService.bindBackendOnSort(grid, dataView) : this.sortService.bindLocalOnSort(grid, dataView);
     }
 
-    // attach external filter (backend) when available or default onFilter (dataView)
+    // bind external filter (backend) when available or default onFilter (dataView)
     if (gridOptions.enableFiltering && !this.customDataView) {
       this.filterService.init(grid);
 
@@ -441,7 +441,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (gridOptions.presets && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
         this.filterService.populateColumnFilterSearchTerms();
       }
-      gridOptions.backendServiceApi ? this.filterService.attachBackendOnFilter(grid, this.dataView) : this.filterService.attachLocalOnFilter(grid, this.dataView);
+      gridOptions.backendServiceApi ? this.filterService.bindBackendOnFilter(grid, this.dataView) : this.filterService.bindLocalOnFilter(grid, this.dataView);
     }
 
     // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
@@ -510,7 +510,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  attachBackendCallbackFunctions(gridOptions: GridOption) {
+  bindBackendCallbackFunctions(gridOptions: GridOption) {
     const backendApi = gridOptions.backendServiceApi;
     const serviceOptions: BackendServiceOption = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : {};
     const isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && serviceOptions.hasOwnProperty('executeProcessCommandOnInit')) ? serviceOptions['executeProcessCommandOnInit'] : true);
@@ -572,7 +572,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  attachResizeHook(grid: any, options: GridOption) {
+  bindResizeHook(grid: any, options: GridOption) {
     // expand/autofit columns on first page load
     if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
       grid.autosizeColumns();

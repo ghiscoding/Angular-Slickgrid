@@ -24,7 +24,8 @@
   <angular-slickgrid gridId="grid4"
             [columnDefinitions]="columnDefinitions"
             [gridOptions]="gridOptions"
-            [dataset]="dataset">
+            [dataset]="dataset"
+            (onGridStateChanged)="gridStateChanged($event)">
   </angular-slickgrid>
 </div>
 
