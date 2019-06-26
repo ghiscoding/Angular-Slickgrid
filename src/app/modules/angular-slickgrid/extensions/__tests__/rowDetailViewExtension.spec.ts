@@ -481,7 +481,7 @@ describe('rowDetailViewExtension', () => {
 
     it('should run the internal "onProcessing" and call "notifyTemplate" with a Promise when "process" method is defined and executed', (done) => {
       const mockItem = { id: 2, firstName: 'John', lastName: 'Doe' };
-      gridOptionsMock.rowDetailView.process = () => new Promise((resolve) => resolve(mockItem));
+      gridOptionsMock.rowDetailView.process = (item) => new Promise((resolve) => resolve(item));
       const instance = extension.create(columnsMock, gridOptionsMock);
 
       instance.onAsyncResponse.subscribe((e, response) => {
@@ -489,12 +489,12 @@ describe('rowDetailViewExtension', () => {
         done();
       });
 
-      gridOptionsMock.rowDetailView.process({ id: 'field1', field: 'field1' });
+      gridOptionsMock.rowDetailView.process(mockItem);
     });
 
     it('should run the internal "onProcessing" and call "notifyTemplate" with an Object to simular HttpClient call when "process" method is defined and executed', (done) => {
       const mockItem = { id: 2, firstName: 'John', lastName: 'Doe' };
-      gridOptionsMock.rowDetailView.process = () => of(mockItem);
+      gridOptionsMock.rowDetailView.process = (item) => of(mockItem);
       const instance = extension.create(columnsMock, gridOptionsMock);
 
       instance.onAsyncResponse.subscribe((e, response) => {
@@ -507,11 +507,11 @@ describe('rowDetailViewExtension', () => {
 
     it('should run the internal "onProcessing" and call "notifyTemplate" with an Object to simular HttpClient call when "process" method is defined and executed', async () => {
       const mockItem = { firstName: 'John', lastName: 'Doe' };
-      gridOptionsMock.rowDetailView.process = () => new Promise((resolve) => resolve(mockItem));
+      gridOptionsMock.rowDetailView.process = (item) => new Promise((resolve) => resolve(item));
       extension.create(columnsMock, gridOptionsMock);
 
       try {
-        await gridOptionsMock.rowDetailView.process({ id: 'field1', field: 'field1' });
+        await gridOptionsMock.rowDetailView.process(mockItem);
       } catch (e) {
         expect(e.toString()).toContain(`[Angular-Slickgrid] could not process the Row Detail, you must make sure that your "process" callback`);
       }

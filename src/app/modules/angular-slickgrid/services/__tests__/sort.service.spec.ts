@@ -160,7 +160,7 @@ describe('SortService', () => {
       service.bindBackendOnSort(gridStub, dataViewStub);
       gridStub.onSort.notify({ multiColumnSort: true, sortCols: [], grid: gridStub }, new Slick.EventData(), gridStub);
 
-      expect(spy).toHaveBeenCalledWith(expect.anything(), { grid: expect.anything(), multiColumnSort: true, sortCols: [] });
+      expect(spy).toHaveBeenCalledWith(expect.anything(), { grid: gridStub, multiColumnSort: true, sortCols: [] });
     });
   });
 

@@ -29,9 +29,9 @@ describe('AngularUtilService', () => {
 
   beforeEach(() => {
     // define a <div> container to simulate a row detail DOM element
-    const div1 = document.createElement('div');
-    div1.innerHTML = `<div id="${DOM_PARENT_ID}">parent text</div><div id="${DOM_ELEMENT_ID}">some text</div>`;
-    document.body.appendChild(div1);
+    const div = document.createElement('div');
+    div.innerHTML = `<div id="${DOM_PARENT_ID}">parent text</div><div id="${DOM_ELEMENT_ID}">some text</div>`;
+    document.body.appendChild(div);
 
     TestBed.configureTestingModule({
       declarations: [TestPreloadComponent],
