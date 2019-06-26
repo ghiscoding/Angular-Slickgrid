@@ -8,7 +8,6 @@ import {
   GridOption,
   GridStateChange,
   Statistic,
-  SortDirection,
   OperatorType
 } from './../modules/angular-slickgrid';
 

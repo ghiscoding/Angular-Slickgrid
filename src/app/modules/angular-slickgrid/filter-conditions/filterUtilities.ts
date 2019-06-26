@@ -1,4 +1,4 @@
-import { OperatorString, OperatorType } from '../models';
+import { OperatorString } from '../models';
 
 /**
  * Compare 2 objects,
@@ -26,7 +26,7 @@ export const compareObjects = (o1: any, o2: any, compareKey?: string) => {
   return true;
 };
 
-export const testFilterCondition = (operator: OperatorString | OperatorType, value1: any, value2: any): boolean => {
+export const testFilterCondition = (operator: OperatorString, value1: any, value2: any): boolean => {
   switch (operator) {
     case '<':
     case 'LT': return (value1 < value2);

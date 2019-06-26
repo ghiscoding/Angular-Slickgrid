@@ -365,7 +365,7 @@ export class FilterService {
         fieldType,
         searchTerms: searchValues,
         cellValue,
-        operator,
+        operator: operator as OperatorString,
         cellValueLastChar: lastValueChar,
         filterSearchType
       };
@@ -528,7 +528,7 @@ export class FilterService {
 
     if (columnDef && columnId !== 'selector' && columnDef.filterable) {
       let searchTerms: SearchTerm[] | undefined;
-      let operator: OperatorString | OperatorType;
+      let operator: OperatorType | OperatorString;
       const newFilter: Filter | undefined = this.filterFactory.createFilter(args.column.filter);
       operator = (columnDef && columnDef.filter && columnDef.filter.operator) || (newFilter && newFilter.operator) || undefined;
 
