@@ -1,6 +1,6 @@
 {
   "name": "angular-slickgrid",
-  "version": "2.9.0",
+  "version": "2.9.1",
   "description": "Slickgrid components made available in Angular",
   "keywords": [
     "angular",
@@ -117,7 +117,7 @@
     "copyfiles": "^2.1.0",
     "cross-env": "^5.2.0",
     "custom-event-polyfill": "^1.0.7",
-    "cypress": "^3.2.0",
+    "cypress": "^3.3.1",
     "del": "^3.0.0",
     "del-cli": "^1.1.0",
     "gulp": "^4.0.2",
