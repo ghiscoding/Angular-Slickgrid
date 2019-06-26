@@ -489,12 +489,12 @@ export class GridOdataService implements BackendService {
    * @param columnFilters
    */
   private castFilterToColumnFilters(columnFilters: ColumnFilters | CurrentFilter[]): CurrentFilter[] {
-    if (!Array.isArray(columnFilters)) {
-      return [];
-    }
-
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
     const filtersArray: ColumnFilter[] = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters;
+
+    if (!Array.isArray(filtersArray)) {
+      return [];
+    }
 
     return filtersArray.map((filter) => {
       const tmpFilter: CurrentFilter = { columnId: filter.columnId || '' };

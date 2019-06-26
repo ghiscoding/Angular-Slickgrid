@@ -237,10 +237,12 @@ describe('GridOdataService', () => {
 
       service.init(serviceOptions, paginationOptions, gridStub);
       const query = service.processOnFilterChanged(null, mockFilterChangedArgs);
+      const currentFilters = service.getCurrentFilters();
 
       expect(query).toBe(expectation);
       expect(querySpy).toHaveBeenCalled();
       expect(resetSpy).toHaveBeenCalled();
+      expect(currentFilters).toEqual([{ columnId: 'gender', operator: 'EQ', searchTerms: ['female'] }]);
     });
 
     it('should return a query with a new filter when previous filters are exists', () => {
@@ -263,10 +265,15 @@ describe('GridOdataService', () => {
 
       service.init(serviceOptions, paginationOptions, gridStub);
       const query = service.processOnFilterChanged(null, mockFilterChangedArgs);
+      const currentFilters = service.getCurrentFilters();
 
       expect(query).toBe(expectation);
       expect(querySpy).toHaveBeenCalled();
       expect(resetSpy).toHaveBeenCalled();
+      expect(currentFilters).toEqual([
+        { columnId: 'gender', operator: 'EQ', searchTerms: ['female'] },
+        { columnId: 'firstName', operator: 'startsWith', searchTerms: ['John'] }
+      ]);
     });
   });
 

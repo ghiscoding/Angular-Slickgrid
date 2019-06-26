@@ -432,13 +432,15 @@ describe('GraphqlService', () => {
 
       service.init(serviceOptions, paginationOptions, gridStub);
       const query = service.processOnFilterChanged(null, mockFilterChangedArgs);
+      const currentFilters = service.getCurrentFilters();
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
       expect(querySpy).toHaveBeenCalled();
       expect(resetSpy).toHaveBeenCalled();
+      expect(currentFilters).toEqual([{ columnId: 'gender', operator: 'EQ', searchTerms: ['female'] }]);
     });
 
-    it('should return a query with a new filter when previous filters are exists', () => {
+    it('should return a query with a new filter when previous filters exists', () => {
       const expectation = `query{users(first:10, offset:0,
                           filterBy:[{field:gender, operator:EQ, value:"female"}, {field:firstName, operator:StartsWith, value:"John"}])
                           { totalCount,nodes{ id,field1,field2 } }}`;
@@ -460,10 +462,15 @@ describe('GraphqlService', () => {
 
       service.init(serviceOptions, paginationOptions, gridStub);
       const query = service.processOnFilterChanged(null, mockFilterChangedArgs);
+      const currentFilters = service.getCurrentFilters();
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
       expect(querySpy).toHaveBeenCalled();
       expect(resetSpy).toHaveBeenCalled();
+      expect(currentFilters).toEqual([
+        { columnId: 'gender', operator: 'EQ', searchTerms: ['female'] },
+        { columnId: 'firstName', operator: 'startsWith', searchTerms: ['John'] }
+      ]);
     });
   });
 
