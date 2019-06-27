@@ -169,9 +169,9 @@ export class FilterService {
     });
   }
 
-  callbackSearchEvent(e: KeyboardEvent | undefined, args: FilterCallbackArg) {
+  callbackSearchEvent(event: any, args: FilterCallbackArg) {
     if (args) {
-      const searchTerm = ((e && e.target) ? (e.target as HTMLInputElement).value : undefined);
+      const searchTerm = ((event && event.target) ? (event.target as HTMLInputElement).value : undefined);
       const searchTerms = (args.searchTerms && Array.isArray(args.searchTerms)) ? args.searchTerms : (searchTerm ? [searchTerm] : undefined);
       const columnDef = args.columnDef || null;
       const columnId = columnDef ? (columnDef.id || '') : '';
@@ -197,8 +197,12 @@ export class FilterService {
         this._columnFilters[colId] = colFilter;
       }
 
+      // event might have been created as a CustomEvent (e.g. CompoundDateFilter), without being a valid Slick.EventData,
+      // if so we will create a new Slick.EventData and merge it with that CustomEvent to avoid having SlickGrid errors
+      const eventData = (event && typeof event.isPropagationStopped !== 'function') ? $.extend({}, new Slick.EventData(), event) : event;
+
       // trigger an event only if Filters changed or if ENTER key was pressed
-      const eventKeyCode = e && e.keyCode;
+      const eventKeyCode = event && event.keyCode;
       if (eventKeyCode === KeyCode.ENTER || !isequal(oldColumnFilters, this._columnFilters)) {
         this._onSearchChange.notify({
           clearFilterTriggered: args.clearFilterTriggered,
@@ -209,7 +213,7 @@ export class FilterService {
           operator,
           searchTerms,
           grid: this._grid
-        }, e);
+        }, eventData);
       }
     }
   }
