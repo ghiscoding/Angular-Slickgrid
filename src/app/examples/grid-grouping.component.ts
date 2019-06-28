@@ -40,7 +40,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
   exportBeforeSub: Subscription;
   exportAfterSub: Subscription;
 
-  constructor() {}
+  constructor() { }
 
   ngOnDestroy() {
     this.exportBeforeSub.unsubscribe();
@@ -82,6 +82,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
         filterable: true,
         filter: { model: Filters.compoundSlider },
         sortable: true,
+        type: FieldType.number,
         groupTotalsFormatter: GroupTotalFormatters.avgTotalsPercentage,
         params: { groupFormatterPrefix: '<i>Avg</i>: ' }
       },

@@ -1,13 +1,11 @@
 import {
   BackendServiceOption,
-  Column,
   ColumnFilters,
   ColumnSort,
   CurrentFilter,
   CurrentPagination,
   CurrentSorter,
   FilterChangedArgs,
-  GridOption,
   Pagination,
   PaginationChangedArgs,
   SortChangedArgs,

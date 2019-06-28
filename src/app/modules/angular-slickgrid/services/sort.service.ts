@@ -4,17 +4,16 @@ import {
   CurrentSorter,
   EmitterType,
   FieldType,
-  GraphqlResult,
   GridOption,
   SlickEventHandler,
   SortDirection,
   SortDirectionNumber,
   SortDirectionString,
 } from './../models/index';
-import { executeBackendProcessesCallback, onBackendError } from './backend-utilities';
+import { executeBackendCallback } from './backend-utilities';
 import { getDescendantProperty } from './utilities';
 import { sortByFieldType } from '../sorters/sorterUtilities';
-import { isObservable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -215,20 +214,9 @@ export class SortService {
       backendApi.preProcess();
     }
 
+    // query backend, except when it's called by a ClearFilters then we won't
     const query = backendApi.service.processOnSortChanged(event, args);
-    this.emitSortChanged(EmitterType.remote);
-
-    // the processes can be Observables (like HttpClient) or Promises
-    const process = backendApi.process(query);
-    if (process instanceof Promise && process.then) {
-      process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions))
-        .catch((error: any) => onBackendError(error, backendApi));
-    } else if (isObservable(process)) {
-      process.subscribe(
-        (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridOptions),
-        (error: any) => onBackendError(error, backendApi)
-      );
-    }
+    executeBackendCallback(query, args, startTime, gridOptions, this.emitSortChanged.bind(this));
   }
 
   onLocalSortChanged(grid: any, dataView: any, sortColumns: ColumnSort[], forceReSort = false) {

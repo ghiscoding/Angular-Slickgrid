@@ -29,7 +29,7 @@ export interface Filter {
   /** You can use "params" to pass any types of arguments to your Filter */
   params?: any | any[];
 
-  /** Funtion to initialize the Filter class */
+  /** Filter class initialization, executed by the FilterService right after creating the Filter */
   init: (args: FilterArguments, isFilterFirstRender?: boolean) => void;
 
   /** Clear filter function */

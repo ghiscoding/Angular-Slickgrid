@@ -313,7 +313,6 @@ describe('SortService', () => {
       gridOptionMock.backendServiceApi.process = () => Promise.reject(errorExpected);
       gridOptionMock.backendServiceApi.onError = (e) => jest.fn();
       const spyOnError = jest.spyOn(gridOptionMock.backendServiceApi, 'onError');
-
       jest.spyOn(gridOptionMock.backendServiceApi, 'process');
 
       service.bindBackendOnSort(gridStub, dataViewStub);
@@ -325,7 +324,7 @@ describe('SortService', () => {
       });
     });
 
-    it('should execute the "onError" method when the Observable throws an error', () => {
+    it('should execute the "onError" method when the Observable throws an error', (done) => {
       const errorExpected = 'observable error';
       gridOptionMock.backendServiceApi.process = () => of(spyProcess);
       gridOptionMock.backendServiceApi.onError = (e) => jest.fn();
@@ -334,7 +333,11 @@ describe('SortService', () => {
 
       service.bindBackendOnSort(gridStub, dataViewStub);
       service.onBackendSortChanged(undefined, { multiColumnSort: true, sortCols: [], grid: gridStub });
-      expect(spyOnError).toHaveBeenCalledWith(errorExpected);
+
+      setTimeout(() => {
+        expect(spyOnError).toHaveBeenCalledWith(errorExpected);
+        done();
+      });
     });
   });
 
