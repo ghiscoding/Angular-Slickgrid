@@ -1,13 +1,39 @@
-import { GraphqlResult } from '../models/graphqlResult.interface';
-import { BackendServiceApi } from '../models/backendServiceApi.interface';
-import { GridOption } from '../models';
+import { BackendServiceApi, EmitterType, GraphqlResult, GridOption } from '../models';
+import { isObservable } from 'rxjs';
+
+/**
+ * Execute the backend callback, which are mainly the "process" & "postProcess" methods.
+ * Also note that "preProcess" was executed prior to this callback
+ */
+export async function executeBackendCallback(query: string, args: any, startTime: Date, gridOptions: GridOption, emitActionChangedCallback: (type: EmitterType) => void) {
+  const backendApi = gridOptions && gridOptions.backendServiceApi;
+
+  if (backendApi) {
+    // emit an onFilterChanged event when it's not called by a clear filter
+    if (args && !args.clearFilterTriggered) {
+      emitActionChangedCallback(EmitterType.remote);
+    }
+
+    // the processes can be Observables (like HttpClient) or Promises
+    const process = backendApi.process(query);
+    if (process instanceof Promise && process.then) {
+      process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, gridOptions))
+        .catch((error: any) => onBackendError(error, backendApi));
+    } else if (isObservable(process)) {
+      process.subscribe(
+        (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, gridOptions),
+        (error: any) => onBackendError(error, backendApi)
+      );
+    }
+  }
+}
 
 /** Execute the Backend Processes Callback, that could come from an Observable or a Promise callback */
 export function executeBackendProcessesCallback(startTime: Date, processResult: GraphqlResult | any, backendApi: BackendServiceApi, gridOptions: GridOption): GraphqlResult | any {
   const endTime = new Date();
 
   // define what our internal Post Process callback, only available for GraphQL Service for now
-  // it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+  // it will basically refresh the Dataset & Pagination removing the need for the user to always create his own PostProcess every time
   if (processResult && backendApi && backendApi.internalPostProcess) {
     backendApi.internalPostProcess(processResult);
   }
