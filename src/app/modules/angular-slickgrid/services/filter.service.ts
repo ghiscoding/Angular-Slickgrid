@@ -9,6 +9,7 @@ import {
   Filter,
   FilterArguments,
   FilterCallbackArg,
+  FilterChangedArgs,
   GridOption,
   KeyCode,
   OperatorString,
@@ -202,9 +203,19 @@ export class FilterService {
     }
 
     // when using backend service, we need to query only once so it's better to do it here
-    if (this._gridOptions && this._gridOptions.backendServiceApi) {
+    const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
+    if (backendApi) {
       const callbackArgs = { clearFilterTriggered: true, shouldTriggerQuery: true, grid: this._grid, columnFilters: this._columnFilters };
-      executeBackendCallback(undefined, callbackArgs, new Date(), this._gridOptions, this.emitFilterChanged.bind(this));
+      const queryResponse = backendApi.service.processOnFilterChanged(undefined, callbackArgs as FilterChangedArgs);
+      // @deprecated, processOnFilterChanged in the future should be return as a query string NOT a Promise
+      if (queryResponse instanceof Promise && queryResponse.then) {
+        queryResponse.then((query: string) => {
+          executeBackendCallback(query, callbackArgs, new Date(), this._gridOptions, this.emitFilterChanged.bind(this));
+        });
+      } else {
+        const query = queryResponse as string;
+        executeBackendCallback(query, callbackArgs, new Date(), this._gridOptions, this.emitFilterChanged.bind(this));
+      }
     }
 
     // emit an event when filters are all cleared
@@ -388,7 +399,7 @@ export class FilterService {
     const isTriggeredByClearFilter = args && args.clearFilterTriggered; // was it trigger by a "Clear Filter" command?
 
     if (!isTriggeredByClearFilter && event && event.keyCode !== KeyCode.ENTER && (event.type === 'input' || event.type === 'keyup' || event.type === 'keydown')) {
-      debounceTypingDelay = backendApi.hasOwnProperty('filterTypingDebounce') ? backendApi.filterTypingDebounce : DEFAULT_FILTER_TYPING_DEBOUNCE;
+      debounceTypingDelay = backendApi.hasOwnProperty('filterTypingDebounce') ? backendApi.filterTypingDebounce as number : DEFAULT_FILTER_TYPING_DEBOUNCE;
     }
 
     // query backend, except when it's called by a ClearFilters then we won't
@@ -434,6 +445,7 @@ export class FilterService {
         }
       });
     }
+    return this._columnDefinitions;
   }
 
   // --
@@ -501,11 +513,11 @@ export class FilterService {
       const columnId = columnDef && columnDef.id || '';
       const operator = args.operator || undefined;
       const hasSearchTerms = searchTerms && Array.isArray(searchTerms);
-      const termsCount = hasSearchTerms && searchTerms.length;
+      const termsCount = hasSearchTerms && searchTerms && searchTerms.length;
       const oldColumnFilters = { ...this._columnFilters };
 
       if (columnDef && columnId) {
-        if (!hasSearchTerms || termsCount === 0 || (termsCount === 1 && searchTerms[0] === '')) {
+        if (!hasSearchTerms || termsCount === 0 || (termsCount === 1 && Array.isArray(searchTerms) && searchTerms[0] === '')) {
           // delete the property from the columnFilters when it becomes empty
           // without doing this, it would leave an incorrect state of the previous column filters when filtering on another column
           delete this._columnFilters[columnId];
