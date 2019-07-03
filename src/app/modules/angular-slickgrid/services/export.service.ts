@@ -170,7 +170,7 @@ export class ExportService {
       const skippedField = columnDef.excludeFromExport || false;
 
       // if column width is 0 then it's not evaluated since that field is considered hidden should not be part of the export
-      if ((columnDef.width ===  undefined || columnDef.width > 0) && !skippedField) {
+      if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
         columnHeaders.push({
           key: columnDef.field || columnDef.id,
           title: fieldName
@@ -199,7 +199,7 @@ export class ExportService {
 
       // skip excluded column
       if (columnDef.excludeFromExport) {
-          continue;
+        continue;
       }
 
       // if we are grouping and are on 1st column index, we need to skip this column since it will be used later by the grouping text:: Group by [columnX]
@@ -221,7 +221,7 @@ export class ExportService {
         if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
           itemData = formattedData.text;
         }
-        if (itemData === null) {
+        if (itemData === null || itemData === undefined) {
           itemData = '';
         }
       } else if (isEvaluatingFormatter && columnDef.formatter !== undefined && columnDef.formatter !== null) {
@@ -230,12 +230,12 @@ export class ExportService {
         if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
           itemData = formattedData.text;
         }
-        if (itemData === null) {
+        if (itemData === null || itemData === undefined) {
           itemData = '';
         }
       } else {
         itemData = (itemObj[fieldId] === null || itemObj[fieldId] === undefined) ? '' : itemObj[fieldId];
-        if (itemData === null) {
+        if (itemData === null || itemData === undefined) {
           itemData = '';
         }
       }
