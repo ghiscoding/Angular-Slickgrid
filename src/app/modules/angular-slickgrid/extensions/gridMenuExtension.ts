@@ -52,6 +52,10 @@ export class GridMenuExtension implements Extension {
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
     }
+    this._userOriginalGridMenu = undefined;
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && this.sharedService.gridOptions.gridMenu.customItems) {
+      this.sharedService.gridOptions.gridMenu.customItems = [];
+    }
   }
 
   showGridMenu(e) {

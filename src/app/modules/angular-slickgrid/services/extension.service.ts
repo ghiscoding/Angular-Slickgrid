@@ -319,6 +319,7 @@ export class ExtensionService {
 
     // re-render the column headers
     this.renderColumnHeaders(columnDefinitions);
+    this.gridMenuExtension.translateGridMenu();
   }
 
   /**
@@ -331,7 +332,18 @@ export class ExtensionService {
       collection = this.sharedService.columnDefinitions;
     }
     if (Array.isArray(collection) && this.sharedService.grid && this.sharedService.grid.setColumns) {
+      this.sharedService.allColumns = collection;
       this.sharedService.grid.setColumns(collection);
+    }
+
+    if (this.sharedService.gridOptions.enableColumnPicker) {
+      this.columnPickerExtension.dispose();
+      this.columnPickerExtension.register();
+    }
+
+    if (this.sharedService.gridOptions.enableGridMenu) {
+      this.gridMenuExtension.dispose();
+      this.gridMenuExtension.register();
     }
   }
 

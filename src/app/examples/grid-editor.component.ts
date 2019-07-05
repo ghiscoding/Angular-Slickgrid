@@ -112,6 +112,8 @@ export class GridEditorComponent implements OnInit {
       {
         id: 'edit',
         field: 'id',
+        excludeFromColumnPicker: true,
+        excludeFromGridMenu: true,
         excludeFromHeaderMenu: true,
         formatter: Formatters.editIcon,
         minWidth: 30,
@@ -126,6 +128,8 @@ export class GridEditorComponent implements OnInit {
       }, {
         id: 'delete',
         field: 'id',
+        excludeFromColumnPicker: true,
+        excludeFromGridMenu: true,
         excludeFromHeaderMenu: true,
         formatter: Formatters.deleteIcon,
         minWidth: 30,
