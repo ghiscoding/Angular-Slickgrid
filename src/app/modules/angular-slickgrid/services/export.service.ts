@@ -88,7 +88,7 @@ export class ExportService {
   // Private functions
   // -----------------------
 
-  getDataOutput(): string {
+  private getDataOutput(): string {
     const columns = this._grid.getColumns() || [];
     const delimiter = this._exportOptions.delimiter || '';
     const format = this._exportOptions.format || '';
@@ -128,7 +128,7 @@ export class ExportService {
   /**
    * Get all the grid row data and return that as an output string
    */
-  getAllGridRowData(columns: Column[], lineCarriageReturn: string): string {
+  private getAllGridRowData(columns: Column[], lineCarriageReturn: string): string {
     const outputDataStrings = [];
     const lineCount = this._dataView.getLength();
 
@@ -158,7 +158,7 @@ export class ExportService {
    * Get all header titles and their keys, translate the title when required.
    * @param columns of the grid
    */
-  getColumnHeaders(columns: Column[]): ExportColumnHeader[] {
+  private getColumnHeaders(columns: Column[]): ExportColumnHeader[] {
     if (!columns || !Array.isArray(columns) || columns.length === 0) {
       return null;
     }
@@ -186,7 +186,7 @@ export class ExportService {
    * @param row
    * @param itemObj
    */
-  readRegularRowData(columns: Column[], row: number, itemObj: any) {
+  private readRegularRowData(columns: Column[], row: number, itemObj: any) {
     let idx = 0;
     const rowOutputStrings = [];
     const delimiter = this._exportOptions.delimiter;
@@ -265,7 +265,7 @@ export class ExportService {
    * Get the grouped title(s), for example if we grouped by salesRep, the returned result would be:: 'Sales Rep'
    * @param itemObj
    */
-  readGroupedTitleRow(itemObj: any) {
+  private readGroupedTitleRow(itemObj: any) {
     let groupName = sanitizeHtmlToText(itemObj.title);
     const exportQuoteWrapper = this._exportQuoteWrapper || '';
     const format = this._exportOptions.format;
@@ -284,7 +284,7 @@ export class ExportService {
    * For example if we grouped by "salesRep" and we have a Sum Aggregator on "sales", then the returned output would be:: ["Sum 123$"]
    * @param itemObj
    */
-  readGroupedTotalRow(columns: Column[], itemObj: any) {
+  private readGroupedTotalRow(columns: Column[], itemObj: any) {
     const delimiter = this._exportOptions.delimiter;
     const format = this._exportOptions.format;
     const groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
@@ -320,7 +320,7 @@ export class ExportService {
    * All other browsers will use plain javascript on client side to produce a file download.
    * @param options
    */
-  startDownloadFile(options: { filename: string, csvContent: any, format: FileType | string, useUtf8WithBom: boolean }): void {
+  private startDownloadFile(options: { filename: string, csvContent: any, format: FileType | string, useUtf8WithBom: boolean }): void {
     // IE(6-10) don't support javascript download and our service doesn't support either so throw an error, we have to make a round trip to the Web Server for exporting
     if (navigator.appName === 'Microsoft Internet Explorer') {
       throw new Error('Microsoft Internet Explorer 6 to 10 do not support javascript export to CSV. Please upgrade your browser.');
