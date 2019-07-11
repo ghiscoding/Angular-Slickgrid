@@ -12,8 +12,8 @@ const DATAGRID_BOTTOM_PADDING = 20;
 const DATAGRID_PAGINATION_HEIGHT = 35;
 
 export interface GridDimension {
-  height: number;
-  width: number;
+  height?: number;
+  width?: number;
   heightWithPagination?: number;
 }
 
@@ -102,7 +102,7 @@ export class ResizerService {
     }
 
     const availableHeight = gridHeight - gridOffsetTop - bottomPadding;
-    const availableWidth = containerElm.width() || 0;
+    const availableWidth = containerElm.width() || window.innerWidth || 0;
     const maxHeight = autoResizeOptions && autoResizeOptions.maxHeight || undefined;
     const minHeight = autoResizeOptions && autoResizeOptions.minHeight || DATAGRID_MIN_HEIGHT;
     const maxWidth = autoResizeOptions && autoResizeOptions.maxWidth || undefined;
