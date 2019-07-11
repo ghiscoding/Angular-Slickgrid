@@ -7,9 +7,10 @@ import {
   Formatter,
   GridOption
 } from './../models/index';
+import { Constants } from './../constants';
 import { addWhiteSpaces, htmlEntityDecode, sanitizeHtmlToText, titleCase } from './../services/utilities';
-import { Subject } from 'rxjs';
 import { TextEncoder } from 'text-encoding-utf-8';
+import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
 declare let $: any;
@@ -24,7 +25,7 @@ export class ExportService {
   private _lineCarriageReturn = '\n';
   private _dataView: any;
   private _grid: any;
-  private _exportQuoteWrapper: string;
+  private _exportQuoteWrapper = '';
   private _columnHeaders: ExportColumnHeader[];
   private _groupedHeaders: ExportColumnHeader[];
   private _hasGroupedItems = false;
@@ -157,9 +158,13 @@ export class ExportService {
     const columns = this._grid.getColumns() || [];
     const delimiter = this._exportOptions.delimiter || '';
     const format = this._exportOptions.format || '';
+
+    // Group By text, it could be set in the export options or from translation or if nothing is found then use the English constant text
     let groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle;
     if (!groupByColumnHeader && this._gridOptions.enableTranslate && this.translate && this.translate.instant) {
       groupByColumnHeader = this.translate.instant('GROUP_BY');
+    } else if (!groupByColumnHeader) {
+      groupByColumnHeader = Constants.TEXT_GROUP_BY;
     }
 
     // a CSV needs double quotes wrapper, the other types do not need any wrapper
@@ -169,10 +174,11 @@ export class ExportService {
     let outputDataString = '';
 
     // get grouped column titles and if found, we will add a "Group by" column at the first column index
+    // if it's a CSV format, we'll escape the text in double quotes
     const grouping = this._dataView.getGrouping();
     if (grouping && Array.isArray(grouping) && grouping.length > 0) {
       this._hasGroupedItems = true;
-      outputDataString += `${groupByColumnHeader}` + delimiter;
+      outputDataString += (format === FileType.csv) ? `"${groupByColumnHeader}"${delimiter}` : `${groupByColumnHeader}${delimiter}`;
     } else {
       this._hasGroupedItems = false;
     }
@@ -203,7 +209,6 @@ export class ExportService {
     // loop through all the grid rows of data
     for (let rowNumber = 0; rowNumber < lineCount; rowNumber++) {
       const itemObj = this._dataView.getItem(rowNumber);
-
       if (itemObj != null) {
         // Normal row (not grouped by anything) would have an ID which was predefined in the Grid Columns definition
         if (itemObj[this.datasetIdName] != null) {
@@ -264,7 +269,7 @@ export class ExportService {
     const rowOutputStrings = [];
     const delimiter = this._exportOptions.delimiter;
     const format = this._exportOptions.format;
-    const exportQuoteWrapper = this._exportQuoteWrapper || '';
+    const exportQuoteWrapper = this._exportQuoteWrapper;
 
     for (let col = 0, ln = columns.length; col < ln; col++) {
       const columnDef = columns[col];
@@ -277,7 +282,8 @@ export class ExportService {
 
       // if we are grouping and are on 1st column index, we need to skip this column since it will be used later by the grouping text:: Group by [columnX]
       if (this._hasGroupedItems && idx === 0) {
-        rowOutputStrings.push(`""`);
+        const emptyValue = format === FileType.csv ? `""` : '';
+        rowOutputStrings.push(emptyValue);
       }
 
       // does the user want to evaluate current column Formatter?
@@ -335,12 +341,12 @@ export class ExportService {
   }
 
   /**
-   * Get the grouped title(s), for example if we grouped by salesRep, the returned result would be:: 'Sales Rep'
+   * Get the grouped title(s) and its group title formatter, for example if we grouped by salesRep, the returned result would be:: 'Sales Rep: John Dow (2 items)'
    * @param itemObj
    */
   private readGroupedTitleRow(itemObj: any) {
     let groupName = sanitizeHtmlToText(itemObj.title);
-    const exportQuoteWrapper = this._exportQuoteWrapper || '';
+    const exportQuoteWrapper = this._exportQuoteWrapper;
     const format = this._exportOptions.format;
 
     groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
@@ -349,11 +355,11 @@ export class ExportService {
       // when CSV we also need to escape double quotes twice, so " becomes ""
       groupName = groupName.toString().replace(/"/gi, `""`);
     }
-    return exportQuoteWrapper + ' ' + groupName + exportQuoteWrapper;
+    return exportQuoteWrapper + groupName + exportQuoteWrapper;
   }
 
   /**
-   * Get the grouped totals, these are set by Slick Aggregators.
+   * Get the grouped totals (below the regular rows), these are set by Slick Aggregators.
    * For example if we grouped by "salesRep" and we have a Sum Aggregator on "sales", then the returned output would be:: ["Sum 123$"]
    * @param itemObj
    */
@@ -361,11 +367,13 @@ export class ExportService {
     const delimiter = this._exportOptions.delimiter;
     const format = this._exportOptions.format;
     const groupingAggregatorRowText = this._exportOptions.groupingAggregatorRowText || '';
-    const exportQuoteWrapper = this._exportQuoteWrapper || '';
+    const exportQuoteWrapper = this._exportQuoteWrapper;
     const outputStrings = [`${exportQuoteWrapper}${groupingAggregatorRowText}${exportQuoteWrapper}`];
 
     columns.forEach((columnDef) => {
       let itemData = '';
+
+      const skippedField = columnDef.excludeFromExport || false;
 
       // if there's a groupTotalsFormatter, we will re-run it to get the exact same output as what is shown in UI
       if (columnDef.groupTotalsFormatter) {
@@ -381,7 +389,11 @@ export class ExportService {
         // when CSV we also need to escape double quotes twice, so a double quote " becomes 2x double quotes ""
         itemData = itemData.toString().replace(/"/gi, `""`);
       }
-      outputStrings.push(exportQuoteWrapper + itemData + exportQuoteWrapper);
+
+      // add the column (unless user wants to skip it)
+      if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
+        outputStrings.push(exportQuoteWrapper + itemData + exportQuoteWrapper);
+      }
     });
 
     return outputStrings.join(delimiter);

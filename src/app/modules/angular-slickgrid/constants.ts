@@ -7,6 +7,7 @@ export class Constants {
   static TEXT_EXPORT_IN_CSV_FORMAT = 'Export in CSV format';
   static TEXT_EXPORT_IN_TEXT_FORMAT = 'Export in Text format (Tab delimited)';
   static TEXT_FORCE_FIT_COLUMNS = 'Force fit columns';
+  static TEXT_GROUP_BY = 'Group By';
   static TEXT_HIDE_COLUMN = 'Hide Column';
   static TEXT_REFRESH_DATASET = 'Refresh Dataset';
   static TEXT_REMOVE_FILTER = 'Remove Filter';
