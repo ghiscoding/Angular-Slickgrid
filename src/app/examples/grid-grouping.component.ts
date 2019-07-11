@@ -3,14 +3,16 @@ import {
   AngularGridInstance,
   Aggregators,
   Column,
+  DelimiterType,
   FieldType,
+  FileType,
   Filters,
   Formatters,
   GridOption,
   Grouping,
   GroupTotalFormatters,
   SortDirectionNumber,
-  Sorters
+  Sorters,
 } from './../modules/angular-slickgrid';
 import { Subscription } from 'rxjs';
 
@@ -51,6 +53,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
     this.columnDefinitions = [
       {
         id: 'sel', name: '#', field: 'num', width: 40,
+        excludeFromExport: true,
         maxWidth: 70,
         resizable: true,
         filterable: true,
@@ -143,6 +146,9 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
       enableGrouping: true,
       exportOptions: {
         sanitizeDataExport: true
+      },
+      gridMenu: {
+        hideExportTextDelimitedCommand: false
       }
     };
 
@@ -195,12 +201,18 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
     this.dataviewObj.expandAllGroups();
   }
 
+  exportToCsv(type = 'csv') {
+    this.angularGrid.exportService.exportToFile({
+      delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
+      filename: 'myExport',
+      format: (type === 'csv') ? FileType.csv : FileType.txt
+    });
+  }
+
   groupByDuration() {
     this.dataviewObj.setGrouping({
       getter: 'duration',
-      formatter: (g) => {
-        return `Duration:  ${g.value} <span style="color:green">(${g.count} items)</span>`;
-      },
+      formatter: (g) => `Duration: ${g.value} <span style="color:green">(${g.count} items)</span>`,
       aggregators: [
         new Aggregators.Avg('percentComplete'),
         new Aggregators.Sum('cost')
@@ -214,9 +226,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
   groupByDurationOrderByCount(aggregateCollapsed) {
     this.dataviewObj.setGrouping({
       getter: 'duration',
-      formatter: (g) => {
-        return `Duration:  ${g.value} <span style="color:green">(${g.count} items)</span>`;
-      },
+      formatter: (g) => `Duration: ${g.value} <span style="color:green">(${g.count} items)</span>`,
       comparer: (a, b) => {
         return a.count - b.count;
       },
@@ -233,9 +243,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
     this.dataviewObj.setGrouping([
       {
         getter: 'duration',
-        formatter: (g) => {
-          return `Duration:  ${g.value}  <span style="color:green">(${g.count} items)</span>`;
-        },
+        formatter: (g) => `Duration: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
         aggregators: [
           new Aggregators.Sum('duration'),
           new Aggregators.Sum('cost')
@@ -245,9 +253,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
       },
       {
         getter: 'effortDriven',
-        formatter: (g) => {
-          return `Effort-Driven:  ${(g.value ? 'True' : 'False')} <span style="color:green">(${g.count} items)</span>`;
-        },
+        formatter: (g) => `Effort-Driven: ${(g.value ? 'True' : 'False')} <span style="color:green">(${g.count} items)</span>`,
         aggregators: [
           new Aggregators.Avg('percentComplete'),
           new Aggregators.Sum('cost')
@@ -262,9 +268,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
     this.dataviewObj.setGrouping([
       {
         getter: 'duration',
-        formatter: (g) => {
-          return `Duration:  ${g.value}  <span style="color:green">(${g.count} items)</span>`;
-        },
+        formatter: (g) => `Duration: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
         aggregators: [
           new Aggregators.Sum('duration'),
           new Aggregators.Sum('cost')
@@ -274,9 +278,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
       },
       {
         getter: 'effortDriven',
-        formatter: (g) => {
-          return `Effort-Driven:  ${(g.value ? 'True' : 'False')}  <span style="color:green">(${g.count} items)</span>`;
-        },
+        formatter: (g) => `Effort-Driven: ${(g.value ? 'True' : 'False')}  <span style="color:green">(${g.count} items)</span>`,
         aggregators: [
           new Aggregators.Sum('duration'),
           new Aggregators.Sum('cost')
@@ -285,9 +287,7 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
       },
       {
         getter: 'percentComplete',
-        formatter: (g) => {
-          return `% Complete:  ${g.value}  <span style="color:green">(${g.count} items)</span>`;
-        },
+        formatter: (g) => `% Complete: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
         aggregators: [
           new Aggregators.Avg('percentComplete')
         ],

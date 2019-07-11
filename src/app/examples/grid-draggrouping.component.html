@@ -11,16 +11,19 @@
             50k rows
           </button>
           <button class="btn btn-default btn-xs" (click)="clearGroupsAndSelects()">
-            Clear grouping
+            <i class="fa fa-times"></i> Clear grouping
           </button>
           <button class="btn btn-default btn-xs" (click)="collapseAllGroups()">
-            Collapse all groups
+            <i class="fa fa-compress"></i> Collapse all groups
           </button>
           <button class="btn btn-default btn-xs" (click)="expandAllGroups()">
-            Expand all groups
+            <i class="fa fa-expand"></i> Expand all groups
           </button>
           <button class="btn btn-default btn-xs" (click)="toggleDraggableGroupingRow()">
             Toggle Draggable Grouping Row
+          </button>
+          <button class="btn btn-default btn-xs" (click)="exportToCsv('csv')">
+            <i class="fa fa-download"></i> Export to CSV
           </button>
         </div>
 
