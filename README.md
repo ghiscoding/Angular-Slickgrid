@@ -94,7 +94,7 @@ Screenshots from the demo app with the `Bootstrap` theme (that is the only avail
 
 ### Draggable Grouping & Aggregators
 
-![Draggable Grouping](/screenshots/draggable_grouping.png)
+![Draggable Grouping](/screenshots/draggable-grouping.png)
 
 ### Slickgrid Example with Server Side (Filter/Sort/Pagination)
 #### Comes with OData & GraphQL support (you can implement custom too)
