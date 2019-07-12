@@ -11,21 +11,27 @@
 ### Brief introduction
 One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. I have used a few datagrids and SlickGrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row). We will be using the [6pac/SlickGrid](https://github.com/6pac/SlickGrid/) fork, this is the most active fork since the original @mleibman fork was closed some time ago by his author for personal reasons. Also worth to know, I also contributed a lot to the 6pac/SlickGrid fork for the benefit of Angular-Slickgrid.
 
-### Angular Compatibility
-- version `1.x.x` for Angular 4 to 6 
-   - Angular 6, is only supported through `rxjs-compat` as shown in this [post](https://github.com/ghiscoding/Angular-Slickgrid/issues/36#issuecomment-395710915). It's preferable to upgrade to Angular 7+ to avoid using the `rxjs-compat` version. 
-- version `2.x.x` for Angular 7+
-
 ### NPM Package
 [Angular-Slickgrid on NPM](https://www.npmjs.com/package/angular-slickgrid)
 
 ### License
 [MIT License](LICENSE)
 
+### Use it, like it?
+You like and use this great library `Angular-Slickgrid`? Please upvote :star: and if you want to contribute, please feel free to do so. :smile:
+
 ### Demo page
 `Angular-Slickgrid` supports both `Bootstrap 3` and `Bootstrap 4`, you can see a demo of each one below.
 - [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/Angular-Slickgrid/tree/master/src/app/examples)
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-bs4-demo) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-bs4-demo/tree/master/src/app/examples)
+
+### Angular Compatibility
+- version `1.x.x` for Angular 4 to 6 
+   - Angular 6, is only supported through `rxjs-compat` as shown in this [post](https://github.com/ghiscoding/Angular-Slickgrid/issues/36#issuecomment-395710915). It's preferable to upgrade to Angular 7+ to avoid using the `rxjs-compat` version. 
+- version `2.x.x` for Angular 7+
+
+### Installation
+Refer to the [Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)
 
 #### How to load data with `HttpClient`?
 You might notice that all demos are coded with mocked dataset in each examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
@@ -43,9 +49,6 @@ Technically speaking, `Material` theme is not provided, but it should still work
 The styling might need some adjustments to make it look like `Material` but there's over 300+ [SASS variables](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/dist/styles/sass/_variables.scss), 
 so I'm sure making a Material Theme is totally doable and if you do, please contribute it as a new theme to the project. Thank you. 
 
-### Installation
-Refer to the [Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)
-
 ### Who is using Angular-Slickgrid?
 Are you using Angular-Slickgrid? Add your company/site/project to the [Used by Who](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Used-by-Who%3F) list.
 
@@ -55,6 +58,10 @@ You like the library and would like contribute? That would be awesome, the first
 ## Wiki / Documentation
 The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Slickgrid - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with. You can also take a look at the [Demo page](https://ghiscoding.github.io/Angular-Slickgrid), it includes sample for most of the features and it keeps growing (so you might want to consult it whenever a new version comes out).
 
+## Like my work?
+If you like my work, you can also support me with caffeine :smile:
+[Buy Me a Coffee](https://ko-fi.com/N4N679OT)
+
 ## Main features
 You can see some screenshots below and the instructions down below and if that is not enough for you to decide, head over to the [Wiki - Main Features](https://github.com/ghiscoding/Angular-Slickgrid/wiki).
 
@@ -63,12 +70,6 @@ What if `Angular-Slickgrid` is missing feature(s) compare to the original core l
 
 Fear not, and just simply reference the `SlickGrid` and `DataView` objects, just like in the core lib, those are exposed through Event Emitters. For more info continue reading on [Wiki - SlickGrid & DataView objects](/ghiscoding/Angular-Slickgrid/wiki/SlickGrid-&-DataView-Objects) and [Wiki - Grid & DataView Events](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-&-DataView-Events)
 
-## Use it, like it?
-You like and use this great library `Angular-Slickgrid`? You can always upvote :star: and/or contribute :)
-
-## Like my work?
-If you like my work, you can also support me with caffeine :smile:
-[Buy Me a Coffee](https://ko-fi.com/N4N679OT)
 
 ## Screenshots
 
