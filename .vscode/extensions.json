@@ -1,5 +1,6 @@
 {
   "recommendations": [
+    "andys8.jest-snippets",
     "angular.ng-template",
     "editorconfig.editorconfig",
     "msjsdiag.debugger-for-chrome",

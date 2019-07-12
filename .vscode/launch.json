@@ -23,7 +23,7 @@
       "args": [
         "--runInBand",
         "--config",
-        "${workspaceFolder}/jest.config.js"
+        "${workspaceFolder}/test/jest.config.js"
       ],
       "console": "internalConsole",
       "internalConsoleOptions": "neverOpen",
@@ -40,7 +40,7 @@
         "--runInBand",
         "${fileBasename}",
         "--config",
-        "${workspaceFolder}/jest.config.js"
+        "${workspaceFolder}/test/jest.config.js"
       ],
       "console": "internalConsole",
       "internalConsoleOptions": "neverOpen",
@@ -57,7 +57,7 @@
       "args": [
         "${fileBasename}",
         "--config",
-        "${workspaceFolder}/jest.config.js",
+        "${workspaceFolder}/test/jest.config.js",
         "-t=${selectedText}$",
         "--watch"
       ],

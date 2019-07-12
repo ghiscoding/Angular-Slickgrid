@@ -45,8 +45,8 @@ Thumbs.db
 # Distribution folder
 dist
 
-# tests
-/tests
+# Tests Report & Coverage
+/test/jest-coverage
 mochawesome-report
 junit.xml
 test-report.xml
