@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/angular-slickgrid
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:10-browsers
     steps:
       - checkout
       - restore_cache:
@@ -31,7 +31,7 @@ jobs:
   test_cypress:
     working_directory: ~/angular-slickgrid
     docker:
-      - image: cypress/base:6
+      - image: cypress/base:10
         environment:
           TERM: xterm
     parallelism: 1
