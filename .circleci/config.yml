@@ -16,6 +16,10 @@ jobs:
       - run:
           name: Install Jest JUnit coverage reporter
           command: yarn add --dev jest-junit
+      - save_cache:
+          key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - "node_modules"
       - run:
           name: Run Jest tests with JUnit as reporter
           command: ./node_modules/.bin/jest --config test/jest.config.js --ci --runInBand --collectCoverage=true --reporters=default --reporters=jest-junit
@@ -38,7 +42,7 @@ jobs:
       - save_cache:
           key: e2e-tests-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
-            - "node_modules"
+            - "test/cypress/node_modules"
       - run:
           name: Running Cypress E2E tests with JUnit reporter
           command: |
