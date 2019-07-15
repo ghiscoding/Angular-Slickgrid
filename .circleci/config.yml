@@ -22,6 +22,9 @@ jobs:
           environment:
               JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - run:
+          name: Start Dev WebServer
+          command: yarn start
+      - run:
           name: Installing Cypress dependencies with yarn
           command: |
             cd test/cypress
