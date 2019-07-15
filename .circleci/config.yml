@@ -9,10 +9,6 @@ jobs:
       - restore_cache:
           key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
       - run: yarn install
-      - save_cache:
-          key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
-          paths:
-            - "node_modules"
       - run:
           name: Install Jest JUnit coverage reporter
           command: yarn add --dev jest-junit
@@ -33,16 +29,21 @@ jobs:
           command: yarn start
           background: true
       - restore_cache:
-          key: e2e-tests-{{ .Branch }}-{{ checksum "package.json" }}
+          name: Restoring Cache for Cypress
+          keys:
+            - e2e-tests-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - e2e-tests-{{ .Branch }}-
+            - e2e-tests-
       - run:
           name: Installing Cypress dependencies with yarn
           command: |
             cd test/cypress
             yarn install --frozen-lockfile
       - save_cache:
-          key: e2e-tests-{{ .Branch }}-{{ checksum "package.json" }}
+          name: Saving Cache for Cypress
+          key: e2e-tests-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
-            - "test/cypress/node_modules"
+            - ~/test/cypress/.cache/yarn
       - run:
           name: Running Cypress E2E tests with JUnit reporter
           command: |
