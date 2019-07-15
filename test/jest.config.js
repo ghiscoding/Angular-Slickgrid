@@ -55,7 +55,7 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.+(ts|js)', '**/+(*.)+(spec|test).+(ts|js)'],
   testPathIgnorePatterns: [
     '/node_modules/',
-    '<rootDir>/cypress/',
+    '<rootDir>/test/cypress/',
     '<rootDir>/node_modules/',
   ]
 };
