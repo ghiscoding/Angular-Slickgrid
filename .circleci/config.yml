@@ -28,3 +28,47 @@ jobs:
       - run:
           name: Upload coverage to Codecov
           command: bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
+  test_cypress:
+    working_directory: ~/angular-slickgrid
+    docker:
+      - image: cypress/base:6
+        environment:
+          TERM: xterm
+    parallelism: 1
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restoring cached yarn dependencies
+          keys:
+            - integration-tests-yarn-dependencies-{{ checksum "test/cypress/yarn.lock" }}
+      - run:
+          name: Installing dependencies with yarn
+          command: |
+            cd test/cypress
+            yarn install --frozen-lockfile
+            yarn list
+      - save_cache:
+          name: Caching yarn dependencies
+          key: integration-tests-yarn-dependencies-{{ checksum "test/cypress/yarn.lock" }}
+          paths:
+            - ~/.cache/cypress
+            - ~/.cache/yarn
+            - ~/angular-slickgrid/test/cypress/node_modules
+      - run:
+          name: Running E2E tests with JUnit reporter
+          command: |
+            cd test/cypress
+            yarn cypress:ci:mochawesome
+      - store_test_results:
+          path: test/cypress/test-results
+      - store_artifacts:
+          path: test/cypress/test-results
+      - store_artifacts:
+          path: test/cypress/test-artifacts
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test_cypress
