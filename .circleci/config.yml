@@ -32,8 +32,6 @@ jobs:
     working_directory: ~/angular-slickgrid
     docker:
       - image: cypress/base:10
-        environment:
-          TERM: xterm
     parallelism: 1
     steps:
       - checkout
@@ -43,17 +41,7 @@ jobs:
             - integration-tests-yarn-dependencies-{{ checksum "test/cypress/yarn.lock" }}
       - run:
           name: Installing dependencies with yarn
-          command: |
-            cd test/cypress
-            yarn install --frozen-lockfile
-            yarn list
-      - save_cache:
-          name: Caching yarn dependencies
-          key: integration-tests-yarn-dependencies-{{ checksum "test/cypress/yarn.lock" }}
-          paths:
-            - ~/.cache/cypress
-            - ~/.cache/yarn
-            - ~/angular-slickgrid/test/cypress/node_modules
+          command: yarn install --frozen-lockfile
       - run:
           name: Running E2E tests with JUnit reporter
           command: |
