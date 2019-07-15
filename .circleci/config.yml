@@ -20,10 +20,11 @@ jobs:
           name: Run Jest tests with JUnit as reporter
           command: ./node_modules/.bin/jest --config test/jest.config.js --ci --runInBand --collectCoverage=true --reporters=default --reporters=jest-junit
           environment:
-              JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - run:
           name: Start Dev WebServer
           command: yarn start
+          background: true
       - run:
           name: Installing Cypress dependencies with yarn
           command: |
