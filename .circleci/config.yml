@@ -7,13 +7,13 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+          key: AngularCircleCI-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run: yarn install
       - run:
           name: Install Jest JUnit coverage reporter
           command: yarn add --dev jest-junit
       - save_cache:
-          key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
+          key: AngularCircleCI-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - "node_modules"
       - run:
