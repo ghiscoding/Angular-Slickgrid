@@ -1,14 +1,9 @@
-version: 2.1
-
-executors:
-  main-executor:
-    docker:
-      - image: circleci/node:10-browsers
-    working_directory: ~/angular-slickgrid
-
+version: 2
 jobs:
   build:
-    executor: main-executor
+    working_directory: ~/angular-slickgrid
+    docker:
+      - image: circleci/node:10-browsers
     steps:
       - checkout
       - restore_cache:
@@ -18,9 +13,6 @@ jobs:
           key: AngularCircleCI-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
             - "node_modules"
-  jest_unit_test:
-    executor: main-executor
-    steps:
       - run:
           name: Install Jest JUnit coverage reporter
           command: yarn add --dev jest-junit
@@ -28,13 +20,7 @@ jobs:
           name: Run Jest tests with JUnit as reporter
           command: ./node_modules/.bin/jest --config test/jest.config.js --ci --runInBand --collectCoverage=true --reporters=default --reporters=jest-junit
           environment:
-              JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
-      - run:
-          name: Upload Jest coverage to Codecov
-          command: bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
-  e2e_cypress:
-    executor: main-executor
-    steps:
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
       - run:
           name: Start Dev WebServer
           command: yarn start
@@ -50,20 +36,9 @@ jobs:
             cd test/cypress
             yarn cypress:ci:mochawesome
       - store_test_results:
-          path: test/cypress/test-results
+          path: reports/junit
       - store_artifacts:
-          path: test/cypress/test-results
-      - store_artifacts:
-          path: test/cypress/test-artifacts
-
-workflows:
-  version: 2
-  build_and_full_test:
-    jobs:
-      - build
-      - jest_unit_test:
-          requires:
-            - build
-      - e2e_cypress:
-          requires:
-            - build
+          path: reports/junit
+      - run:
+          name: Upload Jest coverage to Codecov
+          command: bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
