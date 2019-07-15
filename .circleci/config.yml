@@ -35,13 +35,11 @@ jobs:
     parallelism: 1
     steps:
       - checkout
-      - restore_cache:
-          name: Restoring cached yarn dependencies
-          keys:
-            - integration-tests-yarn-dependencies-{{ checksum "test/cypress/yarn.lock" }}
       - run:
           name: Installing dependencies with yarn
-          command: yarn install --frozen-lockfile
+          command: |
+            cd test/cypress
+            yarn install --frozen-lockfile
       - run:
           name: Running E2E tests with JUnit reporter
           command: |
