@@ -1,9 +1,14 @@
-version: 2
-jobs:
-  build:
-    working_directory: ~/angular-slickgrid
+version: 2.1
+
+executors:
+  main-executor:
     docker:
       - image: circleci/node:10-browsers
+    working_directory: ~/angular-slickgrid
+
+jobs:
+  build:
+    executor: main-executor
     steps:
       - checkout
       - restore_cache:
@@ -14,9 +19,7 @@ jobs:
           paths:
             - "node_modules"
   jest_unit_test:
-    working_directory: ~/angular-slickgrid
-    docker:
-      - image: circleci/node:10-browsers
+    executor: main-executor
     steps:
       - run:
           name: Install Jest JUnit coverage reporter
@@ -30,10 +33,12 @@ jobs:
           name: Upload Jest coverage to Codecov
           command: bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
   e2e_cypress:
-    working_directory: ~/angular-slickgrid
-    docker:
-      - image: circleci/node:10-browsers
+    executor: main-executor
     steps:
+      - run:
+          name: Start Dev WebServer
+          command: yarn start
+          background: true
       - run:
           name: Installing Cypress dependencies with yarn
           command: |
