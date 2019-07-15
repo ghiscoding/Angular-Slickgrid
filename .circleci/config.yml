@@ -14,10 +14,10 @@ jobs:
           paths:
             - "node_modules"
       - run:
-          name: Install JUnit coverage reporter
+          name: Install Jest JUnit coverage reporter
           command: yarn add --dev jest-junit
       - run:
-          name: Run tests with JUnit as reporter
+          name: Run Jest tests with JUnit as reporter
           command: ./node_modules/.bin/jest --config test/jest.config.js --ci --runInBand --collectCoverage=true --reporters=default --reporters=jest-junit
           environment:
               JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
@@ -36,12 +36,12 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Installing dependencies with yarn
+          name: Installing Cypress dependencies with yarn
           command: |
             cd test/cypress
             yarn install --frozen-lockfile
       - run:
-          name: Running E2E tests with JUnit reporter
+          name: Running Cypress E2E tests with JUnit reporter
           command: |
             cd test/cypress
             yarn cypress:ci:mochawesome
