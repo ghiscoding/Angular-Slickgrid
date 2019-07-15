@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build_and_test:
     working_directory: ~/angular-slickgrid
     docker:
       - image: circleci/node:10-browsers
@@ -21,20 +21,6 @@ jobs:
           command: ./node_modules/.bin/jest --config test/jest.config.js --ci --runInBand --collectCoverage=true --reporters=default --reporters=jest-junit
           environment:
               JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
-      - store_test_results:
-          path: reports/junit
-      - store_artifacts:
-          path: reports/junit
-      - run:
-          name: Upload coverage to Codecov
-          command: bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
-  test_cypress:
-    working_directory: ~/angular-slickgrid
-    docker:
-      - image: cypress/base:10
-    parallelism: 1
-    steps:
-      - checkout
       - run:
           name: Installing Cypress dependencies with yarn
           command: |
@@ -46,15 +32,9 @@ jobs:
             cd test/cypress
             yarn cypress:ci:mochawesome
       - store_test_results:
-          path: test/cypress/test-results
+          path: reports/junit
       - store_artifacts:
-          path: test/cypress/test-results
-      - store_artifacts:
-          path: test/cypress/test-artifacts
-
-workflows:
-  version: 2
-  build_and_test:
-    jobs:
-      - build
-      - test_cypress
+          path: reports/junit
+      - run:
+          name: Upload Jest coverage to Codecov
+          command: bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
