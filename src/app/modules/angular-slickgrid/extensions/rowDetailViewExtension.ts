@@ -119,6 +119,11 @@ export class RowDetailViewExtension implements Extension {
     return null;
   }
 
+  /** Get the instance of the SlickGrid addon (control or plugin). */
+  getAddonInstance() {
+    return this._addon;
+  }
+
   register(rowSelectionPlugin?: any) {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
       // the plugin has to be created BEFORE the grid (else it behaves oddly), but we can only watch grid events AFTER the grid is created

@@ -46,6 +46,11 @@ export class DraggableGroupingExtension implements Extension {
     return null;
   }
 
+  /** Get the instance of the SlickGrid addon (control or plugin). */
+  getAddonInstance() {
+    return this._addon;
+  }
+
   register(): any {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
       this.sharedService.grid.registerPlugin(this._addon);

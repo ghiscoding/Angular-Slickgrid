@@ -40,16 +40,10 @@ describe('groupItemMetaProviderExtension', () => {
       const pluginSpy = jest.spyOn(SharedService.prototype.grid, 'registerPlugin');
 
       const instance = extension.register();
+      const addonInstance = extension.getAddonInstance();
 
-      expect(sharedService.groupItemMetadataProvider).toEqual(instance);
-      expect(pluginSpy).toHaveBeenCalledWith(instance);
-    });
-
-    it('should register the addon', () => {
-      const pluginSpy = jest.spyOn(SharedService.prototype.grid, 'registerPlugin');
-
-      const instance = extension.register();
-
+      expect(instance).toBeTruthy();
+      expect(instance).toEqual(addonInstance);
       expect(sharedService.groupItemMetadataProvider).toEqual(instance);
       expect(pluginSpy).toHaveBeenCalledWith(instance);
     });

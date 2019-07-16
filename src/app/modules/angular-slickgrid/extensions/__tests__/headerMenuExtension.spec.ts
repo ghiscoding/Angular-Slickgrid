@@ -150,7 +150,10 @@ describe('headerMenuExtension', () => {
       const onRegisteredSpy = jest.spyOn(SharedService.prototype.gridOptions.headerMenu, 'onExtensionRegistered');
 
       const instance = extension.register();
+      const addonInstance = extension.getAddonInstance();
 
+      expect(instance).toBeTruthy();
+      expect(instance).toEqual(addonInstance);
       expect(mockAddon).toHaveBeenCalledWith({
         autoAlignOffset: 12,
         minWidth: 140,

@@ -51,7 +51,10 @@ describe('rowSelectionExtension', () => {
       const pluginSpy = jest.spyOn(SharedService.prototype.grid, 'setSelectionModel');
 
       const instance = extension.register();
+      const addonInstance = extension.getAddonInstance();
 
+      expect(instance).toBeTruthy();
+      expect(instance).toEqual(addonInstance);
       expect(mockAddon).toHaveBeenCalledWith({});
       expect(pluginSpy).toHaveBeenCalledWith(instance);
     });
