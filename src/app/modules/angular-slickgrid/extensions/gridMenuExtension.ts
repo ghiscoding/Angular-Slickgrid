@@ -58,8 +58,9 @@ export class GridMenuExtension implements Extension {
     }
   }
 
-  showGridMenu(e) {
-    this._addon.showGridMenu(e);
+  /** Get the instance of the SlickGrid addon (control or plugin). */
+  getAddonInstance() {
+    return this._addon;
   }
 
   /** Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...) */
@@ -177,6 +178,10 @@ export class GridMenuExtension implements Extension {
         }
       });
     }
+  }
+
+  showGridMenu(e) {
+    this._addon.showGridMenu(e);
   }
 
   /** Translate the Grid Menu titles and column picker */

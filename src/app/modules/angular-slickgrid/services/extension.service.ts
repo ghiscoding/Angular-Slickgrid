@@ -92,7 +92,10 @@ export class ExtensionService {
    */
   getSlickgridAddonInstance(name: ExtensionName): any {
     const extension = this.getExtensionByName(name);
-    if (extension && (extension.instance || extension.addon)) {
+    if (extension && extension.class && (extension.instance || extension.addon)) {
+      if (extension.class && extension.class.getAddonInstance) {
+        return extension.class.getAddonInstance();
+      }
       return extension.instance;
     }
     return null;

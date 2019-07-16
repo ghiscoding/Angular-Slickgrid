@@ -220,8 +220,11 @@ describe('rowDetailViewExtension', () => {
       const pluginSpy = jest.spyOn(SharedService.prototype.grid, 'registerPlugin');
 
       const instance = extension.create(columnsMock, gridOptionsMock);
+      const addonInstance = extension.getAddonInstance();
       extension.register();
 
+      expect(instance).toBeTruthy();
+      expect(instance).toEqual(addonInstance);
       expect(onRegisteredSpy).toHaveBeenCalledWith(instance);
       expect(mockSelectionModel).toHaveBeenCalledWith({ selectActiveRow: true });
       expect(pluginSpy).toHaveBeenCalledWith(instance);

@@ -18,6 +18,11 @@ export class AutoTooltipExtension implements Extension {
     }
   }
 
+  /** Get the instance of the SlickGrid addon (control or plugin). */
+  getAddonInstance() {
+    return this._addon;
+  }
+
   register(): any {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
       // dynamically import the SlickGrid plugin (addon) with RequireJS

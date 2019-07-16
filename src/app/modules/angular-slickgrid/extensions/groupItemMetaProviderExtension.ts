@@ -14,6 +14,11 @@ export class GroupItemMetaProviderExtension implements Extension {
     }
   }
 
+  /** Get the instance of the SlickGrid addon (control or plugin). */
+  getAddonInstance() {
+    return this._addon;
+  }
+
   /** register the group item metadata provider to add expand/collapse group handlers */
   register(): any {
     if (this.sharedService && this.sharedService.grid) {

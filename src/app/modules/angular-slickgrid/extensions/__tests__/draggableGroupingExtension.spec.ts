@@ -67,7 +67,10 @@ describe('draggableGroupingExtension', () => {
 
       const instance = extension.create(gridOptionsMock);
       const addon = extension.register();
+      const addonInstance = extension.getAddonInstance();
 
+      expect(instance).toBeTruthy();
+      expect(instance).toEqual(addonInstance);
       expect(addon).not.toBeNull();
       expect(mockAddon).toHaveBeenCalledWith({
         deleteIconCssClass: 'class',

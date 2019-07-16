@@ -72,8 +72,11 @@ describe('checkboxSelectorExtension', () => {
       const pluginSpy = jest.spyOn(SharedService.prototype.grid, 'registerPlugin');
 
       const instance = extension.create(columnsMock, gridOptionsMock);
+      const addonInstance = extension.getAddonInstance();
       const selectionModel = extension.register();
 
+      expect(instance).toBeTruthy();
+      expect(instance).toEqual(addonInstance);
       expect(selectionModel).not.toBeNull();
       expect(mockAddon).toHaveBeenCalledWith({});
       expect(mockSelectionModel).toHaveBeenCalledWith({});
