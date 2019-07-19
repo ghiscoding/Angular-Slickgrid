@@ -13,6 +13,7 @@ import {
   SearchTerm,
 } from './../models/index';
 import Flatpickr from 'flatpickr';
+import { Optional } from '@angular/core';
 
 // use Flatpickr from import or 'require', whichever works first
 declare function require(name: string): any;
@@ -35,7 +36,7 @@ export class CompoundDateFilter implements Filter {
   columnDef: Column;
   callback: FilterCallback;
 
-  constructor(private translate: TranslateService) { }
+  constructor(@Optional() private translate: TranslateService) { }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get gridOptions(): GridOption {
@@ -123,7 +124,7 @@ export class CompoundDateFilter implements Filter {
   private buildDatePickerInput(searchTerm?: SearchTerm) {
     const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
     const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateUtc);
-    let currentLocale = this.translate.currentLang || 'en';
+    let currentLocale = this.translate && this.translate.currentLang || 'en';
     if (currentLocale.length > 2) {
       currentLocale = currentLocale.substring(0, 2);
     }
@@ -180,12 +181,12 @@ export class CompoundDateFilter implements Filter {
   private getOptionValues(): { operator: OperatorString, description: string }[] {
     return [
       { operator: '' as OperatorString, description: '' },
-      { operator: '=' as OperatorString, description: '' },
-      { operator: '<' as OperatorString, description: '' },
-      { operator: '<=' as OperatorString, description: '' },
-      { operator: '>' as OperatorString, description: '' },
-      { operator: '>=' as OperatorString, description: '' },
-      { operator: '<>' as OperatorString, description: '' }
+      { operator: '=' as OperatorString, description: '=' },
+      { operator: '<' as OperatorString, description: '<' },
+      { operator: '<=' as OperatorString, description: '<=' },
+      { operator: '>' as OperatorString, description: '>' },
+      { operator: '>=' as OperatorString, description: '>=' },
+      { operator: '<>' as OperatorString, description: '<>' }
     ];
   }
 

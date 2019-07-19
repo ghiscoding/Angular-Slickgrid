@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   Column,
@@ -33,7 +33,7 @@ export class ExportService {
   onGridBeforeExportToFile = new Subject<boolean>();
   onGridAfterExportToFile = new Subject<{ content?: string; filename: string; format: string; useUtf8WithBom: boolean; }>();
 
-  constructor(private translate: TranslateService) { }
+  constructor(@Optional() private translate: TranslateService) { }
 
   private get datasetIdName(): string {
     return this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';
@@ -53,6 +53,10 @@ export class ExportService {
   init(grid: any, dataView: any): void {
     this._grid = grid;
     this._dataView = dataView;
+
+    if (this._gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
   }
 
   /**

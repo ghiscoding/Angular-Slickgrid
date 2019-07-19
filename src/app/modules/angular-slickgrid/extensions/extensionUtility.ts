@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Constants } from '../constants';
 import { ExtensionName } from '../models/index';
@@ -8,7 +8,11 @@ declare function require(name: string);
 
 @Injectable()
 export class ExtensionUtility {
-  constructor(private sharedService: SharedService, private translate: TranslateService) { }
+  constructor(private sharedService: SharedService, @Optional() private translate: TranslateService) {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
+  }
 
   /**
    * Remove a column from the grid by it's index in the grid
@@ -127,7 +131,7 @@ export class ExtensionUtility {
     if (Array.isArray(items)) {
       for (const item of items) {
         if (item[inputKey]) {
-          item[outputKey] = this.translate.instant(item[inputKey]);
+          item[outputKey] = this.translate && this.translate && this.translate.instant && this.translate.instant(item[inputKey]);
         }
       }
     }

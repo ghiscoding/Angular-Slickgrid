@@ -1,9 +1,13 @@
 export class Constants {
+  static TEXT_ALL_SELECTED = 'All Selected';
   static TEXT_CANCEL = 'Cancel';
   static TEXT_CLEAR_ALL_FILTERS = 'Clear All Filters';
   static TEXT_CLEAR_ALL_SORTING = 'Clear All Sorting';
+  static TEXT_CONTAINS = 'Contains';
   static TEXT_COLUMNS = 'Columns';
   static TEXT_COMMANDS = 'Commands';
+  static TEXT_EQUALS = 'Equals';
+  static TEXT_ENDS_WITH = 'Ends With';
   static TEXT_EXPORT_IN_CSV_FORMAT = 'Export in CSV format';
   static TEXT_EXPORT_IN_TEXT_FORMAT = 'Export in Text format (Tab delimited)';
   static TEXT_FORCE_FIT_COLUMNS = 'Force fit columns';
@@ -13,11 +17,14 @@ export class Constants {
   static TEXT_REMOVE_FILTER = 'Remove Filter';
   static TEXT_REMOVE_SORT = 'Remove Sort';
   static TEXT_SAVE = 'Save';
+  static TEXT_SELECT_ALL = 'Select All';
   static TEXT_SYNCHRONOUS_RESIZE = 'Synchronous resize';
   static TEXT_SORT_ASCENDING = 'Sort Ascending';
   static TEXT_SORT_DESCENDING = 'Sort Descending';
+  static TEXT_STARTS_WITH = 'Starts With';
   static TEXT_TOGGLE_FILTER_ROW = 'Toggle Filter Row';
   static TEXT_TOGGLE_PRE_HEADER_ROW = 'Toggle Pre-Header Row';
+  static TEXT_X_OF_Y_SELECTED = '# of % selected';
   static VALIDATION_REQUIRED_FIELD = 'Field is required';
   static VALIDATION_EDITOR_VALID_NUMBER = 'Please enter a valid number';
   static VALIDATION_EDITOR_VALID_INTEGER = 'Please enter a valid integer number';

@@ -1,3 +1,4 @@
+import { Constants } from './../constants';
 import { TranslateService } from '@ngx-translate/core';
 import { FieldType } from './../models/index';
 import {
@@ -149,19 +150,19 @@ export class CompoundInputFilter implements Filter {
     switch (type) {
       case FieldType.string:
         optionValues = [
-          { operator: '' as OperatorString, description: this.translate.instant('CONTAINS') },
-          { operator: '=' as OperatorString, description: this.translate.instant('EQUALS') },
-          { operator: 'a*' as OperatorString, description: this.translate.instant('STARTS_WITH') },
-          { operator: '*z' as OperatorString, description: this.translate.instant('ENDS_WITH') },
+          { operator: '' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('CONTAINS') || Constants.TEXT_CONTAINS },
+          { operator: '=' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('EQUALS') || Constants.TEXT_EQUALS },
+          { operator: 'a*' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('STARTS_WITH') || Constants.TEXT_STARTS_WITH },
+          { operator: '*z' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('ENDS_WITH') || Constants.TEXT_CONTAINS },
           /*
-          { operator: 'IN' as OperatorString, description: this.translate.instant('IN_COLLECTION_SEPERATED_BY_COMMA') },
-          { operator: 'NIN' as OperatorString, description: this.translate.instant('NOT_IN_COLLECTION_SEPERATED_BY_COMMA') },
+          { operator: 'IN' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('IN_COLLECTION_SEPERATED_BY_COMMA') },
+          { operator: 'NIN' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('NOT_IN_COLLECTION_SEPERATED_BY_COMMA') },
           */
         ];
         break;
       default:
         optionValues = [
-          { operator: '' as OperatorString, description: this.translate.instant('CONTAINS') },
+          { operator: '' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('CONTAINS') || Constants.TEXT_CONTAINS },
           { operator: '=' as OperatorString, description: '' },
           { operator: '<' as OperatorString, description: '' },
           { operator: '<=' as OperatorString, description: '' },

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Constants } from '../constants';
 import {
@@ -31,8 +31,11 @@ export class HeaderMenuExtension implements Extension {
     private filterService: FilterService,
     private sharedService: SharedService,
     private sortService: SortService,
-    private translate: TranslateService,
+    @Optional() private translate: TranslateService,
   ) {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
     this._eventHandler = new Slick.EventHandler();
   }
 
