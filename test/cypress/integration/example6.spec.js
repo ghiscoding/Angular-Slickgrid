@@ -1,5 +1,3 @@
-/// <reference types="Cypress" />
-
 describe('Example 6 - GraphQL Grid', () => {
   it('should display Example 6 title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/gridgraphql`);
@@ -66,6 +64,57 @@ describe('Example 6 - GraphQL Grid', () => {
       .should(($span) => {
         const text = $span.text().replace(/\s/g, ''); // remove all white spaces
         expect(text).to.eq('query{users(first:30,offset:0,orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],filterBy:[{field:"gender",operator:EQ,value:"male"},{field:"name",operator:Contains,value:"JohnDoe"},{field:"company",operator:IN,value:"xyz"}],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}}}}}');
+      });
+  });
+
+  it('should clear a single filter, that is not empty, by the header menu and expect query change', () => {
+    cy.get('#grid6')
+      .find('.slick-header-column:nth(1)')
+      .trigger('mouseover')
+      .children('.slick-header-menubutton')
+      .should('be.hidden')
+      .invoke('show')
+      .click();
+
+    cy.get('.slick-header-menu')
+      .should('be.visible')
+      .children('.slick-header-menuitem:nth-child(4)')
+      .children('.slick-header-menucontent')
+      .should('contain', 'Remove Filter')
+      .click();
+
+    // wait for the query to finish
+    cy.get('[data-test=status]').should('contain', 'done');
+
+    cy.get('[data-test=graphql-query-result]')
+      .should(($span) => {
+        const text = $span.text().replace(/\s/g, ''); // remove all white spaces
+        expect(text).to.eq('query{users(first:30,offset:0,orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],filterBy:[{field:"gender",operator:EQ,value:"male"},{field:"company",operator:IN,value:"xyz"}],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}}}}}');
+      });
+  });
+
+  it('should try clearing same filter, which is now empty, by the header menu and expect same query without loading spinner', () => {
+    cy.get('#grid6')
+      .find('.slick-header-column:nth(1)')
+      .trigger('mouseover')
+      .children('.slick-header-menubutton')
+      .invoke('show')
+      .click();
+
+    cy.get('.slick-header-menu')
+      .should('be.visible')
+      .children('.slick-header-menuitem:nth-child(4)')
+      .children('.slick-header-menucontent')
+      .should('contain', 'Remove Filter')
+      .click();
+
+    // wait for the query to finish
+    cy.get('[data-test=status]').should('contain', 'done');
+
+    cy.get('[data-test=graphql-query-result]')
+      .should(($span) => {
+        const text = $span.text().replace(/\s/g, ''); // remove all white spaces
+        expect(text).to.eq('query{users(first:30,offset:0,orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],filterBy:[{field:"gender",operator:EQ,value:"male"},{field:"company",operator:IN,value:"xyz"}],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}}}}}');
       });
   });
 

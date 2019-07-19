@@ -6,6 +6,7 @@
     "module": "commonjs",
     "target": "es5",
     "types": [
+      "cypress",
       "jasmine",
       "node"
     ]

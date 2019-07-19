@@ -169,6 +169,14 @@ export class FilterService {
   }
 
   clearFilterByColumnId(event: Event, columnId: number | string) {
+    // get current column filter before clearing, this allow us to know if the filter was empty prior to calling the clear filter
+    const currentColumnFilters = Object.keys(this._columnFilters) as ColumnFilter[];
+    let currentColFilter: ColumnFilter;
+    if (Array.isArray(currentColumnFilters)) {
+      currentColFilter = currentColumnFilters.find((name) => name === columnId);
+    }
+
+    // find the filter object and call its clear method with true (the argument tells the method it was called by a clear filter)
     const colFilter: Filter = this._filtersMetadata.find((filter: Filter) => filter.columnDef.id === columnId);
     if (colFilter && colFilter.clear) {
       colFilter.clear(true);
@@ -177,10 +185,12 @@ export class FilterService {
     let emitter: EmitterType = EmitterType.local;
     const isBackendApi = this._gridOptions && this._gridOptions.backendServiceApi || false;
 
-    // when using a backend service, we need to manually trigger a filter change
+    // when using a backend service, we need to manually trigger a filter change but only if the filter was previously filled
     if (isBackendApi) {
       emitter = EmitterType.remote;
-      this.onBackendFilterChange(event as KeyboardEvent, { grid: this._grid, columnFilters: this._columnFilters });
+      if (currentColFilter) {
+        this.onBackendFilterChange(event as KeyboardEvent, { grid: this._grid, columnFilters: this._columnFilters });
+      }
     }
 
     // emit an event when filter is cleared
