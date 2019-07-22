@@ -88,10 +88,9 @@ export class DateEditor implements Editor {
 
   getCurrentLocale(columnDef: Column, gridOptions: GridOption) {
     const options = gridOptions || columnDef.params || {};
-    if (options.i18n && options.i18n instanceof TranslateService) {
+    if (options && options.i18n instanceof TranslateService) {
       return options.i18n.currentLang;
     }
-
     return 'en';
   }
 

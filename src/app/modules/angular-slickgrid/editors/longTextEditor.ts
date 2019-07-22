@@ -33,7 +33,9 @@ export class LongTextEditor implements Editor {
   constructor(private args: any) {
     this.gridOptions = this.args.grid.getOptions() as GridOption;
     const options = this.gridOptions || this.args.column.params || {};
-    this._translate = options.i18n;
+    if (options && options.i18n instanceof TranslateService) {
+      this._translate = options.i18n;
+    }
 
     this.init();
   }
@@ -61,8 +63,8 @@ export class LongTextEditor implements Editor {
     const columnId = this.columnDef && this.columnDef.id;
     const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
     const title = this.columnEditor && this.columnEditor.title || '';
-    const cancelText = this._translate && this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
-    const saveText = this._translate && this._translate.instant('SAVE') || Constants.TEXT_SAVE;
+    const cancelText = this._translate && this._translate.instant && this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
+    const saveText = this._translate && this._translate.instant && this._translate.instant('SAVE') || Constants.TEXT_SAVE;
     const $container = $('body');
 
     this.$wrapper = $(`<div class="slick-large-editor-text editor-${columnId}" />`).appendTo($container);

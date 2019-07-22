@@ -77,8 +77,10 @@ export class SelectEditor implements Editor {
 
   constructor(protected args: any, protected isMultipleSelect) {
     this.gridOptions = this.args.grid.getOptions() as GridOption;
-    const gridOptions = this.gridOptions || this.args.column.params || {};
-    this._translate = gridOptions.i18n;
+    const options = this.gridOptions || this.args.column.params || {};
+    if (options && options.i18n instanceof TranslateService) {
+      this._translate = options.i18n;
+    }
 
     // provide the name attribute to the DOM element which will be needed to auto-adjust drop position (dropup / dropdown)
     const fieldId = this.columnDef && this.columnDef.id;
