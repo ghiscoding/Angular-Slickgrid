@@ -1,4 +1,3 @@
-import { Constants } from './../constants';
 import { Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -16,6 +15,8 @@ import {
   SearchTerm,
   SelectOption,
 } from './../models/index';
+import { Constants } from './../constants';
+import { Locale } from './../models/locale.interface';
 import { CollectionService } from './../services/collection.service';
 import { castToPromise, getDescendantProperty, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
 import { Observable, Subject, Subscription } from 'rxjs';
@@ -27,6 +28,7 @@ declare var $: any;
 
 export class SelectFilter implements Filter {
   private _isFilterFirstRender = true;
+  private _locales: Locale;
   private _shouldTriggerQuery = true;
 
   /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
@@ -55,53 +57,7 @@ export class SelectFilter implements Filter {
   /**
    * Initialize the Filter
    */
-  constructor(@Optional() protected translate: TranslateService, protected collectionService: CollectionService, protected isMultipleSelect = true) {
-    // default options used by this Filter, user can overwrite any of these by passing "otions"
-    const options: MultipleSelectOption = {
-      autoAdjustDropHeight: true,
-      autoAdjustDropPosition: true,
-      autoAdjustDropWidthByTextSize: true,
-      container: 'body',
-      filter: false,  // input search term on top of the select option list
-      maxHeight: 275,
-      single: true,
-
-      textTemplate: ($elm) => {
-        // render HTML code or not, by default it is sanitized and won't be rendered
-        const isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
-        return isRenderHtmlEnabled ? $elm.text() : $elm.html();
-      },
-      onClose: () => {
-        // we will subscribe to the onClose event for triggering our callback
-        // also add/remove "filled" class for styling purposes
-        const selectedItems = this.$filterElm.multipleSelect('getSelects');
-        if (Array.isArray(selectedItems) && selectedItems.length > 1 || (selectedItems.length === 1 && selectedItems[0] !== '')) {
-          this.isFilled = true;
-          this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
-        } else {
-          this.isFilled = false;
-          this.$filterElm.removeClass('filled');
-          this.$filterElm.siblings('div .search-filter').removeClass('filled');
-        }
-
-        this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems, shouldTriggerQuery: this._shouldTriggerQuery });
-        // reset flag for next use
-        this._shouldTriggerQuery = true;
-      }
-    };
-
-    if (this.isMultipleSelect) {
-      options.single = false;
-      options.okButton = true;
-      options.addTitle = true; // show tooltip of all selected items while hovering the filter
-      options.countSelected = this.translate && this.translate.instant && this.translate.instant('X_OF_Y_SELECTED') || Constants.TEXT_X_OF_Y_SELECTED;
-      options.allSelected = this.translate && this.translate.instant && this.translate.instant('ALL_SELECTED') || Constants.TEXT_ALL_SELECTED;
-      options.selectAllText = this.translate && this.translate.instant && this.translate.instant('SELECT_ALL') || Constants.TEXT_SELECT_ALL;
-      options.selectAllDelimiter = ['', '']; // remove default square brackets of default text "[Select All]" => "Select All"
-    }
-
-    this.defaultOptions = options;
-  }
+  constructor(@Optional() protected translate: TranslateService, protected collectionService: CollectionService, protected isMultipleSelect = true) { }
 
   /** Getter for the Column Filter itself */
   protected get columnFilter(): ColumnFilter {
@@ -155,6 +111,12 @@ export class SelectFilter implements Filter {
     if (this.enableTranslateLabel && (!this.translate || typeof this.translate.instant !== 'function')) {
       throw new Error(`[select-editor] The ngx-translate TranslateService is required for the Select Filter to work correctly`);
     }
+
+    // get locales provided by user in forRoot or else use default English locales via the Constants
+    this._locales = this.gridOptions && this.gridOptions.locales || Constants.locales;
+
+    // create the multiple select element
+    this.initMultipleSelect();
 
     // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
     // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
@@ -321,9 +283,7 @@ export class SelectFilter implements Filter {
     this.createDomElement(filterTemplate);
   }
 
-  /**
-   * Create the HTML template as a string
-   */
+  /** Create the HTML template as a string */
   protected buildTemplateHtmlString(optionCollection: any[], searchTerms: SearchTerm[]) {
     let options = '';
     const fieldId = this.columnDef && this.columnDef.id;
@@ -354,7 +314,7 @@ export class SelectFilter implements Filter {
           const labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey) ? this.translate.instant(labelKey || ' ') : labelKey;
           let prefixText = option[this.labelPrefixName] || '';
           let suffixText = option[this.labelSuffixName] || '';
-          let optionLabel = option[this.optionLabel] || '';
+          let optionLabel = option.hasOwnProperty(this.optionLabel) ? option[this.optionLabel] : '';
           optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
 
           // also translate prefix/suffix if enableTranslateLabel is true and text is a string
@@ -363,7 +323,7 @@ export class SelectFilter implements Filter {
           optionLabel = (this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? this.translate.instant(optionLabel || ' ') : optionLabel;
 
           // add to a temp array for joining purpose and filter out empty text
-          const tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
+          const tmpOptionArray = [prefixText, labelText.toString(), suffixText].filter((text) => text);
           let optionText = tmpOptionArray.join(separatorBetweenLabels);
 
           // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
@@ -442,5 +402,55 @@ export class SelectFilter implements Filter {
     const elementOptions: MultipleSelectOption = { ...this.defaultOptions, ...this.columnFilter.filterOptions };
     this.filterElmOptions = { ...this.defaultOptions, ...elementOptions };
     this.$filterElm = this.$filterElm.multipleSelect(this.filterElmOptions);
+  }
+
+  /** Initialize the Multiple Select element and its options to use */
+  protected initMultipleSelect() {
+    // default options used by this Filter, user can overwrite any of these by passing "otions"
+    const options: MultipleSelectOption = {
+      autoAdjustDropHeight: true,
+      autoAdjustDropPosition: true,
+      autoAdjustDropWidthByTextSize: true,
+      container: 'body',
+      filter: false,  // input search term on top of the select option list
+      maxHeight: 275,
+      single: true,
+
+      textTemplate: ($elm) => {
+        // render HTML code or not, by default it is sanitized and won't be rendered
+        const isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
+        return isRenderHtmlEnabled ? $elm.text() : $elm.html();
+      },
+      onClose: () => {
+        // we will subscribe to the onClose event for triggering our callback
+        // also add/remove "filled" class for styling purposes
+        const selectedItems = this.$filterElm.multipleSelect('getSelects');
+        if (Array.isArray(selectedItems) && selectedItems.length > 1 || (selectedItems.length === 1 && selectedItems[0] !== '')) {
+          this.isFilled = true;
+          this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
+        } else {
+          this.isFilled = false;
+          this.$filterElm.removeClass('filled');
+          this.$filterElm.siblings('div .search-filter').removeClass('filled');
+        }
+
+        this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems, shouldTriggerQuery: this._shouldTriggerQuery });
+        // reset flag for next use
+        this._shouldTriggerQuery = true;
+      }
+    };
+
+    if (this.isMultipleSelect) {
+      options.single = false;
+      options.okButton = true;
+      options.addTitle = true; // show tooltip of all selected items while hovering the filter
+      options.countSelected = this.translate && this.translate.instant && this.translate.instant('X_OF_Y_SELECTED') || this._locales && this._locales.TEXT_X_OF_Y_SELECTED;
+      options.allSelected = this.translate && this.translate.instant && this.translate.instant('ALL_SELECTED') || this._locales && this._locales.TEXT_ALL_SELECTED;
+      options.okButtonText = this.translate && this.translate.instant && this.translate.instant('OK') || this._locales && this._locales.TEXT_OK;
+      options.selectAllText = this.translate && this.translate.instant && this.translate.instant('SELECT_ALL') || this._locales && this._locales.TEXT_SELECT_ALL;
+      options.selectAllDelimiter = ['', '']; // remove default square brackets of default text "[Select All]" => "Select All"
+    }
+
+    this.defaultOptions = options;
   }
 }

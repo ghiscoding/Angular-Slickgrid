@@ -1,12 +1,13 @@
 import { Constants } from './../constants';
 import { TranslateService } from '@ngx-translate/core';
-import { FieldType } from './../models/index';
 import {
   Column,
   ColumnFilter,
+  FieldType,
   Filter,
   FilterArguments,
   FilterCallback,
+  Locale,
   GridOption,
   OperatorString,
   OperatorType,
@@ -18,6 +19,7 @@ declare var $: any;
 
 export class CompoundInputFilter implements Filter {
   private _clearFilterTriggered = false;
+  private _locales: Locale;
   private _shouldTriggerQuery = true;
   private _inputType = 'text';
   private $filterElm: any;
@@ -70,6 +72,9 @@ export class CompoundInputFilter implements Filter {
     this.columnDef = args.columnDef;
     this.operator = args.operator;
     this.searchTerms = args.searchTerms || [];
+
+    // get locales provided by user in forRoot or else use default English locales via the Constants
+    this._locales = this.gridOptions && this.gridOptions.locales || Constants.locales;
 
     // filter input can only have 1 search term, so we will use the 1st array index if it exist
     const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
@@ -150,10 +155,10 @@ export class CompoundInputFilter implements Filter {
     switch (type) {
       case FieldType.string:
         optionValues = [
-          { operator: '' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('CONTAINS') || Constants.TEXT_CONTAINS },
-          { operator: '=' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('EQUALS') || Constants.TEXT_EQUALS },
-          { operator: 'a*' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('STARTS_WITH') || Constants.TEXT_STARTS_WITH },
-          { operator: '*z' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('ENDS_WITH') || Constants.TEXT_CONTAINS },
+          { operator: '' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('CONTAINS') || this._locales && this._locales.TEXT_CONTAINS },
+          { operator: '=' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('EQUALS') || this._locales && this._locales.TEXT_EQUALS },
+          { operator: 'a*' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('STARTS_WITH') || this._locales && this._locales.TEXT_STARTS_WITH },
+          { operator: '*z' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('ENDS_WITH') || this._locales && this._locales.TEXT_CONTAINS },
           /*
           { operator: 'IN' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('IN_COLLECTION_SEPERATED_BY_COMMA') },
           { operator: 'NIN' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('NOT_IN_COLLECTION_SEPERATED_BY_COMMA') },
@@ -162,7 +167,7 @@ export class CompoundInputFilter implements Filter {
         break;
       default:
         optionValues = [
-          { operator: '' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('CONTAINS') || Constants.TEXT_CONTAINS },
+          { operator: '' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('CONTAINS') || this._locales && this._locales.TEXT_CONTAINS },
           { operator: '=' as OperatorString, description: '' },
           { operator: '<' as OperatorString, description: '' },
           { operator: '<=' as OperatorString, description: '' },

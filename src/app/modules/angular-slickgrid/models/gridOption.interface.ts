@@ -14,6 +14,7 @@ import {
   GridState,
   HeaderButton,
   HeaderMenu,
+  Locale,
   Pagination,
   RowDetailView,
   RowMoveManager
@@ -274,6 +275,9 @@ export interface GridOption {
 
   /** ngx-translate i18n translation service instance */
   i18n?: TranslateService;
+
+  /** Locale translations used by the library */
+  locales?: Locale;
 
   /** Do we leave space for new rows in the DOM visible buffer */
   leaveSpaceForNewRows?: boolean;
