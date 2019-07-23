@@ -30,7 +30,7 @@ export interface Locale {
   TEXT_EXPORT_IN_CSV_FORMAT: string;
 
   /** Text "Export in Text Format" shown in Grid Menu (when enabled) */
-  TEXT_EXPORT_IN_TEXT_FORMAT: string;
+  TEXT_EXPORT_IN_TEXT_FORMAT?: string;
 
   /** Text "Force fit Columns" displayed in the Column Picker & Grid Menu (when enabled) */
   TEXT_FORCE_FIT_COLUMNS: string;
@@ -41,11 +41,23 @@ export interface Locale {
   /** Text "Hide Column" shown in Header Menu */
   TEXT_HIDE_COLUMN: string;
 
+  /** Text "items" displayed in the Pagination (when enabled) */
+  TEXT_ITEMS?: string;
+
+  /** Text "items per page" displayed in the Pagination (when enabled) */
+  TEXT_ITEMS_PER_PAGE?: string;
+
+  /** Text "of" displayed in the Pagination (when enabled) */
+  TEXT_OF?: string;
+
   /** Text "OK" displayed in the Multiple Select Editor/Filter */
   TEXT_OK: string;
 
+  /** Text "Page" displayed in the Pagination (when enabled) */
+  TEXT_PAGE?: string;
+
   /** Text "Refresh Dataset" displayed in the Grid Menu (when enabled) */
-  TEXT_REFRESH_DATASET: string;
+  TEXT_REFRESH_DATASET?: string;
 
   /** Text "Remove Filter" shown in Header Menu */
   TEXT_REMOVE_FILTER: string;
@@ -69,13 +81,13 @@ export interface Locale {
   TEXT_STARTS_WITH: string;
 
   /** Text "Synchronous Resize" displayed in the Column Picker & Grid Menu (when enabled) */
-  TEXT_SYNCHRONOUS_RESIZE: string;
+  TEXT_SYNCHRONOUS_RESIZE?: string;
 
   /** Text "Toggle Filter Row" shown in Grid Menu (when enabled) */
-  TEXT_TOGGLE_FILTER_ROW: string;
+  TEXT_TOGGLE_FILTER_ROW?: string;
 
   /** Text "Toggle Pre-Header Row" shown in Grid Menu (when enabled) */
-  TEXT_TOGGLE_PRE_HEADER_ROW: string;
+  TEXT_TOGGLE_PRE_HEADER_ROW?: string;
 
   /** Text "3 of 10 selected" displayed in the Multiple Select Editor/Filter */
   TEXT_X_OF_Y_SELECTED: string;

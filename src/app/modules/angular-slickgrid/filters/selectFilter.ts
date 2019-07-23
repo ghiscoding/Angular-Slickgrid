@@ -108,7 +108,7 @@ export class SelectFilter implements Filter {
     this.optionLabel = this.customStructure && this.customStructure.optionLabel || 'value';
     this.valueName = this.customStructure && this.customStructure.value || 'value';
 
-    if (this.enableTranslateLabel && (!this.translate || typeof this.translate.instant !== 'function')) {
+    if (this.enableTranslateLabel && !this.gridOptions.enableTranslate && (!this.translate || typeof this.translate.instant !== 'function')) {
       throw new Error(`[select-editor] The ngx-translate TranslateService is required for the Select Filter to work correctly`);
     }
 
@@ -311,16 +311,16 @@ export class SelectFilter implements Filter {
           }
           const labelKey = (option.labelKey || option[this.labelName]) as string;
           const selected = (searchTerms.findIndex((term) => term === option[this.valueName]) >= 0) ? 'selected' : '';
-          const labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey) ? this.translate.instant(labelKey || ' ') : labelKey;
+          const labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey && this.gridOptions.enableTranslate) ? this.translate && this.translate.instant(labelKey || ' ') : labelKey;
           let prefixText = option[this.labelPrefixName] || '';
           let suffixText = option[this.labelSuffixName] || '';
           let optionLabel = option.hasOwnProperty(this.optionLabel) ? option[this.optionLabel] : '';
           optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
 
           // also translate prefix/suffix if enableTranslateLabel is true and text is a string
-          prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this.translate.instant(prefixText || ' ') : prefixText;
-          suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this.translate.instant(suffixText || ' ') : suffixText;
-          optionLabel = (this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? this.translate.instant(optionLabel || ' ') : optionLabel;
+          prefixText = (this.enableTranslateLabel && this.gridOptions.enableTranslate && prefixText && typeof prefixText === 'string') ? this.translate && this.translate.instant(prefixText || ' ') : prefixText;
+          suffixText = (this.enableTranslateLabel && this.gridOptions.enableTranslate && suffixText && typeof suffixText === 'string') ? this.translate && this.translate.instant(suffixText || ' ') : suffixText;
+          optionLabel = (this.enableTranslateLabel && this.gridOptions.enableTranslate && optionLabel && typeof optionLabel === 'string') ? this.translate && this.translate.instant(optionLabel || ' ') : optionLabel;
 
           // add to a temp array for joining purpose and filter out empty text
           const tmpOptionArray = [prefixText, labelText.toString(), suffixText].filter((text) => text);

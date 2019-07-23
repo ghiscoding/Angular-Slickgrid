@@ -1,5 +1,7 @@
-import { AfterViewInit, Component, EventEmitter, Injectable, Input, OnDestroy, Output } from '@angular/core';
-import { GraphqlResult, GridOption, Pagination } from './../models/index';
+import { AfterViewInit, Component, EventEmitter, Injectable, Input, OnDestroy, Optional, Output } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Constants } from '../constants';
+import { GraphqlResult, GridOption, Locale, Pagination } from './../models/index';
 import { executeBackendProcessesCallback, onBackendError } from '../services/backend-utilities';
 import { FilterService } from './../services/filter.service';
 import { GridService } from './../services/grid.service';
@@ -18,6 +20,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   private _filterSubcription: Subscription;
   private _gridPaginationOptions: GridOption;
   private _isFirstRender = true;
+  private _locales: Locale;
   @Output() onPaginationChanged = new EventEmitter<Pagination>();
   @Input() dataView: any;
   @Input()
@@ -42,8 +45,18 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   paginationPageSizes = [25, 75, 100];
   fromToParams: any = { from: this.dataFrom, to: this.dataTo, totalItems: this.totalItems };
 
+  // text translations (handled by ngx-translate or by custom locale)
+  textItemsPerPage: string;
+  textItems: string;
+  textOf: string;
+  textPage: string;
+
   /** Constructor */
-  constructor(private filterService: FilterService, private gridService: GridService) {}
+  constructor(private filterService: FilterService, private gridService: GridService, @Optional() private translate: TranslateService) {
+    if (this._gridPaginationOptions && this._gridPaginationOptions.enableTranslate && !this.translate) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
+  }
 
   ngOnDestroy() {
     this.dispose();
@@ -129,6 +142,12 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     if (!backendApi || !backendApi.service || !backendApi.process) {
       throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
     }
+
+    // get locales provided by user in forRoot or else use default English locales via the Constants
+    this._locales = this._gridPaginationOptions && this._gridPaginationOptions.locales || Constants.locales;
+
+    // translate all the text using ngx-translate or custom locales
+    this.translateAllUiTexts();
 
     if (this._gridPaginationOptions && this._gridPaginationOptions.pagination) {
       const pagination = this._gridPaginationOptions.pagination;
@@ -221,6 +240,18 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
       this.dataFrom = (this.pageNumber * this.itemsPerPage) - this.itemsPerPage + 1;
       this.dataTo = (this.totalItems < this.itemsPerPage) ? this.totalItems : (this.pageNumber * this.itemsPerPage);
     }
+  }
+
+  // --
+  // private functions
+  // --------------------
+
+  /** Translate all the texts shown in the UI, use ngx-translate service when available or custom locales when service is null */
+  private translateAllUiTexts() {
+    this.textItemsPerPage = this.translate && this.translate.instant && this.translate.instant('ITEMS_PER_PAGE' || ' ') || this._locales.TEXT_ITEMS_PER_PAGE;
+    this.textItems = this.translate && this.translate.instant && this.translate.instant('ITEMS' || ' ') || this._locales.TEXT_ITEMS;
+    this.textOf = this.translate && this.translate.instant && this.translate.instant('OF' || ' ') || this._locales.TEXT_OF;
+    this.textPage = this.translate && this.translate.instant && this.translate.instant('PAGE' || ' ') || this._locales.TEXT_PAGE;
   }
 
   /**
