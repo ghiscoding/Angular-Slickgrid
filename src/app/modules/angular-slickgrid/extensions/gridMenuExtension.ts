@@ -57,9 +57,8 @@ export class GridMenuExtension implements Extension {
     if (this._addon && this._addon.destroy) {
       this._addon.destroy();
     }
-    this._userOriginalGridMenu = undefined;
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && this.sharedService.gridOptions.gridMenu.customItems) {
-      this.sharedService.gridOptions.gridMenu.customItems = [];
+      this.sharedService.gridOptions.gridMenu = this._userOriginalGridMenu;
     }
   }
 
@@ -83,7 +82,8 @@ export class GridMenuExtension implements Extension {
 
       // merge original user grid menu items with internal items
       // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
-      this.sharedService.gridOptions.gridMenu.customItems = [...this._userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
+      const originalCustomItems = Array.isArray(this._userOriginalGridMenu.customItems) && this._userOriginalGridMenu.customItems || [];
+      this.sharedService.gridOptions.gridMenu.customItems = [...originalCustomItems, ...this.addGridMenuCustomCommands(originalCustomItems)];
       this.extensionUtility.translateItems(this.sharedService.gridOptions.gridMenu.customItems, 'titleKey', 'title');
       this.extensionUtility.sortItems(this.sharedService.gridOptions.gridMenu.customItems, 'positionOrder');
 
@@ -202,7 +202,8 @@ export class GridMenuExtension implements Extension {
 
       // merge original user grid menu items with internal items
       // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
-      this.sharedService.gridOptions.gridMenu.customItems = [...this._userOriginalGridMenu.customItems || [], ...this.addGridMenuCustomCommands()];
+      const originalCustomItems = Array.isArray(this._userOriginalGridMenu.customItems) && this._userOriginalGridMenu.customItems || [];
+      this.sharedService.gridOptions.gridMenu.customItems = [...originalCustomItems, ...this.addGridMenuCustomCommands(originalCustomItems)];
       this.extensionUtility.translateItems(this.sharedService.gridOptions.gridMenu.customItems, 'titleKey', 'title');
       this.extensionUtility.sortItems(this.sharedService.gridOptions.gridMenu.customItems, 'positionOrder');
 
@@ -226,104 +227,126 @@ export class GridMenuExtension implements Extension {
   // ------------------
 
   /** Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL) */
-  private addGridMenuCustomCommands() {
+  private addGridMenuCustomCommands(originalCustomItems: GridMenuItem[]) {
     const backendApi = this.sharedService.gridOptions.backendServiceApi || null;
     const gridMenuCustomItems: GridMenuItem[] = [];
 
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableFiltering) {
       // show grid menu: clear all filters
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllFiltersCommand) {
-        gridMenuCustomItems.push(
-          {
-            iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
-            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : this._locales && this._locales.TEXT_CLEAR_ALL_FILTERS,
-            disabled: false,
-            command: 'clear-filter',
-            positionOrder: 50
-          }
-        );
+        const commandName = 'clear-filter';
+        if (!originalCustomItems.find((item) => item.command === commandName)) {
+          gridMenuCustomItems.push(
+            {
+              iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
+              title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_FILTERS') : this._locales && this._locales.TEXT_CLEAR_ALL_FILTERS,
+              disabled: false,
+              command: commandName,
+              positionOrder: 50
+            }
+          );
+        }
       }
 
       // show grid menu: toggle filter row
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideToggleFilterCommand) {
-        gridMenuCustomItems.push(
-          {
-            iconCssClass: this.sharedService.gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
-            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : this._locales && this._locales.TEXT_TOGGLE_FILTER_ROW,
-            disabled: false,
-            command: 'toggle-filter',
-            positionOrder: 52
-          }
-        );
+        const commandName = 'toggle-filter';
+        if (!originalCustomItems.find((item) => item.command === commandName)) {
+          gridMenuCustomItems.push(
+            {
+              iconCssClass: this.sharedService.gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
+              title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('TOGGLE_FILTER_ROW') : this._locales && this._locales.TEXT_TOGGLE_FILTER_ROW,
+              disabled: false,
+              command: commandName,
+              positionOrder: 52
+            }
+          );
+        }
       }
 
       // show grid menu: refresh dataset
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi) {
-        gridMenuCustomItems.push(
-          {
-            iconCssClass: this.sharedService.gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
-            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : this._locales && this._locales.TEXT_REFRESH_DATASET,
-            disabled: false,
-            command: 'refresh-dataset',
-            positionOrder: 54
-          }
-        );
+        const commandName = 'refresh-dataset';
+        if (!originalCustomItems.find((item) => item.command === commandName)) {
+          gridMenuCustomItems.push(
+            {
+              iconCssClass: this.sharedService.gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
+              title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : this._locales && this._locales.TEXT_REFRESH_DATASET,
+              disabled: false,
+              command: commandName,
+              positionOrder: 54
+            }
+          );
+        }
       }
     }
 
     if (this.sharedService.gridOptions.showPreHeaderPanel) {
       // show grid menu: toggle pre-header row
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideTogglePreHeaderCommand) {
-        gridMenuCustomItems.push(
-          {
-            iconCssClass: this.sharedService.gridOptions.gridMenu.iconTogglePreHeaderCommand || 'fa fa-random',
-            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('TOGGLE_PRE_HEADER_ROW') : this._locales && this._locales.TEXT_TOGGLE_PRE_HEADER_ROW,
-            disabled: false,
-            command: 'toggle-preheader',
-            positionOrder: 52
-          }
-        );
+        const commandName = 'toggle-preheader';
+        if (!originalCustomItems.find((item) => item.command === commandName)) {
+          gridMenuCustomItems.push(
+            {
+              iconCssClass: this.sharedService.gridOptions.gridMenu.iconTogglePreHeaderCommand || 'fa fa-random',
+              title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('TOGGLE_PRE_HEADER_ROW') : this._locales && this._locales.TEXT_TOGGLE_PRE_HEADER_ROW,
+              disabled: false,
+              command: commandName,
+              positionOrder: 52
+            }
+          );
+        }
       }
     }
 
     if (this.sharedService.gridOptions.enableSorting) {
       // show grid menu: clear all sorting
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllSortingCommand) {
-        gridMenuCustomItems.push(
-          {
-            iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
-            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : this._locales && this._locales.TEXT_CLEAR_ALL_SORTING,
-            disabled: false,
-            command: 'clear-sorting',
-            positionOrder: 51
-          }
-        );
+        const commandName = 'clear-sorting';
+        if (!originalCustomItems.find((item) => item.command === commandName)) {
+          gridMenuCustomItems.push(
+            {
+              iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
+              title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('CLEAR_ALL_SORTING') : this._locales && this._locales.TEXT_CLEAR_ALL_SORTING,
+              disabled: false,
+              command: commandName,
+              positionOrder: 51
+            }
+          );
+        }
       }
     }
 
     // show grid menu: export to file
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportCsvCommand) {
-      gridMenuCustomItems.push(
-        {
-          iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
-          title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : this._locales && this._locales.TEXT_EXPORT_IN_CSV_FORMAT,
-          disabled: false,
-          command: 'export-csv',
-          positionOrder: 53
-        }
-      );
+      const commandName = 'export-csv';
+      if (!originalCustomItems.find((item) => item.command === commandName)) {
+        gridMenuCustomItems.push(
+          {
+            iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
+            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : this._locales && this._locales.TEXT_EXPORT_IN_CSV_FORMAT,
+            disabled: false,
+            command: commandName,
+            positionOrder: 53
+          }
+        );
+      }
     }
+
     // show grid menu: export to text file as tab delimited
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportTextDelimitedCommand) {
-      gridMenuCustomItems.push(
-        {
-          iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
-          title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : this._locales && this._locales.TEXT_EXPORT_IN_TEXT_FORMAT,
-          disabled: false,
-          command: 'export-text-delimited',
-          positionOrder: 54
-        }
-      );
+      const commandName = 'export-text-delimited';
+      if (!originalCustomItems.find((item) => item.command === commandName)) {
+        gridMenuCustomItems.push(
+          {
+            iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
+            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : this._locales && this._locales.TEXT_EXPORT_IN_TEXT_FORMAT,
+            disabled: false,
+            command: commandName,
+            positionOrder: 54
+          }
+        );
+      }
     }
 
     // add the custom "Commands" title if there are any commands

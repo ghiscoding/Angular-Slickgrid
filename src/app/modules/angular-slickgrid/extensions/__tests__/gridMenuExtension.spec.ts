@@ -126,6 +126,7 @@ describe('gridMenuExtension', () => {
       CLEAR_ALL_SORTING: 'Supprimer tous les tris',
       EXPORT_TO_CSV: 'Exporter en format CSV',
       EXPORT_TO_TAB_DELIMITED: 'Exporter en format texte (délimité par tabulation)',
+      HELP: 'Aide',
       COMMANDS: 'Commandes',
       COLUMNS: 'Colonnes',
       FORCE_FIT_COLUMNS: 'Ajustement forcé des colonnes',
@@ -294,6 +295,7 @@ describe('gridMenuExtension', () => {
       const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true } as unknown as GridOption;
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       extension.register();
+      extension.register(); // calling 2x register to make sure it doesn't duplicate commands
       expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
         { iconCssClass: 'fa fa-filter text-danger', title: 'Supprimer tous les filtres', disabled: false, command: 'clear-filter', positionOrder: 50 },
         { iconCssClass: 'fa fa-random', title: 'Basculer la ligne des filtres', disabled: false, command: 'toggle-filter', positionOrder: 52 },
@@ -305,6 +307,7 @@ describe('gridMenuExtension', () => {
       const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, gridMenu: { hideToggleFilterCommand: true, hideRefreshDatasetCommand: true } } as unknown as GridOption;
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       extension.register();
+      extension.register(); // calling 2x register to make sure it doesn't duplicate commands
       expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
         { iconCssClass: 'fa fa-filter text-danger', title: 'Supprimer tous les filtres', disabled: false, command: 'clear-filter', positionOrder: 50 }
       ]);
@@ -314,6 +317,7 @@ describe('gridMenuExtension', () => {
       const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, gridMenu: { hideClearAllFiltersCommand: true, hideRefreshDatasetCommand: true } } as unknown as GridOption;
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       extension.register();
+      extension.register(); // calling 2x register to make sure it doesn't duplicate commands
       expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
         { iconCssClass: 'fa fa-random', title: 'Basculer la ligne des filtres', disabled: false, command: 'toggle-filter', positionOrder: 52 },
       ]);
@@ -323,6 +327,7 @@ describe('gridMenuExtension', () => {
       const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, gridMenu: { hideClearAllFiltersCommand: true, hideToggleFilterCommand: true } } as unknown as GridOption;
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       extension.register();
+      extension.register(); // calling 2x register to make sure it doesn't duplicate commands
       expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
         { iconCssClass: 'fa fa-refresh', title: 'Rafraîchir les données', disabled: false, command: 'refresh-dataset', positionOrder: 54 }
       ]);
@@ -332,6 +337,7 @@ describe('gridMenuExtension', () => {
       const copyGridOptionsMock = { ...gridOptionsMock, showPreHeaderPanel: true } as unknown as GridOption;
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       extension.register();
+      extension.register(); // calling 2x register to make sure it doesn't duplicate commands
       expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
         { iconCssClass: 'fa fa-random', title: 'Basculer la ligne de pré-en-tête', disabled: false, command: 'toggle-preheader', positionOrder: 52 }
       ]);
@@ -348,6 +354,7 @@ describe('gridMenuExtension', () => {
       const copyGridOptionsMock = { ...gridOptionsMock, enableSorting: true } as unknown as GridOption;
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       extension.register();
+      extension.register(); // calling 2x register to make sure it doesn't duplicate commands
       expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
         { iconCssClass: 'fa fa-unsorted text-danger', title: 'Supprimer tous les tris', disabled: false, command: 'clear-sorting', positionOrder: 51 }
       ]);
@@ -364,6 +371,7 @@ describe('gridMenuExtension', () => {
       const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, gridMenu: { hideExportTextDelimitedCommand: true } } as unknown as GridOption;
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       extension.register();
+      extension.register(); // calling 2x register to make sure it doesn't duplicate commands
       expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
         { iconCssClass: 'fa fa-download', title: 'Exporter en format CSV', disabled: false, command: 'export-csv', positionOrder: 53 }
       ]);
@@ -380,6 +388,7 @@ describe('gridMenuExtension', () => {
       const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, gridMenu: { hideExportCsvCommand: true } } as unknown as GridOption;
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       extension.register();
+      extension.register(); // calling 2x register to make sure it doesn't duplicate commands
       expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
         { iconCssClass: 'fa fa-download', title: 'Exporter en format texte (délimité par tabulation)', disabled: false, command: 'export-text-delimited', positionOrder: 54 }
       ]);
@@ -390,6 +399,61 @@ describe('gridMenuExtension', () => {
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
       extension.register();
       expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([]);
+    });
+  });
+
+  describe('adding Grid Menu Custom Items', () => {
+    const customItemsMock = [{
+      iconCssClass: 'fa fa-question-circle',
+      titleKey: 'HELP',
+      disabled: false,
+      command: 'help',
+      positionOrder: 99
+    }];
+
+    beforeEach(() => {
+      const copyGridOptionsMock = {
+        ...gridOptionsMock,
+        enableExport: true,
+        gridMenu: {
+          customItems: customItemsMock,
+          hideExportCsvCommand: false,
+          hideExportTextDelimitedCommand: true,
+          hideRefreshDatasetCommand: true,
+          hideSyncResizeButton: true,
+          hideToggleFilterCommand: true,
+          hideTogglePreHeaderCommand: true
+        }
+      } as unknown as GridOption;
+
+      jest.spyOn(SharedService.prototype, 'dataView', 'get').mockReturnValue(dataViewStub);
+      jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
+      jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
+      jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(columnsMock);
+      jest.spyOn(SharedService.prototype, 'visibleColumns', 'get').mockReturnValue(columnsMock);
+      jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get').mockReturnValue(columnsMock);
+      jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+    });
+
+    afterEach(() => {
+      extension.dispose();
+    });
+
+    it('should have user grid menu custom items', () => {
+      extension.register();
+      expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
+        { command: 'export-csv', disabled: false, iconCssClass: 'fa fa-download', positionOrder: 53, title: 'Exporter en format CSV' },
+        { command: 'help', disabled: false, iconCssClass: 'fa fa-question-circle', positionOrder: 99, title: 'Aide', titleKey: 'HELP' },
+      ]);
+    });
+
+    it('should have same user grid menu custom items even when grid menu extension is registered multiple times', () => {
+      extension.register();
+      extension.register();
+      expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
+        { command: 'export-csv', disabled: false, iconCssClass: 'fa fa-download', positionOrder: 53, title: 'Exporter en format CSV' },
+        { command: 'help', disabled: false, iconCssClass: 'fa fa-question-circle', positionOrder: 99, title: 'Aide', titleKey: 'HELP' },
+      ]);
     });
   });
 
