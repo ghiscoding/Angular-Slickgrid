@@ -323,7 +323,7 @@ export class SelectFilter implements Filter {
           optionLabel = (this.enableTranslateLabel && this.gridOptions.enableTranslate && optionLabel && typeof optionLabel === 'string') ? this.translate && this.translate.instant(optionLabel || ' ') : optionLabel;
 
           // add to a temp array for joining purpose and filter out empty text
-          const tmpOptionArray = [prefixText, labelText.toString(), suffixText].filter((text) => text);
+          const tmpOptionArray = [prefixText, labelText !== undefined ? labelText.toString() : labelText, suffixText].filter((text) => text);
           let optionText = tmpOptionArray.join(separatorBetweenLabels);
 
           // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default

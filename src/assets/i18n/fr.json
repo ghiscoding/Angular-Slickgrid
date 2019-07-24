@@ -16,7 +16,7 @@
   "HIDE_COLUMN": "Cacher la colonne",
   "IN_COLLECTION_SEPERATED_BY_COMMA": "Recherche incluant certain éléments d'une collection, doit être séparé par une virgule (a,b)",
   "INVALID_FLOAT": "Le nombre doit être valide et avoir un maximum de {{maxDecimal}} décimales.",
-  "ITEMS": "Éléments",
+  "ITEMS": "éléments",
   "ITEMS_PER_PAGE": "éléments par page",
   "NOT_IN_COLLECTION_SEPERATED_BY_COMMA": "Recherche excluant certain éléments d'une collection, doit être séparé par une virgule (a,b)",
   "OF": "de",

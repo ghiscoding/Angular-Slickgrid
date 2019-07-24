@@ -16,6 +16,7 @@ export class Constants {
     TEXT_FORCE_FIT_COLUMNS: 'Force fit columns',
     TEXT_GROUP_BY: 'Group By',
     TEXT_HIDE_COLUMN: 'Hide Column',
+    TEXT_ITEMS: 'items',
     TEXT_ITEMS_PER_PAGE: 'items per page',
     TEXT_OF: 'of',
     TEXT_OK: 'OK',

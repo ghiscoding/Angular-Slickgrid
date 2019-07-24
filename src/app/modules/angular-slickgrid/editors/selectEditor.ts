@@ -265,7 +265,7 @@ export class SelectEditor implements Editor {
     this.valueName = this.customStructure && this.customStructure.value || 'value';
 
     if (this.enableTranslateLabel && (!this._translate || typeof this._translate.instant !== 'function')) {
-      throw new Error(`[select-editor] The ngx-translate TranslateService is required for the Select Editor to work correctly`);
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
     }
 
     // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",

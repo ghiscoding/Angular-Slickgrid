@@ -56,6 +56,10 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     if (this._gridPaginationOptions && this._gridPaginationOptions.enableTranslate && !this.translate) {
       throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
     }
+    // translate all the text using ngx-translate or custom locales
+    if (translate && translate.onLangChange) {
+      this.translate.onLangChange.subscribe(() => this.translateAllUiTexts(this._locales));
+    }
   }
 
   ngOnDestroy() {
@@ -147,7 +151,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     this._locales = this._gridPaginationOptions && this._gridPaginationOptions.locales || Constants.locales;
 
     // translate all the text using ngx-translate or custom locales
-    this.translateAllUiTexts();
+    this.translateAllUiTexts(this._locales);
 
     if (this._gridPaginationOptions && this._gridPaginationOptions.pagination) {
       const pagination = this._gridPaginationOptions.pagination;
@@ -247,11 +251,18 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   // --------------------
 
   /** Translate all the texts shown in the UI, use ngx-translate service when available or custom locales when service is null */
-  private translateAllUiTexts() {
-    this.textItemsPerPage = this.translate && this.translate.instant && this.translate.instant('ITEMS_PER_PAGE' || ' ') || this._locales.TEXT_ITEMS_PER_PAGE;
-    this.textItems = this.translate && this.translate.instant && this.translate.instant('ITEMS' || ' ') || this._locales.TEXT_ITEMS;
-    this.textOf = this.translate && this.translate.instant && this.translate.instant('OF' || ' ') || this._locales.TEXT_OF;
-    this.textPage = this.translate && this.translate.instant && this.translate.instant('PAGE' || ' ') || this._locales.TEXT_PAGE;
+  private translateAllUiTexts(locales: Locale) {
+    if (this.translate && this.translate.instant) {
+      this.textItemsPerPage = this.translate.instant('ITEMS_PER_PAGE');
+      this.textItems = this.translate.instant('ITEMS');
+      this.textOf = this.translate.instant('OF');
+      this.textPage = this.translate.instant('PAGE');
+    } else if (locales) {
+      this.textItemsPerPage = locales.TEXT_ITEMS_PER_PAGE || 'TEXT_ITEMS_PER_PAGE';
+      this.textItems = locales.TEXT_ITEMS || 'TEXT_ITEMS';
+      this.textOf = locales.TEXT_OF || 'TEXT_OF';
+      this.textPage = locales.TEXT_PAGE || 'TEXT_PAGE';
+    }
   }
 
   /**
