@@ -74,7 +74,7 @@ export class GridMenuExtension implements Extension {
 
       // merge original user grid menu items with internal items
       // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
-      const originalCustomItems = this._userOriginalGridMenu.customItems || [];
+      const originalCustomItems = Array.isArray(this._userOriginalGridMenu.customItems) && this._userOriginalGridMenu.customItems || [];
       this.sharedService.gridOptions.gridMenu.customItems = [...originalCustomItems, ...this.addGridMenuCustomCommands(originalCustomItems)];
       this.extensionUtility.translateItems(this.sharedService.gridOptions.gridMenu.customItems, 'titleKey', 'title');
       this.extensionUtility.sortItems(this.sharedService.gridOptions.gridMenu.customItems, 'positionOrder');
@@ -194,7 +194,7 @@ export class GridMenuExtension implements Extension {
 
       // merge original user grid menu items with internal items
       // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
-      const originalCustomItems = this._userOriginalGridMenu.customItems || [];
+      const originalCustomItems = Array.isArray(this._userOriginalGridMenu.customItems) && this._userOriginalGridMenu.customItems || [];
       this.sharedService.gridOptions.gridMenu.customItems = [...originalCustomItems, ...this.addGridMenuCustomCommands(originalCustomItems)];
       this.extensionUtility.translateItems(this.sharedService.gridOptions.gridMenu.customItems, 'titleKey', 'title');
       this.extensionUtility.sortItems(this.sharedService.gridOptions.gridMenu.customItems, 'positionOrder');
@@ -222,9 +222,6 @@ export class GridMenuExtension implements Extension {
   private addGridMenuCustomCommands(originalCustomItems: GridMenuItem[]) {
     const backendApi = this.sharedService.gridOptions.backendServiceApi || null;
     const gridMenuCustomItems: GridMenuItem[] = [];
-    if (!Array.isArray(originalCustomItems)) {
-      originalCustomItems = [];
-    }
 
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableFiltering) {
       // show grid menu: clear all filters
