@@ -6,6 +6,7 @@ import { executeBackendProcessesCallback, onBackendError } from '../services/bac
 import { FilterService } from './../services/filter.service';
 import { GridService } from './../services/grid.service';
 import { isObservable, Subscription } from 'rxjs';
+import { unsubscribeAllObservables } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -17,10 +18,11 @@ declare var Slick: any;
 @Injectable()
 export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   private _eventHandler = new Slick.EventHandler();
-  private _filterSubcription: Subscription;
   private _gridPaginationOptions: GridOption;
   private _isFirstRender = true;
   private _locales: Locale;
+  private subscriptions: Subscription[] = [];
+
   @Output() onPaginationChanged = new EventEmitter<Pagination>();
   @Input() dataView: any;
   @Input()
@@ -58,7 +60,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     }
     // translate all the text using ngx-translate or custom locales
     if (translate && translate.onLangChange) {
-      this.translate.onLangChange.subscribe(() => this.translateAllUiTexts(this._locales));
+      this.subscriptions.push(this.translate.onLangChange.subscribe(() => this.translateAllUiTexts(this._locales)));
     }
   }
 
@@ -73,14 +75,14 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
     }
 
     // Subscribe to Filter Clear & Changed and go back to page 1 when that happen
-    this._filterSubcription = this.filterService.onFilterChanged.subscribe(() => this.refreshPagination(true));
-    this._filterSubcription = this.filterService.onFilterCleared.subscribe(() => this.refreshPagination(true));
+    this.subscriptions.push(this.filterService.onFilterChanged.subscribe(() => this.refreshPagination(true)));
+    this.subscriptions.push(this.filterService.onFilterCleared.subscribe(() => this.refreshPagination(true)));
 
     // Subscribe to any dataview row count changed so that when Adding/Deleting item(s) through the DataView
     // that would trigger a refresh of the pagination numbers
     if (this.dataView) {
-      this.gridService.onItemAdded.subscribe((items: any | any[]) => this.onItemAddedOrRemoved(items, true));
-      this.gridService.onItemDeleted.subscribe((items: any | any[]) => this.onItemAddedOrRemoved(items, false));
+      this.subscriptions.push(this.gridService.onItemAdded.subscribe((items: any | any[]) => this.onItemAddedOrRemoved(items, true)));
+      this.subscriptions.push(this.gridService.onItemDeleted.subscribe((items: any | any[]) => this.onItemAddedOrRemoved(items, false)));
     }
   }
 
@@ -125,12 +127,12 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
 
   dispose() {
     this.onPaginationChanged.unsubscribe();
-    if (this._filterSubcription) {
-      this._filterSubcription.unsubscribe();
-    }
 
     // unsubscribe all SlickGrid events
     this._eventHandler.unsubscribeAll();
+
+    // also unsubscribe all Angular Subscriptions
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
   }
 
   onChangeItemPerPage(event: any) {
