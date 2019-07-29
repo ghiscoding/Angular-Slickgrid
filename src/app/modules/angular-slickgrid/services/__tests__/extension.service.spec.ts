@@ -262,29 +262,40 @@ describe('ExtensionService', () => {
       });
 
       it('should register the CheckboxSelector addon when "enableCheckboxSelector" is set in the grid options', () => {
+        const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
         const gridOptionsMock = { enableCheckboxSelector: true } as GridOption;
-        const extSpy = jest.spyOn(extensionStub, 'register').mockReturnValue(instanceMock);
+        const extCreateSpy = jest.spyOn(extensionStub, 'create').mockReturnValue(instanceMock);
+        const extRegisterSpy = jest.spyOn(extensionStub, 'register');
         const gridSpy = jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
 
+        service.createExtensionsBeforeGridCreation(columnsMock, gridOptionsMock);
         service.bindDifferentExtensions();
+        const rowSelectionInstance = service.getExtensionByName(ExtensionName.rowSelection);
         const output = service.getExtensionByName(ExtensionName.checkboxSelector);
 
         expect(gridSpy).toHaveBeenCalled();
-        expect(extSpy).toHaveBeenCalled();
+        expect(extCreateSpy).toHaveBeenCalledWith(columnsMock, gridOptionsMock);
+        expect(extRegisterSpy).toHaveBeenCalled();
+        expect(rowSelectionInstance).not.toBeNull();
         expect(output).toEqual({ name: ExtensionName.checkboxSelector, addon: instanceMock, instance: instanceMock, class: extensionStub } as ExtensionModel);
       });
 
       it('should register the RowDetailView addon when "enableRowDetailView" is set in the grid options', () => {
+        const columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
         const gridOptionsMock = { enableRowDetailView: true } as GridOption;
-        const extSpy = jest.spyOn(extensionStub, 'register').mockReturnValue(instanceMock);
+        const extCreateSpy = jest.spyOn(extensionStub, 'create').mockReturnValue(instanceMock);
+        const extRegisterSpy = jest.spyOn(extensionStub, 'register');
         const gridSpy = jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
 
+        service.createExtensionsBeforeGridCreation(columnsMock, gridOptionsMock);
         service.bindDifferentExtensions();
+        const rowSelectionInstance = service.getExtensionByName(ExtensionName.rowSelection);
         const output = service.getExtensionByName(ExtensionName.rowDetailView);
 
         expect(gridSpy).toHaveBeenCalled();
-        expect(extSpy).toHaveBeenCalled();
-        expect(output).toEqual({ name: ExtensionName.rowDetailView, addon: instanceMock, instance: instanceMock, class: extensionStub } as ExtensionModel);
+        expect(extCreateSpy).toHaveBeenCalledWith(columnsMock, gridOptionsMock);
+        expect(rowSelectionInstance).not.toBeNull();
+        expect(extRegisterSpy).toHaveBeenCalled(); expect(output).toEqual({ name: ExtensionName.rowDetailView, addon: instanceMock, instance: instanceMock, class: extensionStub } as ExtensionModel);
       });
 
       it('should register the RowMoveManager addon when "enableRowMoveManager" is set in the grid options', () => {
@@ -398,7 +409,6 @@ describe('ExtensionService', () => {
         const gridOptionsMock = { enableCheckboxSelector: true } as GridOption;
         const extSpy = jest.spyOn(extensionStub, 'create').mockReturnValue(instanceMock);
 
-        service.bindDifferentExtensions();
         service.createExtensionsBeforeGridCreation(columnsMock, gridOptionsMock);
 
         expect(extSpy).toHaveBeenCalledWith(columnsMock, gridOptionsMock);
@@ -409,7 +419,6 @@ describe('ExtensionService', () => {
         const gridOptionsMock = { enableRowDetailView: true } as GridOption;
         const extSpy = jest.spyOn(extensionStub, 'create').mockReturnValue(instanceMock);
 
-        service.bindDifferentExtensions();
         service.createExtensionsBeforeGridCreation(columnsMock, gridOptionsMock);
 
         expect(extSpy).toHaveBeenCalledWith(columnsMock, gridOptionsMock);
@@ -420,7 +429,6 @@ describe('ExtensionService', () => {
         const gridOptionsMock = { enableDraggableGrouping: true } as GridOption;
         const extSpy = jest.spyOn(extensionStub, 'create').mockReturnValue(instanceMock);
 
-        service.bindDifferentExtensions();
         service.createExtensionsBeforeGridCreation(columnsMock, gridOptionsMock);
 
         expect(extSpy).toHaveBeenCalledWith(gridOptionsMock);

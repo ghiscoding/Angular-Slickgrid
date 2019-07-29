@@ -6,7 +6,7 @@
         <div class="col-sm-8">
           <div class="alert alert-success">
             <strong>(single select) Selected Row:</strong>
-            <span [innerHTML]="selectedTitle"></span>
+            <span [innerHTML]="selectedTitle" data-test="grid1-selections"></span>
           </div>
         </div>
     </div>
@@ -27,7 +27,7 @@
         <div class="col-sm-8">
           <div class="alert alert-success">
             <strong>(multi-select) Selected Row(s):</strong>
-            <span [innerHTML]="selectedTitles"></span>
+            <span [innerHTML]="selectedTitles" data-test="grid2-selections"></span>
           </div>
         </div>
     </div>
