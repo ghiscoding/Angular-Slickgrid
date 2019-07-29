@@ -41,9 +41,6 @@ export class GridMenuExtension implements Extension {
     private sortService: SortService,
     @Optional() private translate: TranslateService,
   ) {
-    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
-      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
-    }
     this._eventHandler = new Slick.EventHandler();
   }
 
@@ -69,6 +66,10 @@ export class GridMenuExtension implements Extension {
 
   /** Create the Header Menu and expose all the available hooks that user can subscribe (onCommand, onBeforeMenuShow, ...) */
   register(): any {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
+
     // keep original user grid menu, useful when switching locale to translate
     this._userOriginalGridMenu = { ...this.sharedService.gridOptions.gridMenu };
 

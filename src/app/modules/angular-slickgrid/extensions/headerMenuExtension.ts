@@ -35,9 +35,6 @@ export class HeaderMenuExtension implements Extension {
     private sortService: SortService,
     @Optional() private translate: TranslateService,
   ) {
-    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
-      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
-    }
     this._eventHandler = new Slick.EventHandler();
   }
 
@@ -65,6 +62,10 @@ export class HeaderMenuExtension implements Extension {
    * @param columnDefinitions
    */
   register(): any {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
+
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
       // get locales provided by user in forRoot or else use default English locales via the Constants
       this._locales = this.sharedService.gridOptions && this.sharedService.gridOptions.locales || Constants.locales;

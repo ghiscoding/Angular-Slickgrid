@@ -59,6 +59,7 @@ const extensionHeaderMenuStub = {
 
 describe('ExtensionService', () => {
   let service: ExtensionService;
+  let sharedService: SharedService;
   let translate: TranslateService;
 
   describe('with ngx-translate', () => {
@@ -87,6 +88,7 @@ describe('ExtensionService', () => {
         imports: [TranslateModule.forRoot()]
       });
       service = TestBed.get(ExtensionService);
+      sharedService = TestBed.get(SharedService);
       translate = TestBed.get(TranslateService);
       translate.setTranslation('fr', { HELLO: 'Bonjour', WORLD: 'Monde' });
       translate.setTranslation('en', { HELLO: 'Hello', WORLD: 'World' });
@@ -593,26 +595,46 @@ describe('ExtensionService', () => {
   });
 
   describe('without ngx-translate', () => {
-    it('should throw an error if "enableTranslate" is set but the Translate Service is null', (done) => {
+    beforeEach(() => {
+      translate = null;
+      service = new ExtensionService(
+        // extensions
+        extensionStub as unknown as AutoTooltipExtension,
+        extensionStub as unknown as CellExternalCopyManagerExtension,
+        extensionStub as unknown as CheckboxSelectorExtension,
+        extensionColumnPickerStub as unknown as ColumnPickerExtension,
+        extensionStub as unknown as DraggableGroupingExtension,
+        extensionGridMenuStub as unknown as GridMenuExtension,
+        extensionGroupItemMetaStub as unknown as GroupItemMetaProviderExtension,
+        extensionStub as unknown as HeaderButtonExtension,
+        extensionHeaderMenuStub as unknown as HeaderMenuExtension,
+        extensionStub as unknown as RowDetailViewExtension,
+        extensionStub as unknown as RowMoveManagerExtension,
+        extensionStub as unknown as RowSelectionExtension,
+        sharedService,
+        translate,
+      );
+
+      const gridOptionsMock = { enableTranslate: true } as GridOption;
+      jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
+    });
+
+    it('should throw an error if "enableTranslate" is set but the Translate Service is null and "translateColumnHeaders" method is called', () => {
+      expect(() => service.translateColumnHeaders())
+        .toThrowError('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured');
+    });
+
+    it('should throw an error if "enableTranslate" is set but the Translate Service is null and "translateItems" private method is called', (done) => {
       try {
-        service = new ExtensionService(
-          {} as AutoTooltipExtension,
-          {} as CellExternalCopyManagerExtension,
-          {} as CheckboxSelectorExtension,
-          {} as ColumnPickerExtension,
-          {} as DraggableGroupingExtension,
-          {} as GridMenuExtension,
-          {} as GroupItemMetaProviderExtension,
-          {} as HeaderButtonExtension,
-          {} as HeaderMenuExtension,
-          {} as RowDetailViewExtension,
-          {} as RowMoveManagerExtension,
-          {} as RowSelectionExtension,
-          { gridOptions: { enableTranslate: true } } as SharedService,
-          null
-        );
+        const gridOptionsMock = { enableTranslate: true } as GridOption;
+        const columnBeforeTranslate = { id: 'field1', field: 'field1', name: 'Hello', headerKey: 'HELLO' };
+        const columnsMock = [columnBeforeTranslate] as Column[];
+        jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(columnsMock);
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
+
+        service.bindDifferentExtensions();
       } catch (e) {
-        expect(e.toString()).toContain('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured');
+        expect(e.message).toContain('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured');
         done();
       }
     });

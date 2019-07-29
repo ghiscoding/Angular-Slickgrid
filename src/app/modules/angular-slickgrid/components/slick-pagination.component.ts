@@ -55,9 +55,6 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
 
   /** Constructor */
   constructor(private filterService: FilterService, private gridService: GridService, @Optional() private translate: TranslateService) {
-    if (this._gridPaginationOptions && this._gridPaginationOptions.enableTranslate && !this.translate) {
-      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
-    }
     // translate all the text using ngx-translate or custom locales
     if (translate && translate.onLangChange) {
       this.subscriptions.push(this.translate.onLangChange.subscribe(() => this.translateAllUiTexts(this._locales)));
@@ -69,7 +66,10 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this._gridPaginationOptions = this._gridPaginationOptions;
+    if (this._gridPaginationOptions && this._gridPaginationOptions.enableTranslate && !this.translate) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
+
     if (!this._gridPaginationOptions || !this._gridPaginationOptions.pagination || (this._gridPaginationOptions.pagination.totalItems !== this.totalItems)) {
       this.refreshPagination();
     }

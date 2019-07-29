@@ -502,13 +502,13 @@ describe('headerMenuExtension', () => {
   });
 
   describe('without ngx-translate', () => {
-    it('should throw an error if "enableTranslate" is set but the Translate Service is null', (done) => {
-      try {
-        extension = new HeaderMenuExtension({} as ExtensionUtility, {} as FilterService, { gridOptions: { enableTranslate: true } } as SharedService, {} as SortService, null);
-      } catch (e) {
-        expect(e.toString()).toContain('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured');
-        done();
-      }
+    beforeEach(() => {
+      translate = null;
+      extension = new HeaderMenuExtension({} as ExtensionUtility, {} as FilterService, { gridOptions: { enableTranslate: true } } as SharedService, {} as SortService, translate);
+    });
+
+    it('should throw an error if "enableTranslate" is set but the Translate Service is null', () => {
+      expect(() => extension.register()).toThrowError('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured');
     });
   });
 });
