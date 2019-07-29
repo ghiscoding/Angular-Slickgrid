@@ -29,6 +29,7 @@ import { SharedService } from './shared.service';
 
 @Injectable()
 export class ExtensionService {
+  private _extensionCreatedList: any[] = [];
   private _extensionList: ExtensionModel[] = [];
 
   constructor(
@@ -82,7 +83,7 @@ export class ExtensionService {
    *  @param name
    */
   getExtensionByName(name: ExtensionName): ExtensionModel | undefined {
-    return this._extensionList.find((p) => p.name === name);
+    return Array.isArray(this._extensionList) && this._extensionList.find((p) => p.name === name);
   }
 
   /**
@@ -131,11 +132,22 @@ export class ExtensionService {
         }
       }
 
+      // Row Selection Plugin
+      // this extension should be registered BEFORE the Checkbox Selector & Row Detail since it can be use by these 2 plugins
+      if (!this.getExtensionByName(ExtensionName.rowSelection) && (this.sharedService.gridOptions.enableRowSelection || this.sharedService.gridOptions.enableCheckboxSelector || this.sharedService.gridOptions.enableRowDetailView)) {
+        if (this.rowSelectionExtension && this.rowSelectionExtension.register) {
+          const instance = this.rowSelectionExtension.register();
+          this._extensionList.push({ name: ExtensionName.rowSelection, class: this.rowSelectionExtension, addon: instance, instance });
+        }
+      }
+
       // Checkbox Selector Plugin
       if (this.sharedService.gridOptions.enableCheckboxSelector) {
         if (this.checkboxSelectorExtension && this.checkboxSelectorExtension.register) {
           const rowSelectionExtension = this.getExtensionByName(ExtensionName.rowSelection);
-          const instance = this.checkboxSelectorExtension.register(rowSelectionExtension);
+          this.checkboxSelectorExtension.register(rowSelectionExtension);
+          const createdExtension = this.getCreatedExtensionByName(ExtensionName.checkboxSelector); // get the instance from when it was really created earlier
+          const instance = createdExtension && createdExtension.instance;
           this._extensionList.push({ name: ExtensionName.checkboxSelector, class: this.checkboxSelectorExtension, addon: instance, instance });
         }
       }
@@ -193,7 +205,9 @@ export class ExtensionService {
       if (this.sharedService.gridOptions.enableRowDetailView) {
         if (this.rowDetailViewExtension && this.rowDetailViewExtension.register) {
           const rowSelectionExtension = this.getExtensionByName(ExtensionName.rowSelection);
-          const instance = this.rowDetailViewExtension.register(rowSelectionExtension);
+          this.rowDetailViewExtension.register(rowSelectionExtension);
+          const createdExtension = this.getCreatedExtensionByName(ExtensionName.rowDetailView); // get the plugin from when it was really created earlier
+          const instance = createdExtension && createdExtension.instance;
           this._extensionList.push({ name: ExtensionName.rowDetailView, class: this.rowDetailViewExtension, addon: instance, instance });
         }
       }
@@ -203,14 +217,6 @@ export class ExtensionService {
         if (this.rowMoveManagerExtension && this.rowMoveManagerExtension.register) {
           const instance = this.rowMoveManagerExtension.register();
           this._extensionList.push({ name: ExtensionName.rowMoveManager, class: this.rowMoveManagerExtension, addon: instance, instance });
-        }
-      }
-
-      // Row Selection Plugin
-      if (!this.sharedService.gridOptions.enableCheckboxSelector && this.sharedService.gridOptions.enableRowSelection) {
-        if (this.rowSelectionExtension && this.rowSelectionExtension.register) {
-          const instance = this.rowSelectionExtension.register();
-          this._extensionList.push({ name: ExtensionName.rowSelection, class: this.rowSelectionExtension, addon: instance, instance });
         }
       }
 
@@ -239,14 +245,23 @@ export class ExtensionService {
    */
   createExtensionsBeforeGridCreation(columnDefinitions: Column[], options: GridOption) {
     if (options.enableCheckboxSelector) {
-      this.checkboxSelectorExtension.create(columnDefinitions, options);
+      if (!this.getCreatedExtensionByName(ExtensionName.checkboxSelector)) {
+        const checkboxInstance = this.checkboxSelectorExtension.create(columnDefinitions, options);
+        this._extensionCreatedList.push({ name: ExtensionName.checkboxSelector, instance: checkboxInstance });
+      }
     }
     if (options.enableRowDetailView) {
-      this.rowDetailViewExtension.create(columnDefinitions, options);
+      if (!this.getCreatedExtensionByName(ExtensionName.rowDetailView)) {
+        const rowDetailInstance = this.rowDetailViewExtension.create(columnDefinitions, options);
+        this._extensionCreatedList.push({ name: ExtensionName.rowDetailView, instance: rowDetailInstance });
+      }
     }
     if (options.enableDraggableGrouping) {
-      const plugin = this.draggableGroupingExtension.create(options);
-      options.enableColumnReorder = plugin.getSetupColumnReorder;
+      if (!this.getCreatedExtensionByName(ExtensionName.rowDetailView)) {
+        const draggableInstance = this.draggableGroupingExtension.create(options);
+        options.enableColumnReorder = draggableInstance.getSetupColumnReorder;
+        this._extensionCreatedList.push({ name: ExtensionName.draggableGrouping, instance: draggableInstance });
+      }
     }
   }
 
@@ -348,6 +363,18 @@ export class ExtensionService {
       this.gridMenuExtension.dispose();
       this.gridMenuExtension.register();
     }
+  }
+
+  //
+  // private functions
+  // -------------------
+
+  /**
+   * Get an Extension that was created by calling its "create" method (there are only 3 extensions which uses this method)
+   *  @param name
+   */
+  private getCreatedExtensionByName(name: ExtensionName): ExtensionModel | undefined {
+    return Array.isArray(this._extensionCreatedList) && this._extensionCreatedList.find((p) => p.name === name);
   }
 
   /** Translate an array of items from an input key and assign translated value to the output key */
