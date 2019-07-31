@@ -154,6 +154,9 @@ export class SelectFilter implements Filter {
       throw new Error(`[select-editor] The ngx-translate TranslateService is required for the Select Filter to work correctly`);
     }
 
+    // add placeholder when found
+    this.defaultOptions.placeholder = this.columnDef && this.columnDef.filter && this.columnDef.filter.placeholder || '';
+
     // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
     // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
     const newCollection = this.columnFilter.collection || [];
