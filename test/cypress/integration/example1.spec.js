@@ -20,13 +20,11 @@ describe('Example 1 - Basic Grids', () => {
       .should('have.css', 'height', '300px');
   });
 
-  it('should have exact Titles on 1st grid', () => {
+  it('should have exact column titles on 1st grid', () => {
     cy.get('#slickGridContainer-grid1')
       .find('.slick-header-columns')
       .children()
-      .each(($child, index) => {
-        expect($child.text()).to.eq(titles[index]);
-      });
+      .each(($child, index) => expect($child.text()).to.eq(titles[index]));
   });
 
   it('should hover over the Title column and click on "Sort Descending" command', () => {
@@ -42,6 +40,8 @@ describe('Example 1 - Basic Grids', () => {
     cy.get('.slick-header-menu')
       .should('be.visible')
       .children('.slick-header-menuitem:nth-child(2)')
+      .children('.slick-header-menucontent')
+      .should('contain', 'Sort Descending')
       .click();
 
     cy.get('.slick-row')
@@ -62,10 +62,11 @@ describe('Example 1 - Basic Grids', () => {
       .invoke('show')
       .click();
 
-    cy.get('#grid2')
-      .find('.slick-header-menu')
+    cy.get('.slick-header-menu')
       .should('be.visible')
       .children('.slick-header-menuitem:nth-child(1)')
+      .children('.slick-header-menucontent')
+      .should('contain', 'Sort Ascending')
       .click();
 
     cy.get('#grid2')
