@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   Column,
   ExportOption,
   FileType,
   Formatter,
-  GridOption
+  GridOption,
+  Locale,
 } from './../models/index';
 import { Constants } from './../constants';
 import { addWhiteSpaces, htmlEntityDecode, sanitizeHtmlToText, titleCase } from './../services/utilities';
@@ -25,6 +26,7 @@ export class ExportService {
   private _lineCarriageReturn = '\n';
   private _dataView: any;
   private _grid: any;
+  private _locales: Locale;
   private _exportQuoteWrapper = '';
   private _columnHeaders: ExportColumnHeader[];
   private _groupedHeaders: ExportColumnHeader[];
@@ -33,7 +35,7 @@ export class ExportService {
   onGridBeforeExportToFile = new Subject<boolean>();
   onGridAfterExportToFile = new Subject<{ content?: string; filename: string; format: string; useUtf8WithBom: boolean; }>();
 
-  constructor(private translate: TranslateService) { }
+  constructor(@Optional() private translate: TranslateService) { }
 
   private get datasetIdName(): string {
     return this._gridOptions && this._gridOptions.datasetIdPropertyName || 'id';
@@ -53,6 +55,13 @@ export class ExportService {
   init(grid: any, dataView: any): void {
     this._grid = grid;
     this._dataView = dataView;
+
+    // get locales provided by user in forRoot or else use default English locales via the Constants
+    this._locales = this._gridOptions && this._gridOptions.locales || Constants.locales;
+
+    if (this._gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
   }
 
   /**
@@ -164,7 +173,7 @@ export class ExportService {
     if (!groupByColumnHeader && this._gridOptions.enableTranslate && this.translate && this.translate.instant) {
       groupByColumnHeader = this.translate.instant('GROUP_BY');
     } else if (!groupByColumnHeader) {
-      groupByColumnHeader = Constants.TEXT_GROUP_BY;
+      groupByColumnHeader = this._locales && this._locales.TEXT_GROUP_BY;
     }
 
     // a CSV needs double quotes wrapper, the other types do not need any wrapper

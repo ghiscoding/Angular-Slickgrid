@@ -7,7 +7,7 @@ import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
 
 // ...then everything else...
-import { AfterViewInit, Component, ElementRef, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { GlobalGridOptions } from './../global-grid-options';
 import { titleCase, unsubscribeAllObservables } from './../services/utilities';
@@ -168,7 +168,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private resizer: ResizerService,
     private sharedService: SharedService,
     private sortService: SortService,
-    private translate: TranslateService,
+    @Optional() private translate: TranslateService,
     @Inject('config') private forRootConfig: GridOption
   ) { }
 
@@ -400,16 +400,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   bindDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
     // on locale change, we have to manually translate the Headers, GridMenu
-    this.subscriptions.push(
-      this.translate.onLangChange.subscribe((event) => {
-        if (gridOptions.enableTranslate) {
-          this.extensionService.translateColumnHeaders();
-          this.extensionService.translateColumnPicker();
-          this.extensionService.translateGridMenu();
-          this.extensionService.translateHeaderMenu();
-        }
-      })
-    );
+    if (this.translate && this.translate.onLangChange) {
+      this.subscriptions.push(
+        this.translate.onLangChange.subscribe((event) => {
+          if (gridOptions.enableTranslate) {
+            this.extensionService.translateColumnHeaders();
+            this.extensionService.translateColumnPicker();
+            this.extensionService.translateGridMenu();
+            this.extensionService.translateHeaderMenu();
+          }
+        })
+      );
+    }
 
     // if user entered some Columns "presets", we need to reflect them all in the grid
     if (gridOptions.presets && Array.isArray(gridOptions.presets.columns) && gridOptions.presets.columns.length > 0) {

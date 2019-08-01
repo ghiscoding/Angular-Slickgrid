@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Constants } from '../constants';
-import { ExtensionName } from '../models/index';
+import { ExtensionName, Locale } from '../models/index';
 import { SharedService } from '../services/shared.service';
 
 declare function require(name: string);
 
 @Injectable()
 export class ExtensionUtility {
-  constructor(private sharedService: SharedService, private translate: TranslateService) { }
+  constructor(private sharedService: SharedService, @Optional() private translate: TranslateService) { }
 
   /**
    * Remove a column from the grid by it's index in the grid
@@ -76,28 +76,35 @@ export class ExtensionUtility {
    * 3- else if nothing is provided use
    */
   getPickerTitleOutputString(propName: string, pickerName: 'gridMenu' | 'columnPicker') {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
+
     let output = '';
     const picker = this.sharedService.gridOptions && this.sharedService.gridOptions[pickerName] || {};
     const enableTranslate = this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate || false;
 
+    // get locales provided by user in forRoot or else use default English locales via the Constants
+    const locales = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.locales || Constants.locales;
+
     const title = picker && picker[propName];
     const titleKey = picker && picker[`${propName}Key`];
 
-    if (titleKey) {
+    if (titleKey && this.translate && this.translate.instant) {
       output = this.translate.instant(titleKey || ' ');
     } else {
       switch (propName) {
         case 'customTitle':
-          output = title || (enableTranslate ? this.translate.instant('COMMANDS') : Constants.TEXT_COMMANDS);
+          output = title || enableTranslate && this.translate && this.translate.instant && this.translate.instant('COMMANDS' || ' ') || locales && locales.TEXT_COMMANDS;
           break;
         case 'columnTitle':
-          output = title || (enableTranslate ? this.translate.instant('COLUMNS') : Constants.TEXT_COLUMNS);
+          output = title || enableTranslate && this.translate && this.translate.instant && this.translate.instant('COLUMNS' || ' ') || locales && locales.TEXT_COLUMNS;
           break;
         case 'forceFitTitle':
-          output = title || (enableTranslate ? this.translate.instant('FORCE_FIT_COLUMNS') : Constants.TEXT_FORCE_FIT_COLUMNS);
+          output = title || enableTranslate && this.translate && this.translate.instant && this.translate.instant('FORCE_FIT_COLUMNS' || ' ') || locales && locales.TEXT_FORCE_FIT_COLUMNS;
           break;
         case 'syncResizeTitle':
-          output = title || (enableTranslate ? this.translate.instant('SYNCHRONOUS_RESIZE') : Constants.TEXT_SYNCHRONOUS_RESIZE);
+          output = title || enableTranslate && this.translate && this.translate.instant && this.translate.instant('SYNCHRONOUS_RESIZE' || ' ') || locales && locales.TEXT_SYNCHRONOUS_RESIZE;
           break;
         default:
           output = title;
@@ -127,7 +134,7 @@ export class ExtensionUtility {
     if (Array.isArray(items)) {
       for (const item of items) {
         if (item[inputKey]) {
-          item[outputKey] = this.translate.instant(item[inputKey]);
+          item[outputKey] = this.translate && this.translate && this.translate.instant && this.translate.instant(item[inputKey]);
         }
       }
     }

@@ -3,7 +3,7 @@ import 'slickgrid/plugins/slick.cellrangedecorator';
 import 'slickgrid/plugins/slick.cellrangeselector';
 import 'slickgrid/plugins/slick.cellselectionmodel';
 
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   Column,
@@ -46,7 +46,7 @@ export class ExtensionService {
     private rowMoveManagerExtension: RowMoveManagerExtension,
     private rowSelectionExtension: RowSelectionExtension,
     private sharedService: SharedService,
-    private translate: TranslateService,
+    @Optional() private translate: TranslateService,
   ) { }
 
   /** Dispose of all the controls & plugins */
@@ -119,7 +119,7 @@ export class ExtensionService {
       // Auto Tooltip Plugin
       if (this.sharedService.gridOptions.enableAutoTooltip) {
         if (this.autoTooltipExtension && this.autoTooltipExtension.register) {
-          const instance = this.autoTooltipExtension.register()
+          const instance = this.autoTooltipExtension.register();
           this._extensionList.push({ name: ExtensionName.autoTooltip, class: this.autoTooltipExtension, addon: instance, instance });
         }
       }
@@ -323,6 +323,10 @@ export class ExtensionService {
    * @param new column definitions (optional)
    */
   translateColumnHeaders(locale?: boolean | string, newColumnDefinitions?: Column[]) {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
+
     if (locale) {
       this.translate.use(locale as string);
     }
@@ -383,6 +387,10 @@ export class ExtensionService {
 
   /** Translate an array of items from an input key and assign translated value to the output key */
   private translateItems(items: any[], inputKey: string, outputKey: string) {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
+
     if (Array.isArray(items)) {
       for (const item of items) {
         if (item[inputKey]) {

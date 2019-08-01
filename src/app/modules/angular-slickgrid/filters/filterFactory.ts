@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { Filter } from '../models/filter.interface';
 import { ColumnFilter } from '../models';
 import { SlickgridConfig } from '../slickgrid-config';
@@ -12,7 +12,7 @@ export class FilterFactory {
    */
   private _options: any;
 
-  constructor(private config: SlickgridConfig, private translate: TranslateService, private collectionService: CollectionService) {
+  constructor(private config: SlickgridConfig, @Optional() private translate: TranslateService, private collectionService: CollectionService) {
     this._options = this.config.options;
   }
 

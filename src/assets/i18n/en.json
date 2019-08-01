@@ -16,10 +16,11 @@
   "GROUP_BY": "Group by",
   "HIDE_COLUMN": "Hide Column",
   "IN_COLLECTION_SEPERATED_BY_COMMA": "Search items in a collection, must be separated by a comma (a,b)",
-  "ITEMS": "Items",
+  "ITEMS": "items",
   "ITEMS_PER_PAGE": "items per page",
   "NOT_IN_COLLECTION_SEPERATED_BY_COMMA": "Search items not in a collection, must be separated by a comma (a,b)",
   "OF": "of",
+  "OK": "OK",
   "PAGE": "Page",
   "PAGE_X_OF_Y": "page {{x}} of {{y}}",
   "REFRESH_DATASET": "Refresh Dataset",
@@ -34,7 +35,6 @@
   "TOGGLE_FILTER_ROW": "Toggle Filter Row",
   "TOGGLE_PRE_HEADER_ROW": "Toggle Pre-Header Row",
   "X_OF_Y_SELECTED": "# of % selected",
-
   "BILLING": {
     "ADDRESS": {
       "STREET": "Billing Address Street",

@@ -14,6 +14,7 @@ import { ExtensionService } from './extension.service';
 import { FilterService } from './filter.service';
 import { SortService } from './sort.service';
 import { Subject, Subscription } from 'rxjs';
+import { unsubscribeAllObservables } from './utilities';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -56,12 +57,8 @@ export class GridStateService {
     this._eventHandler.unsubscribeAll();
 
     // also unsubscribe all Angular Subscriptions
-    this.subscriptions.forEach((subscription: Subscription) => {
-      if (subscription && subscription.unsubscribe) {
-        subscription.unsubscribe();
-      }
-    });
-    this.subscriptions = [];
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
+
     this._currentColumns = [];
     this._columns = [];
   }

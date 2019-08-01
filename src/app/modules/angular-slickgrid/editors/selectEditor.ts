@@ -77,8 +77,10 @@ export class SelectEditor implements Editor {
 
   constructor(protected args: any, protected isMultipleSelect) {
     this.gridOptions = this.args.grid.getOptions() as GridOption;
-    const gridOptions = this.gridOptions || this.args.column.params || {};
-    this._translate = gridOptions.i18n;
+    const options = this.gridOptions || this.args.column.params || {};
+    if (options && options.i18n instanceof TranslateService) {
+      this._translate = options.i18n;
+    }
 
     // provide the name attribute to the DOM element which will be needed to auto-adjust drop position (dropup / dropdown)
     const fieldId = this.columnDef && this.columnDef.id;
@@ -263,7 +265,7 @@ export class SelectEditor implements Editor {
     this.valueName = this.customStructure && this.customStructure.value || 'value';
 
     if (this.enableTranslateLabel && (!this._translate || typeof this._translate.instant !== 'function')) {
-      throw new Error(`[select-editor] The ngx-translate TranslateService is required for the Select Editor to work correctly`);
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
     }
 
     // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
