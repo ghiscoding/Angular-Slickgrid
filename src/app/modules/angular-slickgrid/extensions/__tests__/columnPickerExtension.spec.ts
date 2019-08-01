@@ -16,6 +16,7 @@ const gridStub = {
 const mockAddon = jest.fn().mockImplementation(() => ({
   init: jest.fn(),
   destroy: jest.fn(),
+  updateAllTitles: jest.fn(),
   onColumnsChanged: new Slick.Event(),
 }));
 
@@ -63,6 +64,7 @@ describe('columnPickerExtension', () => {
       jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
       jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(columnsMock);
+      jest.spyOn(SharedService.prototype, 'visibleColumns', 'get').mockReturnValue(columnsMock.slice(0, 1));
       jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get').mockReturnValue(columnsMock);
     });
 
@@ -81,17 +83,37 @@ describe('columnPickerExtension', () => {
     it('should call internal event handler subscribe and expect the "onColumnSpy" option to be called when addon notify is called', () => {
       const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
       const onColumnSpy = jest.spyOn(SharedService.prototype.gridOptions.columnPicker, 'onColumnsChanged');
+      const visibleColsSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
 
       const instance = extension.register();
-      instance.onColumnsChanged.notify(columnsMock.slice(0, 1), new Slick.EventData(), gridStub);
+      instance.onColumnsChanged.notify({ columns: columnsMock.slice(0, 1), grid: gridStub }, new Slick.EventData(), gridStub);
 
       expect(handlerSpy).toHaveBeenCalledTimes(1);
       expect(handlerSpy).toHaveBeenCalledWith(
         { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
         expect.anything()
       );
-      expect(onColumnSpy).toHaveBeenCalledWith(expect.anything(), columnsMock.slice(0, 1));
+      expect(onColumnSpy).toHaveBeenCalledWith(expect.anything(), { columns: columnsMock.slice(0, 1), grid: gridStub });
+      expect(visibleColsSpy).not.toHaveBeenCalled();
     });
+
+    it(`should call internal event handler subscribe and expect the "onColumnSpy" option to be called when addon notify is called
+    and it should override "visibleColumns" when array passed as arguments is bigger than previous visible columns`, () => {
+        const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
+        const onColumnSpy = jest.spyOn(SharedService.prototype.gridOptions.columnPicker, 'onColumnsChanged');
+        const visibleColsSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
+
+        const instance = extension.register();
+        instance.onColumnsChanged.notify({ columns: columnsMock, grid: gridStub }, new Slick.EventData(), gridStub);
+
+        expect(handlerSpy).toHaveBeenCalledTimes(1);
+        expect(handlerSpy).toHaveBeenCalledWith(
+          { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
+          expect.anything()
+        );
+        expect(onColumnSpy).toHaveBeenCalledWith(expect.anything(), { columns: columnsMock, grid: gridStub });
+        expect(visibleColsSpy).toHaveBeenCalledWith(columnsMock);
+      });
 
     it('should dispose of the addon', () => {
       const instance = extension.register();
@@ -110,11 +132,11 @@ describe('columnPickerExtension', () => {
 
       const instance = extension.register();
       extension.translateColumnPicker();
-      const initSpy = jest.spyOn(instance, 'init');
+      const updateColsSpy = jest.spyOn(instance, 'updateAllTitles');
 
       expect(utilitySpy).toHaveBeenCalled();
       expect(translateSpy).toHaveBeenCalled();
-      expect(initSpy).toHaveBeenCalledWith(gridStub);
+      expect(updateColsSpy).toHaveBeenCalledWith(SharedService.prototype.gridOptions.columnPicker);
       expect(SharedService.prototype.gridOptions.columnPicker.columnTitle).toBe('Colonnes');
       expect(SharedService.prototype.gridOptions.columnPicker.forceFitTitle).toBe('Ajustement forcé des colonnes');
       expect(SharedService.prototype.gridOptions.columnPicker.syncResizeTitle).toBe('Redimension synchrone');
