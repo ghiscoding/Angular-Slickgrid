@@ -540,6 +540,11 @@ describe('ExtensionService', () => {
     });
 
     describe('renderColumnHeaders method', () => {
+      beforeEach(() => {
+        const columnsMock = [{ id: 'field1', field: 'field1', headerKey: 'HELLO' }] as Column[];
+        jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(columnsMock);
+      });
+
       it('should call "setColumns" on the Shared Service with the Shared "columnDefinitions" when no arguments is provided', () => {
         const columnsMock = [{ id: 'field1', field: 'field1', headerKey: 'HELLO' }] as Column[];
         jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
@@ -552,21 +557,42 @@ describe('ExtensionService', () => {
         expect(setColumnsSpy).toHaveBeenCalledWith(columnsMock);
       });
 
-      it('should call "setColumns" on the Shared Service with the collection provided as argument', () => {
-        const columnsMock = [{ id: 'field1', field: 'field1', headerKey: 'HELLO' }] as Column[];
+      it('should override "allColumns" on the Shared Service and call "setColumns" with the collection provided as argument', () => {
+        const columnsMock = [
+          { id: 'field1', field: 'field1', headerKey: 'HELLO' },
+          { id: 'field2', field: 'field2', headerKey: 'WORLD' }
+        ] as Column[];
         jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
-        const spyAllCols = jest.spyOn(SharedService.prototype, 'allColumns', 'set');
+        const allColsSpy = jest.spyOn(SharedService.prototype, 'allColumns', 'set');
         const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
 
         service.renderColumnHeaders(columnsMock);
 
-        expect(spyAllCols).toHaveBeenCalledWith(columnsMock);
         expect(setColumnsSpy).toHaveBeenCalledWith(columnsMock);
+        expect(allColsSpy).toHaveBeenCalledWith(columnsMock);
       });
+
+      it(`should call "setColumns" with the collection provided as argument but NOT override "allColumns" on the Shared Service
+    when collection provided is smaller than "allColumns" that already exists`, () => {
+          const columnsMock = [
+            { id: 'field1', field: 'field1', headerKey: 'HELLO' }
+          ] as Column[];
+          jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
+          const spyAllCols = jest.spyOn(SharedService.prototype, 'allColumns', 'set');
+          const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
+
+          service.renderColumnHeaders(columnsMock);
+
+          expect(setColumnsSpy).toHaveBeenCalledWith(columnsMock);
+          expect(spyAllCols).not.toHaveBeenCalled();
+        });
 
       it('should re-register the Column Picker when enable and method is called with new column definition collection provided as argument', () => {
         const gridOptionsMock = { enableColumnPicker: true } as GridOption;
-        const columnsMock = [{ id: 'field1', field: 'field1', headerKey: 'HELLO' }] as Column[];
+        const columnsMock = [
+          { id: 'field1', field: 'field1', headerKey: 'HELLO' },
+          { id: 'field2', field: 'field2', headerKey: 'WORLD' }
+        ] as Column[];
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
         jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
         const spyCpDispose = jest.spyOn(extensionColumnPickerStub, 'dispose');
@@ -584,7 +610,10 @@ describe('ExtensionService', () => {
 
       it('should re-register the Grid Menu when enable and method is called with new column definition collection provided as argument', () => {
         const gridOptionsMock = { enableGridMenu: true } as GridOption;
-        const columnsMock = [{ id: 'field1', field: 'field1', headerKey: 'HELLO' }] as Column[];
+        const columnsMock = [
+          { id: 'field1', field: 'field1', headerKey: 'HELLO' },
+          { id: 'field2', field: 'field2', headerKey: 'WORLD' }
+        ] as Column[];
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
         jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
         const spyGmDispose = jest.spyOn(extensionGridMenuStub, 'dispose');

@@ -354,8 +354,12 @@ export class ExtensionService {
       collection = this.sharedService.columnDefinitions;
     }
     if (Array.isArray(collection) && this.sharedService.grid && this.sharedService.grid.setColumns) {
-      this.sharedService.allColumns = collection;
-      this.sharedService.grid.setColumns(collection);
+      if (collection.length > this.sharedService.allColumns.length) {
+        this.sharedService.allColumns = collection;
+        this.sharedService.grid.setColumns(collection);
+      } else {
+        this.sharedService.grid.setColumns(this.sharedService.allColumns);
+      }
     }
 
     if (this.sharedService.gridOptions.enableColumnPicker) {

@@ -100,10 +100,13 @@ export class GridMenuExtension implements Extension {
             this.sharedService.gridOptions.gridMenu.onBeforeMenuShow(e, args);
           }
         });
-        this._eventHandler.subscribe(this._addon.onColumnsChanged, (e: any, args: CellArgs) => {
+        this._eventHandler.subscribe(this._addon.onColumnsChanged, (e: any, args: { columns: any, grid: any }) => {
           this._areVisibleColumnDifferent = true;
           if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onColumnsChanged === 'function') {
             this.sharedService.gridOptions.gridMenu.onColumnsChanged(e, args);
+          }
+          if (args && Array.isArray(args.columns) && args.columns.length > this.sharedService.visibleColumns.length) {
+            this.sharedService.visibleColumns = args.columns;
           }
         });
         this._eventHandler.subscribe(this._addon.onCommand, (e: any, args: any) => {
@@ -215,11 +218,8 @@ export class GridMenuExtension implements Extension {
       // translate all columns (including non-visible)
       this.extensionUtility.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
 
-      // re-initialize the Grid Menu, that will recreate all the menus & list
-      // doing an "init()" won't drop any existing command attached
-      if (this._addon.init) {
-        this._addon.init(this.sharedService.grid);
-      }
+      // update the Titles of each sections (command, customTitle, ...)
+      this._addon.updateAllTitles(this.sharedService.gridOptions.gridMenu);
     }
   }
 

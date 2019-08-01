@@ -35,16 +35,6 @@ export class GridMenuComponent implements OnInit {
   ngOnInit(): void {
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', headerKey: 'TITLE', filterable: true, type: FieldType.string },
-      {
-        id: 'phone', name: 'Phone Number using mask', field: 'phone',
-        filterable: true, sortable: true, minWidth: 100,
-        type: FieldType.string, // because we use a mask filter, we should always assume the value is a string for it to behave correctly
-        formatter: Formatters.mask, params: { mask: '(000) 000-0000' },
-        filter: {
-          model: Filters.inputMask,
-          operator: OperatorType.startsWith
-        }
-      },
       { id: 'duration', name: 'Duration', field: 'duration', headerKey: 'DURATION', sortable: true, filterable: true, type: FieldType.string },
       {
         id: '%', name: '% Complete', field: 'percentComplete', sortable: true, filterable: true,
