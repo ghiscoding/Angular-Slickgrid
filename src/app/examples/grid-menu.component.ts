@@ -29,7 +29,10 @@ export class GridMenuComponent implements OnInit {
   visibleColumns: Column[];
 
   constructor(private translate: TranslateService) {
-    this.selectedLanguage = this.translate.getDefaultLang();
+    // always start with English for Cypress E2E tests
+    const defaultLang = 'en';
+    this.translate.setDefaultLang(defaultLang);
+    this.selectedLanguage = defaultLang;
   }
 
   ngOnInit(): void {
@@ -157,8 +160,8 @@ export class GridMenuComponent implements OnInit {
   }
 
   switchLanguage() {
-    this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(this.selectedLanguage);
+    const nextLocale = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
   }
 
   toggleGridMenu(e) {
