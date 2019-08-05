@@ -7,19 +7,15 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - angular-slickgrid-yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - angular-slickgrid-yarn-packages-v1-{{ .Branch }}-
-            - angular-slickgrid-yarn-packages-v1-
+          key: angular-slickgrid-build-{{ .Branch }}-{{ checksum "package.json" }}
       - run: yarn install
       - run:
           name: Install Jest JUnit coverage reporter
           command: yarn add --dev jest-junit
       - save_cache:
+          key: angular-slickgrid-build-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
-            - ~/.cache/yarn
-          key: angular-slickgrid-yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - "node_modules"
       - run:
           name: Run Jest tests with JUnit as reporter
           command: ./node_modules/.bin/jest --config test/jest.config.js --ci --runInBand --collectCoverage=true --reporters=default --reporters=jest-junit
@@ -35,19 +31,17 @@ jobs:
       - restore_cache:
           name: Restoring Cache for Cypress
           keys:
-            - angular-slickgrid-cypress-yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - angular-slickgrid-cypress-yarn-packages-v1-{{ .Branch }}-
-            - angular-slickgrid-cypress-yarn-packages-v1-
+            - e2e-tests-{{ .Branch }}-{{ checksum "package.json" }}
       - run:
-          name: Installing Cypress dependencies
+          name: Installing Cypress dependencies with yarn
           command: |
             cd test/cypress
-            yarn install
+            yarn install --frozen-lockfile
       - save_cache:
           name: Saving Cache for Cypress
+          key: e2e-tests-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
-            - ~/.cache/yarn
-          key: angular-slickgrid-yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - "test/cypress/node_modules"
       - run:
           name: Running Cypress E2E tests with JUnit reporter
           command: |
