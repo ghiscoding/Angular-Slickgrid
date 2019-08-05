@@ -326,7 +326,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.bindBackendCallbackFunctions(this.gridOptions);
     }
 
-    this.gridStateService.init(this.grid, this.extensionService, this.filterService, this.sortService);
+    this.gridStateService.init(this.grid);
 
     this.onAngularGridCreated.emit({
       // Slick Grid & DataView objects

@@ -88,7 +88,7 @@ export class GridMenuExtension implements Extension {
       this.extensionUtility.translateItems(this.sharedService.gridOptions.gridMenu.customItems, 'titleKey', 'title');
       this.extensionUtility.sortItems(this.sharedService.gridOptions.gridMenu.customItems, 'positionOrder');
 
-      this._addon = new Slick.Controls.GridMenu(this.sharedService.columnDefinitions, this.sharedService.grid, this.sharedService.gridOptions);
+      this._addon = new Slick.Controls.GridMenu(this.sharedService.allColumns, this.sharedService.grid, this.sharedService.gridOptions);
 
       // hook all events
       if (this.sharedService.grid && this.sharedService.gridOptions.gridMenu) {

@@ -15,8 +15,8 @@ export class ExtensionUtility {
    * @param array input
    * @param index
    */
-  arrayRemoveItemByIndex(array: any[], index: number) {
-    return array.filter((el: any, i: number) => index !== i);
+  arrayRemoveItemByIndex<T>(array: T[], index: number): T[] {
+    return array.filter((el: T, i: number) => index !== i);
   }
 
   /**
