@@ -1,4 +1,5 @@
 import { Column, GridOption } from '../models';
+import { Subject } from 'rxjs';
 
 export class SharedService {
   private _allColumns: Column[];
@@ -7,6 +8,7 @@ export class SharedService {
   private _grid: any;
   private _gridOptions: GridOption;
   private _visibleColumns: Column[];
+  onColumnsChanged = new Subject<Column[]>();
 
   // --
   // public

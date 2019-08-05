@@ -29,9 +29,9 @@ export class GridMenuComponent implements OnInit {
   visibleColumns: Column[];
 
   constructor(private translate: TranslateService) {
-    // always start with English for Cypress E2E tests
+    // always start with English for Cypress E2E tests to be consistent
     const defaultLang = 'en';
-    this.translate.setDefaultLang(defaultLang);
+    this.translate.use(defaultLang);
     this.selectedLanguage = defaultLang;
   }
 

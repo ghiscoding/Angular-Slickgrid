@@ -15,6 +15,7 @@ const filterServiceStub = {
 
 const sortServiceStub = {
   clearSorting: jest.fn(),
+  emitSortChanged: jest.fn(),
   getCurrentColumnSorts: jest.fn(),
   onBackendSortChanged: jest.fn(),
   onLocalSortChanged: jest.fn(),

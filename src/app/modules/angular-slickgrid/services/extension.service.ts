@@ -356,20 +356,30 @@ export class ExtensionService {
     if (Array.isArray(collection) && this.sharedService.grid && this.sharedService.grid.setColumns) {
       if (collection.length > this.sharedService.allColumns.length) {
         this.sharedService.allColumns = collection;
-        this.sharedService.grid.setColumns(collection);
-      } else {
-        this.sharedService.grid.setColumns(this.sharedService.allColumns);
+      }
+      this.sharedService.grid.setColumns(collection);
+    }
+
+    // dispose of previous Column Picker instance, then re-register it and don't forget to overwrite previous instance ref
+    if (this.sharedService.gridOptions.enableColumnPicker) {
+      this.columnPickerExtension.dispose();
+      const instance = this.columnPickerExtension.register();
+      const extension = this.getExtensionByName(ExtensionName.columnPicker);
+      if (extension) {
+        extension.addon = instance;
+        extension.instance = instance;
       }
     }
 
-    if (this.sharedService.gridOptions.enableColumnPicker) {
-      this.columnPickerExtension.dispose();
-      this.columnPickerExtension.register();
-    }
-
+    // dispose of previous Grid Menu instance, then re-register it and don't forget to overwrite previous instance ref
     if (this.sharedService.gridOptions.enableGridMenu) {
       this.gridMenuExtension.dispose();
-      this.gridMenuExtension.register();
+      const instance = this.gridMenuExtension.register();
+      const extension = this.getExtensionByName(ExtensionName.gridMenu);
+      if (extension) {
+        extension.addon = instance;
+        extension.instance = instance;
+      }
     }
   }
 

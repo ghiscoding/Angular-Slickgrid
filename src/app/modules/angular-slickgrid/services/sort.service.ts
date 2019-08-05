@@ -134,6 +134,27 @@ export class SortService {
     }
   }
 
+  /**
+   * A simple function that is binded to the subscriber and emit a change when the sort is called.
+   * Other services, like Pagination, can then subscribe to it.
+   * @param sender
+   */
+  emitSortChanged(sender: EmitterType, currentLocalSorters?: CurrentSorter[]) {
+    if (sender === EmitterType.remote && this._gridOptions && this._gridOptions.backendServiceApi) {
+      let currentSorters: CurrentSorter[] = [];
+      const backendService = this._gridOptions.backendServiceApi.service;
+      if (backendService && backendService.getCurrentSorters) {
+        currentSorters = backendService.getCurrentSorters() as CurrentSorter[];
+      }
+      this.onSortChanged.next(currentSorters);
+    } else if (sender === EmitterType.local) {
+      if (currentLocalSorters) {
+        this._currentLocalSorters = currentLocalSorters;
+      }
+      this.onSortChanged.next(this.getCurrentLocalSorters());
+    }
+  }
+
   getCurrentLocalSorters(): CurrentSorter[] {
     return this._currentLocalSorters;
   }
@@ -265,27 +286,5 @@ export class SortService {
       }
     }
     return SortDirectionNumber.neutral;
-  }
-
-  // --
-  // private functions
-  // ------------------
-
-  /**
-   * A simple function that is binded to the subscriber and emit a change when the sort is called.
-   * Other services, like Pagination, can then subscribe to it.
-   * @param sender
-   */
-  private emitSortChanged(sender: EmitterType) {
-    if (sender === EmitterType.remote && this._gridOptions && this._gridOptions.backendServiceApi) {
-      let currentSorters: CurrentSorter[] = [];
-      const backendService = this._gridOptions.backendServiceApi.service;
-      if (backendService && backendService.getCurrentSorters) {
-        currentSorters = backendService.getCurrentSorters() as CurrentSorter[];
-      }
-      this.onSortChanged.next(currentSorters);
-    } else if (sender === EmitterType.local) {
-      this.onSortChanged.next(this.getCurrentLocalSorters());
-    }
   }
 }
