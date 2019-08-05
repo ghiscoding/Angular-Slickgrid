@@ -56,4 +56,89 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
       .filter('.slick-cell-checkboxsel.selected.true')
       .should('have.length', 0);
   });
+
+  it('should make sure that first column is hidden from the Grid Menu (1st column definition has "excludeFromGridMenu" set) on 1st grid', () => {
+    cy.get('#grid1')
+      .find('button.slick-gridmenu-button')
+      .trigger('click')
+      .click();
+
+    cy.get('.slick-gridmenu')
+      .find('.slick-gridmenu-list')
+      .children()
+      .each(($child, index) => {
+        if (index === 0) {
+          expect($child[0].className).to.eq('hidden');
+          expect($child[0].offsetHeight).to.eq(0);
+          expect($child[0].offsetWidth).to.eq(0);
+        }
+        expect($child.text()).to.eq(titles[index]);
+      });
+  });
+
+  it('should hide Title from the Grid Menu and expect 1 less column in the 1st grid', () => {
+    const newTitleList = ['', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
+
+    cy.get('#grid1')
+      .get('.slick-gridmenu:visible')
+      .find('.slick-gridmenu-list')
+      .children('li:nth-child(2)')
+      .children('label')
+      .should('contain', 'Title')
+      .click();
+
+    cy.get('#grid1')
+      .find('.slick-header-columns')
+      .children()
+      .each(($child, index) => {
+        expect($child.text()).to.eq(newTitleList[index]);
+      });
+
+    cy.get('#grid1')
+      .get('.slick-gridmenu:visible')
+      .find('span.close')
+      .trigger('click')
+      .click();
+  });
+
+  it('should show the Title column again from the Column Picker in the 1st grid', () => {
+    cy.get('#grid1')
+      .find('.slick-header-column')
+      .first()
+      .trigger('mouseover')
+      .trigger('contextmenu')
+      .invoke('show');
+
+    cy.get('.slick-columnpicker')
+      .find('.slick-columnpicker-list')
+      .children()
+      .each(($child, index) => {
+        if (index === 0) {
+          expect($child[0].className).to.eq('hidden');
+          expect($child[0].offsetHeight).to.eq(0);
+          expect($child[0].offsetWidth).to.eq(0);
+        }
+        expect($child.text()).to.eq(titles[index]);
+      });
+
+    cy.get('.slick-columnpicker')
+      .find('.slick-columnpicker-list')
+      .children('li:nth-child(2)')
+      .children('label')
+      .should('contain', 'Title')
+      .click();
+
+    cy.get('#grid1')
+      .find('.slick-header-columns')
+      .children()
+      .each(($child, index) => {
+        expect($child.text()).to.eq(titles[index]);
+      });
+
+    cy.get('#grid1')
+      .get('.slick-columnpicker:visible')
+      .find('span.close')
+      .trigger('click')
+      .click();
+  });
 });
