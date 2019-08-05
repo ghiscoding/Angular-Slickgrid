@@ -16,7 +16,7 @@ export class GridMenuComponent implements OnInit {
       <li>You can change the Grid Menu icon, for example "fa-ellipsis-v"&nbsp;&nbsp;<span class="fa fa-ellipsis-v"></span>&nbsp;&nbsp;(which is shown in this example)</li>
       <li>By default the Grid Menu shows all columns which you can show/hide them</li>
       <li>You can configure multiple custom "commands" to show up in the Grid Menu and use the "onGridMenuCommand()" callback</li>
-      <li>Doing a "right+click" over any column header will also provide a way to show/hide a column (via the Column Picker Plugin)</li>
+      <li>Doing a "right + click" over any column header will also provide a way to show/hide a column (via the Column Picker Plugin)</li>
       <li><i class="fa fa-arrow-down"></i> You can also show the Grid Menu anywhere on your page</li>
     </ul>
   `;
@@ -29,22 +29,15 @@ export class GridMenuComponent implements OnInit {
   visibleColumns: Column[];
 
   constructor(private translate: TranslateService) {
-    this.selectedLanguage = this.translate.getDefaultLang();
+    // always start with English for Cypress E2E tests to be consistent
+    const defaultLang = 'en';
+    this.translate.use(defaultLang);
+    this.selectedLanguage = defaultLang;
   }
 
   ngOnInit(): void {
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', headerKey: 'TITLE', filterable: true, type: FieldType.string },
-      {
-        id: 'phone', name: 'Phone Number using mask', field: 'phone',
-        filterable: true, sortable: true, minWidth: 100,
-        type: FieldType.string, // because we use a mask filter, we should always assume the value is a string for it to behave correctly
-        formatter: Formatters.mask, params: { mask: '(000) 000-0000' },
-        filter: {
-          model: Filters.inputMask,
-          operator: OperatorType.startsWith
-        }
-      },
       { id: 'duration', name: 'Duration', field: 'duration', headerKey: 'DURATION', sortable: true, filterable: true, type: FieldType.string },
       {
         id: '%', name: '% Complete', field: 'percentComplete', sortable: true, filterable: true,
@@ -167,8 +160,8 @@ export class GridMenuComponent implements OnInit {
   }
 
   switchLanguage() {
-    this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(this.selectedLanguage);
+    const nextLocale = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
   }
 
   toggleGridMenu(e) {

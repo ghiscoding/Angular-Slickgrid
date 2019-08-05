@@ -3,10 +3,11 @@ import {
   Column,
   ColumnSort,
   CurrentSorter,
+  EmitterType,
+  FieldType,
   GridOption,
   SlickEventHandler,
   SortChangedArgs,
-  FieldType,
 } from '../../models';
 import { Sorters } from '../../sorters';
 import { SortService } from '../sort.service';
@@ -267,6 +268,19 @@ describe('SortService', () => {
       expect(spyPreProcess).toHaveBeenCalled();
       expect(spyPostProcess).toHaveBeenCalled();
       expect(spyEmitSort).toHaveBeenCalledWith(expectedSortCols);
+    });
+  });
+
+  describe('emitSortChanged method', () => {
+    it('should have same current sort changed when it is passed as argument to the emitSortChanged method', () => {
+      const localSorterMock = { columnId: 'field1', direction: 'DESC' } as CurrentSorter;
+      const rxOnSortSpy = jest.spyOn(service.onSortChanged, 'next');
+
+      service.emitSortChanged(EmitterType.local, [localSorterMock]);
+      const currentLocalSorters = service.getCurrentLocalSorters();
+
+      expect(currentLocalSorters).toEqual([localSorterMock]);
+      expect(rxOnSortSpy).toHaveBeenCalledWith(currentLocalSorters);
     });
   });
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   CollectionFilterBy,
@@ -15,7 +15,7 @@ import { uniqueArray } from './utilities';
 
 @Injectable()
 export class CollectionService {
-  constructor(private translate: TranslateService) { }
+  constructor(@Optional() private translate: TranslateService) { }
 
   /**
    * Filter 1 or more items from a collection
@@ -86,6 +86,10 @@ export class CollectionService {
    * @param enableTranslateLabel
    */
   sortCollection(columnDef: Column, collection: any[], sortByOptions: CollectionSortBy | CollectionSortBy[], enableTranslateLabel?: boolean): any[] {
+    if (enableTranslateLabel && (!this.translate || !this.translate.instant)) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
+
     let sortedCollection: any[] = [];
 
     if (sortByOptions) {

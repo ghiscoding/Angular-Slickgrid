@@ -16,10 +16,11 @@
   "HIDE_COLUMN": "Cacher la colonne",
   "IN_COLLECTION_SEPERATED_BY_COMMA": "Recherche incluant certain éléments d'une collection, doit être séparé par une virgule (a,b)",
   "INVALID_FLOAT": "Le nombre doit être valide et avoir un maximum de {{maxDecimal}} décimales.",
-  "ITEMS": "Éléments",
+  "ITEMS": "éléments",
   "ITEMS_PER_PAGE": "éléments par page",
   "NOT_IN_COLLECTION_SEPERATED_BY_COMMA": "Recherche excluant certain éléments d'une collection, doit être séparé par une virgule (a,b)",
   "OF": "de",
+  "OK": "Terminé",
   "PAGE": "Page",
   "PAGE_X_OF_Y": "page {{x}} de {{y}}",
   "REFRESH_DATASET": "Rafraîchir les données",
@@ -34,7 +35,6 @@
   "TOGGLE_FILTER_ROW": "Basculer la ligne des filtres",
   "TOGGLE_PRE_HEADER_ROW": "Basculer la ligne de pré-en-tête",
   "X_OF_Y_SELECTED": "# de % sélectionné",
-
   "BILLING": {
     "ADDRESS": {
       "STREET": "Adresse de facturation",

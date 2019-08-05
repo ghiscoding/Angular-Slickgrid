@@ -9,23 +9,25 @@ import {
   GridState,
   GridStateChange,
   GridStateType,
+  SlickEventHandler,
 } from './../models/index';
 import { ExtensionService } from './extension.service';
 import { FilterService } from './filter.service';
 import { SortService } from './sort.service';
 import { Subject, Subscription } from 'rxjs';
+import { unsubscribeAllObservables } from './utilities';
+import { SharedService } from './shared.service';
+import { Injectable } from '@angular/core';
 
 // using external non-typed js libraries
 declare var Slick: any;
 
+@Injectable()
 export class GridStateService {
-  private _eventHandler = new Slick.EventHandler();
+  private _eventHandler: SlickEventHandler;
   private _columns: Column[] = [];
   private _currentColumns: CurrentColumn[] = [];
   private _grid: any;
-  private extensionService: ExtensionService;
-  private filterService: FilterService;
-  private sortService: SortService;
   private subscriptions: Subscription[] = [];
   onGridStateChanged = new Subject<GridStateChange>();
 
@@ -34,19 +36,21 @@ export class GridStateService {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
   }
 
-  /**
-   * Initialize the Export Service
-   * @param grid
-   * @param filterService
-   * @param sortService
-   * @param dataView
-   */
-  init(grid: any, extensionService: ExtensionService, filterService: FilterService, sortService: SortService): void {
-    this._grid = grid;
-    this.extensionService = extensionService;
-    this.filterService = filterService;
-    this.sortService = sortService;
+  constructor(
+    private extensionService: ExtensionService,
+    private filterService: FilterService,
+    private sharedService: SharedService,
+    private sortService: SortService
+  ) {
+    this._eventHandler = new Slick.EventHandler();
+  }
 
+  /**
+   * Initialize the Grid State Service
+   * @param grid
+   */
+  init(grid: any): void {
+    this._grid = grid;
     this.subscribeToAllGridChanges(grid);
   }
 
@@ -56,12 +60,8 @@ export class GridStateService {
     this._eventHandler.unsubscribeAll();
 
     // also unsubscribe all Angular Subscriptions
-    this.subscriptions.forEach((subscription: Subscription) => {
-      if (subscription && subscription.unsubscribe) {
-        subscription.unsubscribe();
-      }
-    });
-    this.subscriptions = [];
+    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
+
     this._currentColumns = [];
     this._columns = [];
   }
@@ -264,6 +264,14 @@ export class GridStateService {
     // subscribe to Column Resize & Reordering
     this.bindSlickGridEventToGridStateChange('onColumnsReordered', grid);
     this.bindSlickGridEventToGridStateChange('onColumnsResized', grid);
+
+    // subscribe to HeaderMenu (hide column)
+    this.subscriptions.push(
+      this.sharedService.onColumnsChanged.subscribe((visibleColumns: Column[]) => {
+        const currentColumns: CurrentColumn[] = this.getAssociatedCurrentColumns(visibleColumns);
+        this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
+      })
+    );
   }
 
   // --

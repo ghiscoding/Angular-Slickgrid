@@ -133,6 +133,12 @@ export class GridRowSelectionComponent implements OnInit {
         // True (Single Selection), False (Multiple Selections)
         selectActiveRow: true
       },
+      columnPicker: {
+        hideForceFitButton: true
+      },
+      gridMenu: {
+        hideForceFitButton: true
+      }
     };
 
     this.gridOptions2 = {

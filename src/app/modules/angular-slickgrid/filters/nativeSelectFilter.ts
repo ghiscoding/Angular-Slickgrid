@@ -8,6 +8,7 @@ import {
   OperatorString,
   SearchTerm,
 } from './../models/index';
+import { Optional } from '@angular/core';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -21,7 +22,7 @@ export class NativeSelectFilter implements Filter {
   columnDef: Column;
   callback: FilterCallback;
 
-  constructor(private translate: TranslateService) { }
+  constructor(@Optional() private translate: TranslateService) { }
 
   get operator(): OperatorType | OperatorString {
     return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;

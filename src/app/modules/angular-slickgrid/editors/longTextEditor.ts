@@ -8,7 +8,8 @@ import {
   EditorValidatorOutput,
   GridOption,
   HtmlElementPosition,
-  KeyCode
+  KeyCode,
+  Locale
 } from './../models/index';
 
 // using external non-typed js libraries
@@ -20,6 +21,7 @@ declare var $: any;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class LongTextEditor implements Editor {
+  private _locales: Locale;
   $textarea: any;
   $wrapper: any;
   defaultValue: any;
@@ -33,7 +35,11 @@ export class LongTextEditor implements Editor {
   constructor(private args: any) {
     this.gridOptions = this.args.grid.getOptions() as GridOption;
     const options = this.gridOptions || this.args.column.params || {};
-    this._translate = options.i18n;
+    if (options && options.i18n instanceof TranslateService) {
+      this._translate = options.i18n;
+    }
+    // get locales provided by user in forRoot or else use default English locales via the Constants
+    this._locales = this.gridOptions && this.gridOptions.locales || Constants.locales;
 
     this.init();
   }
@@ -61,8 +67,8 @@ export class LongTextEditor implements Editor {
     const columnId = this.columnDef && this.columnDef.id;
     const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
     const title = this.columnEditor && this.columnEditor.title || '';
-    const cancelText = this._translate && this._translate.instant('CANCEL') || Constants.TEXT_CANCEL;
-    const saveText = this._translate && this._translate.instant('SAVE') || Constants.TEXT_SAVE;
+    const cancelText = this._translate && this._translate.instant && this._translate.instant('CANCEL') || this._locales && this._locales.TEXT_CANCEL;
+    const saveText = this._translate && this._translate.instant && this._translate.instant('SAVE') || this._locales && this._locales.TEXT_SAVE;
     const $container = $('body');
 
     this.$wrapper = $(`<div class="slick-large-editor-text editor-${columnId}" />`).appendTo($container);

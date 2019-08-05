@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Constants } from '../constants';
 import {
   Column,
   ColumnSort,
+  CurrentSorter,
+  EmitterType,
   Extension,
   ExtensionName,
   GridOption,
@@ -11,6 +13,7 @@ import {
   HeaderMenuItem,
   HeaderMenuOnCommandArgs,
   HeaderMenuOnBeforeMenuShowArgs,
+  Locale,
   SlickEventHandler,
 } from '../models/index';
 import { FilterService } from '../services/filter.service';
@@ -25,13 +28,14 @@ declare var Slick: any;
 export class HeaderMenuExtension implements Extension {
   private _addon: any;
   private _eventHandler: SlickEventHandler;
+  private _locales: Locale;
 
   constructor(
     private extensionUtility: ExtensionUtility,
     private filterService: FilterService,
     private sharedService: SharedService,
     private sortService: SortService,
-    private translate: TranslateService,
+    @Optional() private translate: TranslateService,
   ) {
     this._eventHandler = new Slick.EventHandler();
   }
@@ -60,7 +64,14 @@ export class HeaderMenuExtension implements Extension {
    * @param columnDefinitions
    */
   register(): any {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
+
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
+      // get locales provided by user in forRoot or else use default English locales via the Constants
+      this._locales = this.sharedService.gridOptions && this.sharedService.gridOptions.locales || Constants.locales;
+
       // dynamically import the SlickGrid plugin (addon) with RequireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.headerMenu);
       this.sharedService.gridOptions.headerMenu = { ...this.getDefaultHeaderMenuOptions(), ...this.sharedService.gridOptions.headerMenu };
@@ -120,7 +131,7 @@ export class HeaderMenuExtension implements Extension {
             if (columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'sort-asc').length === 0) {
               columnHeaderMenuItems.push({
                 iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
-                title: options.enableTranslate ? this.translate.instant('SORT_ASCENDING') : Constants.TEXT_SORT_ASCENDING,
+                title: options.enableTranslate ? this.translate.instant('SORT_ASCENDING') : this._locales && this._locales.TEXT_SORT_ASCENDING,
                 command: 'sort-asc',
                 positionOrder: 50
               });
@@ -128,7 +139,7 @@ export class HeaderMenuExtension implements Extension {
             if (columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'sort-desc').length === 0) {
               columnHeaderMenuItems.push({
                 iconCssClass: headerMenuOptions.iconSortDescCommand || 'fa fa-sort-desc',
-                title: options.enableTranslate ? this.translate.instant('SORT_DESCENDING') : Constants.TEXT_SORT_DESCENDING,
+                title: options.enableTranslate ? this.translate.instant('SORT_DESCENDING') : this._locales && this._locales.TEXT_SORT_DESCENDING,
                 command: 'sort-desc',
                 positionOrder: 51
               });
@@ -142,7 +153,7 @@ export class HeaderMenuExtension implements Extension {
             if (!headerMenuOptions.hideClearSortCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'clear-sort').length === 0) {
               columnHeaderMenuItems.push({
                 iconCssClass: headerMenuOptions.iconClearSortCommand || 'fa fa-unsorted',
-                title: options.enableTranslate ? this.translate.instant('REMOVE_SORT') : Constants.TEXT_REMOVE_SORT,
+                title: options.enableTranslate ? this.translate.instant('REMOVE_SORT') : this._locales && this._locales.TEXT_REMOVE_SORT,
                 command: 'clear-sort',
                 positionOrder: 54
               });
@@ -154,7 +165,7 @@ export class HeaderMenuExtension implements Extension {
             if (!headerMenuOptions.hideClearFilterCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'clear-filter').length === 0) {
               columnHeaderMenuItems.push({
                 iconCssClass: headerMenuOptions.iconClearFilterCommand || 'fa fa-filter',
-                title: options.enableTranslate ? this.translate.instant('REMOVE_FILTER') : Constants.TEXT_REMOVE_FILTER,
+                title: options.enableTranslate ? this.translate.instant('REMOVE_FILTER') : this._locales && this._locales.TEXT_REMOVE_FILTER,
                 command: 'clear-filter',
                 positionOrder: 53
               });
@@ -165,7 +176,7 @@ export class HeaderMenuExtension implements Extension {
           if (headerMenuOptions && !headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'hide').length === 0) {
             columnHeaderMenuItems.push({
               iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
-              title: options.enableTranslate ? this.translate.instant('HIDE_COLUMN') : Constants.TEXT_HIDE_COLUMN,
+              title: options.enableTranslate ? this.translate.instant('HIDE_COLUMN') : this._locales && this._locales.TEXT_HIDE_COLUMN,
               command: 'hide',
               positionOrder: 55
             });
@@ -183,10 +194,11 @@ export class HeaderMenuExtension implements Extension {
   hideColumn(column: Column) {
     if (this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns && this.sharedService.grid.getColumnIndex) {
       const columnIndex = this.sharedService.grid.getColumnIndex(column.id);
-      const currentColumns = this.sharedService.grid.getColumns();
+      const currentColumns = this.sharedService.grid.getColumns() as Column[];
       const visibleColumns = this.extensionUtility.arrayRemoveItemByIndex(currentColumns, columnIndex);
       this.sharedService.visibleColumns = visibleColumns;
       this.sharedService.grid.setColumns(visibleColumns);
+      this.sharedService.onColumnsChanged.next(visibleColumns);
     }
   }
 
@@ -226,19 +238,19 @@ export class HeaderMenuExtension implements Extension {
           columnHeaderMenuItems.forEach((item) => {
             switch (item.command) {
               case 'clear-filter':
-                item.title = this.translate.instant('REMOVE_FILTER') || Constants.TEXT_REMOVE_FILTER;
+                item.title = this.translate.instant('REMOVE_FILTER') || this._locales && this._locales.TEXT_REMOVE_FILTER;
                 break;
               case 'clear-sort':
-                item.title = this.translate.instant('REMOVE_SORT') || Constants.TEXT_REMOVE_SORT;
+                item.title = this.translate.instant('REMOVE_SORT') || this._locales && this._locales.TEXT_REMOVE_SORT;
                 break;
               case 'sort-asc':
-                item.title = this.translate.instant('SORT_ASCENDING') || Constants.TEXT_SORT_ASCENDING;
+                item.title = this.translate.instant('SORT_ASCENDING') || this._locales && this._locales.TEXT_SORT_ASCENDING;
                 break;
               case 'sort-desc':
-                item.title = this.translate.instant('SORT_DESCENDING') || Constants.TEXT_SORT_DESCENDING;
+                item.title = this.translate.instant('SORT_DESCENDING') || this._locales && this._locales.TEXT_SORT_DESCENDING;
                 break;
               case 'hide':
-                item.title = this.translate.instant('HIDE_COLUMN') || Constants.TEXT_HIDE_COLUMN;
+                item.title = this.translate.instant('HIDE_COLUMN') || this._locales && this._locales.TEXT_HIDE_COLUMN;
                 break;
             }
 
@@ -324,12 +336,16 @@ export class HeaderMenuExtension implements Extension {
       // get previously sorted columns
       const sortedColsWithoutCurrent: ColumnSort[] = this.sortService.getCurrentColumnSorts(args.column.id + '');
 
+      let emitterType: EmitterType;
+
       // add to the column array, the column sorted by the header menu
       sortedColsWithoutCurrent.push({ sortCol: args.column, sortAsc: isSortingAsc });
       if (this.sharedService.gridOptions.backendServiceApi) {
         this.sortService.onBackendSortChanged(event, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this.sharedService.grid });
+        emitterType = EmitterType.remote;
       } else if (this.sharedService.dataView) {
         this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, sortedColsWithoutCurrent);
+        emitterType = EmitterType.local;
       } else {
         // when using customDataView, we will simply send it as a onSort event with notify
         const isMultiSort = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.multiColumnSort || false;
@@ -345,7 +361,23 @@ export class HeaderMenuExtension implements Extension {
           sortCol: col && col.sortCol,
         };
       });
-      this.sharedService.grid.setSortColumns(newSortColumns); // add sort icon in UI
+
+      // add sort icon in UI
+      this.sharedService.grid.setSortColumns(newSortColumns);
+
+      // if we have an emitter type set, we will emit a sort changed
+      // for the Grid State Service to see the change.
+      // We also need to pass current sorters changed to the emitSortChanged method
+      if (emitterType) {
+        const currentLocalSorters: CurrentSorter[] = [];
+        newSortColumns.forEach((sortCol) => {
+          currentLocalSorters.push({
+            columnId: sortCol.columnId + '',
+            direction: sortCol.sortAsc ? 'ASC' : 'DESC'
+          });
+        });
+        this.sortService.emitSortChanged(emitterType, currentLocalSorters);
+      }
     }
   }
 }
