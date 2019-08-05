@@ -28,7 +28,7 @@ export const numberFilterCondition: FilterCondition = (options: FilterConditionO
   }
 
   if (isRangeSearch) {
-    const isInclusive = options.operator && options.operator === OperatorType.rangeIncluside;
+    const isInclusive = options.operator && options.operator === OperatorType.rangeInclusive;
     const resultCondition1 = testFilterCondition((isInclusive ? '>=' : '>'), cellValue, searchValue1);
     const resultCondition2 = testFilterCondition((isInclusive ? '<=' : '<'), cellValue, searchValue2);
     return (resultCondition1 && resultCondition2);

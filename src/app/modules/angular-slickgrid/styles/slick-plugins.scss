@@ -379,6 +379,7 @@ input.search-filter {
 .input-group.flatpickr {
   .flatpickr {
     flex: 1;
+    cursor: pointer;
 
     .flatpickr-input.form-control {
         background-color: $flatpickr-bgcolor;
@@ -386,6 +387,18 @@ input.search-filter {
         font-size: $font-size-base;
         border-radius: $compound-filter-border-radius;
     }
+    .flatpickr.form-control[readonly] {
+      background-color: $flatpickr-bgcolor;
+    }
+  }
+}
+input.flatpickr.form-control {
+  cursor: pointer;
+  font-family: $filter-placeholder-font-family;
+  font-size: $font-size-base;
+  border-radius: $date-range-filter-border-radius;
+  &[readonly] {
+    background-color: $flatpickr-bgcolor;
   }
 }
 

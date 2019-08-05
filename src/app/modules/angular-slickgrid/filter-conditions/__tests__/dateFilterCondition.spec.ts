@@ -68,4 +68,34 @@ describe('dateFilterCondition method', () => {
     const output = dateFilterCondition(options);
     expect(output).toBe(false);
   });
+
+  it('should return True when input value is in the range of search terms', () => {
+    const options = { dataKey: '', operator: 'EQ', cellValue: '1993-12-25', fieldType: FieldType.number, searchTerms: ['1993-12-01..1993-12-31'] } as FilterConditionOption;
+    const output = dateFilterCondition(options);
+    expect(output).toBe(true);
+  });
+
+  it('should return False when input value is not in the range of search terms', () => {
+    const options = { dataKey: '', operator: 'EQ', cellValue: '1993-11-25', fieldType: FieldType.number, searchTerms: ['1993-12-01..1993-12-31'] } as FilterConditionOption;
+    const output = dateFilterCondition(options);
+    expect(output).toBe(false);
+  });
+
+  it('should return True when input value equals the search terms min inclusive value and operator is set to "rangeInclusive"', () => {
+    const options = { dataKey: '', operator: 'RangeInclusive', cellValue: '1993-12-01', fieldType: FieldType.number, searchTerms: ['1993-12-01..1993-12-31'] } as FilterConditionOption;
+    const output = dateFilterCondition(options);
+    expect(output).toBe(true);
+  });
+
+  it('should return False when input value equals the search terms min inclusive value and operator is set to "RangeNotInclusive"', () => {
+    const options = { dataKey: '', operator: 'RangeNotInclusive', cellValue: '1993-12-01', fieldType: FieldType.number, searchTerms: ['1993-12-01..1993-12-31'] } as FilterConditionOption;
+    const output = dateFilterCondition(options);
+    expect(output).toBe(false);
+  });
+
+  it('should return False when any of the 2 search term value is not a valid date', () => {
+    const options = { dataKey: '', operator: 'RangeNotInclusive', cellValue: '1993-12-05', fieldType: FieldType.number, searchTerms: ['1993-12-01..1993-12-60'] } as FilterConditionOption;
+    const output = dateFilterCondition(options);
+    expect(output).toBe(false);
+  });
 });

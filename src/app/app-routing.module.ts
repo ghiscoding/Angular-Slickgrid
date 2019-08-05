@@ -16,6 +16,7 @@ import { GridHeaderMenuComponent } from './examples/grid-headermenu.component';
 import { GridLocalizationComponent } from './examples/grid-localization.component';
 import { GridMenuComponent } from './examples/grid-menu.component';
 import { GridOdataComponent } from './examples/grid-odata.component';
+import { GridRangeComponent } from './examples/grid-range.component';
 import { GridRemoteComponent } from './examples/grid-remote.component';
 import { GridRowDetailComponent } from './examples/grid-rowdetail.component';
 import { GridRowMoveComponent } from './examples/grid-rowmove.component';
@@ -49,6 +50,7 @@ const routes: Routes = [
   { path: 'localization', component: GridLocalizationComponent },
   { path: 'clientside', component: GridClientSideComponent },
   { path: 'odata', component: GridOdataComponent },
+  { path: 'range', component: GridRangeComponent },
   { path: 'remote', component: GridRemoteComponent },
   { path: 'rowdetail', component: GridRowDetailComponent },
   { path: 'rowmove', component: GridRowMoveComponent },

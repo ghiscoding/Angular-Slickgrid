@@ -11,6 +11,7 @@ import { InputNumberFilter } from './inputNumberFilter';
 import { InputPasswordFilter } from './inputPasswordFilter';
 import { MultipleSelectFilter } from './multipleSelectFilter';
 import { NativeSelectFilter } from './nativeSelectFilter';
+import { RangeDateFilter } from './rangeDateFilter';
 import { SingleSelectFilter } from './singleSelectFilter';
 import { SliderFilter } from './sliderFilter';
 
@@ -56,6 +57,9 @@ export const Filters = {
 
   /** Multiple Select filter, which uses 3rd party lib "multiple-select.js" */
   multipleSelect: MultipleSelectFilter,
+
+  /** Range Date Filter (uses the Flactpickr Date picker with range option) */
+  rangeDate: RangeDateFilter,
 
   /** Select filter, which uses native DOM element select */
   select: NativeSelectFilter,

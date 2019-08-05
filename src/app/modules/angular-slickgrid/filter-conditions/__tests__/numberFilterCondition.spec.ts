@@ -39,7 +39,7 @@ describe('numberFilterCondition method', () => {
     expect(output).toBe(true);
   });
 
-  it('should return False when the cell value is equal to at least 1 of the searchTerms', () => {
+  it('should return False when the cell value is not equal to the first search term', () => {
     const options = { dataKey: '', operator: 'EQ', cellValue: 3, fieldType: FieldType.number, searchTerms: ['1', '2', '3'] } as FilterConditionOption;
     const output = numberFilterCondition(options);
     expect(output).toBe(false);
@@ -65,6 +65,30 @@ describe('numberFilterCondition method', () => {
 
   it('should return False when there are a valid number search term but without operator', () => {
     const options = { dataKey: '', cellValue: 2, fieldType: FieldType.number, searchTerms: [1] } as FilterConditionOption;
+    const output = numberFilterCondition(options);
+    expect(output).toBe(false);
+  });
+
+  it('should return True when input value is in the range of search terms', () => {
+    const options = { dataKey: '', operator: 'EQ', cellValue: '3', fieldType: FieldType.number, searchTerms: ['1..5'] } as FilterConditionOption;
+    const output = numberFilterCondition(options);
+    expect(output).toBe(true);
+  });
+
+  it('should return False when input value is not in the range of search terms', () => {
+    const options = { dataKey: '', operator: 'EQ', cellValue: '15', fieldType: FieldType.number, searchTerms: ['1..5'] } as FilterConditionOption;
+    const output = numberFilterCondition(options);
+    expect(output).toBe(false);
+  });
+
+  it('should return True when input value equals the search terms min inclusive value and operator is set to "rangeInclusive"', () => {
+    const options = { dataKey: '', operator: 'RangeInclusive', cellValue: '1', fieldType: FieldType.number, searchTerms: ['1..5'] } as FilterConditionOption;
+    const output = numberFilterCondition(options);
+    expect(output).toBe(true);
+  });
+
+  it('should return False when input value equals the search terms min inclusive value and operator is set to "RangeNotInclusive"', () => {
+    const options = { dataKey: '', operator: 'RangeNotInclusive', cellValue: '1', fieldType: FieldType.number, searchTerms: ['1..5'] } as FilterConditionOption;
     const output = numberFilterCondition(options);
     expect(output).toBe(false);
   });

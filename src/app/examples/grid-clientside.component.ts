@@ -103,8 +103,8 @@ export class GridClientSideComponent implements OnInit {
         }
       },
       {
-        id: 'complete', name: '% Complete', field: 'percentComplete', /*formatter: Formatters.percentCompleteBar,*/ minWidth: 70, type: FieldType.number, sortable: true,
-        filterable: true, filter: { model: Filters.input /*Filters.compoundInputNumber*/ }
+        id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, minWidth: 70, type: FieldType.number, sortable: true,
+        filterable: true, filter: { model: Filters.compoundInputNumber }
       },
       {
         id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true,
@@ -172,10 +172,10 @@ export class GridClientSideComponent implements OnInit {
       // use columnDef searchTerms OR use presets as shown below
       presets: {
         filters: [
-          // { columnId: 'duration', searchTerms: [10, 220] },
-          { columnId: 'complete', searchTerms: ['5..10'] },
-          // { columnId: 'usDateShort', operator: '<', searchTerms: ['4/20/25'] },
-          // { columnId: 'effort-driven', searchTerms: [true] }
+          { columnId: 'duration', searchTerms: [10, 220] },
+          // { columnId: 'complete', searchTerms: ['5'], operator: '>' },
+          { columnId: 'usDateShort', operator: '<', searchTerms: ['4/20/25'] },
+          // { columnId: 'effort-driven', searchTerms: [true] },
         ],
         sorters: [
           { columnId: 'duration', direction: 'DESC' },

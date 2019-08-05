@@ -33,13 +33,13 @@ export enum OperatorType {
    * Search in an inclusive range of values that is greater or equal to search value 1 and is smaller or equal to value 2
    * For example the search term of "5..10" will return any values that are greater or equal to 5 and smaller or equal to 10
    */
-  rangeIncluside = 'RangeInclusive',
+  rangeInclusive = 'RangeInclusive',
 
   /**
    * Search in an inclusive range of values that is greater then search value 1 and is smaller then value 2
    * For example the search term of "5..10" will return any values that is greater then 5 and smaller then 10
    */
-  rangeNotIncluside = 'RangeNotInclusive',
+  rangeNotInclusive = 'RangeNotInclusive',
 
   /** String starts with value */
   startsWith = 'StartsWith',
