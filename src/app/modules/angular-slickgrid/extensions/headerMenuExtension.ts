@@ -4,6 +4,8 @@ import { Constants } from '../constants';
 import {
   Column,
   ColumnSort,
+  CurrentSorter,
+  EmitterType,
   Extension,
   ExtensionName,
   GridOption,
@@ -192,10 +194,11 @@ export class HeaderMenuExtension implements Extension {
   hideColumn(column: Column) {
     if (this.sharedService.grid && this.sharedService.grid.getColumns && this.sharedService.grid.setColumns && this.sharedService.grid.getColumnIndex) {
       const columnIndex = this.sharedService.grid.getColumnIndex(column.id);
-      const currentColumns = this.sharedService.grid.getColumns();
+      const currentColumns = this.sharedService.grid.getColumns() as Column[];
       const visibleColumns = this.extensionUtility.arrayRemoveItemByIndex(currentColumns, columnIndex);
       this.sharedService.visibleColumns = visibleColumns;
       this.sharedService.grid.setColumns(visibleColumns);
+      this.sharedService.onColumnsChanged.next(visibleColumns);
     }
   }
 
@@ -333,12 +336,16 @@ export class HeaderMenuExtension implements Extension {
       // get previously sorted columns
       const sortedColsWithoutCurrent: ColumnSort[] = this.sortService.getCurrentColumnSorts(args.column.id + '');
 
+      let emitterType: EmitterType;
+
       // add to the column array, the column sorted by the header menu
       sortedColsWithoutCurrent.push({ sortCol: args.column, sortAsc: isSortingAsc });
       if (this.sharedService.gridOptions.backendServiceApi) {
         this.sortService.onBackendSortChanged(event, { multiColumnSort: true, sortCols: sortedColsWithoutCurrent, grid: this.sharedService.grid });
+        emitterType = EmitterType.remote;
       } else if (this.sharedService.dataView) {
         this.sortService.onLocalSortChanged(this.sharedService.grid, this.sharedService.dataView, sortedColsWithoutCurrent);
+        emitterType = EmitterType.local;
       } else {
         // when using customDataView, we will simply send it as a onSort event with notify
         const isMultiSort = this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.multiColumnSort || false;
@@ -354,7 +361,23 @@ export class HeaderMenuExtension implements Extension {
           sortCol: col && col.sortCol,
         };
       });
-      this.sharedService.grid.setSortColumns(newSortColumns); // add sort icon in UI
+
+      // add sort icon in UI
+      this.sharedService.grid.setSortColumns(newSortColumns);
+
+      // if we have an emitter type set, we will emit a sort changed
+      // for the Grid State Service to see the change.
+      // We also need to pass current sorters changed to the emitSortChanged method
+      if (emitterType) {
+        const currentLocalSorters: CurrentSorter[] = [];
+        newSortColumns.forEach((sortCol) => {
+          currentLocalSorters.push({
+            columnId: sortCol.columnId + '',
+            direction: sortCol.sortAsc ? 'ASC' : 'DESC'
+          });
+        });
+        this.sortService.emitSortChanged(emitterType, currentLocalSorters);
+      }
     }
   }
 }

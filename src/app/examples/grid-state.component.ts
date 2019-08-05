@@ -51,10 +51,14 @@ export class GridStateComponent implements OnInit {
   ngOnInit(): void {
     const presets = JSON.parse(localStorage[LOCAL_STORAGE_KEY] || null);
 
-    // use some Grid State preset defaults if you wish
+    // use some Grid State preset defaults if you wish or just restore from Locale Storage
     // presets = presets || this.useDefaultPresets();
-
     this.defineGrid(presets);
+
+    // always start with English for Cypress E2E tests to be consistent
+    const defaultLang = 'en';
+    this.translate.use(defaultLang);
+    this.selectedLanguage = defaultLang;
   }
 
   /** Clear the Grid State from Local Storage and reset the grid to it's original state */
@@ -100,7 +104,6 @@ export class GridStateComponent implements OnInit {
         filter: {
           collection: multiSelectFilterArray,
           model: Filters.multipleSelect,
-          searchTerms: [1, 33, 44, 50, 66], // default selection
           // we could add certain option(s) to the "multiple-select" plugin
           filterOptions: {
             maxHeight: 250,
@@ -141,7 +144,13 @@ export class GridStateComponent implements OnInit {
       enableCheckboxSelector: true,
       enableFiltering: true,
       enableTranslate: true,
-      i18n: this.translate
+      i18n: this.translate,
+      columnPicker: {
+        hideForceFitButton: true
+      },
+      gridMenu: {
+        hideForceFitButton: true
+      },
     };
 
     // reload the Grid State with the grid options presets
@@ -196,8 +205,8 @@ export class GridStateComponent implements OnInit {
   }
 
   switchLanguage() {
-    this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(this.selectedLanguage);
+    const nextLocale = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
   }
 
   useDefaultPresets() {

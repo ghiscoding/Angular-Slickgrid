@@ -46,7 +46,7 @@ export class ColumnPickerExtension implements Extension {
       this.sharedService.gridOptions.columnPicker.columnTitle = this.sharedService.gridOptions.columnPicker.columnTitle || columnTitle;
       this.sharedService.gridOptions.columnPicker.forceFitTitle = this.sharedService.gridOptions.columnPicker.forceFitTitle || forceFitTitle;
       this.sharedService.gridOptions.columnPicker.syncResizeTitle = this.sharedService.gridOptions.columnPicker.syncResizeTitle || syncResizeTitle;
-      this._addon = new Slick.Controls.ColumnPicker(this.sharedService.columnDefinitions, this.sharedService.grid, this.sharedService.gridOptions);
+      this._addon = new Slick.Controls.ColumnPicker(this.sharedService.allColumns, this.sharedService.grid, this.sharedService.gridOptions);
 
       if (this.sharedService.grid && this.sharedService.gridOptions.enableColumnPicker) {
         if (this.sharedService.gridOptions.columnPicker.onExtensionRegistered) {

@@ -7,15 +7,19 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: angular-slickgrid-build-{{ .Branch }}-{{ checksum "package.json" }}
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - angular-slickgrid-yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - angular-slickgrid-yarn-packages-v1-{{ .Branch }}-
+            - angular-slickgrid-yarn-packages-v1-
       - run: yarn install
       - run:
           name: Install Jest JUnit coverage reporter
           command: yarn add --dev jest-junit
       - save_cache:
-          key: angular-slickgrid-build-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
-            - "node_modules"
+            - ~/.cache/yarn
+          key: angular-slickgrid-yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run Jest tests with JUnit as reporter
           command: ./node_modules/.bin/jest --config test/jest.config.js --ci --runInBand --collectCoverage=true --reporters=default --reporters=jest-junit
@@ -31,17 +35,19 @@ jobs:
       - restore_cache:
           name: Restoring Cache for Cypress
           keys:
-            - e2e-tests-{{ .Branch }}-{{ checksum "package.json" }}
+            - angular-slickgrid-cypress-yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - angular-slickgrid-cypress-yarn-packages-v1-{{ .Branch }}-
+            - angular-slickgrid-cypress-yarn-packages-v1-
       - run:
-          name: Installing Cypress dependencies with yarn
+          name: Installing Cypress dependencies
           command: |
             cd test/cypress
-            yarn install --frozen-lockfile
+            yarn install
       - save_cache:
           name: Saving Cache for Cypress
-          key: e2e-tests-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
-            - "test/cypress/node_modules"
+            - ~/.cache/yarn
+          key: angular-slickgrid-yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Running Cypress E2E tests with JUnit reporter
           command: |

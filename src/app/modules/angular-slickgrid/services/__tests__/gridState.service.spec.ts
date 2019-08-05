@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { ExtensionService } from '../extension.service';
 import { FilterService } from '../filter.service';
 import { GridStateService } from '../gridState.service';
+import { SharedService } from '../shared.service';
 import { SortService } from '../sort.service';
 import {
   BackendService,
@@ -57,13 +58,12 @@ const sortServiceStub = {
 
 describe('GridStateService', () => {
   let service: GridStateService;
+  let sharedService: SharedService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [GridStateService]
-    });
-    service = TestBed.get(GridStateService);
-    service.init(gridStub, extensionServiceStub, filterServiceStub, sortServiceStub);
+    sharedService = new SharedService();
+    service = new GridStateService(extensionServiceStub, filterServiceStub, sharedService, sortServiceStub);
+    service.init(gridStub);
   });
 
   afterEach(() => {
@@ -89,7 +89,7 @@ describe('GridStateService', () => {
       const filterSpy = jest.spyOn(filterServiceStub.onFilterChanged, 'subscribe');
       const sortSpy = jest.spyOn(sortServiceStub.onSortChanged, 'subscribe');
 
-      service.init(gridStub, extensionServiceStub, filterServiceStub, sortServiceStub);
+      service.init(gridStub);
 
       expect(gridStateSpy).toHaveBeenCalled();
       expect(filterSpy).toHaveBeenCalled();
@@ -134,7 +134,7 @@ describe('GridStateService', () => {
         const extensionSpy = jest.spyOn(extensionServiceStub, 'getExtensionByName').mockReturnValue(extensionMock);
         const rxOnChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
 
-        service.init(gridStub, extensionServiceStub, filterServiceStub, sortServiceStub);
+        service.init(gridStub);
         slickgridEvent.notify({ columns: columnsMock }, new Slick.EventData(), gridStub);
 
         expect(gridStateSpy).toHaveBeenCalled();
@@ -157,7 +157,7 @@ describe('GridStateService', () => {
         const gridStateSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
         const rxOnChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
 
-        service.init(gridStub, extensionServiceStub, filterServiceStub, sortServiceStub);
+        service.init(gridStub);
         gridStub.onColumnsReordered.notify({ impactedColumns: columnsMock }, new Slick.EventData(), gridStub);
         service.resetColumns();
 
@@ -460,6 +460,22 @@ describe('GridStateService', () => {
       const rxOnChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
 
       sortServiceStub.onSortCleared.next(true);
+      expect(rxOnChangeSpy).toHaveBeenCalledWith(stateChangeMock);
+    });
+
+    it('should trigger a "gridStateService:changed" event when ShareService "onColumnsChanged" is triggered', () => {
+      columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }] as Column[];
+      currentColumnsMock = [{ columnId: 'field1', cssClass: 'red', headerCssClass: '', width: 100 }] as CurrentColumn[];
+      const gridStateMock = { columns: currentColumnsMock, filters: [], sorters: [] } as GridState;
+      const stateChangeMock = { change: { newValues: currentColumnsMock, type: GridStateType.columns }, gridState: gridStateMock } as GridStateChange;
+      const rxOnChangeSpy = jest.spyOn(service.onGridStateChanged, 'next');
+      const getCurGridStateSpy = jest.spyOn(service, 'getCurrentGridState').mockReturnValue(gridStateMock);
+      const getAssocCurColSpy = jest.spyOn(service, 'getAssociatedCurrentColumns').mockReturnValue(currentColumnsMock);
+
+      sharedService.onColumnsChanged.next(columnsMock);
+
+      expect(getCurGridStateSpy).toHaveBeenCalled();
+      expect(getAssocCurColSpy).toHaveBeenCalled();
       expect(rxOnChangeSpy).toHaveBeenCalledWith(stateChangeMock);
     });
   });
