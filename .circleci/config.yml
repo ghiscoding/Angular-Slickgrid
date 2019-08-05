@@ -8,7 +8,7 @@ jobs:
       - checkout
       - restore_cache:
           key: angular-slickgrid-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run: yarn install --frozen-lockfile
+      - run: yarn install
       - run:
           name: Install Jest JUnit coverage reporter
           command: yarn add --dev jest-junit
@@ -36,7 +36,7 @@ jobs:
           name: Installing Cypress dependencies
           command: |
             cd test/cypress
-            yarn install --frozen-lockfile
+            yarn install
       - save_cache:
           name: Saving Cache for Cypress
           key: e2e-tests-{{ .Branch }}-{{ checksum "yarn.lock" }}
