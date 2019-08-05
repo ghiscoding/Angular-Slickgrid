@@ -36,7 +36,7 @@ jobs:
           name: Installing Cypress dependencies with yarn
           command: |
             cd test/cypress
-            yarn install --frozen-lockfile
+            yarn install
       - save_cache:
           name: Saving Cache for Cypress
           key: e2e-tests-{{ .Branch }}-{{ checksum "package.json" }}
