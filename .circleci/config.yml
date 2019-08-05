@@ -7,15 +7,19 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: angular-slickgrid-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - angular-slickgrid-yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - angular-slickgrid-yarn-packages-v1-{{ .Branch }}-
+            - angular-slickgrid-yarn-packages-v1-
       - run: yarn install
       - run:
           name: Install Jest JUnit coverage reporter
           command: yarn add --dev jest-junit
       - save_cache:
-          key: angular-slickgrid-build-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
+          key: angular-slickgrid-yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run Jest tests with JUnit as reporter
           command: ./node_modules/.bin/jest --config test/jest.config.js --ci --runInBand --collectCoverage=true --reporters=default --reporters=jest-junit
@@ -31,7 +35,9 @@ jobs:
       - restore_cache:
           name: Restoring Cache for Cypress
           keys:
-            - e2e-tests-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - angular-slickgrid-cypress-yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - angular-slickgrid-cypress-yarn-packages-v1-{{ .Branch }}-
+            - angular-slickgrid-cypress-yarn-packages-v1-
       - run:
           name: Installing Cypress dependencies
           command: |
@@ -39,9 +45,9 @@ jobs:
             yarn install
       - save_cache:
           name: Saving Cache for Cypress
-          key: e2e-tests-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
+          key: angular-slickgrid-yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Running Cypress E2E tests with JUnit reporter
           command: |

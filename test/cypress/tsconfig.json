@@ -1,7 +1,7 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.spec.json",
   "include": [
-    "../node_modules/cypress",
-    "*/*.ts"
+    "node_modules/cypress",
+    "*/*.js"
   ]
 }
