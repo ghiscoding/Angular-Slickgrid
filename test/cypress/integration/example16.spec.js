@@ -1,6 +1,6 @@
 describe('Example 16: Grid State & Presets using Local Storage', () => {
   const fullEnglishTitles = ['', 'Title', 'Description', 'Duration', '% Complete', 'Start', 'Completed'];
-  const fullFrenchTitles = ['', 'Titre', 'Description', 'Durée', '% Complete', 'Début', 'Terminé'];
+  const fullFrenchTitles = ['', 'Titre', 'Description', 'Durée', '% Achevée', 'Début', 'Terminé'];
 
   beforeEach(() => {
     cy.restoreLocalStorage();
@@ -186,7 +186,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
   });
 
   it('should have French titles in Column Picker after switching to Language', () => {
-    const expectedTitles = ['', 'Description', 'Durée', 'Titre', '% Complete', 'Début', 'Terminé'];
+    const expectedTitles = ['', 'Description', 'Durée', 'Titre', '% Achevée', 'Début', 'Terminé'];
 
     cy.get('[data-test=language-button]')
       .click();
@@ -221,7 +221,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
   });
 
   it('should have French titles in Grid Menu after switching to Language', () => {
-    const expectedTitles = ['', 'Description', 'Durée', 'Titre', '% Complete', 'Début', 'Terminé'];
+    const expectedTitles = ['', 'Description', 'Durée', 'Titre', '% Achevée', 'Début', 'Terminé'];
 
     cy.get('#grid16')
       .find('button.slick-gridmenu-button')
@@ -248,7 +248,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
   });
 
   it('should hover over the "Terminé" column and click on "Cacher la colonne" remove the column from grid', () => {
-    const expectedTitles = ['', 'Description', 'Durée', 'Titre', '% Complete'];
+    const expectedTitles = ['', 'Description', 'Durée', 'Titre', '% Achevée'];
 
     cy.get('.slick-header-columns')
       .children('.slick-header-column:nth(5)')

@@ -1,6 +1,6 @@
 describe('Example 9 - Grid Menu', () => {
   const fullEnglishTitles = ['Title', 'Duration', '% Complete', 'Start', 'Finish', 'Completed'];
-  const fullFrenchTitles = ['Titre', 'Durée', '% Complete', 'Début', 'Fin', 'Terminé'];
+  const fullFrenchTitles = ['Titre', 'Durée', '% Achevée', 'Début', 'Fin', 'Terminé'];
 
   it('should display Example 9 title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/gridmenu`);
@@ -118,7 +118,7 @@ describe('Example 9 - Grid Menu', () => {
       cy.get('#grid9')
         .get('.slick-gridmenu:visible')
         .find('span.close')
-        .trigger('click')
+        .trigger('click', { force: true })
         .click();
     });
   });

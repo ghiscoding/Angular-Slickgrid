@@ -65,7 +65,13 @@ export class GridLocalizationComponent implements OnInit {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'id', headerKey: 'TITLE', formatter: taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true } },
+      {
+        id: 'title', name: 'Title', field: 'id', headerKey: 'TITLE', minWidth: 100,
+        formatter: taskTranslateFormatter,
+        sortable: true,
+        filterable: true,
+        params: { useFormatterOuputToFilter: true }
+      },
       { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80 },
       {
         id: 'duration', name: 'Duration (days)', field: 'duration', headerKey: 'DURATION', sortable: true,
