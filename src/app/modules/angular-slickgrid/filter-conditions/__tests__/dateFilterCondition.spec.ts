@@ -87,14 +87,14 @@ describe('dateFilterCondition method', () => {
     expect(output).toBe(true);
   });
 
-  it('should return False when input value equals the search terms min inclusive value and operator is set to "RangeNotInclusive"', () => {
-    const options = { dataKey: '', operator: 'RangeNotInclusive', cellValue: '1993-12-01', fieldType: FieldType.number, searchTerms: ['1993-12-01..1993-12-31'] } as FilterConditionOption;
+  it('should return False when input value equals the search terms min inclusive value and operator is set to "RangeExclusive"', () => {
+    const options = { dataKey: '', operator: 'RangeExclusive', cellValue: '1993-12-01', fieldType: FieldType.number, searchTerms: ['1993-12-01..1993-12-31'] } as FilterConditionOption;
     const output = dateFilterCondition(options);
     expect(output).toBe(false);
   });
 
   it('should return False when any of the 2 search term value is not a valid date', () => {
-    const options = { dataKey: '', operator: 'RangeNotInclusive', cellValue: '1993-12-05', fieldType: FieldType.number, searchTerms: ['1993-12-01..1993-12-60'] } as FilterConditionOption;
+    const options = { dataKey: '', operator: 'RangeExclusive', cellValue: '1993-12-05', fieldType: FieldType.number, searchTerms: ['1993-12-01..1993-12-60'] } as FilterConditionOption;
     const output = dateFilterCondition(options);
     expect(output).toBe(false);
   });

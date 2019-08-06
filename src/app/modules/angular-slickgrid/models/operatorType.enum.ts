@@ -39,7 +39,7 @@ export enum OperatorType {
    * Search in an inclusive range of values that is greater then search value 1 and is smaller then value 2
    * For example the search term of "5..10" will return any values that is greater then 5 and smaller then 10
    */
-  rangeNotInclusive = 'RangeNotInclusive',
+  rangeExclusive = 'RangeExclusive',
 
   /** String starts with value */
   startsWith = 'StartsWith',

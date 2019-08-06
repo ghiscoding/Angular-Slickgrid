@@ -87,8 +87,8 @@ describe('numberFilterCondition method', () => {
     expect(output).toBe(true);
   });
 
-  it('should return False when input value equals the search terms min inclusive value and operator is set to "RangeNotInclusive"', () => {
-    const options = { dataKey: '', operator: 'RangeNotInclusive', cellValue: '1', fieldType: FieldType.number, searchTerms: ['1..5'] } as FilterConditionOption;
+  it('should return False when input value equals the search terms min inclusive value and operator is set to "RangeExclusive"', () => {
+    const options = { dataKey: '', operator: 'RangeExclusive', cellValue: '1', fieldType: FieldType.number, searchTerms: ['1..5'] } as FilterConditionOption;
     const output = numberFilterCondition(options);
     expect(output).toBe(false);
   });

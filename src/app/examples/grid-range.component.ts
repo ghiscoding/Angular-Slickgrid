@@ -20,14 +20,15 @@ export class GridRangeComponent implements OnInit {
     This demo shows how to use Filters with Range of Search Values (for example, shown below, filters by duration of 1 to 5 days)
     <br/>
     <ul class="small">
-      <li>All column types support the following operators: (>, >=, <, <=, <>, !=, =, ==, *)
+      <li>All input filters support the following operators: (>, >=, <, <=, <>, !=, =, ==, *)
+      <li>All Filters supporting range will be using the 2 dots (..) to represent a range, even for dates to be consistent when using the "presets"</li>
       <ul>
         <li>For the range in a text input filters, you can use 2 dots (..) to represent a range</li>
         <li>example: type "5..10" to filter between 5 and 10 (non-inclusive)</li>
       </ul>
       <ul>
         <li>by default the range are not inclusive but if you wish to be inclusive, you can see the Operator to "operator: 'RangeInclusive'" or "operator: OperatoryType.rangeIncluside"</li>
-        <li>you can also set the inverse (and default) to "operator: 'RangeNotInclusive'" or "operator: OperatoryType.rangeNotIncluside"</li>
+        <li>you can also set the inverse (and default) to "operator: 'RangeExclusive'" or "operator: OperatoryType.rangeExclusive"</li>
       </ul>
       <li>Date Range with Flatpickr Date Picker</li>
     </ul>
@@ -85,8 +86,11 @@ export class GridRangeComponent implements OnInit {
         }
       },
       {
-        id: 'complete', name: '% Complete', field: 'percentComplete', /*formatter: Formatters.percentCompleteBar,*/ minWidth: 70, type: FieldType.number, sortable: true,
-        filterable: true, filter: { model: Filters.input /*Filters.compoundInputNumber*/ }
+        id: 'complete', name: '% Complete', field: 'percentComplete', minWidth: 70, type: FieldType.number, sortable: true,
+        filterable: true, filter: {
+          model: Filters.input,
+          operator: OperatorType.rangeExclusive // defaults to exclusive
+        }
       },
       {
         id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true,
