@@ -262,7 +262,7 @@ $draggable-group-column-icon-height:      9px !default;
 $draggable-group-column-icon-width:       9px !default;
 $draggable-group-column-icon-margin-left: 4px !default;
 
-/* Input Range Filter */
+/* Input Slider Filter (vanilla html) */
 $slider-filter-border:                    1px solid #ccc !default;
 $slider-filter-bgcolor:                   #eee !default;
 $slider-filter-runnable-track-bgcolor:    #ddd !default;
@@ -271,11 +271,27 @@ $slider-filter-runnable-track-padding:    0 6px !default;
 $slider-filter-fill-lower-color:          #ddd !default; /* ms only */
 $slider-filter-fill-focus-lower-color:    #aaa !default; /* ms only */
 $slider-filter-height:                    $header-input-height !default;
+$slider-filter-thumb-cursor:              pointer !default;
 $slider-filter-thumb-color:               rgb(201, 219, 203) !default;
 $slider-filter-thumb-size:                14px !default;
 $slider-filter-thumb-border:              1px solid darken($slider-filter-thumb-color, 15%) !default;
 $slider-filter-number-padding:            4px 8px !default;
 $slider-filter-number-font-size:          ($font-size-base-value - 1px) !default;
+
+/* Input Range Slider Filter (with jQuery UI) */
+$slider-range-filter-height:                $slider-filter-height !default;
+$slider-range-filter-border:                $slider-filter-border !default;
+$slider-range-filter-thumb-color:           $slider-filter-thumb-color !default;
+$slider-range-filter-thumb-border:          $slider-filter-thumb-border !default;
+$slider-range-filter-thumb-border-radius:   50% !default;
+$slider-range-filter-thumb-cursor:          $slider-filter-thumb-cursor !default;
+$slider-range-filter-thumb-size:            $slider-filter-thumb-size !default;
+$slider-range-filter-thumb-top:             -5px !default;
+$slider-range-filter-thumb-margin-left:     -7px !default;
+$slider-range-filter-runnable-track-top:    45% !default;
+$slider-range-filter-runnable-track-height: $slider-filter-runnable-track-height !default;
+$slider-range-filter-bgcolor:               $slider-filter-bgcolor !default;
+$slider-range-filter-padding:               0 12px !default;
 
 /* Multiple-Select Filter */
 $multiselect-input-filter-border:         1px solid #ccc !default;

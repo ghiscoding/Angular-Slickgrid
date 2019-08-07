@@ -477,7 +477,7 @@ input.flatpickr.form-control {
 }
 
 // ----------------------------------------------
-// Input Range Filter (Slider)
+// Input Slider Filter (with vanilla html)
 // ----------------------------------------------
 input.slider-editor-input[type=range],
 input.slider-filter-input[type=range] {
@@ -513,6 +513,7 @@ input.slider-filter-input[type=range] {
     border-radius: 3px;
   }
   &::-webkit-slider-thumb {
+    cursor: $slider-filter-thumb-cursor;
     -webkit-appearance: none;
     border: none;
     height: $slider-filter-thumb-size;
@@ -536,6 +537,7 @@ input.slider-filter-input[type=range] {
   }
   &::-moz-range-thumb {
     border: none;
+    cursor: $slider-filter-thumb-cursor;
     height: $slider-filter-thumb-size - 2px;
     width: $slider-filter-thumb-size - 2px;
     border-radius: 50%;
@@ -573,6 +575,7 @@ input.slider-filter-input[type=range] {
   }
   &::-ms-thumb {
     border: none;
+    cursor: $slider-filter-thumb-cursor;
     height: $slider-filter-thumb-size - 2px;
     width: $slider-filter-thumb-size - 2px;
     border-radius: 50%;
@@ -612,6 +615,41 @@ input.slider-editor-input[type=range] {
       font-size: $slider-filter-number-font-size;
       height: $slider-editor-height;
     }
+  }
+}
+
+// ----------------------------------------------
+// Input Slider Range Filter (using jQuery UI)
+// ----------------------------------------------
+.slider-range-container {
+  height: $slider-range-filter-height;
+  border: $slider-range-filter-border;
+  padding: $slider-range-filter-padding;
+
+  .ui-slider {
+    position: relative;
+
+    .ui-slider-handle {
+      position: absolute;
+      top: $slider-range-filter-thumb-top;
+      margin-left: $slider-range-filter-thumb-margin-left;
+      border-radius: $slider-range-filter-thumb-border-radius;
+      cursor: $slider-range-filter-thumb-cursor;
+      border: $slider-range-filter-thumb-border;
+      height: $slider-range-filter-thumb-size;
+      width: $slider-range-filter-thumb-size;
+      background-color: $slider-range-filter-thumb-color;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  .ui-slider-horizontal {
+    top: $slider-range-filter-runnable-track-top;
+    height: $slider-range-filter-runnable-track-height;
+    background-color: $slider-range-filter-bgcolor;
   }
 }
 

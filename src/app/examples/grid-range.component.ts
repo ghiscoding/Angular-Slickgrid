@@ -4,7 +4,7 @@ import { AngularGridInstance, Column, FieldType, Filters, Formatter, Formatters,
 import { CustomInputFilter } from './custom-inputFilter';
 import * as moment from 'moment-mini';
 
-const NB_ITEMS = 500;
+const NB_ITEMS = 1000;
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -28,7 +28,7 @@ export class GridRangeComponent implements OnInit {
     <br/>
     <ul class="small">
       <li>All input filters support the following operators: (>, >=, <, <=, <>, !=, =, ==, *)
-      <li>All Filters supporting range will be using the 2 dots (..) to represent a range, even for dates to be consistent when using the "presets"</li>
+      <li>All input filters also support range search by using the 2 dots (..) to represent a range, even for dates to be consistent when using the "presets"</li>
       <ul>
         <li>For the range in a text input filters, you can use 2 dots (..) to represent a range</li>
         <li>example: type "5..10" to filter between 5 and 10 (non-inclusive)</li>
@@ -73,16 +73,25 @@ export class GridRangeComponent implements OnInit {
         }
       },
       {
-        id: 'duration', field: 'duration', headerKey: 'DURATION', sortable: true,
-        formatter: Formatters.percentCompleteBar, minWidth: 100,
-        filterable: true,
-        filter: { model: Filters.slider, /* operator: '>=',*/ }
-      },
-      {
-        id: 'complete', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', minWidth: 70, type: FieldType.number, sortable: true,
+        id: 'complete', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', minWidth: 70,
+        type: FieldType.number,
+        sortable: true,
         filterable: true, filter: {
           model: Filters.input,
           operator: OperatorType.rangeExclusive // defaults to exclusive
+        }
+      },
+      {
+        id: 'duration', field: 'duration', headerKey: 'DURATION', sortable: true,
+        formatter: Formatters.percentCompleteBar, minWidth: 100,
+        type: FieldType.number,
+        filterable: true,
+        filter: {
+          model: Filters.sliderRange,
+          minValue: 0,
+          maxValue: 100,
+          /* operator: OperatorType.rangeExclusive, */
+          params: { valueStep: 5 } // you can provide an optional value step, 1 is the default
         }
       },
       {
@@ -112,6 +121,9 @@ export class GridRangeComponent implements OnInit {
       }
     ];
 
+    const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
+    const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
+
     this.gridOptions = {
       autoResize: {
         containerId: 'demo-container',
@@ -126,14 +138,14 @@ export class GridRangeComponent implements OnInit {
       // use columnDef searchTerms OR use presets as shown below
       presets: {
         filters: [
-          // { columnId: 'duration', searchTerms: [10, 220] },
+          { columnId: 'duration', searchTerms: ['15..75'] },
           { columnId: 'complete', searchTerms: ['15..75'] },
-          { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [`${moment().add(-2, 'days').format('YYYY-MM-DD')}..${moment().add(20, 'days').format('YYYY-MM-DD')}`] },
+          { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [`${presetLowestDay}..${presetHighestDay}`] },
           // { columnId: 'effort-driven', searchTerms: [true] }
         ],
         sorters: [
+          { columnId: 'complete', direction: 'ASC' },
           { columnId: 'duration', direction: 'DESC' },
-          { columnId: 'complete', direction: 'ASC' }
         ],
       }
     };

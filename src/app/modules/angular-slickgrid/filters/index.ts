@@ -14,6 +14,7 @@ import { NativeSelectFilter } from './nativeSelectFilter';
 import { RangeDateFilter } from './rangeDateFilter';
 import { SingleSelectFilter } from './singleSelectFilter';
 import { SliderFilter } from './sliderFilter';
+import { SliderRangeFilter } from './sliderRangeFilter';
 
 export const Filters = {
   /** AutoComplete Filter (using jQuery UI autocomplete feature) */
@@ -67,6 +68,9 @@ export const Filters = {
   /** Single Select filter, which uses 3rd party lib "multiple-select.js" */
   singleSelect: SingleSelectFilter,
 
-  /** Slider Filter */
+  /** Slider Filter (only 1 value) */
   slider: SliderFilter,
+
+  /** Slider Range Filter, uses jQuery UI Range Slider (2 values, lowest/highest search range) */
+  sliderRange: SliderRangeFilter,
 };

@@ -62,7 +62,7 @@ export class RangeDateFilter implements Filter {
 
   /** Getter for the Filter Operator */
   get operator(): OperatorType | OperatorString {
-    return this._operator || OperatorType.rangeInclusive;
+    return this._operator || OperatorType.rangeExclusive;
   }
 
   /**
