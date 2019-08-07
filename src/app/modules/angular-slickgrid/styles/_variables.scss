@@ -271,6 +271,7 @@ $slider-filter-runnable-track-padding:    0 6px !default;
 $slider-filter-fill-lower-color:          #ddd !default; /* ms only */
 $slider-filter-fill-focus-lower-color:    #aaa !default; /* ms only */
 $slider-filter-height:                    $header-input-height !default;
+$slider-filter-thumb-border-radius:       50% !default;
 $slider-filter-thumb-cursor:              pointer !default;
 $slider-filter-thumb-color:               rgb(201, 219, 203) !default;
 $slider-filter-thumb-size:                14px !default;
@@ -283,7 +284,7 @@ $slider-range-filter-height:                $slider-filter-height !default;
 $slider-range-filter-border:                $slider-filter-border !default;
 $slider-range-filter-thumb-color:           $slider-filter-thumb-color !default;
 $slider-range-filter-thumb-border:          $slider-filter-thumb-border !default;
-$slider-range-filter-thumb-border-radius:   50% !default;
+$slider-range-filter-thumb-border-radius:   $slider-filter-thumb-border-radius !default;
 $slider-range-filter-thumb-cursor:          $slider-filter-thumb-cursor !default;
 $slider-range-filter-thumb-size:            $slider-filter-thumb-size !default;
 $slider-range-filter-thumb-top:             -5px !default;
@@ -313,6 +314,7 @@ $multiselect-icon-radio-unchecked:        "\f10c" !default;
 $multiselect-icon-font-size:              16px !default;
 $multiselect-label-margin-bottom:         5px !default;
 $multiselect-unchecked-opacity:           0.5 !default;
+$multiselect-placeholder-font-family:     $filter-placeholder-font-family !default;
 $multiselect-ok-button-bg-color:          #fff !default;
 $multiselect-ok-button-bg-hover-color:    darken($row-mouse-hover-color, 3%) !default;
 $multiselect-ok-button-font-weight:       600 !default;

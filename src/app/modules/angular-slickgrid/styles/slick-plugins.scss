@@ -239,7 +239,11 @@
 
   span {
     font-size: $multiselect-input-filter-font-size;
-    font-family: $multiselect-input-filter-font-family
+    font-family: $multiselect-input-filter-font-family;
+  }
+  .placeholder {
+    font-family: $multiselect-placeholder-font-family;
+    font-size: ($multiselect-input-filter-font-size + 2px);
   }
 }
 .ms-filter.search-filter {
@@ -518,7 +522,7 @@ input.slider-filter-input[type=range] {
     border: none;
     height: $slider-filter-thumb-size;
     width: $slider-filter-thumb-size;
-    border-radius: 50%;
+    border-radius: $slider-filter-thumb-border-radius;
     border: $slider-filter-thumb-border;
     background: $slider-filter-thumb-color;
     margin-top: -4px;
@@ -540,7 +544,7 @@ input.slider-filter-input[type=range] {
     cursor: $slider-filter-thumb-cursor;
     height: $slider-filter-thumb-size - 2px;
     width: $slider-filter-thumb-size - 2px;
-    border-radius: 50%;
+    border-radius: $slider-filter-thumb-border-radius;
     border: $slider-filter-thumb-border;
     background: $slider-filter-thumb-color;
   }
@@ -578,7 +582,7 @@ input.slider-filter-input[type=range] {
     cursor: $slider-filter-thumb-cursor;
     height: $slider-filter-thumb-size - 2px;
     width: $slider-filter-thumb-size - 2px;
-    border-radius: 50%;
+    border-radius: $slider-filter-thumb-border-radius;
     border: $slider-filter-thumb-border;
     background: $slider-filter-thumb-color;
     margin-top: 1px;

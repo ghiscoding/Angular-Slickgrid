@@ -11,7 +11,7 @@ import { InputNumberFilter } from './inputNumberFilter';
 import { InputPasswordFilter } from './inputPasswordFilter';
 import { MultipleSelectFilter } from './multipleSelectFilter';
 import { NativeSelectFilter } from './nativeSelectFilter';
-import { RangeDateFilter } from './rangeDateFilter';
+import { DateRangeFilter } from './dateRangeFilter';
 import { SingleSelectFilter } from './singleSelectFilter';
 import { SliderFilter } from './sliderFilter';
 import { SliderRangeFilter } from './sliderRangeFilter';
@@ -38,6 +38,9 @@ export const Filters = {
   /** Compound Slider Filter (compound of Operator + Slider) */
   compoundSlider: CompoundSliderFilter,
 
+  /** Range Date Filter (uses the Flactpickr Date picker with range option) */
+  dateRange: DateRangeFilter,
+
   /** Alias to inputText, input type text filter */
   input: InputFilter,
 
@@ -58,9 +61,6 @@ export const Filters = {
 
   /** Multiple Select filter, which uses 3rd party lib "multiple-select.js" */
   multipleSelect: MultipleSelectFilter,
-
-  /** Range Date Filter (uses the Flactpickr Date picker with range option) */
-  rangeDate: RangeDateFilter,
 
   /** Select filter, which uses native DOM element select */
   select: NativeSelectFilter,

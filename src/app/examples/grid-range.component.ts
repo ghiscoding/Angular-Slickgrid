@@ -103,7 +103,7 @@ export class GridRangeComponent implements OnInit {
         type: FieldType.date,
         filterable: true,
         filter: {
-          model: Filters.rangeDate,
+          model: Filters.dateRange,
         }
       },
       {

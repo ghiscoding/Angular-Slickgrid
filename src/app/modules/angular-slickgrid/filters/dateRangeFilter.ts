@@ -24,7 +24,7 @@ require('flatpickr');
 // using external non-typed js libraries
 declare var $: any;
 
-export class RangeDateFilter implements Filter {
+export class DateRangeFilter implements Filter {
   private _clearFilterTriggered = false;
   private _flatpickrOptions: any;
   private _shouldTriggerQuery = true;
