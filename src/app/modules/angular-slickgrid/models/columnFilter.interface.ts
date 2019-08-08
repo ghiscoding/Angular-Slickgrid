@@ -25,7 +25,7 @@ export interface ColumnFilter {
   /** Custom Filter */
   customFilter?: Filter;
 
-  /** Search terms (collection) */
+  /** Search terms to preload (collection), please note it is better to use the "presets" grid option which is more powerful. */
   searchTerms?: SearchTerm[];
 
   /** Operator to use when filtering (>, >=, EQ, IN, ...) */

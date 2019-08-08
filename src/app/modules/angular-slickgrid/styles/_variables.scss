@@ -173,6 +173,7 @@ $grid-menu-icon-font-size:                14px !default;
 $grid-menu-divider-height:                1px !default;
 $grid-menu-divider-margin:                8px 3px !default;
 $grid-menu-divider-color:                 #d8d8d8 !default;
+$grid-menu-z-index:                       500 !default;
 
 /* Header Menu Plugin */
 $header-menu-bg-color:                    #ffffff !default;
@@ -293,6 +294,9 @@ $slider-range-filter-runnable-track-top:    45% !default;
 $slider-range-filter-runnable-track-height: $slider-filter-runnable-track-height !default;
 $slider-range-filter-bgcolor:               $slider-filter-bgcolor !default;
 $slider-range-filter-padding:               0 12px !default;
+$slider-range-filter-values-slider-width:   calc(98% - 16px) !default;
+$slider-range-filter-values-slider-top:     12px !default;
+$slider-range-filter-values-slider-ml:      10px;
 
 /* Multiple-Select Filter */
 $multiselect-input-filter-border:         1px solid #ccc !default;

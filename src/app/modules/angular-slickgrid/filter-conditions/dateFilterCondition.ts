@@ -5,7 +5,7 @@ import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
 export const dateFilterCondition: FilterCondition = (options: FilterConditionOption) => {
-  const searchTerm = (Array.isArray(options.searchTerms) && options.searchTerms[0] || '') as string;
+  const searchTerms = Array.isArray(options.searchTerms) && options.searchTerms || [];
   const filterSearchType = options.filterSearchType || FieldType.dateIso;
   const searchDateFormat = mapMomentDateFormatWithFieldType(filterSearchType);
 
@@ -14,16 +14,16 @@ export const dateFilterCondition: FilterCondition = (options: FilterConditionOpt
   let dateSearch2;
 
   // return when cell value is not a valid date
-  if (searchTerm === null || searchTerm === '' || !moment(options.cellValue, moment.ISO_8601).isValid()) {
+  if (searchTerms.length === 0 || searchTerms[0] === '' || searchTerms[0] === null || !moment(options.cellValue, moment.ISO_8601).isValid()) {
     return false;
   }
 
   // cell value in moment format
   const dateCell = moment(options.cellValue);
 
-  if (searchTerm.indexOf('..') >= 0) {
+  if (searchTerms.length === 2 || ((searchTerms[0] as string).indexOf('..') > 0)) {
     isRangeSearch = true;
-    const searchValues = searchTerm.split('..');
+    const searchValues = (searchTerms.length === 2) ? searchTerms : (searchTerms[0] as string).split('..');
     const searchTerm1 = moment(Array.isArray(searchValues) && searchValues[0]);
     const searchTerm2 = moment(Array.isArray(searchValues) && searchValues[1]);
 
@@ -35,10 +35,10 @@ export const dateFilterCondition: FilterCondition = (options: FilterConditionOpt
     dateSearch2 = moment(searchTerm2);
   } else {
     // return if the search term is an invalid date
-    if (!moment(searchTerm, searchDateFormat, true).isValid()) {
+    if (!moment(searchTerms[0], searchDateFormat, true).isValid()) {
       return false;
     }
-    dateSearch1 = moment(searchTerm);
+    dateSearch1 = moment(searchTerms[0]);
   }
 
   // run the filter condition with date in Unix Timestamp format

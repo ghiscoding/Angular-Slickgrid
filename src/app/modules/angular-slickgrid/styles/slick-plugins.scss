@@ -380,7 +380,7 @@ input.search-filter {
 // Date Picker Filter
 // ----------------------------------------------
 
-.input-group.flatpickr {
+.search-filter.flatpickr {
   .flatpickr {
     flex: 1;
     cursor: pointer;
@@ -654,6 +654,29 @@ input.slider-editor-input[type=range] {
     top: $slider-range-filter-runnable-track-top;
     height: $slider-range-filter-runnable-track-height;
     background-color: $slider-range-filter-bgcolor;
+  }
+
+}
+.slider-range-container.slider-values {
+  padding: 0;
+  .ui-slider-horizontal {
+    width: $slider-range-filter-values-slider-width;
+    top: $slider-range-filter-values-slider-top;
+    margin-left: $slider-range-filter-values-slider-ml;
+  }
+  .slider-range-value {
+    padding: 0;
+    border: 0;
+    .input-group-text {
+      padding: $slider-filter-number-padding;
+      font-size: $slider-filter-number-font-size;
+    }
+  }
+  .input-group-prepend.slider-range-value {
+    border-right: $slider-range-filter-border;
+  }
+  .input-group-append.slider-range-value {
+    border-left: $slider-range-filter-border;
   }
 }
 

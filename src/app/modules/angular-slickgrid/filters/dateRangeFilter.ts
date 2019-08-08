@@ -76,12 +76,8 @@ export class DateRangeFilter implements Filter {
       this.operator = args.operator || '';
       this.searchTerms = args.searchTerms || [];
 
-      // date input can only have 1 search term, so we will use the 1st array index if it exist
-      const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
-
       // step 1, create the DOM Element of the filter which contain the compound Operator+Input
-      // and initialize it if searchTerm is filled
-      this.$filterElm = this.createDomElement(searchTerm);
+      this.$filterElm = this.createDomElement(this.searchTerms);
 
       // step 3, subscribe to the keyup event and run the callback when that happens
       // also add/remove "filled" class for styling purposes
@@ -115,18 +111,25 @@ export class DateRangeFilter implements Filter {
   /**
    * Set value(s) on the DOM element
    */
-  setValues(values: SearchTerm[]) {
-    const searchTerm = (Array.isArray(values) && typeof values[0] === 'string') ? values[0] : '';
-    const dateValues = ((searchTerm as string).indexOf('..') >= 0) ? (searchTerm as string).split('..') : searchTerm;
-    if (this.flatInstance && searchTerm) {
-      this.flatInstance.setDate(dateValues);
+  setValues(searchTerms: SearchTerm[]) {
+    let pickerValues = [];
+
+    // get the slider values, if it's a string with the "..", we'll do the split else we'll use the array of search terms
+    if (typeof searchTerms === 'string' || (Array.isArray(searchTerms) && typeof searchTerms[0] === 'string') && (searchTerms[0] as string).indexOf('..') > 0) {
+      pickerValues = (typeof searchTerms === 'string') ? [(searchTerms as string)] : (searchTerms[0] as string).split('..');
+    } else if (Array.isArray(searchTerms)) {
+      pickerValues = searchTerms;
+    }
+
+    if (this.flatInstance && searchTerms) {
+      this.flatInstance.setDate(pickerValues);
     }
   }
 
   //
   // private functions
   // ------------------
-  private buildDatePickerInput(searchTerms?: SearchTerm) {
+  private buildDatePickerInput(searchTerms?: SearchTerm | SearchTerm[]) {
     const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
     const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateUtc);
     let currentLocale = this.translate && this.translate.currentLang || 'en';
@@ -134,10 +137,17 @@ export class DateRangeFilter implements Filter {
       currentLocale = currentLocale.substring(0, 2);
     }
 
-    const searchTerm = ((searchTerms as string).indexOf('..') >= 0) ? (searchTerms as string).split('..') : searchTerms;
+    let pickerValues = [];
+
+    // get the slider values, if it's a string with the "..", we'll do the split else we'll use the array of search terms
+    if (typeof searchTerms === 'string' || (Array.isArray(searchTerms) && typeof searchTerms[0] === 'string') && (searchTerms[0] as string).indexOf('..') > 0) {
+      pickerValues = (typeof searchTerms === 'string') ? [(searchTerms as string)] : (searchTerms[0] as string).split('..');
+    } else if (Array.isArray(searchTerms)) {
+      pickerValues = searchTerms;
+    }
 
     const pickerOptions: any = {
-      defaultDate: searchTerm || '',
+      defaultDate: pickerValues || '',
       altInput: true,
       altFormat: outputFormat,
       dateFormat: inputFormat,
@@ -176,7 +186,7 @@ export class DateRangeFilter implements Filter {
     if (this.columnFilter && this.columnFilter.placeholder) {
       placeholder = this.columnFilter.placeholder;
     }
-    const $filterInputElm: any = $(`<div class="flatpickr"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
+    const $filterInputElm: any = $(`<div class="flatpickr search-filter"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
     this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(this._flatpickrOptions) : Flatpickr($filterInputElm, this._flatpickrOptions);
     return $filterInputElm;
   }
@@ -184,13 +194,13 @@ export class DateRangeFilter implements Filter {
   /**
    * Create the DOM element
    */
-  private createDomElement(searchTerm?: SearchTerm) {
+  private createDomElement(searchTerms?: SearchTerm[]) {
     const fieldId = this.columnDef && this.columnDef.id;
     const $headerElm = this.grid.getHeaderRowColumn(fieldId);
     $($headerElm).empty();
 
     // create the DOM Select dropdown for the Operator
-    this.$filterInputElm = this.buildDatePickerInput(searchTerm);
+    this.$filterInputElm = this.buildDatePickerInput(searchTerms);
 
     /* the DOM element final structure will be
       <div class=flatpickr>
@@ -203,9 +213,9 @@ export class DateRangeFilter implements Filter {
     this.$filterInputElm.data('columnId', fieldId);
 
     // if there's a search term, we will add the "filled" class for styling purposes
-    if (searchTerm) {
+    if (Array.isArray(searchTerms) && searchTerms.length > 0 && searchTerms[0] !== '') {
       this.$filterInputElm.addClass('filled');
-      this._currentValue = searchTerm as string;
+      this._currentValue = searchTerms[0] as string;
     }
 
     // append the new DOM element to the header row

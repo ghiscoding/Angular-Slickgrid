@@ -78,6 +78,8 @@ export * from './headerMenuItem.interface';
 export * from './headerMenuOnCommandArgs.interface';
 export * from './headerMenuOnBeforeMenuShowArgs.interface';
 export * from './htmlElementPosition.interface';
+export * from './jQueryUiSliderOption.interface';
+export * from './jQueryUiSliderResponse.interface';
 export * from './keyCode.enum';
 export * from './locale.interface';
 export * from './multiColumnSort.interface';
