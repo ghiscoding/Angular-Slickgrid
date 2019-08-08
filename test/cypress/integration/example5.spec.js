@@ -95,4 +95,35 @@ describe('Example 5 - OData Grid', () => {
         expect($span.text()).to.eq(`$top=10`);
       });
   });
+
+  it('should use "substringof" when OData version is set to 2', () => {
+    cy.get('.search-filter.filter-name')
+      .find('input')
+      .type('John');
+
+    // wait for the query to finish
+    cy.get('[data-test=status]').should('contain', 'done');
+
+    cy.get('[data-test=odata-query-result]')
+      .should(($span) => {
+        expect($span.text()).to.eq(`$top=10&$filter=(substringof('John', Name))`);
+      });
+  });
+
+  it('should use "contains" when OData version is set to 4', () => {
+    cy.get('[data-test=version4]')
+      .click();
+
+    cy.get('.search-filter.filter-name')
+      .find('input')
+      .type('John');
+
+    // wait for the query to finish
+    cy.get('[data-test=status]').should('contain', 'done');
+
+    cy.get('[data-test=odata-query-result]')
+      .should(($span) => {
+        expect($span.text()).to.eq(`$top=10&$filter=(contains(Name, 'John'))`);
+      });
+  });
 });
