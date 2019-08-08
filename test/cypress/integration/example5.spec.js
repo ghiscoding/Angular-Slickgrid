@@ -108,6 +108,10 @@ describe('Example 5 - OData Grid', () => {
       .should(($span) => {
         expect($span.text()).to.eq(`$top=10&$filter=(substringof('John', Name))`);
       });
+
+    cy.get('#grid5')
+      .find('.slick-row')
+      .should('have.length', 1);
   });
 
   it('should use "contains" when OData version is set to 4', () => {
@@ -125,5 +129,9 @@ describe('Example 5 - OData Grid', () => {
       .should(($span) => {
         expect($span.text()).to.eq(`$top=10&$filter=(contains(Name, 'John'))`);
       });
+
+    cy.get('#grid5')
+      .find('.slick-row')
+      .should('have.length', 1);
   });
 });

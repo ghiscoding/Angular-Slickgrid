@@ -171,7 +171,7 @@ export class GridOdataComponent implements OnInit {
           const filterBy = param.substring('$filter='.length).replace('%20', ' ');
           if (filterBy.includes('contains')) {
             const filterMatch = filterBy.match(/contains\(([a-zA-Z\/]+),\s?'(.*?)'/);
-            const fieldName = filterMatch[2].trim();
+            const fieldName = filterMatch[1].trim();
             columnFilters[fieldName] = { type: 'substring', term: filterMatch[2].trim() };
           }
           if (filterBy.includes('substringof')) {
