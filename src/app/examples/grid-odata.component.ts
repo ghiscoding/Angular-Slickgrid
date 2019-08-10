@@ -1,6 +1,7 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
+  AngularGridInstance,
   Column,
   FieldType,
   Filters,
@@ -35,16 +36,22 @@ export class GridOdataComponent implements OnInit {
       <li>You can also preload a grid with certain "presets" like Filters / Sorters / Pagination <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki - Grid Preset</a>
     </ul>
   `;
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset = [];
   statistics: Statistic;
 
+  odataVersion = 2;
   odataQuery = '';
   processing = true;
   status = { text: 'processing...', class: 'alert alert-danger' };
 
   constructor(private http: HttpClient) { }
+
+  angularGridReady(angularGrid: AngularGridInstance) {
+    this.angularGrid = angularGrid;
+  }
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -98,6 +105,7 @@ export class GridOdataComponent implements OnInit {
       },
       backendServiceApi: {
         service: new GridOdataService(),
+        options: { version: this.odataVersion }, // defaults to 2, the query string is slightly different between OData 2 and 4
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {
@@ -161,37 +169,30 @@ export class GridOdataComponent implements OnInit {
         }
         if (param.includes('$filter=')) {
           const filterBy = param.substring('$filter='.length).replace('%20', ' ');
+          if (filterBy.includes('contains')) {
+            const filterMatch = filterBy.match(/contains\(([a-zA-Z\/]+),\s?'(.*?)'/);
+            const fieldName = filterMatch[1].trim();
+            columnFilters[fieldName] = { type: 'substring', term: filterMatch[2].trim() };
+          }
           if (filterBy.includes('substringof')) {
             const filterMatch = filterBy.match(/substringof\('(.*?)',([a-zA-Z ]*)/);
             const fieldName = filterMatch[2].trim();
-            columnFilters[fieldName] = {
-              type: 'substring',
-              term: filterMatch[1].trim()
-            };
+            columnFilters[fieldName] = { type: 'substring', term: filterMatch[1].trim() };
           }
           if (filterBy.includes('eq')) {
             const filterMatch = filterBy.match(/([a-zA-Z ]*) eq '(.*?)'/);
             const fieldName = filterMatch[1].trim();
-            columnFilters[fieldName] = {
-              type: 'equal',
-              term: filterMatch[2].trim()
-            };
+            columnFilters[fieldName] = { type: 'equal', term: filterMatch[2].trim() };
           }
           if (filterBy.includes('startswith')) {
             const filterMatch = filterBy.match(/startswith\(([a-zA-Z ]*),\s?'(.*?)'/);
             const fieldName = filterMatch[1].trim();
-            columnFilters[fieldName] = {
-              type: 'starts',
-              term: filterMatch[2].trim()
-            };
+            columnFilters[fieldName] = { type: 'starts', term: filterMatch[2].trim() };
           }
           if (filterBy.includes('endswith')) {
             const filterMatch = filterBy.match(/endswith\(([a-zA-Z ]*),\s?'(.*?)'/);
             const fieldName = filterMatch[1].trim();
-            columnFilters[fieldName] = {
-              type: 'ends',
-              term: filterMatch[2].trim()
-            };
+            columnFilters[fieldName] = { type: 'ends', term: filterMatch[2].trim() };
           }
         }
       }
@@ -258,5 +259,16 @@ export class GridOdataComponent implements OnInit {
   /** Dispatched event of a Grid State Changed event */
   gridStateChanged(gridStateChanges: GridStateChange) {
     console.log('Client sample, Grid State changed:: ', gridStateChanges);
+  }
+
+  // THIS IS ONLY FOR DEMO PURPOSES DO NOT USE THIS CODE
+  setOdataVersion(version: number) {
+    this.odataVersion = version;
+    const odataService = this.gridOptions.backendServiceApi.service;
+    // @ts-ignore
+    odataService.updateOptions({ version: this.odataVersion });
+    odataService.clearFilters();
+    this.angularGrid.filterService.clearFilters();
+    return true;
   }
 }

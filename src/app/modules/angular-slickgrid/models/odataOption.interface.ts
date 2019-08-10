@@ -26,6 +26,9 @@ export interface OdataOption extends BackendServiceOption {
   /** Sorting string (or array of string) that must be a valid OData string */
   orderBy?: string | string[];
 
+  /** OData version number (the query string is different between versions) */
+  version?: number;
+
   /** When accessed as an object */
   [key: string]: any;
 }

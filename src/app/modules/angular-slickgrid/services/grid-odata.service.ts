@@ -340,12 +340,15 @@ export class GridOdataService implements BackendService {
           } else if (fieldType === FieldType.string) {
             // string field needs to be in single quotes
             if (operator === '' || operator === OperatorType.contains || operator === OperatorType.notContains) {
-              searchBy = `substringof('${searchValue}', ${fieldName})`;
+              if (this._odataService.options.version >= 4) {
+                searchBy = `contains(${fieldName}, '${searchValue}')`;
+              } else {
+                searchBy = `substringof('${searchValue}', ${fieldName})`;
+              }
               if (operator === OperatorType.notContains) {
                 searchBy = `not ${searchBy}`;
               }
             } else {
-              // searchBy = `substringof('${searchValue}', ${fieldNameCased}) ${this.mapOdataOperator(operator)} true`;
               searchBy = `${fieldName} ${this.mapOdataOperator(operator)} '${searchValue}'`;
             }
           } else {

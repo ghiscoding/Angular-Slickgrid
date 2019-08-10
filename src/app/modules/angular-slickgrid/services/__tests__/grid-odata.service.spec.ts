@@ -252,7 +252,7 @@ describe('GridOdataService', () => {
       const mockColumn = { id: 'gender', field: 'gender' } as Column;
       const mockColumnName = { id: 'firstName', field: 'firstName' } as Column;
       const mockColumnFilter = { columnDef: mockColumn, columnId: 'gender', operator: 'EQ', searchTerms: ['female'] } as ColumnFilter;
-      const mockColumnFilterName = { columnDef: mockColumnName, columnId: 'firstName', operator: 'startsWith', searchTerms: ['John'] } as ColumnFilter;
+      const mockColumnFilterName = { columnDef: mockColumnName, columnId: 'firstName', operator: 'StartsWith', searchTerms: ['John'] } as ColumnFilter;
       const mockFilterChangedArgs = {
         columnDef: mockColumn,
         columnId: 'gender',
@@ -272,7 +272,7 @@ describe('GridOdataService', () => {
       expect(resetSpy).toHaveBeenCalled();
       expect(currentFilters).toEqual([
         { columnId: 'gender', operator: 'EQ', searchTerms: ['female'] },
-        { columnId: 'firstName', operator: 'startsWith', searchTerms: ['John'] }
+        { columnId: 'firstName', operator: 'StartsWith', searchTerms: ['John'] }
       ]);
     });
   });
@@ -718,6 +718,29 @@ describe('GridOdataService', () => {
 
       expect(query).toBe(expectation);
       expect(currentFilters).toEqual([]);
+    });
+  });
+
+  describe('updateFilters method with OData version 4', () => {
+    beforeEach(() => {
+      serviceOptions.version = 4;
+      serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'name', field: 'name' }];
+    });
+
+    it('should return a query with a date showing as DateTime as per OData requirement', () => {
+      const expectation = `$top=10&$filter=(contains(Company, 'abc') and UpdatedDate eq DateTime'2001-02-28T00:00:00Z')`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnUpdated = { id: 'updatedDate', field: 'updatedDate', type: FieldType.date } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        updatedDate: { columnId: 'updatedDate', columnDef: mockColumnUpdated, searchTerms: ['2001-02-28'], operator: 'EQ' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
     });
   });
 
