@@ -71,37 +71,6 @@ export class GridOdataComponent implements OnInit {
         }
       },
       { id: 'company', name: 'Company', field: 'company' },
-      {
-        id: 'duration', field: 'duration', name: 'Duration', maxWidth: 90,
-        type: FieldType.number,
-        sortable: true,
-        filterable: true, filter: {
-          model: Filters.input,
-          operator: OperatorType.rangeInclusive // defaults to exclusive
-        }
-      },
-      {
-        id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, sortable: true, minWidth: 75, width: 120, exportWithFormatter: true,
-        type: FieldType.date,
-        filterable: true,
-        filter: {
-          model: Filters.dateRange,
-        }
-      },
-      {
-        id: 'complete', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', minWidth: 120,
-        sortable: true,
-        formatter: Formatters.progressBar,
-        type: FieldType.number,
-        filterable: true,
-        filter: {
-          model: Filters.sliderRange,
-          maxValue: 100, // or you can use the filterOptions as well
-          operator: OperatorType.rangeInclusive, // defaults to exclusive
-          params: { hideSliderNumbers: false }, // you can hide/show the slider numbers on both side
-          filterOptions: { min: 0, step: 5 } // you can also optionally pass any option of the jQuery UI Slider
-        }
-      },
     ];
 
     this.gridOptions = {
