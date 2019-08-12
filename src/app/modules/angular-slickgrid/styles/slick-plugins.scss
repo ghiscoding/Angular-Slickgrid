@@ -390,12 +390,16 @@ input.search-filter {
         font-family: $filter-placeholder-font-family;
         font-size: $font-size-base;
         border-radius: $compound-filter-border-radius;
+        &[readonly] {
+          background-color: $flatpickr-bgcolor;
+        }
     }
     .flatpickr.form-control[readonly] {
       background-color: $flatpickr-bgcolor;
     }
   }
 }
+input.flatpickr-input.form-control,
 input.flatpickr.form-control {
   cursor: pointer;
   font-family: $filter-placeholder-font-family;

@@ -13,13 +13,13 @@ import {
   JQueryUiSliderOption,
   MultipleSelectOption,
   OperatorType,
-  Statistic
+  Statistic,
 } from '../modules/angular-slickgrid';
 import * as moment from 'moment-mini';
 
 const NB_ITEMS = 1000;
 
-function randomBetween(min, max) {
+function randomBetween(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 

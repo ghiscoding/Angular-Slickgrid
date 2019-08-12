@@ -18,7 +18,6 @@ const DEFAULT_MIN_VALUE = 0;
 const DEFAULT_MAX_VALUE = 100;
 const DEFAULT_STEP = 1;
 
-
 /** A Slider Range Filter which uses jQuery UI, this is only meant to be used as a range filter (with 2 handles lowest & highest values) */
 export class SliderRangeFilter implements Filter {
   private _clearFilterTriggered = false;
@@ -46,7 +45,7 @@ export class SliderRangeFilter implements Filter {
     return this.columnDef && this.columnDef.filter || {};
   }
 
-  /** Getter for the Flatpickr Options */
+  /** Getter for the JQuery UI Slider Options */
   get sliderOptions(): JQueryUiSliderOption {
     return this._sliderOptions || {};
   }
@@ -101,6 +100,7 @@ export class SliderRangeFilter implements Filter {
 
   /**
    * Set value(s) on the DOM element
+   * @params searchTerms
    */
   setValues(searchTerms: SearchTerm | SearchTerm[]) {
     if (searchTerms) {

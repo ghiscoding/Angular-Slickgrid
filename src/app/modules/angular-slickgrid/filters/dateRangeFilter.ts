@@ -4,10 +4,10 @@ import { mapFlatpickrDateFormatWithFieldType, mapMomentDateFormatWithFieldType }
 import {
   Column,
   ColumnFilter,
+  FieldType,
   Filter,
   FilterArguments,
   FilterCallback,
-  FieldType,
   FlatpickrOption,
   GridOption,
   OperatorString,
@@ -112,6 +112,7 @@ export class DateRangeFilter implements Filter {
 
   /**
    * Set value(s) on the DOM element
+   * @params searchTerms
    */
   setValues(searchTerms: SearchTerm[]) {
     let pickerValues = [];
@@ -195,6 +196,7 @@ export class DateRangeFilter implements Filter {
 
   /**
    * Create the DOM element
+   * @params searchTerms
    */
   private createDomElement(searchTerms?: SearchTerm[]) {
     const fieldId = this.columnDef && this.columnDef.id;

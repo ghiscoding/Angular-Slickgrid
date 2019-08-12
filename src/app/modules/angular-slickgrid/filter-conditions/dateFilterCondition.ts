@@ -24,8 +24,10 @@ export const dateFilterCondition: FilterCondition = (options: FilterConditionOpt
   if (searchTerms.length === 2 || ((searchTerms[0] as string).indexOf('..') > 0)) {
     isRangeSearch = true;
     const searchValues = (searchTerms.length === 2) ? searchTerms : (searchTerms[0] as string).split('..');
-    const searchTerm1 = moment(Array.isArray(searchValues) && searchValues[0]);
-    const searchTerm2 = moment(Array.isArray(searchValues) && searchValues[1]);
+    const searchValue1 = (Array.isArray(searchValues) && searchValues[0] || '') as Date | string;
+    const searchValue2 = (Array.isArray(searchValues) && searchValues[1] || '') as Date | string;
+    const searchTerm1 = moment(searchValue1);
+    const searchTerm2 = moment(searchValue2);
 
     // return if any of the 2 values are invalid dates
     if (!moment(searchTerm1, searchDateFormat, true).isValid() || !moment(searchTerm2, searchDateFormat, true).isValid()) {
@@ -35,10 +37,10 @@ export const dateFilterCondition: FilterCondition = (options: FilterConditionOpt
     dateSearch2 = moment(searchTerm2);
   } else {
     // return if the search term is an invalid date
-    if (!moment(searchTerms[0], searchDateFormat, true).isValid()) {
+    if (!moment(searchTerms[0] as Date | string, searchDateFormat, true).isValid()) {
       return false;
     }
-    dateSearch1 = moment(searchTerms[0]);
+    dateSearch1 = moment(searchTerms[0] as Date | string);
   }
 
   // run the filter condition with date in Unix Timestamp format
