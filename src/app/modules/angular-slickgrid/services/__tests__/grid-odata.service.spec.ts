@@ -719,6 +719,70 @@ describe('GridOdataService', () => {
       expect(query).toBe(expectation);
       expect(currentFilters).toEqual([]);
     });
+
+    it('should return a query to filter a search value between an inclusive range of numbers using the 2 dots (..) separator and the "RangeInclusive" operator', () => {
+      const expectation = `$top=10&$filter=(substringof('abc', Company) and (Duration ge 5 and Duration le 22))`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['5..22'], operator: 'RangeInclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query to filter a search value between an exclusive range of numbers using 2 search terms and the "RangeExclusive" operator', () => {
+      const expectation = `$top=10&$filter=(substringof('abc', Company) and (Duration gt 5 and Duration lt 22))`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: [5, 22], operator: 'RangeExclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query to filter a search value between an inclusive range of dates using the 2 dots (..) separator and the "RangeInclusive" operator', () => {
+      const expectation = `$top=10&$filter=(substringof('abc', Company) and (UpdatedDate ge DateTime'2001-01-20T00:00:00Z' and UpdatedDate le DateTime'2001-02-28T00:00:00Z'))`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnUpdated = { id: 'updatedDate', field: 'updatedDate', type: FieldType.date } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        updatedDate: { columnId: 'updatedDate', columnDef: mockColumnUpdated, searchTerms: ['2001-01-20..2001-02-28'], operator: 'RangeInclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query to filter a search value between an exclusive range of dates using 2 search terms and the "RangeExclusive" operator', () => {
+      const expectation = `$top=10&$filter=(substringof('abc', Company) and (UpdatedDate gt DateTime'2001-01-20T00:00:00Z' and UpdatedDate lt DateTime'2001-02-28T00:00:00Z'))`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnUpdated = { id: 'updatedDate', field: 'updatedDate', type: FieldType.date } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        updatedDate: { columnId: 'updatedDate', columnDef: mockColumnUpdated, searchTerms: ['2001-01-20', '2001-02-28'], operator: 'RangeExclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
   });
 
   describe('updateFilters method with OData version 4', () => {
@@ -734,6 +798,134 @@ describe('GridOdataService', () => {
       const mockColumnFilters = {
         company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
         updatedDate: { columnId: 'updatedDate', columnDef: mockColumnUpdated, searchTerms: ['2001-02-28'], operator: 'EQ' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query to filter a search value between an inclusive range of numbers using the 2 dots (..) separator and the "RangeInclusive" operator', () => {
+      const expectation = `$top=10&$filter=(contains(Company, 'abc') and (Duration ge 5 and Duration le 22))`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['5..22'], operator: 'RangeInclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query to filter a search value between an exclusive range of numbers using 2 search terms and the "RangeExclusive" operator', () => {
+      const expectation = `$top=10&$filter=(contains(Company, 'abc') and (Duration gt 5 and Duration lt 22))`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: [5, 22], operator: 'RangeExclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query to filter a search value between an exclusive range of numbers using 2 search terms and the "RangeExclusive" operator and type is default (string)', () => {
+      const expectation = `$top=10&$filter=(contains(Company, 'abc') and (Duration gt 5 and Duration lt 22))`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnDuration = { id: 'duration', field: 'duration' } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: [5, 22], operator: 'RangeExclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query to filter a search value between an inclusive range of dates using the 2 dots (..) separator and the "RangeInclusive" operator', () => {
+      const expectation = `$top=10&$filter=(contains(Company, 'abc') and (UpdatedDate ge 2001-01-20T00:00:00Z and UpdatedDate le 2001-02-28T00:00:00Z))`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnUpdated = { id: 'updatedDate', field: 'updatedDate', type: FieldType.date } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        updatedDate: { columnId: 'updatedDate', columnDef: mockColumnUpdated, searchTerms: ['2001-01-20..2001-02-28'], operator: 'RangeInclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query to filter a search value between an exclusive range of dates using 2 search terms and the "RangeExclusive" operator', () => {
+      const expectation = `$top=10&$filter=(contains(Company, 'abc') and (UpdatedDate gt 2001-01-20T00:00:00Z and UpdatedDate lt 2001-02-28T00:00:00Z))`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnUpdated = { id: 'updatedDate', field: 'updatedDate', type: FieldType.date } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        updatedDate: { columnId: 'updatedDate', columnDef: mockColumnUpdated, searchTerms: ['2001-01-20', '2001-02-28'], operator: 'RangeExclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query with a date equal when only 1 searchTerms is provided and even if the operator is set to a range', () => {
+      const expectation = `$top=10&$filter=(contains(Company, 'abc') and UpdatedDate eq 2001-01-20T00:00:00Z)`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnUpdated = { id: 'updatedDate', field: 'updatedDate', type: FieldType.date } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        updatedDate: { columnId: 'updatedDate', columnDef: mockColumnUpdated, searchTerms: ['2001-01-20'], operator: 'RangeExclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query without any date filtering when searchTerms is an empty array', () => {
+      const expectation = `$top=10&$filter=(contains(Company, 'abc'))`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnUpdated = { id: 'updatedDate', field: 'updatedDate', type: FieldType.date } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        updatedDate: { columnId: 'updatedDate', columnDef: mockColumnUpdated, searchTerms: [], operator: 'RangeExclusive' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query without any number filtering when searchTerms is an empty array', () => {
+      const expectation = `$top=10&$filter=(contains(Company, 'abc'))`;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+      const mockColumnFilters = {
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+        duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: [], operator: 'RangeInclusive' },
       } as ColumnFilters;
 
       service.init(serviceOptions, paginationOptions, gridStub);
