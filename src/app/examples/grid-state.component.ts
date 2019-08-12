@@ -8,7 +8,8 @@ import {
   Formatters,
   GridOption,
   GridState,
-  GridStateChange
+  GridStateChange,
+  MultipleSelectOption
 } from './../modules/angular-slickgrid';
 
 function randomBetween(min, max) {
@@ -108,7 +109,7 @@ export class GridStateComponent implements OnInit {
           filterOptions: {
             maxHeight: 250,
             width: 175
-          }
+          } as MultipleSelectOption
         }
       },
       {
@@ -129,9 +130,7 @@ export class GridStateComponent implements OnInit {
           model: Filters.singleSelect,
 
           // we could add certain option(s) to the "multiple-select" plugin
-          filterOptions: {
-            autoDropWidth: true
-          },
+          filterOptions: { autoDropWidth: true } as MultipleSelectOption,
         }
       }
     ];

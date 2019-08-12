@@ -11,6 +11,7 @@ import {
   GraphqlServiceOption,
   GridOption,
   GridStateChange,
+  MultipleSelectOption,
   OperatorType,
   SortDirection,
   Statistic
@@ -81,7 +82,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           collection: [{ value: 'acme', label: 'Acme' }, { value: 'abc', label: 'Company ABC' }, { value: 'xyz', label: 'Company XYZ' }],
           filterOptions: {
             filter: true // adds a filter on top of the multi-select dropdown
-          }
+          } as MultipleSelectOption
         }
       },
       { id: 'billing.address.street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', width: 60, filterable: true, sortable: true },

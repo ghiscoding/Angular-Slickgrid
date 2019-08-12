@@ -1,7 +1,7 @@
 import { TranslateService } from '@ngx-translate/core';
 import { Constants } from './../constants';
 import { mapFlatpickrDateFormatWithFieldType, mapMomentDateFormatWithFieldType } from './../services/utilities';
-import { Column, ColumnEditor, Editor, EditorValidator, EditorValidatorOutput, FieldType, GridOption, KeyCode } from './../models/index';
+import { Column, ColumnEditor, Editor, EditorValidator, EditorValidatorOutput, FieldType, FlatpickrOption, GridOption } from './../models/index';
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
@@ -59,21 +59,21 @@ export class DateEditor implements Editor {
         currentLocale = currentLocale.substring(0, 2);
       }
 
-      const pickerOptions: any = {
-        defaultDate: this.defaultDate,
+      const pickerOptions: FlatpickrOption = {
+        defaultDate: this.defaultDate as string,
         altInput: true,
         altInputClass: 'flatpickr-alt-input',
         altFormat: inputFormat,
         dateFormat: outputFormat,
         closeOnSelect: false,
         locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
-        onChange: (selectedDates: any[] | any, dateStr: string, instance: any) => {
+        onChange: (selectedDates: Date[] | Date, dateStr: string, instance: any) => {
           this.save();
         },
       };
 
       // merge options with optional user's custom options
-      const pickerMergedOptions = { ...pickerOptions, ...this.editorOptions };
+      const pickerMergedOptions: FlatpickrOption = { ...pickerOptions, ...(this.editorOptions as FlatpickrOption) };
       const inputCssClasses = `.editor-text.editor-${columnId}.flatpickr`;
 
       this.$input = $(`<input type="text" data-defaultDate="${this.defaultDate}" class="${inputCssClasses.replace(/\./g, ' ')}" placeholder="${placeholder}" title="${title}" />`);

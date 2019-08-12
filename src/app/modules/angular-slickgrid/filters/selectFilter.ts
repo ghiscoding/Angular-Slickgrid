@@ -406,8 +406,8 @@ export class SelectFilter implements Filter {
     }
 
     // merge options & attach multiSelect
-    const elementOptions: MultipleSelectOption = { ...this.defaultOptions, ...this.columnFilter.filterOptions };
-    this.filterElmOptions = { ...this.defaultOptions, ...elementOptions };
+    const filterOptions: MultipleSelectOption = { ...this.defaultOptions, ...this.columnFilter.filterOptions };
+    this.filterElmOptions = { ...this.defaultOptions, ...(filterOptions as MultipleSelectOption) };
     this.$filterElm = this.$filterElm.multipleSelect(this.filterElmOptions);
   }
 

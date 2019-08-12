@@ -61,7 +61,12 @@ export interface ColumnFilter {
   /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Filter */
   customStructure?: CollectionCustomStructure;
 
-  /** Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250} */
+  /**
+   * Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250}
+   *
+   * Please note that if you use options that have existed model interfaces, you should cast with "as X",
+   * for example { filterOptions: {maxHeight: 250} as MultipleSelectOption }
+   */
   filterOptions?: MultipleSelectOption | any;
 
   /**

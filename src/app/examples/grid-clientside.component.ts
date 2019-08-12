@@ -1,8 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { AngularGridInstance, Column, FieldType, Filters, Formatters, GridOption, GridStateChange, OperatorType, Statistic } from './../modules/angular-slickgrid';
 import { CustomInputFilter } from './custom-inputFilter';
+import {
+  AngularGridInstance,
+  Column,
+  FieldType,
+  Filters,
+  FlatpickrOption,
+  Formatters,
+  GridOption,
+  GridStateChange,
+  MultipleSelectOption,
+  OperatorType,
+  Statistic,
+} from './../modules/angular-slickgrid';
 
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -99,7 +111,7 @@ export class GridClientSideComponent implements OnInit {
             // if we want to display shorter text as the selected text (on the select filter itself, parent element)
             // we can use "useSelectOptionLabel" or "useSelectOptionLabelToHtml" the latter will parse html
             useSelectOptionLabelToHtml: true
-          }
+          } as MultipleSelectOption
         }
       },
       {
@@ -121,9 +133,7 @@ export class GridClientSideComponent implements OnInit {
           model: Filters.compoundDate,
           // override any of the Flatpickr options through "filterOptions"
           // please note that there's no TSlint on this property since it's generic for any filter, so make sure you entered the correct filter option(s)
-          filterOptions: {
-            minDate: 'today'
-          }
+          filterOptions: { minDate: 'today' } as FlatpickrOption
         }
       },
       {
@@ -152,9 +162,7 @@ export class GridClientSideComponent implements OnInit {
           model: Filters.singleSelect,
 
           // we could add certain option(s) to the "multiple-select" plugin
-          filterOptions: {
-            autoDropWidth: true
-          },
+          filterOptions: { autoDropWidth: true } as MultipleSelectOption,
         }
       }
     ];

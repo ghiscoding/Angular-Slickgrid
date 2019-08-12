@@ -114,7 +114,7 @@ export interface GridOption {
   /** The default filter model to use when none is specified */
   defaultFilter?: any;
 
-  /** Default placeholder to use in Filters that support placeholder (input, flatpickr) */
+  /** Default placeholder to use in Filters that support placeholder (autocomplete, input, flatpickr, select, ...) */
   defaultFilterPlaceholder?: string;
 
   /** Draggable Grouping Plugin options & events */

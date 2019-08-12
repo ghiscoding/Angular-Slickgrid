@@ -8,12 +8,14 @@ import {
   FilterArguments,
   FilterCallback,
   FieldType,
+  FlatpickrOption,
   GridOption,
   OperatorString,
   OperatorType,
   SearchTerm,
 } from '../models/index';
 import Flatpickr from 'flatpickr';
+import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
@@ -26,7 +28,7 @@ declare var $: any;
 
 export class DateRangeFilter implements Filter {
   private _clearFilterTriggered = false;
-  private _flatpickrOptions: any;
+  private _flatpickrOptions: FlatpickrOption;
   private _shouldTriggerQuery = true;
   private $filterElm: any;
   private $filterInputElm: any;
@@ -146,8 +148,8 @@ export class DateRangeFilter implements Filter {
       pickerValues = searchTerms;
     }
 
-    const pickerOptions: any = {
-      defaultDate: pickerValues || '',
+    const pickerOptions: FlatpickrOption = {
+      defaultDate: (pickerValues || '') as string,
       altInput: true,
       altFormat: outputFormat,
       dateFormat: inputFormat,
@@ -155,7 +157,7 @@ export class DateRangeFilter implements Filter {
       wrap: true,
       closeOnSelect: true,
       locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
-      onChange: (selectedDates: any[] | any, dateStr: string, instance: any) => {
+      onChange: (selectedDates: Date[] | Date, dateStr: string, instance: any) => {
         if (Array.isArray(selectedDates)) {
           const outFormat = mapMomentDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
           const selectedDateRanges = selectedDates.map(date => moment(date).format(outFormat));
@@ -180,14 +182,14 @@ export class DateRangeFilter implements Filter {
     }
 
     // merge options with optional user's custom options
-    this._flatpickrOptions = { ...pickerOptions, ...this.columnFilter.filterOptions };
+    this._flatpickrOptions = { ...pickerOptions, ...(this.columnFilter.filterOptions as FlatpickrOption) };
 
     let placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
     if (this.columnFilter && this.columnFilter.placeholder) {
       placeholder = this.columnFilter.placeholder;
     }
     const $filterInputElm: any = $(`<div class="flatpickr search-filter"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
-    this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(this._flatpickrOptions) : Flatpickr($filterInputElm, this._flatpickrOptions);
+    this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(this._flatpickrOptions) : Flatpickr($filterInputElm, this._flatpickrOptions as unknown as Partial<FlatpickrBaseOptions>);
     return $filterInputElm;
   }
 

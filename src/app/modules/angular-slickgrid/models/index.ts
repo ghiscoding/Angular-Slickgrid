@@ -1,6 +1,7 @@
 export * from './aggregator.interface';
 export * from './angularComponentOutput.interface';
 export * from './angularGridInstance.interface';
+export * from './autocompleteOption.interface';
 export * from './autoResizeOption.interface';
 export * from './backendService.interface';
 export * from './backendEventChanged.interface';
@@ -48,6 +49,7 @@ export * from './filterCondition.interface';
 export * from './filterConditionOption.interface';
 export * from './filterMultiplePassType.enum';
 export * from './filterMultiplePassTypeString';
+export * from './flatpickrOption.interface';
 export * from './formatter.interface';
 export * from './formatterOption.interface';
 export * from './formatterResultObject.interface';
