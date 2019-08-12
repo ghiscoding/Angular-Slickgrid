@@ -17,7 +17,7 @@ export const stringFilterCondition: FilterCondition = (options: FilterConditionO
   } else if ((options.operator === '' && options.cellValueLastChar === '*') || options.operator === 'StartsWith') {
     return cellValue.startsWith(searchTerm);
   } else if (options.operator === '') {
-    return cellValue.includes(searchTerm);
+    return (cellValue.indexOf(searchTerm) > -1);
   }
   return testFilterCondition(options.operator || '==', cellValue, searchTerm);
 };

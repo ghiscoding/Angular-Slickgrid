@@ -1,4 +1,4 @@
-import { OperatorString } from '../models';
+import { OperatorString } from '../models/index';
 
 /**
  * Compare 2 objects,
@@ -7,8 +7,9 @@ import { OperatorString } from '../models';
  * @param o1
  * @param o2
  * @param compareKey optional
+ * @return boolean are objects equals?
  */
-export const compareObjects = (o1: any, o2: any, compareKey?: string) => {
+export function compareObjects(o1: any, o2: any, compareKey?: string): boolean {
   // if user provided an object compare key then compare directly both objects by that key
   if (compareKey && (o1.hasOwnProperty(compareKey) || o2.hasOwnProperty(compareKey))) {
     return o1[compareKey] === o2 || o1 === o2[compareKey] || o1[compareKey] === o2[compareKey];
@@ -24,7 +25,7 @@ export const compareObjects = (o1: any, o2: any, compareKey?: string) => {
     }
   }
   return true;
-};
+}
 
 export const testFilterCondition = (operator: OperatorString, value1: any, value2: any): boolean => {
   switch (operator) {
@@ -42,7 +43,7 @@ export const testFilterCondition = (operator: OperatorString, value1: any, value
     case '=':
     case '==':
     case 'EQ': return (value1 === value2);
-    case 'IN': return ((value2 && value2.includes) ? (value2.includes(value1)) : false);
+    case 'IN': return ((value2 && value2.indexOf) ? (value2.indexOf(value1) > -1) : false);
     case 'NIN':
     case 'NOT_IN':
       return ((value2 && value2.includes) ? (!value2.includes(value1)) : false);

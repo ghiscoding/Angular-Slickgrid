@@ -1,5 +1,4 @@
-import { OperatorType } from './../models/operatorType.enum';
-import { FilterCondition, FilterConditionOption } from '../models/index';
+import { FilterCondition, FilterConditionOption, OperatorType } from '../models/index';
 import { testFilterCondition } from './filterUtilities';
 
 export const numberFilterCondition: FilterCondition = (options: FilterConditionOption) => {
