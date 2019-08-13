@@ -410,11 +410,6 @@ export class GraphqlService implements BackendService {
           operator = columnDef.filter.operator;
         }
 
-        // if we still don't have an operator find the proper Operator to use by it's field type
-        if (!operator) {
-          operator = mapOperatorByFieldType(columnDef.type || FieldType.string);
-        }
-
         // when having more than 1 search term (we need to create a CSV string for GraphQL "IN" or "NOT IN" filter search)
         if (searchTerms && searchTerms.length > 1 && (operator === 'IN' || operator === 'NIN' || operator === 'NOTIN' || operator === 'NOT IN' || operator === 'NOT_IN')) {
           searchValue = searchTerms.join(',');
@@ -425,6 +420,11 @@ export class GraphqlService implements BackendService {
           searchByArray.push({ field: fieldName, operator: (operator === OperatorType.rangeInclusive ? 'GE' : 'GT'), value: searchTerms[0] });
           searchByArray.push({ field: fieldName, operator: (operator === OperatorType.rangeInclusive ? 'LE' : 'LT'), value: searchTerms[1] });
           continue;
+        }
+
+        // if we still don't have an operator find the proper Operator to use by it's field type
+        if (!operator) {
+          operator = mapOperatorByFieldType(columnDef.type || FieldType.string);
         }
 
         // build the search array

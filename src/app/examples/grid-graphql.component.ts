@@ -179,9 +179,9 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           // { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
           // { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },
           // { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' }
+          { columnId: 'duration', searchTerms: ['4..88'] },
 
           // or you could also use 2 searchTerms values, instead of using the 2 dots (only works with SliderRange & DateRange Filters)
-          { columnId: 'duration', searchTerms: ['4..88'] },
           { columnId: 'complete', searchTerms: [5, 80], operator: 'RangeInclusive' }, // same result with searchTerms: ['5..80']
           { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [presetLowestDay, presetHighestDay] },
         ],
