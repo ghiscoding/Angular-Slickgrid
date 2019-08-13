@@ -64,7 +64,7 @@ export class DateRangeFilter implements Filter {
 
   /** Getter for the Filter Operator */
   get operator(): OperatorType | OperatorString {
-    return this._operator || OperatorType.rangeExclusive;
+    return this._operator || this.gridOptions.defaultFilterRangeOperator || OperatorType.rangeExclusive;
   }
 
   /**

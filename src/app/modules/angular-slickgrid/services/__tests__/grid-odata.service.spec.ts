@@ -20,6 +20,7 @@ const DEFAULT_ITEMS_PER_PAGE = 25;
 const DEFAULT_PAGE_SIZE = 20;
 
 const gridOptionMock = {
+  defaultFilterRangeOperator: 'RangeExclusive',
   enablePagination: true,
   backendServiceApi: {
     service: undefined,
@@ -957,22 +958,6 @@ describe('GridOdataService', () => {
       expect(currentSorters).toEqual([{ columnId: 'Gender', direction: 'desc' }, { columnId: 'FirstName', direction: 'asc' }]);
     });
 
-    it('should return a query when using presets array', () => {
-      const expectation = `$top=10&$orderby=Company desc,FirstName asc`;
-      const presets = [
-        { columnId: 'company', direction: 'DESC' },
-        { columnId: 'firstName', direction: 'ASC' },
-      ] as CurrentSorter[];
-
-      service.init(serviceOptions, paginationOptions, gridStub);
-      service.updateSorters(undefined, presets);
-      const query = service.buildQuery();
-      const currentSorters = service.getCurrentSorters();
-
-      expect(query).toBe(expectation);
-      expect(currentSorters).toEqual(presets);
-    });
-
     it('should return a query string using a different field to query when the column has a "queryField" defined in its definition', () => {
       const expectation = `$top=10&$orderby=Gender desc,FirstName asc`;
       const mockColumnSort = [
@@ -1036,6 +1021,104 @@ describe('GridOdataService', () => {
 
       expect(query).toBe(expectation);
       expect(currentSorters).toEqual([]);
+    });
+  });
+
+  describe('presets', () => {
+    it('should return a query when using presets sorters array', () => {
+      const expectation = `$top=10&$orderby=Company desc,FirstName asc`;
+      const presets = [
+        { columnId: 'company', direction: 'DESC' },
+        { columnId: 'firstName', direction: 'ASC' },
+      ] as CurrentSorter[];
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateSorters(undefined, presets);
+      const query = service.buildQuery();
+      const currentSorters = service.getCurrentSorters();
+
+      expect(query).toBe(expectation);
+      expect(currentSorters).toEqual(presets);
+    });
+
+    it('should return a query with a filter with range of numbers when the preset is a filter range with 2 dots (..) separator', () => {
+      serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration', type: FieldType.number }];
+      const expectation = `$top=10&$filter=(Duration gt 4 and Duration lt 88)`;
+      const presetFilters = [
+        { columnId: 'duration', searchTerms: ['4..88'] },
+      ] as CurrentFilter[];
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(presetFilters, true);
+      const query = service.buildQuery();
+      const currentFilters = service.getCurrentFilters();
+
+      expect(query).toBe(expectation);
+      expect(currentFilters).toEqual(presetFilters);
+    });
+
+    it('should return a query with a filter with range of numbers when the preset is a filter range with 2 searchTerms', () => {
+      serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration', type: FieldType.number }];
+      const expectation = `$top=10&$filter=(Duration ge 4 and Duration le 88)`;
+      const presetFilters = [
+        { columnId: 'duration', searchTerms: [4, 88], operator: 'RangeInclusive' },
+      ] as CurrentFilter[];
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(presetFilters, true);
+      const query = service.buildQuery();
+      const currentFilters = service.getCurrentFilters();
+
+      expect(query).toBe(expectation);
+      expect(currentFilters).toEqual(presetFilters);
+    });
+
+    it('should return a query with a filter with range of dates when the preset is a filter range with 2 dots (..) separator', () => {
+      serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'finish', field: 'finish', type: FieldType.date }];
+      const expectation = `$top=10&$filter=(Finish gt DateTime'2001-01-01T00:00:00Z' and Finish lt DateTime'2001-01-31T00:00:00Z')`;
+      const presetFilters = [
+        { columnId: 'finish', searchTerms: ['2001-01-01..2001-01-31'] },
+      ] as CurrentFilter[];
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(presetFilters, true);
+      const query = service.buildQuery();
+      const currentFilters = service.getCurrentFilters();
+
+      expect(query).toBe(expectation);
+      expect(currentFilters).toEqual(presetFilters);
+    });
+
+    it('should return a query with a filter with range of dates when the preset is a filter range with 2 searchTerms', () => {
+      serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'finish', field: 'finish', type: FieldType.date }];
+      const expectation = `$top=10&$filter=(Finish ge DateTime'2001-01-01T00:00:00Z' and Finish le DateTime'2001-01-31T00:00:00Z')`;
+      const presetFilters = [
+        { columnId: 'finish', searchTerms: ['2001-01-01', '2001-01-31'], operator: 'RangeInclusive' },
+      ] as CurrentFilter[];
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(presetFilters, true);
+      const query = service.buildQuery();
+      const currentFilters = service.getCurrentFilters();
+
+      expect(query).toBe(expectation);
+      expect(currentFilters).toEqual(presetFilters);
+    });
+
+    it('should return a query with a filter with range of dates inclusive when the preset is a filter range with 2 searchTerms without an operator', () => {
+      serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'finish', field: 'finish', type: FieldType.date }];
+      const expectation = `$top=10&$filter=(Finish gt DateTime'2001-01-01T00:00:00Z' and Finish lt DateTime'2001-01-31T00:00:00Z')`;
+      const presetFilters = [
+        { columnId: 'finish', searchTerms: ['2001-01-01', '2001-01-31'] },
+      ] as CurrentFilter[];
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(presetFilters, true);
+      const query = service.buildQuery();
+      const currentFilters = service.getCurrentFilters();
+
+      expect(query).toBe(expectation);
+      expect(currentFilters).toEqual(presetFilters);
     });
   });
 

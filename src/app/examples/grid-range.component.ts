@@ -153,11 +153,12 @@ export class GridRangeComponent implements OnInit {
         filters: [
           //  you can use the 2 dots separator on all Filters which support ranges
           { columnId: 'duration', searchTerms: ['4..88'] },
-          // { columnId: 'complete', searchTerms: ['5..80'] },
+          // { columnId: 'complete', searchTerms: ['5..80'] }, // without operator will default to 'RangeExclusive'
           // { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [`${presetLowestDay}..${presetHighestDay}`] },
 
           // or you could also use 2 searchTerms values, instead of using the 2 dots (only works with SliderRange & DateRange Filters)
-          { columnId: 'complete', searchTerms: [5, 80] }, // same result with searchTerms: ['5..80']
+          // BUT make sure to provide the operator, else the filter service won't know that this is really a range
+          { columnId: 'complete', operator: 'RangeInclusive', searchTerms: [5, 80] }, // same result with searchTerms: ['5..80']
           { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [presetLowestDay, presetHighestDay] },
         ],
         sorters: [

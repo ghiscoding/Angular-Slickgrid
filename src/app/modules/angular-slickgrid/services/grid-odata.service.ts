@@ -254,7 +254,7 @@ export class GridOdataService implements BackendService {
 
         let fieldName = columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || columnDef.name || '';
         const fieldType = columnDef.type || FieldType.string;
-        const searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
+        let searchTerms = (columnFilter ? columnFilter.searchTerms : null) || [];
         let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
         if (typeof fieldSearchValue === 'undefined') {
           fieldSearchValue = '';
@@ -275,6 +275,13 @@ export class GridOdataService implements BackendService {
         if (fieldName && searchValue === '' && searchTerms.length <= 1) {
           this.removeColumnFilter(fieldName);
           continue;
+        }
+
+        if (Array.isArray(searchTerms) && searchTerms.length === 1 && typeof searchTerms[0] === 'string' && searchTerms[0].indexOf('..') > 0) {
+          searchTerms = searchTerms[0].split('..');
+          if (!operator) {
+            operator = OperatorType.rangeExclusive;
+          }
         }
 
         // escaping the search value
@@ -539,6 +546,9 @@ export class GridOdataService implements BackendService {
       searchValues = (searchTerms[0] as string).split('..');
     } else if (Array.isArray(searchTerms) && searchTerms.length > 1) {
       searchValues = searchTerms;
+      if (operator !== OperatorType.rangeExclusive && operator !== OperatorType.rangeInclusive) {
+        operator = this._gridOptions.defaultFilterRangeOperator;
+      }
     }
 
     // single search value

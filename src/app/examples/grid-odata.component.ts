@@ -5,7 +5,6 @@ import {
   Column,
   FieldType,
   Filters,
-  Formatters,
   GridOdataService,
   GridOption,
   GridStateChange,

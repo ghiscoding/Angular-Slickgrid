@@ -4,6 +4,7 @@ import {
   Filter,
   FilterArguments,
   FilterCallback,
+  GridOption,
   JQueryUiSliderOption,
   JQueryUiSliderResponse,
   OperatorType,
@@ -45,13 +46,18 @@ export class SliderRangeFilter implements Filter {
     return this.columnDef && this.columnDef.filter || {};
   }
 
+  /** Getter for the Grid Options pulled through the Grid Object */
+  get gridOptions(): GridOption {
+    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+  }
+
   /** Getter for the JQuery UI Slider Options */
   get sliderOptions(): JQueryUiSliderOption {
     return this._sliderOptions || {};
   }
 
   get operator(): OperatorType | OperatorString {
-    return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.rangeExclusive;
+    return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || this.gridOptions.defaultFilterRangeOperator || OperatorType.rangeExclusive;
   }
 
   /**
@@ -141,9 +147,17 @@ export class SliderRangeFilter implements Filter {
     const $headerElm = this.grid.getHeaderRowColumn(fieldId);
     const minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
     const maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE;
-    const defaultStartValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
-    const defaultEndValue = this.filterParams.hasOwnProperty('sliderEndValue') ? this.filterParams.sliderEndValue : maxValue;
     const step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP;
+
+    let defaultStartValue;
+    let defaultEndValue;
+    if (Array.isArray(searchTerms) && searchTerms.length > 1) {
+      defaultStartValue = searchTerms[0];
+      defaultEndValue = searchTerms[1];
+    } else {
+      defaultStartValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
+      defaultEndValue = this.filterParams.hasOwnProperty('sliderEndValue') ? this.filterParams.sliderEndValue : maxValue;
+    }
 
     $($headerElm).empty();
 
@@ -185,7 +199,6 @@ export class SliderRangeFilter implements Filter {
     // merge options with optional user's custom options
     this._sliderOptions = { ...definedOptions, ...(this.columnFilter.filterOptions as JQueryUiSliderOption) };
     this.$filterElm.slider(this._sliderOptions);
-
 
     // if there's a search term, we will add the "filled" class for styling purposes
     if (Array.isArray(searchTerms) && searchTerms.length > 0 && searchTerms[0] !== '') {

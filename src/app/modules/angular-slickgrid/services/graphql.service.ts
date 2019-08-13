@@ -18,8 +18,11 @@ import {
   GraphqlSortingOption,
   GridOption,
   MultiColumnSort,
+  OperatorString,
+  OperatorType,
   Pagination,
   PaginationChangedArgs,
+  SearchTerm,
   SortChangedArgs,
   SortDirection,
   SortDirectionString
@@ -243,7 +246,7 @@ export class GraphqlService implements BackendService {
     // save current pagination as Page 1 and page size as "first" set size
     this._currentPagination = {
       pageNumber: 1,
-      pageSize: paginationOptions.first
+      pageSize: paginationOptions.first || DEFAULT_PAGE_SIZE
     };
 
     this.updateOptions({ paginationOptions });
@@ -365,7 +368,7 @@ export class GraphqlService implements BackendService {
         }
 
         const fieldName = columnDef.queryFieldFilter || columnDef.queryField || columnDef.field || columnDef.name || '';
-        const searchTerms = columnFilter && columnFilter.searchTerms || [];
+        let searchTerms = columnFilter && columnFilter.searchTerms || [];
         let fieldSearchValue = (Array.isArray(searchTerms) && searchTerms.length === 1) ? searchTerms[0] : '';
         if (typeof fieldSearchValue === 'undefined') {
           fieldSearchValue = '';
@@ -386,10 +389,14 @@ export class GraphqlService implements BackendService {
           continue;
         }
 
-        // when having more than 1 search term (we need to create a CSV string for GraphQL "IN" or "NOT IN" filter search)
-        if (searchTerms && searchTerms.length > 1) {
-          searchValue = searchTerms.join(',');
-        } else if (typeof searchValue === 'string') {
+        if (Array.isArray(searchTerms) && searchTerms.length === 1 && typeof searchTerms[0] === 'string' && searchTerms[0].indexOf('..') > 0) {
+          searchTerms = searchTerms[0].split('..');
+          if (!operator) {
+            operator = OperatorType.rangeExclusive;
+          }
+        }
+
+        if (typeof searchValue === 'string') {
           // escaping the search value
           searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
           if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*') {
@@ -408,11 +415,20 @@ export class GraphqlService implements BackendService {
           operator = mapOperatorByFieldType(columnDef.type || FieldType.string);
         }
 
-        searchByArray.push({
-          field: fieldName,
-          operator: mapOperatorType(operator),
-          value: searchValue
-        });
+        // when having more than 1 search term (we need to create a CSV string for GraphQL "IN" or "NOT IN" filter search)
+        if (searchTerms && searchTerms.length > 1 && (operator === 'IN' || operator === 'NIN' || operator === 'NOTIN' || operator === 'NOT IN' || operator === 'NOT_IN')) {
+          searchValue = searchTerms.join(',');
+        } else if (searchTerms && searchTerms.length === 2 && (!operator || operator === OperatorType.rangeExclusive || operator === OperatorType.rangeInclusive)) {
+          if (!operator) {
+            operator = OperatorType.rangeExclusive;
+          }
+          searchByArray.push({ field: fieldName, operator: (operator === OperatorType.rangeInclusive ? 'GE' : 'GT'), value: searchTerms[0] });
+          searchByArray.push({ field: fieldName, operator: (operator === OperatorType.rangeInclusive ? 'LE' : 'LT'), value: searchTerms[1] });
+          continue;
+        }
+
+        // build the search array
+        searchByArray.push({ field: fieldName, operator: mapOperatorType(operator), value: searchValue });
       }
     }
 
@@ -555,7 +571,6 @@ export class GraphqlService implements BackendService {
    * @param columnFilters
    */
   private castFilterToColumnFilters(columnFilters: ColumnFilters | CurrentFilter[]): CurrentFilter[] {
-
     // keep current filters & always save it as an array (columnFilters can be an object when it is dealt by SlickGrid Filter)
     const filtersArray: ColumnFilter[] = (typeof columnFilters === 'object') ? Object.keys(columnFilters).map(key => columnFilters[key]) : columnFilters;
 
