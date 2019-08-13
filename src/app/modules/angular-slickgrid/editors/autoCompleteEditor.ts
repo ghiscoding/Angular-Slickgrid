@@ -1,4 +1,5 @@
 import {
+  AutocompleteOption,
   Column,
   ColumnEditor,
   Editor,
@@ -85,7 +86,7 @@ export class AutoCompleteEditor implements Editor {
       });
 
     // user might pass his own autocomplete options
-    const autoCompleteOptions = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.editorOptions;
+    const autoCompleteOptions: AutocompleteOption = this.columnEditor.editorOptions;
 
     // user might provide his own custom structure
     // jQuery UI autocomplete requires a label/value pair, so we must remap them when user provide different ones
