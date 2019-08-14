@@ -542,9 +542,7 @@ export class GridOdataService implements BackendService {
   private filterBySearchDate(fieldName: string, operator: OperatorType | OperatorString, searchTerms: SearchTerm[], version: number): string {
     let query = '';
     let searchValues: SearchTerm[];
-    if (Array.isArray(searchTerms) && searchTerms.length === 1 && typeof searchTerms[0] === 'string' && (searchTerms[0] as string).indexOf('..') > 0) {
-      searchValues = (searchTerms[0] as string).split('..');
-    } else if (Array.isArray(searchTerms) && searchTerms.length > 1) {
+    if (Array.isArray(searchTerms) && searchTerms.length > 1) {
       searchValues = searchTerms;
       if (operator !== OperatorType.rangeExclusive && operator !== OperatorType.rangeInclusive) {
         operator = this._gridOptions.defaultFilterRangeOperator;
@@ -583,20 +581,17 @@ export class GridOdataService implements BackendService {
    */
   private filterBySearchTermRange(fieldName: string, operator: OperatorType | OperatorString, searchTerms: SearchTerm[]) {
     let query = '';
-    let searchValues: SearchTerm[];
-    if (Array.isArray(searchTerms) && searchTerms.length === 1 && typeof searchTerms[0] === 'string' && (searchTerms[0] as string).indexOf('..') > 0) {
-      searchValues = (searchTerms[0] as string).split('..');
-    } else if (Array.isArray(searchTerms)) {
-      searchValues = searchTerms;
+    if (!Array.isArray(searchTerms)) {
+      return '';
     }
 
-    if (Array.isArray(searchValues) && searchValues.length === 2) {
+    if (Array.isArray(searchTerms) && searchTerms.length === 2) {
       if (operator === OperatorType.rangeInclusive) {
         // example:: (Duration >= 5 and Duration <= 10)
-        query = `(${fieldName} ge ${searchValues[0]} and ${fieldName} le ${searchValues[1]})`;
+        query = `(${fieldName} ge ${searchTerms[0]} and ${fieldName} le ${searchTerms[1]})`;
       } else if (operator === OperatorType.rangeExclusive) {
         // example:: (Duration > 5 and Duration < 10)
-        query = `(${fieldName} gt ${searchValues[0]} and ${fieldName} lt ${searchValues[1]})`;
+        query = `(${fieldName} gt ${searchTerms[0]} and ${fieldName} lt ${searchTerms[1]})`;
       }
     }
     return query;

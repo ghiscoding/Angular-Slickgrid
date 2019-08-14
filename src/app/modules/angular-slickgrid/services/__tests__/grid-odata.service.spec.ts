@@ -1057,6 +1057,22 @@ describe('GridOdataService', () => {
       expect(currentFilters).toEqual(presetFilters);
     });
 
+    it('should return a query with a filter with range of numbers with decimals when the preset is a filter range with 3 dots (..) separator', () => {
+      serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration', type: FieldType.number }];
+      const expectation = `$top=10&$filter=(Duration gt 0.5 and Duration lt .88)`;
+      const presetFilters = [
+        { columnId: 'duration', searchTerms: ['0.5...88'] },
+      ] as CurrentFilter[];
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(presetFilters, true);
+      const query = service.buildQuery();
+      const currentFilters = service.getCurrentFilters();
+
+      expect(query).toBe(expectation);
+      expect(currentFilters).toEqual(presetFilters);
+    });
+
     it('should return a query with a filter with range of numbers when the preset is a filter range with 2 searchTerms', () => {
       serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration', type: FieldType.number }];
       const expectation = `$top=10&$filter=(Duration ge 4 and Duration le 88)`;

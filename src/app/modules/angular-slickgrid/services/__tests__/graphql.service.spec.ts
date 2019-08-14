@@ -950,6 +950,21 @@ describe('GraphqlService', () => {
       expect(currentFilters).toEqual(presetFilters);
     });
 
+    it('should return a query with a filter with range of numbers with decimals when the preset is a filter range with 3 dots (..) separator', () => {
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GT, value:"0.5"}, {field:duration, operator:LT, value:".88"}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
+      const presetFilters = [
+        { columnId: 'duration', searchTerms: ['0.5...88'] },
+      ] as CurrentFilter[];
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(presetFilters, true);
+      const query = service.buildQuery();
+      const currentFilters = service.getCurrentFilters();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+      expect(currentFilters).toEqual(presetFilters);
+    });
+
     it('should return a query with search having a range of inclusive numbers when 2 searchTerms numbers are provided and the operator is "RangeInclusive"', () => {
       const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GE, value:2}, {field:duration, operator:LE, value:33}]) { totalCount,nodes{ id,company,gender,duration,startDate } }}`;
       const presetFilters = [
