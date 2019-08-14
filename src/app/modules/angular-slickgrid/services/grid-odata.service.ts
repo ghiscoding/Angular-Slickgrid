@@ -581,9 +581,6 @@ export class GridOdataService implements BackendService {
    */
   private filterBySearchTermRange(fieldName: string, operator: OperatorType | OperatorString, searchTerms: SearchTerm[]) {
     let query = '';
-    if (!Array.isArray(searchTerms)) {
-      return '';
-    }
 
     if (Array.isArray(searchTerms) && searchTerms.length === 2) {
       if (operator === OperatorType.rangeInclusive) {
