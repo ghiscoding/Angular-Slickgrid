@@ -54,6 +54,9 @@ export class InputFilter implements Filter {
    * Initialize the Filter
    */
   init(args: FilterArguments) {
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
+    }
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;

@@ -67,6 +67,10 @@ export class CompoundInputFilter implements Filter {
    * Initialize the Filter
    */
   init(args: FilterArguments) {
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
+    }
+
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
@@ -122,7 +126,7 @@ export class CompoundInputFilter implements Filter {
    */
   setValues(values: SearchTerm[]) {
     if (values && Array.isArray(values)) {
-      this.$filterElm.val(values[0]);
+      this.$filterInputElm.val(values[0]);
     }
   }
 
@@ -167,13 +171,13 @@ export class CompoundInputFilter implements Filter {
         break;
       default:
         optionValues = [
-          { operator: '' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('CONTAINS') || this._locales && this._locales.TEXT_CONTAINS },
-          { operator: '=' as OperatorString, description: '' },
-          { operator: '<' as OperatorString, description: '' },
-          { operator: '<=' as OperatorString, description: '' },
-          { operator: '>' as OperatorString, description: '' },
-          { operator: '>=' as OperatorString, description: '' },
-          { operator: '<>' as OperatorString, description: '' }];
+          { operator: '' as OperatorString, description: '' },
+          { operator: '=' as OperatorString, description: '=' },
+          { operator: '<' as OperatorString, description: '<' },
+          { operator: '<=' as OperatorString, description: '<=' },
+          { operator: '>' as OperatorString, description: '>' },
+          { operator: '>=' as OperatorString, description: '>=' },
+          { operator: '<>' as OperatorString, description: '<>' }];
         break;
     }
 
