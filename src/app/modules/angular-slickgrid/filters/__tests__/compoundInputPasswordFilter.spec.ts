@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Column, FilterArguments, FieldType, GridOption } from '../../models';
+import { Column, FilterArguments, GridOption } from '../../models';
 import { Filters } from '..';
-import { CompoundInputPasswordFilter } from '../compoundinputPasswordFilter';
+import { CompoundInputPasswordFilter } from '../compoundInputPasswordFilter';
 
 const containerId = 'demo-container';
 
