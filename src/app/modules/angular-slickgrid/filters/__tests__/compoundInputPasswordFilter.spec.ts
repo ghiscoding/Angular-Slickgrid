@@ -7,8 +7,7 @@ import { CompoundInputPasswordFilter } from '../compoundInputPasswordFilter';
 const containerId = 'demo-container';
 
 // define a <div> container to simulate the grid container
-const template =
-  `<div id="${containerId}"></div>`;
+const template = `<div id="${containerId}"></div>`;
 
 const gridOptionMock = {
   enableFiltering: true,

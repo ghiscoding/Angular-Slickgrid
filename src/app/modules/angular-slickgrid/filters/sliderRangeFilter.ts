@@ -22,6 +22,7 @@ const DEFAULT_STEP = 1;
 /** A Slider Range Filter which uses jQuery UI, this is only meant to be used as a range filter (with 2 handles lowest & highest values) */
 export class SliderRangeFilter implements Filter {
   private _clearFilterTriggered = false;
+  private _currentValues: number[];
   private _shouldTriggerQuery = true;
   private _sliderOptions: JQueryUiSliderOption;
   private $filterElm: any;
@@ -44,6 +45,11 @@ export class SliderRangeFilter implements Filter {
   /** Getter for the Column Filter */
   get columnFilter(): ColumnFilter {
     return this.columnDef && this.columnDef.filter || {};
+  }
+
+  /** Getter for the Current Slider Values */
+  get currentValues(): number[] {
+    return this._currentValues;
   }
 
   /** Getter for the Grid Options pulled through the Grid Object */
@@ -86,6 +92,7 @@ export class SliderRangeFilter implements Filter {
       this.searchTerms = [];
       const lowestValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
       const highestValue = this.filterParams.hasOwnProperty('sliderEndValue') ? this.filterParams.sliderEndValue : DEFAULT_MAX_VALUE;
+      this._currentValues = [lowestValue, highestValue];
       this.$filterElm.slider('values', [lowestValue, highestValue]);
       if (!this.filterParams.hideSliderNumbers) {
         this.renderSliderValues(lowestValue, highestValue);
@@ -120,12 +127,10 @@ export class SliderRangeFilter implements Filter {
       }
 
       if (Array.isArray(sliderValues) && sliderValues.length === 2) {
-        this.$filterElm.slider('values', [sliderValues[0], sliderValues[1]]);
+        this.$filterElm.slider('values', sliderValues);
         if (!this.filterParams.hideSliderNumbers) {
           this.renderSliderValues(sliderValues[0], sliderValues[1]);
         }
-      } else {
-        this.clear(true);
       }
     }
   }
@@ -139,7 +144,7 @@ export class SliderRangeFilter implements Filter {
    * @param searchTerm optional preset search terms
    */
   private createDomElement(searchTerms?: SearchTerm | SearchTerm[]) {
-    if (this.columnFilter.filterOptions && this.columnFilter.filterOptions.change || this.columnFilter.filterOptions.slide) {
+    if (this.columnFilter && this.columnFilter.filterOptions && (this.columnFilter.filterOptions.change || this.columnFilter.filterOptions.slide)) {
       throw new Error(`[Angular-Slickgrid] You cannot override the "change" and/or the "slide" callback methods
         since they are used in SliderRange Filter itself, however any other methods can be used for example the "create", "start", "stop" methods.`);
     }
@@ -149,14 +154,14 @@ export class SliderRangeFilter implements Filter {
     const maxValue = this.filterProperties.hasOwnProperty('maxValue') ? this.filterProperties.maxValue : DEFAULT_MAX_VALUE;
     const step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP;
 
-    let defaultStartValue;
-    let defaultEndValue;
+    let defaultStartValue: number = DEFAULT_MIN_VALUE;
+    let defaultEndValue: number = DEFAULT_MAX_VALUE;
     if (Array.isArray(searchTerms) && searchTerms.length > 1) {
-      defaultStartValue = searchTerms[0];
-      defaultEndValue = searchTerms[1];
+      defaultStartValue = +searchTerms[0];
+      defaultEndValue = +searchTerms[1];
     } else {
-      defaultStartValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
-      defaultEndValue = this.filterParams.hasOwnProperty('sliderEndValue') ? this.filterParams.sliderEndValue : maxValue;
+      defaultStartValue = +(this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue);
+      defaultEndValue = +(this.filterParams.hasOwnProperty('sliderEndValue') ? this.filterParams.sliderEndValue : maxValue);
     }
 
     $($headerElm).empty();
@@ -170,8 +175,8 @@ export class SliderRangeFilter implements Filter {
     <div class="input-group-addon input-group-append slider-range-value">
       <span class="input-group-text highest-range-${fieldId}">${defaultEndValue}</span>
     </div>`);
-    this.$filterElm = $(`<div class="filter-${fieldId}"></div>`);
-    this.$filterContainerElm = $(`<div class="input-group search-filter slider-range-container slider-values form-control">`);
+    this.$filterElm = $(`<div class="filter-input filter-${fieldId}"></div>`);
+    this.$filterContainerElm = $(`<div class="input-group form-control search-filter slider-range-container slider-values filter-${fieldId}">`);
 
     if (this.filterParams.hideSliderNumbers) {
       this.$filterContainerElm.append(this.$filterElm);
@@ -180,6 +185,9 @@ export class SliderRangeFilter implements Filter {
       this.$filterContainerElm.append(this.$filterElm);
       this.$filterContainerElm.append($highestSliderValueElm);
     }
+
+    // if we are preloading searchTerms, we'll keep them for reference
+    this._currentValues = [defaultStartValue, defaultEndValue];
 
     const definedOptions: JQueryUiSliderOption = {
       range: true,
@@ -215,7 +223,7 @@ export class SliderRangeFilter implements Filter {
 
   /** On a value change event triggered */
   private onValueChanged(e: Event, ui: JQueryUiSliderResponse) {
-    const values = ui.values;
+    const values = ui && Array.isArray(ui.values) ? ui.values : [];
     const value = values.join('..');
 
     if (this._clearFilterTriggered) {
@@ -223,7 +231,7 @@ export class SliderRangeFilter implements Filter {
       this.$filterContainerElm.removeClass('filled');
     } else {
       value === '' ? this.$filterContainerElm.removeClass('filled') : this.$filterContainerElm.addClass('filled');
-      this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
+      this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: values, shouldTriggerQuery: this._shouldTriggerQuery });
     }
     // reset both flags for next use
     this._clearFilterTriggered = false;

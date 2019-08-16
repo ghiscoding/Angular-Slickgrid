@@ -69,26 +69,50 @@ describe('numberFilterCondition method', () => {
     expect(output).toBe(false);
   });
 
-  it('should return True when input value is in the range of search terms', () => {
+  it('should return True when input value is in the range of search terms using 2 dots (..) notation', () => {
     const options = { dataKey: '', operator: 'EQ', cellValue: '3', fieldType: FieldType.number, searchTerms: ['1..5'] } as FilterConditionOption;
     const output = numberFilterCondition(options);
     expect(output).toBe(true);
   });
 
-  it('should return False when input value is not in the range of search terms', () => {
+  it('should return False when input value is not in the range of search terms using 2 dots (..) notation', () => {
     const options = { dataKey: '', operator: 'EQ', cellValue: '15', fieldType: FieldType.number, searchTerms: ['1..5'] } as FilterConditionOption;
     const output = numberFilterCondition(options);
     expect(output).toBe(false);
   });
 
-  it('should return True when input value equals the search terms min inclusive value and operator is set to "rangeInclusive"', () => {
+  it('should return True when input value equals the search terms min inclusive value and operator is set to "rangeInclusive" using 2 dots (..) notation', () => {
     const options = { dataKey: '', operator: 'RangeInclusive', cellValue: '1', fieldType: FieldType.number, searchTerms: ['1..5'] } as FilterConditionOption;
     const output = numberFilterCondition(options);
     expect(output).toBe(true);
   });
 
-  it('should return False when input value equals the search terms min inclusive value and operator is set to "RangeExclusive"', () => {
+  it('should return False when input value equals the search terms min inclusive value and operator is set to "RangeExclusive" using 2 dots (..) notation', () => {
     const options = { dataKey: '', operator: 'RangeExclusive', cellValue: '1', fieldType: FieldType.number, searchTerms: ['1..5'] } as FilterConditionOption;
+    const output = numberFilterCondition(options);
+    expect(output).toBe(false);
+  });
+
+  it('should return True when input value is in the range of search terms array', () => {
+    const options = { dataKey: '', operator: 'EQ', cellValue: '3', fieldType: FieldType.number, searchTerms: [1, 5] } as FilterConditionOption;
+    const output = numberFilterCondition(options);
+    expect(output).toBe(true);
+  });
+
+  it('should return False when input value is not in the range of search terms array', () => {
+    const options = { dataKey: '', operator: 'EQ', cellValue: '15', fieldType: FieldType.number, searchTerms: [1, 5] } as FilterConditionOption;
+    const output = numberFilterCondition(options);
+    expect(output).toBe(false);
+  });
+
+  it('should return True when input value equals the search terms min (first array term) inclusive value and operator is set to "rangeInclusive"', () => {
+    const options = { dataKey: '', operator: 'RangeInclusive', cellValue: '1', fieldType: FieldType.number, searchTerms: [1, 5] } as FilterConditionOption;
+    const output = numberFilterCondition(options);
+    expect(output).toBe(true);
+  });
+
+  it('should return False when input value equals the search terms min (first array term) inclusive value and operator is set to "RangeExclusive"', () => {
+    const options = { dataKey: '', operator: 'RangeExclusive', cellValue: '1', fieldType: FieldType.number, searchTerms: [1, 5] } as FilterConditionOption;
     const output = numberFilterCondition(options);
     expect(output).toBe(false);
   });

@@ -5,8 +5,7 @@ import { Filters } from '..';
 const containerId = 'demo-container';
 
 // define a <div> container to simulate the grid container
-const template =
-  `<div id="${containerId}"></div>`;
+const template = `<div id="${containerId}"></div>`;
 
 const gridOptionMock = {
   enableFiltering: true,
@@ -78,11 +77,7 @@ describe('InputFilter', () => {
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-duration');
 
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', {
-      keyCode: 97,
-      bubbles: true,
-      cancelable: true
-    }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-duration.filled');
 
     expect(filterFilledElms.length).toBe(1);
@@ -98,11 +93,7 @@ describe('InputFilter', () => {
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-duration');
 
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', {
-      keyCode: 97,
-      bubbles: true,
-      cancelable: true
-    }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-duration.filled');
 
     expect(filterFilledElms.length).toBe(1);
@@ -119,11 +110,7 @@ describe('InputFilter', () => {
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-duration');
 
     filterElm.focus();
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', {
-      keyCode: 97,
-      bubbles: true,
-      cancelable: true
-    }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-duration.filled');
 
     expect(filterFilledElms.length).toBe(1);
@@ -138,11 +125,7 @@ describe('InputFilter', () => {
 
     filterElm.focus();
     filterElm.value = 'a';
-    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', {
-      keyCode: 97,
-      bubbles: true,
-      cancelable: true
-    }));
+    filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['a'], shouldTriggerQuery: true });
   });

@@ -3,26 +3,22 @@ import { testFilterCondition } from './filterUtilities';
 
 export const numberFilterCondition: FilterCondition = (options: FilterConditionOption) => {
   const cellValue = parseFloat(options.cellValue);
-  const searchTerm = (Array.isArray(options.searchTerms) && options.searchTerms[0]) || 0;
+  const searchTerms = Array.isArray(options.searchTerms) && options.searchTerms || [0];
 
   let isRangeSearch = false;
   let searchValue1;
   let searchValue2;
 
-  if (typeof searchTerm === 'string') {
-    if (searchTerm.indexOf('..') >= 0) {
-      isRangeSearch = true;
-      const searchValues = searchTerm.split('..');
-      searchValue1 = parseFloat(Array.isArray(searchValues) && searchValues[0]);
-      searchValue2 = parseFloat(Array.isArray(searchValues) && searchValues[1]);
-    } else {
-      searchValue1 = parseFloat(searchTerm);
-    }
+  if (searchTerms.length === 2 || (typeof searchTerms[0] === 'string' && (searchTerms[0] as string).indexOf('..') > 0)) {
+    isRangeSearch = true;
+    const searchValues = (searchTerms.length === 2) ? searchTerms : (searchTerms[0] as string).split('..');
+    searchValue1 = parseFloat(Array.isArray(searchValues) && searchValues[0] + '');
+    searchValue2 = parseFloat(Array.isArray(searchValues) && searchValues[1] + '');
   } else {
-    searchValue1 = searchTerm;
+    searchValue1 = searchTerms[0];
   }
 
-  if (!searchTerm && !options.operator) {
+  if (!searchValue1 && !options.operator) {
     return true;
   }
 
