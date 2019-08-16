@@ -28,12 +28,13 @@ declare var $: any;
 
 export class DateRangeFilter implements Filter {
   private _clearFilterTriggered = false;
+  private _currentValue: string;
+  private _currentDates: Date[];
+  private _currentDateStrings: string[];
   private _flatpickrOptions: FlatpickrOption;
   private _shouldTriggerQuery = true;
   private $filterElm: any;
   private $filterInputElm: any;
-  private _currentValue: string;
-  private _operator: OperatorType | OperatorString;
   flatInstance: any;
   grid: any;
   searchTerms: SearchTerm[];
@@ -52,41 +53,42 @@ export class DateRangeFilter implements Filter {
     return this.columnDef && this.columnDef.filter || {};
   }
 
+  /** Getter for the Current Dates selected */
+  get currentDates(): Date[] {
+    return this._currentDates;
+  }
+
   /** Getter for the Flatpickr Options */
-  get flatpickrOptions(): any {
+  get flatpickrOptions(): FlatpickrOption {
     return this._flatpickrOptions || {};
   }
 
-  /** Setter for the Filter Operator */
-  set operator(op: OperatorType | OperatorString) {
-    this._operator = op;
-  }
-
-  /** Getter for the Filter Operator */
+  /** Getter of the Operator to use when doing the filter comparing */
   get operator(): OperatorType | OperatorString {
-    return this._operator || this.gridOptions.defaultFilterRangeOperator || OperatorType.rangeExclusive;
+    return this.columnFilter.operator || this.gridOptions.defaultFilterRangeOperator || OperatorType.rangeExclusive;
   }
 
   /**
    * Initialize the Filter
    */
   init(args: FilterArguments) {
-    if (args) {
-      this.grid = args.grid;
-      this.callback = args.callback;
-      this.columnDef = args.columnDef;
-      this.operator = args.operator || '';
-      this.searchTerms = args.searchTerms || [];
-
-      // step 1, create the DOM Element of the filter which contain the compound Operator+Input
-      this.$filterElm = this.createDomElement(this.searchTerms);
-
-      // step 3, subscribe to the keyup event and run the callback when that happens
-      // also add/remove "filled" class for styling purposes
-      this.$filterInputElm.keyup((e: any) => {
-        this.onTriggerEvent(e);
-      });
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
     }
+
+    this.grid = args.grid;
+    this.callback = args.callback;
+    this.columnDef = args.columnDef;
+    this.searchTerms = args.searchTerms || [];
+
+    // step 1, create the DOM Element of the filter which contain the compound Operator+Input
+    this.$filterElm = this.createDomElement(this.searchTerms);
+
+    // step 3, subscribe to the keyup event and run the callback when that happens
+    // also add/remove "filled" class for styling purposes
+    this.$filterInputElm.keyup((e: any) => {
+      this.onTriggerEvent(e);
+    });
   }
 
   /**
@@ -125,6 +127,7 @@ export class DateRangeFilter implements Filter {
     }
 
     if (this.flatInstance && searchTerms) {
+      this._currentDates = pickerValues;
       this.flatInstance.setDate(pickerValues);
     }
   }
@@ -133,6 +136,7 @@ export class DateRangeFilter implements Filter {
   // private functions
   // ------------------
   private buildDatePickerInput(searchTerms?: SearchTerm | SearchTerm[]) {
+    const columnId = this.columnDef && this.columnDef.id;
     const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
     const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateUtc);
     let currentLocale = this.translate && this.translate.currentLang || 'en';
@@ -149,8 +153,15 @@ export class DateRangeFilter implements Filter {
       pickerValues = searchTerms;
     }
 
+    // if we are preloading searchTerms, we'll keep them for reference
+    if (pickerValues) {
+      this._currentDates = pickerValues;
+      const outFormat = mapMomentDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
+      this._currentDateStrings = pickerValues.map(date => moment(date).format(outFormat));
+    }
+
     const pickerOptions: FlatpickrOption = {
-      defaultDate: (pickerValues || '') as string,
+      defaultDate: pickerValues || '',
       altInput: true,
       altFormat: outputFormat,
       dateFormat: inputFormat,
@@ -160,11 +171,10 @@ export class DateRangeFilter implements Filter {
       locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
       onChange: (selectedDates: Date[] | Date, dateStr: string, instance: any) => {
         if (Array.isArray(selectedDates)) {
+          this._currentDates = selectedDates;
           const outFormat = mapMomentDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
-          const selectedDateRanges = selectedDates.map(date => moment(date).format(outFormat));
-          this._currentValue = selectedDateRanges.join('..');
-        } else {
-          this._currentValue = dateStr;
+          this._currentDateStrings = selectedDates.map(date => moment(date).format(outFormat));
+          this._currentValue = this._currentDateStrings.join('..');
         }
 
         // when using the time picker, we can simulate a keyup event to avoid multiple backend request
@@ -189,7 +199,7 @@ export class DateRangeFilter implements Filter {
     if (this.columnFilter && this.columnFilter.placeholder) {
       placeholder = this.columnFilter.placeholder;
     }
-    const $filterInputElm: any = $(`<div class="flatpickr search-filter"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
+    const $filterInputElm: any = $(`<div class="flatpickr search-filter filter-${columnId}"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
     this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(this._flatpickrOptions) : Flatpickr($filterInputElm, this._flatpickrOptions as unknown as Partial<FlatpickrBaseOptions>);
     return $filterInputElm;
   }
@@ -219,6 +229,7 @@ export class DateRangeFilter implements Filter {
     // if there's a search term, we will add the "filled" class for styling purposes
     if (Array.isArray(searchTerms) && searchTerms.length > 0 && searchTerms[0] !== '') {
       this.$filterInputElm.addClass('filled');
+      this._currentDates = searchTerms as Date[];
       this._currentValue = searchTerms[0] as string;
     }
 
@@ -230,15 +241,16 @@ export class DateRangeFilter implements Filter {
     return this.$filterInputElm;
   }
 
-  private loadFlatpickrLocale(locale: string) {
-    // change locale if needed, Flatpickr reference: https://chmln.github.io/flatpickr/localization/
-    if (this.gridOptions && this.gridOptions.params && this.gridOptions.params.flapickrLocale) {
-      return this.gridOptions.params.flapickrLocale;
-    } else if (locale !== 'en') {
-      const localeDefault: any = require(`flatpickr/dist/l10n/${locale}.js`).default;
-      return (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
+  /** Load a different set of locales for Flatpickr to be localized */
+  private loadFlatpickrLocale(language: string) {
+    let locales = 'en';
+
+    if (language !== 'en') {
+      // change locale if needed, Flatpickr reference: https://chmln.github.io/flatpickr/localization/
+      const localeDefault: any = require(`flatpickr/dist/l10n/${language}.js`).default;
+      locales = (localeDefault && localeDefault[language]) ? localeDefault[language] : 'en';
     }
-    return 'en';
+    return locales;
   }
 
   private onTriggerEvent(e: Event | undefined) {
@@ -246,23 +258,11 @@ export class DateRangeFilter implements Filter {
       this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
       this.$filterElm.removeClass('filled');
     } else {
-      (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-      this.callback(e, { columnDef: this.columnDef, searchTerms: (this._currentValue ? [this._currentValue] : null), operator: this._operator || '', shouldTriggerQuery: this._shouldTriggerQuery });
+      (this._currentDateStrings) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
+      this.callback(e, { columnDef: this.columnDef, searchTerms: (this._currentDateStrings ? this._currentDateStrings : [this._currentValue]), operator: this.operator || '', shouldTriggerQuery: this._shouldTriggerQuery });
     }
     // reset both flags for next use
     this._clearFilterTriggered = false;
     this._shouldTriggerQuery = true;
-  }
-
-  private hide() {
-    if (this.flatInstance && typeof this.flatInstance.close === 'function') {
-      this.flatInstance.close();
-    }
-  }
-
-  private show() {
-    if (this.flatInstance && typeof this.flatInstance.open === 'function') {
-      this.flatInstance.open();
-    }
   }
 }
