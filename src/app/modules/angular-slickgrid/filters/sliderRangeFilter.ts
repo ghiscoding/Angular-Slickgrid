@@ -164,11 +164,11 @@ export class SliderRangeFilter implements Filter {
     // create the DOM element & add an ID and filter class
     const $lowestSliderValueElm = $(`
     <div class="input-group-addon input-group-prepend slider-range-value">
-      <span class="input-group-text" id="lowest">${defaultStartValue}</span>
+      <span class="input-group-text lowest-range-${fieldId}">${defaultStartValue}</span>
     </div>`);
     const $highestSliderValueElm = $(`
     <div class="input-group-addon input-group-append slider-range-value">
-      <span class="input-group-text" id="highest">${defaultEndValue}</span>
+      <span class="input-group-text highest-range-${fieldId}">${defaultEndValue}</span>
     </div>`);
     this.$filterElm = $(`<div class="filter-${fieldId}"></div>`);
     this.$filterContainerElm = $(`<div class="input-group search-filter slider-range-container slider-values form-control">`);
@@ -236,8 +236,9 @@ export class SliderRangeFilter implements Filter {
    * @param highestValue number
    */
   private renderSliderValues(lowestValue: number | string, highestValue: number | string) {
-    const lowerElm = document.getElementById('lowest');
-    const highestElm = document.getElementById('highest');
+    const fieldId = this.columnDef && this.columnDef.id;
+    const lowerElm = document.querySelector(`.lowest-range-${fieldId}`);
+    const highestElm = document.querySelector(`.highest-range-${fieldId}`);
     if (lowerElm && lowerElm.innerHTML) {
       lowerElm.innerHTML = lowestValue.toString();
     }

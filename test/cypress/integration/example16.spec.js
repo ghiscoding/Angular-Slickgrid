@@ -10,7 +10,7 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
     cy.saveLocalStorage();
   });
 
-  it('should display Example 16 title', () => {
+  it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/gridstate`);
     cy.get('h2').should('contain', 'Example 16: Grid State & Presets using Local Storage');
 

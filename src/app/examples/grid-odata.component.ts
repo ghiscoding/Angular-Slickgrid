@@ -253,7 +253,7 @@ export class GridOdataComponent implements OnInit {
 
         setTimeout(() => {
           resolve({ items: updatedData, totalRecordCount: countTotalItems, query });
-        }, 500);
+        }, 250);
       });
     });
   }

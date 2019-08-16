@@ -1,13 +1,14 @@
+import moment from 'moment-mini';
+
 function removeSpaces(textS) {
   return `${textS}`.replace(/\s+/g, '');
 }
-import moment from 'moment-mini';
-// import moment from 'moment';
+
 const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
 const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
 
 describe('Example 6 - GraphQL Grid', () => {
-  it('should display Example 6 title', () => {
+  it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/gridgraphql`);
     cy.get('h2').should('contain', 'Example 6: Grid connected to Backend Server with GraphQL');
   });
