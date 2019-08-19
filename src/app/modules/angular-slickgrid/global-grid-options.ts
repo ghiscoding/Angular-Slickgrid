@@ -1,4 +1,4 @@
-import { DelimiterType, FileType, GridOption } from './models/index';
+import { DelimiterType, FileType, GridOption, OperatorType } from './models/index';
 import { Filters } from './filters/index';
 
 /**
@@ -28,6 +28,7 @@ export const GlobalGridOptions: GridOption = {
   defaultFilter: Filters.input,
   enableFilterTrimWhiteSpace: false, // do we want to trim white spaces on all Filters?
   defaultFilterPlaceholder: '&#128269;',
+  defaultFilterRangeOperator: OperatorType.rangeExclusive,
   editable: false,
   enableAutoResize: true,
   enableAutoSizeColumns: true,

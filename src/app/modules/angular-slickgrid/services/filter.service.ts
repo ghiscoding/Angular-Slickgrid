@@ -435,9 +435,8 @@ export class FilterService {
    * This is basically the same as if we would manually add searchTerm(s) to a column filter object in the column definition, but we do it programmatically.
    * At the end of the day, when creating the Filter (DOM Element), it will use these searchTerm(s) so we can take advantage of that without recoding each Filter type (DOM element)
    */
-  populateColumnFilterSearchTerms() {
-    if (this._gridOptions.presets && Array.isArray(this._gridOptions.presets.filters) && this._gridOptions.presets.filters.length > 0) {
-      const filters = this._gridOptions.presets.filters;
+  populateColumnFilterSearchTermPresets(filters: ColumnFilter[]) {
+    if (Array.isArray(filters) && filters.length > 0) {
       this._columnDefinitions.forEach((columnDef: Column) => {
         // clear any columnDef searchTerms before applying Presets
         if (columnDef.filter && columnDef.filter.searchTerms) {

@@ -54,6 +54,9 @@ export class InputFilter implements Filter {
    * Initialize the Filter
    */
   init(args: FilterArguments) {
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
+    }
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
@@ -134,7 +137,7 @@ export class InputFilter implements Filter {
     if (this.columnFilter && this.columnFilter.placeholder) {
       placeholder = this.columnFilter.placeholder;
     }
-    return `<input type="${this._inputType || 'text'}" role="presentation"  autocomplete="off" class="form-control search-filter filter-${fieldId}" placeholder="${placeholder}"><span></span>`;
+    return `<input type="${this._inputType || 'text'}" role="presentation" autocomplete="off" class="form-control search-filter filter-${fieldId}" placeholder="${placeholder}"><span></span>`;
   }
 
   /**

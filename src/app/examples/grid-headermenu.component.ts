@@ -34,7 +34,7 @@ export class GridHeaderMenuComponent implements OnInit {
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', headerKey: 'TITLE' },
       { id: 'duration', name: 'Duration', field: 'duration', headerKey: 'DURATION', sortable: true },
-      { id: '%', name: '% Complete', field: 'percentComplete', sortable: true },
+      { id: '%', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', sortable: true },
       { id: 'start', name: 'Start', field: 'start', headerKey: 'START' },
       { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH' },
       { id: 'effort-driven', name: 'Completed', field: 'effortDriven', headerKey: 'COMPLETED' }

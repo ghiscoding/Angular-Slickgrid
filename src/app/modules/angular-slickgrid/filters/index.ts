@@ -11,8 +11,10 @@ import { InputNumberFilter } from './inputNumberFilter';
 import { InputPasswordFilter } from './inputPasswordFilter';
 import { MultipleSelectFilter } from './multipleSelectFilter';
 import { NativeSelectFilter } from './nativeSelectFilter';
+import { DateRangeFilter } from './dateRangeFilter';
 import { SingleSelectFilter } from './singleSelectFilter';
 import { SliderFilter } from './sliderFilter';
+import { SliderRangeFilter } from './sliderRangeFilter';
 
 export const Filters = {
   /** AutoComplete Filter (using jQuery UI autocomplete feature) */
@@ -35,6 +37,9 @@ export const Filters = {
 
   /** Compound Slider Filter (compound of Operator + Slider) */
   compoundSlider: CompoundSliderFilter,
+
+  /** Range Date Filter (uses the Flactpickr Date picker with range option) */
+  dateRange: DateRangeFilter,
 
   /** Alias to inputText, input type text filter */
   input: InputFilter,
@@ -63,6 +68,9 @@ export const Filters = {
   /** Single Select filter, which uses 3rd party lib "multiple-select.js" */
   singleSelect: SingleSelectFilter,
 
-  /** Slider Filter */
+  /** Slider Filter (only 1 value) */
   slider: SliderFilter,
+
+  /** Slider Range Filter, uses jQuery UI Range Slider (2 values, lowest/highest search range) */
+  sliderRange: SliderRangeFilter,
 };

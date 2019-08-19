@@ -538,7 +538,7 @@ export function mapOperatorByFieldType(fieldType: FieldType | string): OperatorT
 }
 
 /** Parse any input (bool, number, string) and return a boolean or False when not possible */
-export function parseBoolean(input: boolean | number | string): boolean {
+export function parseBoolean(input: any): boolean {
   return /(true|1)/i.test(input + '');
 }
 

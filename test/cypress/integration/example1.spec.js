@@ -1,7 +1,7 @@
 describe('Example 1 - Basic Grids', () => {
   const titles = ['Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 
-  it('should display Example 1 title', () => {
+  it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseUrl')}`);
     cy.get('h2').should('contain', 'Example 1: Basic Grid');
   });

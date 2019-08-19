@@ -25,8 +25,8 @@ export interface ColumnFilter {
   /** Custom Filter */
   customFilter?: Filter;
 
-  /** Search terms (collection) */
-  searchTerms?: SearchTerm[];
+  /** Search terms to preload (collection), please note it is better to use the "presets" grid option which is more powerful. */
+  searchTerms?: SearchTerm[] | undefined;
 
   /** Operator to use when filtering (>, >=, EQ, IN, ...) */
   operator?: OperatorType | OperatorString;
@@ -61,7 +61,12 @@ export interface ColumnFilter {
   /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Filter */
   customStructure?: CollectionCustomStructure;
 
-  /** Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250} */
+  /**
+   * Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250}
+   *
+   * Please note that if you use options that have existed model interfaces, you should cast with "as X",
+   * for example { filterOptions: {maxHeight: 250} as MultipleSelectOption }
+   */
   filterOptions?: MultipleSelectOption | any;
 
   /**

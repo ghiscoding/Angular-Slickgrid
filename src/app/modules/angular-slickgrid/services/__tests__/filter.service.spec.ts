@@ -799,7 +799,7 @@ describe('FilterService', () => {
     });
   });
 
-  describe('populateColumnFilterSearchTerms method', () => {
+  describe('populateColumnFilterSearchTermPresets method', () => {
     beforeEach(() => {
       gridStub.getColumns = jest.fn();
       gridOptionMock.presets = {
@@ -813,7 +813,7 @@ describe('FilterService', () => {
       gridStub.getColumns = undefined;
 
       service.init(gridStub);
-      const output = service.populateColumnFilterSearchTerms();
+      const output = service.populateColumnFilterSearchTermPresets(undefined);
 
       expect(output).toEqual([]);
     });
@@ -825,7 +825,7 @@ describe('FilterService', () => {
       ]);
 
       service.init(gridStub);
-      const output = service.populateColumnFilterSearchTerms();
+      const output = service.populateColumnFilterSearchTermPresets(gridOptionMock.presets.filters);
 
       expect(spy).toHaveBeenCalled();
       expect(output).toEqual([
@@ -846,7 +846,7 @@ describe('FilterService', () => {
       ]);
 
       service.init(gridStub);
-      const output = service.populateColumnFilterSearchTerms();
+      const output = service.populateColumnFilterSearchTermPresets(gridOptionMock.presets.filters);
 
       expect(spy).toHaveBeenCalled();
       expect(output).toEqual([
@@ -867,7 +867,7 @@ describe('FilterService', () => {
       ]);
 
       service.init(gridStub);
-      const output = service.populateColumnFilterSearchTerms();
+      const output = service.populateColumnFilterSearchTermPresets(gridOptionMock.presets.filters);
 
       expect(spy).toHaveBeenCalled();
       expect(output).toEqual([

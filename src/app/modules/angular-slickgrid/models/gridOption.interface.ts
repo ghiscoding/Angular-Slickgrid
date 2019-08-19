@@ -15,6 +15,8 @@ import {
   HeaderButton,
   HeaderMenu,
   Locale,
+  OperatorType,
+  OperatorString,
   Pagination,
   RowDetailView,
   RowMoveManager
@@ -114,8 +116,11 @@ export interface GridOption {
   /** The default filter model to use when none is specified */
   defaultFilter?: any;
 
-  /** Default placeholder to use in Filters that support placeholder (input, flatpickr) */
+  /** Default placeholder to use in Filters that support placeholder (autocomplete, input, flatpickr, select, ...) */
   defaultFilterPlaceholder?: string;
+
+  /** Defaults to 'RangeExclusive', allows to change the default filter range operator */
+  defaultFilterRangeOperator?: OperatorString | OperatorType;
 
   /** Draggable Grouping Plugin options & events */
   draggableGrouping?: DraggableGrouping;

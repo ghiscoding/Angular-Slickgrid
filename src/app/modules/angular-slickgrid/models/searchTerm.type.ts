@@ -1,1 +1,1 @@
-export type SearchTerm = string | number | boolean;
+export type SearchTerm = string | number | boolean | Date;

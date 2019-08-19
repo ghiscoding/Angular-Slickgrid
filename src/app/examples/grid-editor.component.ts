@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
+  AutocompleteOption,
   Column,
   Editors,
   EditorArgs,
   EditorValidator,
   FieldType,
   Filters,
+  FlatpickrOption,
   Formatters,
   GridOption,
   OnEventArgs,
@@ -271,9 +273,7 @@ export class GridEditorComponent implements OnInit {
           model: Editors.date,
           // override any of the Flatpickr options through "editorOptions"
           // please note that there's no TSlint on this property since it's generic for any filter, so make sure you entered the correct filter option(s)
-          editorOptions: {
-            minDate: 'today'
-          }
+          editorOptions: { minDate: 'today' } as FlatpickrOption
         },
       }, {
         id: 'cityOfOrigin', name: 'City of Origin', field: 'cityOfOrigin',
@@ -299,7 +299,7 @@ export class GridEditorComponent implements OnInit {
                 success: (data) => response(data)
               });
             }
-          },
+          } as AutocompleteOption,
         },
         filter: {
           model: Filters.autoComplete,
@@ -322,7 +322,7 @@ export class GridEditorComponent implements OnInit {
                 success: (data) => response(data)
               });
             }
-          },
+          } as AutocompleteOption,
         }
       }, {
         id: 'countryOfOrigin', name: 'Country of Origin', field: 'countryOfOrigin',

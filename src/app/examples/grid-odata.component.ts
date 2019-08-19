@@ -69,7 +69,7 @@ export class GridOdataComponent implements OnInit {
           collection: [{ value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' }]
         }
       },
-      { id: 'company', name: 'Company', field: 'company' }
+      { id: 'company', name: 'Company', field: 'company' },
     ];
 
     this.gridOptions = {
@@ -181,8 +181,10 @@ export class GridOdataComponent implements OnInit {
           }
           if (filterBy.includes('eq')) {
             const filterMatch = filterBy.match(/([a-zA-Z ]*) eq '(.*?)'/);
-            const fieldName = filterMatch[1].trim();
-            columnFilters[fieldName] = { type: 'equal', term: filterMatch[2].trim() };
+            if (Array.isArray(filterMatch)) {
+              const fieldName = filterMatch[1].trim();
+              columnFilters[fieldName] = { type: 'equal', term: filterMatch[2].trim() };
+            }
           }
           if (filterBy.includes('startswith')) {
             const filterMatch = filterBy.match(/startswith\(([a-zA-Z ]*),\s?'(.*?)'/);
@@ -251,7 +253,7 @@ export class GridOdataComponent implements OnInit {
 
         setTimeout(() => {
           resolve({ items: updatedData, totalRecordCount: countTotalItems, query });
-        }, 500);
+        }, 250);
       });
     });
   }

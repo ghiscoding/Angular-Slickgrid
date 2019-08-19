@@ -1,7 +1,7 @@
 describe('Example 10 - Multiple Grids with Row Selection', () => {
   const titles = ['', 'Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 
-  it('should display Example 10 title', () => {
+  it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/selection`);
     cy.get('h2').should('contain', 'Example 10: Multiple Grids with Row Selection');
   });

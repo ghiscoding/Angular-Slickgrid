@@ -8,7 +8,8 @@ import {
   Formatters,
   GridOption,
   GridState,
-  GridStateChange
+  GridStateChange,
+  MultipleSelectOption
 } from './../modules/angular-slickgrid';
 
 function randomBetween(min, max) {
@@ -108,11 +109,11 @@ export class GridStateComponent implements OnInit {
           filterOptions: {
             maxHeight: 250,
             width: 175
-          }
+          } as MultipleSelectOption
         }
       },
       {
-        id: 'complete', name: '% Complete', field: 'percentComplete', minWidth: 70, type: FieldType.number, sortable: true, width: 100,
+        id: 'complete', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', minWidth: 70, type: FieldType.number, sortable: true, width: 100,
         formatter: Formatters.percentCompleteBar, filterable: true, filter: { model: Filters.slider, operator: '>' }
       },
       {
@@ -129,9 +130,7 @@ export class GridStateComponent implements OnInit {
           model: Filters.singleSelect,
 
           // we could add certain option(s) to the "multiple-select" plugin
-          filterOptions: {
-            autoDropWidth: true
-          },
+          filterOptions: { autoDropWidth: true } as MultipleSelectOption,
         }
       }
     ];

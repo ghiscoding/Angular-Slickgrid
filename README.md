@@ -60,7 +60,7 @@ You like the library and would like contribute? That would be awesome, the first
 The Wiki is where all the documentation and instructions will go, so please consult the [Angular-Slickgrid - Wiki](https://github.com/ghiscoding/Angular-Slickgrid/wiki) before opening any issues. The [Wiki - HOWTO](https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step) is a great place to start with. You can also take a look at the [Demo page](https://ghiscoding.github.io/Angular-Slickgrid), it includes sample for most of the features and it keeps growing (so you might want to consult it whenever a new version comes out).
 
 ## Like my work?
-If you like my work, you can also support me with caffeine :smile:
+If you like my work, you can also support me with caffeine :coffee:
 [Buy Me a Coffee](https://ko-fi.com/N4N679OT)
 
 ## Main features

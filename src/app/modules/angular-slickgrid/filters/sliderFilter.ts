@@ -165,7 +165,8 @@ export class SliderFilter implements Filter {
 
   /**
    * From the html template string, create a DOM element
-   * @param filterTemplate
+   * @param filterTemplate string
+   * @param searchTerm optional preset search terms
    */
   private createDomElement(filterTemplate: string, searchTerm?: SearchTerm) {
     const fieldId = this.columnDef && this.columnDef.id;
