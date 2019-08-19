@@ -56,13 +56,13 @@
       "problemMatcher": []
     },
     {
-      "label": "Prepare Release as Minor (0.x.0)",
+      "label": "Prepare Release as Minor (0.x.0) -- Make sure to NPM Publish DIST folder",
       "type": "shell",
       "command": "yarn run release -- --release-as minor --infile ./CHANGELOG.md",
       "problemMatcher": []
     },
     {
-      "label": "Prepare Release as Patch (0.0.x)",
+      "label": "Prepare Release as Patch (0.0.x) -- Make sure to NPM Publish DIST folder",
       "type": "shell",
       "command": "yarn run release -- --release-as patch --infile ./CHANGELOG.md",
       "problemMatcher": []
