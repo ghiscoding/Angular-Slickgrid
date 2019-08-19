@@ -7,7 +7,8 @@ import { stringFilterCondition } from './stringFilterCondition';
 import { FieldType, FilterCondition, FilterConditionOption, OperatorType } from '../models/index';
 import { mapMomentDateFormatWithFieldType } from './../services/utilities';
 import { testFilterCondition } from './filterUtilities';
-import * as moment from 'moment-mini';
+import * as moment_ from 'moment-mini';
+const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
 export const executeMappedCondition: FilterCondition = (options: FilterConditionOption) => {
   // when using a multi-select ('IN' operator) we will not use the field type but instead go directly with a collection search
@@ -67,8 +68,8 @@ function executeAssociatedDateCondition(options: FilterConditionOption): boolean
   const searchTerms = Array.isArray(options.searchTerms) && options.searchTerms || [];
 
   let isRangeSearch = false;
-  let dateSearch1: moment.Moment;
-  let dateSearch2: moment.Moment;
+  let dateSearch1: any;
+  let dateSearch2: any;
 
   // return when cell value is not a valid date
   if (searchTerms.length === 0 || searchTerms[0] === '' || searchTerms[0] === null || !moment(options.cellValue, FORMAT, true).isValid()) {

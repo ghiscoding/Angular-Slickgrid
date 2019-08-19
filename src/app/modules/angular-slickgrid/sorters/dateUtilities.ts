@@ -1,8 +1,9 @@
 import { mapMomentDateFormatWithFieldType } from '../services/utilities';
 import { FieldType, Sorter } from '../models/index';
-import * as moment from 'moment-mini';
+import * as moment_ from 'moment-mini';
+const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
-export function compareDates(value1: any, value2: any, sortDirection: number, format: string | moment.MomentBuiltinFormat, strict?: boolean) {
+export function compareDates(value1: any, value2: any, sortDirection: number, format: string | moment_.MomentBuiltinFormat, strict?: boolean) {
   let diff = 0;
 
   if (value1 === null || value1 === '' || !moment(value1, format, strict).isValid()) {
