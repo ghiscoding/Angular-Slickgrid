@@ -11,7 +11,6 @@ import {
   GraphqlServiceOption,
   GridOption,
   GridStateChange,
-  JQueryUiSliderOption,
   MultipleSelectOption,
   OperatorType,
   SortDirection,

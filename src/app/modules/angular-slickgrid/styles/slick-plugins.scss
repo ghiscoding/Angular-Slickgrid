@@ -380,16 +380,18 @@ input.search-filter {
 // Date Picker Filter
 // ----------------------------------------------
 
-.search-filter.flatpickr {
+.search-filter .flatpickr {
   .flatpickr {
     flex: 1;
     cursor: pointer;
 
+    input.flatpickr.form-control,
     .flatpickr-input.form-control {
         background-color: $flatpickr-bgcolor;
         font-family: $filter-placeholder-font-family;
         font-size: $font-size-base;
         border-radius: $compound-filter-border-radius;
+        width: 100%;
         &[readonly] {
           background-color: $flatpickr-bgcolor;
         }
@@ -492,6 +494,7 @@ input.slider-filter-input[type=range] {
   /*removes default webkit styles*/
   -webkit-appearance: none;
   height: $slider-filter-height;
+  flex: 1;
 
   padding: $slider-filter-runnable-track-padding;
 
@@ -618,6 +621,7 @@ input.slider-editor-input[type=range] {
 .slider-editor {
   .slider-value {
     padding: 0;
+    height: $header-input-height;
     .input-group-text {
       padding: $slider-editor-number-padding;
       font-size: $slider-filter-number-font-size;
@@ -631,7 +635,6 @@ input.slider-editor-input[type=range] {
 // ----------------------------------------------
 .slider-range-container {
   height: $slider-range-filter-height;
-  border: $slider-range-filter-border;
   padding: $slider-range-filter-padding;
 
   .ui-slider {
@@ -640,7 +643,6 @@ input.slider-editor-input[type=range] {
     .ui-slider-handle {
       position: absolute;
       top: $slider-range-filter-thumb-top;
-      margin-left: $slider-range-filter-thumb-margin-left;
       border-radius: $slider-range-filter-thumb-border-radius;
       cursor: $slider-range-filter-thumb-cursor;
       border: $slider-range-filter-thumb-border;
@@ -659,18 +661,23 @@ input.slider-editor-input[type=range] {
     height: $slider-range-filter-runnable-track-height;
     background-color: $slider-range-filter-bgcolor;
   }
+  .input-group-text {
+    border: 0;
 
+  }
 }
 .slider-range-container.slider-values {
   padding: 0;
   .ui-slider-horizontal {
+    flex: 1;
     width: $slider-range-filter-values-slider-width;
     top: $slider-range-filter-values-slider-top;
-    margin-left: $slider-range-filter-values-slider-ml;
+    margin: $slider-range-filter-values-slider-margin;
   }
   .slider-range-value {
     padding: 0;
     border: 0;
+    height: 100%;
     .input-group-text {
       padding: $slider-filter-number-padding;
       font-size: $slider-filter-number-font-size;
