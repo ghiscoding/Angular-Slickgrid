@@ -70,10 +70,10 @@ export class GridMenuExtension implements Extension {
       throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
     }
 
-    // keep original user grid menu, useful when switching locale to translate
-    this._userOriginalGridMenu = { ...this.sharedService.gridOptions.gridMenu };
+    if (this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
+      // keep original user grid menu, useful when switching locale to translate
+      this._userOriginalGridMenu = { ...this.sharedService.gridOptions.gridMenu };
 
-    if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
       // get locales provided by user in forRoot or else use default English locales via the Constants
       this._locales = this.sharedService.gridOptions && this.sharedService.gridOptions.locales || Constants.locales;
 
@@ -83,7 +83,7 @@ export class GridMenuExtension implements Extension {
 
       // merge original user grid menu items with internal items
       // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
-      const originalCustomItems = Array.isArray(this._userOriginalGridMenu.customItems) && this._userOriginalGridMenu.customItems || [];
+      const originalCustomItems = this._userOriginalGridMenu && Array.isArray(this._userOriginalGridMenu.customItems) ? this._userOriginalGridMenu.customItems : [];
       this.sharedService.gridOptions.gridMenu.customItems = [...originalCustomItems, ...this.addGridMenuCustomCommands(originalCustomItems)];
       this.extensionUtility.translateItems(this.sharedService.gridOptions.gridMenu.customItems, 'titleKey', 'title');
       this.extensionUtility.sortItems(this.sharedService.gridOptions.gridMenu.customItems, 'positionOrder');
@@ -200,13 +200,13 @@ export class GridMenuExtension implements Extension {
   translateGridMenu() {
     // update the properties by pointers, that is the only way to get Grid Menu Control to see the new values
     // we also need to call the control init so that it takes the new Grid object with latest values
-    if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
+    if (this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu) {
       this.sharedService.gridOptions.gridMenu.customItems = [];
       this.emptyGridMenuTitles();
 
       // merge original user grid menu items with internal items
       // then sort all Grid Menu Custom Items (sorted by pointer, no need to use the return)
-      const originalCustomItems = Array.isArray(this._userOriginalGridMenu.customItems) && this._userOriginalGridMenu.customItems || [];
+      const originalCustomItems = this._userOriginalGridMenu && Array.isArray(this._userOriginalGridMenu.customItems) ? this._userOriginalGridMenu.customItems : [];
       this.sharedService.gridOptions.gridMenu.customItems = [...originalCustomItems, ...this.addGridMenuCustomCommands(originalCustomItems)];
       this.extensionUtility.translateItems(this.sharedService.gridOptions.gridMenu.customItems, 'titleKey', 'title');
       this.extensionUtility.sortItems(this.sharedService.gridOptions.gridMenu.customItems, 'positionOrder');
@@ -351,7 +351,7 @@ export class GridMenuExtension implements Extension {
     }
 
     // add the custom "Commands" title if there are any commands
-    if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && (gridMenuCustomItems.length > 0 || (this.sharedService.gridOptions.gridMenu.customItems && this.sharedService.gridOptions.gridMenu.customItems.length > 0))) {
+    if (this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && (Array.isArray(gridMenuCustomItems) && gridMenuCustomItems.length > 0 || (Array.isArray(this.sharedService.gridOptions.gridMenu.customItems) && this.sharedService.gridOptions.gridMenu.customItems.length > 0))) {
       this.sharedService.gridOptions.gridMenu.customTitle = this.sharedService.gridOptions.gridMenu.customTitle || this.extensionUtility.getPickerTitleOutputString('customTitle', 'gridMenu');
     }
 
