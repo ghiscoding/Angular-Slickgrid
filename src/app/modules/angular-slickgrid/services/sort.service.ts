@@ -277,7 +277,7 @@ export class SortService {
               return customSortResult;
             }
           } else {
-            const sortResult = sortByFieldType(value1, value2, fieldType, sortDirection, columnSortObj.sortCol);
+            const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, columnSortObj.sortCol);
             if (sortResult !== SortDirectionNumber.neutral) {
               return sortResult;
             }
