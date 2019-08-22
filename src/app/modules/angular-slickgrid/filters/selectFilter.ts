@@ -28,6 +28,7 @@ declare var $: any;
 
 export class SelectFilter implements Filter {
   private _isFilterFirstRender = true;
+  private _isMultipleSelect = true;
   private _locales: Locale;
   private _shouldTriggerQuery = true;
 
@@ -57,7 +58,9 @@ export class SelectFilter implements Filter {
   /**
    * Initialize the Filter
    */
-  constructor(@Optional() protected translate: TranslateService, protected collectionService: CollectionService, protected isMultipleSelect = true) { }
+  constructor(@Optional() protected translate: TranslateService, protected collectionService: CollectionService, isMultipleSelect = true) {
+    this._isMultipleSelect = isMultipleSelect;
+  }
 
   /** Getter for the Column Filter itself */
   protected get columnFilter(): ColumnFilter {
@@ -79,6 +82,11 @@ export class SelectFilter implements Filter {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
+  /** Getter to know if the current filter is a multiple-select (false means it's a single select) */
+  get isMultipleSelect(): boolean {
+    return this._isMultipleSelect;
+  }
+
   /** Getter for the filter operator */
   get operator(): OperatorType | OperatorString {
     if (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) {
@@ -91,6 +99,9 @@ export class SelectFilter implements Filter {
    * Initialize the filter template
    */
   init(args: FilterArguments, isFilterFirstRender: boolean) {
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
+    }
     this._isFilterFirstRender = isFilterFirstRender;
     this.grid = args.grid;
     this.callback = args.callback;
@@ -109,7 +120,7 @@ export class SelectFilter implements Filter {
     this.valueName = this.customStructure && this.customStructure.value || 'value';
 
     if (this.enableTranslateLabel && !this.gridOptions.enableTranslate && (!this.translate || typeof this.translate.instant !== 'function')) {
-      throw new Error(`[select-editor] The ngx-translate TranslateService is required for the Select Filter to work correctly`);
+      throw new Error(`[select-editor] The ngx-translate TranslateService is required for the Select Filter to work correctly when "enableTranslateLabel" is set.`);
     }
 
     // get locales provided by user in forRoot or else use default English locales via the Constants
@@ -172,10 +183,21 @@ export class SelectFilter implements Filter {
   }
 
   /**
+   * Get selected values retrieved from the multiple-selected element
+   * @params selected items
+   */
+  getValues(): any[] {
+    if (this.$filterElm && typeof this.$filterElm.multipleSelect === 'function') {
+      return this.$filterElm.multipleSelect('getSelects');
+    }
+    return [];
+  }
+
+  /**
    * Set value(s) on the DOM element
    */
   setValues(values: SearchTerm | SearchTerm[]) {
-    if (values) {
+    if (values && this.$filterElm && typeof this.$filterElm.multipleSelect === 'function') {
       values = Array.isArray(values) ? values : [values];
       this.$filterElm.multipleSelect('setSelects', values);
     }
@@ -268,7 +290,7 @@ export class SelectFilter implements Filter {
       collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
     }
     if (!Array.isArray(collection)) {
-      throw new Error('The "collection" passed to the Select Filter is not a valid array');
+      throw new Error('The "collection" passed to the Select Filter is not a valid array.');
     }
 
     // user can optionally add a blank entry at the beginning of the collection
@@ -424,14 +446,14 @@ export class SelectFilter implements Filter {
       single: true,
 
       textTemplate: ($elm) => {
-        // render HTML code or not, by default it is sanitized and won't be rendered
+        // are we rendering HTML code? by default it is sanitized and won't be rendered
         const isRenderHtmlEnabled = this.columnDef && this.columnDef.filter && this.columnDef.filter.enableRenderHtml || false;
         return isRenderHtmlEnabled ? $elm.text() : $elm.html();
       },
       onClose: () => {
         // we will subscribe to the onClose event for triggering our callback
         // also add/remove "filled" class for styling purposes
-        const selectedItems = this.$filterElm.multipleSelect('getSelects');
+        const selectedItems = this.getValues();
         if (Array.isArray(selectedItems) && selectedItems.length > 1 || (selectedItems.length === 1 && selectedItems[0] !== '')) {
           this.isFilled = true;
           this.$filterElm.addClass('filled').siblings('div .search-filter').addClass('filled');
@@ -441,6 +463,7 @@ export class SelectFilter implements Filter {
           this.$filterElm.siblings('div .search-filter').removeClass('filled');
         }
 
+        this.searchTerms = selectedItems;
         this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: selectedItems, shouldTriggerQuery: this._shouldTriggerQuery });
         // reset flag for next use
         this._shouldTriggerQuery = true;
