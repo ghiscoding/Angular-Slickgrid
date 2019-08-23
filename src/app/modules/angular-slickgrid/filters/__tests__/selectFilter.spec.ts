@@ -401,7 +401,6 @@ describe('SelectFilter', () => {
     filterBtnElm.click();
 
     mockCollection.push('other');
-    (mockColumn.filter.collectionAsync as Subject<any[]>).next(mockCollection);
 
     // before await
     expect(filterListElm.length).toBe(2);
@@ -409,6 +408,7 @@ describe('SelectFilter', () => {
 
     setTimeout(() => {
       // after await of Subject
+      (mockColumn.filter.collectionAsync as Subject<any[]>).next(mockCollection);
       const filterUpdatedListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=filter-gender].ms-drop ul>li input[type=checkbox]`);
       expect(filterUpdatedListElm.length).toBe(3);
       done();
