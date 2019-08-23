@@ -1,4 +1,3 @@
-import { Sorters } from './../../sorters/index';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import {
@@ -10,8 +9,9 @@ import {
   FieldType,
   SortDirectionNumber,
 } from '../../models';
-import { Formatters } from './../../formatters/index';
 import { ExportService } from '../export.service';
+import { Formatters } from './../../formatters/index';
+import { Sorters } from './../../sorters/index';
 import { GroupTotalFormatters } from '../..';
 
 function removeMultipleSpaces(textS) {

@@ -51,21 +51,23 @@ describe('SliderRangeFilter', () => {
     expect(() => filter.init(null)).toThrowError('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
   });
 
-  it('should throw an error when trying override the slider "change" method', () => {
+  it('should throw an error when trying override the slider "change" method', (done) => {
     try {
       mockColumn.filter.filterOptions = { change: () => { } } as JQueryUiSliderOption;
       filter.init(filterArguments);
     } catch (e) {
       expect(e.toString()).toContain(`[Angular-Slickgrid] You cannot override the "change" and/or the "slide" callback methods`);
+      done();
     }
   });
 
-  it('should throw an error when trying override the slider "slide" method', () => {
+  it('should throw an error when trying override the slider "slide" method', (done) => {
     try {
       mockColumn.filter.filterOptions = { slide: () => { } } as JQueryUiSliderOption;
       filter.init(filterArguments);
     } catch (e) {
       expect(e.toString()).toContain(`[Angular-Slickgrid] You cannot override the "change" and/or the "slide" callback methods`);
+      done();
     }
   });
 

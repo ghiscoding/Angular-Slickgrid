@@ -481,6 +481,7 @@ export function mapOperatorType(operator: string): OperatorType {
       map = OperatorType.notContains;
       break;
     case 'Contains':
+    case 'CONTAINS':
     default:
       map = OperatorType.contains;
       break;

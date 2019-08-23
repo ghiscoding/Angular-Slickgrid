@@ -53,25 +53,41 @@ export class CollectionService {
   singleFilterCollection(collection: any[], filterBy: CollectionFilterBy): any[] {
     let filteredCollection: any[] = [];
 
-    if (filterBy && filterBy.property) {
-      const property = filterBy.property;
+    if (filterBy) {
+      const objectProperty = filterBy.property;
       const operator = filterBy.operator || OperatorType.equal;
       // just check for undefined since the filter value could be null, 0, '', false etc
       const value = typeof filterBy.value === 'undefined' ? '' : filterBy.value;
 
       switch (operator) {
         case OperatorType.equal:
-          filteredCollection = collection.filter((item) => item[property] === value);
+          if (objectProperty) {
+            filteredCollection = collection.filter((item) => item[objectProperty] === value);
+          } else {
+            filteredCollection = collection.filter((item) => item === value);
+          }
           break;
         case OperatorType.contains:
-          filteredCollection = collection.filter((item) => item[property].toString().indexOf(value.toString()) !== -1);
+          if (objectProperty) {
+            filteredCollection = collection.filter((item) => item[objectProperty].toString().indexOf(value.toString()) !== -1);
+          } else {
+            filteredCollection = collection.filter((item) => (item !== null && item !== undefined) && item.toString().indexOf(value.toString()) !== -1);
+          }
           break;
         case OperatorType.notContains:
-          filteredCollection = collection.filter((item) => item[property].toString().indexOf(value.toString()) === -1);
+          if (objectProperty) {
+            filteredCollection = collection.filter((item) => item[objectProperty].toString().indexOf(value.toString()) === -1);
+          } else {
+            filteredCollection = collection.filter((item) => (item !== null && item !== undefined) && item.toString().indexOf(value.toString()) === -1);
+          }
           break;
         case OperatorType.notEqual:
         default:
-          filteredCollection = collection.filter((item) => item[property] !== value);
+          if (objectProperty) {
+            filteredCollection = collection.filter((item) => item[objectProperty] !== value);
+          } else {
+            filteredCollection = collection.filter((item) => item !== value);
+          }
       }
     }
 
@@ -100,11 +116,12 @@ export class CollectionService {
             const sortBy = sortByOptions[i];
 
             if (sortBy && sortBy.property) {
+              // collection of objects with a property name provided
               const sortDirection = sortBy.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
-              const propertyName = sortBy.property;
+              const objectProperty = sortBy.property;
               const fieldType = sortBy.fieldType || FieldType.string;
-              const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[propertyName] || ' ') : dataRow1[propertyName];
-              const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[propertyName] || ' ') : dataRow2[propertyName];
+              const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[objectProperty] || ' ') : dataRow1[objectProperty];
+              const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[objectProperty] || ' ') : dataRow2[objectProperty];
 
               const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, columnDef);
               if (sortResult !== SortDirectionNumber.neutral) {
@@ -116,19 +133,22 @@ export class CollectionService {
         });
       } else if (sortByOptions && sortByOptions.property) {
         // single sort
-        const propertyName = sortByOptions.property;
+        // collection of objects with a property name provided
+        const objectProperty = sortByOptions.property;
         const sortDirection = sortByOptions.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
         const fieldType = sortByOptions.fieldType || FieldType.string;
 
-        sortedCollection = collection.sort((dataRow1: any, dataRow2: any) => {
-          const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[propertyName] || ' ') : dataRow1[propertyName];
-          const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[propertyName] || ' ') : dataRow2[propertyName];
-          const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, columnDef);
-          if (sortResult !== SortDirectionNumber.neutral) {
-            return sortResult;
-          }
-          return SortDirectionNumber.neutral;
-        });
+        if (objectProperty) {
+          sortedCollection = collection.sort((dataRow1: any, dataRow2: any) => {
+            const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[objectProperty] || ' ') : dataRow1[objectProperty];
+            const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[objectProperty] || ' ') : dataRow2[objectProperty];
+            const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, columnDef);
+            if (sortResult !== SortDirectionNumber.neutral) {
+              return sortResult;
+            }
+            return SortDirectionNumber.neutral;
+          });
+        }
       } else if (sortByOptions && !sortByOptions.property) {
         const sortDirection = sortByOptions.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
         const fieldType = sortByOptions.fieldType || FieldType.string;
