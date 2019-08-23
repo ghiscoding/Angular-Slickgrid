@@ -44,7 +44,7 @@ describe('SelectFilter', () => {
     mockColumn = {
       id: 'gender', field: 'gender', filterable: true,
       filter: {
-        model: Filters.select,
+        model: Filters.multipleSelect,
         collection: [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }]
       }
     };
@@ -134,7 +134,7 @@ describe('SelectFilter', () => {
       filter = new SelectFilter(translate, collectionService);
       filter.init(filterArguments, true);
     } catch (e) {
-      expect(e.toString()).toContain(`[select-editor] The ngx-translate TranslateService is required for the Select Filter to work correctly when "enableTranslateLabel" is set.`);
+      expect(e.toString()).toContain(`[select-filter] The ngx-translate TranslateService is required for the Select Filter to work correctly when "enableTranslateLabel" is set.`);
       done();
     }
   });
@@ -288,7 +288,6 @@ describe('SelectFilter', () => {
     mockColumn.filter = {
       collection: ['other', 'male', 'female'],
       collectionSortBy: {
-        property: 'value', // REMOVE property
         sortDesc: true,
         fieldType: FieldType.string
       }
@@ -330,11 +329,10 @@ describe('SelectFilter', () => {
     expect(filterListElm[2].textContent).toBe('other');
   });
 
-  xit('should create the multi-select filter and filter the string collection when "collectionFilterBy" is set', () => {
+  it('should create the multi-select filter and filter the string collection when "collectionFilterBy" is set', () => {
     mockColumn.filter = {
       collection: ['other', 'male', 'female'],
       collectionFilterBy: {
-        property: 'value', // REMOVE property
         operator: OperatorType.equal,
         value: 'other'
       }

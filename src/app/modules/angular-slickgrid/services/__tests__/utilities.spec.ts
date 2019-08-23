@@ -688,9 +688,11 @@ describe('Service/Utilies', () => {
     it('should return default OperatoryType associated to contains', () => {
       const output1 = mapOperatorType('');
       const output2 = mapOperatorType('Contains');
+      const output3 = mapOperatorType('CONTAINS');
 
       expect(output1).toBe(OperatorType.contains);
       expect(output2).toBe(OperatorType.contains);
+      expect(output3).toBe(OperatorType.contains);
     });
   });
 

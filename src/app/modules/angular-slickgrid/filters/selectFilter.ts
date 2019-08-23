@@ -120,7 +120,7 @@ export class SelectFilter implements Filter {
     this.valueName = this.customStructure && this.customStructure.value || 'value';
 
     if (this.enableTranslateLabel && !this.gridOptions.enableTranslate && (!this.translate || typeof this.translate.instant !== 'function')) {
-      throw new Error(`[select-editor] The ngx-translate TranslateService is required for the Select Filter to work correctly when "enableTranslateLabel" is set.`);
+      throw new Error(`[select-filter] The ngx-translate TranslateService is required for the Select Filter to work correctly when "enableTranslateLabel" is set.`);
     }
 
     // get locales provided by user in forRoot or else use default English locales via the Constants
