@@ -432,8 +432,9 @@ export class SelectEditor implements Editor {
   }
 
   protected renderDomElement(collection: any[]) {
-    if (!Array.isArray(collection) && this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
-      collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
+    if (!Array.isArray(collection) && this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
+      const collectionInsideObjectProperty = this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty;
+      collection = getDescendantProperty(collection, collectionInsideObjectProperty);
     }
     if (!Array.isArray(collection)) {
       throw new Error('The "collection" passed to the Select Editor is not a valid array');

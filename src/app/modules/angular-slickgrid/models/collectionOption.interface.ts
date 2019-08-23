@@ -8,15 +8,18 @@ export interface CollectionOption {
    */
   addBlankEntry?: boolean;
 
+  /** @deprecated please use "collectionInsideObjectProperty" instead */
+  collectionInObjectProperty?: string;
+
   /**
    * When the collection is inside an object descendant property
    * we can optionally pass a dot (.) notation string to pull the collection from an object property.
-   * For example if our output data is:
+   * For example if our output data returned by the collectionAsync is inside an object of the following format:
    * myData = { someProperty: { myCollection: [] }, otherProperty: 'something' }
    * We can pass the dot notation string
-   * collectionInObjectProperty: 'someProperty.myCollection'
+   * collectionInsideObjectProperty: 'someProperty.myCollection'
    */
-  collectionInObjectProperty?: string;
+  collectionInsideObjectProperty?: string;
 
   /**
    * Defaults to "chain", when using multiple "collectionFilterBy", do we want to "merge" or "chain" the result after each pass?

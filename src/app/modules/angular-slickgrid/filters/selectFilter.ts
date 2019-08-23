@@ -270,8 +270,9 @@ export class SelectFilter implements Filter {
    * and reinitialize filter collection with this new collection
    */
   protected renderDomElementFromCollectionAsync(collection) {
-    if (this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
-      collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
+    if (this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
+      const collectionInsideObjectProperty = this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty;
+      collection = getDescendantProperty(collection, collectionInsideObjectProperty);
     }
     if (!Array.isArray(collection)) {
       throw new Error('Something went wrong while trying to pull the collection from the "collectionAsync" call in the Select Filter, the collection is not a valid array.');
@@ -286,8 +287,9 @@ export class SelectFilter implements Filter {
   }
 
   protected renderDomElement(collection) {
-    if (!Array.isArray(collection) && this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
-      collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
+    if (!Array.isArray(collection) && this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
+      const collectionInsideObjectProperty = this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty;
+      collection = getDescendantProperty(collection, collectionInsideObjectProperty);
     }
     if (!Array.isArray(collection)) {
       throw new Error('The "collection" passed to the Select Filter is not a valid array.');
@@ -317,6 +319,7 @@ export class SelectFilter implements Filter {
     let options = '';
     const fieldId = this.columnDef && this.columnDef.id;
     const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
+    const isEnableTranslate = this.gridOptions && this.gridOptions.enableTranslate;
     const isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
     const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
 
@@ -340,16 +343,16 @@ export class SelectFilter implements Filter {
           }
           const labelKey = (option.labelKey || option[this.labelName]) as string;
           const selected = (searchTerms.findIndex((term) => term === option[this.valueName]) >= 0) ? 'selected' : '';
-          const labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey && this.gridOptions.enableTranslate) ? this.translate && this.translate.instant(labelKey || ' ') : labelKey;
+          const labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey && isEnableTranslate) ? this.translate && this.translate.instant(labelKey || ' ') : labelKey;
           let prefixText = option[this.labelPrefixName] || '';
           let suffixText = option[this.labelSuffixName] || '';
           let optionLabel = option.hasOwnProperty(this.optionLabel) ? option[this.optionLabel] : '';
           optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
 
           // also translate prefix/suffix if enableTranslateLabel is true and text is a string
-          prefixText = (this.enableTranslateLabel && this.gridOptions.enableTranslate && prefixText && typeof prefixText === 'string') ? this.translate && this.translate.instant(prefixText || ' ') : prefixText;
-          suffixText = (this.enableTranslateLabel && this.gridOptions.enableTranslate && suffixText && typeof suffixText === 'string') ? this.translate && this.translate.instant(suffixText || ' ') : suffixText;
-          optionLabel = (this.enableTranslateLabel && this.gridOptions.enableTranslate && optionLabel && typeof optionLabel === 'string') ? this.translate && this.translate.instant(optionLabel || ' ') : optionLabel;
+          prefixText = (this.enableTranslateLabel && isEnableTranslate && prefixText && typeof prefixText === 'string') ? this.translate && this.translate.instant(prefixText || ' ') : prefixText;
+          suffixText = (this.enableTranslateLabel && isEnableTranslate && suffixText && typeof suffixText === 'string') ? this.translate && this.translate.instant(suffixText || ' ') : suffixText;
+          optionLabel = (this.enableTranslateLabel && isEnableTranslate && optionLabel && typeof optionLabel === 'string') ? this.translate && this.translate.instant(optionLabel || ' ') : optionLabel;
 
           // add to a temp array for joining purpose and filter out empty text
           const tmpOptionArray = [prefixText, labelText !== undefined ? labelText.toString() : labelText, suffixText].filter((text) => text);
