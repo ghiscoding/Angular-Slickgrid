@@ -3,10 +3,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 [![npm version](https://badge.fury.io/js/angular-slickgrid.svg)](//npmjs.com/package/angular-slickgrid)
-[![NPM downloads](https://img.shields.io/npm/dt/angular-slickgrid.svg)](https://npmjs.org/package/angular-slickgrid)
+[![NPM downloads](https://img.shields.io/npm/dy/angular-slickgrid.svg)](https://npmjs.org/package/angular-slickgrid)
 [![gzip size](http://img.badgesize.io/https://npmcdn.com/angular-slickgrid/bundles/angular-slickgrid.umd.js?compression=gzip)](https://npmcdn.com/angular-slickgrid/bundles/angular-slickgrid.umd.js)
 [![CircleCI](https://circleci.com/gh/ghiscoding/Angular-Slickgrid/tree/master.svg?style=shield)](https://circleci.com/gh/ghiscoding/workflows/Angular-Slickgrid/tree/master)
 [![codecov](https://codecov.io/gh/ghiscoding/Angular-Slickgrid/branch/master/graph/badge.svg)](https://codecov.io/gh/ghiscoding/Angular-Slickgrid)
+[![jest](https://jestjs.io/img/jest-badge.svg)](https://github.com/facebook/jest)
 
 ### Brief introduction
 One of the best javascript datagrid [SlickGrid](https://github.com/mleibman/SlickGrid) which was originally developed by @mleibman is now available to Angular. I have used a few datagrids and SlickGrid beats most of them in terms of functionalities and performance (it can easily deal with even a million row). We will be using the [6pac/SlickGrid](https://github.com/6pac/SlickGrid/) fork, this is the most active fork since the original @mleibman fork was closed some time ago by his author for personal reasons. Also worth to know, I also contributed a lot to the 6pac/SlickGrid fork for the benefit of Angular-Slickgrid.
