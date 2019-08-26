@@ -116,10 +116,10 @@ describe('Example 9 - Grid Menu', () => {
         .each(($child, index) => expect($child.text()).to.eq(fullEnglishTitles[index]));
 
       cy.get('#grid9')
-        .get('.slick-gridmenu:visible')
+        .get('.slick-gridmenu')
         .find('span.close')
         .trigger('click', { force: true })
-        .click();
+        .click({ force: true });
     });
   });
 
@@ -232,10 +232,10 @@ describe('Example 9 - Grid Menu', () => {
         .each(($child, index) => expect($child.text()).to.eq(fullFrenchTitles[index]));
 
       cy.get('#grid9')
-        .get('.slick-gridmenu:visible')
+        .get('.slick-gridmenu')
         .find('span.close')
-        .trigger('click')
-        .click();
+        .trigger('click', { force: true })
+        .click({ force: true });
     });
   });
 });
