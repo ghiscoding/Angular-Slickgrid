@@ -18,11 +18,9 @@ import {
   GraphqlSortingOption,
   GridOption,
   MultiColumnSort,
-  OperatorString,
   OperatorType,
   Pagination,
   PaginationChangedArgs,
-  SearchTerm,
   SortChangedArgs,
   SortDirection,
   SortDirectionString
@@ -459,7 +457,10 @@ export class GraphqlService implements BackendService {
       };
     }
 
-    this.updateOptions({ paginationOptions });
+    // unless user specifically set "enablePagination" to False, we'll update pagination options in every other cases
+    if (this._gridOptions && (this._gridOptions.enablePagination || !this._gridOptions.hasOwnProperty('enablePagination'))) {
+      this.updateOptions({ paginationOptions });
+    }
   }
 
   /**

@@ -402,12 +402,12 @@ describe('SelectFilter', () => {
     expect(filterListElm[1].textContent).toBe('male');
   });
 
-  it('should create the multi-select filter with a value/label pair collection that is inside an object when "collectionInObjectProperty" is defined with a dot notation', () => {
+  it('should create the multi-select filter with a value/label pair collection that is inside an object when "collectionInsideObjectProperty" is defined with a dot notation', () => {
     mockColumn.filter = {
       // @ts-ignore
       collection: { deep: { myCollection: [{ value: 'other', description: 'other' }, { value: 'male', description: 'male' }, { value: 'female', description: 'female' }] } },
       collectionOptions: {
-        collectionInObjectProperty: 'deep.myCollection'
+        collectionInsideObjectProperty: 'deep.myCollection'
       },
       customStructure: {
         value: 'value',
@@ -426,11 +426,11 @@ describe('SelectFilter', () => {
     expect(filterListElm[2].textContent).toBe('female');
   });
 
-  it('should create the multi-select filter with a value/label pair collectionAsync that is inside an object when "collectionInObjectProperty" is defined with a dot notation', (done) => {
+  it('should create the multi-select filter with a value/label pair collectionAsync that is inside an object when "collectionInsideObjectProperty" is defined with a dot notation', (done) => {
     mockColumn.filter = {
       collectionAsync: of({ deep: { myCollection: [{ value: 'other', description: 'other' }, { value: 'male', description: 'male' }, { value: 'female', description: 'female' }] } }),
       collectionOptions: {
-        collectionInObjectProperty: 'deep.myCollection'
+        collectionInsideObjectProperty: 'deep.myCollection'
       },
       customStructure: {
         value: 'value',

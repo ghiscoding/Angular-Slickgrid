@@ -67,18 +67,23 @@ export class GridOdataService implements BackendService {
   init(serviceOptions: OdataOption, pagination?: Pagination, grid?: any): void {
     this._grid = grid;
     const mergedOptions = { ...this.defaultOptions, ...serviceOptions };
-    if (pagination && pagination.pageSize) {
-      mergedOptions.top = pagination.pageSize;
+
+    // unless user specifically set "enablePagination" to False, we'll add "top" property for the pagination in every other cases
+    if (this._gridOptions && !this._gridOptions.enablePagination) {
+      // save current pagination as Page 1 and page size as "top"
+      this._odataService.options = { ...mergedOptions, top: null };
+      this._currentPagination = null;
+    } else {
+      const topOption = (pagination && pagination.pageSize) ? pagination.pageSize : this.defaultOptions.top;
+      this._odataService.options = { ...mergedOptions, top: topOption };
+      this._currentPagination = {
+        pageNumber: 1,
+        pageSize: this._odataService.options.top || this.defaultOptions.top || DEFAULT_PAGE_SIZE
+      };
     }
-    this._odataService.options = { ...mergedOptions, top: mergedOptions.top || this.defaultOptions.top };
+
     this.options = this._odataService.options;
     this.pagination = pagination;
-
-    // save current pagination as Page 1 and page size as "top"
-    this._currentPagination = {
-      pageNumber: 1,
-      pageSize: this._odataService.options.top || this.defaultOptions.top || DEFAULT_PAGE_SIZE
-    };
 
     if (grid && grid.getColumns) {
       this._columnDefinitions = serviceOptions && serviceOptions.columnDefinitions || grid.getColumns();
@@ -392,10 +397,13 @@ export class GridOdataService implements BackendService {
       pageSize
     };
 
-    this._odataService.updateOptions({
-      top: pageSize,
-      skip: (newPage - 1) * pageSize
-    });
+    // unless user specifically set "enablePagination" to False, we'll update pagination options in every other cases
+    if (this._gridOptions && (this._gridOptions.enablePagination || !this._gridOptions.hasOwnProperty('enablePagination'))) {
+      this._odataService.updateOptions({
+        top: pageSize,
+        skip: (newPage - 1) * pageSize
+      });
+    }
   }
 
   /**

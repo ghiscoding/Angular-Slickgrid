@@ -63,6 +63,7 @@ describe('GridOdataService', () => {
       pageSize: 10,
       totalItems: 100
     };
+    gridOptionMock.enablePagination = true;
     gridOptionMock.backendServiceApi.service = service;
   });
 
@@ -172,6 +173,55 @@ describe('GridOdataService', () => {
 
       expect(query).toBe(expectation);
     });
+
+    describe('set "enablePagination" to False', () => {
+      beforeEach(() => {
+        gridOptionMock.enablePagination = false;
+      });
+
+      it('should not add a "$top" option when "enablePagination" is set to False', () => {
+        const expectation = '';
+        const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100, excludeFromQuery: true }];
+
+        service.init({ columnDefinitions: columns }, undefined, gridStub);
+        const query = service.buildQuery();
+
+        expect(query).toBe(expectation);
+      });
+
+      it('should not do anything when calling "updatePagination" method with "enablePagination" set to False', () => {
+        const expectation = '';
+        const columns = [];
+
+        service.init({ columnDefinitions: columns }, paginationOptions, gridStub);
+        service.updatePagination(3, 20);
+        const query = service.buildQuery();
+
+        expect(query).toBe(expectation);
+      });
+
+      it('should be able to provide "filter" through the "init" and see the query string include the filter but without pagination querying when "enablePagination" is set to False', () => {
+        const expectation = `$filter=(IsActive eq true)`;
+        const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+
+        service.init({ columnDefinitions: columns, filterBy: `IsActive eq true` }, paginationOptions, gridStub);
+        const query = service.buildQuery();
+
+        expect(query).toBe(expectation);
+      });
+
+      it('should be able to provide "filter" through the "updateOptions" and see the query string include the filter but without pagination querying when "enablePagination" is set to False', () => {
+        const expectation = `$filter=(IsActive eq true)`;
+        const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+
+        service.init({ columnDefinitions: columns }, paginationOptions, gridStub);
+        service.updatePagination(3, 20);
+        service.updateOptions({ filterBy: `IsActive eq true` });
+        const query = service.buildQuery();
+
+        expect(query).toBe(expectation);
+      });
+    });
   });
 
   describe('clearFilters method', () => {
@@ -246,7 +296,7 @@ describe('GridOdataService', () => {
       expect(currentFilters).toEqual([{ columnId: 'gender', operator: 'EQ', searchTerms: ['female'] }]);
     });
 
-    it('should return a query with a new filter when previous filters are exists', () => {
+    it('should return a query with a new filter when previous filters exists', () => {
       const expectation = `$top=10&$filter=(Gender eq 'female' and FirstName eq 'John')`;
       const querySpy = jest.spyOn(service.odataService, 'buildQuery');
       const resetSpy = jest.spyOn(service, 'resetPaginationOptions');
@@ -275,6 +325,69 @@ describe('GridOdataService', () => {
         { columnId: 'gender', operator: 'EQ', searchTerms: ['female'] },
         { columnId: 'firstName', operator: 'StartsWith', searchTerms: ['John'] }
       ]);
+    });
+
+    describe('set "enablePagination" to False', () => {
+      beforeEach(() => {
+        gridOptionMock.enablePagination = false;
+      });
+
+      it('should return a query with the new filter but without pagination when "enablePagination" is set to False', () => {
+        const expectation = `$filter=(Gender eq 'female')`;
+        const querySpy = jest.spyOn(service.odataService, 'buildQuery');
+        const resetSpy = jest.spyOn(service, 'resetPaginationOptions');
+        const mockColumn = { id: 'gender', field: 'gender' } as Column;
+        const mockColumnFilter = { columnDef: mockColumn, columnId: 'gender', operator: 'EQ', searchTerms: ['female'] } as ColumnFilter;
+        const mockFilterChangedArgs = {
+          columnDef: mockColumn,
+          columnId: 'gender',
+          columnFilters: { gender: mockColumnFilter },
+          grid: gridStub,
+          operator: 'EQ',
+          searchTerms: ['female'],
+          shouldTriggerQuery: true
+        } as FilterChangedArgs;
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        const query = service.processOnFilterChanged(null, mockFilterChangedArgs);
+        const currentFilters = service.getCurrentFilters();
+
+        expect(query).toBe(expectation);
+        expect(querySpy).toHaveBeenCalled();
+        expect(resetSpy).toHaveBeenCalled();
+        expect(currentFilters).toEqual([{ columnId: 'gender', operator: 'EQ', searchTerms: ['female'] }]);
+      });
+
+      it('should return a query with a new filter when previous filters exists when "enablePagination" is set to False', () => {
+        const expectation = `$filter=(Gender eq 'female' and FirstName eq 'John')`;
+        const querySpy = jest.spyOn(service.odataService, 'buildQuery');
+        const resetSpy = jest.spyOn(service, 'resetPaginationOptions');
+        const mockColumn = { id: 'gender', field: 'gender' } as Column;
+        const mockColumnName = { id: 'firstName', field: 'firstName' } as Column;
+        const mockColumnFilter = { columnDef: mockColumn, columnId: 'gender', operator: 'EQ', searchTerms: ['female'] } as ColumnFilter;
+        const mockColumnFilterName = { columnDef: mockColumnName, columnId: 'firstName', operator: 'StartsWith', searchTerms: ['John'] } as ColumnFilter;
+        const mockFilterChangedArgs = {
+          columnDef: mockColumn,
+          columnId: 'gender',
+          columnFilters: { gender: mockColumnFilter, name: mockColumnFilterName },
+          grid: gridStub,
+          operator: 'EQ',
+          searchTerms: ['female'],
+          shouldTriggerQuery: true
+        } as FilterChangedArgs;
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        const query = service.processOnFilterChanged(null, mockFilterChangedArgs);
+        const currentFilters = service.getCurrentFilters();
+
+        expect(query).toBe(expectation);
+        expect(querySpy).toHaveBeenCalled();
+        expect(resetSpy).toHaveBeenCalled();
+        expect(currentFilters).toEqual([
+          { columnId: 'gender', operator: 'EQ', searchTerms: ['female'] },
+          { columnId: 'firstName', operator: 'StartsWith', searchTerms: ['John'] }
+        ]);
+      });
     });
   });
 
@@ -319,6 +432,20 @@ describe('GridOdataService', () => {
       expect(querySpy).toHaveBeenCalled();
       expect(currentPagination).toEqual({ pageNumber: 3, pageSize: 20 });
     });
+
+    it('should return a query without pagination when "enablePagination" is set to False', () => {
+      gridOptionMock.enablePagination = false;
+      const expectation = '';
+      const querySpy = jest.spyOn(service.odataService, 'buildQuery');
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      const query = service.processOnPaginationChanged(null, { newPage: 3, pageSize: 20 });
+      const currentPagination = service.getCurrentPagination();
+
+      expect(query).toBe(expectation);
+      expect(querySpy).toHaveBeenCalled();
+      expect(currentPagination).toEqual({ pageNumber: 3, pageSize: 20 });
+    });
   });
 
   describe('processOnSortChanged method', () => {
@@ -349,6 +476,41 @@ describe('GridOdataService', () => {
 
       expect(query).toBe(expectation);
       expect(querySpy).toHaveBeenCalled();
+    });
+
+    describe('set "enablePagination" to False', () => {
+      beforeEach(() => {
+        gridOptionMock.enablePagination = false;
+      });
+
+      it('should return a query with the new sorting when using single sort and without pagintion when "enablePagination" is set to False', () => {
+        const expectation = `$orderby=Gender desc`;
+        const querySpy = jest.spyOn(service.odataService, 'buildQuery');
+        const mockColumn = { id: 'gender', field: 'gender' } as Column;
+        const mockSortChangedArgs = { columnId: 'gender', sortCol: mockColumn, sortAsc: false, multiColumnSort: false } as ColumnSort;
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        const query = service.processOnSortChanged(null, mockSortChangedArgs);
+
+        expect(query).toBe(expectation);
+        expect(querySpy).toHaveBeenCalled();
+      });
+
+      it('should return a query with the multiple new sorting when using multiColumnSort and without pagintion when "enablePagination" is set to False', () => {
+        const expectation = `$orderby=Gender desc,FirstName asc`;
+        const querySpy = jest.spyOn(service.odataService, 'buildQuery');
+        const mockColumn = { id: 'gender', field: 'gender' } as Column;
+        const mockColumnName = { id: 'firstName', field: 'firstName' } as Column;
+        const mockColumnSort = { columnId: 'gender', sortCol: mockColumn, sortAsc: false } as ColumnSort;
+        const mockColumnSortName = { columnId: 'firstName', sortCol: mockColumnName, sortAsc: true } as ColumnSort;
+        const mockSortChangedArgs = { sortCols: [mockColumnSort, mockColumnSortName], multiColumnSort: true, grid: gridStub } as MultiColumnSort;
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        const query = service.processOnSortChanged(null, mockSortChangedArgs);
+
+        expect(query).toBe(expectation);
+        expect(querySpy).toHaveBeenCalled();
+      });
     });
   });
 
@@ -784,6 +946,59 @@ describe('GridOdataService', () => {
 
       expect(query).toBe(expectation);
     });
+
+    describe('set "enablePagination" to False', () => {
+      beforeEach(() => {
+        gridOptionMock.enablePagination = false;
+      });
+
+      it('should return a query with the new filter when filters are passed as a filter trigger by a filter event and is of type ColumnFilters but without pagintion when "enablePagination" is set to False', () => {
+        const expectation = `$filter=(Gender eq 'female')`;
+        const mockColumn = { id: 'gender', field: 'gender' } as Column;
+        const mockColumnFilters = {
+          gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['female'], operator: 'EQ' },
+        } as ColumnFilters;
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        service.updateFilters(mockColumnFilters, false);
+        const query = service.buildQuery();
+
+        expect(query).toBe(expectation);
+      });
+
+      it('should return a query without any sorting neither pagination after clearFilters was called when "enablePagination" is set to False', () => {
+        const expectation = '';
+        const mockColumn = { id: 'gender', field: 'gender' } as Column;
+        const mockColumnFilters = {
+          gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['female'], operator: 'EQ' },
+        } as ColumnFilters;
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        service.updateFilters(mockColumnFilters, false);
+        service.clearFilters();
+        const currentFilters = service.getCurrentFilters();
+        const query = service.buildQuery();
+
+        expect(query).toBe(expectation);
+        expect(currentFilters).toEqual([]);
+      });
+
+      it('should return a query to filter a search value between an inclusive range of numbers using the 2 dots (..) separator and the "RangeInclusive" operator without pagination hen "enablePagination" is set to False', () => {
+        const expectation = `$filter=(substringof('abc', Company) and (Duration ge 5 and Duration le 22))`;
+        const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+        const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+        const mockColumnFilters = {
+          company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+          duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['5..22'], operator: 'RangeInclusive' },
+        } as ColumnFilters;
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        service.updateFilters(mockColumnFilters, false);
+        const query = service.buildQuery();
+
+        expect(query).toBe(expectation);
+      });
+    });
   });
 
   describe('updateFilters method with OData version 4', () => {
@@ -935,6 +1150,44 @@ describe('GridOdataService', () => {
 
       expect(query).toBe(expectation);
     });
+
+    describe('set "enablePagination" to False', () => {
+      beforeEach(() => {
+        gridOptionMock.enablePagination = false;
+      });
+
+      it('should return a query with a date showing as Date as per OData 4 requirement but without pagination when "enablePagination" is set to False', () => {
+        const expectation = `$filter=(contains(Company, 'abc') and UpdatedDate eq 2001-02-28T00:00:00Z)`;
+        const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+        const mockColumnUpdated = { id: 'updatedDate', field: 'updatedDate', type: FieldType.date } as Column;
+        const mockColumnFilters = {
+          company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+          updatedDate: { columnId: 'updatedDate', columnDef: mockColumnUpdated, searchTerms: ['2001-02-28'], operator: 'EQ' },
+        } as ColumnFilters;
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        service.updateFilters(mockColumnFilters, false);
+        const query = service.buildQuery();
+
+        expect(query).toBe(expectation);
+      });
+
+      it('should return a query to filter a search value between an inclusive range of numbers using the 2 dots (..) separator and the "RangeInclusive" operator but without pagination when "enablePagination" is set to False', () => {
+        const expectation = `$filter=(contains(Company, 'abc') and (Duration ge 5 and Duration le 22))`;
+        const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+        const mockColumnDuration = { id: 'duration', field: 'duration', type: FieldType.number } as Column;
+        const mockColumnFilters = {
+          company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: ['abc'], operator: 'Contains' },
+          duration: { columnId: 'duration', columnDef: mockColumnDuration, searchTerms: ['5..22'], operator: 'RangeInclusive' },
+        } as ColumnFilters;
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        service.updateFilters(mockColumnFilters, false);
+        const query = service.buildQuery();
+
+        expect(query).toBe(expectation);
+      });
+    });
   });
 
   describe('updateSorters method', () => {
@@ -1021,6 +1274,45 @@ describe('GridOdataService', () => {
 
       expect(query).toBe(expectation);
       expect(currentSorters).toEqual([]);
+    });
+
+    describe('set "enablePagination" to False', () => {
+      beforeEach(() => {
+        gridOptionMock.enablePagination = false;
+      });
+
+      it('should return a query without the field sorter when its field property is missing but without pagination when "enablePagination" is set to False', () => {
+        const expectation = `$orderby=Gender desc`;
+        const mockColumnSort = [
+          { columnId: 'gender', sortCol: { id: 'gender', field: 'gender' }, sortAsc: false },
+          { columnId: 'firstName', sortCol: { id: 'firstName' }, sortAsc: true }
+        ] as ColumnSort[];
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        service.updateSorters(mockColumnSort);
+        const query = service.buildQuery();
+        const currentSorters = service.getCurrentSorters();
+
+        expect(query).toBe(expectation);
+        expect(currentSorters).toEqual([{ columnId: 'Gender', direction: 'desc' }, { columnId: 'FirstName', direction: 'asc' }]);
+      });
+
+      it('should return a query without any sorting after clearSorters was called but without pagination when "enablePagination" is set to False', () => {
+        const expectation = '';
+        const mockColumnSort = [
+          { columnId: 'gender', sortCol: { id: 'gender', field: 'gender' }, sortAsc: false },
+          { columnId: 'firstName', sortCol: { id: 'firstName', field: 'firstName' }, sortAsc: true }
+        ] as ColumnSort[];
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        service.updateSorters(mockColumnSort);
+        service.clearSorters();
+        const query = service.buildQuery();
+        const currentSorters = service.getCurrentSorters();
+
+        expect(query).toBe(expectation);
+        expect(currentSorters).toEqual([]);
+      });
     });
   });
 
@@ -1135,6 +1427,44 @@ describe('GridOdataService', () => {
 
       expect(query).toBe(expectation);
       expect(currentFilters).toEqual(presetFilters);
+    });
+
+    describe('set "enablePagination" to False', () => {
+      beforeEach(() => {
+        gridOptionMock.enablePagination = false;
+      });
+
+      it('should return a query when using presets sorters array but without pagination when "enablePagination" is set to False', () => {
+        const expectation = `$orderby=Company desc,FirstName asc`;
+        const presets = [
+          { columnId: 'company', direction: 'DESC' },
+          { columnId: 'firstName', direction: 'ASC' },
+        ] as CurrentSorter[];
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        service.updateSorters(undefined, presets);
+        const query = service.buildQuery();
+        const currentSorters = service.getCurrentSorters();
+
+        expect(query).toBe(expectation);
+        expect(currentSorters).toEqual(presets);
+      });
+
+      it('should return a query with a filter with range of numbers when the preset is a filter range with 2 dots (..) separator but without pagination when "enablePagination" is set to False', () => {
+        serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration', type: FieldType.number }];
+        const expectation = `$filter=(Duration gt 4 and Duration lt 88)`;
+        const presetFilters = [
+          { columnId: 'duration', searchTerms: ['4..88'] },
+        ] as CurrentFilter[];
+
+        service.init(serviceOptions, paginationOptions, gridStub);
+        service.updateFilters(presetFilters, true);
+        const query = service.buildQuery();
+        const currentFilters = service.getCurrentFilters();
+
+        expect(query).toBe(expectation);
+        expect(currentFilters).toEqual(presetFilters);
+      });
     });
   });
 
