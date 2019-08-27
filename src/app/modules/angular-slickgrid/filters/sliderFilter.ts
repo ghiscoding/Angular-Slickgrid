@@ -74,7 +74,7 @@ export class SliderFilter implements Filter {
       this._currentValue = +value;
 
       if (this._clearFilterTriggered) {
-        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
+        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, searchTerms: [], shouldTriggerQuery: this._shouldTriggerQuery });
         this.$filterElm.removeClass('filled');
       } else {
         value === '' ? this.$filterElm.removeClass('filled') : this.$filterElm.addClass('filled');

@@ -171,7 +171,7 @@ describe('SliderFilter', () => {
     filter.clear();
 
     expect(filter.getValues()).toBe(0);
-    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: true, searchTerms: [] });
   });
 
   it('should trigger a callback with the clear filter but without querying when when calling the "clear" method with False as argument', () => {
@@ -182,7 +182,7 @@ describe('SliderFilter', () => {
     filter.clear(false);
 
     expect(filter.getValues()).toBe(0);
-    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
+    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false, searchTerms: [] });
   });
 
   it('should trigger a callback with the clear filter set when calling the "clear" method and expect min slider values being with values of "sliderStartValue" when defined through the filter params', () => {
@@ -198,6 +198,6 @@ describe('SliderFilter', () => {
     filter.clear(false);
 
     expect(filter.getValues()).toEqual(4);
-    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
+    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false, searchTerms: [] });
   });
 });
