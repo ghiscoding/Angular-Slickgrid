@@ -116,7 +116,7 @@ export class NativeSelectFilter implements Filter {
   }
 
   /**
-   * Get selected values retrieved from the multiple-selected element
+   * Get selected values retrieved from the select element
    * @params selected items
    */
   getValues(): any[] {

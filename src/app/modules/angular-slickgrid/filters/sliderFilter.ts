@@ -18,6 +18,7 @@ const DEFAULT_STEP = 1;
 
 export class SliderFilter implements Filter {
   private _clearFilterTriggered = false;
+  private _currentValue: number;
   private _shouldTriggerQuery = true;
   private _elementRangeInputId: string;
   private _elementRangeOutputId: string;
@@ -70,6 +71,8 @@ export class SliderFilter implements Filter {
     // also add/remove "filled" class for styling purposes
     this.$filterElm.change((e: any) => {
       const value = e && e.target && e.target.value || '';
+      this._currentValue = +value;
+
       if (this._clearFilterTriggered) {
         this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
         this.$filterElm.removeClass('filled');
@@ -103,8 +106,10 @@ export class SliderFilter implements Filter {
       this._shouldTriggerQuery = shouldTriggerQuery;
       this.searchTerms = [];
       const clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
+      this._currentValue = clearedValue;
       this.$filterElm.children('input').val(clearedValue);
       this.$filterElm.children('div.input-group-addon.input-group-append').children().html(clearedValue);
+      this.$filterElm.val(clearedValue);
       this.$filterElm.trigger('change');
     }
   }
@@ -119,11 +124,23 @@ export class SliderFilter implements Filter {
   }
 
   /**
+   * Get selected value retrieved from the slider element
+   * @params selected items
+   */
+  getValues(): number {
+    return this._currentValue;
+  }
+
+  /**
    * Set value(s) on the DOM element
    */
-  setValues(values: SearchTerm) {
-    if (values) {
+  setValues(values: SearchTerm | SearchTerm[]) {
+    if (Array.isArray(values)) {
+      this.$filterElm.val(values[0]);
+      this._currentValue = +values[0];
+    } else if (values) {
       this.$filterElm.val(values);
+      this._currentValue = +values;
     }
   }
 
@@ -143,7 +160,7 @@ export class SliderFilter implements Filter {
 
     if (this.filterParams.hideSliderNumber) {
       return `
-      <div class="search-filter filter-${fieldId}">
+      <div class="search-filter slider-container filter-${fieldId}">
         <input type="range" id="${this._elementRangeInputId}"
           name="${this._elementRangeInputId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
@@ -152,7 +169,7 @@ export class SliderFilter implements Filter {
     }
 
     return `
-      <div class="input-group search-filter filter-${fieldId}">
+      <div class="input-group slider-container search-filter filter-${fieldId}">
         <input type="range" id="${this._elementRangeInputId}"
           name="${this._elementRangeInputId}"
           defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
@@ -170,12 +187,21 @@ export class SliderFilter implements Filter {
    */
   private createDomElement(filterTemplate: string, searchTerm?: SearchTerm) {
     const fieldId = this.columnDef && this.columnDef.id;
+    const minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
+    const startValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
     const $headerElm = this.grid.getHeaderRowColumn(fieldId);
     $($headerElm).empty();
 
     // create the DOM element & add an ID and filter class
     const $filterElm = $(filterTemplate);
-    const searchTermInput = (searchTerm || '0') as string;
+    let searchTermInput = (searchTerm || '0') as string;
+    if (+searchTermInput < minValue) {
+      searchTermInput = `${minValue}`;
+    }
+    if (+searchTermInput < startValue) {
+      searchTermInput = `${startValue}`;
+    }
+    this._currentValue = +searchTermInput;
 
     $filterElm.children('input').val(searchTermInput);
     $filterElm.children('div.input-group-addon.input-group-append').children().html(searchTermInput);
