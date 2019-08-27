@@ -90,6 +90,18 @@ describe('SingleSelectFilter', () => {
     expect(filter.isMultipleSelect).toBe(false);
   });
 
+  it('should create the select filter with empty search term when passed an empty string as a filter argument and not expect "filled" css class either', () => {
+    mockColumn.filter.collection = [{ value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+
+    filterArguments.searchTerms = [''];
+    filter.init(filterArguments, true);
+    const filterListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=filter-gender].ms-drop ul>li input[type=radio]`);
+
+    const filterFilledElms = divContainer.querySelectorAll<HTMLDivElement>('.ms-parent.ms-filter.search-filter.filter-gender.filled');
+    expect(filterListElm.length).toBe(3);
+    expect(filterFilledElms.length).toBe(0);
+  });
+
   it('should trigger single select change event and expect the callback to be called when we select a single search term from dropdown list', () => {
     const spyCallback = jest.spyOn(filterArguments, 'callback');
     mockColumn.filter.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];

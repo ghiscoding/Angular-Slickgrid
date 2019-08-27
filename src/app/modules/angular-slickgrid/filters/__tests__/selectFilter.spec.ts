@@ -272,6 +272,44 @@ describe('SelectFilter', () => {
     expect(spyCallback).toHaveBeenCalledWith(undefined, { columnDef: mockColumn, operator: 'IN', searchTerms: ['female'], shouldTriggerQuery: true });
   });
 
+  it('should create the multi-select filter with default boolean search term converted as strings when passed as a filter argument', () => {
+    mockColumn.filter.collection = [{ value: true, label: 'True' }, { value: false, label: 'False' }];
+    const spyCallback = jest.spyOn(filterArguments, 'callback');
+
+    filterArguments.searchTerms = [false];
+    filter.init(filterArguments, true);
+    const filterBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.search-filter.filter-gender button.ms-choice');
+    const filterListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=filter-gender].ms-drop ul>li input[type=checkbox]`);
+    const filterFilledElms = divContainer.querySelectorAll<HTMLDivElement>('.ms-parent.ms-filter.search-filter.filter-gender.filled');
+    const filterOkElm = divContainer.querySelector<HTMLButtonElement>(`[name=filter-gender].ms-drop .ms-ok-button`);
+    filterBtnElm.click();
+    filterOkElm.click();
+
+    expect(filterListElm.length).toBe(2);
+    expect(filterFilledElms.length).toBe(1);
+    expect(filterListElm[1].checked).toBe(true);
+    expect(spyCallback).toHaveBeenCalledWith(undefined, { columnDef: mockColumn, operator: 'IN', searchTerms: ['false'], shouldTriggerQuery: true });
+  });
+
+  it('should create the multi-select filter with default number search term converted as strings when passed as a filter argument', () => {
+    mockColumn.filter.collection = [{ value: 1, label: 'male' }, { value: 2, label: 'female' }];
+    const spyCallback = jest.spyOn(filterArguments, 'callback');
+
+    filterArguments.searchTerms = [2];
+    filter.init(filterArguments, true);
+    const filterBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.search-filter.filter-gender button.ms-choice');
+    const filterListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=filter-gender].ms-drop ul>li input[type=checkbox]`);
+    const filterFilledElms = divContainer.querySelectorAll<HTMLDivElement>('.ms-parent.ms-filter.search-filter.filter-gender.filled');
+    const filterOkElm = divContainer.querySelector<HTMLButtonElement>(`[name=filter-gender].ms-drop .ms-ok-button`);
+    filterBtnElm.click();
+    filterOkElm.click();
+
+    expect(filterListElm.length).toBe(2);
+    expect(filterFilledElms.length).toBe(1);
+    expect(filterListElm[1].checked).toBe(true);
+    expect(spyCallback).toHaveBeenCalledWith(undefined, { columnDef: mockColumn, operator: 'IN', searchTerms: ['2'], shouldTriggerQuery: true });
+  });
+
   it('should create the multi-select filter with a default search term when passed as a filter argument even with collection an array of strings', () => {
     const spyCallback = jest.spyOn(filterArguments, 'callback');
     mockColumn.filter.collection = ['male', 'female'];

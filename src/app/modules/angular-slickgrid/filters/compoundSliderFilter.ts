@@ -66,14 +66,14 @@ export class CompoundSliderFilter implements Filter {
       this.callback = args.callback;
       this.columnDef = args.columnDef;
       this.operator = args.operator || '';
-      this.searchTerms = args.searchTerms || [];
+      this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
 
       // define the input & slider number IDs
       this._elementRangeInputId = `rangeInput_${this.columnDef.field}`;
       this._elementRangeOutputId = `rangeOutput_${this.columnDef.field}`;
 
       // filter input can only have 1 search term, so we will use the 1st array index if it exist
-      const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+      const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms.length >= 0) ? this.searchTerms[0] : '';
 
       // step 1, create the DOM Element of the filter which contain the compound Operator+Input
       // and initialize it if searchTerm is filled

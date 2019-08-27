@@ -76,7 +76,7 @@ export class SliderRangeFilter implements Filter {
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
-    this.searchTerms = args.searchTerms || [];
+    this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
 
     // step 1, create the DOM Element of the filter & initialize it if searchTerm is filled
     this.$filterElm = this.createDomElement(this.searchTerms);

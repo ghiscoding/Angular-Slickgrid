@@ -79,7 +79,7 @@ export class DateRangeFilter implements Filter {
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
-    this.searchTerms = args.searchTerms || [];
+    this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
 
     // step 1, create the DOM Element of the filter which contain the compound Operator+Input
     this.$filterElm = this.createDomElement(this.searchTerms);

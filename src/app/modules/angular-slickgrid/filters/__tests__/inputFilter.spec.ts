@@ -139,6 +139,17 @@ describe('InputFilter', () => {
     expect(filterElm.value).toBe('xyz');
   });
 
+  it('should expect the input not to have the "filled" css class when the search term provided is an empty string', () => {
+    filterArguments.searchTerms = [''];
+
+    filter.init(filterArguments);
+    const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-duration');
+    const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-duration.filled');
+
+    expect(filterElm.value).toBe('');
+    expect(filterFilledElms.length).toBe(0);
+  });
+
   it('should trigger a callback with the clear filter set when calling the "clear" method', () => {
     const spyCallback = jest.spyOn(filterArguments, 'callback');
     filterArguments.searchTerms = ['xyz'];
@@ -147,7 +158,6 @@ describe('InputFilter', () => {
     filter.clear();
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-duration');
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-duration.filled');
-
 
     expect(filterElm.value).toBe('');
     expect(filterFilledElms.length).toBe(0);

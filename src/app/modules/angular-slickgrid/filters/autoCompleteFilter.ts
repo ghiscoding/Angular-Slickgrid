@@ -90,7 +90,7 @@ export class AutoCompleteFilter implements Filter {
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
-    this.searchTerms = args.searchTerms || [];
+    this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
 
     if (!this.grid || !this.columnDef || !this.columnFilter || (!this.columnFilter.collection && !this.columnFilter.collectionAsync && !this.columnFilter.filterOptions)) {
       throw new Error(`[Angular-SlickGrid] You need to pass a "collection" (or "collectionAsync") for the AutoComplete Filter to work correctly. Also each option should include a value/label pair (or value/labelKey when using Locale). For example:: { filter: model: Filters.autoComplete, collection: [{ value: true, label: 'True' }, { value: false, label: 'False'}] }`);
@@ -244,7 +244,7 @@ export class AutoCompleteFilter implements Filter {
     newCollection = this.sortCollection(newCollection);
 
     // filter input can only have 1 search term, so we will use the 1st array index if it exist
-    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms.length >= 0) ? this.searchTerms[0] : '';
 
     // step 1, create HTML string template
     const filterTemplate = this.buildTemplateHtmlString();
