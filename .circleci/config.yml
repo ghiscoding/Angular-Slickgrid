@@ -28,20 +28,20 @@ jobs:
           name: Start Dev WebServer
           command: yarn start
           background: true
-      - restore_cache:
-          name: Restoring Cache for Cypress
-          keys:
-            - e2e-tests-{{ .Branch }}-{{ checksum "package.json" }}
+      # - restore_cache:
+      #     name: Restoring Cache for Cypress
+      #     keys:
+      #       - e2e-tests-{{ .Branch }}-{{ checksum "package.json" }}
       - run:
           name: Installing Cypress dependencies with yarn
           command: |
             cd test/cypress
             yarn install
-      - save_cache:
-          name: Saving Cache for Cypress
-          key: e2e-tests-{{ .Branch }}-{{ checksum "package.json" }}
-          paths:
-            - "test/cypress/node_modules"
+      # - save_cache:
+      #     name: Saving Cache for Cypress
+      #     key: e2e-tests-{{ .Branch }}-{{ checksum "package.json" }}
+      #     paths:
+      #       - "test/cypress/node_modules"
       - run:
           name: Running Cypress E2E tests with JUnit reporter
           command: |
@@ -51,3 +51,6 @@ jobs:
           path: reports/junit
       - store_artifacts:
           path: reports/junit
+      - run:
+          name: Build Demo Site
+          command: NODE_ENV=production npx ng build --prod
