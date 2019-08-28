@@ -39,7 +39,7 @@ export interface Filter {
   destroy: () => void;
 
   /** Get value(s) of the DOM element */
-  getValues?: (values: SearchTerm | SearchTerm[] | undefined) => void;
+  getValues?: () => SearchTerm | SearchTerm[] | undefined;
 
   /** Set value(s) on the DOM element */
   setValues: (values: SearchTerm | SearchTerm[] | undefined) => void;

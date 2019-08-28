@@ -177,7 +177,8 @@ export class CompoundInputFilter implements Filter {
           { operator: '<=' as OperatorString, description: '<=' },
           { operator: '>' as OperatorString, description: '>' },
           { operator: '>=' as OperatorString, description: '>=' },
-          { operator: '<>' as OperatorString, description: '<>' }];
+          { operator: '<>' as OperatorString, description: '<>' }
+        ];
         break;
     }
 

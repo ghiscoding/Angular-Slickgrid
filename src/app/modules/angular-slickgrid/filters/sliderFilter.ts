@@ -70,15 +70,15 @@ export class SliderFilter implements Filter {
     // step 3, subscribe to the change event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
     this.$filterElm.change((e: any) => {
-      const value = e && e.target && e.target.value || '';
+      const value = e && e.target && e.target.value;
       this._currentValue = +value;
 
       if (this._clearFilterTriggered) {
-        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, searchTerms: [], shouldTriggerQuery: this._shouldTriggerQuery });
         this.$filterElm.removeClass('filled');
+        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, searchTerms: [], shouldTriggerQuery: this._shouldTriggerQuery });
       } else {
-        value === '' ? this.$filterElm.removeClass('filled') : this.$filterElm.addClass('filled');
-        this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
+        this.$filterElm.addClass('filled');
+        this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value || '0'], shouldTriggerQuery: this._shouldTriggerQuery });
       }
       // reset both flags for next use
       this._clearFilterTriggered = false;
@@ -89,8 +89,8 @@ export class SliderFilter implements Filter {
     // we need to use both "input" and "change" event to be all cross-browser
     if (!this.filterParams.hideSliderNumber) {
       this.$filterElm.on('input change', (e: { target: HTMLInputElement }) => {
-        const value = e && e.target && e.target.value || '';
-        if (value) {
+        const value = e && e.target && e.target.value;
+        if (value !== undefined && value !== null) {
           document.getElementById(this._elementRangeOutputId).innerHTML = value;
         }
       });
@@ -106,7 +106,7 @@ export class SliderFilter implements Filter {
       this._shouldTriggerQuery = shouldTriggerQuery;
       this.searchTerms = [];
       const clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
-      this._currentValue = clearedValue;
+      this._currentValue = +clearedValue;
       this.$filterElm.children('input').val(clearedValue);
       this.$filterElm.children('div.input-group-addon.input-group-append').children().html(clearedValue);
       this.$filterElm.val(clearedValue);

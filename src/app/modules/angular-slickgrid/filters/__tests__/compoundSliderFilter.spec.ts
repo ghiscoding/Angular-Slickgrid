@@ -1,6 +1,6 @@
 import { GridOption, FilterArguments, Column } from '../../models';
 import { Filters } from '..';
-import { SliderFilter } from '../sliderFilter';
+import { CompoundSliderFilter } from '../compoundSliderFilter';
 
 const containerId = 'demo-container';
 
@@ -19,9 +19,9 @@ const gridStub = {
   render: jest.fn(),
 };
 
-describe('SliderFilter', () => {
+describe('CompoundSliderFilter', () => {
   let divContainer: HTMLDivElement;
-  let filter: SliderFilter;
+  let filter: CompoundSliderFilter;
   let filterArguments: FilterArguments;
   let spyGetHeaderRow;
   let mockColumn: Column;
@@ -32,14 +32,14 @@ describe('SliderFilter', () => {
     document.body.appendChild(divContainer);
     spyGetHeaderRow = jest.spyOn(gridStub, 'getHeaderRowColumn').mockReturnValue(divContainer);
 
-    mockColumn = { id: 'duration', field: 'duration', filterable: true, filter: { model: Filters.slider } };
+    mockColumn = { id: 'duration', field: 'duration', filterable: true, filter: { model: Filters.compoundSlider } };
     filterArguments = {
       grid: gridStub,
       columnDef: mockColumn,
       callback: jest.fn()
     };
 
-    filter = new SliderFilter();
+    filter = new CompoundSliderFilter();
   });
 
   afterEach(() => {
@@ -58,36 +58,51 @@ describe('SliderFilter', () => {
     expect(filterCount).toBe(1);
   });
 
-  it('should call "setValues" and expect that value to be in the callback when triggered', () => {
+  it('should call "setValues" with "operator" set in the filter arguments and expect that value to be in the callback when triggered', () => {
     const spyCallback = jest.spyOn(filterArguments, 'callback');
+    const filterArgs = { ...filterArguments, operator: '>' } as FilterArguments;
 
-    filter.init(filterArguments);
+    filter.init(filterArgs);
     filter.setValues(['2']);
-    const filterElm = divContainer.querySelector('.search-filter.slider-container.filter-duration');
+    const filterElm = divContainer.querySelector('.input-group.search-filter.filter-duration input');
     filterElm.dispatchEvent(new CustomEvent('change'));
 
-    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['2'], shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, operator: '>', searchTerms: ['2'], shouldTriggerQuery: true });
   });
 
-  it('should call "setValues" and expect that value, converted as a string, to be in the callback when triggered', () => {
+  it('should call "setValues" with "operator" set in the filter arguments and expect that value, converted as a string, to be in the callback when triggered', () => {
+    const spyCallback = jest.spyOn(filterArguments, 'callback');
+    const filterArgs = { ...filterArguments, operator: '<=' } as FilterArguments;
+
+    filter.init(filterArgs);
+    filter.setValues(3);
+    const filterElm = divContainer.querySelector('.input-group.search-filter.filter-duration input');
+    filterElm.dispatchEvent(new CustomEvent('change'));
+    const filterFilledElms = divContainer.querySelectorAll('.slider-container.search-filter.filter-duration.filled');
+
+    expect(filterFilledElms.length).toBe(1);
+    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, operator: '<=', searchTerms: ['3'], shouldTriggerQuery: true });
+  });
+
+  it('should trigger an operator change event and expect the callback to be called with the searchTerms and operator defined', () => {
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    filter.setValues(3);
-    const filterElm = divContainer.querySelector('.search-filter.slider-container.filter-duration');
-    filterElm.dispatchEvent(new CustomEvent('change'));
-    const filterFilledElms = divContainer.querySelectorAll('.search-filter.slider-container.filter-duration.filled');
+    filter.setValues(9);
+    const filterSelectElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration select');
 
-    expect(filterFilledElms.length).toBe(1);
-    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['3'], shouldTriggerQuery: true });
+    filterSelectElm.value = '<=';
+    filterSelectElm.dispatchEvent(new Event('change'));
+
+    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '<=', searchTerms: ['9'], shouldTriggerQuery: true });
   });
 
   it('should create the input filter with default search terms range when passed as a filter argument', () => {
-    filterArguments.searchTerms = [3];
+    const filterArgs = { ...filterArguments, operator: '<=', searchTerms: [3] } as FilterArguments;
 
-    filter.init(filterArguments);
+    filter.init(filterArgs);
     const filterNumberElm = divContainer.querySelector<HTMLInputElement>('.input-group-text');
-    const filterFilledElms = divContainer.querySelectorAll('.search-filter.slider-container.filter-duration.filled');
+    const filterFilledElms = divContainer.querySelectorAll('.slider-container.search-filter.filter-duration.filled');
 
     expect(filterFilledElms.length).toBe(1);
     expect(filterNumberElm.textContent).toBe('3');
@@ -95,12 +110,12 @@ describe('SliderFilter', () => {
   });
 
   it('should create the input filter with default search terms and a different step size when "valueStep" is provided', () => {
-    filterArguments.searchTerms = [15];
+    const filterArgs = { ...filterArguments, operator: '<=', searchTerms: [15] } as FilterArguments;
     mockColumn.filter.valueStep = 5;
 
-    filter.init(filterArguments);
+    filter.init(filterArgs);
     const filterNumberElm = divContainer.querySelector<HTMLInputElement>('.input-group-text');
-    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.slider-container.filter-duration input');
+    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
 
     expect(filterInputElm.step).toBe('5');
     expect(filterNumberElm.textContent).toBe('15');
@@ -150,28 +165,29 @@ describe('SliderFilter', () => {
   });
 
   it('should trigger a callback with the clear filter set when calling the "clear" method', () => {
-    filterArguments.searchTerms = [3];
+    const filterArgs = { ...filterArguments, operator: '<=', searchTerms: [3] } as FilterArguments;
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
-    filter.init(filterArguments);
+    filter.init(filterArgs);
     filter.clear();
 
     expect(filter.getValues()).toBe(0);
-    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: true, searchTerms: [] });
+    expect(spyCallback).toHaveBeenLastCalledWith(undefined, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: true });
   });
 
   it('should trigger a callback with the clear filter but without querying when when calling the "clear" method with False as argument', () => {
-    filterArguments.searchTerms = [3];
+    const filterArgs = { ...filterArguments, operator: '<=', searchTerms: [3] } as FilterArguments;
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
-    filter.init(filterArguments);
+    filter.init(filterArgs);
     filter.clear(false);
 
     expect(filter.getValues()).toBe(0);
-    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false, searchTerms: [] });
+    expect(spyCallback).toHaveBeenLastCalledWith(undefined, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
   });
 
   it('should trigger a callback with the clear filter set when calling the "clear" method and expect min slider values being with values of "sliderStartValue" when defined through the filter params', () => {
+    const filterArgs = { ...filterArguments, operator: '<=', searchTerms: [3] } as FilterArguments;
     const spyCallback = jest.spyOn(filterArguments, 'callback');
     mockColumn.filter = {
       params: {
@@ -180,10 +196,27 @@ describe('SliderFilter', () => {
       }
     };
 
-    filter.init(filterArguments);
+    filter.init(filterArgs);
     filter.clear(false);
 
     expect(filter.getValues()).toEqual(4);
-    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false, searchTerms: [] });
+    expect(spyCallback).toHaveBeenLastCalledWith(undefined, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
+  });
+
+  it('should create the input filter with all available operators in a select dropdown options as a prepend element', () => {
+    filterArguments.searchTerms = ['9'];
+
+    filter.init(filterArguments);
+    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.input-group.search-filter.filter-duration input');
+    const filterSelectElm = divContainer.querySelectorAll<HTMLSelectElement>('.search-filter.filter-duration select');
+
+    expect(filterInputElm.value).toBe('9');
+    expect(filterSelectElm[0][1].title).toBe('=');
+    expect(filterSelectElm[0][1].textContent).toBe('=');
+    expect(filterSelectElm[0][2].textContent).toBe('<');
+    expect(filterSelectElm[0][3].textContent).toBe('<=');
+    expect(filterSelectElm[0][4].textContent).toBe('>');
+    expect(filterSelectElm[0][5].textContent).toBe('>=');
+    expect(filterSelectElm[0][6].textContent).toBe('<>');
   });
 });
