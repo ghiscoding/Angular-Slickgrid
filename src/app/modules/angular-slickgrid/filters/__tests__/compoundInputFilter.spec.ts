@@ -190,6 +190,17 @@ describe('CompoundInputFilter', () => {
     expect(filterInputElm.value).toBe('xyz');
   });
 
+  it('should expect the input not to have the "filled" css class when the search term provided is an empty string', () => {
+    filterArguments.searchTerms = [''];
+
+    filter.init(filterArguments);
+    const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-duration input');
+    const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.search-filter.filter-duration.filled');
+
+    expect(filterInputElm.value).toBe('');
+    expect(filterFilledElms.length).toBe(0);
+  });
+
   it('should create the input filter with operator dropdown options related to numbers when column definition type is FieldType.number', () => {
     mockColumn.type = FieldType.number;
     filterArguments.searchTerms = ['9'];

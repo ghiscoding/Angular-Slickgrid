@@ -47,7 +47,10 @@ jobs:
           command: |
             cd test/cypress
             yarn cypress:ci:mochawesome
-      - store_test_results:
-          path: reports/junit
-      - store_artifacts:
-          path: reports/junit
+      # - run:
+      #     name: Build Demo Site
+      #     command: NODE_ENV=production npx ng build --prod
+      # - store_test_results:
+      #     path: reports/junit
+      # - store_artifacts:
+      #     path: reports/junit

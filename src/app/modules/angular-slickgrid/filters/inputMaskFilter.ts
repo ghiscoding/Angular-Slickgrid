@@ -25,7 +25,7 @@ export class InputMaskFilter extends InputFilter {
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
-    this.searchTerms = args.searchTerms || [];
+    this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
 
     // get input mask from params (can be in columnDef or columnFilter params)
     if (this.columnDef && this.columnDef.params && this.columnDef.params.mask) {
@@ -40,7 +40,7 @@ export class InputMaskFilter extends InputFilter {
     }
 
     // filter input can only have 1 search term, so we will use the 1st array index if it exist
-    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms.length >= 0) ? this.searchTerms[0] : '';
 
     // step 1, create HTML string template
     const filterTemplate = this.buildTemplateHtmlString();
