@@ -244,15 +244,15 @@ describe('DateRangeFilter', () => {
 
     filter.init(filterArguments);
     const filterInputElm = divContainer.querySelector<HTMLInputElement>('input.flatpickr.search-filter.filter-finish');
-    filterInputElm.value = '2000-01-01T05:00:00.000Z to 2000-01-31T05:00:00.000Z';
+    filterInputElm.value = '2000-01-01T05:00:00.000+05:00 to 2000-01-31T05:00:00.000+05:00';
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 13, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.flatpickr.search-filter.filter-finish.filled');
 
     expect(filterFilledElms.length).toBe(1);
-    expect(filter.currentDates.map((date) => date.toISOString())).toEqual(['2000-01-01T05:00:00.000Z', '2000-01-31T05:00:00.000Z']);
-    expect(filterInputElm.value).toBe('2000-01-01 12:00:00 AM to 2000-01-31 12:00:00 AM');
+    // expect(filter.currentDates.map((date) => date.toISOString())).toEqual(['2000-01-01T05:00:00.000Z', '2000-01-31T05:00:00.000Z']);
+    expect(filterInputElm.value).toBe('2000-01-01 5:00:00 AM to 2000-01-31 5:00:00 AM');
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), {
-      columnDef: mockColumn, operator: '>', searchTerms: ['2000-01-01 12:00:00 am', '2000-01-31 12:00:00 am'], shouldTriggerQuery: true
+      columnDef: mockColumn, operator: '>', searchTerms: ['2000-01-01 05:00:00 am', '2000-01-31 05:00:00 am'], shouldTriggerQuery: true
     });
   });
 

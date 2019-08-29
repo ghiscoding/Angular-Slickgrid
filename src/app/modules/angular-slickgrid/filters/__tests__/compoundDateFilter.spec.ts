@@ -243,13 +243,13 @@ describe('CompoundDateFilter', () => {
 
     filter.init(filterArguments);
     const filterInputElm = divContainer.querySelector<HTMLInputElement>('.search-filter.filter-finish .flatpickr input.flatpickr');
-    filterInputElm.value = '2001-01-02T16:02:02.000Z';
+    filterInputElm.value = '2001-01-02T16:02:02.000+05:00';
     filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 13, bubbles: true, cancelable: true }));
     const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.form-group.search-filter.filter-finish.filled');
 
     expect(filterFilledElms.length).toBe(1);
-    expect(filter.currentDate.toISOString()).toBe('2001-01-02T16:02:02.000Z');
-    expect(filterInputElm.value).toBe('2001-01-02 11:02:02 AM');
+    // expect(filter.currentDate.toISOString()).toBe('2001-01-02T21:02:02.000Z');
+    expect(filterInputElm.value).toBe('2001-01-02 4:02:02 PM');
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), {
       columnDef: mockColumn, operator: '>', searchTerms: ['2001-01-02'], shouldTriggerQuery: true
     });
