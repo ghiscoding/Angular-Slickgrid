@@ -119,7 +119,7 @@ export class DateRangeFilter implements Filter {
   setValues(searchTerms: SearchTerm[]) {
     let pickerValues = [];
 
-    // get the slider values, if it's a string with the "..", we'll do the split else we'll use the array of search terms
+    // get the picker values, if it's a string with the "..", we'll do the split else we'll use the array of search terms
     if (typeof searchTerms === 'string' || (Array.isArray(searchTerms) && typeof searchTerms[0] === 'string') && (searchTerms[0] as string).indexOf('..') > 0) {
       pickerValues = (typeof searchTerms === 'string') ? [(searchTerms as string)] : (searchTerms[0] as string).split('..');
     } else if (Array.isArray(searchTerms)) {
@@ -146,7 +146,7 @@ export class DateRangeFilter implements Filter {
 
     let pickerValues = [];
 
-    // get the slider values, if it's a string with the "..", we'll do the split else we'll use the array of search terms
+    // get the picker values, if it's a string with the "..", we'll do the split else we'll use the array of search terms
     if (typeof searchTerms === 'string' || (Array.isArray(searchTerms) && typeof searchTerms[0] === 'string') && (searchTerms[0] as string).indexOf('..') > 0) {
       pickerValues = (typeof searchTerms === 'string') ? [(searchTerms as string)] : (searchTerms[0] as string).split('..');
     } else if (Array.isArray(searchTerms)) {
@@ -172,7 +172,7 @@ export class DateRangeFilter implements Filter {
       onChange: (selectedDates: Date[] | Date, dateStr: string, instance: any) => {
         if (Array.isArray(selectedDates)) {
           this._currentDates = selectedDates;
-          const outFormat = mapMomentDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
+          const outFormat = mapMomentDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateIso);
           this._currentDateStrings = selectedDates.map(date => moment(date).format(outFormat));
           this._currentValue = this._currentDateStrings.join('..');
         }

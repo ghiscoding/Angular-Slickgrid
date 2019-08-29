@@ -1,7 +1,7 @@
 
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { Column, FilterArguments, GridOption } from '../../models';
+import { Column, FilterArguments, GridOption, FieldType } from '../../models';
 import { Filters } from '..';
 import { DateRangeFilter } from '../dateRangeFilter';
 
@@ -141,7 +141,7 @@ describe('DateRangeFilter', () => {
   });
 
   it('should pass a different operator then trigger an input change event and expect the callback to be called with the date provided in the input', () => {
-    mockColumn.filter.filterOptions = { allowInput: true }; // change to allow input value only for testing purposes
+    mockColumn.filter.filterOptions = { allowInput: true, enableTime: false }; // change to allow input value only for testing purposes
     mockColumn.filter.operator = 'RangeExclusive';
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
@@ -234,5 +234,44 @@ describe('DateRangeFilter', () => {
     expect(filterInputElm.value).toBe('');
     expect(filterFilledElms.length).toBe(0);
     expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
+  });
+
+  it('should have a value with date & time in the picker when "enableTime" option is set and we trigger a change', () => {
+    mockColumn.filter.filterOptions = { enableTime: true, allowInput: true }; // change to allow input value only for testing purposes
+    mockColumn.outputType = FieldType.dateTimeIsoAmPm;
+    mockColumn.filter.operator = '>';
+    const spyCallback = jest.spyOn(filterArguments, 'callback');
+
+    filter.init(filterArguments);
+    const filterInputElm = divContainer.querySelector<HTMLInputElement>('input.flatpickr.search-filter.filter-finish');
+    filterInputElm.value = '2000-01-01T05:00:00.000Z to 2000-01-31T05:00:00.000Z';
+    filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 13, bubbles: true, cancelable: true }));
+    const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.flatpickr.search-filter.filter-finish.filled');
+
+    expect(filterFilledElms.length).toBe(1);
+    expect(filter.currentDates.map((date) => date.toISOString())).toEqual(['2000-01-01T05:00:00.000Z', '2000-01-31T05:00:00.000Z']);
+    expect(filterInputElm.value).toBe('2000-01-01 12:00:00 AM to 2000-01-31 12:00:00 AM');
+    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), {
+      columnDef: mockColumn, operator: '>', searchTerms: ['2000-01-01 12:00:00 am', '2000-01-31 12:00:00 am'], shouldTriggerQuery: true
+    });
+  });
+
+  it('should have a value with date & time in the picker when using no "outputType" which will default to UTC date', () => {
+    mockColumn.outputType = null;
+    filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z', '2000-01-31T05:00:00.000Z'];
+    mockColumn.filter.operator = '<=';
+    const spyCallback = jest.spyOn(filterArguments, 'callback');
+
+    filter.init(filterArguments);
+    const filterInputElm = divContainer.querySelector<HTMLInputElement>('input.flatpickr.search-filter.filter-finish');
+
+    filterInputElm.focus();
+    filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+    const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('.flatpickr.search-filter.filter-finish.filled');
+
+    expect(filterFilledElms.length).toBe(1);
+    expect(filter.currentDates).toEqual(['2000-01-01T05:00:00.000Z', '2000-01-31T05:00:00.000Z']);
+    expect(filterInputElm.value).toBe('2000-01-01T05:00:00.000Z to 2000-01-31T05:00:00.000Z');
+    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '<=', searchTerms: ['2000-01-01', '2000-01-31'], shouldTriggerQuery: true });
   });
 });
