@@ -24,6 +24,7 @@ declare var $: any;
 @Injectable()
 export class AutoCompleteFilter implements Filter {
   private _clearFilterTriggered = false;
+  private _collection: any[];
   private _shouldTriggerQuery = true;
 
   /** DOM Element Name, useful for auto-detecting positioning (dropup / dropdown) */
@@ -58,6 +59,11 @@ export class AutoCompleteFilter implements Filter {
   /** Getter for the Collection Options */
   protected get collectionOptions(): CollectionOption {
     return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions || {};
+  }
+
+  /** Getter for the Collection Used by the Filter */
+  get collection(): any[] {
+    return this._collection;
   }
 
   /** Getter for the Column Filter */
@@ -102,6 +108,7 @@ export class AutoCompleteFilter implements Filter {
 
     // always render the DOM element, even if user passed a "collectionAsync",
     const newCollection = this.columnFilter.collection || [];
+    this._collection = newCollection;
     this.renderDomElement(newCollection);
 
     // on every Filter which have a "collection" or a "collectionAsync"
@@ -211,6 +218,7 @@ export class AutoCompleteFilter implements Filter {
    * and reinitialize filter collection with this new collection
    */
   protected renderDomElementFromCollectionAsync(collection) {
+    this._collection = collection;
     if (this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
       const collectionInsideObjectProperty = this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty;
       collection = getDescendantProperty(collection, collectionInsideObjectProperty);
@@ -233,7 +241,7 @@ export class AutoCompleteFilter implements Filter {
       collection = getDescendantProperty(collection, collectionInsideObjectProperty);
     }
     if (!Array.isArray(collection)) {
-      throw new Error('The "collection" passed to the Autocomplete Filter is not a valid array');
+      throw new Error('The "collection" passed to the Autocomplete Filter is not a valid array.');
     }
 
     // assign the collection to a temp variable before filtering/sorting the collection
@@ -251,6 +259,7 @@ export class AutoCompleteFilter implements Filter {
 
     // step 2, create the DOM Element of the filter & pre-load search term
     // also subscribe to the onClose event
+    this._collection = newCollection;
     this.$filterElm = this.createDomElement(filterTemplate, newCollection, searchTerm);
 
     // step 3, subscribe to the keyup event and run the callback when that happens
@@ -266,12 +275,8 @@ export class AutoCompleteFilter implements Filter {
         this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
         this.$filterElm.removeClass('filled');
       } else {
-        if (value === '') {
-          this.$filterElm.removeClass('filled');
-          this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
-        } else {
-          this.$filterElm.addClass('filled');
-        }
+        value === '' ? this.$filterElm.removeClass('filled') : this.$filterElm.addClass('filled');
+        this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
       }
       // reset both flags for next use
       this._clearFilterTriggered = false;
@@ -321,10 +326,6 @@ export class AutoCompleteFilter implements Filter {
       autoCompleteOptions.select = (event: Event, ui: any) => this.onSelect(event, ui);
       $filterElm.autocomplete(autoCompleteOptions);
     } else {
-      if (!Array.isArray(collection)) {
-        throw new Error('AutoComplete default implementation requires a "collection" or "collectionAsync" to be provided for the filter to work properly');
-      }
-
       $filterElm.autocomplete({
         minLength: 0,
         source: collection,
