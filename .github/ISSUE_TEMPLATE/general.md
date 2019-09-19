@@ -19,11 +19,11 @@ Thanks for filing an issue! However, before you submit, please read the followin
 <!--- Include as many relevant details as possible about the environment you experienced the bug in -->
 | Software          | Version(s) |
 | ----------------- | ---------- |
-| Angular           |
-| Angular-Slickgrid |
-| TypeScript        |
-| Operating System  |
-| NPM/Node/Yarn     |
+| Angular           | x.y        | 
+| Angular-Slickgrid | x.y        | 
+| TypeScript        | x.y        | 
+| Operating System  | x.y        | 
+| NPM/Node/Yarn     | x.y        | 
 
 ### Context
 <!--- How has this issue affected you? What are you trying to accomplish? -->
