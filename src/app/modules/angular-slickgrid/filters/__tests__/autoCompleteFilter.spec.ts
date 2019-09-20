@@ -41,7 +41,7 @@ describe('AutoCompleteFilter', () => {
     mockColumn = {
       id: 'gender', field: 'gender', filterable: true,
       filter: {
-        model: Filters.multipleSelect,
+        model: Filters.autoComplete,
       }
     };
     filterArguments = {

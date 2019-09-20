@@ -29,6 +29,7 @@ export * from './draggableGrouping.interface';
 export * from './editCommand.interface';
 export * from './editor.interface';
 export * from './editorArgs.interface';
+export * from './editorArguments.interface';
 export * from './editorValidator.interface';
 export * from './editorValidatorOutput.interface';
 export * from './editUndoRedoBuffer.interface';

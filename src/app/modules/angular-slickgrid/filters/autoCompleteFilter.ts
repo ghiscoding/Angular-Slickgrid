@@ -258,7 +258,7 @@ export class AutoCompleteFilter implements Filter {
     const filterTemplate = this.buildTemplateHtmlString();
 
     // step 2, create the DOM Element of the filter & pre-load search term
-    // also subscribe to the onClose event
+    // also subscribe to the onSelect event
     this._collection = newCollection;
     this.$filterElm = this.createDomElement(filterTemplate, newCollection, searchTerm);
 

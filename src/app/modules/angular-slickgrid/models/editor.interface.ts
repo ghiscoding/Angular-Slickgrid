@@ -1,3 +1,4 @@
+import { EditorArguments } from './editorArguments.interface';
 import { EditorValidatorOutput } from './editorValidatorOutput.interface';
 
 /***
@@ -6,7 +7,7 @@ import { EditorValidatorOutput } from './editorValidatorOutput.interface';
  */
 export interface Editor {
   /** Initialize the Editor */
-  init: () => void;
+  init: (args?: EditorArguments) => void;
 
   /** Saves the Editor value */
   save?: () => void;

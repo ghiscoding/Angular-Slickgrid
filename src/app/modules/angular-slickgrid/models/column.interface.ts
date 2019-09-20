@@ -122,7 +122,8 @@ export interface Column {
   id: number | string;
 
   /**
-   * @internal used internally by Angular-Slickgrid, to copy over the Column Editor Options
+   * @reserved This is a RESERVED property and is used internally by the library to copy over the Column Editor Options.
+   * You can read this property if you wish, but DO NOT override this property (unless you know what you're doing) as it will cause other issues with your editors.
    */
   internalColumnEditor?: ColumnEditor;
 
