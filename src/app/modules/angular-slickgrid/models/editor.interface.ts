@@ -42,8 +42,8 @@ export interface Editor {
   focus: () => void;
 
   /**
-   * Deserialize the value(s) saved to "state" and apply them to the data item
-   * this method may get called after the editor itself has been destroyed
+   * Deserialize the value(s) saved to "state" and apply them to the data item.
+   * This method may get called after the editor itself has been destroyed,
    * treat it as an equivalent of a Java/C# "static" method - no instance variables should be accessed
    */
   applyValue: (item: any, state: any) => void;

@@ -16,6 +16,9 @@ import { findOrDefault } from '../services/utilities';
 // using external non-typed js libraries
 declare var $: any;
 
+// minimum length of chars to type before starting to start querying
+const MIN_LENGTH = 3;
+
 /*
  * An example of a 'detached' editor.
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
@@ -104,7 +107,7 @@ export class AutoCompleteEditor implements Editor {
   }
 
   focus() {
-    this._$editorElm.focus();
+    this._$editorElm.focus().select();
   }
 
   getValue() {
@@ -142,15 +145,16 @@ export class AutoCompleteEditor implements Editor {
     }
   }
 
-  serializeValue() {
-    // if user provided a custom structure, we will serialize the value returned from the object with custom structure
-    const minLength = typeof this.editorOptions.minLength !== 'undefined' ? this.editorOptions.minLength : 3;
+  serializeValue(): any {
+    // if you want to add the autocomplete functionality but want the user to be able to input a new option
     if (this.editorOptions.forceUserInput) {
-      this._currentValue = this._$editorElm.val().length >= minLength ? this._$editorElm.val() : this._currentValue;
+      const minLength = this.editorOptions && this.editorOptions.hasOwnProperty('minLength') ? this.editorOptions.minLength : MIN_LENGTH;
+      this._currentValue = this._$editorElm.val().length > minLength ? this._$editorElm.val() : this._currentValue;
     }
-    if (this.customStructure && this._currentValue.hasOwnProperty(this.labelName)) {
+    // if user provided a custom structure, we will serialize the value returned from the object with custom structure
+    if (this.customStructure && this._currentValue && this._currentValue.hasOwnProperty(this.labelName)) {
       return this._currentValue[this.labelName];
-    } else if (this._currentValue.label) {
+    } else if (this._currentValue && this._currentValue.label) {
       if (this.columnDef.type === FieldType.object) {
         return {
           [this.labelName]: this._currentValue.label,
@@ -165,15 +169,16 @@ export class AutoCompleteEditor implements Editor {
   applyValue(item: any, state: any) {
     let newValue = state;
     const fieldName = this.columnDef && this.columnDef.field;
+
     // if we have a collection defined, we will try to find the string within the collection and return it
     if (Array.isArray(this.editorCollection) && this.editorCollection.length > 0) {
       newValue = findOrDefault(this.editorCollection, (collectionItem: any) => {
         if (collectionItem && typeof state === 'object' && collectionItem.hasOwnProperty(this.labelName)) {
-          return collectionItem[this.labelName].toString() === state[this.labelName].toString();
+          return (collectionItem.hasOwnProperty(this.labelName) && collectionItem[this.labelName].toString()) === (state.hasOwnProperty(this.labelName) && state[this.labelName].toString());
         } else if (collectionItem && typeof state === 'string' && collectionItem.hasOwnProperty(this.labelName)) {
-          return collectionItem[this.labelName].toString() === state;
+          return (collectionItem.hasOwnProperty(this.labelName) && collectionItem[this.labelName].toString()) === state;
         }
-        return collectionItem.toString() === state;
+        return collectionItem && collectionItem.toString() === state;
       });
     }
 
@@ -183,7 +188,7 @@ export class AutoCompleteEditor implements Editor {
     item[fieldNameFromComplexObject || fieldName] = (validation && validation.valid) ? newValue : '';
   }
 
-  isValueChanged() {
+  isValueChanged(): boolean {
     const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
     if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
       return true;
@@ -218,7 +223,9 @@ export class AutoCompleteEditor implements Editor {
   // private functions
   // ------------------
 
-  private onSelect(event: Event, ui: any) {
+  // this function should be PRIVATE but for unit tests purposes we'll make it public until a better solution is found
+  // a better solution would be to get the autocomplete DOM element to work with selection but I couldn't find how to do that in Jest
+  onSelect(event: Event, ui: any): boolean {
     if (ui && ui.item) {
       this._currentValue = ui && ui.item;
       const itemLabel = typeof ui.item === 'string' ? ui.item : ui.item.label;
@@ -282,8 +289,6 @@ export class AutoCompleteEditor implements Editor {
       });
     }
 
-    setTimeout(() => {
-      this._$editorElm.focus().select();
-    }, 50);
+    setTimeout(() => this.focus(), 50);
   }
 }

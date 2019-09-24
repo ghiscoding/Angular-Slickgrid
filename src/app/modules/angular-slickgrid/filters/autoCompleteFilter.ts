@@ -138,7 +138,7 @@ export class AutoCompleteFilter implements Filter {
    */
   destroy() {
     if (this.$filterElm) {
-      this.$filterElm.off('keyup input change').remove();
+      this.$filterElm.off('keyup').remove();
     }
   }
 
@@ -264,7 +264,7 @@ export class AutoCompleteFilter implements Filter {
 
     // step 3, subscribe to the keyup event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
-    this.$filterElm.on('keyup input change', (e: any) => {
+    this.$filterElm.on('keyup', (e: any) => {
       let value = e && e.target && e.target.value || '';
       const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
       if (typeof value === 'string' && enableWhiteSpaceTrim) {
@@ -354,15 +354,15 @@ export class AutoCompleteFilter implements Filter {
   // private functions
   // ------------------
 
-  private onSelect(event: Event, ui: any) {
+  // this function should be PRIVATE but for unit tests purposes we'll make it public until a better solution is found
+  // a better solution would be to get the autocomplete DOM element to work with selection but I couldn't find how to do that in Jest
+  onSelect(event: Event, ui: any): boolean {
     if (ui && ui.item) {
       const itemLabel = typeof ui.item === 'string' ? ui.item : ui.item.label;
       const itemValue = typeof ui.item === 'string' ? ui.item : ui.item.value;
-      this.$filterElm.val(itemLabel);
+      this.setValues(itemLabel);
+      itemValue === '' ? this.$filterElm.removeClass('filled') : this.$filterElm.addClass('filled');
       this.callback(event, { columnDef: this.columnDef, operator: this.operator, searchTerms: [itemValue], shouldTriggerQuery: this._shouldTriggerQuery });
-      // reset both flags for next use
-      this._clearFilterTriggered = false;
-      this._shouldTriggerQuery = true;
     }
     return false;
   }
