@@ -41,7 +41,7 @@ describe('AutoCompleteFilter', () => {
     mockColumn = {
       id: 'gender', field: 'gender', filterable: true,
       filter: {
-        model: Filters.multipleSelect,
+        model: Filters.autoComplete,
       }
     };
     filterArguments = {
@@ -445,5 +445,33 @@ describe('AutoCompleteFilter', () => {
     expect(filterCollection[0]).toEqual({ value: 'female', description: 'female' });
     expect(filterCollection[1]).toEqual({ value: 'male', description: 'male' });
     expect(filterCollection[2]).toEqual({ value: 'other', description: 'other' });
+  });
+
+  describe('onSelect method', () => {
+    it('should expect "setValue" and "autoCommitEdit" to have been called with a string when item provided is a string', () => {
+      const spyCallback = jest.spyOn(filterArguments, 'callback');
+      mockColumn.filter.collection = ['male', 'female'];
+
+      filter.init(filterArguments);
+      const spySetValue = jest.spyOn(filter, 'setValues');
+      const output = filter.onSelect(null, { item: 'female' });
+
+      expect(output).toBe(false);
+      expect(spySetValue).toHaveBeenCalledWith('female');
+      expect(spyCallback).toHaveBeenCalledWith(null, { columnDef: mockColumn, operator: 'EQ', searchTerms: ['female'], shouldTriggerQuery: true });
+    });
+
+    it('should expect "setValue" and "autoCommitEdit" to have been called with the string label when item provided is an object', () => {
+      const spyCallback = jest.spyOn(filterArguments, 'callback');
+      mockColumn.filter.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+
+      filter.init(filterArguments);
+      const spySetValue = jest.spyOn(filter, 'setValues');
+      const output = filter.onSelect(null, { item: { value: 'f', label: 'Female' } });
+
+      expect(output).toBe(false);
+      expect(spySetValue).toHaveBeenCalledWith('Female');
+      expect(spyCallback).toHaveBeenCalledWith(null, { columnDef: mockColumn, operator: 'EQ', searchTerms: ['f'], shouldTriggerQuery: true });
+    });
   });
 });
