@@ -71,7 +71,7 @@ describe('OdataQueryBuilderService', () => {
       expect(query).toBe(expectation);
     });
 
-    it('should return a query with sorting when "filterBy" is provided as a string', () => {
+    it('should return a query with filters when "filterBy" is provided as a string', () => {
       const expectation = `$top=10&$filter=(FirstName eq 'John')`;
 
       service.options = { top: 10, filterBy: `FirstName eq 'John'` };
@@ -80,7 +80,7 @@ describe('OdataQueryBuilderService', () => {
       expect(query).toBe(expectation);
     });
 
-    it('should return a query with sorting when "filterBy" is provided as an array', () => {
+    it('should return a query with filters when "filterBy" is provided as an array', () => {
       const expectation = `$top=10&$filter=(FirstName eq 'John' and FirstName eq 'Jane')`;
 
       service.options = { top: 10, filter: [`FirstName eq 'John'`, `FirstName eq 'Jane'`] };
@@ -89,7 +89,7 @@ describe('OdataQueryBuilderService', () => {
       expect(query).toBe(expectation);
     });
 
-    it('should return a query with sorting when "filterBy" is provided as an array', () => {
+    it('should return a query with filters when "filterBy" is provided as an array', () => {
       const expectation = `$top=10&$filter=(FirstName eq 'John' or FirstName eq 'Jane')`;
 
       service.options = { top: 10, filterBy: [`FirstName eq 'John'`, `FirstName eq 'Jane'`], filterBySeparator: 'or' };
@@ -176,6 +176,43 @@ describe('OdataQueryBuilderService', () => {
       const query = service.buildQuery();
 
       expect(query).toBe(expectation);
+    });
+  });
+
+  describe('enableCount flag', () => {
+    it('should return a query with "$inlinecount" when "enableCount" is set and no OData version is provided', () => {
+      const expectation = `$inlinecount=allpages&$top=10&$filter=(FirstName eq 'John')`;
+
+      service.options = { top: 10, filterBy: `FirstName eq 'John'`, enableCount: true };
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
+    it('should return a query with "$inlinecount" when "enableCount" is set with OData version 2 or 3', () => {
+      const expectation = `$inlinecount=allpages&$top=10&$filter=(FirstName eq 'John')`;
+
+      service.options = { top: 10, filterBy: `FirstName eq 'John'`, enableCount: true, version: 2 };
+      const query1 = service.buildQuery();
+
+      service.options = { top: 10, filterBy: `FirstName eq 'John'`, enableCount: true, version: 3 };
+      const query2 = service.buildQuery();
+
+      expect(query1).toBe(expectation);
+      expect(query2).toBe(expectation);
+    });
+
+    it('should return a query with "$count" when "enableCount" is set with OData version 4 or higher', () => {
+      const expectation = `$count=true&$top=10&$filter=(FirstName eq 'John')`;
+
+      service.options = { top: 10, filterBy: `FirstName eq 'John'`, enableCount: true, version: 4 };
+      const query1 = service.buildQuery();
+
+      service.options = { top: 10, filterBy: `FirstName eq 'John'`, enableCount: true, version: 5 };
+      const query2 = service.buildQuery();
+
+      expect(query1).toBe(expectation);
+      expect(query2).toBe(expectation);
     });
   });
 });

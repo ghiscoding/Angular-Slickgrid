@@ -199,4 +199,26 @@ describe('Example 6 - GraphQL Grid', () => {
         expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
       });
   });
+
+  it('should click on "Name" column to sort it Ascending', () => {
+    cy.get('.slick-header-columns')
+      .children('.slick-header-column:nth(0)')
+      .click();
+
+    cy.get('.slick-header-columns')
+      .children('.slick-header-column:nth(0)')
+      .find('.slick-sort-indicator.slick-sort-indicator-asc')
+      .should('be.visible');
+
+    // wait for the query to finish
+    cy.get('[data-test=status]').should('contain', 'done');
+
+    cy.get('[data-test=graphql-query-result]')
+      .should(($span) => {
+        const text = removeSpaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
+          orderBy:[{field:"name",direction:ASC}],
+          locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+      });
+  });
 });
