@@ -381,9 +381,24 @@ describe('AutoCompleteEditor', () => {
     });
 
     describe('onSelect method', () => {
-      it('should expect "setValue" and "autoCommitEdit" to have been called with a string when item provided is a string', (done) => {
-        const spyCommitEdit = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
+      it('should expect "setValue" to have been called but not "autoCommitEdit" when "autoCommitEdit" is disabled', () => {
+        const spyCommitEdit = jest.spyOn(gridStub, 'getEditorLock');
         gridOptionMock.autoCommitEdit = false;
+        mockColumn.internalColumnEditor.collection = ['male', 'female'];
+        mockItemData = { id: 123, gender: 'female', isActive: true };
+
+        editor = new AutoCompleteEditor(editorArguments);
+        const spySetValue = jest.spyOn(editor, 'setValue');
+        const output = editor.onSelect(null, { item: mockItemData.gender });
+
+        expect(output).toBe(false);
+        expect(spyCommitEdit).not.toHaveBeenCalled();
+        expect(spySetValue).toHaveBeenCalledWith('female');
+      });
+
+      it('should expect "setValue" and "autoCommitEdit" to have been called with a string when item provided is a string', (done) => {
+        const spyCommitEdit = jest.spyOn(gridStub, 'getEditorLock');
+        gridOptionMock.autoCommitEdit = true;
         mockColumn.internalColumnEditor.collection = ['male', 'female'];
         mockItemData = { id: 123, gender: 'female', isActive: true };
 
@@ -406,8 +421,8 @@ describe('AutoCompleteEditor', () => {
       });
 
       it('should expect "setValue" and "autoCommitEdit" to have been called with the string label when item provided is an object', () => {
-        const spyCommitEdit = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
-        gridOptionMock.autoCommitEdit = false;
+        const spyCommitEdit = jest.spyOn(gridStub, 'getEditorLock');
+        gridOptionMock.autoCommitEdit = true;
         mockColumn.internalColumnEditor.collection = [{ value: 'm', label: 'Male' }, { value: 'f', label: 'Female' }];
         mockItemData = { id: 123, gender: { value: 'f', label: 'Female' }, isActive: true };
 
