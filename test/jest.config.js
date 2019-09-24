@@ -2,7 +2,6 @@ module.exports = {
   rootDir: '../',
   globals: {
     'ts-jest': {
-      isolatedModules: true,
       tsConfigFile: '<rootDir>/src/tsconfig.spec.json',
     },
     __TRANSFORM_HTML__: true,
