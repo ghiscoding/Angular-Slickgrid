@@ -11,10 +11,10 @@ import {
   GraphqlServiceOption,
   GridOption,
   GridStateChange,
+  Metrics,
   MultipleSelectOption,
   OperatorType,
   SortDirection,
-  Statistic
 } from './../modules/angular-slickgrid';
 import * as moment from 'moment-mini';
 import { Subscription } from 'rxjs';
@@ -47,7 +47,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset = [];
-  statistics: Statistic;
+  metrics: Metrics;
 
   graphqlQuery = '';
   processing = true;
@@ -170,7 +170,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (result: GraphqlResult) => {
-          this.statistics = result.statistics;
+          this.metrics = result.metrics;
           this.displaySpinner(false);
         }
       }

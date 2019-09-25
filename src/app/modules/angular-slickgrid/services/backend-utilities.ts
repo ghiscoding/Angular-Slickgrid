@@ -41,13 +41,15 @@ export function executeBackendProcessesCallback(startTime: Date, processResult: 
   // send the response process to the postProcess callback
   if (backendApi.postProcess) {
     if (processResult instanceof Object) {
-      processResult.statistics = {
+      processResult.metrics = {
         startTime,
         endTime,
         executionTime: endTime.valueOf() - startTime.valueOf(),
         itemCount: gridOptions && gridOptions.pagination && gridOptions.pagination.totalItems,
         totalItemCount: gridOptions && gridOptions.pagination && gridOptions.pagination.totalItems
       };
+      // @deprecated
+      processResult.statistics = processResult.metrics;
     }
     backendApi.postProcess(processResult);
   }

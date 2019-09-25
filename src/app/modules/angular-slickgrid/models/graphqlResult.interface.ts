@@ -1,3 +1,4 @@
+import { Metrics } from './metrics.interface';
 import { Statistic } from './statistic.interface';
 
 export interface GraphqlResult {
@@ -11,5 +12,8 @@ export interface GraphqlResult {
     }
   };
 
+  metrics?: Metrics;
+
+  /** @deprecated please use "metrics" instead */
   statistics?: Statistic;
 }

@@ -8,7 +8,7 @@ import {
   GridOdataService,
   GridOption,
   GridStateChange,
-  Statistic,
+  Metrics,
   OdataOption,
   OperatorType,
 } from './../modules/angular-slickgrid';
@@ -41,7 +41,7 @@ export class GridOdataComponent implements OnInit {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset = [];
-  statistics: Statistic;
+  metrics: Metrics;
 
   isCountEnabled = true;
   odataVersion = 2;
@@ -114,7 +114,7 @@ export class GridOdataComponent implements OnInit {
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {
-          this.statistics = response.statistics;
+          this.metrics = response.metrics;
           this.displaySpinner(false);
           this.getCustomerCallback(response);
         }
@@ -137,8 +137,8 @@ export class GridOdataComponent implements OnInit {
       countPropName = (this.odataVersion === 4) ? '@odata.count' : 'odata.count';
     }
     this.gridOptions.pagination.totalItems = data[countPropName];
-    if (this.statistics) {
-      this.statistics.totalItemCount = data[countPropName];
+    if (this.metrics) {
+      this.metrics.totalItemCount = data[countPropName];
     }
     this.gridOptions = Object.assign({}, this.gridOptions);
 
