@@ -363,6 +363,10 @@ export class AutoCompleteFilter implements Filter {
       this.setValues(itemLabel);
       itemValue === '' ? this.$filterElm.removeClass('filled') : this.$filterElm.addClass('filled');
       this.callback(event, { columnDef: this.columnDef, operator: this.operator, searchTerms: [itemValue], shouldTriggerQuery: this._shouldTriggerQuery });
+
+      // reset both flags for next use
+      this._clearFilterTriggered = false;
+      this._shouldTriggerQuery = true;
     }
     return false;
   }

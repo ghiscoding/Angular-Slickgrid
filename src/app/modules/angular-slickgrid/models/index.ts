@@ -85,6 +85,7 @@ export * from './jQueryUiSliderOption.interface';
 export * from './jQueryUiSliderResponse.interface';
 export * from './keyCode.enum';
 export * from './locale.interface';
+export * from './metrics.interface';
 export * from './multiColumnSort.interface';
 export * from './multipleSelectOption.interface';
 export * from './odataOption.interface';
