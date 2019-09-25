@@ -179,12 +179,14 @@ export class GridMenuExtension implements Extension {
         // send the response process to the postProcess callback
         if (backendApi && backendApi.postProcess) {
           if (processResult instanceof Object) {
-            processResult.statistics = {
+            processResult.metrics = {
               startTime,
               endTime,
               executionTime: endTime.valueOf() - startTime.valueOf(),
               totalItemCount: this.sharedService.gridOptions && this.sharedService.gridOptions.pagination && this.sharedService.gridOptions.pagination.totalItems
             };
+            // @deprecated
+            processResult.statistics = processResult.metrics;
           }
           backendApi.postProcess(processResult);
         }
