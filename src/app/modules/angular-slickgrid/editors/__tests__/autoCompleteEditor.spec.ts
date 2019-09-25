@@ -14,8 +14,7 @@ const dataViewStub = {
 
 const gridOptionMock = {
   autoCommitEdit: false,
-  enableeditoring: true,
-  enableeditorTrimWhiteSpace: true,
+  editable: true,
 } as GridOption;
 
 const getEditorLockMock = {
@@ -381,6 +380,10 @@ describe('AutoCompleteEditor', () => {
     });
 
     describe('onSelect method', () => {
+      beforeEach(() => {
+        jest.clearAllMocks();
+      });
+
       it('should expect "setValue" to have been called but not "autoCommitEdit" when "autoCommitEdit" is disabled', () => {
         const spyCommitEdit = jest.spyOn(gridStub, 'getEditorLock');
         gridOptionMock.autoCommitEdit = false;
