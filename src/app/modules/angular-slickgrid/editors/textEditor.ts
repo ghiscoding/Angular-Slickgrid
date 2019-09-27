@@ -1,5 +1,6 @@
 import { Constants } from '../constants';
-import { Column, ColumnEditor, Editor, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
+import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
+import { getDescendantProperty, setDeepValue } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -10,25 +11,37 @@ declare var $: any;
  */
 export class TextEditor implements Editor {
   private _lastInputEvent: KeyboardEvent;
-  $input: any;
+  private _$input: any;
   defaultValue: any;
 
-  constructor(private args: any) {
+  /** SlickGrid Grid object */
+  grid: any;
+
+  constructor(private args: EditorArguments) {
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
+    }
+    this.grid = args.grid;
     this.init();
   }
 
   /** Get Column Definition object */
-  get columnDef(): Column {
-    return this.args && this.args.column || {};
+  get columnDef(): Column | undefined {
+    return this.args && this.args.column;
   }
 
   /** Get Column Editor object */
   get columnEditor(): ColumnEditor {
-    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+    return this.columnDef && this.columnDef.internalColumnEditor || {};
+  }
+
+  /** Get the Editor DOM Element */
+  get editorDomElement(): any {
+    return this._$input;
   }
 
   get hasAutoCommitEdit() {
-    return this.args.grid.getOptions().autoCommitEdit;
+    return this.grid.getOptions().autoCommitEdit;
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
@@ -36,12 +49,12 @@ export class TextEditor implements Editor {
     return this.columnEditor.validator || this.columnDef.validator;
   }
 
-  init(): void {
+  init() {
     const columnId = this.columnDef && this.columnDef.id;
     const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
     const title = this.columnEditor && this.columnEditor.title || '';
 
-    this.$input = $(`<input type="text" role="presentation"  autocomplete="off" class="editor-text editor-${columnId}" placeholder="${placeholder}" title="${title}" />`)
+    this._$input = $(`<input type="text" role="presentation"  autocomplete="off" class="editor-text editor-${columnId}" placeholder="${placeholder}" title="${title}" />`)
       .appendTo(this.args.container)
       .on('keydown.nav', (event: KeyboardEvent) => {
         this._lastInputEvent = event;
@@ -53,83 +66,90 @@ export class TextEditor implements Editor {
     // the lib does not get the focus out event for some reason
     // so register it here
     if (this.hasAutoCommitEdit) {
-      this.$input.on('focusout', () => this.save());
+      this._$input.on('focusout', () => this.save());
     }
 
-    setTimeout(() => {
-      this.$input.focus().select();
-    }, 50);
+    setTimeout(() => this.focus(), 50);
   }
 
   destroy() {
-    this.$input.off('keydown.nav focusout').remove();
+    this._$input.off('keydown.nav focusout').remove();
   }
 
   focus() {
-    this.$input.focus();
+    this._$input.focus();
   }
 
-  getValue() {
-    return this.$input.val();
+  getValue(): string {
+    return this._$input.val();
   }
 
   setValue(val: string) {
-    this.$input.val(val);
+    this._$input.val(val);
+  }
+
+  applyValue(item: any, state: any) {
+    const fieldName = this.columnDef && this.columnDef.field;
+    const isComplexObject = fieldName.indexOf('.') > 0; // is the field a complex object, "address.streetNumber"
+
+    // validate the value before applying it (if not valid we'll set an empty string)
+    const validation = this.validate(state);
+    const newValue = (validation && validation.valid) ? state : '';
+
+    // set the new value to the item datacontext
+    if (isComplexObject) {
+      setDeepValue(item, fieldName, newValue);
+    } else {
+      item[fieldName] = newValue;
+    }
+  }
+
+  isValueChanged() {
+    const elmValue = this._$input.val();
+    const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
+    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
+      return true;
+    }
+    return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
   }
 
   loadValue(item: any) {
     const fieldName = this.columnDef && this.columnDef.field;
 
-    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
-    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+    // is the field a complex object, "address.streetNumber"
+    const isComplexObject = fieldName.indexOf('.') > 0;
 
-    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || item.hasOwnProperty(fieldNameFromComplexObject))) {
-      this.defaultValue = item[fieldNameFromComplexObject || fieldName] || '';
-      this.$input.val(this.defaultValue);
-      this.$input[0].defaultValue = this.defaultValue;
-      this.$input.select();
+    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
+      const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
+      this.defaultValue = value;
+      this._$input.val(this.defaultValue);
+      this._$input[0].defaultValue = this.defaultValue;
+      this._$input.select();
     }
-  }
-
-  serializeValue() {
-    return this.$input.val();
-  }
-
-  applyValue(item: any, state: any) {
-    const fieldName = this.columnDef && this.columnDef.field;
-    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
-    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
-    const validation = this.validate(state);
-    item[fieldNameFromComplexObject || fieldName] = (validation && validation.valid) ? state : '';
-  }
-
-  isValueChanged() {
-    const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
-    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
-      return true;
-    }
-    return (!(this.$input.val() === '' && this.defaultValue === null)) && (this.$input.val() !== this.defaultValue);
   }
 
   save() {
     const validation = this.validate();
     if (validation && validation.valid) {
       if (this.hasAutoCommitEdit) {
-        this.args.grid.getEditorLock().commitCurrentEdit();
+        this.grid.getEditorLock().commitCurrentEdit();
       } else {
         this.args.commitChanges();
       }
     }
   }
 
+  serializeValue() {
+    return this._$input.val();
+  }
+
   validate(inputValue?: any): EditorValidatorOutput {
     const isRequired = this.columnEditor.required;
-    const elmValue = (inputValue !== undefined) ? inputValue : this.$input && this.$input.val && this.$input.val();
+    const elmValue = (inputValue !== undefined) ? inputValue : this._$input && this._$input.val && this._$input.val();
     const errorMsg = this.columnEditor.errorMessage;
 
     if (this.validator) {
-      const value = this.$input && this.$input.val && this.$input.val();
-      return this.validator(value, this.args);
+      return this.validator(elmValue, this.args);
     }
 
     // by default the editor is almost always valid (except when it's required but not provided)

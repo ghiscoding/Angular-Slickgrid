@@ -110,6 +110,21 @@ export class DateRangeFilter implements Filter {
     if (this.$filterElm) {
       this.$filterElm.off('keyup').remove();
     }
+    if (this.flatInstance && typeof this.flatInstance.destroy === 'function') {
+      this.flatInstance.destroy();
+    }
+  }
+
+  hide() {
+    if (this.flatInstance && typeof this.flatInstance.close === 'function') {
+      this.flatInstance.close();
+    }
+  }
+
+  show() {
+    if (this.flatInstance && typeof this.flatInstance.open === 'function') {
+      this.flatInstance.open();
+    }
   }
 
   /**

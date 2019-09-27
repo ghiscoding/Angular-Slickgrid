@@ -1,5 +1,6 @@
 import { Constants } from '../constants';
-import { Column, ColumnEditor, Editor, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
+import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
+import { setDeepValue, getDescendantProperty } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -12,16 +13,23 @@ const defaultDecimalPlaces = 0;
  */
 export class FloatEditor implements Editor {
   private _lastInputEvent: KeyboardEvent;
-  $input: any;
+  private _$input: any;
   defaultValue: any;
 
-  constructor(private args: any) {
+  /** SlickGrid Grid object */
+  grid: any;
+
+  constructor(private args: EditorArguments) {
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
+    }
+    this.grid = args.grid;
     this.init();
   }
 
   /** Get Column Definition object */
-  get columnDef(): Column {
-    return this.args && this.args.column || {};
+  get columnDef(): Column | undefined {
+    return this.args && this.args.column;
   }
 
   /** Get Column Editor object */
@@ -29,8 +37,13 @@ export class FloatEditor implements Editor {
     return this.columnDef && this.columnDef.internalColumnEditor || {};
   }
 
+  /** Get the Editor DOM Element */
+  get editorDomElement(): any {
+    return this._$input;
+  }
+
   get hasAutoCommitEdit() {
-    return this.args && this.args.grid && this.args.grid.getOptions && this.args.grid.getOptions().autoCommitEdit;
+    return this.grid && this.grid.getOptions && this.grid.getOptions().autoCommitEdit;
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
@@ -38,12 +51,12 @@ export class FloatEditor implements Editor {
     return this.columnEditor.validator || this.columnDef.validator;
   }
 
-  init(): void {
+  init() {
     const columnId = this.columnDef && this.columnDef.id;
     const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
     const title = this.columnEditor && this.columnEditor.title || '';
 
-    this.$input = $(`<input type="number" role="presentation"  autocomplete="off" class="editor-text editor-${columnId}" placeholder="${placeholder}" title="${title}" step="${this.getInputDecimalSteps()}" />`)
+    this._$input = $(`<input type="number" role="presentation" autocomplete="off" class="editor-text editor-${columnId}" placeholder="${placeholder}" title="${title}" step="${this.getInputDecimalSteps()}" />`)
       .appendTo(this.args.container)
       .on('keydown.nav', (event: KeyboardEvent) => {
         this._lastInputEvent = event;
@@ -55,24 +68,20 @@ export class FloatEditor implements Editor {
     // the lib does not get the focus out event for some reason
     // so register it here
     if (this.hasAutoCommitEdit) {
-      this.$input.on('focusout', () => this.save());
+      this._$input.on('focusout', () => this.save());
     }
 
-    setTimeout(() => {
-      this.$input.focus().select();
-    }, 50);
+    setTimeout(() => this.focus(), 50);
   }
 
   destroy() {
-    this.$input.off('keydown.nav focusout').remove();
+    if (this._$input) {
+      this._$input.off('keydown.nav').remove();
+    }
   }
 
   focus() {
-    this.$input.focus();
-  }
-
-  getColumnEditor() {
-    return this.args && this.args.column && this.args.column.internalColumnEditor;
+    this._$input.focus();
   }
 
   getDecimalPlaces(): number {
@@ -98,54 +107,31 @@ export class FloatEditor implements Editor {
     return '1';
   }
 
-  loadValue(item: any) {
-    const fieldName = this.columnDef && this.columnDef.field;
-
-    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
-    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
-
-    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || item.hasOwnProperty(fieldNameFromComplexObject))) {
-      this.defaultValue = item[fieldNameFromComplexObject || fieldName];
-      const decPlaces = this.getDecimalPlaces();
-      if (decPlaces !== null
-        && (this.defaultValue || this.defaultValue === 0)
-        && this.defaultValue.toFixed) {
-        this.defaultValue = this.defaultValue.toFixed(decPlaces);
-      }
-
-      this.$input.val(this.defaultValue);
-      this.$input[0].defaultValue = this.defaultValue;
-      this.$input.select();
-    }
+  getValue(): string {
+    return this._$input.val() || '';
   }
 
-  serializeValue() {
-    const elmValue = this.$input.val();
-    if (elmValue === '' || isNaN(elmValue)) {
-      return elmValue;
-    }
-
-    let rtn = parseFloat(elmValue);
-    const decPlaces = this.getDecimalPlaces();
-    if (decPlaces !== null
-      && (rtn || rtn === 0)
-      && rtn.toFixed) {
-      rtn = parseFloat(rtn.toFixed(decPlaces));
-    }
-
-    return rtn;
+  setValue(value: number | string) {
+    this._$input.val(value);
   }
 
   applyValue(item: any, state: any) {
     const fieldName = this.columnDef && this.columnDef.field;
-    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
-    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+    const isComplexObject = fieldName.indexOf('.') > 0; // is the field a complex object, "address.streetNumber"
+
     const validation = this.validate(state);
-    item[fieldNameFromComplexObject || fieldName] = (validation && validation.valid) ? state : '';
+    const newValue = (validation && validation.valid) ? state : '';
+
+    // set the new value to the item datacontext
+    if (isComplexObject) {
+      setDeepValue(item, fieldName, newValue);
+    } else {
+      item[fieldName] = newValue;
+    }
   }
 
   isValueChanged() {
-    const elmValue = this.$input.val();
+    const elmValue = this._$input.val();
     const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
     if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
       return true;
@@ -153,19 +139,53 @@ export class FloatEditor implements Editor {
     return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
   }
 
+  loadValue(item: any) {
+    const fieldName = this.columnDef && this.columnDef.field;
+
+    // is the field a complex object, "address.streetNumber"
+    const isComplexObject = fieldName.indexOf('.') > 0;
+
+    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
+      const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
+      this.defaultValue = value;
+      const decPlaces = this.getDecimalPlaces();
+      if (decPlaces !== null && (this.defaultValue || this.defaultValue === 0) && this.defaultValue.toFixed) {
+        this.defaultValue = this.defaultValue.toFixed(decPlaces);
+      }
+      this._$input.val(this.defaultValue);
+      this._$input[0].defaultValue = this.defaultValue;
+      this._$input.select();
+    }
+  }
+
   save() {
     const validation = this.validate();
     if (validation && validation.valid) {
       if (this.hasAutoCommitEdit) {
-        this.args.grid.getEditorLock().commitCurrentEdit();
+        this.grid.getEditorLock().commitCurrentEdit();
       } else {
         this.args.commitChanges();
       }
     }
   }
 
+  serializeValue() {
+    const elmValue = this._$input.val();
+    if (elmValue === '' || isNaN(elmValue)) {
+      return elmValue;
+    }
+
+    let rtn = parseFloat(elmValue);
+    const decPlaces = this.getDecimalPlaces();
+    if (decPlaces !== null && (rtn || rtn === 0) && rtn.toFixed) {
+      rtn = parseFloat(rtn.toFixed(decPlaces));
+    }
+
+    return rtn;
+  }
+
   validate(inputValue?: any): EditorValidatorOutput {
-    const elmValue = (inputValue !== undefined) ? inputValue : this.$input && this.$input.val && this.$input.val();
+    const elmValue = (inputValue !== undefined) ? inputValue : this._$input && this._$input.val && this._$input.val();
     const floatNumber = !isNaN(elmValue as number) ? parseFloat(elmValue) : null;
     const decPlaces = this.getDecimalPlaces();
     const isRequired = this.columnEditor.required;

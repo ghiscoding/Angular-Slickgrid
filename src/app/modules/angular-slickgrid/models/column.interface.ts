@@ -72,7 +72,13 @@ export interface Column {
    * When set this flag to True, the cell value will be wrapped with an equal sign and double quotes, which forces Excel to evaluate it as a string. The output will be:: ="1E06" */
   exportCsvForceToKeepAsString?: boolean;
 
-  /** Field property name to use from the dataset that is used to display the column data.  */
+  /**
+   * Field property name to use from the dataset that is used to display the column data.
+   * For example: { id: 'firstName', field: 'firstName' }
+   *
+   * NOTE: a field with dot notation (.) will be considered a complex object.
+   * For example: { id: 'Users', field: 'user.firstName' }
+   */
   field: string;
 
   /**

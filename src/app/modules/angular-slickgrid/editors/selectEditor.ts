@@ -6,6 +6,7 @@ import {
   Column,
   ColumnEditor,
   Editor,
+  EditorArguments,
   EditorValidator,
   EditorValidatorOutput,
   FieldType,
@@ -75,8 +76,15 @@ export class SelectEditor implements Editor {
   /** The translate library */
   protected _translate: TranslateService;
 
-  constructor(protected args: any, protected isMultipleSelect) {
-    this.gridOptions = this.args.grid.getOptions() as GridOption;
+  /** SlickGrid Grid object */
+  grid: any;
+
+  constructor(protected args: EditorArguments, protected isMultipleSelect) {
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
+    }
+    this.grid = args.grid;
+    this.gridOptions = this.grid.getOptions() as GridOption;
     const options = this.gridOptions || this.args.column.params || {};
     if (options && options.i18n instanceof TranslateService) {
       this._translate = options.i18n;
@@ -101,13 +109,7 @@ export class SelectEditor implements Editor {
         return isRenderHtmlEnabled ? $elm.text() : $elm.html();
       },
       onBlur: () => this.destroy(),
-      onClose: () => {
-        if (!this._destroying && this.hasAutoCommitEdit) {
-          // do not use args.commitChanges() as this sets the focus to the next
-          // row. Also the select list will stay shown when clicking off the grid
-          args.grid.getEditorLock().commitCurrentEdit();
-        }
-      }
+      onClose: () => this.save(),
     };
 
     if (isMultipleSelect) {
@@ -140,13 +142,18 @@ export class SelectEditor implements Editor {
   }
 
   /** Get Column Definition object */
-  get columnDef(): Column {
-    return this.args && this.args.column || {};
+  get columnDef(): Column | undefined {
+    return this.args && this.args.column;
   }
 
   /** Get Column Editor object */
-  get columnEditor(): ColumnEditor {
-    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+  get columnEditor(): ColumnEditor | undefined {
+    return this.columnDef && this.columnDef.internalColumnEditor;
+  }
+
+  /** Get the Editor DOM Element */
+  get editorDomElement(): any {
+    return this.$editorElm;
   }
 
   /** Getter for the Custom Structure if exist */
@@ -155,7 +162,7 @@ export class SelectEditor implements Editor {
   }
 
   get hasAutoCommitEdit() {
-    return this.args.grid.getOptions().autoCommitEdit;
+    return this.grid.getOptions().autoCommitEdit;
   }
 
   /**
@@ -196,7 +203,6 @@ export class SelectEditor implements Editor {
         return labelText;
       });
   }
-
 
   /**
    * The current selected values (single select) from the collection
@@ -246,10 +252,6 @@ export class SelectEditor implements Editor {
   }
 
   init() {
-    if (!this.args) {
-      throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
-    }
-
     if (!this.columnDef || !this.columnDef.internalColumnEditor || (!this.columnDef.internalColumnEditor.collection && !this.columnDef.internalColumnEditor.collectionAsync)) {
       throw new Error(`[Angular-SlickGrid] You need to pass a "collection" (or "collectionAsync") inside Column Definition Editor for the MultipleSelect/SingleSelect Editor to work correctly.
       Also each option should include a value/label pair (or value/labelKey when using Locale).
@@ -351,6 +353,18 @@ export class SelectEditor implements Editor {
     });
   }
 
+  save() {
+    // autocommit will not focus the next editor
+    const validation = this.validate();
+    if (validation && validation.valid) {
+      if (!this._destroying && this.hasAutoCommitEdit) {
+        // do not use args.commitChanges() as this sets the focus to the next
+        // row. Also the select list will stay shown when clicking off the grid
+        this.grid.getEditorLock().commitCurrentEdit();
+      }
+    }
+  }
+
   serializeValue(): any {
     return (this.isMultipleSelect) ? this.currentValues : this.currentValue;
   }
@@ -437,7 +451,7 @@ export class SelectEditor implements Editor {
       collection = getDescendantProperty(collection, collectionInsideObjectProperty);
     }
     if (!Array.isArray(collection)) {
-      throw new Error('The "collection" passed to the Select Editor is not a valid array');
+      throw new Error('The "collection" passed to the Select Editor is not a valid array.');
     }
 
     // user can optionally add a blank entry at the beginning of the collection
@@ -531,6 +545,10 @@ export class SelectEditor implements Editor {
     if (this.$editorElm && typeof this.$editorElm.appendTo === 'function') {
       this.$editorElm.appendTo(this.args.container);
     }
+
+    // add placeholder when found
+    const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
+    this.defaultOptions.placeholder = placeholder || '';
 
     if (typeof this.$editorElm.multipleSelect !== 'function') {
       // fallback to bootstrap
