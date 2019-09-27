@@ -27,6 +27,12 @@ export class OdataQueryBuilderService {
     this._odataOptions.filterQueue = [];
     const queryTmpArray = [];
 
+    // When enableCount is set, add it to the OData query
+    if (this._odataOptions.enableCount === true) {
+      const countQuery = (this._odataOptions.version >= 4) ? '$count=true' : '$inlinecount=allpages';
+      queryTmpArray.push(countQuery);
+    }
+
     if (this._odataOptions.top) {
       queryTmpArray.push(`$top=${this._odataOptions.top}`);
     }

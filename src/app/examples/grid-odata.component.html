@@ -19,6 +19,7 @@
       <div class="alert alert-info" data-test="alert-odata-query">
         <strong>OData Query:</strong> <span data-test="odata-query-result">{{odataQuery}}</span>
       </div>
+
       <label>OData Version: </label>
       <span data-test="radioVersion">
         <label class="radio-inline control-label" for="radio2">
@@ -30,6 +31,11 @@
                  (change)="setOdataVersion(4)"> 4
         </label>
       </span>
+      <label class="checkbox-inline control-label" for="enableCount" style="margin-left: 20px">
+        <input type="checkbox" id="enableCount" data-test="enable-count" [checked]="isCountEnabled"
+               (click)="changeCountEnableFlag()">
+        <span style="font-weight: bold">Enable Count</span> (add to OData query)
+      </label>
     </div>
   </div>
 

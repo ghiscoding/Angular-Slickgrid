@@ -5,6 +5,9 @@ export interface OdataOption extends BackendServiceOption {
   /** What is the casing type to use? Typically that would be 1 of the following 2: camelCase or PascalCase */
   caseType?: CaseType;
 
+  /** Add the total count $inlinecount (OData v2) or $count (OData v4) to the OData query */
+  enableCount?: boolean;
+
   /** How many rows to pull? */
   top?: number;
 

@@ -380,11 +380,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * For now, this is GraphQL Service ONLY feature and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
    */
   createBackendApiInternalPostProcessCallback(gridOptions: GridOption) {
-    if (gridOptions && gridOptions.backendServiceApi) {
-      const backendApi = gridOptions.backendServiceApi;
-
-      // internalPostProcess only works with a GraphQL Service, so make sure it is that type
-      if (backendApi && backendApi.service && backendApi.service instanceof GraphqlService) {
+    const backendApi = gridOptions && gridOptions.backendServiceApi;
+    if (backendApi) {
+      // internalPostProcess only works (for now) with a GraphQL Service, so make sure it is that type
+      if (backendApi && backendApi.service instanceof GraphqlService) {
         backendApi.internalPostProcess = (processResult: any) => {
           const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
           if (processResult && processResult.data && processResult.data[datasetName]) {
