@@ -252,14 +252,14 @@ describe('DateEditor', () => {
 
     describe('serializeValue method', () => {
       it('should return serialized value as a date string', () => {
-        mockColumn.type = FieldType.dateTimeIsoAmPm;
+        mockColumn.type = FieldType.dateIso;
         mockItemData = { id: 1, startDate: '2001-01-02T16:02:02.000+05:00', isActive: true };
 
         editor = new DateEditor(editorArguments);
         editor.loadValue(mockItemData);
         const output = editor.serializeValue();
 
-        expect(output).toBe('2001-01-02 06:02:02 am');
+        expect(output).toBe('2001-01-02');
       });
 
       it('should return serialized value as an empty string when item value is also an empty string', () => {
@@ -283,7 +283,7 @@ describe('DateEditor', () => {
       });
 
       it('should return serialized value as a date string when using a dot (.) notation for complex object', () => {
-        mockColumn.type = FieldType.dateTimeIsoAmPm;
+        mockColumn.type = FieldType.dateIso;
         mockColumn.field = 'employee.startDate';
         mockItemData = { id: 1, employee: { startDate: '2001-01-02T16:02:02.000+05:00' }, isActive: true };
 
@@ -291,7 +291,7 @@ describe('DateEditor', () => {
         editor.loadValue(mockItemData);
         const output = editor.serializeValue();
 
-        expect(output).toBe('2001-01-02 06:02:02 am');
+        expect(output).toBe('2001-01-02');
       });
     });
 
