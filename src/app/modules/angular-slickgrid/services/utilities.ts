@@ -107,7 +107,7 @@ export function htmlEntityEncode(input: any): string {
  * @return boolean true if equal, else false
  */
 export function charArraysEqual(a: any[], b: any[], orderMatters: boolean = false): boolean {
-  if (!Array.isArray(a) || !Array.isArray(a)) {
+  if (!a || !b || !Array.isArray(a) || !Array.isArray(a)) {
     return false;
   }
 

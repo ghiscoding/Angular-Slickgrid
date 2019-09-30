@@ -141,7 +141,7 @@ describe('SelectEditor', () => {
     beforeEach(() => {
       mockItemData = { id: 1, gender: 'male', isActive: true };
       mockColumn = { id: 'gender', field: 'gender', editable: true, editor: { model: Editors.multipleSelect }, internalColumnEditor: {} } as Column;
-      mockColumn.internalColumnEditor.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+      mockColumn.internalColumnEditor.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }, { value: 'other', label: 'other' }];
 
       editorArguments.column = mockColumn;
       editorArguments.item = mockItemData;
@@ -155,6 +155,7 @@ describe('SelectEditor', () => {
       mockColumn.internalColumnEditor.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
       gridOptionMock.i18n = translate;
       editor = new SelectEditor(editorArguments, true);
+      editor.focus();
       const editorCount = document.body.querySelectorAll('select.ms-filter.editor-gender').length;
 
       expect(editorCount).toBe(1);
@@ -188,141 +189,162 @@ describe('SelectEditor', () => {
       expect(editor.columnEditor).toEqual(mockColumn.internalColumnEditor);
     });
 
-    // xit('should call "setValue" and expect the DOM element value to be the same string when calling "getValue"', () => {
-    //   editor = new SelectEditor(editorArguments, true);
-    //   editor.setValue('male');
+    it('should call "setValue" with a single string and expect the string to be returned in a single string array when calling "getValue" when using single select', () => {
+      editor = new SelectEditor(editorArguments, true);
+      editor.setValue(['male']);
 
-    //   expect(editor.getValue()).toBe('male');
-    // });
+      expect(editor.getValue()).toEqual(['male']);
+    });
 
-    // xit('should define an item datacontext containing a string as cell value and expect this value to be loaded in the editor when calling "loadValue"', () => {
-    //   editor = new SelectEditor(editorArguments, true);
-    //   editor.loadValue(mockItemData);
-    //   const editorElm = editor.editorDomElement;
+    it('should define an item datacontext containing a string as cell value and expect this value to be loaded in the editor when calling "loadValue"', () => {
+      editor = new SelectEditor(editorArguments, true);
+      editor.loadValue(mockItemData);
+      const editorElm = editor.editorDomElement;
 
-    //   expect(editor.getValue()).toBe('male');
-    //   expect(editorElm[0].defaultValue).toBe('male');
-    // });
+      expect(editor.getValue()).toEqual(['male']);
+    });
 
-    // describe('isValueChanged method', () => {
-    //   xit('should return True when previously dispatched keyboard event being char "a"', () => {
-    //     const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
+    it('should create the multi-select filter with a blank entry at the beginning of the collection when "addBlankEntry" is set in the "collectionOptions" property', () => {
+      mockColumn.internalColumnEditor.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+      mockColumn.internalColumnEditor.collectionOptions = { addBlankEntry: true };
 
-    //     editor = new SelectEditor(editorArguments, true);
-    //     const editorElm = document.body.querySelector<HTMLTextAreaElement>('.editor-gender textarea');
+      editor = new SelectEditor(editorArguments, true);
+      const editorBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.editor-gender button.ms-choice');
+      const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li input[type=checkbox]`);
+      const editorOkElm = divContainer.querySelector<HTMLButtonElement>(`[name=editor-gender].ms-drop .ms-ok-button`);
+      editorBtnElm.click();
+      editorOkElm.click();
 
-    //     editor.focus();
-    //     editorElm.dispatchEvent(event);
+      expect(editorListElm.length).toBe(3);
+      expect(editorListElm[1].textContent).toBe('');
+    });
 
-    //     expect(editor.isValueChanged()).toBe(true);
-    //   });
+    describe('isValueChanged method', () => {
+      it('should return True after doing a check of an option and clicking on the OK button', () => {
+        editor = new SelectEditor(editorArguments, true);
+        const editorBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.editor-gender button.ms-choice');
+        const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li input[type=checkbox]`);
+        const editorOkElm = divContainer.querySelector<HTMLButtonElement>(`[name=editor-gender].ms-drop .ms-ok-button`);
+        editorBtnElm.click();
 
-    //   xit('should return False when previously dispatched keyboard event is same string number as current value', () => {
-    //     const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
+        // we can use property "checked" or dispatch an event
+        editorListElm[0].dispatchEvent(new CustomEvent('click'));
+        editorOkElm.click();
 
-    //     editor = new SelectEditor(editorArguments, true);
-    //     const editorElm = document.body.querySelector<HTMLTextAreaElement>('.editor-gender textarea');
+        expect(editorListElm.length).toBe(3);
+        expect(editor.isValueChanged()).toBe(true);
+      });
 
-    //     editor.loadValue({ id: 1, gender: 'a', isActive: true });
-    //     editor.focus();
-    //     editorElm.dispatchEvent(event);
+      it('should return False after doing a check & uncheck of the same option and clicking on the OK button', () => {
+        editor = new SelectEditor(editorArguments, true);
+        const editorBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.editor-gender button.ms-choice');
+        const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li input[type=checkbox]`);
+        const editorOkElm = divContainer.querySelector<HTMLButtonElement>(`[name=editor-gender].ms-drop .ms-ok-button`);
+        editorBtnElm.click();
 
-    //     expect(editor.isValueChanged()).toBe(false);
-    //   });
+        // we can use property "checked" or dispatch an event
+        // check and uncheck the same option
+        editorListElm[0].checked = true;
+        editorListElm[0].checked = false;
+        editorOkElm.click();
 
-    //   xit('should return True when previously dispatched keyboard event ENTER', () => {
-    //     const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KeyCode.ENTER, bubbles: true, cancelable: true });
+        expect(editorListElm.length).toBe(3);
+        expect(editor.isValueChanged()).toBe(true);
+      });
+    });
 
-    //     editor = new SelectEditor(editorArguments, true);
-    //     const editorElm = document.body.querySelector<HTMLTextAreaElement>('.editor-gender textarea');
+    describe('applyValue method', () => {
+      it('should apply the value to the gender property when it passes validation', () => {
+        mockColumn.internalColumnEditor.validator = null;
+        mockItemData = { id: 1, gender: 'male', isActive: true };
 
-    //     editor.focus();
-    //     editorElm.dispatchEvent(event);
+        editor = new SelectEditor(editorArguments, true);
+        editor.applyValue(mockItemData, 'female');
 
-    //     expect(editor.isValueChanged()).toBe(true);
-    //   });
-    // });
+        expect(mockItemData).toEqual({ id: 1, gender: 'female', isActive: true });
+      });
 
-    // describe('applyValue method', () => {
-    //   xit('should apply the value to the gender property when it passes validation', () => {
-    //     mockColumn.internalColumnEditor.validator = null;
-    //     mockItemData = { id: 1, gender: 'male', isActive: true };
+      it('should apply the value to the gender property with a field having dot notation (complex object) that passes validation', () => {
+        mockColumn.internalColumnEditor.validator = null;
+        mockColumn.field = 'part.gender';
+        mockItemData = { id: 1, part: { gender: 'male' }, isActive: true };
 
-    //     editor = new SelectEditor(editorArguments, true);
-    //     editor.applyValue(mockItemData, 'female');
+        editor = new SelectEditor(editorArguments, true);
+        editor.applyValue(mockItemData, 'female');
 
-    //     expect(mockItemData).toEqual({ id: 1, gender: 'female', isActive: true });
-    //   });
+        expect(mockItemData).toEqual({ id: 1, part: { gender: 'female' }, isActive: true });
+      });
 
-    //   xit('should apply the value to the gender property with a field having dot notation (complex object) that passes validation', () => {
-    //     mockColumn.internalColumnEditor.validator = null;
-    //     mockColumn.field = 'part.gender';
-    //     mockItemData = { id: 1, part: { gender: 'male' }, isActive: true };
+      it('should return item data with an empty string in its value when it fails the custom validation', () => {
+        mockColumn.internalColumnEditor.validator = (value: any, args: EditorArgs) => {
+          if (value.length < 10) {
+            return { valid: false, msg: 'Must be at least 10 chars long.' };
+          }
+          return { valid: true, msg: '' };
+        };
+        mockItemData = { id: 1, gender: 'male', isActive: true };
 
-    //     editor = new SelectEditor(editorArguments, true);
-    //     editor.applyValue(mockItemData, 'female');
+        editor = new SelectEditor(editorArguments, true);
+        editor.applyValue(mockItemData, 'female');
 
-    //     expect(mockItemData).toEqual({ id: 1, part: { gender: 'female' }, isActive: true });
-    //   });
+        expect(mockItemData).toEqual({ id: 1, gender: '', isActive: true });
+      });
+    });
 
-    //   xit('should return item data with an empty string in its value when it fails the custom validation', () => {
-    //     mockColumn.internalColumnEditor.validator = (value: any, args: EditorArgs) => {
-    //       if (value.length < 10) {
-    //         return { valid: false, msg: 'Must be at least 10 chars long.' };
-    //       }
-    //       return { valid: true, msg: '' };
-    //     };
-    //     mockItemData = { id: 1, gender: 'male', isActive: true };
+    describe('serializeValue method', () => {
+      it('should return serialized value as a string', () => {
+        mockItemData = { id: 1, gender: 'male', isActive: true };
 
-    //     editor = new SelectEditor(editorArguments, true);
-    //     editor.applyValue(mockItemData, 'female');
+        editor = new SelectEditor(editorArguments, true);
+        editor.loadValue(mockItemData);
+        const output = editor.serializeValue();
 
-    //     expect(mockItemData).toEqual({ id: 1, gender: '', isActive: true });
-    //   });
-    // });
+        expect(output).toEqual(['male']);
+      });
 
-    // describe('serializeValue method', () => {
-    //   xit('should return serialized value as a string', () => {
-    //     mockItemData = { id: 1, gender: 'male', isActive: true };
+      it('should return serialized value as an empty array when item value is also an empty string', () => {
+        mockItemData = { id: 1, gender: '', isActive: true };
 
-    //     editor = new SelectEditor(editorArguments, true);
-    //     editor.loadValue(mockItemData);
-    //     const output = editor.serializeValue();
+        editor = new SelectEditor(editorArguments, true);
+        editor.loadValue(mockItemData);
+        const output = editor.serializeValue();
 
-    //     expect(output).toBe('male');
-    //   });
+        expect(output).toEqual([]);
+      });
 
-    //   xit('should return serialized value as an empty string when item value is also an empty string', () => {
-    //     mockItemData = { id: 1, gender: '', isActive: true };
+      it('should return serialized value as an empty string when item value is null', () => {
+        mockItemData = { id: 1, gender: null, isActive: true };
 
-    //     editor = new SelectEditor(editorArguments, true);
-    //     editor.loadValue(mockItemData);
-    //     const output = editor.serializeValue();
+        editor = new SelectEditor(editorArguments, true);
+        editor.loadValue(mockItemData);
+        const output = editor.serializeValue();
 
-    //     expect(output).toBe('');
-    //   });
+        expect(output).toEqual([]);
+      });
 
-    //   xit('should return serialized value as an empty string when item value is null', () => {
-    //     mockItemData = { id: 1, gender: null, isActive: true };
+      it('should return object value when using a dot (.) notation for complex object with a collection of option/label pair', () => {
+        mockColumn.field = 'employee.gender';
+        mockItemData = { id: 1, employee: { gender: ['male', 'other'] }, isActive: true };
 
-    //     editor = new SelectEditor(editorArguments, true);
-    //     editor.loadValue(mockItemData);
-    //     const output = editor.serializeValue();
+        editor = new SelectEditor(editorArguments, true);
+        editor.loadValue(mockItemData);
+        const output = editor.serializeValue();
 
-    //     expect(output).toBe('');
-    //   });
+        expect(output).toEqual([{ label: 'male', value: 'male' }, { label: 'other', value: 'other' }]);
+      });
 
-    //   xit('should return value as a number when using a dot (.) notation for complex object', () => {
-    //     mockColumn.field = 'task.gender';
-    //     mockItemData = { id: 1, task: { gender: 'male' }, isActive: true };
+      it('should return value as a string when using a dot (.) notation for complex object with a collection of string values', () => {
+        mockColumn.field = 'employee.gender';
+        mockColumn.internalColumnEditor.collection = ['male', 'female'];
+        mockItemData = { id: 1, employee: { gender: 'male' }, isActive: true };
 
-    //     editor = new SelectEditor(editorArguments, true);
-    //     editor.loadValue(mockItemData);
-    //     const output = editor.serializeValue();
+        editor = new SelectEditor(editorArguments, true);
+        editor.loadValue(mockItemData);
+        const output = editor.serializeValue();
 
-    //     expect(output).toBe('male');
-    //   });
-    // });
+        expect(output).toEqual(['male']);
+      });
+    });
 
     describe('save method', () => {
       afterEach(() => {
@@ -330,7 +352,7 @@ describe('SelectEditor', () => {
       });
 
       it('should call "getEditorLock" method when "hasAutoCommitEdit" is enabled', () => {
-        mockItemData = { id: 1, gender: 'task', isActive: true };
+        mockItemData = { id: 1, gender: 'male', isActive: true };
         gridOptionMock.autoCommitEdit = true;
         const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
 
@@ -342,7 +364,7 @@ describe('SelectEditor', () => {
       });
 
       it('should not call anything when "hasAutoCommitEdit" is disabled', () => {
-        mockItemData = { id: 1, gender: 'task', isActive: true };
+        mockItemData = { id: 1, gender: 'male', isActive: true };
         gridOptionMock.autoCommitEdit = false;
         const spy = jest.spyOn(editorArguments, 'commitChanges');
 
