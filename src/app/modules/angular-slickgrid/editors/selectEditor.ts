@@ -318,7 +318,6 @@ export class SelectEditor implements Editor {
     // when set as a multiple selection, we can assume that the 3rd party lib multiple-select will return a CSV string
     // we need to re-split that into an array to be the same as the original column
     if (this.isMultipleSelect && typeof state === 'string' && state.indexOf(',') >= 0) {
-      console.log(state)
       newValue = state.split(',');
     }
 
