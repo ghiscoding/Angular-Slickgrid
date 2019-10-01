@@ -143,10 +143,8 @@ describe('AutoCompleteEditor', () => {
     it('should define an item datacontext containing a string as cell value and expect this value to be loaded in the editor when calling "loadValue"', () => {
       editor = new AutoCompleteEditor(editorArguments);
       editor.loadValue(mockItemData);
-      const editorElm = editor.editorDomElement;
 
       expect(editor.getValue()).toBe('male');
-      expect(editorElm[0].defaultValue).toBe('male');
     });
 
     it('should define an item datacontext containing a complex object as cell value and expect this value to be loaded in the editor when calling "loadValue"', () => {
@@ -154,10 +152,8 @@ describe('AutoCompleteEditor', () => {
       mockColumn.field = 'gender.value';
       editor = new AutoCompleteEditor(editorArguments);
       editor.loadValue(mockItemData);
-      const editorElm = editor.editorDomElement;
 
-      expect(editor.getValue()).toBe('Male');
-      expect(editorElm[0].defaultValue).toBe('Male');
+      expect(editor.getValue()).toBe('male');
     });
 
     it('should dispatch a keyboard event and expect "stopImmediatePropagation()" to have been called when using Left Arrow key', () => {
@@ -238,7 +234,7 @@ describe('AutoCompleteEditor', () => {
       expect(editor.isValueChanged()).toBe(true);
     });
 
-    it('should call "focus()" method and expect the DOM element to be focused and selected', async () => {
+    it('should call "focus()" method and expect the DOM element to be focused and selected', () => {
       editor = new AutoCompleteEditor(editorArguments);
       const editorElm = editor.editorDomElement;
       const spy = jest.spyOn(editorElm, 'focus');
@@ -247,136 +243,157 @@ describe('AutoCompleteEditor', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should return override the item data as an object found from the collection when calling "applyValue" that passes validation', () => {
-      mockColumn.internalColumnEditor.validator = null;
-      mockItemData = { id: 123, gender: 'female', isActive: true };
+    describe('applyValue method', () => {
+      it('should apply the value to the gender property when it passes validation', () => {
+        mockColumn.internalColumnEditor.validator = null;
+        mockItemData = { id: 123, gender: 'female', isActive: true };
 
-      editor = new AutoCompleteEditor(editorArguments);
-      editor.applyValue(mockItemData, { value: 'female', label: 'female' });
+        editor = new AutoCompleteEditor(editorArguments);
+        editor.applyValue(mockItemData, { value: 'female', label: 'female' });
 
-      expect(mockItemData).toEqual({ id: 123, gender: { value: 'female', label: 'female' }, isActive: true });
+        expect(mockItemData).toEqual({ id: 123, gender: { value: 'female', label: 'female' }, isActive: true });
+      });
+
+      it('should apply the value to the gender property with a field having dot notation (complex object) that passes validation', () => {
+        mockColumn.internalColumnEditor.validator = null;
+        mockColumn.field = 'user.gender';
+        mockItemData = { id: 1, user: { gender: 'female' }, isActive: true };
+
+        editor = new AutoCompleteEditor(editorArguments);
+        editor.applyValue(mockItemData, { value: 'female', label: 'female' });
+
+        expect(mockItemData).toEqual({ id: 1, user: { gender: { value: 'female', label: 'female' } }, isActive: true });
+      });
+
+      it('should return override the item data as a string found from the collection that passes validation', () => {
+        mockColumn.internalColumnEditor.validator = null;
+        mockColumn.internalColumnEditor.collection = ['male', 'female'];
+        mockItemData = { id: 123, gender: 'female', isActive: true };
+
+        editor = new AutoCompleteEditor(editorArguments);
+        editor.applyValue(mockItemData, 'female');
+
+        expect(mockItemData).toEqual({ id: 123, gender: 'female', isActive: true });
+      });
+
+      it('should return item data with an empty string in its value when calling "applyValue" which fails the custom validation', () => {
+        mockColumn.internalColumnEditor.validator = (value: any, args: EditorArgs) => {
+          if (value.label.length < 10) {
+            return { valid: false, msg: 'Must be at least 10 chars long.' };
+          }
+          return { valid: true, msg: '' };
+        };
+        mockItemData = { id: 123, gender: 'female', isActive: true };
+
+        editor = new AutoCompleteEditor(editorArguments);
+        editor.applyValue(mockItemData, 'female');
+
+        expect(mockItemData).toEqual({ id: 123, gender: '', isActive: true });
+      });
     });
 
-    it('should return override the item data as a string found from the collection when calling "applyValue" that passes validation', () => {
-      mockColumn.internalColumnEditor.validator = null;
-      mockColumn.internalColumnEditor.collection = ['male', 'female'];
-      mockItemData = { id: 123, gender: 'female', isActive: true };
+    describe('forceUserInput flag', () => {
+      it('should return DOM element value when "forceUserInput" is enabled and loaded value length is greater then minLength defined when calling "serializeValue"', () => {
+        mockColumn.internalColumnEditor.editorOptions = { forceUserInput: true, };
+        mockItemData = { id: 123, gender: { value: 'male', label: 'Male' }, isActive: true };
 
-      editor = new AutoCompleteEditor(editorArguments);
-      editor.applyValue(mockItemData, 'female');
+        editor = new AutoCompleteEditor(editorArguments);
+        editor.loadValue(mockItemData);
+        editor.setValue('Female');
+        const output = editor.serializeValue();
 
-      expect(mockItemData).toEqual({ id: 123, gender: 'female', isActive: true });
+        expect(output).toBe('Female');
+      });
+
+      it('should return DOM element value when "forceUserInput" is enabled and loaded value length is greater then custom minLength defined when calling "serializeValue"', () => {
+        mockColumn.internalColumnEditor.editorOptions = { forceUserInput: true, minLength: 2 } as AutocompleteOption;
+        mockItemData = { id: 123, gender: { value: 'male', label: 'Male' }, isActive: true };
+
+        editor = new AutoCompleteEditor(editorArguments);
+        editor.loadValue(mockItemData);
+        editor.setValue('Female');
+        const output = editor.serializeValue();
+
+        expect(output).toBe('Female');
+      });
+
+      it('should return loaded value when "forceUserInput" is enabled and loaded value length is lower than minLength defined when calling "serializeValue"', () => {
+        mockColumn.internalColumnEditor.editorOptions = { forceUserInput: true, };
+        mockItemData = { id: 123, gender: { value: 'male', label: 'Male' }, isActive: true };
+
+        editor = new AutoCompleteEditor(editorArguments);
+        editor.loadValue(mockItemData);
+        editor.setValue('F');
+        const output = editor.serializeValue();
+
+        expect(output).toBe('Male');
+      });
     });
 
-    it('should return item data with an empty string in its value when calling "applyValue" which fails the custom validation', () => {
-      mockColumn.internalColumnEditor.validator = (value: any, args: EditorArgs) => {
-        if (value.label.length < 10) {
-          return { valid: false, msg: 'Must be at least 10 chars long.' };
-        }
-        return { valid: true, msg: '' };
-      };
-      mockItemData = { id: 123, gender: 'female', isActive: true };
+    describe('serializeValue method', () => {
+      it('should return correct object value even when defining a "customStructure" when calling "serializeValue"', () => {
+        mockColumn.internalColumnEditor.collection = [{ option: 'male', text: 'Male' }, { option: 'female', text: 'Female' }];
+        mockColumn.internalColumnEditor.customStructure = { value: 'option', label: 'text' };
+        mockItemData = { id: 123, gender: { option: 'female', text: 'Female' }, isActive: true };
 
-      editor = new AutoCompleteEditor(editorArguments);
-      editor.applyValue(mockItemData, 'female');
+        editor = new AutoCompleteEditor(editorArguments);
+        editor.loadValue(mockItemData);
+        const output = editor.serializeValue();
 
-      expect(mockItemData).toEqual({ id: 123, gender: '', isActive: true });
+        expect(output).toBe('Female');
+      });
+
+      it('should return an object output when calling "serializeValue" with its column definition set to "FieldType.object"', () => {
+        mockColumn.type = FieldType.object;
+        mockColumn.internalColumnEditor.collection = [{ value: 'm', label: 'Male' }, { value: 'f', label: 'Female' }];
+        mockItemData = { id: 123, gender: { value: 'f', label: 'Female' }, isActive: true };
+
+        editor = new AutoCompleteEditor(editorArguments);
+        editor.loadValue(mockItemData);
+        const output = editor.serializeValue();
+
+        expect(output).toEqual({ value: 'f', label: 'Female' });
+      });
     });
 
-    it('should return DOM element value when "forceUserInput" is enabled and loaded value length is greater then minLength defined when calling "serializeValue"', () => {
-      mockColumn.internalColumnEditor.editorOptions = { forceUserInput: true, };
-      mockItemData = { id: 123, gender: { value: 'male', label: 'Male' }, isActive: true };
+    describe('save method', () => {
+      it('should call "getEditorLock" when "hasAutoCommitEdit" is enabled after calling "save()" method', () => {
+        gridOptionMock.autoCommitEdit = true;
+        const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
 
-      editor = new AutoCompleteEditor(editorArguments);
-      editor.loadValue(mockItemData);
-      editor.setValue('Female');
-      const output = editor.serializeValue();
+        editor = new AutoCompleteEditor(editorArguments);
+        editor.save();
 
-      expect(output).toBe('Female');
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('should call "commitChanges" when "hasAutoCommitEdit" is disabled after calling "save()" method', () => {
+        gridOptionMock.autoCommitEdit = false;
+        const spy = jest.spyOn(editorArguments, 'commitChanges');
+
+        editor = new AutoCompleteEditor(editorArguments);
+        editor.save();
+
+        expect(spy).toHaveBeenCalled();
+      });
     });
 
-    it('should return DOM element value when "forceUserInput" is enabled and loaded value length is greater then custom minLength defined when calling "serializeValue"', () => {
-      mockColumn.internalColumnEditor.editorOptions = { forceUserInput: true, minLength: 2 } as AutocompleteOption;
-      mockItemData = { id: 123, gender: { value: 'male', label: 'Male' }, isActive: true };
+    describe('validate method', () => {
+      it('should validate and return False when field is required and field is an empty string', () => {
+        mockColumn.internalColumnEditor.required = true;
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('');
 
-      editor = new AutoCompleteEditor(editorArguments);
-      editor.loadValue(mockItemData);
-      editor.setValue('Female');
-      const output = editor.serializeValue();
+        expect(validation).toEqual({ valid: false, msg: 'Field is required' });
+      });
 
-      expect(output).toBe('Female');
-    });
+      it('should validate and return True when field is required and field is a valid input value', () => {
+        mockColumn.internalColumnEditor.required = true;
+        editor = new AutoCompleteEditor(editorArguments);
+        const validation = editor.validate('gender');
 
-    it('should return loaded value when "forceUserInput" is enabled and loaded value length is lower than minLength defined when calling "serializeValue"', () => {
-      mockColumn.internalColumnEditor.editorOptions = { forceUserInput: true, };
-      mockItemData = { id: 123, gender: { value: 'male', label: 'Male' }, isActive: true };
-
-      editor = new AutoCompleteEditor(editorArguments);
-      editor.loadValue(mockItemData);
-      editor.setValue('F');
-      const output = editor.serializeValue();
-
-      expect(output).toBe('Male');
-    });
-
-    it('should return correct object value even when defining a "customStructure" when calling "serializeValue"', () => {
-      mockColumn.internalColumnEditor.collection = [{ option: 'male', text: 'Male' }, { option: 'female', text: 'Female' }];
-      mockColumn.internalColumnEditor.customStructure = { value: 'option', label: 'text' };
-      mockItemData = { id: 123, gender: { option: 'female', text: 'Female' }, isActive: true };
-
-      editor = new AutoCompleteEditor(editorArguments);
-      editor.loadValue(mockItemData);
-      const output = editor.serializeValue();
-
-      expect(output).toBe('Female');
-    });
-
-    it('should return an object output when calling "serializeValue" with its column definition set to "FieldType.object"', () => {
-      mockColumn.type = FieldType.object;
-      mockColumn.internalColumnEditor.collection = [{ value: 'm', label: 'Male' }, { value: 'f', label: 'Female' }];
-      mockItemData = { id: 123, gender: { value: 'f', label: 'Female' }, isActive: true };
-
-      editor = new AutoCompleteEditor(editorArguments);
-      editor.loadValue(mockItemData);
-      const output = editor.serializeValue();
-
-      expect(output).toEqual({ value: 'f', label: 'Female' });
-    });
-
-    it('should call "getEditorLock" when "hasAutoCommitEdit" is enabled after calling "save()" method', async () => {
-      gridOptionMock.autoCommitEdit = true;
-      const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
-
-      editor = new AutoCompleteEditor(editorArguments);
-      editor.save();
-
-      expect(spy).toHaveBeenCalled();
-    });
-
-    it('should call "commitChanges" when "hasAutoCommitEdit" is disabled after calling "save()" method', async () => {
-      gridOptionMock.autoCommitEdit = false;
-      const spy = jest.spyOn(editorArguments, 'commitChanges');
-
-      editor = new AutoCompleteEditor(editorArguments);
-      editor.save();
-
-      expect(spy).toHaveBeenCalled();
-    });
-
-    it('should validate and return False when field is required and field is an empty string', () => {
-      mockColumn.internalColumnEditor.required = true;
-      editor = new AutoCompleteEditor(editorArguments);
-      const validation = editor.validate('');
-
-      expect(validation).toEqual({ valid: false, msg: 'Field is required' });
-    });
-
-    it('should validate and return True when field is required and field a valid object', () => {
-      mockColumn.internalColumnEditor.required = true;
-      editor = new AutoCompleteEditor(editorArguments);
-      const validation = editor.validate(mockItemData);
-
-      expect(validation).toEqual({ valid: true, msg: null });
+        expect(validation).toEqual({ valid: true, msg: null });
+      });
     });
 
     describe('onSelect method', () => {

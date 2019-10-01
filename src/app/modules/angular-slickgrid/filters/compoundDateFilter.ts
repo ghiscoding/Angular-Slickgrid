@@ -122,6 +122,21 @@ export class CompoundDateFilter implements Filter {
     if (this.$filterElm) {
       this.$filterElm.off('keyup').remove();
     }
+    if (this.flatInstance && typeof this.flatInstance.destroy === 'function') {
+      this.flatInstance.destroy();
+    }
+  }
+
+  hide() {
+    if (this.flatInstance && typeof this.flatInstance.close === 'function') {
+      this.flatInstance.close();
+    }
+  }
+
+  show() {
+    if (this.flatInstance && typeof this.flatInstance.open === 'function') {
+      this.flatInstance.open();
+    }
   }
 
   /**
@@ -144,7 +159,7 @@ export class CompoundDateFilter implements Filter {
     const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
     const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateUtc);
     let currentLocale = this.translate && this.translate.currentLang || 'en';
-    if (currentLocale.length > 2) {
+    if (currentLocale && currentLocale.length > 2) {
       currentLocale = currentLocale.substring(0, 2);
     }
 

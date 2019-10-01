@@ -18,6 +18,7 @@ import {
   parseBoolean,
   parseUtcDate,
   sanitizeHtmlToText,
+  setDeepValue,
   titleCase,
   toCamelCase,
   toKebabCase,
@@ -843,6 +844,28 @@ describe('Service/Utilies', () => {
       const input = '<script>alert("Hello World")</script>';
       const output = sanitizeHtmlToText(input);
       expect(output).toBe('alert("Hello World")');
+    });
+  });
+
+  describe('setDeepValue method', () => {
+    let obj = {};
+    beforeEach(() => {
+      obj = { id: 1, user: { firstName: 'John', lastName: 'Doe', address: { number: 123, street: 'Broadway' } } };
+    });
+
+    it('should be able to update an object at 2nd level deep property', () => {
+      setDeepValue(obj, 'user.firstName', 'Jane');
+      expect(obj['user'].firstName).toBe('Jane');
+    });
+
+    it('should be able to update an object at 3rd level deep property', () => {
+      setDeepValue(obj, 'user.address.number', 78);
+      expect(obj['user']['address']['number']).toBe(78);
+    });
+
+    it('should be able to update a property that is not a complex object', () => {
+      setDeepValue(obj, 'id', 76);
+      expect(obj['id']).toBe(76);
     });
   });
 

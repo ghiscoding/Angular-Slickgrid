@@ -75,11 +75,13 @@ describe('SliderFilter', () => {
     filter.init(filterArguments);
     filter.setValues(3);
     const filterElm = divContainer.querySelector('.search-filter.slider-container.filter-duration');
-    filterElm.dispatchEvent(new CustomEvent('change'));
+    const mockEvent = new Event('change');
+    Object.defineProperty(mockEvent, 'target', { writable: true, configurable: true, value: { value: '13' } });
+    filterElm.dispatchEvent(mockEvent);
     const filterFilledElms = divContainer.querySelectorAll('.search-filter.slider-container.filter-duration.filled');
 
     expect(filterFilledElms.length).toBe(1);
-    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['3'], shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenLastCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['13'], shouldTriggerQuery: true });
   });
 
   it('should create the input filter with default search terms range when passed as a filter argument', () => {

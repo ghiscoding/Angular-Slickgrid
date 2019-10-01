@@ -11,7 +11,7 @@ import {
   KeyCode,
 } from './../models/index';
 import { Constants } from './../constants';
-import { findOrDefault } from '../services/utilities';
+import { findOrDefault, getDescendantProperty, setDeepValue } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -32,6 +32,7 @@ export class AutoCompleteEditor implements Editor {
   /** The JQuery DOM element */
   private _$editorElm: any;
 
+  /** SlickGrid Grid object */
   grid: any;
 
   /** The property name for labels in the collection */
@@ -46,7 +47,8 @@ export class AutoCompleteEditor implements Editor {
     if (!args) {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
-    this.init(args);
+    this.grid = args.grid;
+    this.init();
   }
 
   /** Get the Collection */
@@ -92,8 +94,7 @@ export class AutoCompleteEditor implements Editor {
     return this._$editorElm;
   }
 
-  init(args: EditorArguments) {
-    this.grid = args.grid;
+  init() {
     this.labelName = this.customStructure && this.customStructure.label || 'label';
     this.valueName = this.customStructure && this.customStructure.value || 'value';
 
@@ -118,25 +119,63 @@ export class AutoCompleteEditor implements Editor {
     this._$editorElm.val(value);
   }
 
+  applyValue(item: any, state: any) {
+    let newValue = state;
+    const fieldName = this.columnDef && this.columnDef.field;
+
+    // if we have a collection defined, we will try to find the string within the collection and return it
+    if (Array.isArray(this.editorCollection) && this.editorCollection.length > 0) {
+      newValue = findOrDefault(this.editorCollection, (collectionItem: any) => {
+        if (collectionItem && typeof state === 'object' && collectionItem.hasOwnProperty(this.labelName)) {
+          return (collectionItem.hasOwnProperty(this.labelName) && collectionItem[this.labelName].toString()) === (state.hasOwnProperty(this.labelName) && state[this.labelName].toString());
+        } else if (collectionItem && typeof state === 'string' && collectionItem.hasOwnProperty(this.labelName)) {
+          return (collectionItem.hasOwnProperty(this.labelName) && collectionItem[this.labelName].toString()) === state;
+        }
+        return collectionItem && collectionItem.toString() === state;
+      });
+    }
+
+    // is the field a complex object, "address.streetNumber"
+    const isComplexObject = fieldName.indexOf('.') > 0;
+
+    // validate the value before applying it (if not valid we'll set an empty string)
+    const validation = this.validate(newValue);
+    newValue = (validation && validation.valid) ? newValue : '';
+
+    // set the new value to the item datacontext
+    if (isComplexObject) {
+      setDeepValue(item, fieldName, newValue);
+    } else {
+      item[fieldName] = newValue;
+    }
+  }
+
+  isValueChanged(): boolean {
+    const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
+    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
+      return true;
+    }
+    return (!(this._$editorElm.val() === '' && this._defaultTextValue === null)) && (this._$editorElm.val() !== this._defaultTextValue);
+  }
+
   loadValue(item: any) {
     const fieldName = this.columnDef && this.columnDef.field;
 
-    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
-    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
+    // is the field a complex object, "address.streetNumber"
+    const isComplexObject = fieldName.indexOf('.') > 0;
 
-    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || item.hasOwnProperty(fieldNameFromComplexObject))) {
-      const data = item[fieldNameFromComplexObject || fieldName];
+    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
+      const data = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
       this._currentValue = data;
       this._defaultTextValue = typeof data === 'string' ? data : data[this.labelName];
       this._$editorElm.val(this._defaultTextValue);
-      this._$editorElm[0].defaultValue = this._defaultTextValue;
       this._$editorElm.select();
     }
   }
 
   save() {
     const validation = this.validate();
-    if (validation && validation.valid) {
+    if (validation && validation.valid && this.isValueChanged()) {
       if (this.hasAutoCommitEdit) {
         this.grid.getEditorLock().commitCurrentEdit();
       } else {
@@ -164,36 +203,6 @@ export class AutoCompleteEditor implements Editor {
       return this._currentValue.label;
     }
     return this._currentValue;
-  }
-
-  applyValue(item: any, state: any) {
-    let newValue = state;
-    const fieldName = this.columnDef && this.columnDef.field;
-
-    // if we have a collection defined, we will try to find the string within the collection and return it
-    if (Array.isArray(this.editorCollection) && this.editorCollection.length > 0) {
-      newValue = findOrDefault(this.editorCollection, (collectionItem: any) => {
-        if (collectionItem && typeof state === 'object' && collectionItem.hasOwnProperty(this.labelName)) {
-          return (collectionItem.hasOwnProperty(this.labelName) && collectionItem[this.labelName].toString()) === (state.hasOwnProperty(this.labelName) && state[this.labelName].toString());
-        } else if (collectionItem && typeof state === 'string' && collectionItem.hasOwnProperty(this.labelName)) {
-          return (collectionItem.hasOwnProperty(this.labelName) && collectionItem[this.labelName].toString()) === state;
-        }
-        return collectionItem && collectionItem.toString() === state;
-      });
-    }
-
-    // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
-    const fieldNameFromComplexObject = fieldName.indexOf('.') ? fieldName.substring(0, fieldName.indexOf('.')) : '';
-    const validation = this.validate(newValue);
-    item[fieldNameFromComplexObject || fieldName] = (validation && validation.valid) ? newValue : '';
-  }
-
-  isValueChanged(): boolean {
-    const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
-    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
-      return true;
-    }
-    return (!(this._$editorElm.val() === '' && this._defaultTextValue === null)) && (this._$editorElm.val() !== this._defaultTextValue);
   }
 
   validate(inputValue?: any): EditorValidatorOutput {
@@ -231,7 +240,7 @@ export class AutoCompleteEditor implements Editor {
       const itemLabel = typeof ui.item === 'string' ? ui.item : ui.item.label;
       this.setValue(itemLabel);
 
-      if (this.grid.getOptions().autoCommitEdit) {
+      if (this.hasAutoCommitEdit) {
         // do not use args.commitChanges() as this sets the focus to the next row.
         const validation = this.validate();
         if (validation && validation.valid) {

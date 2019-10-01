@@ -180,33 +180,36 @@ export class GridEditorComponent implements OnInit {
       }, {
         id: 'duration',
         name: 'Duration (days)',
-        field: 'duration',
+        field: 'task.duration',
         minWidth: 100,
         filterable: true,
         sortable: true,
+        formatter: Formatters.complexObject,
         type: FieldType.number,
+        exportWithFormatter: true,
         filter: { model: Filters.slider, params: { hideSliderNumber: false } },
+        /*
         editor: {
           model: Editors.slider,
           minValue: 0,
           maxValue: 100,
           // params: { hideSliderNumber: true },
         },
-        /*
+        */
         editor: {
           // default is 0 decimals, if no decimals is passed it will accept 0 or more decimals
           // however if you pass the "decimalPlaces", it will validate with that maximum
           alwaysSaveOnEnterKey: true, // defaults to False, when set to true and user presses ENTER it will always call a Save even if value is empty
           model: Editors.float,
           placeholder: 'enter number',
-          title: 'Your number must be bigger than 5', title: 'show a custom title', // add a custom title, to see it as a real tooltip you'll need to implement something like tipsy jquery lib
+          title: 'Your number must be bigger than 5', // add a custom title, to see it as a real tooltip you'll need to implement something like tipsy jquery lib
           minValue: 5,
           maxValue: 365,
           // the default validation error message is in English but you can override it by using "errorMessage"
           // errorMessage: this.i18n.tr('INVALID_FLOAT', { maxDecimal: 2 }),
           params: { decimalPlaces: 2 },
         },
-        */
+
       }, {
         id: 'complete',
         name: '% Complete',
@@ -247,11 +250,14 @@ export class GridEditorComponent implements OnInit {
       }, {
         id: 'start',
         name: 'Start',
-        field: 'start',
+        field: 'task.start',
         minWidth: 100,
         filterable: true,
         filter: { model: Filters.compoundDate },
-        formatter: Formatters.dateIso,
+        formatter: Formatters.multiple,
+        params: {
+          formatters: [Formatters.complexObject, Formatters.dateIso,]
+        },
         exportWithFormatter: true,
         sortable: true,
         type: FieldType.date,
@@ -383,6 +389,7 @@ export class GridEditorComponent implements OnInit {
         sortable: true,
         type: FieldType.string,
         editor: {
+          placeholder: 'choose option',
           collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
           // OR a regular collection load
           // collection: Array.from(Array(100).keys()).map(k => ({ value: k, prefix: 'Task', label: k })),
@@ -530,10 +537,12 @@ export class GridEditorComponent implements OnInit {
       tempDataset.push({
         id: i,
         title: 'Task ' + i,
-        duration: (i % 33 === 0) ? null : Math.round(Math.random() * 100) + '',
+        task: {
+          duration: (i % 33 === 0) ? null : Math.round(Math.random() * 100) + '',
+          start: new Date(randomYear, randomMonth, randomDay),
+        },
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
-        start: new Date(randomYear, randomMonth, randomDay),
         finish: randomFinish < new Date() ? '' : randomFinish, // make sure the random date is earlier than today
         effortDriven: (i % 5 === 0),
         prerequisites: (i % 2 === 0) && i !== 0 && i < 12 ? [i, i - 1] : [],

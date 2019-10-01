@@ -301,10 +301,17 @@ export class ExportService {
       // did the user provide a Custom Formatter for the export
       const exportCustomFormatter: Formatter | undefined = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
 
+      // does the field have the dot (.) notation and is a complex object? if so pull the first property name
+      let fieldProperty = fieldId;
+      if (typeof fieldId === 'string' && fieldId.indexOf('.') > 0) {
+        const props = fieldId.split('.');
+        fieldProperty = (props.length > 0) ? props[0] : fieldId;
+      }
+
       let itemData = '';
 
-      if (itemObj && itemObj.hasOwnProperty(fieldId) && exportCustomFormatter !== undefined && exportCustomFormatter !== undefined) {
-        const formattedData = exportCustomFormatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+      if (itemObj && itemObj.hasOwnProperty(fieldProperty) && exportCustomFormatter !== undefined && exportCustomFormatter !== undefined) {
+        const formattedData = exportCustomFormatter(row, col, itemObj[fieldProperty], columnDef, itemObj, this._grid);
         itemData = formattedData as string;
         if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
           itemData = formattedData.text;
@@ -312,8 +319,8 @@ export class ExportService {
         if (itemData === null || itemData === undefined) {
           itemData = '';
         }
-      } else if (isEvaluatingFormatter && itemObj.hasOwnProperty(fieldId) && columnDef.formatter) {
-        const formattedData = columnDef.formatter(row, col, itemObj[fieldId], columnDef, itemObj, this._grid);
+      } else if (isEvaluatingFormatter && itemObj.hasOwnProperty(fieldProperty) && columnDef.formatter) {
+        const formattedData = columnDef.formatter(row, col, itemObj[fieldProperty], columnDef, itemObj, this._grid);
         itemData = formattedData as string;
         if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
           itemData = formattedData.text;
@@ -322,7 +329,7 @@ export class ExportService {
           itemData = '';
         }
       } else {
-        itemData = (!itemObj.hasOwnProperty(fieldId)) ? '' : itemObj[fieldId];
+        itemData = (!itemObj.hasOwnProperty(fieldProperty)) ? '' : itemObj[fieldProperty];
         if (itemData === null || itemData === undefined) {
           itemData = '';
         }
