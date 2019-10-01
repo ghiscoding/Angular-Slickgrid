@@ -159,7 +159,7 @@ export class GridAddItemComponent implements OnInit {
     this.dataset = mockedDataset;
   }
 
-  addNewItem() {
+  addNewItem(insertPosition?: 'top' | 'bottom') {
     const newId = this.dataset.length;
     const randomYear = 2000 + Math.floor(Math.random() * 10);
     const randomMonth = Math.floor(Math.random() * 11);
@@ -176,7 +176,7 @@ export class GridAddItemComponent implements OnInit {
       finish: new Date(randomYear, (randomMonth + 2), randomDay),
       effortDriven: true
     };
-    this.angularGrid.gridService.addItemToDatagrid(newItem);
+    this.angularGrid.gridService.addItem(newItem, { position: insertPosition });
   }
 
   highlighFifthRow() {

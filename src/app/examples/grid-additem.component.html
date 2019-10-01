@@ -1,20 +1,24 @@
 <div class="container-fluid">
-    <h2>{{title}}</h2>
-    <div class="subtitle" [innerHTML]="subTitle"></div>
+  <h2>{{title}}</h2>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
 
-    <div class="col-sm-12">
-        <span>
-            <button class="btn btn-sm btn-default" (click)="addNewItem()">Add New Mocked Item</button>
-            <button class="btn btn-sm btn-default" (click)="updateSecondItem()">Update 2nd Row Item with Random Duration</button>
-            <button class="btn btn-sm btn-default" (click)="highlighFifthRow()">Highlight 5th Row</button>
-            <button class="btn btn-sm btn-default" (click)="changeDurationBackgroundColor()">Highlight Rows with Duration over 50</button>
-        </span>
-        <hr/>
-    </div>
+  <div class="col-sm-12">
+    <span>
+      <button class="btn btn-sm btn-default" (click)="addNewItem()">Add New Mocked Item (top)</button>
+      <button class="btn btn-sm btn-default" (click)="addNewItem('bottom')">Add New Mocked Item (bottom)</button>
+      <button class="btn btn-sm btn-default" (click)="updateSecondItem()">Update 2nd Row Item with Random
+        Duration</button>
+      <button class="btn btn-sm btn-default" (click)="highlighFifthRow()">Highlight 5th Row</button>
+      <button class="btn btn-sm btn-default" (click)="changeDurationBackgroundColor()">Highlight Rows with Duration over
+        50</button>
+    </span>
+    <hr />
+  </div>
 
-    <div class="col-sm-12">
-        <angular-slickgrid gridId="grid2" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset"
-        (onAngularGridCreated)="angularGridReady($event)">
-        </angular-slickgrid>
-    </div>
+  <div class="col-sm-12">
+    <angular-slickgrid gridId="grid2" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
+                       [dataset]="dataset"
+                       (onAngularGridCreated)="angularGridReady($event)">
+    </angular-slickgrid>
+  </div>
 </div>

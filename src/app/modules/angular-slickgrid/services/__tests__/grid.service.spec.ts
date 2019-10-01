@@ -30,6 +30,7 @@ const sortServiceStub = {
 } as unknown as SortService;
 
 const dataviewStub = {
+  addItem: jest.fn(),
   deleteItem: jest.fn(),
   getIdxById: jest.fn(),
   getItem: jest.fn(),
@@ -328,12 +329,30 @@ describe('Grid Service', () => {
     it('should expect the service to call the DataView "insertItem" when calling "addItem" with an item', () => {
       const mockItem = { id: 0, user: { firstName: 'John', lastName: 'Doe' } };
       const addSpy = jest.spyOn(dataviewStub, 'insertItem');
+      const scrollSpy = jest.spyOn(gridStub, 'scrollRowIntoView');
       const rxSpy = jest.spyOn(service.onItemAdded, 'next');
 
       service.addItem(mockItem);
 
       expect(addSpy).toHaveBeenCalledTimes(1);
       expect(addSpy).toHaveBeenCalledWith(0, mockItem);
+      expect(scrollSpy).toHaveBeenCalledWith(0);
+      expect(rxSpy).toHaveBeenCalledWith(mockItem);
+    });
+
+    it('should expect the service to call the DataView "addItem" when calling "addItem" with an item and the option "position" set to "bottom"', () => {
+      const expectationNewRowPosition = 1000;
+      const mockItem = { id: 0, user: { firstName: 'John', lastName: 'Doe' } };
+      jest.spyOn(dataviewStub, 'getRowById').mockReturnValue(expectationNewRowPosition);
+      const addSpy = jest.spyOn(dataviewStub, 'addItem');
+      const scrollSpy = jest.spyOn(gridStub, 'scrollRowIntoView');
+      const rxSpy = jest.spyOn(service.onItemAdded, 'next');
+
+      service.addItem(mockItem, { position: 'bottom' });
+
+      expect(addSpy).toHaveBeenCalledTimes(1);
+      expect(addSpy).toHaveBeenCalledWith(mockItem);
+      expect(scrollSpy).toHaveBeenCalledWith(expectationNewRowPosition);
       expect(rxSpy).toHaveBeenCalledWith(mockItem);
     });
 
@@ -692,16 +711,16 @@ describe('Grid Service', () => {
 
     it(`should return an Item Metadata object with filled "cssClasses" property including a row number in the string
     when the column definition has a "rowClass" property and when callback provided already returns a "cssClasses" property`, () => {
-        const rowNumber = 1;
-        const dataviewSpy = jest.spyOn(dataviewStub, 'getItem').mockReturnValue(columnDefinitions[rowNumber]);
+      const rowNumber = 1;
+      const dataviewSpy = jest.spyOn(dataviewStub, 'getItem').mockReturnValue(columnDefinitions[rowNumber]);
 
-        const callback = service.getItemRowMetadataToHighlight(mockItemMetadataFn);
-        const output = callback(rowNumber); // execute callback with a row number
+      const callback = service.getItemRowMetadataToHighlight(mockItemMetadataFn);
+      const output = callback(rowNumber); // execute callback with a row number
 
-        expect(dataviewSpy).toHaveBeenCalled();
-        expect(typeof callback === 'function').toBe(true);
-        expect(output).toEqual({ cssClasses: ' red row1' });
-      });
+      expect(dataviewSpy).toHaveBeenCalled();
+      expect(typeof callback === 'function').toBe(true);
+      expect(output).toEqual({ cssClasses: ' red row1' });
+    });
   });
 
   describe('highlightRowByMetadata method', () => {
