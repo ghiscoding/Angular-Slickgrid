@@ -207,7 +207,7 @@ describe('LongTextEditor', () => {
     });
 
     describe('isValueChanged method', () => {
-      it('should return True when previously dispatched keyboard event being char "a"', () => {
+      it('should return True when previously dispatched keyboard event is a new char "a"', () => {
         const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
 
         editor = new LongTextEditor(editorArguments);
@@ -338,6 +338,7 @@ describe('LongTextEditor', () => {
 
         editor = new LongTextEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue('task 1');
         editor.save();
 
         expect(spy).toHaveBeenCalled();
@@ -350,6 +351,7 @@ describe('LongTextEditor', () => {
 
         editor = new LongTextEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue('task 1');
         editor.save();
 
         expect(spy).toHaveBeenCalled();
@@ -363,6 +365,7 @@ describe('LongTextEditor', () => {
 
         editor = new LongTextEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue('');
         editor.save();
 
         expect(spy).not.toHaveBeenCalled();

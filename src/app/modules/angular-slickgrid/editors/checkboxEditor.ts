@@ -11,7 +11,7 @@ declare var $: any;
  */
 export class CheckboxEditor implements Editor {
   private _$input: any;
-  defaultValue: boolean;
+  originalValue: boolean;
 
   /** SlickGrid Grid object */
   grid: any;
@@ -54,7 +54,7 @@ export class CheckboxEditor implements Editor {
 
     this._$input = $(`<input type="checkbox" value="true" class="editor-checkbox editor-${fieldId}" title="${title}" />`);
     this._$input.appendTo(this.args.container);
-    this._$input.focus();
+    this.focus();
 
     // make the checkbox editor act like a regular checkbox that commit the value on click
     if (this.hasAutoCommitEdit) {
@@ -96,7 +96,7 @@ export class CheckboxEditor implements Editor {
   }
 
   isValueChanged() {
-    return (this.serializeValue() !== this.defaultValue);
+    return (this.serializeValue() !== this.originalValue);
   }
 
   loadValue(item: any) {
@@ -107,8 +107,8 @@ export class CheckboxEditor implements Editor {
 
     if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
       const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
-      this.defaultValue = value;
-      if (this.defaultValue) {
+      this.originalValue = value;
+      if (this.originalValue) {
         this._$input.prop('checked', true);
       } else {
         this._$input.prop('checked', false);
@@ -118,7 +118,7 @@ export class CheckboxEditor implements Editor {
 
   save() {
     const validation = this.validate();
-    if (validation && validation.valid && this.hasAutoCommitEdit) {
+    if (validation && validation.valid && this.isValueChanged() && this.hasAutoCommitEdit) {
       this.grid.getEditorLock().commitCurrentEdit();
     }
   }

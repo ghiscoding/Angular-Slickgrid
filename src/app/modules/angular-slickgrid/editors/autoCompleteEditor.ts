@@ -169,14 +169,13 @@ export class AutoCompleteEditor implements Editor {
       this._currentValue = data;
       this._defaultTextValue = typeof data === 'string' ? data : data[this.labelName];
       this._$editorElm.val(this._defaultTextValue);
-      this._$editorElm[0].defaultValue = this._defaultTextValue;
       this._$editorElm.select();
     }
   }
 
   save() {
     const validation = this.validate();
-    if (validation && validation.valid) {
+    if (validation && validation.valid && this.isValueChanged()) {
       if (this.hasAutoCommitEdit) {
         this.grid.getEditorLock().commitCurrentEdit();
       } else {

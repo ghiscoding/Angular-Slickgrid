@@ -5,9 +5,8 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Editors } from '../index';
 import { SelectEditor } from '../selectEditor';
-import { AutocompleteOption, Column, EditorArgs, EditorArguments, GridOption, KeyCode } from '../../models';
+import { AutocompleteOption, Column, EditorArgs, EditorArguments, GridOption, FieldType, OperatorType } from '../../models';
 
-const KEY_CHAR_A = 97;
 const containerId = 'demo-container';
 
 // define a <div> container to simulate the grid container
@@ -202,6 +201,7 @@ describe('SelectEditor', () => {
       const editorElm = editor.editorDomElement;
 
       expect(editor.getValue()).toEqual(['male']);
+      expect(editorElm[0].value).toEqual('male');
     });
 
     it('should create the multi-select filter with a blank entry at the beginning of the collection when "addBlankEntry" is set in the "collectionOptions" property', () => {
@@ -288,6 +288,28 @@ describe('SelectEditor', () => {
         editor.applyValue(mockItemData, 'female');
 
         expect(mockItemData).toEqual({ id: 1, gender: '', isActive: true });
+      });
+
+      it('should apply the value to the gender property as an array with multiple when the input value is a CSV string', () => {
+        mockColumn.internalColumnEditor.validator = null;
+        mockItemData = { id: 1, gender: 'male', isActive: true };
+
+        editor = new SelectEditor(editorArguments, true);
+        editor.applyValue(mockItemData, 'male,other');
+
+        expect(mockItemData).toEqual({ id: 1, gender: ['male', 'other'], isActive: true });
+      });
+
+      it('should parse the value as a float when field type is defined as float then apply the value', () => {
+        mockColumn = { id: 'age', field: 'age', type: FieldType.boolean, editable: true, editor: { model: Editors.multipleSelect }, internalColumnEditor: {} } as Column;
+        mockItemData = { id: 1, gender: 'male', isActive: true, age: 26 };
+        mockColumn.internalColumnEditor.collection = [{ value: 20, label: '20' }, { value: 25, label: '25' }];
+
+        editorArguments.column = mockColumn;
+        editor = new SelectEditor(editorArguments, true);
+        editor.applyValue(mockItemData, 25);
+
+        expect(mockItemData).toEqual({ id: 1, gender: 'male', isActive: true, age: 25 });
       });
     });
 
@@ -404,6 +426,214 @@ describe('SelectEditor', () => {
         const validation = editor.validate('text');
 
         expect(validation).toEqual({ valid: true, msg: null });
+      });
+    });
+
+    describe('initialize with collection', () => {
+      it('should create the multi-select filter with a default search term when passed as a filter argument even with collection an array of strings', () => {
+        mockColumn.internalColumnEditor.collection = ['male', 'female'];
+
+        editor = new SelectEditor(editorArguments, true);
+        const editorBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.editor-gender button.ms-choice');
+        const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li input[type=checkbox]`);
+        const editorOkElm = divContainer.querySelector<HTMLButtonElement>(`[name=editor-gender].ms-drop .ms-ok-button`);
+        editorBtnElm.click();
+        editorOkElm.click();
+
+        expect(editorListElm.length).toBe(2);
+        expect(editorListElm[0].value).toBe('male');
+        expect(editorListElm[1].value).toBe('female');
+      });
+    });
+
+    describe('collectionSortBy setting', () => {
+      it('should create the multi-select filter and sort the string collection when "collectionSortBy" is set', () => {
+        mockColumn.internalColumnEditor = {
+          collection: ['other', 'male', 'female'],
+          collectionSortBy: {
+            sortDesc: true,
+            fieldType: FieldType.string
+          }
+        };
+
+        editor = new SelectEditor(editorArguments, true);
+        const editorBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.editor-gender button.ms-choice');
+        const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li input[type=checkbox]`);
+        editorBtnElm.click();
+
+        expect(editorListElm.length).toBe(3);
+        expect(editorListElm[0].value).toBe('other');
+        expect(editorListElm[1].value).toBe('male');
+        expect(editorListElm[2].value).toBe('female');
+      });
+
+      it('should create the multi-select filter and sort the value/label pair collection when "collectionSortBy" is set', () => {
+        mockColumn.internalColumnEditor = {
+          collection: [{ value: 'other', description: 'other' }, { value: 'male', description: 'male' }, { value: 'female', description: 'female' }],
+          collectionSortBy: {
+            property: 'value',
+            sortDesc: false,
+            fieldType: FieldType.string
+          },
+          customStructure: {
+            value: 'value',
+            label: 'description',
+          },
+        };
+
+        editor = new SelectEditor(editorArguments, true);
+        const editorBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.editor-gender button.ms-choice');
+        const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li input[type=checkbox]`);
+        editorBtnElm.click();
+
+        expect(editorListElm.length).toBe(3);
+        expect(editorListElm[0].value).toBe('female');
+        expect(editorListElm[1].value).toBe('male');
+        expect(editorListElm[2].value).toBe('other');
+      });
+    });
+
+    describe('collectionFilterBy setting', () => {
+      it('should create the multi-select filter and filter the string collection when "collectionFilterBy" is set', () => {
+        mockColumn.internalColumnEditor = {
+          collection: ['other', 'male', 'female'],
+          collectionFilterBy: {
+            operator: OperatorType.equal,
+            value: 'other'
+          }
+        };
+
+        editor = new SelectEditor(editorArguments, true);
+        const editorBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.editor-gender button.ms-choice');
+        const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li input[type=checkbox]`);
+        editorBtnElm.click();
+
+        expect(editorListElm.length).toBe(1);
+        expect(editorListElm[0].value).toBe('other');
+      });
+
+      it('should create the multi-select filter and filter the value/label pair collection when "collectionFilterBy" is set', () => {
+        mockColumn.internalColumnEditor = {
+          collection: [{ value: 'other', description: 'other' }, { value: 'male', description: 'male' }, { value: 'female', description: 'female' }],
+          collectionFilterBy: [
+            { property: 'value', operator: OperatorType.notEqual, value: 'other' },
+            { property: 'value', operator: OperatorType.notEqual, value: 'male' }
+          ],
+          customStructure: {
+            value: 'value',
+            label: 'description',
+          },
+        };
+
+        editor = new SelectEditor(editorArguments, true);
+        const editorBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.editor-gender button.ms-choice');
+        const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li input[type=checkbox]`);
+        editorBtnElm.click();
+
+        expect(editorListElm.length).toBe(1);
+        expect(editorListElm[0].value).toBe('female');
+      });
+
+      it('should create the multi-select filter and filter the value/label pair collection when "collectionFilterBy" is set and "filterResultAfterEachPass" is set to "merge"', () => {
+        mockColumn.internalColumnEditor = {
+          collection: [{ value: 'other', description: 'other' }, { value: 'male', description: 'male' }, { value: 'female', description: 'female' }],
+          collectionFilterBy: [
+            { property: 'value', operator: OperatorType.equal, value: 'other' },
+            { property: 'value', operator: OperatorType.equal, value: 'male' }
+          ],
+          collectionOptions: {
+            filterResultAfterEachPass: 'merge'
+          },
+          customStructure: {
+            value: 'value',
+            label: 'description',
+          },
+        };
+
+        editor = new SelectEditor(editorArguments, true);
+        const editorBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.editor-gender button.ms-choice');
+        const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li input[type=checkbox]`);
+        editorBtnElm.click();
+
+        expect(editorListElm.length).toBe(2);
+        expect(editorListElm[0].value).toBe('other');
+        expect(editorListElm[1].value).toBe('male');
+      });
+    });
+
+    describe('collectionInsideObjectProperty setting', () => {
+      it('should create the multi-select editor with a value/label pair collection that is inside an object when "collectionInsideObjectProperty" is defined with a dot notation', () => {
+        mockColumn.internalColumnEditor = {
+          // @ts-ignore
+          collection: { deep: { myCollection: [{ value: 'other', description: 'other' }, { value: 'male', description: 'male' }, { value: 'female', description: 'female' }] } },
+          collectionOptions: {
+            collectionInsideObjectProperty: 'deep.myCollection'
+          },
+          customStructure: {
+            value: 'value',
+            label: 'description',
+          },
+        };
+
+        editor = new SelectEditor(editorArguments, true);
+        const editorBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.editor-gender button.ms-choice');
+        const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li input[type=checkbox]`);
+        editorBtnElm.click();
+
+        expect(editorListElm.length).toBe(3);
+        expect(editorListElm[0].value).toBe('other');
+        expect(editorListElm[1].value).toBe('male');
+        expect(editorListElm[2].value).toBe('female');
+      });
+    });
+
+    describe('enableRenderHtml property', () => {
+      it('should create the multi-select filter with a default search term and have the HTML rendered when "enableRenderHtml" is set', () => {
+        mockColumn.internalColumnEditor = {
+          enableRenderHtml: true,
+          collection: [{ value: true, label: 'True', labelPrefix: `<i class="fa fa-check"></i> ` }, { value: false, label: 'False' }],
+          customStructure: {
+            value: 'isEffort',
+            label: 'label',
+            labelPrefix: 'labelPrefix',
+          },
+        };
+
+        editor = new SelectEditor(editorArguments, true);
+        const editorBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.editor-gender button.ms-choice');
+        const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li span`);
+        editorBtnElm.click();
+
+        expect(editorListElm.length).toBe(2);
+        expect(editorListElm[0].innerHTML).toBe('<i class="fa fa-check"></i> True');
+      });
+
+      it('should create the multi-select filter with a default search term and have the HTML rendered and sanitized when "enableRenderHtml" is set and has <script> tag', () => {
+        mockColumn.internalColumnEditor = {
+          enableRenderHtml: true,
+          collection: [{ isEffort: true, label: 'True', labelPrefix: `<script>alert('test')></script><i class="fa fa-check"></i> ` }, { isEffort: false, label: 'False' }],
+          collectionOptions: {
+            separatorBetweenTextLabels: ': ',
+            includePrefixSuffixToSelectedValues: true,
+          },
+          customStructure: {
+            value: 'isEffort',
+            label: 'label',
+            labelPrefix: 'labelPrefix',
+          },
+        };
+        mockItemData = { id: 1, gender: 'male', isEffort: false };
+
+        editor = new SelectEditor(editorArguments, true);
+        editor.loadValue(mockItemData);
+        editor.setValue([false]);
+        const editorBtnElm = divContainer.querySelector<HTMLButtonElement>('.ms-parent.ms-filter.editor-gender button.ms-choice');
+        const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li span`);
+        editorBtnElm.click();
+
+        expect(editor.getValue()).toEqual(['']);
+        expect(editorListElm.length).toBe(2);
+        expect(editorListElm[0].innerHTML).toBe('<i class="fa fa-check"></i> : True');
       });
     });
   });

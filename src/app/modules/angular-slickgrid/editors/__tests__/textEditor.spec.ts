@@ -88,6 +88,18 @@ describe('TextEditor', () => {
       expect(editorCount).toBe(1);
     });
 
+    it('should initialize the editor and focus on the element after a small delay', (done) => {
+      const spy = jest.spyOn(editor, 'focus');
+      editor = new TextEditor(editorArguments);
+      const editorCount = divContainer.querySelectorAll('input.editor-text.editor-title').length;
+
+      setTimeout(() => {
+        expect(editorCount).toBe(1);
+        expect(spy).toHaveBeenCalled();
+        done();
+      }, 51);
+    });
+
     it('should initialize the editor even when user define his own editor options', () => {
       mockColumn.internalColumnEditor.editorOptions = { minLength: 3 } as AutocompleteOption;
       editor = new TextEditor(editorArguments);
@@ -141,7 +153,6 @@ describe('TextEditor', () => {
       const editorElm = editor.editorDomElement;
 
       expect(editor.getValue()).toBe('task 1');
-      expect(editorElm[0].defaultValue).toBe('task 1');
     });
 
     it('should dispatch a keyboard event and expect "stopImmediatePropagation()" to have been called when using Left Arrow key', () => {
@@ -171,7 +182,7 @@ describe('TextEditor', () => {
     });
 
     describe('isValueChanged method', () => {
-      it('should return True when previously dispatched keyboard event being char "a"', () => {
+      it('should return True when previously dispatched keyboard event is a new char "a"', () => {
         const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_A, bubbles: true, cancelable: true });
 
         editor = new TextEditor(editorArguments);
@@ -303,6 +314,7 @@ describe('TextEditor', () => {
 
         editor = new TextEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue('task 21');
         editor.save();
 
         expect(spy).toHaveBeenCalled();
@@ -315,19 +327,21 @@ describe('TextEditor', () => {
 
         editor = new TextEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue('task 21');
         editor.save();
 
         expect(spy).toHaveBeenCalled();
       });
 
       it('should not call anything when the input value is empty but is required', () => {
-        mockItemData = { id: 1, title: '', isActive: true };
+        mockItemData = { id: 1, title: 'task', isActive: true };
         mockColumn.internalColumnEditor.required = true;
         gridOptionMock.autoCommitEdit = true;
         const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
 
         editor = new TextEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue('');
         editor.save();
 
         expect(spy).not.toHaveBeenCalled();
@@ -340,6 +354,7 @@ describe('TextEditor', () => {
 
         editor = new TextEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue('task 21');
         const spySave = jest.spyOn(editor, 'save');
         const editorElm = editor.editorDomElement;
 

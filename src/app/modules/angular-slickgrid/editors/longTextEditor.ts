@@ -181,14 +181,12 @@ export class LongTextEditor implements Editor {
 
   save() {
     const validation = this.validate();
-    if (validation && validation.valid) {
+    if (validation && validation.valid && this.isValueChanged()) {
       if (this.hasAutoCommitEdit) {
         this.grid.getEditorLock().commitCurrentEdit();
       } else {
         this.args.commitChanges();
       }
-    } else {
-      this.args.commitChanges();
     }
   }
 

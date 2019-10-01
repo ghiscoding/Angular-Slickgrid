@@ -14,7 +14,7 @@ const defaultDecimalPlaces = 0;
 export class FloatEditor implements Editor {
   private _lastInputEvent: KeyboardEvent;
   private _$input: any;
-  defaultValue: any;
+  originalValue: number | string;
 
   /** SlickGrid Grid object */
   grid: any;
@@ -136,7 +136,7 @@ export class FloatEditor implements Editor {
     if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
       return true;
     }
-    return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
+    return (!(elmValue === '' && this.originalValue === null)) && (elmValue !== this.originalValue);
   }
 
   loadValue(item: any) {
@@ -147,20 +147,19 @@ export class FloatEditor implements Editor {
 
     if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
       const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
-      this.defaultValue = value;
+      this.originalValue = value;
       const decPlaces = this.getDecimalPlaces();
-      if (decPlaces !== null && (this.defaultValue || this.defaultValue === 0) && this.defaultValue.toFixed) {
-        this.defaultValue = this.defaultValue.toFixed(decPlaces);
+      if (decPlaces !== null && (this.originalValue || this.originalValue === 0) && (+this.originalValue).toFixed) {
+        this.originalValue = (+this.originalValue).toFixed(decPlaces);
       }
-      this._$input.val(this.defaultValue);
-      this._$input[0].defaultValue = this.defaultValue;
+      this._$input.val(this.originalValue);
       this._$input.select();
     }
   }
 
   save() {
     const validation = this.validate();
-    if (validation && validation.valid) {
+    if (validation && validation.valid && this.isValueChanged()) {
       if (this.hasAutoCommitEdit) {
         this.grid.getEditorLock().commitCurrentEdit();
       } else {

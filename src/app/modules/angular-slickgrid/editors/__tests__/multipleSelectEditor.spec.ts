@@ -5,10 +5,8 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Editors } from '../index';
 import { MultipleSelectEditor } from '../multipleSelectEditor';
-import { CollectionService } from '../../services/collection.service';
-import { AutocompleteOption, Column, EditorArgs, EditorArguments, GridOption, KeyCode } from '../../models';
+import { Column, EditorArguments, GridOption } from '../../models';
 
-const KEY_CHAR_A = 97;
 const containerId = 'demo-container';
 
 // define a <div> container to simulate the grid container

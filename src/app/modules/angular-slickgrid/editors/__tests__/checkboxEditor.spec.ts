@@ -101,9 +101,11 @@ describe('CheckboxEditor', () => {
       mockColumn.internalColumnEditor.title = testValue;
 
       editor = new CheckboxEditor(editorArguments);
+      const editorElmJquery = editor.editorDomElement;
       const editorElm = divContainer.querySelector<HTMLInputElement>('input.editor-checkbox.editor-isActive');
 
       expect(editorElm.title).toBe(testValue);
+      expect(editorElmJquery[0].title).toBe(testValue);
     });
 
     it('should call "columnEditor" GETTER and expect to equal the editor settings we provided', () => {
@@ -146,13 +148,16 @@ describe('CheckboxEditor', () => {
 
     describe('isValueChanged method', () => {
       it('should return True when previous event is a click event', () => {
+        gridOptionMock.autoCommitEdit = true;
         editor = new CheckboxEditor(editorArguments);
+        const spy = jest.spyOn(editor, 'save');
         editor.loadValue({ id: 2, title: 'task 1', isActive: true });
 
-        const editorElm = editor.editorDomElement;
-        editorElm.click();
+        const editorElm = divContainer.querySelector<HTMLInputElement>('input.editor-isActive');
+        editorElm.dispatchEvent(new (window.window as any).CustomEvent('click'));
 
         expect(editor.isValueChanged()).toBe(true);
+        expect(spy).toHaveBeenCalled();
       });
 
       it('should return False when previous event is not a click event', () => {
@@ -261,24 +266,26 @@ describe('CheckboxEditor', () => {
       });
 
       it('should call "getEditorLock" method when "hasAutoCommitEdit" is enabled', () => {
-        mockItemData = { id: 1, title: 'task', isActive: true };
+        mockItemData = { id: 1, title: 'task', isActive: false };
         gridOptionMock.autoCommitEdit = true;
         const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
 
         editor = new CheckboxEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue(true);
         editor.save();
 
         expect(spy).toHaveBeenCalled();
       });
 
       it('should call "commitChanges" method when "hasAutoCommitEdit" is disabled', () => {
-        mockItemData = { id: 1, title: 'task', isActive: true };
+        mockItemData = { id: 1, title: 'task', isActive: false };
         gridOptionMock.autoCommitEdit = false;
         const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
 
         editor = new CheckboxEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue(true);
         editor.save();
 
         expect(spy).not.toHaveBeenCalled();
@@ -292,6 +299,7 @@ describe('CheckboxEditor', () => {
 
         editor = new CheckboxEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue(false);
         editor.save();
 
         expect(spy).not.toHaveBeenCalled();
@@ -305,6 +313,7 @@ describe('CheckboxEditor', () => {
 
         editor = new CheckboxEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue(false);
         editor.save();
 
         expect(spy).not.toHaveBeenCalled();

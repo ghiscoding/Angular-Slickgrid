@@ -143,10 +143,8 @@ describe('AutoCompleteEditor', () => {
     it('should define an item datacontext containing a string as cell value and expect this value to be loaded in the editor when calling "loadValue"', () => {
       editor = new AutoCompleteEditor(editorArguments);
       editor.loadValue(mockItemData);
-      const editorElm = editor.editorDomElement;
 
       expect(editor.getValue()).toBe('male');
-      expect(editorElm[0].defaultValue).toBe('male');
     });
 
     it('should define an item datacontext containing a complex object as cell value and expect this value to be loaded in the editor when calling "loadValue"', () => {
@@ -154,10 +152,8 @@ describe('AutoCompleteEditor', () => {
       mockColumn.field = 'gender.value';
       editor = new AutoCompleteEditor(editorArguments);
       editor.loadValue(mockItemData);
-      const editorElm = editor.editorDomElement;
 
       expect(editor.getValue()).toBe('male');
-      expect(editorElm[0].defaultValue).toBe('male');
     });
 
     it('should dispatch a keyboard event and expect "stopImmediatePropagation()" to have been called when using Left Arrow key', () => {

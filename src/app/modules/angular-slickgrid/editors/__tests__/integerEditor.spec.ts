@@ -88,12 +88,16 @@ describe('IntegerEditor', () => {
       expect(editorCount).toBe(1);
     });
 
-    it('should initialize the editor even when user define his own editor options', () => {
-      mockColumn.internalColumnEditor.editorOptions = { minLength: 3 } as AutocompleteOption;
+    it('should initialize the editor and focus on the element after a small delay', (done) => {
+      const spy = jest.spyOn(editor, 'focus');
       editor = new IntegerEditor(editorArguments);
       const editorCount = divContainer.querySelectorAll('input.editor-text.editor-price').length;
 
-      expect(editorCount).toBe(1);
+      setTimeout(() => {
+        expect(editorCount).toBe(1);
+        expect(spy).toHaveBeenCalled();
+        done();
+      }, 51);
     });
 
     it('should have a placeholder when defined in its column definition', () => {
@@ -141,7 +145,6 @@ describe('IntegerEditor', () => {
       const editorElm = editor.editorDomElement;
 
       expect(editor.getValue()).toBe('213');
-      expect(editorElm[0].defaultValue).toBe('213');
     });
 
     it('should dispatch a keyboard event and expect "stopImmediatePropagation()" to have been called when using Left Arrow key', () => {
@@ -171,7 +174,7 @@ describe('IntegerEditor', () => {
     });
 
     describe('isValueChanged method', () => {
-      it('should return True when previously dispatched keyboard event being char 0', () => {
+      it('should return True when previously dispatched keyboard event is a new char 0', () => {
         const event = new (window.window as any).KeyboardEvent('keydown', { keyCode: KEY_CHAR_0, bubbles: true, cancelable: true });
 
         editor = new IntegerEditor(editorArguments);
@@ -346,6 +349,7 @@ describe('IntegerEditor', () => {
 
         editor = new IntegerEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue(35);
         editor.save();
 
         expect(spy).toHaveBeenCalled();
@@ -358,18 +362,20 @@ describe('IntegerEditor', () => {
 
         editor = new IntegerEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue(35);
         editor.save();
 
         expect(spy).toHaveBeenCalled();
       });
 
       it('should not call anything when the input value is not a valid integer', () => {
-        mockItemData = { id: 1, price: '.2', isActive: true };
+        mockItemData = { id: 1, price: '.1', isActive: true };
         gridOptionMock.autoCommitEdit = true;
         const spy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
 
         editor = new IntegerEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue('.2');
         editor.save();
 
         expect(spy).not.toHaveBeenCalled();
@@ -382,6 +388,7 @@ describe('IntegerEditor', () => {
 
         editor = new IntegerEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue(35);
         const spySave = jest.spyOn(editor, 'save');
         const editorElm = editor.editorDomElement;
 
