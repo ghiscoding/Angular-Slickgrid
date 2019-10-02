@@ -1,4 +1,7 @@
 export interface GridServiceInsertOption {
+  /** Defaults to "top", which position in the grid do we want to insert and show the new row (on top or bottom of the grid) */
+  position?: 'top' | 'bottom';
+
   /** Defaults to true, highlight the row(s) in the grid after insert */
   highlightRow?: boolean;
 

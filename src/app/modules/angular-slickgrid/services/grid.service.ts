@@ -18,8 +18,8 @@ import { Subject } from 'rxjs';
 declare var Slick: any;
 let highlightTimerEnd: any;
 const GridServiceDeleteOptionDefaults: GridServiceDeleteOption = { triggerEvent: true };
-const GridServiceInsertOptionDefaults: GridServiceInsertOption = { highlightRow: true, resortGrid: false, selectRow: false, triggerEvent: true };
-const GridServiceUpdateOptionDefaults: GridServiceUpdateOption = { highlightRow: true, selectRow: false, triggerEvent: true };
+const GridServiceInsertOptionDefaults: GridServiceInsertOption = { highlightRow: true, position: 'top', resortGrid: false, selectRow: false, triggerEvent: true };
+const GridServiceUpdateOptionDefaults: GridServiceUpdateOption = { highlightRow: true, selectRow: false, scrollRowIntoView: false, triggerEvent: true };
 
 @Injectable()
 export class GridService {
@@ -285,9 +285,15 @@ export class GridService {
       throw new Error(`Adding an item requires the item to include an "id" property`);
     }
 
-    this._dataView.insertItem(0, item); // insert at index 0
+    // insert position top/bottom, defaults to top
+    // when position is top we'll call insert at index 0, else call addItem which just push to the DataView array
+    if (options && options.position === 'bottom') {
+      this._dataView.addItem(item);
+    } else {
+      this._dataView.insertItem(0, item); // insert at index 0
+    }
 
-    // row number in the grid, by default it will be on first row
+    // row number in the grid, by default it will be on first row (top is the default)
     let rowNumber = 0;
 
     // do we want the item to be sorted in the grid, when set to False it will insert on first row (defaults to false)
@@ -298,15 +304,17 @@ export class GridService {
       // we need to do it here after resort and get each row number because it possibly changes after the sort
       rowNumber = this._dataView.getRowById(item.id);
     } else {
-      this._grid.scrollRowIntoView(rowNumber); // scroll to row 0
+      // scroll to row index 0 when inserting on top else scroll to the bottom where it got inserted
+      rowNumber = (options && options.position === 'bottom') ? this._dataView.getRowById(item.id) : 0;
+      this._grid.scrollRowIntoView(rowNumber);
     }
 
-    // highlight the row we just added, if highlight is defined
+    // if highlight is enabled, we'll highlight the row we just added
     if (options.highlightRow) {
       this.highlightRow(rowNumber);
     }
 
-    // select the row in the grid
+    // if row selection (checkbox selector) is enabled, we'll select the row in the grid
     if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
       this._grid.setSelectedRows(rowNumber);
     }
@@ -332,7 +340,7 @@ export class GridService {
     if (!Array.isArray(items)) {
       return [this.addItem(items, options)];
     } else {
-      items.forEach((item: any) => this.addItem(item, { highlightRow: false, resortGrid: false, selectRow: false, triggerEvent: false }));
+      items.forEach((item: any) => this.addItem(item, { ...options, highlightRow: false, resortGrid: false, triggerEvent: false }));
     }
 
     // do we want the item to be sorted in the grid, when set to False it will insert on first row (defaults to false)
@@ -426,7 +434,7 @@ export class GridService {
       if (item && item.id !== undefined) {
         itemIds.push(item.id);
       }
-      this.deleteItem(item, { triggerEvent: false });
+      this.deleteItem(item, { ...options, triggerEvent: false });
     });
 
     // do we want to trigger an event after deleting the item
@@ -537,7 +545,7 @@ export class GridService {
 
     const gridRowNumbers: number[] = [];
     items.forEach((item: any) => {
-      gridRowNumbers.push(this.updateItem(item, { highlightRow: false, selectRow: false, triggerEvent: false }));
+      gridRowNumbers.push(this.updateItem(item, { ...options, highlightRow: false, selectRow: false, triggerEvent: false }));
     });
 
     // only highlight at the end, all at once
@@ -581,6 +589,11 @@ export class GridService {
       // Update the item itself inside the dataView
       this._dataView.updateItem(itemId, item);
       this._grid.updateRow(rowNumber);
+
+      // do we want to scroll to the row so that it shows in the Viewport (UI)
+      if (options.scrollRowIntoView) {
+        this._grid.scrollRowIntoView(rowNumber);
+      }
 
       // highlight the row we just updated, if defined
       if (options.highlightRow) {
@@ -631,7 +644,7 @@ export class GridService {
 
     const gridRowNumbers: number[] = [];
     items.forEach((item: any) => {
-      gridRowNumbers.push(this.upsertItem(item, { highlightRow: false, resortGrid: false, selectRow: false, triggerEvent: false }));
+      gridRowNumbers.push(this.upsertItem(item, { ...options, highlightRow: false, resortGrid: false, selectRow: false, triggerEvent: false }));
     });
 
     // only highlight at the end, all at once
