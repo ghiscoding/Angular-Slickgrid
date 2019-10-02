@@ -131,9 +131,10 @@ export class SelectEditor implements Editor {
   }
 
   /** Get the Collection */
-  get collection(): any[] {
-    return this.columnDef && this.columnDef && this.columnDef.internalColumnEditor.collection || [];
+  get collection(): SelectOption[] {
+    return this.columnDef && this.columnDef.internalColumnEditor.collection || [];
   }
+
 
   /** Getter for the Collection Options */
   get collectionOptions(): CollectionOption {

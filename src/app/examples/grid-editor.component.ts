@@ -180,7 +180,7 @@ export class GridEditorComponent implements OnInit {
       }, {
         id: 'duration',
         name: 'Duration (days)',
-        field: 'task.duration',
+        field: 'duration',
         minWidth: 100,
         filterable: true,
         sortable: true,
@@ -188,14 +188,13 @@ export class GridEditorComponent implements OnInit {
         type: FieldType.number,
         exportWithFormatter: true,
         filter: { model: Filters.slider, params: { hideSliderNumber: false } },
-        /*
         editor: {
           model: Editors.slider,
           minValue: 0,
           maxValue: 100,
           // params: { hideSliderNumber: true },
         },
-        */
+        /*
         editor: {
           // default is 0 decimals, if no decimals is passed it will accept 0 or more decimals
           // however if you pass the "decimalPlaces", it will validate with that maximum
@@ -209,7 +208,7 @@ export class GridEditorComponent implements OnInit {
           // errorMessage: this.i18n.tr('INVALID_FLOAT', { maxDecimal: 2 }),
           params: { decimalPlaces: 2 },
         },
-
+        */
       }, {
         id: 'complete',
         name: '% Complete',
@@ -250,7 +249,7 @@ export class GridEditorComponent implements OnInit {
       }, {
         id: 'start',
         name: 'Start',
-        field: 'task.start',
+        field: 'start',
         minWidth: 100,
         filterable: true,
         filter: { model: Filters.compoundDate },
@@ -537,10 +536,8 @@ export class GridEditorComponent implements OnInit {
       tempDataset.push({
         id: i,
         title: 'Task ' + i,
-        task: {
-          duration: (i % 33 === 0) ? null : Math.round(Math.random() * 100) + '',
-          start: new Date(randomYear, randomMonth, randomDay),
-        },
+        duration: (i % 33 === 0) ? null : Math.round(Math.random() * 100) + '',
+        start: new Date(randomYear, randomMonth, randomDay),
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
         finish: randomFinish < new Date() ? '' : randomFinish, // make sure the random date is earlier than today
