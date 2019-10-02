@@ -346,23 +346,16 @@ export class GridService {
     // do we want the item to be sorted in the grid, when set to False it will insert on first row (defaults to false)
     if (options.resortGrid) {
       this._dataView.reSort();
-
-      // if user wanted to see highlighted row
-      // we need to do it here after resort and get each row number because it possibly changes after the sort
-      if (options.highlightRow) {
-        items.forEach((item: any) => {
-          const rowNumber = this._dataView.getRowById(item.id);
-          rowNumbers.push(rowNumber);
-        });
-      }
-    } else if (options.highlightRow) {
-      const ln = items.length;
-      for (let i = 0; i < ln; i++) {
-        rowNumbers.push(i);
-      }
     }
 
-    // do user want to highlight the rows
+    // scroll to row index 0 when inserting on top else scroll to the bottom where it got inserted
+    (options && options.position === 'bottom') ? this._grid.navigateBottom() : this._grid.navigateTop();
+
+    // get row numbers of all new inserted items
+    // we need to do it after resort and get each row number because it possibly changed after the sort
+    items.forEach((item: any) => rowNumbers.push(this._dataView.getRowById(item.id)));
+
+    // if user wanted to see highlighted row
     if (options.highlightRow) {
       this.highlightRow(rowNumbers);
     }

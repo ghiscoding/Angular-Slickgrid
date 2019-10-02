@@ -159,8 +159,8 @@ export class GridAddItemComponent implements OnInit {
     this.dataset = mockedDataset;
   }
 
-  addNewItem(insertPosition?: 'top' | 'bottom') {
-    const newId = this.dataset.length;
+  createNewItem(newId: number) {
+    // const newId = this.dataset.length;
     const randomYear = 2000 + Math.floor(Math.random() * 10);
     const randomMonth = Math.floor(Math.random() * 11);
     const randomDay = Math.floor((Math.random() * 29));
@@ -176,7 +176,14 @@ export class GridAddItemComponent implements OnInit {
       finish: new Date(randomYear, (randomMonth + 2), randomDay),
       effortDriven: true
     };
-    this.angularGrid.gridService.addItem(newItem, { position: insertPosition });
+    return newItem;
+  }
+
+  addNewItem(insertPosition?: 'top' | 'bottom') {
+    const newItem1 = this.createNewItem(this.dataset.length + 1);
+    const newItem2 = this.createNewItem(this.dataset.length + 2);
+    // this.angularGrid.gridService.addItems([newItem1, newItem2], { position: insertPosition });
+    this.angularGrid.gridService.addItems(newItem1, { position: insertPosition });
   }
 
   highlighFifthRow() {
