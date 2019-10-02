@@ -50,6 +50,8 @@ const gridStub = {
   getSelectionModel: jest.fn(),
   setSelectionModel: jest.fn(),
   getSelectedRows: jest.fn(),
+  navigateBottom: jest.fn(),
+  navigateTop: jest.fn(),
   render: jest.fn(),
   setColumns: jest.fn(),
   setSelectedRows: jest.fn(),
@@ -378,6 +380,7 @@ describe('Grid Service', () => {
 
     it('should expect the service to call the "addItem" multiple times when calling "addItems" with an array of items', () => {
       const mockItems = [{ id: 0, user: { firstName: 'John', lastName: 'Doe' } }, { id: 5, user: { firstName: 'Jane', lastName: 'Doe' } }];
+      jest.spyOn(dataviewStub, 'getRowById').mockReturnValue(0).mockReturnValueOnce(0).mockReturnValueOnce(1).mockReturnValueOnce(1);
       const serviceAddSpy = jest.spyOn(service, 'addItem');
       const serviceHighlightSpy = jest.spyOn(service, 'highlightRow');
       const rxSpy = jest.spyOn(service.onItemAdded, 'next');
@@ -389,6 +392,27 @@ describe('Grid Service', () => {
       expect(serviceAddSpy).toHaveBeenNthCalledWith(2, mockItems[1], { highlightRow: false, position: 'top', resortGrid: false, selectRow: false, triggerEvent: false });
       expect(serviceHighlightSpy).toHaveBeenCalledTimes(1);
       expect(serviceHighlightSpy).toHaveBeenCalledWith([0, 1]);
+      expect(rxSpy).toHaveBeenCalledWith(mockItems);
+    });
+
+    it('should expect the service to call the "addItem" multiple times when calling "addItems" with an array of items and the option "position" set to "bottom"', () => {
+      const expectationNewRowPosition1 = 1000;
+      const expectationNewRowPosition2 = 1001;
+      const mockItems = [{ id: 0, user: { firstName: 'John', lastName: 'Doe' } }, { id: 5, user: { firstName: 'Jane', lastName: 'Doe' } }];
+      jest.spyOn(dataviewStub, 'getRowById')
+        .mockReturnValueOnce(expectationNewRowPosition1).mockReturnValueOnce(expectationNewRowPosition1)
+        .mockReturnValueOnce(expectationNewRowPosition2).mockReturnValueOnce(expectationNewRowPosition2);
+      const serviceAddSpy = jest.spyOn(service, 'addItem');
+      const serviceHighlightSpy = jest.spyOn(service, 'highlightRow');
+      const rxSpy = jest.spyOn(service.onItemAdded, 'next');
+
+      service.addItems(mockItems, { position: 'bottom' });
+
+      expect(serviceAddSpy).toHaveBeenCalledTimes(2);
+      expect(serviceAddSpy).toHaveBeenNthCalledWith(1, mockItems[0], { highlightRow: false, position: 'bottom', resortGrid: false, selectRow: false, triggerEvent: false });
+      expect(serviceAddSpy).toHaveBeenNthCalledWith(2, mockItems[1], { highlightRow: false, position: 'bottom', resortGrid: false, selectRow: false, triggerEvent: false });
+      expect(serviceHighlightSpy).toHaveBeenCalledTimes(1);
+      expect(serviceHighlightSpy).toHaveBeenCalledWith([expectationNewRowPosition1, expectationNewRowPosition2]);
       expect(rxSpy).toHaveBeenCalledWith(mockItems);
     });
 
@@ -443,6 +467,7 @@ describe('Grid Service', () => {
 
     it('should expect the row to be selected when calling "addItems" with an item when setting the "selecRow" flag and the grid option "enableRowSelection" is set', () => {
       const mockItem = { id: 0, user: { firstName: 'John', lastName: 'Doe' } };
+      jest.spyOn(dataviewStub, 'getRowById').mockReturnValue(0);
       jest.spyOn(gridStub, 'getOptions').mockReturnValue({ enableAutoResize: true, enableRowSelection: true } as GridOption);
       const addSpy = jest.spyOn(dataviewStub, 'insertItem');
       const selectSpy = jest.spyOn(gridStub, 'setSelectedRows');
