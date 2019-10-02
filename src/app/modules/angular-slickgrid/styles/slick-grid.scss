@@ -28,6 +28,7 @@
   .slick-group-header-column.ui-state-default {
     position: relative;
     display: inline-block;
+    box-sizing: content-box !important; /* this here only for Firefox! */
     overflow: hidden;
     -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
