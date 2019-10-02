@@ -31,8 +31,8 @@ You like and use this great library `Angular-Slickgrid`? Please upvote :star: an
    - Angular 6, is only supported through `rxjs-compat` as shown in this [post](https://github.com/ghiscoding/Angular-Slickgrid/issues/36#issuecomment-395710915). It's preferable to upgrade to Angular 7+ to avoid using the `rxjs-compat` version. 
 - version `2.x.x` for Angular 7+
 
-#### Angular 8
-When running `ng update` to upgrade to Angular 8, one of the biggest change that is noticeable is that they change the target to `ES2015`, which does not play well with SlickGrid core library (which is all written in plain ES5 javascript). So for that reason, you need to switch back the `target` to `ES5` in your `tsconfig.json` file (`"target": "es5"`). This might be fixable in the future, but for now that is the quick fix to get Angular 8 to work.
+#### Angular 8+
+When running `ng update` to upgrade to Angular 8, one of the biggest change which is noticeable in the build, is that they change the target to `ES2015`. At first there was some issues, but starting with version `2.11.0`, the build target of `ES2015` should work and allow you to use smaller bundles on mordern browser. If you see any bundle problems, please try to switch to `ES5` and see if that makes a difference before opening an issue.
 
 ### Installation
 Refer to the [Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)
