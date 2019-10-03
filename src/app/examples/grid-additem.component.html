@@ -4,13 +4,24 @@
 
   <div class="col-sm-12">
     <span>
+      <label>Scroll: </label>
+      <div class="btn-group" role="group">
+        <button class="btn btn-sm btn-default" (click)="scrollGridTop()">
+          <i class="fa fa-arrow-up"></i>
+        </button>
+        <button class="btn btn-sm btn-default" (click)="scrollGridBottom()">
+          <i class="fa fa-arrow-down"></i>
+        </button>
+      </div>
       <button class="btn btn-sm btn-default" (click)="addNewItem()">Add New Mocked Item (top)</button>
       <button class="btn btn-sm btn-default" (click)="addNewItem('bottom')">Add New Mocked Item (bottom)</button>
-      <button class="btn btn-sm btn-default" (click)="updateSecondItem()">Update 2nd Row Item with Random
-        Duration</button>
+      <button class="btn btn-sm btn-default" (click)="updateSecondItem()">
+        Update 2nd Row Item with Random Duration
+      </button>
       <button class="btn btn-sm btn-default" (click)="highlighFifthRow()">Highlight 5th Row</button>
-      <button class="btn btn-sm btn-default" (click)="changeDurationBackgroundColor()">Highlight Rows with Duration over
-        50</button>
+      <button class="btn btn-sm btn-default" (click)="changeDurationBackgroundColor()">
+        Highlight Rows with Duration over 50
+      </button>
     </span>
     <hr />
   </div>

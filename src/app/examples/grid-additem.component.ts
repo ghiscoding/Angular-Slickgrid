@@ -180,6 +180,7 @@ export class GridAddItemComponent implements OnInit {
   }
 
   highlighFifthRow() {
+    this.scrollGridTop();
     this.angularGrid.gridService.highlightRow(4, 1500);
   }
 
@@ -223,6 +224,7 @@ export class GridAddItemComponent implements OnInit {
   }
 
   updateSecondItem() {
+    this.scrollGridTop();
     const updatedItem = this.angularGrid.gridService.getDataItemByRowNumber(1);
     updatedItem.duration = Math.round(Math.random() * 100);
     this.angularGrid.gridService.updateItem(updatedItem);
@@ -238,5 +240,13 @@ export class GridAddItemComponent implements OnInit {
     updatedItem2.duration = Math.round(Math.random() * 100);
     this.angularGrid.gridService.updateItems([updatedItem1, updatedItem2], true);
     */
+  }
+
+  scrollGridBottom() {
+    this.angularGrid.slickGrid.navigateBottom();
+  }
+
+  scrollGridTop() {
+    this.angularGrid.slickGrid.navigateTop();
   }
 }
