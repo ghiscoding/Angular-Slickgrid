@@ -237,7 +237,7 @@ export class GraphqlService implements BackendService {
       } as GraphqlCursorPaginationOption;
     } else {
       // first, last, offset
-      paginationOptions = (this.options.paginationOptions || this.getInitPaginationOptions()) as GraphqlPaginationOption;
+      paginationOptions = ((this.options && this.options.paginationOptions) || this.getInitPaginationOptions()) as GraphqlPaginationOption;
       (paginationOptions as GraphqlPaginationOption).offset = 0;
     }
 
@@ -446,7 +446,7 @@ export class GraphqlService implements BackendService {
     };
 
     let paginationOptions;
-    if (this.options.isWithCursor) {
+    if (this.options && this.options.isWithCursor) {
       paginationOptions = {
         first: pageSize
       };
