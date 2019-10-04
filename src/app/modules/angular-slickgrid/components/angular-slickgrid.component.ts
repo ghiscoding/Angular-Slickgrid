@@ -38,6 +38,7 @@ import { GridEventService } from './../services/gridEvent.service';
 import { GridService } from './../services/grid.service';
 import { GridStateService } from './../services/gridState.service';
 import { GroupingAndColspanService } from './../services/groupingAndColspan.service';
+import { PaginationService } from '../services/pagination.service';
 import { ResizerService } from './../services/resizer.service';
 import { SharedService } from '../services/shared.service';
 import { SortService } from './../services/sort.service';
@@ -88,6 +89,7 @@ const slickgridEventPrefix = 'sg';
     GroupItemMetaProviderExtension,
     HeaderButtonExtension,
     HeaderMenuExtension,
+    PaginationService,
     ResizerService,
     RowDetailViewExtension,
     RowMoveManagerExtension,
@@ -165,6 +167,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private gridEventService: GridEventService,
     private gridStateService: GridStateService,
     private groupingAndColspanService: GroupingAndColspanService,
+    private paginationService: PaginationService,
     private resizer: ResizerService,
     private sharedService: SharedService,
     private sortService: SortService,
@@ -196,6 +199,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.gridEventService.dispose();
     this.gridStateService.dispose();
     this.groupingAndColspanService.dispose();
+    this.paginationService.dispose();
     this.resizer.dispose();
     this.sortService.dispose();
     if (this._eventHandler && this._eventHandler.unsubscribeAll) {
@@ -345,6 +349,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       gridStateService: this.gridStateService,
       gridService: this.gridService,
       groupingService: this.groupingAndColspanService,
+      paginationService: this.paginationService,
       resizerService: this.resizer,
       sortService: this.sortService,
 

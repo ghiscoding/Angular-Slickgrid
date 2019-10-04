@@ -273,7 +273,7 @@ export class GridService {
    * Add an item (data item) to the datagrid, by default it will highlight (flashing) the inserted row but we can disable it too
    * @param item object which must contain a unique "id" property and any other suitable properties
    * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, selectRow, triggerEvent)
-   * @return rowIndex: typically index 0
+   * @return rowIndex: typically index 0 when adding to position "top" or a different number when adding to the "bottom"
    */
   addItem(item: any, options?: GridServiceInsertOption): number {
     options = { ...GridServiceInsertOptionDefaults, ...options };

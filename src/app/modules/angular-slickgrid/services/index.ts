@@ -12,6 +12,7 @@ export * from './grid.service';
 export * from './gridState.service';
 export * from './groupingAndColspan.service';
 export * from './odataQueryBuilder.service';
+export * from './pagination.service';
 export * from './resizer.service';
 export * from './shared.service';
 export * from './sort.service';

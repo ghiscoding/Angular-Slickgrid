@@ -93,6 +93,7 @@ export * from './odataSortingOption.interface';
 export * from './onEventArgs.interface';
 export * from './operatorString';
 export * from './operatorType.enum';
+export * from './pager.interface';
 export * from './pagination.interface';
 export * from './paginationChangedArgs.interface';
 export * from './queryArgument.interface';

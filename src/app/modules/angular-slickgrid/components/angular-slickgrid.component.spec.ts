@@ -1,14 +1,15 @@
-import { AngularUtilService } from '../services/angularUtil.service';
-import { SlickgridConfig } from './../slickgrid-config';
-import { FilterFactory } from './../filters/filterFactory';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
+import { SlickgridConfig } from './../slickgrid-config';
+import { FilterFactory } from './../filters/filterFactory';
 
 import { AngularSlickgridComponent } from './angular-slickgrid.component';
 import { SlickPaginationComponent } from './slick-pagination.component';
 import { CollectionService } from '../services/collection.service';
 import {
+  AngularUtilService,
   ExportService,
   ExtensionService,
   FilterService,
@@ -16,6 +17,7 @@ import {
   GridEventService,
   GridStateService,
   GroupingAndColspanService,
+  PaginationService,
   ResizerService,
   SharedService,
   SortService
@@ -81,6 +83,7 @@ describe('App Component', () => {
         GridEventService,
         GridStateService,
         GroupingAndColspanService,
+        PaginationService,
         ResizerService,
         SharedService,
         TranslateService,
