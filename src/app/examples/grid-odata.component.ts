@@ -153,6 +153,14 @@ export class GridOdataComponent implements OnInit {
     return this.getCustomerDataApiMock(query);
   }
 
+  goToFirstPage() {
+    this.angularGrid.paginationService.goToFirstPage();
+  }
+
+  goToLastPage() {
+    this.angularGrid.paginationService.goToLastPage();
+  }
+
   /** This function is only here to mock a WebAPI call (since we are using a JSON file for the demo)
    *  in your case the getCustomer() should be a WebAPI function returning a Promise
    */

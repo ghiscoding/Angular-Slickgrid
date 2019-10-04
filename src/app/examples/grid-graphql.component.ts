@@ -239,6 +239,14 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     });
   }
 
+  goToFirstPage() {
+    this.angularGrid.paginationService.goToFirstPage();
+  }
+
+  goToLastPage() {
+    this.angularGrid.paginationService.goToLastPage();
+  }
+
   /** Dispatched event of a Grid State Changed event */
   gridStateChanged(gridStateChanges: GridStateChange) {
     console.log('Client sample, Grid State changed:: ', gridStateChanges);
