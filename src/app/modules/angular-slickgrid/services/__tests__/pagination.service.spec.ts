@@ -479,13 +479,16 @@ describe('PaginationService', () => {
 
     it('should call "processOnItemAddedOrRemoved" and expect the (To) to be incremented by 1 when "onItemAdded" is triggered with a single item', (done) => {
       const mockItems = { name: 'John' };
-      const spy = jest.spyOn(service, 'recalculateFromToIndexes');
+      const paginationSpy = jest.spyOn(service.onPaginationChanged, 'next');
+      const recalculateSpy = jest.spyOn(service, 'recalculateFromToIndexes');
 
       service.init(gridStub, dataviewStub, mockGridOption);
       gridServiceStub.onItemAdded.next(mockItems);
 
       setTimeout(() => {
-        expect(spy).toHaveBeenCalled();
+        // called 2x times by init() then by processOnItemAddedOrRemoved()
+        expect(paginationSpy).toHaveBeenCalledTimes(2);
+        expect(recalculateSpy).toHaveBeenCalledTimes(2);
         expect(service.pager.from).toBe(26);
         expect(service.pager.to).toBe(50 + 1);
         done();
@@ -494,13 +497,16 @@ describe('PaginationService', () => {
 
     it('should call "processOnItemAddedOrRemoved" and expect the (To) to be incremented by 2 when "onItemAdded" is triggered with an array of 2 new items', (done) => {
       const mockItems = [{ name: 'John' }, { name: 'Jane' }];
-      const spy = jest.spyOn(service, 'recalculateFromToIndexes');
+      const paginationSpy = jest.spyOn(service.onPaginationChanged, 'next');
+      const recalculateSpy = jest.spyOn(service, 'recalculateFromToIndexes');
 
       service.init(gridStub, dataviewStub, mockGridOption);
       gridServiceStub.onItemAdded.next(mockItems);
 
       setTimeout(() => {
-        expect(spy).toHaveBeenCalled();
+        // called 2x times by init() then by processOnItemAddedOrRemoved()
+        expect(paginationSpy).toHaveBeenCalledTimes(2);
+        expect(recalculateSpy).toHaveBeenCalledTimes(2);
         expect(service.pager.from).toBe(26);
         expect(service.pager.to).toBe(50 + mockItems.length);
         done();
@@ -508,10 +514,16 @@ describe('PaginationService', () => {
     });
 
     it('should call "processOnItemAddedOrRemoved" and expect the (To) to remain the same when "onItemAdded" is triggered without any items', (done) => {
+      const paginationSpy = jest.spyOn(service.onPaginationChanged, 'next');
+      const recalculateSpy = jest.spyOn(service, 'recalculateFromToIndexes');
+
       service.init(gridStub, dataviewStub, mockGridOption);
       gridServiceStub.onItemAdded.next(null);
 
       setTimeout(() => {
+        // called 1x time by init() only
+        expect(paginationSpy).toHaveBeenCalledTimes(1);
+        expect(recalculateSpy).toHaveBeenCalledTimes(1);
         expect(service.pager.from).toBe(26);
         expect(service.pager.to).toBe(50);
         done();
@@ -520,13 +532,16 @@ describe('PaginationService', () => {
 
     it('should call "processOnItemAddedOrRemoved" and expect the (To) to be decremented by 2 when "onItemDeleted" is triggered with a single item', (done) => {
       const mockItems = { name: 'John' };
-      const spy = jest.spyOn(service, 'recalculateFromToIndexes');
+      const paginationSpy = jest.spyOn(service.onPaginationChanged, 'next');
+      const recalculateSpy = jest.spyOn(service, 'recalculateFromToIndexes');
 
       service.init(gridStub, dataviewStub, mockGridOption);
       gridServiceStub.onItemDeleted.next(mockItems);
 
       setTimeout(() => {
-        expect(spy).toHaveBeenCalled();
+        // called 2x times by init() then by processOnItemAddedOrRemoved()
+        expect(paginationSpy).toHaveBeenCalledTimes(2);
+        expect(recalculateSpy).toHaveBeenCalledTimes(2);
         expect(service.pager.from).toBe(26);
         expect(service.pager.to).toBe(50 - 1);
         done();
@@ -535,13 +550,16 @@ describe('PaginationService', () => {
 
     it('should call "processOnItemAddedOrRemoved" and expect the (To) to be decremented by 2 when "onItemDeleted" is triggered with an array of 2 new items', (done) => {
       const mockItems = [{ name: 'John' }, { name: 'Jane' }];
-      const spy = jest.spyOn(service, 'recalculateFromToIndexes');
+      const paginationSpy = jest.spyOn(service.onPaginationChanged, 'next');
+      const recalculateSpy = jest.spyOn(service, 'recalculateFromToIndexes');
 
       service.init(gridStub, dataviewStub, mockGridOption);
       gridServiceStub.onItemDeleted.next(mockItems);
 
       setTimeout(() => {
-        expect(spy).toHaveBeenCalled();
+        // called 2x times by init() then by processOnItemAddedOrRemoved()
+        expect(paginationSpy).toHaveBeenCalledTimes(2);
+        expect(recalculateSpy).toHaveBeenCalledTimes(2);
         expect(service.pager.from).toBe(26);
         expect(service.pager.to).toBe(50 - mockItems.length);
         done();
@@ -549,10 +567,16 @@ describe('PaginationService', () => {
     });
 
     it('should call "processOnItemAddedOrRemoved" and expect the (To) to remain the same when "onItemDeleted" is triggered without any items', (done) => {
+      const paginationSpy = jest.spyOn(service.onPaginationChanged, 'next');
+      const recalculateSpy = jest.spyOn(service, 'recalculateFromToIndexes');
+
       service.init(gridStub, dataviewStub, mockGridOption);
       gridServiceStub.onItemDeleted.next(null);
 
       setTimeout(() => {
+        // called 1x time by init() only
+        expect(paginationSpy).toHaveBeenCalledTimes(1);
+        expect(recalculateSpy).toHaveBeenCalledTimes(1);
         expect(service.pager.from).toBe(26);
         expect(service.pager.to).toBe(50);
         done();

@@ -277,6 +277,7 @@ export class PaginationService {
       // finally refresh the "To" count and we know it might be different than the "items per page" count
       // but this is necessary since we don't want an actual backend refresh
       this._dataTo = previousDataTo + itemCountWithDirection;
+      this.onPaginationChanged.next(this.pager);
     }
   }
 }
