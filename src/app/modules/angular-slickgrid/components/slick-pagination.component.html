@@ -1,4 +1,4 @@
-<div class="slick-pagination" *ngIf="pager">
+<div class="slick-pagination" *ngIf="pager && options">
   <div class="slick-pagination-nav">
     <nav aria-label="Page navigation">
       <ul class="pagination">
@@ -41,7 +41,7 @@
   </div>
   <span class="slick-pagination-settings">
     <select id="items-per-page-label" [value]="pager?.itemsPerPage" (change)="changeItemPerPage($event)">
-      <option value="{{pageSize}}" *ngFor="let pageSize of pager?.availablePageSizes;">{{pageSize}}</option>
+      <option value="{{pageSize}}" *ngFor="let pageSize of options.pageSizes">{{pageSize}}</option>
     </select>
     <span>{{textItemsPerPage}}</span>,
     <span class="slick-pagination-count">

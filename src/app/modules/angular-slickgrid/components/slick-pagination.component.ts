@@ -2,8 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Injectable, Input, OnDestroy, O
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
-import { Constants } from '../constants';
-import { GridOption, Locale, Pager, Pagination } from './../models/index';
+import { BackendServiceApi, Locale, Pager, Pagination } from './../models/index';
 import { PaginationService } from '../services/pagination.service';
 import { unsubscribeAllObservables } from '../services/utilities';
 
@@ -11,26 +10,31 @@ import { unsubscribeAllObservables } from '../services/utilities';
   selector: 'slick-pagination',
   templateUrl: './slick-pagination.component.html'
 })
-@Injectable()
 export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
-  private _gridPaginationOptions: GridOption;
   private _isFirstRender = true;
-  private _locales: Locale;
   private _pager: Pager;
+  private _totalItems: number;
   private subscriptions: Subscription[] = [];
 
   @Output() onPaginationChanged = new EventEmitter<Pagination>();
+  @Input() enableTranslate: boolean;
+  @Input() options: Pagination;
   @Input() dataView: any;
+  @Input() locales: Locale;
+  @Input() backendServiceApi: BackendServiceApi;
   @Input()
-  set gridPaginationOptions(gridPaginationOptions: GridOption) {
-    this._gridPaginationOptions = gridPaginationOptions;
-    if (this._isFirstRender || !gridPaginationOptions || !gridPaginationOptions.pagination || (gridPaginationOptions.pagination.totalItems !== this.pager.totalItems)) {
-      this.refreshPagination();
-      this._isFirstRender = false;
+  set totalItems(total: number) {
+    if (this._isFirstRender || this._totalItems === undefined) {
+      this._isFirstRender = true;
+    }
+    this._totalItems = total;
+    this._isFirstRender = false;
+    if (this.paginationService) {
+      this.paginationService.totalItems = total;
     }
   }
-  get gridPaginationOptions(): GridOption {
-    return this._gridPaginationOptions;
+  get totalItems(): number {
+    return this._totalItems;
   }
   @Input() grid: any;
 
@@ -44,11 +48,11 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   constructor(private paginationService: PaginationService, @Optional() private translate: TranslateService) {
     // translate all the text using ngx-translate or custom locales
     if (translate && translate.onLangChange) {
-      this.subscriptions.push(this.translate.onLangChange.subscribe(() => this.translateAllUiTexts(this._locales)));
+      this.subscriptions.push(this.translate.onLangChange.subscribe(() => this.translateAllUiTexts(this.locales)));
     }
 
     // translate all the text using ngx-translate or custom locales
-    this.paginationService.onPaginationRefreshed.subscribe(() => this.translateAllUiTexts(this._locales));
+    this.paginationService.onPaginationRefreshed.subscribe(() => this.translateAllUiTexts(this.locales));
 
     this.paginationService.onPaginationChanged.subscribe(pager => {
       this._pager = pager;
@@ -74,13 +78,12 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (this._gridPaginationOptions && this._gridPaginationOptions.enableTranslate && !this.translate) {
+    if (this.enableTranslate && !this.translate) {
       throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
     }
-    // get locales provided by user in forRoot or else use default English locales via the Constants
-    this._locales = this._gridPaginationOptions && this._gridPaginationOptions.locales || Constants.locales;
-
-    this.paginationService.init(this.grid, this.dataView, this._gridPaginationOptions);
+    // Angular throws the infamous "ExpressionChangedAfterItHasBeenCheckedError"
+    // none of the code refactoring worked to go over the error expect adding a delay, so we'll keep that for now
+    setTimeout(() => this.paginationService.init(this.grid, this.dataView, this.options, this.backendServiceApi));
   }
 
   changeToFirstPage(event: any) {
@@ -121,13 +124,6 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
 
     // also unsubscribe all Angular Subscriptions
     this.subscriptions = unsubscribeAllObservables(this.subscriptions);
-  }
-
-  refreshPagination() {
-    if (this.paginationService) {
-      this.paginationService.gridPaginationOptions = this._gridPaginationOptions;
-      this.paginationService.refreshPagination();
-    }
   }
 
   // --

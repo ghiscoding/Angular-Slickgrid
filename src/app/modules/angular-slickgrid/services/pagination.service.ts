@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subscription, isObservable, Subject } from 'rxjs';
 
-import { GridOption, GraphqlResult, Pager } from '../models';
+import { BackendServiceApi, GraphqlResult, Pager, Pagination } from '../models';
 import { FilterService } from './filter.service';
 import { GridService } from './grid.service';
 import { executeBackendProcessesCallback, onBackendError } from './backend-utilities';
@@ -12,23 +12,34 @@ declare var Slick: any;
 
 @Injectable()
 export class PaginationService {
-  set gridPaginationOptions(gridPaginationOptions: GridOption) {
-    this._gridPaginationOptions = gridPaginationOptions;
+  set paginationOptions(paginationOptions: Pagination) {
+    this._paginationOptions = paginationOptions;
   }
-  get gridPaginationOptions(): GridOption {
-    return this._gridPaginationOptions;
+  get paginationOptions(): Pagination {
+    return this._paginationOptions;
   }
 
+  set totalItems(totalItems: number) {
+    this._totalItems = totalItems;
+    if (this._initialized) {
+      this.refreshPagination();
+    }
+  }
+  get totalItems(): number {
+    return this._totalItems;
+  }
+
+  private _initialized = false;
+  private _backendServiceApi: BackendServiceApi;
   private _dataFrom = 1;
   private _dataTo = 1;
   private _itemsPerPage: number;
   private _pageCount = 0;
   private _pageNumber = 1;
   private _totalItems = 0;
-  private _availablePageSizes = [25, 75, 100];
+  private _availablePageSizes: number[];
   private _eventHandler = new Slick.EventHandler();
-  private _gridPaginationOptions: GridOption;
-  private _isFirstRender = true;
+  private _paginationOptions: Pagination;
   private _subscriptions: Subscription[] = [];
 
   onPaginationRefreshed = new Subject<boolean>();
@@ -52,15 +63,16 @@ export class PaginationService {
     };
   }
 
-  init(grid: any, dataView: any, gridPaginationOptions: GridOption) {
+  init(grid: any, dataView: any, paginationOptions: Pagination, backendServiceApi: BackendServiceApi) {
+    this._availablePageSizes = paginationOptions.pageSizes;
     this.dataView = dataView;
     this.grid = grid;
-    this._gridPaginationOptions = gridPaginationOptions;
+    this._backendServiceApi = backendServiceApi;
+    this._paginationOptions = paginationOptions;
 
-    if (!this._gridPaginationOptions || !this._gridPaginationOptions.pagination || (this._gridPaginationOptions.pagination.totalItems !== this._totalItems)) {
-      this.refreshPagination();
+    if (!backendServiceApi || !backendServiceApi.service || !backendServiceApi.process) {
+      throw new Error(`BackendServiceApi requires the following 2 properties "process" and "service" to be defined.`);
     }
-    this._isFirstRender = false;
 
     // Subscribe to Filter Clear & Changed and go back to page 1 when that happen
     this._subscriptions.push(this.filterService.onFilterChanged.subscribe(() => this.refreshPagination(true)));
@@ -72,9 +84,15 @@ export class PaginationService {
       this._subscriptions.push(this.gridService.onItemAdded.subscribe((items: any | any[]) => this.processOnItemAddedOrRemoved(items, true)));
       this._subscriptions.push(this.gridService.onItemDeleted.subscribe((items: any | any[]) => this.processOnItemAddedOrRemoved(items, false)));
     }
+    if (!this._paginationOptions || (this._paginationOptions.totalItems !== this._totalItems)) {
+      this.refreshPagination();
+    }
+    this._initialized = true;
   }
 
   dispose() {
+    this._initialized = false;
+
     // unsubscribe all SlickGrid events
     this._eventHandler.unsubscribeAll();
 
@@ -144,38 +162,35 @@ export class PaginationService {
   }
 
   refreshPagination(isPageNumberReset: boolean = false) {
-    const backendApi = this._gridPaginationOptions && this._gridPaginationOptions.backendServiceApi;
-    if (!backendApi || !backendApi.service || !backendApi.process) {
-      throw new Error(`BackendServiceApi requires the following 2 properties "process" and "service" to be defined.`);
-    }
-
     // trigger an event to inform subscribers
     this.onPaginationRefreshed.next(true);
 
-    if (this._gridPaginationOptions && this._gridPaginationOptions.pagination) {
-      const pagination = this._gridPaginationOptions.pagination;
+    if (this._paginationOptions) {
+      const pagination = this._paginationOptions;
       // set the number of items per page if not already set
       if (!this._itemsPerPage) {
-        this._itemsPerPage = +((backendApi && backendApi.options && backendApi.options.paginationOptions && backendApi.options.paginationOptions.first) ? backendApi.options.paginationOptions.first : this._gridPaginationOptions.pagination.pageSize);
+        this._itemsPerPage = +((this._backendServiceApi && this._backendServiceApi.options && this._backendServiceApi.options.paginationOptions && this._backendServiceApi.options.paginationOptions.first) ? this._backendServiceApi.options.paginationOptions.first : this._paginationOptions.pageSize);
       }
 
       // if totalItems changed, we should always go back to the first page and recalculation the From-To indexes
       if (isPageNumberReset || this._totalItems !== pagination.totalItems) {
-        if (this._isFirstRender && pagination.pageNumber && pagination.pageNumber > 1) {
-          this._pageNumber = pagination.pageNumber || 1;
-        } else {
+        if (isPageNumberReset) {
           this._pageNumber = 1;
+        } else if (!this._initialized && pagination.pageNumber && pagination.pageNumber > 1) {
+          this._pageNumber = pagination.pageNumber || 1;
         }
 
         // when page number is set to 1 then also reset the "offset" of backend service
         if (this._pageNumber === 1) {
-          backendApi.service.resetPaginationOptions();
+          this._backendServiceApi.service.resetPaginationOptions();
         }
       }
 
       // calculate and refresh the multiple properties of the pagination UI
-      this._availablePageSizes = this._gridPaginationOptions.pagination.pageSizes;
-      this._totalItems = this._gridPaginationOptions.pagination.totalItems;
+      this._availablePageSizes = this._paginationOptions.pageSizes;
+      if (!this._totalItems && this._paginationOptions.totalItems) {
+        this._totalItems = this._paginationOptions.totalItems;
+      }
       this.recalculateFromToIndexes();
     }
     this._pageCount = Math.ceil(this._totalItems / this._itemsPerPage);
@@ -186,50 +201,43 @@ export class PaginationService {
     return new Promise((resolve, reject) => {
       this.recalculateFromToIndexes();
 
-      const backendApi = this._gridPaginationOptions.backendServiceApi;
-      if (!backendApi || !backendApi.service || !backendApi.process) {
-        const error = new Error(`BackendServiceApi requires the following 2 properties "process" and "service" to be defined.`);
-        reject(error);
-        throw error;
-      }
-
       if (this._dataTo > this._totalItems) {
         this._dataTo = this._totalItems;
       } else if (this._totalItems < this._itemsPerPage) {
         this._dataTo = this._totalItems;
       }
 
-      if (backendApi) {
+      if (this._backendServiceApi) {
         const itemsPerPage = +this._itemsPerPage;
 
         // keep start time & end timestamps & return it after process execution
         const startTime = new Date();
 
         // run any pre-process, if defined, for example a spinner
-        if (backendApi.preProcess) {
-          backendApi.preProcess();
+        if (this._backendServiceApi.preProcess) {
+          this._backendServiceApi.preProcess();
         }
 
-        const query = backendApi.service.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
+        const query = this._backendServiceApi.service.processOnPaginationChanged(event, { newPage: pageNumber, pageSize: itemsPerPage });
 
         // the processes can be Promises or an Observables (like HttpClient)
-        const process = backendApi.process(query);
+        const process = this._backendServiceApi.process(query);
         if (process instanceof Promise) {
           process
             .then((processResult: GraphqlResult | any) => {
-              resolve(executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridPaginationOptions));
+              resolve(executeBackendProcessesCallback(startTime, processResult, this._backendServiceApi, this._totalItems));
             })
             .catch((error) => {
-              onBackendError(error, backendApi);
+              onBackendError(error, this._backendServiceApi);
               reject(process);
             });
         } else if (isObservable(process)) {
           process.subscribe(
             (processResult: GraphqlResult | any) => {
-              resolve(executeBackendProcessesCallback(startTime, processResult, backendApi, this._gridPaginationOptions));
+              resolve(executeBackendProcessesCallback(startTime, processResult, this._backendServiceApi, this._totalItems));
             },
             (error: any) => {
-              onBackendError(error, backendApi);
+              onBackendError(error, this._backendServiceApi);
               reject(process);
             }
           );

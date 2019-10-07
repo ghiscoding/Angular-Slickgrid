@@ -220,11 +220,13 @@ export class FilterService {
       // @deprecated, processOnFilterChanged in the future should be return as a query string NOT a Promise
       if (queryResponse instanceof Promise && queryResponse.then) {
         queryResponse.then((query: string) => {
-          executeBackendCallback(query, callbackArgs, new Date(), this._gridOptions, this.emitFilterChanged.bind(this));
+          const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems;
+          executeBackendCallback(backendApi, query, callbackArgs, new Date(), totalItems, this.emitFilterChanged.bind(this));
         });
       } else {
         const query = queryResponse as string;
-        executeBackendCallback(query, callbackArgs, new Date(), this._gridOptions, this.emitFilterChanged.bind(this));
+        const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems;
+        executeBackendCallback(backendApi, query, callbackArgs, new Date(), totalItems, this.emitFilterChanged.bind(this));
       }
     }
 
@@ -420,11 +422,13 @@ export class FilterService {
         clearTimeout(timer);
         timer = setTimeout(async () => {
           const query = await backendApi.service.processOnFilterChanged(event, args);
-          executeBackendCallback(query, args, startTime, this._gridOptions, this.emitFilterChanged.bind(this));
+          const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems;
+          executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitFilterChanged.bind(this));
         }, debounceTypingDelay);
       } else {
         const query = await backendApi.service.processOnFilterChanged(event, args);
-        executeBackendCallback(query, args, startTime, this._gridOptions, this.emitFilterChanged.bind(this));
+        const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems;
+        executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitFilterChanged.bind(this));
       }
     }
   }

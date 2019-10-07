@@ -237,7 +237,8 @@ export class SortService {
 
     // query backend, except when it's called by a ClearFilters then we won't
     const query = backendApi.service.processOnSortChanged(event, args);
-    executeBackendCallback(query, args, startTime, gridOptions, this.emitSortChanged.bind(this));
+    const totalItems = gridOptions && gridOptions.pagination && gridOptions.pagination.totalItems;
+    executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitSortChanged.bind(this));
   }
 
   onLocalSortChanged(grid: any, dataView: any, sortColumns: ColumnSort[], forceReSort = false) {
