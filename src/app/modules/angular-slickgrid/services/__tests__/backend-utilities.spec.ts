@@ -16,7 +16,7 @@ describe('backend-utilities', () => {
       const now = new Date();
       gridOptionMock.backendServiceApi.internalPostProcess = jest.fn();
       const spy = jest.spyOn(gridOptionMock.backendServiceApi, 'internalPostProcess');
-      executeBackendProcessesCallback(now, { data: {} }, gridOptionMock.backendServiceApi, gridOptionMock);
+      executeBackendProcessesCallback(now, { data: {} }, gridOptionMock.backendServiceApi, 0);
 
       expect(spy).toHaveBeenCalled();
     });
@@ -46,7 +46,7 @@ describe('backend-utilities', () => {
       gridOptionMock.pagination = { totalItems: 1, pageSizes: [10, 25], pageSize: 10 };
 
       const spy = jest.spyOn(gridOptionMock.backendServiceApi, 'postProcess');
-      executeBackendProcessesCallback(now, mockResult, gridOptionMock.backendServiceApi, gridOptionMock);
+      executeBackendProcessesCallback(now, mockResult, gridOptionMock.backendServiceApi, 1);
 
       expect(spy).toHaveBeenCalledWith(expectaction);
     });

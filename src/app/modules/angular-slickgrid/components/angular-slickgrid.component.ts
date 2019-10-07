@@ -7,13 +7,16 @@ import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
 
 // ...then everything else...
-import { AfterViewInit, Component, ElementRef, EventEmitter, Inject, Injectable, Input, Output, OnDestroy, OnInit, Optional } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Inject, Input, Output, OnDestroy, OnInit, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+
+import { Constants } from '../constants';
 import { GlobalGridOptions } from './../global-grid-options';
 import { titleCase, unsubscribeAllObservables } from './../services/utilities';
 import { executeBackendProcessesCallback, onBackendError } from '../services/backend-utilities';
 import {
   AngularGridInstance,
+  BackendServiceApi,
   BackendServiceOption,
   Column,
   ExtensionName,
@@ -21,6 +24,7 @@ import {
   GridOption,
   GridStateChange,
   GridStateType,
+  Locale,
   Pagination,
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
@@ -63,7 +67,6 @@ declare var $: any;
 
 const slickgridEventPrefix = 'sg';
 
-@Injectable()
 @Component({
   selector: 'angular-slickgrid',
   templateUrl: './angular-slickgrid.component.html',
@@ -108,12 +111,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _hideHeaderRowAfterPageLoad = false;
   dataView: any;
   grid: any;
-  gridPaginationOptions: GridOption;
   gridHeightString: string;
   gridWidthString: string;
   groupingDefinition: any = {};
   groupItemMetadataProvider: any;
+  backendServiceApi: BackendServiceApi;
+  locales: Locale;
+  paginationOptions: Pagination;
   showPagination = false;
+  totalItems = 0;
   isGridInitialized = false;
   subscriptions: Subscription[] = [];
 
@@ -234,6 +240,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
     this._dataset = this._dataset || [];
     this.gridOptions = this.mergeGridOptions(this.gridOptions);
+    this.paginationOptions = this.gridOptions.pagination;
+    this.locales = this.gridOptions && this.gridOptions.locales || Constants.locales;
+    this.backendServiceApi = this.gridOptions && this.gridOptions.backendServiceApi;
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
 
     if (!this.customDataView) {
@@ -564,10 +573,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         try {
           // the processes can be Observables (like HttpClient) or Promises
           if (process instanceof Promise && process.then) {
-            process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions));
+            process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions.pagination.totalItems));
           } else if (isObservable(process)) {
             process.subscribe(
-              (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions),
+              (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions.pagination.totalItems),
               (error: any) => onBackendError(error, backendApi)
             );
           }
@@ -665,24 +674,25 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         this.grid.render();
       }
 
-      if (this.gridOptions.backendServiceApi) {
+      if (this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.pagination) {
         // do we want to show pagination?
         // if we have a backendServiceApi and the enablePagination is undefined, we'll assume that we do want to see it, else get that defined value
         this.showPagination = ((this.gridOptions.backendServiceApi && this.gridOptions.enablePagination === undefined) ? true : this.gridOptions.enablePagination) || false;
 
-        // before merging the grid options, make sure that it has the totalItems count
-        // once we have that, we can merge and pass all these options to the pagination component
-        if (!this.gridOptions.pagination) {
-          this.gridOptions.pagination = (this.gridOptions.pagination) ? this.gridOptions.pagination : undefined;
-        }
-        if (this.gridOptions.pagination && totalCount !== undefined) {
-          this.gridOptions.pagination.totalItems = totalCount;
-        }
         if (this.gridOptions.presets && this.gridOptions.presets.pagination && this.gridOptions.pagination) {
-          this.gridOptions.pagination.pageSize = this.gridOptions.presets.pagination.pageSize;
-          this.gridOptions.pagination.pageNumber = this.gridOptions.presets.pagination.pageNumber;
+          this.paginationOptions.pageSize = this.gridOptions.presets.pagination.pageSize;
+          this.paginationOptions.pageNumber = this.gridOptions.presets.pagination.pageNumber;
         }
-        this.gridPaginationOptions = this.mergeGridOptions(this.gridOptions);
+
+        // when we have a totalCount use it, else we'll take it from the pagination object
+        // only update the total items if it's different to avoid refreshing the UI
+        const totalRecords = totalCount !== undefined ? totalCount : this.gridOptions.pagination.totalItems;
+        if (totalRecords !== this.totalItems) {
+          this.totalItems = totalRecords;
+        }
+      } else {
+        // without backend service, we'll assume the total of items is the dataset size
+        this.totalItems = dataset.length;
       }
 
       // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)

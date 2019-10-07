@@ -611,7 +611,7 @@ export class GridService {
    * @param item object which must contain a unique "id" property and any other suitable properties
    * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, selectRow, triggerEvent)
    */
-  upsertItem(item: any, options?: GridServiceInsertOption): number {
+  upsertItem(item: any, options?: GridServiceInsertOption): { added: number, updated: number } {
     options = { ...GridServiceInsertOptionDefaults, ...options };
     const itemId = (!item || !item.hasOwnProperty('id')) ? undefined : item.id;
 
@@ -628,34 +628,43 @@ export class GridService {
    * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, selectRow, triggerEvent)
    * @return row numbers in the grid
    */
-  upsertItems(items: any | any[], options?: GridServiceInsertOption): number[] {
+  upsertItems(items: any | any[], options?: GridServiceInsertOption): { added: number, updated: number }[] {
     options = { ...GridServiceInsertOptionDefaults, ...options };
     // when it's not an array, we can call directly the single item update
     if (!Array.isArray(items)) {
       return [this.upsertItem(items, options)];
     }
 
-    const gridRowNumbers: number[] = [];
+    const upsertedRows: { added: number, updated: number }[] = [];
     items.forEach((item: any) => {
-      gridRowNumbers.push(this.upsertItem(item, { ...options, highlightRow: false, resortGrid: false, selectRow: false, triggerEvent: false }));
+      upsertedRows.push(this.upsertItem(item, { ...options, highlightRow: false, resortGrid: false, selectRow: false, triggerEvent: false }));
     });
 
     // only highlight at the end, all at once
     // we have to do this because doing highlight 1 by 1 would only re-select the last highlighted row which is wrong behavior
     if (options.highlightRow) {
-      this.highlightRow(gridRowNumbers);
+      const rowNumbers = upsertedRows.map((upsertRow) => upsertRow.added !== undefined ? upsertRow.added : upsertRow.updated);
+      this.highlightRow(rowNumbers);
     }
 
     // select the row in the grid
     if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
-      this._grid.setSelectedRows(gridRowNumbers);
+      this._grid.setSelectedRows(upsertedRows);
     }
 
     // do we want to trigger an event after updating the item
     if (options.triggerEvent) {
       this.onItemUpserted.next(items);
+      const addedItems = upsertedRows.filter((upsertRow) => upsertRow.added !== undefined);
+      if (Array.isArray(addedItems) && addedItems.length > 0) {
+        this.onItemAdded.next(addedItems);
+      }
+      const updatedItems = upsertedRows.filter((upsertRow) => upsertRow.updated !== undefined);
+      if (Array.isArray(updatedItems) && updatedItems.length > 0) {
+        this.onItemUpdated.next(updatedItems);
+      }
     }
-    return gridRowNumbers;
+    return upsertedRows;
   }
 
   /**
@@ -665,23 +674,28 @@ export class GridService {
    * @param options: provide the possibility to do certain actions after or during the upsert (highlightRow, resortGrid, selectRow, triggerEvent)
    * @return grid row number in the grid
    */
-  upsertItemById(itemId: number | string, item: any, options?: GridServiceInsertOption): number {
+  upsertItemById(itemId: number | string, item: any, options?: GridServiceInsertOption): { added: number, updated: number } {
+    let isItemAdded = false;
     options = { ...GridServiceInsertOptionDefaults, ...options };
     if (itemId === undefined) {
       throw new Error(`Calling Upsert of an item requires the item to include a valid and unique "id" property`);
     }
 
-    let rowNumber: number;
+    let rowNumberAdded: number;
+    let rowNumberUpdated: number;
     if (this._dataView.getRowById(itemId) === undefined) {
-      rowNumber = this.addItem(item, options);
+      rowNumberAdded = this.addItem(item, options);
+      isItemAdded = true;
     } else {
-      rowNumber = this.updateItem(item, { highlightRow: options.highlightRow, selectRow: options.selectRow, triggerEvent: options.triggerEvent });
+      rowNumberUpdated = this.updateItem(item, { highlightRow: options.highlightRow, selectRow: options.selectRow, triggerEvent: options.triggerEvent });
+      isItemAdded = false;
     }
 
     // do we want to trigger an event after updating the item
     if (options.triggerEvent) {
       this.onItemUpserted.next(item);
+      isItemAdded ? this.onItemAdded.next(item) : this.onItemUpdated.next(item);
     }
-    return rowNumber;
+    return { added: rowNumberAdded, updated: rowNumberUpdated };
   }
 }
