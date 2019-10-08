@@ -101,18 +101,27 @@ export class GraphqlService implements BackendService {
     }
 
     const filters = this.buildFilterQuery(columnIds);
+    let graphqlFields = [];
 
     if (this.options.isWithCursor) {
       // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
       const pageInfoQb = new QueryBuilder('pageInfo');
       pageInfoQb.find('hasNextPage', 'endCursor');
       dataQb.find(['cursor', { node: filters }]);
-      datasetQb.find(['totalCount', pageInfoQb, dataQb]);
+      graphqlFields = ['totalCount', pageInfoQb, dataQb];
     } else {
       // ...nodes { _filters_ }
       dataQb.find(filters);
-      datasetQb.find(['totalCount', dataQb]);
+      graphqlFields = ['totalCount', dataQb];
     }
+
+    // are we adding the current user listSeparator to the fields query result?
+    if (this.options.addListSeparator) {
+      graphqlFields.unshift('listSeparator');
+    }
+
+    // properties to be returned by the query
+    datasetQb.find(graphqlFields);
 
     // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
     let datasetFilters: GraphqlDatasetFilter = {};

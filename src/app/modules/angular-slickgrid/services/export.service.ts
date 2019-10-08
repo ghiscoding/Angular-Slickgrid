@@ -1,5 +1,8 @@
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { TextEncoder } from 'text-encoding-utf-8';
+import { Subject } from 'rxjs';
+
 import {
   Column,
   ExportOption,
@@ -10,8 +13,6 @@ import {
 } from './../models/index';
 import { Constants } from './../constants';
 import { addWhiteSpaces, htmlEntityDecode, sanitizeHtmlToText, titleCase } from './../services/utilities';
-import { TextEncoder } from 'text-encoding-utf-8';
-import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
 declare let $: any;
@@ -23,6 +24,8 @@ export interface ExportColumnHeader {
 
 @Injectable()
 export class ExportService {
+  private _delimiter = ',';
+  private _fileFormat = FileType.csv;
   private _lineCarriageReturn = '\n';
   private _dataView: any;
   private _grid: any;
@@ -77,6 +80,8 @@ export class ExportService {
     return new Promise((resolve, reject) => {
       this.onGridBeforeExportToFile.next(true);
       this._exportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
+      this._delimiter = this._exportOptions.delimiterOverride || this._exportOptions.delimiter || '';
+      this._fileFormat = this._exportOptions.format || FileType.csv;
 
       // get the CSV output from the grid data
       const dataOutput = this.getDataOutput();
@@ -86,8 +91,8 @@ export class ExportService {
       setTimeout(() => {
         try {
           const downloadOptions = {
-            filename: `${this._exportOptions.filename}.${this._exportOptions.format}`,
-            format: this._exportOptions.format,
+            filename: `${this._exportOptions.filename}.${this._fileFormat}`,
+            format: this._fileFormat,
             useUtf8WithBom: this._exportOptions.hasOwnProperty('useUtf8WithBom') ? this._exportOptions.useUtf8WithBom : true
           };
 
@@ -165,8 +170,6 @@ export class ExportService {
 
   private getDataOutput(): string {
     const columns = this._grid.getColumns() || [];
-    const delimiter = this._exportOptions.delimiter || '';
-    const format = this._exportOptions.format || '';
 
     // Group By text, it could be set in the export options or from translation or if nothing is found then use the English constant text
     let groupByColumnHeader = this._exportOptions.groupingColumnHeaderTitle;
@@ -177,7 +180,7 @@ export class ExportService {
     }
 
     // a CSV needs double quotes wrapper, the other types do not need any wrapper
-    this._exportQuoteWrapper = (format === FileType.csv) ? '"' : '';
+    this._exportQuoteWrapper = (this._fileFormat === FileType.csv) ? '"' : '';
 
     // data variable which will hold all the fields data of a row
     let outputDataString = '';
@@ -187,7 +190,7 @@ export class ExportService {
     const grouping = this._dataView.getGrouping();
     if (grouping && Array.isArray(grouping) && grouping.length > 0) {
       this._hasGroupedItems = true;
-      outputDataString += (format === FileType.csv) ? `"${groupByColumnHeader}"${delimiter}` : `${groupByColumnHeader}${delimiter}`;
+      outputDataString += (this._fileFormat === FileType.csv) ? `"${groupByColumnHeader}"${this._delimiter}` : `${groupByColumnHeader}${this._delimiter}`;
     } else {
       this._hasGroupedItems = false;
     }
@@ -199,7 +202,7 @@ export class ExportService {
       const outputHeaderTitles = this._columnHeaders.map((header) => {
         return this._exportQuoteWrapper + header.title + this._exportQuoteWrapper;
       });
-      outputDataString += (outputHeaderTitles.join(delimiter) + this._lineCarriageReturn);
+      outputDataString += (outputHeaderTitles.join(this._delimiter) + this._lineCarriageReturn);
     }
 
     // Populate the rest of the Grid Data
@@ -276,8 +279,6 @@ export class ExportService {
   private readRegularRowData(columns: Column[], row: number, itemObj: any) {
     let idx = 0;
     const rowOutputStrings = [];
-    const delimiter = this._exportOptions.delimiter;
-    const format = this._exportOptions.format;
     const exportQuoteWrapper = this._exportQuoteWrapper;
 
     for (let col = 0, ln = columns.length; col < ln; col++) {
@@ -291,7 +292,7 @@ export class ExportService {
 
       // if we are grouping and are on 1st column index, we need to skip this column since it will be used later by the grouping text:: Group by [columnX]
       if (this._hasGroupedItems && idx === 0) {
-        const emptyValue = format === FileType.csv ? `""` : '';
+        const emptyValue = this._fileFormat === FileType.csv ? `""` : '';
         rowOutputStrings.push(emptyValue);
       }
 
@@ -341,7 +342,7 @@ export class ExportService {
       }
 
       // when CSV we also need to escape double quotes twice, so " becomes ""
-      if (format === FileType.csv && itemData) {
+      if (this._fileFormat === FileType.csv && itemData) {
         itemData = itemData.toString().replace(/"/gi, `""`);
       }
 
@@ -353,7 +354,7 @@ export class ExportService {
       idx++;
     }
 
-    return rowOutputStrings.join(delimiter);
+    return rowOutputStrings.join(this._delimiter);
   }
 
   /**
@@ -363,11 +364,10 @@ export class ExportService {
   private readGroupedTitleRow(itemObj: any) {
     let groupName = sanitizeHtmlToText(itemObj.title);
     const exportQuoteWrapper = this._exportQuoteWrapper;
-    const format = this._exportOptions.format;
 
     groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
 
-    if (format === FileType.csv) {
+    if (this._fileFormat === FileType.csv) {
       // when CSV we also need to escape double quotes twice, so " becomes ""
       groupName = groupName.toString().replace(/"/gi, `""`);
     }

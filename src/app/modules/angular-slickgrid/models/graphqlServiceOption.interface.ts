@@ -7,10 +7,16 @@ import { GraphqlPaginationOption } from './graphqlPaginationOption.interface';
 
 export interface GraphqlServiceOption extends BackendServiceOption {
   /**
-   * When using Translation, we probably want to add locale in the query for the filterBy/orderBy to work
-   * ex.: users(first: 10, offset: 0, locale: "en-CA", filterBy: [{field: name, operator: EQ, value:"John"}]) {
+   * When using Translation, we probably want to add locale as a query parameter for the filterBy/orderBy to work
+   * ex.: users(first: 10, offset: 0, locale: "en-CA", filterBy: [{field: name, operator: EQ, value:"John"}]) { }
    */
   addLocaleIntoQuery?: boolean;
+
+  /**
+   * Add the Current User List Separator to the result query (in English the separator is comma ",").
+   * This is useful to set the "delimiter" property when using Export CSV, for example French uses semicolon ";" as a delimiter/separator
+   */
+  addListSeparator?: boolean;
 
   /** What is the dataset, this is required for the GraphQL query to be built */
   datasetName?: string;
