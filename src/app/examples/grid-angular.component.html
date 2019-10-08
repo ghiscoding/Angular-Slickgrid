@@ -48,6 +48,7 @@
                        (sgOnCellChange)="onCellChanged($event.detail.eventData, $event.detail.args)"
                        (sgOnClick)="onCellClicked($event.detail.eventData, $event.detail.args)"
                        (sgOnValidationError)="onCellValidation($event.detail.eventData, $event.detail.args)"
+                       (sgOnActiveCellChanged)="onActiveCellChanged($event.detail.eventData, $event.detail.args)"
                        [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
     </angular-slickgrid>
   </div>

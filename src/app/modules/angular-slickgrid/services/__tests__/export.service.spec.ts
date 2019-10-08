@@ -250,6 +250,10 @@ describe('ExportService', () => {
     describe('startDownloadFile call after all private methods ran ', () => {
       let mockCollection: any[];
 
+      beforeEach(() => {
+        mockGridOptions.exportOptions = { delimiterOverride: '' };
+      });
+
       it(`should have the Order exported correctly with multiple formatters which have 1 of them returning an object with a text property (instead of simple string)`, (done) => {
         mockCollection = [{ id: 0, userId: '1E06', firstName: 'John', lastName: 'Z', position: 'SALES_REP', order: 10 }];
         jest.spyOn(dataViewStub, 'getLength').mockReturnValue(mockCollection.length);
@@ -262,6 +266,31 @@ describe('ExportService', () => {
         const contentExpectation =
           `"User Id","FirstName","LastName","Position","Order"
               ="1E06","John","Z","SALES_REP","<b>10</b>"`;
+
+        service.init(gridStub, dataViewStub);
+        service.exportToFile(mockExportCsvOptions);
+
+        setTimeout(() => {
+          expect(spyOnAfter).toHaveBeenCalledWith(optionExpectation);
+          expect(spyUrlCreate).toHaveBeenCalledWith(mockCsvBlob);
+          expect(spyDownload).toHaveBeenCalledWith({ ...optionExpectation, content: removeMultipleSpaces(contentExpectation) });
+          done();
+        });
+      });
+
+      it(`should have the Order exported correctly with multiple formatters and use a different delimiter when "delimiterOverride" is provided`, (done) => {
+        mockGridOptions.exportOptions = { delimiterOverride: DelimiterType.doubleSemicolon };
+        mockCollection = [{ id: 0, userId: '1E06', firstName: 'John', lastName: 'Z', position: 'SALES_REP', order: 10 }];
+        jest.spyOn(dataViewStub, 'getLength').mockReturnValue(mockCollection.length);
+        jest.spyOn(dataViewStub, 'getItem').mockReturnValue(null).mockReturnValueOnce(mockCollection[0]);
+        const spyOnAfter = jest.spyOn(service.onGridAfterExportToFile, 'next');
+        const spyUrlCreate = jest.spyOn(URL, 'createObjectURL');
+        const spyDownload = jest.spyOn(service, 'startDownloadFile');
+
+        const optionExpectation = { filename: 'export.csv', format: 'csv', useUtf8WithBom: false };
+        const contentExpectation =
+          `"User Id";;"FirstName";;"LastName";;"Position";;"Order"
+              ="1E06";;"John";;"Z";;"SALES_REP";;"<b>10</b>"`;
 
         service.init(gridStub, dataViewStub);
         service.exportToFile(mockExportCsvOptions);
