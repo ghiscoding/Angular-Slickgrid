@@ -316,7 +316,7 @@ export class GridService {
 
     // if row selection (checkbox selector) is enabled, we'll select the row in the grid
     if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
-      this._grid.setSelectedRows(rowNumber);
+      this._grid.setSelectedRow(rowNumber);
     }
 
     // do we want to trigger an event after adding the item
@@ -595,7 +595,7 @@ export class GridService {
 
       // select the row in the grid
       if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
-        this._grid.setSelectedRows(rowNumber);
+        this._grid.setSelectedRow(rowNumber);
       }
 
       // do we want to trigger an event after updating the item
