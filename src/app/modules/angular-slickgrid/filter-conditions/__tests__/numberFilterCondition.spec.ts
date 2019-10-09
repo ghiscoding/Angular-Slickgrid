@@ -33,8 +33,20 @@ describe('numberFilterCondition method', () => {
     expect(output).toBe(true);
   });
 
-  it('should return True when input value provided is equal to the searchTerms and is called by "executeMappedCondition"', () => {
+  it('should return True when input value provided is equal to the searchTerms and is called by "executeMappedCondition" with fieldType.number', () => {
     const options = { dataKey: '', operator: 'EQ', cellValue: 3, fieldType: FieldType.number, searchTerms: [3] } as FilterConditionOption;
+    const output = executeMappedCondition(options);
+    expect(output).toBe(true);
+  });
+
+  it('should return True when input value provided is equal to the searchTerms and is called by "executeMappedCondition"  with fieldType.float', () => {
+    const options = { dataKey: '', operator: 'EQ', cellValue: 3, fieldType: FieldType.float, searchTerms: [3] } as FilterConditionOption;
+    const output = executeMappedCondition(options);
+    expect(output).toBe(true);
+  });
+
+  it('should return True when input value provided is equal to the searchTerms and is called by "executeMappedCondition"  with fieldType.integer', () => {
+    const options = { dataKey: '', operator: 'EQ', cellValue: 3, fieldType: FieldType.integer, searchTerms: [3] } as FilterConditionOption;
     const output = executeMappedCondition(options);
     expect(output).toBe(true);
   });
