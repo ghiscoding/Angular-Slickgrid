@@ -10,8 +10,7 @@ import {
   OperatorType,
   SearchTerm
 } from './../models/index';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { Observable, Subject } from 'rxjs';
 
 export interface ColumnFilter {
   /** Do we want to bypass the Backend Query? Commonly used with an OData Backend Service, if we want to filter without calling the regular OData query. */
@@ -26,8 +25,8 @@ export interface ColumnFilter {
   /** Custom Filter */
   customFilter?: Filter;
 
-  /** Search terms (collection) */
-  searchTerms?: SearchTerm[];
+  /** Search terms to preload (collection), please note it is better to use the "presets" grid option which is more powerful. */
+  searchTerms?: SearchTerm[] | undefined;
 
   /** Operator to use when filtering (>, >=, EQ, IN, ...) */
   operator?: OperatorType | OperatorString;
@@ -44,29 +43,40 @@ export interface ColumnFilter {
   /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Filter) */
   collectionAsync?: Promise<any> | Observable<any> | Subject<any>;
 
-  /** A collection of items/options (commonly used with a Select/Multi-Select Filter) */
+  /**
+   * A collection of items/options (commonly used with a Select/Multi-Select Filter)
+   * It can be a collection of string or label/value pair (the pair can be customized via the "customStructure" option)
+   */
   collection?: any[];
 
   /** Options to change the behavior of the "collection" */
   collectionOptions?: CollectionOption;
 
-  /** We could filter some items from the collection */
-  collectionFilterBy?: CollectionFilterBy;
+  /** We could filter some 1 or more items from the collection */
+  collectionFilterBy?: CollectionFilterBy | CollectionFilterBy[];
 
-  /** We could sort the collection by their value, or by translated value when enableTranslateLabel is True */
-  collectionSortBy?: CollectionSortBy;
+  /** We could sort the collection by 1 or more properties, or by translated value(s) when enableTranslateLabel is True */
+  collectionSortBy?: CollectionSortBy | CollectionSortBy[];
 
   /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Filter */
   customStructure?: CollectionCustomStructure;
 
-  /** Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250} */
+  /**
+   * Options that could be provided to the Filter, example: { container: 'body', maxHeight: 250}
+   *
+   * Please note that if you use options that have existed model interfaces, you should cast with "as X",
+   * for example { filterOptions: {maxHeight: 250} as MultipleSelectOption }
+   */
   filterOptions?: MultipleSelectOption | any;
 
   /**
    * Defaults to false, when set it will render any HTML code instead of removing it
    * So far only used in the MultipleSelect & SingleSelect Filters will support it
    */
-  enableRenderHtml ?: boolean;
+  enableRenderHtml?: boolean;
+
+  /** Defaults to false, do we want to trim white spaces from the filter value typed by the user? */
+  enableTrimWhiteSpace?: boolean;
 
   /** Do we want the Filter to handle translation (localization)? */
   enableTranslateLabel?: boolean;
@@ -77,6 +87,12 @@ export interface ColumnFilter {
    * params: { options: [{ value: true, label: 'True' }, { value: true, label: 'True'} ]}
    */
   params?: any;
+
+  /**
+   * Placeholder text that can be used by some Filters.
+   * Note that this will override the default placeholder configured in the global config
+   */
+  placeholder?: string;
 
   /** Step value of the filter, works only with Filters supporting it (input text, number, float, range, slider) */
   valueStep?: number | string;

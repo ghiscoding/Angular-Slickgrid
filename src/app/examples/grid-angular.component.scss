@@ -1,0 +1,23 @@
+h3 {
+  font-style: normal;
+  color: #3d3d3d;
+}
+
+#slickGridContainer-grid22 {
+  .slickgrid-container {
+    .slick-headerrow-column {
+      .ng-input {
+        padding-top: -4px !important;
+        padding-left: 4px !important;
+      }
+    }
+    .slick-cell {
+      line-height: 30px !important;
+    }
+  }
+
+  input.slider-filter-input[type=range],
+  .form-control {
+    height: 34px !important;
+  }
+}

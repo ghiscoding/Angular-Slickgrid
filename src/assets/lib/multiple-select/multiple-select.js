@@ -1,6 +1,6 @@
 /**
  * @author zhixin wen <wenzhixin2010@gmail.com>
- * @version 1.2.1
+ * @version 1.2.2
  *
  * http://wenzhixin.net.cn/p/multiple-select/
  *
@@ -23,6 +23,8 @@
  * - "domElmOkButtonHeight" defaults to 26 (as per CSS), that is the "OK" button element height in pixels inside the drop when using multiple-selection
  * - "domElmSelectSidePadding" defaults to 26 (as per CSS), that is the select DOM element padding in pixels (that is not the drop but the select itself, how tall is it)
  * - "domElmSelectAllHeight" defaults to 39 (as per CSS), that is the DOM element of the "Select All" text area
+ * - "useSelectOptionLabel" (defaults to False), when set to True it will use the <option label=""> that can be used to display selected options
+ * - "useSelectOptionLabelToHtml" (defaults to False), same as "useSelectOptionLabel" but will also render html
  */
 
 (function ($) {
@@ -143,6 +145,17 @@
 
   };
 
+  var stripScripts = function (str) {
+    var div = document.createElement('div');
+    div.innerHTML = str;
+    var scripts = div.getElementsByTagName('script');
+    var i = scripts.length;
+    while (i--) {
+      scripts[i].parentNode.removeChild(scripts[i]);
+    }
+    return div.innerHTML;
+  }
+
   function MultipleSelect($el, options) {
     var that = this,
       name = $el.attr('name') || options.name || '';
@@ -196,18 +209,21 @@
     this.selectItemName = 'data-name="selectItem' + name + '"';
 
     if (!this.options.keepOpen) {
-      $(document).click(function (e) {
+      $('body').click(function (e) {
         if ($(e.target)[0] === that.$choice[0] ||
           $(e.target).parents('.ms-choice')[0] === that.$choice[0]) {
           return;
         }
         if (($(e.target)[0] === that.$drop[0] ||
           $(e.target).parents('.ms-drop')[0] !== that.$drop[0] && e.target !== $el[0]) &&
-          that.options.isOpen) {
+          that.options.isOpen
+        ) {
           that.close();
         }
       });
     }
+
+    this.options.onAfterCreate();
   }
 
   MultipleSelect.prototype = {
@@ -251,8 +267,6 @@
       if (this.options.okButton) {
         this.$okButton = $('<button type="button" class="ms-ok-button">' + this.options.okButtonText + '</button>');
         this.$drop.append(this.$okButton);
-
-
       }
 
       var dropWidth = isNaN(this.options.width) ? this.options.width : this.options.width + 'px';
@@ -274,12 +288,19 @@
       if (this.options.isOpen) {
         this.open();
       }
+
+      if (this.options.openOnHover) {
+        $(".ms-parent").hover(function (e) {
+          that.open();
+        });
+      }
     },
 
     optionToHtml: function (i, elm, group, groupDisabled) {
       var that = this,
         $elm = $(elm),
         classes = $elm.attr('class') || '',
+        label = sprintf('label="%s"', $elm.attr('label') || ''),
         title = sprintf('title="%s"', $elm.attr('title')),
         multiple = this.options.multiple ? 'multiple' : '',
         disabled,
@@ -295,7 +316,7 @@
         disabled = groupDisabled || $elm.prop('disabled');
 
         $el = $([
-          sprintf('<li class="%s %s" %s %s>', multiple, classes, title, style),
+          sprintf('<li class="%s %s" %s %s %s>', multiple, classes, title, style, label),
           sprintf('<label class="%s">', disabled ? 'disabled' : ''),
           sprintf('<input type="%s" %s%s%s%s>',
             type, this.selectItemName,
@@ -496,7 +517,7 @@
         this.filter();
       }
 
-      if (!this.options.autoDropWidth && this.options.autoAdjustDropWidthByTextSize) {
+      if (this.options.autoAdjustDropWidthByTextSize) {
         this.adjustDropWidthByText();
       } else if (!this.options.width && this.options.autoDropWidth) {
         this.$drop.css('width', this.$parent.width());
@@ -614,9 +635,10 @@
     },
 
     adjustDropWidthByText: function () {
-      // if the dropWidth or width is specified, we won't adjust anything here
+      // keep the dropWidth/width as reference, if our new calculated width is below then we will re-adjust (else do nothing)
+      var currentDefinedWidth = this.$parent.width();
       if (this.options.dropWidth || this.options.width) {
-        return;
+        currentDefinedWidth = this.options.dropWidth || this.options.width;
       }
 
       // calculate the "Select All" element width, this text is configurable which is why we recalculate every time
@@ -626,7 +648,7 @@
       var scrollbarWidth = hasScrollbar ? this.getScrollbarWidth() : 0;
       var maxDropWidth = 0;
 
-      $('li span', this.$drop).each(function(index, elm) {
+      $('li span', this.$drop).each(function (index, elm) {
         var spanWidth = $(elm).width();
         if (spanWidth > maxDropWidth) {
           maxDropWidth = spanWidth;
@@ -654,8 +676,10 @@
         maxDropWidth = selectParentWidth;
       }
 
-      // finally re-adjust the drop to the new calculated width
-      this.$drop.css({ 'width': maxDropWidth, 'max-width': maxDropWidth });
+      // finally re-adjust the drop to the new calculated width when necessary
+      if (currentDefinedWidth > maxDropWidth || this.$drop.width() > maxDropWidth || currentDefinedWidth === '100%') {
+        this.$drop.css({ 'width': maxDropWidth, 'max-width': maxDropWidth });
+      }
     },
 
     availableSpaceBottom: function () {
@@ -671,7 +695,7 @@
       return msDropOffsetTop - pageScroll;
     },
 
-    update: function (isInit) {
+    update: function (ignoreTrigger) {
       var selects = this.options.displayValues ? this.getSelects() : this.getSelects('text'),
         $span = this.$choice.find('>span'),
         sl = selects.length;
@@ -688,15 +712,26 @@
           .replace('#', selects.length)
           .replace('%', this.$selectItems.length + this.$disableItems.length));
       } else {
-        $span.removeClass('placeholder').text(selects.join(this.options.delimiter));
+        if (this.options.useSelectOptionLabel || this.options.useSelectOptionLabelToHtml) {
+          var labels = this.getSelects('label').join(this.options.delimiter);
+          if (this.options.useSelectOptionLabelToHtml) {
+            var sanitizedLabels = stripScripts(labels);
+            $span.removeClass('placeholder').html(sanitizedLabels);
+          } else {
+            $span.removeClass('placeholder').text(labels);
+          }
+        } else {
+          $span.removeClass('placeholder').text(selects.join(this.options.delimiter));
+        }
       }
 
       if (this.options.addTitle) {
-        $span.prop('title', this.getSelects('text'));
+        var selectType = (this.options.useSelectOptionLabel || this.options.useSelectOptionLabelToHtml) ? 'label' : 'text'
+        $span.prop('title', this.getSelects(selectType));
       }
 
       // set selects to select
-      this.$el.val(this.getSelects()).trigger('change');
+      this.$el.val(this.getSelects());
 
       // add selected class to selected li
       this.$drop.find('li').removeClass('selected');
@@ -705,7 +740,7 @@
       });
 
       // trigger <select> change event
-      if (!isInit) {
+      if (!ignoreTrigger) {
         this.$el.trigger('change');
       }
     },
@@ -737,9 +772,11 @@
     getSelects: function (type) {
       var that = this,
         texts = [],
+        labels = [],
         values = [];
       this.$drop.find(sprintf('input[%s]:checked', this.selectItemName)).each(function () {
         texts.push($(this).parents('li').first().text());
+        labels.push($(this).parents('li').attr('label') || '');
         values.push($(this).val());
       });
 
@@ -768,8 +805,41 @@
           html.push(']');
           texts.push(html.join(''));
         });
+      } else if (type === 'label' && this.$selectGroups.length) {
+        labels = [];
+        this.$selectGroups.each(function () {
+          var html = [],
+            label = $.trim($(this).attr('label') || ''),
+            group = $(this).parent().data('group'),
+            $children = that.$drop.find(sprintf('[%s][data-group="%s"]', that.selectItemName, group)),
+            $selected = $children.filter(':checked');
+
+          if (!$selected.length) {
+            return;
+          }
+
+          html.push('[');
+          html.push(label);
+          if ($children.length > $selected.length) {
+            var list = [];
+            $selected.each(function () {
+              list.push($(this).attr('label') || '');
+            });
+            html.push(': ' + list.join(', '));
+          }
+          html.push(']');
+          labels.push(html.join(''));
+        });
       }
-      return type === 'text' ? texts : values;
+
+      switch (type) {
+        case 'text':
+          return texts;
+        case 'label':
+          return labels;
+        default:
+          return values;
+      }
     },
 
     getScrollbarWidth: function () {
@@ -815,7 +885,7 @@
           $children.length === $children.filter(':checked').length);
       });
 
-      this.update();
+      this.update(false);
     },
 
     enable: function () {
@@ -824,6 +894,11 @@
 
     disable: function () {
       this.$choice.addClass('disabled');
+    },
+
+    destroy: function () {
+      this.$el.before(this.$parent).show();
+      this.$parent.remove();
     },
 
     checkAll: function () {
@@ -909,7 +984,7 @@
         'open', 'close',
         'checkAll', 'uncheckAll',
         'focus', 'blur',
-        'refresh', 'close'
+        'refresh', 'destroy'
       ];
 
     this.each(function () {
@@ -975,6 +1050,7 @@
     addTitle: false,
     filterAcceptOnEnter: false,
     hideOptgroupCheckboxes: false,
+    openOnHover: false,
     okButton: false,
     okButtonText: 'OK',
     selectAllText: 'Select all',
@@ -1017,6 +1093,9 @@
       return false;
     },
     onFilter: function () {
+      return false;
+    },
+    onAfterCreate: function () {
       return false;
     }
   };

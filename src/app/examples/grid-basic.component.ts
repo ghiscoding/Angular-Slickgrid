@@ -7,7 +7,7 @@ import { Column, GridOption } from './../modules/angular-slickgrid';
 export class GridBasicComponent implements OnInit {
   title = 'Example 1: Basic Grid';
   subTitle = `
-    Basic Grid with fixed sizes (800 x 400) set by "gridHeight" &amp; "gridWidth"
+    Basic Grid with fixed sizes (800 x 300) set by "gridHeight" &amp; "gridWidth"
     <ul>
       <li><a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/HOWTO---Step-by-Step" target="_blank">Wiki HOWTO link</a></li>
     </ul>

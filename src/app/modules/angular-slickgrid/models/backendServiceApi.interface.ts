@@ -2,7 +2,7 @@ import { OdataOption } from './odataOption.interface';
 import { GraphqlResult } from './graphqlResult.interface';
 import { BackendService } from './backendService.interface';
 import { GraphqlServiceOption } from './graphqlServiceOption.interface';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 export interface BackendServiceApi {
   /** Backend Service Options */
@@ -10,6 +10,9 @@ export interface BackendServiceApi {
 
   /** Backend Service instance (could be OData or GraphQL Service) */
   service: BackendService;
+
+  /** On error callback, when an error is thrown by the process execution */
+  onError?: (e) => void;
 
   /** On init (or on page load), what action to perform? */
   onInit?: (query: string) => Promise<GraphqlResult | any> | Observable<GraphqlResult | any>;

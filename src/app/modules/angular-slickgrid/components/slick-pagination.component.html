@@ -1,44 +1,51 @@
-<div class="slick-pagination">
-    <div class="slick-pagination-nav">
-        <nav aria-label="Page navigation">
-        <ul class="pagination">
-            <li class="page-item" [ngClass]="pageNumber === 1 ? 'disabled' : ''">
-            <a class="page-link icon-seek-first fa fa-angle-double-left" aria-label="First" (click)="changeToFirstPage($event)">
-            </a>
-            </li>
-            <li class="page-item" [ngClass]="pageNumber === 1 ? 'disabled' : ''">
-            <a class="page-link icon-seek-prev fa fa-angle-left" aria-label="Previous" (click)="changeToPreviousPage($event)">
-            </a>
-            </li>
-        </ul>
-        </nav>
+<div class="slick-pagination" *ngIf="pager && options">
+  <div class="slick-pagination-nav">
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        <li class="page-item" [ngClass]="(pager?.pageNumber === 1 || pager?.totalItems === 0) ? 'disabled' : ''">
+          <a class="page-link icon-seek-first fa fa-angle-double-left" aria-label="First"
+             (click)="changeToFirstPage($event)">
+          </a>
+        </li>
+        <li class="page-item" [ngClass]="(pager?.pageNumber === 1 || pager?.totalItems === 0) ? 'disabled' : ''">
+          <a class="page-link icon-seek-prev fa fa-angle-left" aria-label="Previous"
+             (click)="changeToPreviousPage($event)">
+          </a>
+        </li>
+      </ul>
+    </nav>
 
-        <div class="slick-page-number">
-            <span [translate]="'PAGE'"></span>
-            <input type="text" class="form-control" value="{{pageNumber}}" size="1"  (change)="changeToCurrentPage($event)">
-            <span [translate]="'OF'"></span><span> {{pageCount}}</span>
-        </div>
-
-        <nav aria-label="Page navigation">
-        <ul class="pagination">
-            <li class="page-item" [ngClass]="pageNumber === pageCount ? 'disabled' : ''">
-            <a class="page-link icon-seek-next text-center fa fa-lg fa-angle-right" aria-label="Next" (click)="changeToNextPage($event)">
-            </a>
-            </li>
-            <li class="page-item" [ngClass]="pageNumber === pageCount ? 'disabled' : ''">
-            <a class="page-link icon-seek-end fa fa-lg fa-angle-double-right" aria-label="Last" (click)="changeToLastPage($event)">
-            </a>
-            </li>
-        </ul>
-        </nav>
+    <div class="slick-page-number">
+      <span>{{textPage}}</span>
+      <input type="text" class="form-control" [value]="pager?.pageNumber" size="1" [readOnly]="pager?.totalItems === 0"
+             (change)="changeToCurrentPage($event)">
+      <span>{{textOf}}</span><span> {{pager?.pageCount}}</span>
     </div>
-    <span class="slick-pagination-settings">
-        <select id="items-per-page-label" [value]="itemsPerPage" (change)="onChangeItemPerPage($event)">
-        <option value="{{pageSize}}" *ngFor="let pageSize of paginationPageSizes;">{{pageSize}}</option>
-        </select>
-        <span [translate]="'ITEMS_PER_PAGE'"></span>,
-        <span class="slick-pagination-count">
-            <span [translate]="'FROM_TO_OF_TOTAL_ITEMS'" [translateParams]="{ from: dataFrom, to: dataTo, totalItems: totalItems }"></span>
-        </span>
+
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        <li class="page-item"
+            [ngClass]="(pager?.pageNumber === pager?.pageCount || pager?.totalItems === 0) ? 'disabled' : ''">
+          <a class="page-link icon-seek-next text-center fa fa-lg fa-angle-right" aria-label="Next"
+             (click)="changeToNextPage($event)">
+          </a>
+        </li>
+        <li class="page-item"
+            [ngClass]="(pager?.pageNumber === pager?.pageCount || pager?.totalItems === 0) ? 'disabled' : ''">
+          <a class="page-link icon-seek-end fa fa-lg fa-angle-double-right" aria-label="Last"
+             (click)="changeToLastPage($event)">
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <span class="slick-pagination-settings">
+    <select id="items-per-page-label" [value]="pager?.itemsPerPage" (change)="changeItemPerPage($event)">
+      <option value="{{pageSize}}" *ngFor="let pageSize of options.pageSizes">{{pageSize}}</option>
+    </select>
+    <span>{{textItemsPerPage}}</span>,
+    <span class="slick-pagination-count">
+      <span>{{pager?.from}}-{{pager?.to}} {{textOf}} {{pager?.totalItems}} {{textItems}}</span>
     </span>
-    </div>
+  </span>
+</div>

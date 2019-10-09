@@ -1,10 +1,16 @@
 <div id="slickGridContainer-{{gridId}}" class="gridPane" [style.width]="gridWidthString">
-    <div attr.id='{{gridId}}' class="slickgrid-container" style="width: 100%" [style.height]="gridHeightString">
-    </div>
+  <div attr.id='{{gridId}}' class="slickgrid-container" style="width: 100%" [style.height]="gridHeightString">
+  </div>
 
-    <slick-pagination id="slickPagingContainer-{{gridId}}"
-        *ngIf="showPagination"
-        (onPaginationChanged)="paginationChanged($event)"
-        [gridPaginationOptions]="gridPaginationOptions">
-    </slick-pagination>
+  <slick-pagination id="slickPagingContainer-{{gridId}}"
+                    *ngIf="showPagination"
+                    (onPaginationChanged)="paginationChanged($event)"
+                    [enableTranslate]="gridOptions.enableTranslate"
+                    [dataView]="dataView"
+                    [grid]="grid"
+                    [options]="paginationOptions"
+                    [locales]="locales"
+                    [totalItems]="totalItems"
+                    [backendServiceApi]="backendServiceApi">
+  </slick-pagination>
 </div>

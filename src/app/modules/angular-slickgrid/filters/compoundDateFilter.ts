@@ -1,9 +1,24 @@
+import { Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { mapFlatpickrDateFormatWithFieldType } from '../services/utilities';
-import { Column, Filter, FilterArguments, FilterCallback, FieldType, GridOption, OperatorString, OperatorType, SearchTerm } from './../models/index';
+import {
+  Column,
+  ColumnFilter,
+  Filter,
+  FilterArguments,
+  FilterCallback,
+  FieldType,
+  FlatpickrOption,
+  GridOption,
+  OperatorString,
+  OperatorType,
+  SearchTerm,
+} from './../models/index';
+import Flatpickr from 'flatpickr';
+import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
 
-// importing Flatpickr works better with a 'require'
-declare function require(name: string);
+// use Flatpickr from import or 'require', whichever works first
+declare function require(name: string): any;
 require('flatpickr');
 
 // using external non-typed js libraries
@@ -11,6 +26,9 @@ declare var $: any;
 
 export class CompoundDateFilter implements Filter {
   private _clearFilterTriggered = false;
+  private _currentDate: Date;
+  private _flatpickrOptions: FlatpickrOption;
+  private _shouldTriggerQuery = true;
   private $filterElm: any;
   private $filterInputElm: any;
   private $selectOperatorElm: any;
@@ -22,55 +40,75 @@ export class CompoundDateFilter implements Filter {
   columnDef: Column;
   callback: FilterCallback;
 
-  constructor(private translate: TranslateService) { }
+  constructor(@Optional() private translate: TranslateService) { }
 
   /** Getter for the Grid Options pulled through the Grid Object */
   private get gridOptions(): GridOption {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
+  /** Getter for the Column Filter */
+  get columnFilter(): ColumnFilter {
+    return this.columnDef && this.columnDef.filter || {};
+  }
+
+  /** Getter for the Current Dates selected */
+  get currentDate(): Date {
+    return this._currentDate;
+  }
+
+  /** Getter for the Flatpickr Options */
+  get flatpickrOptions(): FlatpickrOption {
+    return this._flatpickrOptions || {};
+  }
+
+  /** Setter for the Filter Operator */
   set operator(op: OperatorType | OperatorString) {
     this._operator = op;
   }
+
+  /** Getter for the Filter Operator */
   get operator(): OperatorType | OperatorString {
-    return this._operator || OperatorType.empty;
+    return this._operator || this.columnFilter.operator || OperatorType.empty;
   }
 
   /**
    * Initialize the Filter
    */
   init(args: FilterArguments) {
-    if (args) {
-      this.grid = args.grid;
-      this.callback = args.callback;
-      this.columnDef = args.columnDef;
-      this.operator = args.operator || '';
-      this.searchTerms = args.searchTerms || [];
-
-      // date input can only have 1 search term, so we will use the 1st array index if it exist
-      const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
-
-      // step 1, create the DOM Element of the filter which contain the compound Operator+Input
-      // and initialize it if searchTerm is filled
-      this.$filterElm = this.createDomElement(searchTerm);
-
-      // step 3, subscribe to the keyup event and run the callback when that happens
-      // also add/remove "filled" class for styling purposes
-      this.$filterInputElm.keyup((e: any) => {
-        this.onTriggerEvent(e);
-      });
-      this.$selectOperatorElm.change((e: any) => {
-        this.onTriggerEvent(e);
-      });
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
     }
+    this.grid = args.grid;
+    this.callback = args.callback;
+    this.columnDef = args.columnDef;
+    this.operator = args.operator || '';
+    this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
+
+    // date input can only have 1 search term, so we will use the 1st array index if it exist
+    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms.length >= 0) ? this.searchTerms[0] : '';
+
+    // step 1, create the DOM Element of the filter which contain the compound Operator+Input
+    // and initialize it if searchTerm is filled
+    this.$filterElm = this.createDomElement(searchTerm);
+
+    // step 3, subscribe to the keyup event and run the callback when that happens
+    // also add/remove "filled" class for styling purposes
+    this.$filterInputElm.keyup((e: any) => {
+      this.onTriggerEvent(e);
+    });
+    this.$selectOperatorElm.change((e: any) => {
+      this.onTriggerEvent(e);
+    });
   }
 
   /**
    * Clear the filter value
    */
-  clear() {
+  clear(shouldTriggerQuery = true) {
     if (this.flatInstance && this.$selectOperatorElm) {
       this._clearFilterTriggered = true;
+      this._shouldTriggerQuery = shouldTriggerQuery;
       this.searchTerms = [];
       this.$selectOperatorElm.val(0);
       this.flatInstance.clear();
@@ -84,14 +122,33 @@ export class CompoundDateFilter implements Filter {
     if (this.$filterElm) {
       this.$filterElm.off('keyup').remove();
     }
+    if (this.flatInstance && typeof this.flatInstance.destroy === 'function') {
+      this.flatInstance.destroy();
+    }
+  }
+
+  hide() {
+    if (this.flatInstance && typeof this.flatInstance.close === 'function') {
+      this.flatInstance.close();
+    }
+  }
+
+  show() {
+    if (this.flatInstance && typeof this.flatInstance.open === 'function') {
+      this.flatInstance.open();
+    }
   }
 
   /**
    * Set value(s) on the DOM element
    */
-  setValues(values: SearchTerm[]) {
-    if (values && Array.isArray(values)) {
+  setValues(values: SearchTerm | SearchTerm[]) {
+    if (this.flatInstance && values && Array.isArray(values)) {
+      this._currentDate = values[0] as Date;
       this.flatInstance.setDate(values[0]);
+    } else if (this.flatInstance && values && values) {
+      this._currentDate = values as Date;
+      this.flatInstance.setDate(values);
     }
   }
 
@@ -101,21 +158,27 @@ export class CompoundDateFilter implements Filter {
   private buildDatePickerInput(searchTerm?: SearchTerm) {
     const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
     const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || this.columnDef.type || FieldType.dateUtc);
-    let currentLocale = this.translate.currentLang || 'en';
-    if (currentLocale.length > 2) {
+    let currentLocale = this.translate && this.translate.currentLang || 'en';
+    if (currentLocale && currentLocale.length > 2) {
       currentLocale = currentLocale.substring(0, 2);
     }
 
-    const pickerOptions: any = {
-      defaultDate: searchTerm || '',
+    // if we are preloading searchTerms, we'll keep them for reference
+    if (searchTerm) {
+      this._currentDate = searchTerm as Date;
+    }
+
+    const pickerOptions: FlatpickrOption = {
+      defaultDate: (searchTerm as string) || '',
       altInput: true,
       altFormat: outputFormat,
       dateFormat: inputFormat,
       wrap: true,
       closeOnSelect: true,
       locale: (currentLocale !== 'en') ? this.loadFlatpickrLocale(currentLocale) : 'en',
-      onChange: (selectedDates: any[] | any, dateStr: string, instance: any) => {
+      onChange: (selectedDates: Date[] | Date, dateStr: string, instance: any) => {
         this._currentValue = dateStr;
+        this._currentDate = Array.isArray(selectedDates) && selectedDates[0];
 
         // when using the time picker, we can simulate a keyup event to avoid multiple backend request
         // since backend request are only executed after user start typing, changing the time should be treated the same way
@@ -132,9 +195,15 @@ export class CompoundDateFilter implements Filter {
       pickerOptions.enableTime = true;
     }
 
-    const placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
+    // merge options with optional user's custom options
+    this._flatpickrOptions = { ...pickerOptions, ...(this.columnFilter.filterOptions as FlatpickrOption) };
+
+    let placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
+    if (this.columnFilter && this.columnFilter.placeholder) {
+      placeholder = this.columnFilter.placeholder;
+    }
     const $filterInputElm: any = $(`<div class="flatpickr"><input type="text" class="form-control" data-input placeholder="${placeholder}"></div>`);
-    this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(pickerOptions) : null;
+    this.flatInstance = ($filterInputElm[0] && typeof $filterInputElm[0].flatpickr === 'function') ? $filterInputElm[0].flatpickr(this._flatpickrOptions) : Flatpickr($filterInputElm, this._flatpickrOptions as unknown as Partial<FlatpickrBaseOptions>);
     return $filterInputElm;
   }
 
@@ -148,15 +217,15 @@ export class CompoundDateFilter implements Filter {
     return `<select class="form-control">${optionValueString}</select>`;
   }
 
-  private getOptionValues(): {operator: OperatorString, description: string }[] {
+  private getOptionValues(): { operator: OperatorString, description: string }[] {
     return [
       { operator: '' as OperatorString, description: '' },
-      { operator: '=' as OperatorString, description: '' },
-      { operator: '<' as OperatorString, description: '' },
-      { operator: '<=' as OperatorString, description: '' },
-      { operator: '>' as OperatorString, description: '' },
-      { operator: '>=' as OperatorString, description: '' },
-      { operator: '<>' as OperatorString, description: '' }
+      { operator: '=' as OperatorString, description: '=' },
+      { operator: '<' as OperatorString, description: '<' },
+      { operator: '<=' as OperatorString, description: '<=' },
+      { operator: '>' as OperatorString, description: '>' },
+      { operator: '>=' as OperatorString, description: '>=' },
+      { operator: '<>' as OperatorString, description: '<>' }
     ];
   }
 
@@ -164,13 +233,14 @@ export class CompoundDateFilter implements Filter {
    * Create the DOM element
    */
   private createDomElement(searchTerm?: SearchTerm) {
-    const $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+    const fieldId = this.columnDef && this.columnDef.id;
+    const $headerElm = this.grid.getHeaderRowColumn(fieldId);
     $($headerElm).empty();
 
     // create the DOM Select dropdown for the Operator
     this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
     this.$filterInputElm = this.buildDatePickerInput(searchTerm);
-    const $filterContainerElm = $(`<div class="form-group search-filter"></div>`);
+    const $filterContainerElm = $(`<div class="form-group search-filter filter-${fieldId}"></div>`);
     const $containerInputGroup = $(`<div class="input-group flatpickr"></div>`);
     const $operatorInputGroupAddon = $(`<div class="input-group-addon input-group-prepend operator"></div>`);
 
@@ -190,16 +260,17 @@ export class CompoundDateFilter implements Filter {
 
     // create the DOM element & add an ID and filter class
     $filterContainerElm.append($containerInputGroup);
-    $filterContainerElm.attr('id', `filter-${this.columnDef.id}`);
-    this.$filterInputElm.data('columnId', this.columnDef.id);
+    $filterContainerElm.attr('id', `filter-${fieldId}`);
+    this.$filterInputElm.data('columnId', fieldId);
 
     if (this.operator) {
       this.$selectOperatorElm.val(this.operator);
     }
 
     // if there's a search term, we will add the "filled" class for styling purposes
-    if (searchTerm) {
-      $filterContainerElm.addClass('filled');
+    if (searchTerm && searchTerm !== '') {
+      this.$filterInputElm.addClass('filled');
+      this._currentDate = searchTerm as Date;
       this._currentValue = searchTerm as string;
     }
 
@@ -211,35 +282,29 @@ export class CompoundDateFilter implements Filter {
     return $filterContainerElm;
   }
 
-  private loadFlatpickrLocale(locale: string) {
-    // change locale if needed, Flatpickr reference: https://chmln.github.io/flatpickr/localization/
-    if (locale !== 'en') {
-      const localeDefault: any = require(`flatpickr/dist/l10n/${locale}.js`).default;
-      return (localeDefault && localeDefault[locale]) ? localeDefault[locale] : 'en';
+  /** Load a different set of locales for Flatpickr to be localized */
+  private loadFlatpickrLocale(language: string) {
+    let locales = 'en';
+
+    if (language !== 'en') {
+      // change locale if needed, Flatpickr reference: https://chmln.github.io/flatpickr/localization/
+      const localeDefault: any = require(`flatpickr/dist/l10n/${language}.js`).default;
+      locales = (localeDefault && localeDefault[language]) ? localeDefault[language] : 'en';
     }
-    return 'en';
+    return locales;
   }
 
   private onTriggerEvent(e: Event | undefined) {
     if (this._clearFilterTriggered) {
-      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
-      this._clearFilterTriggered = false; // reset flag for next use
+      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
+      this.$filterElm.removeClass('filled');
     } else {
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
       (this._currentValue) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-      this.callback(e, { columnDef: this.columnDef, searchTerms: (this._currentValue ? [this._currentValue] : null), operator: selectedOperator || '' });
+      this.callback(e, { columnDef: this.columnDef, searchTerms: (this._currentValue ? [this._currentValue] : null), operator: selectedOperator || '', shouldTriggerQuery: this._shouldTriggerQuery });
     }
-  }
-
-  private hide() {
-    if (this.flatInstance && typeof this.flatInstance.close === 'function') {
-      this.flatInstance.close();
-    }
-  }
-
-  private show() {
-    if (this.flatInstance && typeof this.flatInstance.open === 'function') {
-      this.flatInstance.open();
-    }
+    // reset both flags for next use
+    this._clearFilterTriggered = false;
+    this._shouldTriggerQuery = true;
   }
 }

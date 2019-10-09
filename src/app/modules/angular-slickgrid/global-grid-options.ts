@@ -1,4 +1,4 @@
-import { DelimiterType, FileType, GridOption } from './models/index';
+import { DelimiterType, FileType, GridOption, OperatorType } from './models/index';
 import { Filters } from './filters/index';
 
 /**
@@ -10,6 +10,7 @@ export const GlobalGridOptions: GridOption = {
   asyncEditorLoading: false,
   autoFitColumnsOnFirstLoad: true,
   autoResize: {
+    calculateAvailableSizeBy: 'window',
     bottomPadding: 20,
     minHeight: 180,
     minWidth: 300,
@@ -24,8 +25,10 @@ export const GlobalGridOptions: GridOption = {
     hideSyncResizeButton: true
   },
   datasetIdPropertyName: 'id',
-  defaultFilterPlaceholder: '&#128269;',
   defaultFilter: Filters.input,
+  enableFilterTrimWhiteSpace: false, // do we want to trim white spaces on all Filters?
+  defaultFilterPlaceholder: '&#128269;',
+  defaultFilterRangeOperator: OperatorType.rangeExclusive,
   editable: false,
   enableAutoResize: true,
   enableAutoSizeColumns: true,
@@ -44,6 +47,7 @@ export const GlobalGridOptions: GridOption = {
     exportWithFormatter: false,
     filename: 'export',
     format: FileType.csv,
+    groupingColumnHeaderTitle: 'Group By',
     groupingAggregatorRowText: '',
     sanitizeDataExport: false,
     useUtf8WithBom: true
@@ -58,6 +62,7 @@ export const GlobalGridOptions: GridOption = {
     hideRefreshDatasetCommand: false,
     hideSyncResizeButton: true,
     hideToggleFilterCommand: false,
+    hideTogglePreHeaderCommand: false,
     iconCssClass: 'fa fa-bars',
     iconClearAllFiltersCommand: 'fa fa-filter text-danger',
     iconClearAllSortingCommand: 'fa fa-unsorted text-danger',
@@ -65,6 +70,7 @@ export const GlobalGridOptions: GridOption = {
     iconExportTextDelimitedCommand: 'fa fa-download',
     iconRefreshDatasetCommand: 'fa fa-refresh',
     iconToggleFilterCommand: 'fa fa-random',
+    iconTogglePreHeaderCommand: 'fa fa-random',
     menuWidth: 16,
     resizeOnShowHeaderRow: true
   },
@@ -72,10 +78,14 @@ export const GlobalGridOptions: GridOption = {
     autoAlign: true,
     autoAlignOffset: 12,
     minWidth: 140,
-    iconSortAscCommand: 'fa fa-sort-asc',
-    iconSortDescCommand: 'fa fa-sort-desc',
+    iconClearFilterCommand: 'fa fa-filter text-danger',
+    iconClearSortCommand: 'fa fa-unsorted',
+    iconSortAscCommand: 'fa fa-sort-amount-asc',
+    iconSortDescCommand: 'fa fa-sort-amount-desc',
     iconColumnHideCommand: 'fa fa-times',
     hideColumnHideCommand: false,
+    hideClearFilterCommand: false,
+    hideClearSortCommand: false,
     hideSortCommands: false
   },
   headerRowHeight: 35,
@@ -89,7 +99,18 @@ export const GlobalGridOptions: GridOption = {
     pageSize: 25,
     totalItems: 0
   },
+  rowDetailView: {
+    cssClass: 'detail-view-toggle',
+    panelRows: 1,
+    keyPrefix: '__',
+    useRowClick: true,
+    useSimpleViewportCalc: true,
+    saveDetailViewOnScroll: false,
+
+    // the following 2 property/method should always be override by the user
+    process: undefined,
+    viewComponent: null
+  },
   rowHeight: 35,
-  showHeaderRow: false,
   topPanelHeight: 35
 };

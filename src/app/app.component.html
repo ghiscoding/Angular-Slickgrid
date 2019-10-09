@@ -1,84 +1,126 @@
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" menu-collapse>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="https://github.com/ghiscoding/Angular-Slickgrid">
-            <i class="fa fa-github"></i>
-            <span>{{title}}</span>
+<nav class="navbar navbar-default navbar-fixed-top"
+     role="navigation">
+  <div class="navbar-header">
+    <button type="button"
+            class="navbar-toggle"
+            data-toggle="collapse"
+            data-target=".navbar-collapse"
+            menu-collapse>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand"
+       href="https://github.com/ghiscoding/Angular-Slickgrid">
+      <i class="fa fa-github"></i>
+      <span>{{title}}</span>
+    </a>
+    <span style="position: relative; top: 15px">
+      <iframe allowtransparency="true"
+              scrolling="no"
+              frameborder="0"
+              src="https://buttons.github.io/buttons.html#href=https%3A%2F%2Fgithub.com%2Fghiscoding%2FAngular-Slickgrid&amp;aria-label=Star%20ghiscoding%2FAngular-Slickgrid%20on%20GitHub&amp;data-icon=octicon-star&amp;data-text=Star&amp;data-show-count=true"
+              style="width: 90px; height: 20px; border: none;"></iframe>
+    </span>
+  </div>
+  <div class="navbar-collapse collapse">
+    <ul class="nav navbar-nav">
+      <li>
+        <a [routerLink]="['/home']">
+          <i class="fa fa-lg fa-home"></i> Home
         </a>
-        <span style="position: relative; top: 15px">
-            <iframe allowtransparency="true" scrolling="no" frameborder="0" src="https://buttons.github.io/buttons.html#href=https%3A%2F%2Fgithub.com%2Fghiscoding%2FAngular-Slickgrid&amp;aria-label=Star%20ghiscoding%2FAngular-Slickgrid%20on%20GitHub&amp;data-icon=octicon-star&amp;data-text=Star&amp;data-show-count=true"
-                style="width: 90px; height: 20px; border: none;"></iframe>
-        </span>
-    </div>
-    <div class="navbar-collapse collapse">
-        <ul class="nav navbar-nav">
-            <li>
-                <a [routerLink]="['/home']">
-                    <i class="fa fa-lg fa-home"></i> Home
-                </a>
-            </li>
-        </ul>
-    </div>
+      </li>
+    </ul>
+  </div>
 </nav>
 
-<section class="body-content">
-    <div class="col-sm-3 col-md-2 links">
-        <ul class="nav nav-pills nav-stacked">
-            <li routerLinkActive="active">
-                <a [routerLink]="['/basic']">1- Basic Grid / 2 Grids</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/formatter']">2- Formatters</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/editor']">3- Editors</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/clientside']">4- Client Side Sort/Filter</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/odata']">5- Backend Server with OData</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/gridgraphql']">6- Backend Server with GraphQL</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/headerbutton']">7- Header Button Plugin</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/headermenu']">8- Header Menu Plugin</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/gridmenu']">9- Grid Menu (hamburger menu)</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/selection']">10- Row Selection / 2 Grids</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/additem']">11- Add/Update Grid Item</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/localization']">12- Localization (i18n)</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/swt']">13- Backend Server Custom Paging</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/grouping']">14- Grouping &amp; Aggregator</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/colspan']">15- Column Span</a>
-            </li>
-            <li routerLinkActive="active">
-                <a [routerLink]="['/gridstate']">16- Grid State &amp; Local Storage</a>
-            </li>
-        </ul>
-    </div>
-</section>
-<div id="demo-container" class="col-sm-9">
-    <router-outlet></router-outlet>
+<div class="container-fluid">
+  <div class="panel-wm">
+    <section id="panel-left"
+             class="panel-wm-left">
+      <ul class="nav nav-pills nav-stacked">
+        <li routerLinkActive="active">
+          <a [routerLink]="['/basic']">1- Basic Grid / 2 Grids</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/formatter']">2- Formatters</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/editor']">3- Editors</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/clientside']">4- Client Side Sort/Filter</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/odata']">5- Backend Server with OData</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/gridgraphql']">6- Backend Server with GraphQL</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/headerbutton']">7- Header Button Plugin</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/headermenu']">8- Header Menu Plugin</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/gridmenu']">9- Grid Menu (hamburger menu)</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/selection']">10- Row Selection / 2 Grids</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/additem']">11- Add/Update Grid Item</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/localization']">12- Localization (i18n)</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/swt']">13- Backend Server Custom Paging</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/grouping']">14- Grouping &amp; Aggregator</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/colspan']">15- Column Span</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/gridstate']">16- Grid State &amp; Local Storage</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/rowmove']">17- Row Move</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/remote']">18- Remote Model</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/draggrouping']">19- Draggable Grouping</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/frozen']">20- Pinned Columns/Rows</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/rowdetail']">21- Row Detail View</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/angular-components']">22- Use of Angular Components</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/autoheight']">23- Grid AutoHeight (full height)</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/gridtabs']">24- within Bootstrap Tabs</a>
+        </li>
+        <li routerLinkActive="active">
+          <a [routerLink]="['/range']">25- Filter by Range of Values</a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel-wm-content">
+      <div id="demo-container">
+        <router-outlet></router-outlet>
+      </div>
+    </section>
+  </div>
 </div>

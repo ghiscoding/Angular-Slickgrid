@@ -14,10 +14,11 @@
    .slick-header-column {
      background: $grid-header-background;
      // background-color: #EBECEE;
+     box-sizing: content-box !important; /* this here only for Firefox! */
    }
 
    .slick-header-columns {
-     border-bottom: 1px solid $grid-border-color;
+     /*border-bottom: 1px solid $grid-border-color;*/
      background: linear-gradient(rgba(0,0,0,0) 60%, rgba(0,0,0,.1));
    }
 

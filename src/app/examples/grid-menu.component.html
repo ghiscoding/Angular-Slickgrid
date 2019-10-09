@@ -1,19 +1,29 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div class="container">
-    <h2>{{title}}</h2>
-    <div class="subtitle" [innerHTML]="subTitle"></div>
+<div class="container-fluid">
+  <h2>{{title}}</h2>
+  <div class="subtitle"
+       [innerHTML]="subTitle"></div>
 
-    <button class="btn btn-default btn-sm" (click)="switchLanguage()">
-        <i class="fa fa-language"></i>
-        Switch Language
-    </button>
+  <button class="btn btn-default btn-sm"
+          (click)="toggleGridMenu($event)"
+          data-test="external-gridmenu">
+    <i class="fa fa-bars"></i>
+    Grid Menu
+  </button>
+  <button class="btn btn-default btn-sm"
+          (click)="switchLanguage()"
+          data-test="language">
+    <i class="fa fa-language"></i>
+    Switch Language
+  </button>
+  <b>Locale:</b> <span style="font-style: italic"
+        data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
 
-    <div class="col-sm-12">
-        <angular-slickgrid gridId="grid2"
-            (onAngularGridCreated)="angularGridReady($event)"
-            [columnDefinitions]="columnDefinitions"
-            [gridOptions]="gridOptions"
-            [dataset]="dataset">
-        </angular-slickgrid>
-    </div>
+  <div class="col-sm-12">
+    <angular-slickgrid gridId="grid9"
+                       (onAngularGridCreated)="angularGridReady($event)"
+                       [columnDefinitions]="columnDefinitions"
+                       [gridOptions]="gridOptions"
+                       [dataset]="dataset">
+    </angular-slickgrid>
+  </div>
 </div>

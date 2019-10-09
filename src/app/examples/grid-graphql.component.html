@@ -1,43 +1,52 @@
-<!--The content below is only a placeholder and can be replaced.-->
 <div class="container-fluid">
-    <h2>{{title}}</h2>
-    <div class="subtitle row" [innerHTML]="subTitle"></div>
+  <h2>{{title}}</h2>
+  <div class="subtitle row" [innerHTML]="subTitle"></div>
 
-    <div class="row">
-        <div class="col-sm-4">
-            <div [class]="status.class" role="alert">
-                <strong>Status: </strong> {{status.text}}
-                <span [hidden]="!processing">
-                    <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
-                </span>
-            </div>
+  <div class="row">
+    <div class="col-sm-5">
+      <div [class]="status.class" role="alert" data-test="status">
+        <strong>Status: </strong> {{status.text}}
+        <span [hidden]="!processing">
+          <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
+        </span>
+      </div>
 
-            <br/>
-
-            <button class="btn btn-default btn-sm" (click)="switchLanguage()">Switch Language</button>
-            <b>Locale:</b>
-            <span style="font-style: italic">{{selectedLanguage + '.json'}}</span>
-            <br/>
-            <span *ngIf="statistics">
-                <b>Statistics:</b> {{statistics.endTime | date: 'yyyy-MM-dd HH:mm aaaaa\'m\''}} | {{statistics.executionTime}}ms | {{statistics.totalItemCount}} items
-            </span>
-        </div>
-        <div class="col-sm-8">
-            <div class="alert alert-info">
-                <strong>GraphQL Query:</strong>
-                <div [innerHTML]="graphqlQuery"></div>
-            </div>
-        </div>
+      <button class="btn btn-default btn-sm" (click)="clearAllFiltersAndSorts()" title="Clear all Filters & Sorts">
+        <i class="fa fa-filter text-danger"></i>
+        Clear all Filter & Sorts
+      </button>
+      <button class="btn btn-default btn-sm" (click)="switchLanguage()">
+        <i class="fa fa-language"></i>
+        Switch Language
+      </button>
+      <b>Locale:</b>
+      <span style="font-style: italic">{{selectedLanguage + '.json'}}</span>
+      <br />
+      <span *ngIf="metrics">
+        <b>Metrics:</b> {{metrics.endTime | date: 'yyyy-MM-dd HH:mm aaaaa\'m\''}} | {{metrics.executionTime}}ms
+        | {{metrics.totalItemCount}} items
+      </span>
+      <div class="row col-md-12">
+        <label>Programmatically go to first/last page:</label>
+        <button class="btn btn-default btn-xs" (click)="goToFirstPage()">
+          <i class="fa fa-caret-left fa-lg"></i>
+        </button>
+        <button class="btn btn-default btn-xs" (click)="goToLastPage()">
+          <i class="fa fa-caret-right fa-lg"></i>
+        </button>
+      </div>
     </div>
+    <div class="col-sm-7">
+      <div class="alert alert-info" data-test="alert-graphql-query">
+        <strong>GraphQL Query:</strong>
+        <div [innerHTML]="graphqlQuery" data-test="graphql-query-result"></div>
+      </div>
+    </div>
+  </div>
 
-    <angular-slickgrid gridId="grid4"
-        [gridHeight]="250"
-        [gridWidth]="800"
-        [columnDefinitions]="columnDefinitions"
-        [gridOptions]="gridOptions"
-        [dataset]="dataset"
-        (onAngularGridCreated)="angularGridReady($event)"
-        (onGridStateChanged)="gridStateChanged($event)"
-        (onBeforeGridDestroy)="saveCurrentGridState($event)">
-    </angular-slickgrid>
+  <angular-slickgrid gridId="grid6" [gridHeight]="200" [gridWidth]="900" [columnDefinitions]="columnDefinitions"
+                     [gridOptions]="gridOptions" [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
+                     (onGridStateChanged)="gridStateChanged($event)"
+                     (onBeforeGridDestroy)="saveCurrentGridState($event)">
+  </angular-slickgrid>
 </div>

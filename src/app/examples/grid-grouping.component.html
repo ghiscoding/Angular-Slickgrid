@@ -1,5 +1,4 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div class="container">
+<div class="container-fluid">
     <h2>{{title}}</h2>
     <div class="subtitle" [innerHTML]="subTitle"></div>
     <div class="row col-sm-12">
@@ -10,13 +9,16 @@
             50k rows
         </button>
         <button class="btn btn-default btn-xs" (click)="clearGrouping()">
-            Clear grouping
+          <i class="fa fa-times"></i> Clear grouping
         </button>
         <button class="btn btn-default btn-xs" (click)="collapseAllGroups()">
-            Collapse all groups
+          <i class="fa fa-compress"></i> Collapse all groups
         </button>
         <button class="btn btn-default btn-xs" (click)="expandAllGroups()">
-            Expand all groups
+          <i class="fa fa-expand"></i> Expand all groups
+        </button>
+        <button class="btn btn-default btn-xs" (click)="exportToCsv('csv')">
+            <i class="fa fa-download"></i> Export to CSV
         </button>
     </div>
     <hr/>
@@ -44,11 +46,9 @@
     </div>
 
     <angular-slickgrid gridId="grid2"
-        (onAngularGridCreated)="angularGridReady($event)"
-        (onDataviewCreated)="dataviewReady($event)"
-        (onGridCreated)="gridReady($event)"
         [dataset]="dataset"
         [columnDefinitions]="columnDefinitions"
-        [gridOptions]="gridOptions">
+        [gridOptions]="gridOptions"
+        (onAngularGridCreated)="angularGridReady($event)">
     </angular-slickgrid>
 </div>

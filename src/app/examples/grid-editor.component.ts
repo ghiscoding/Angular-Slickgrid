@@ -3,36 +3,64 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
+  AutocompleteOption,
   Column,
-  EditorValidator,
   Editors,
+  EditorArgs,
+  EditorValidator,
   FieldType,
   Filters,
+  FlatpickrOption,
   Formatters,
   GridOption,
   OnEventArgs,
-  OperatorType
+  OperatorType,
+  Sorters,
 } from './../modules/angular-slickgrid';
 import { CustomInputEditor } from './custom-inputEditor';
-import { Subject } from 'rxjs/Subject';
+import { CustomInputFilter } from './custom-inputFilter';
+import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
 declare var Slick: any;
+declare var $: any;
 
 const NB_ITEMS = 100;
 const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_100_numbers.json';
+const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
+const URL_COUNTRY_NAMES = 'assets/data/country_names.json';
 
 // you can create custom validator to pass to an inline editor
-const myCustomTitleValidator: EditorValidator = (value) => {
+const myCustomTitleValidator: EditorValidator = (value: any, args: EditorArgs) => {
+  // you can get the Editor Args which can be helpful, e.g. we can get the Translate Service from it
+  const grid = args && args.grid;
+  const gridOptions = (grid && grid.getOptions) ? grid.getOptions() : {};
+  const translate = gridOptions.i18n;
+
+  // to get the editor object, you'll need to use "internalColumnEditor"
+  // don't use "editor" property since that one is what SlickGrid uses internally by it's editor factory
+  const columnEditor = args && args.column && args.column.internalColumnEditor;
+
   if (value == null || value === undefined || !value.length) {
     return { valid: false, msg: 'This is a required field' };
   } else if (!/^Task\s\d+$/.test(value)) {
     return { valid: false, msg: 'Your title is invalid, it must start with "Task" followed by a number' };
+    // OR use the Translate Service with your custom message
+    // return { valid: false, msg: translate.instant('YOUR_ERROR', { x: value }) };
   } else {
     return { valid: true, msg: '' };
   }
 };
 
+// create a custom Formatter to show the Task + value
+const taskFormatter = (row, cell, value, columnDef, dataContext) => {
+  if (value && Array.isArray(value)) {
+    const taskValues = value.map((val) => `Task ${val}`);
+    const values = taskValues.join(', ');
+    return `<span title="${values}">${values}</span>`;
+  }
+  return '';
+};
 @Component({
   templateUrl: './grid-editor.component.html'
 })
@@ -42,6 +70,7 @@ export class GridEditorComponent implements OnInit {
   subTitle = `
   Grid with Inline Editors and onCellClick actions (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Editors" target="_blank">Wiki docs</a>).
   <ul>
+    <li>Multiple Editors & Filters are available: AutoComplete, Checkbox, Date, Slider, SingleSelect, MultipleSelect, Float, Text, LongText... even Custom Editor</li>
     <li>When using "enableCellNavigation: true", clicking on a cell will automatically make it active &amp; selected.</li>
     <ul><li>If you don't want this behavior, then you should disable "enableCellNavigation"</li></ul>
     <li>Inline Editors requires "enableCellNavigation: true" (not sure why though)</li>
@@ -67,10 +96,11 @@ export class GridEditorComponent implements OnInit {
   alertWarning: any;
   updatedObject: any;
   selectedLanguage = 'en';
+  duplicateTitleHeaderCount = 1;
 
-  constructor(private http: HttpClient, private translate: TranslateService) {}
+  constructor(private http: HttpClient, private translate: TranslateService) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.prepareGrid();
   }
 
@@ -84,6 +114,8 @@ export class GridEditorComponent implements OnInit {
       {
         id: 'edit',
         field: 'id',
+        excludeFromColumnPicker: true,
+        excludeFromGridMenu: true,
         excludeFromHeaderMenu: true,
         formatter: Formatters.editIcon,
         minWidth: 30,
@@ -98,6 +130,8 @@ export class GridEditorComponent implements OnInit {
       }, {
         id: 'delete',
         field: 'id',
+        excludeFromColumnPicker: true,
+        excludeFromGridMenu: true,
         excludeFromHeaderMenu: true,
         formatter: Formatters.deleteIcon,
         minWidth: 30,
@@ -113,14 +147,15 @@ export class GridEditorComponent implements OnInit {
         id: 'title',
         name: 'Title',
         field: 'title',
+        minWidth: 100,
         filterable: true,
         sortable: true,
         type: FieldType.string,
         editor: {
           model: Editors.longText,
+          required: true,
           validator: myCustomTitleValidator, // use a custom validator
         },
-        minWidth: 100,
         onCellChange: (e: Event, args: OnEventArgs) => {
           console.log(args);
           this.alertWarning = `Updated Title: ${args.dataContext.title}`;
@@ -129,21 +164,29 @@ export class GridEditorComponent implements OnInit {
         id: 'title2',
         name: 'Title, Custom Editor',
         field: 'title',
+        minWidth: 70,
         filterable: true,
         sortable: true,
         type: FieldType.string,
         editor: {
           model: CustomInputEditor,
+          placeholder: 'custom',
           validator: myCustomTitleValidator, // use a custom validator
         },
-        minWidth: 70
+        filter: {
+          model: CustomInputFilter,
+          placeholder: '&#128269; custom',
+        },
       }, {
         id: 'duration',
         name: 'Duration (days)',
         field: 'duration',
+        minWidth: 100,
         filterable: true,
         sortable: true,
+        formatter: Formatters.complexObject,
         type: FieldType.number,
+        exportWithFormatter: true,
         filter: { model: Filters.slider, params: { hideSliderNumber: false } },
         editor: {
           model: Editors.slider,
@@ -155,19 +198,22 @@ export class GridEditorComponent implements OnInit {
         editor: {
           // default is 0 decimals, if no decimals is passed it will accept 0 or more decimals
           // however if you pass the "decimalPlaces", it will validate with that maximum
+          alwaysSaveOnEnterKey: true, // defaults to False, when set to true and user presses ENTER it will always call a Save even if value is empty
           model: Editors.float,
-          minValue: 0,
+          placeholder: 'enter number',
+          title: 'Your number must be bigger than 5', // add a custom title, to see it as a real tooltip you'll need to implement something like tipsy jquery lib
+          minValue: 5,
           maxValue: 365,
           // the default validation error message is in English but you can override it by using "errorMessage"
           // errorMessage: this.i18n.tr('INVALID_FLOAT', { maxDecimal: 2 }),
           params: { decimalPlaces: 2 },
         },
         */
-        minWidth: 100
       }, {
         id: 'complete',
         name: '% Complete',
         field: 'percentComplete',
+        minWidth: 100,
         filterable: true,
         formatter: Formatters.multiple,
         type: FieldType.number,
@@ -197,7 +243,6 @@ export class GridEditorComponent implements OnInit {
             maxHeight: 400
           }
         },
-        minWidth: 100,
         params: {
           formatters: [Formatters.collectionEditor, Formatters.percentCompleteBar],
         }
@@ -205,11 +250,15 @@ export class GridEditorComponent implements OnInit {
         id: 'start',
         name: 'Start',
         field: 'start',
+        minWidth: 100,
         filterable: true,
         filter: { model: Filters.compoundDate },
-        formatter: Formatters.dateIso,
+        formatter: Formatters.multiple,
+        params: {
+          formatters: [Formatters.complexObject, Formatters.dateIso,]
+        },
+        exportWithFormatter: true,
         sortable: true,
-        minWidth: 100,
         type: FieldType.date,
         editor: {
           model: Editors.date
@@ -218,19 +267,107 @@ export class GridEditorComponent implements OnInit {
         id: 'finish',
         name: 'Finish',
         field: 'finish',
+        minWidth: 100,
         filterable: true,
+        sortable: true,
         filter: { model: Filters.compoundDate },
         formatter: Formatters.dateIso,
-        sortable: true,
-        minWidth: 100,
+        exportWithFormatter: true,
         type: FieldType.date,
         editor: {
-          model: Editors.date
+          model: Editors.date,
+          // override any of the Flatpickr options through "editorOptions"
+          // please note that there's no TSlint on this property since it's generic for any filter, so make sure you entered the correct filter option(s)
+          editorOptions: { minDate: 'today' } as FlatpickrOption
         },
+      }, {
+        id: 'cityOfOrigin', name: 'City of Origin', field: 'cityOfOrigin',
+        filterable: true,
+        minWidth: 100,
+        editor: {
+          model: Editors.autoComplete,
+          placeholder: '&#128269; search city',
+
+          // We can use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
+          // use your own autocomplete options, instead of $.ajax, use http
+          // here we use $.ajax just because I'm not sure how to configure http with JSONP and CORS
+          editorOptions: {
+            forceUserInput: true,
+            minLength: 3,
+            source: (request, response) => {
+              $.ajax({
+                url: 'http://gd.geobytes.com/AutoCompleteCity',
+                dataType: 'jsonp',
+                data: {
+                  q: request.term
+                },
+                success: (data) => response(data)
+              });
+            }
+          } as AutocompleteOption,
+        },
+        filter: {
+          model: Filters.autoComplete,
+          // placeholder: '&#128269; search city',
+
+          // We can use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
+          // collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),
+
+          // OR use your own autocomplete options, instead of $.ajax, use http
+          // here we use $.ajax just because I'm not sure how to configure http with JSONP and CORS
+          filterOptions: {
+            minLength: 3,
+            source: (request, response) => {
+              $.ajax({
+                url: 'http://gd.geobytes.com/AutoCompleteCity',
+                dataType: 'jsonp',
+                data: {
+                  q: request.term
+                },
+                success: (data) => response(data)
+              });
+            }
+          } as AutocompleteOption,
+        }
+      }, {
+        id: 'countryOfOrigin', name: 'Country of Origin', field: 'countryOfOrigin',
+        formatter: Formatters.complexObject,
+        exportWithFormatter: true,
+        dataKey: 'code',
+        labelKey: 'name',
+        type: FieldType.object,
+        sorter: Sorters.objectString, // this sorter requires the dataKey and assume that obj1[dataKey] will be a string so it can sort it that way
+        filterable: true,
+        sortable: true,
+        minWidth: 100,
+        editor: {
+          model: Editors.autoComplete,
+          customStructure: { label: 'name', value: 'code' },
+          collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),
+        },
+        filter: {
+          model: Filters.autoComplete,
+          customStructure: { label: 'name', value: 'code' },
+          collectionAsync: this.http.get(URL_COUNTRIES_COLLECTION),
+        }
+      }, {
+        id: 'countryOfOriginName', name: 'Country of Origin Name', field: 'countryOfOriginName',
+        filterable: true,
+        sortable: true,
+        minWidth: 100,
+        editor: {
+          model: Editors.autoComplete,
+          collectionAsync: this.http.get(URL_COUNTRY_NAMES),
+        },
+        filter: {
+          model: Filters.autoComplete,
+          collectionAsync: this.http.get(URL_COUNTRY_NAMES),
+        }
       }, {
         id: 'effort-driven',
         name: 'Effort Driven',
         field: 'effortDriven',
+        minWidth: 70,
         filterable: true,
         type: FieldType.boolean,
         filter: {
@@ -241,16 +378,17 @@ export class GridEditorComponent implements OnInit {
         editor: {
           model: Editors.checkbox,
         },
-        minWidth: 70
       }, {
         id: 'prerequisites',
         name: 'Prerequisites',
         field: 'prerequisites',
-        filterable: true,
         minWidth: 100,
+        filterable: true,
+        formatter: taskFormatter,
         sortable: true,
         type: FieldType.string,
         editor: {
+          placeholder: 'choose option',
           collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
           // OR a regular collection load
           // collection: Array.from(Array(100).keys()).map(k => ({ value: k, prefix: 'Task', label: k })),
@@ -264,10 +402,10 @@ export class GridEditorComponent implements OnInit {
             labelPrefix: 'prefix',
           },
           collectionOptions: {
-            separatorBetweenTextLabels: ' ',
-            includePrefixSuffixToSelectedValues: true
+            separatorBetweenTextLabels: ' '
           },
           model: Editors.multipleSelect,
+          required: true
         },
         filter: {
           collectionAsync: this.http.get<{ value: string; label: string; }[]>(URL_SAMPLE_COLLECTION_DATA),
@@ -294,6 +432,7 @@ export class GridEditorComponent implements OnInit {
     this.gridOptions = {
       asyncEditorLoading: false,
       autoEdit: this.isAutoEdit,
+      autoCommitEdit: false,
       autoResize: {
         containerId: 'demo-container',
         sidePadding: 15
@@ -388,20 +527,25 @@ export class GridEditorComponent implements OnInit {
     const tempDataset = [];
     for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
+      const randomFinishYear = (new Date().getFullYear() - 3) + Math.floor(Math.random() * 10); // use only years not lower than 3 years ago
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
       const randomPercent = Math.round(Math.random() * 100);
+      const randomFinish = new Date(randomFinishYear, (randomMonth + 1), randomDay);
 
       tempDataset.push({
         id: i,
         title: 'Task ' + i,
-        duration: Math.round(Math.random() * 100) + '',
+        duration: (i % 33 === 0) ? null : Math.round(Math.random() * 100) + '',
+        start: new Date(randomYear, randomMonth, randomDay),
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
-        start: new Date(randomYear, randomMonth, randomDay),
-        finish: new Date(randomYear, (randomMonth + 1), randomDay),
+        finish: randomFinish < new Date() ? '' : randomFinish, // make sure the random date is earlier than today
         effortDriven: (i % 5 === 0),
-        prerequisites: (i % 2 === 0) && i !== 0 && i < 12 ? [`Task ${i}`, `Task ${i - 1}`] : []
+        prerequisites: (i % 2 === 0) && i !== 0 && i < 12 ? [i, i - 1] : [],
+        countryOfOrigin: (i % 2) ? { code: 'CA', name: 'Canada' } : { code: 'US', name: 'United States' },
+        countryOfOriginName: (i % 2) ? 'Canada' : 'United States',
+        cityOfOrigin: (i % 2) ? 'Vancouver, BC, Canada' : 'Boston, MA, United States',
       });
     }
     return tempDataset;
@@ -432,6 +576,30 @@ export class GridEditorComponent implements OnInit {
 
   onCellValidation(e, args) {
     alert(args.validationResults.msg);
+  }
+
+  changeAutoCommit() {
+    this.gridOptions.autoCommitEdit = !this.gridOptions.autoCommitEdit;
+    this.gridObj.setOptions({
+      autoCommitEdit: this.gridOptions.autoCommitEdit
+    });
+    return true;
+  }
+
+  dynamicallyAddTitleHeader() {
+    const newCol = {
+      id: `title${this.duplicateTitleHeaderCount++}`,
+      name: 'Title',
+      field: 'title',
+      editor: {
+        model: Editors.text,
+        required: true,
+        validator: myCustomTitleValidator, // use a custom validator
+      },
+      sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true }
+    };
+    this.columnDefinitions.push(newCol);
+    this.columnDefinitions = this.columnDefinitions.slice();
   }
 
   setAutoEdit(isAutoEdit) {

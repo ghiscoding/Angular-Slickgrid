@@ -1,47 +1,69 @@
 import {
   Column,
+  ColumnFilter,
   Filter,
   FilterArguments,
   FilterCallback,
   GridOption,
   OperatorType,
   OperatorString,
-  SearchTerm
+  SearchTerm,
 } from './../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
 
 export class InputFilter implements Filter {
-  private _clearFilterTriggered = false;
-  private $filterElm: any;
+  protected _clearFilterTriggered = false;
+  protected _shouldTriggerQuery = true;
+  protected _inputType = 'text';
+  protected $filterElm: any;
   grid: any;
   searchTerms: SearchTerm[];
   columnDef: Column;
   callback: FilterCallback;
 
-  constructor() {}
+  constructor() { }
 
-  /** Getter for the Grid Options pulled through the Grid Object */
-  private get gridOptions(): GridOption {
-    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
+  /** Getter for the Column Filter */
+  get columnFilter(): ColumnFilter {
+    return this.columnDef && this.columnDef.filter || {};
   }
 
+  /** Getter of input type (text, number, password) */
+  get inputType() {
+    return this._inputType;
+  }
+
+  /** Setter of input type (text, number, password) */
+  set inputType(type: string) {
+    this._inputType = type;
+  }
+
+  /** Getter of the Operator to use when doing the filter comparing */
   get operator(): OperatorType | OperatorString {
     return this.columnDef && this.columnDef.filter && this.columnDef.filter.operator || '';
+  }
+
+  /** Getter for the Grid Options pulled through the Grid Object */
+  protected get gridOptions(): GridOption {
+    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
   /**
    * Initialize the Filter
    */
   init(args: FilterArguments) {
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
+    }
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
-    this.searchTerms = args.searchTerms || [];
+    this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
 
     // filter input can only have 1 search term, so we will use the 1st array index if it exist
-    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
+    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms.length >= 0) ? this.searchTerms[0] : '';
 
     // step 1, create HTML string template
     const filterTemplate = this.buildTemplateHtmlString();
@@ -51,25 +73,33 @@ export class InputFilter implements Filter {
 
     // step 3, subscribe to the keyup event and run the callback when that happens
     // also add/remove "filled" class for styling purposes
-    this.$filterElm.keyup((e: any) => {
-      const value = e && e.target && e.target.value || '';
+    this.$filterElm.on('keyup input change', (e: any) => {
+      let value = e && e.target && e.target.value || '';
+      const enableWhiteSpaceTrim = this.gridOptions.enableFilterTrimWhiteSpace || this.columnFilter.enableTrimWhiteSpace;
+      if (typeof value === 'string' && enableWhiteSpaceTrim) {
+        value = value.trim();
+      }
+
       if (this._clearFilterTriggered) {
-        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
-        this._clearFilterTriggered = false; // reset flag for next use
+        this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
         this.$filterElm.removeClass('filled');
       } else {
-        this.$filterElm.addClass('filled');
-        this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value] });
+        value === '' ? this.$filterElm.removeClass('filled') : this.$filterElm.addClass('filled');
+        this.callback(e, { columnDef: this.columnDef, operator: this.operator, searchTerms: [value], shouldTriggerQuery: this._shouldTriggerQuery });
       }
+      // reset both flags for next use
+      this._clearFilterTriggered = false;
+      this._shouldTriggerQuery = true;
     });
   }
 
   /**
    * Clear the filter value
    */
-  clear() {
+  clear(shouldTriggerQuery = true) {
     if (this.$filterElm) {
       this._clearFilterTriggered = true;
+      this._shouldTriggerQuery = shouldTriggerQuery;
       this.searchTerms = [];
       this.$filterElm.val('');
       this.$filterElm.trigger('keyup');
@@ -81,7 +111,7 @@ export class InputFilter implements Filter {
    */
   destroy() {
     if (this.$filterElm) {
-      this.$filterElm.off('keyup').remove();
+      this.$filterElm.off('keyup input change').remove();
     }
   }
 
@@ -95,31 +125,36 @@ export class InputFilter implements Filter {
   }
 
   //
-  // private functions
+  // protected functions
   // ------------------
 
   /**
    * Create the HTML template as a string
    */
-  private buildTemplateHtmlString() {
-    const placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
-    return `<input type="text" class="form-control search-filter" placeholder="${placeholder}">`;
+  protected buildTemplateHtmlString() {
+    const fieldId = this.columnDef && this.columnDef.id;
+    let placeholder = (this.gridOptions) ? (this.gridOptions.defaultFilterPlaceholder || '') : '';
+    if (this.columnFilter && this.columnFilter.placeholder) {
+      placeholder = this.columnFilter.placeholder;
+    }
+    return `<input type="${this._inputType || 'text'}" role="presentation" autocomplete="off" class="form-control search-filter filter-${fieldId}" placeholder="${placeholder}"><span></span>`;
   }
 
   /**
    * From the html template string, create a DOM element
    * @param filterTemplate
    */
-  private createDomElement(filterTemplate: string, searchTerm?: SearchTerm) {
-    const $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
+  protected createDomElement(filterTemplate: string, searchTerm?: SearchTerm) {
+    const fieldId = this.columnDef && this.columnDef.id;
+    const $headerElm = this.grid.getHeaderRowColumn(fieldId);
     $($headerElm).empty();
 
     // create the DOM element & add an ID and filter class
     const $filterElm = $(filterTemplate);
 
     $filterElm.val(searchTerm);
-    $filterElm.attr('id', `filter-${this.columnDef.id}`);
-    $filterElm.data('columnId', this.columnDef.id);
+    $filterElm.attr('id', `filter-${fieldId}`);
+    $filterElm.data('columnId', fieldId);
 
     // if there's a search term, we will add the "filled" class for styling purposes
     if (searchTerm) {

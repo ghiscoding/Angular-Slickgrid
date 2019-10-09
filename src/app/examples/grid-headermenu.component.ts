@@ -16,6 +16,7 @@ export class GridHeaderMenuComponent implements OnInit {
       <li>Hover over any column header to see an arrow showing up on the right</li>
       <li>Try Sorting (multi-sort) the 2 columns "Duration" and "% Complete" (the other ones are disabled)</li>
       <li>Try hiding any columns (you use the "Column Picker" plugin by doing a right+click on the header to show the column back)</li>
+      <li>Note: The "Header Button" & "Header Menu" Plugins cannot be used at the same time</li>
     </ul>
   `;
 
@@ -33,7 +34,7 @@ export class GridHeaderMenuComponent implements OnInit {
     this.columnDefinitions = [
       { id: 'title', name: 'Title', field: 'title', headerKey: 'TITLE' },
       { id: 'duration', name: 'Duration', field: 'duration', headerKey: 'DURATION', sortable: true },
-      { id: '%', name: '% Complete', field: 'percentComplete', sortable: true },
+      { id: '%', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', sortable: true },
       { id: 'start', name: 'Start', field: 'start', headerKey: 'START' },
       { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH' },
       { id: 'effort-driven', name: 'Completed', field: 'effortDriven', headerKey: 'COMPLETED' }
@@ -53,7 +54,13 @@ export class GridHeaderMenuComponent implements OnInit {
               titleKey: 'HELP', // use "title" as plain string OR "titleKey" when using a translation key
               command: 'help',
               positionOrder: 99
-            }
+            },
+            // you can also add divider between commands (command is a required property but you can set it to empty string)
+            {
+              divider: true,
+              command: '',
+              positionOrder: 98
+            },
           ]
         }
       };
@@ -101,7 +108,7 @@ export class GridHeaderMenuComponent implements OnInit {
     this.dataset = mockDataset;
   }
 
-  angularGridReady(angularGrid: any) {
+  angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
   }
 

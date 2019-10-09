@@ -1,10 +1,5 @@
 import { FilterConditionOption } from './../models/filterConditionOption.interface';
 import { booleanFilterCondition } from './booleanFilterCondition';
-import { dateFilterCondition } from './dateFilterCondition';
-import { dateIsoFilterCondition } from './dateIsoFilterCondition';
-import { dateUsFilterCondition } from './dateUsFilterCondition';
-import { dateUsShortFilterCondition } from './dateUsShortFilterCondition';
-import { dateUtcFilterCondition } from './dateUtcFilterCondition';
 import { executeMappedCondition } from './executeMappedCondition';
 import { collectionSearchFilterCondition } from './collectionSearchFilterCondition';
 import { numberFilterCondition } from './numberFilterCondition';
@@ -15,11 +10,6 @@ export const FilterConditions = {
   executeMappedCondition,
   booleanFilter: booleanFilterCondition,
   collectionSearchFilter: collectionSearchFilterCondition,
-  dateFilter: dateFilterCondition,
-  dateIsoFilter: dateIsoFilterCondition,
-  dateUtcFilter: dateUtcFilterCondition,
-  dateUsFilter: dateUsFilterCondition,
-  dateUsShortFilter: dateUsShortFilterCondition,
   numberFilter: numberFilterCondition,
   stringFilter: stringFilterCondition,
   testFilter: testFilterCondition

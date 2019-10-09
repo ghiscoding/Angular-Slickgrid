@@ -1,4 +1,3 @@
-import { Subscription } from 'rxjs/Subscription';
 import { Component, Injectable, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -12,10 +11,13 @@ import {
   GraphqlServiceOption,
   GridOption,
   GridStateChange,
+  Metrics,
+  MultipleSelectOption,
   OperatorType,
   SortDirection,
-  Statistic
 } from './../modules/angular-slickgrid';
+import * as moment from 'moment-mini';
+import { Subscription } from 'rxjs';
 
 const defaultPageSize = 20;
 const GRAPHQL_QUERY_DATASET_NAME = 'users';
@@ -32,7 +34,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     <br/>
     <ul class="small">
       <li><span class="red">(*) NO DATA SHOWING</span> - just change Filters &amp; Pages and look at the "GraphQL Query" changing :)</li>
-      <li>Only "Name" field is sortable for the demo (because we use JSON files), however "multiColumnSort: true" is also supported</li>
+      <li>This example also demos the Grid State feature, open the console log to see the changes</li>
       <li>String column also support operator (>, >=, <, <=, <>, !=, =, ==, *)
       <ul>
         <li>The (*) can be used as startsWith (ex.: "abc*" => startsWith "abc") / endsWith (ex.: "*xyz" => endsWith "xyz")</li>
@@ -45,7 +47,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset = [];
-  statistics: Statistic;
+  metrics: Metrics;
 
   graphqlQuery = '';
   processing = true;
@@ -78,7 +80,10 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         filterable: true,
         filter: {
           model: Filters.multipleSelect,
-          collection: [{ value: 'acme', label: 'Acme'}, { value: 'abc', label: 'Company ABC'}, { value: 'xyz', label: 'Company XYZ'}]
+          collection: [{ value: 'acme', label: 'Acme' }, { value: 'abc', label: 'Company ABC' }, { value: 'xyz', label: 'Company XYZ' }],
+          filterOptions: {
+            filter: true // adds a filter on top of the multi-select dropdown
+          } as MultipleSelectOption
         }
       },
       { id: 'billing.address.street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', width: 60, filterable: true, sortable: true },
@@ -89,16 +94,24 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         filter: {
           model: Filters.compoundInput
         },
-        formatter: Formatters.multiple, params: { formatters: [Formatters.complexObject, Formatters.translate] } },
+        formatter: Formatters.multiple, params: { formatters: [Formatters.complexObject, Formatters.translate] }
+      },
+      {
+        id: 'finish', field: 'finish', name: 'Date', formatter: Formatters.dateIso, sortable: true, minWidth: 90, width: 120, exportWithFormatter: true,
+        type: FieldType.date,
+        filterable: true,
+        filter: {
+          model: Filters.dateRange,
+        }
+      },
     ];
 
+    const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
+    const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
+
     this.gridOptions = {
-      autoHeight: false,
-      enableAutoResize: false,
       enableFiltering: true,
       enableCellNavigation: true,
-      enableCheckboxSelector: true,
-      enableRowSelection: true,
       enableTranslate: true,
       i18n: this.translate,
       gridMenu: {
@@ -125,14 +138,25 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         totalItems: 0
       },
       presets: {
-        // you can also type operator as string, e.g.: operator: 'EQ'
+        columns: [
+          { columnId: 'name', width: 100 },
+          { columnId: 'gender', width: 55 },
+          { columnId: 'company' },
+          { columnId: 'billing.address.zip' }, // flip column position of Street/Zip to Zip/Street
+          { columnId: 'billing.address.street', width: 120 },
+          { columnId: 'finish', width: 130 },
+        ],
         filters: [
+          // you can use OperatorType or type them as string, e.g.: operator: 'EQ'
           { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
           { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },
-          { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' }
+          { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' },
+
+          // use a date range with 2 searchTerms values
+          { columnId: 'finish', searchTerms: [presetLowestDay, presetHighestDay], operator: OperatorType.rangeInclusive },
         ],
         sorters: [
-          // direction can typed as 'asc' (uppercase or lowercase) and/or use the SortDirection type
+          // direction can written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
           { columnId: 'name', direction: 'asc' },
           { columnId: 'company', direction: SortDirection.DESC }
         ],
@@ -146,7 +170,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (result: GraphqlResult) => {
-          this.statistics = result.statistics;
+          this.metrics = result.metrics;
           this.displaySpinner(false);
         }
       }
@@ -211,14 +235,28 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.graphqlQuery = this.angularGrid.backendService.buildQuery();
         resolve(mockedResult);
-      }, 500);
+      }, 250);
     });
+  }
+
+  goToFirstPage() {
+    this.angularGrid.paginationService.goToFirstPage();
+  }
+
+  goToLastPage() {
+    this.angularGrid.paginationService.goToLastPage();
   }
 
   /** Dispatched event of a Grid State Changed event */
   gridStateChanged(gridStateChanges: GridStateChange) {
     console.log('Client sample, Grid State changed:: ', gridStateChanges);
     localStorage[LOCAL_STORAGE_KEY] = JSON.stringify(gridStateChanges.gridState);
+  }
+
+  clearAllFiltersAndSorts() {
+    if (this.angularGrid && this.angularGrid.gridService) {
+      this.angularGrid.gridService.clearAllFiltersAndSorts();
+    }
   }
 
   /** Save current Filters, Sorters in LocaleStorage or DB */

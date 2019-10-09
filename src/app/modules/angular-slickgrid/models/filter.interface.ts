@@ -29,14 +29,17 @@ export interface Filter {
   /** You can use "params" to pass any types of arguments to your Filter */
   params?: any | any[];
 
-  /** Funtion to initialize the Filter class */
-  init: (args: FilterArguments) => void;
+  /** Filter class initialization, executed by the FilterService right after creating the Filter */
+  init: (args: FilterArguments, isFilterFirstRender?: boolean) => void;
 
   /** Clear filter function */
-  clear: () => void;
+  clear: (shouldTriggerQuery?: boolean) => void;
 
   /** Destroy filter function */
   destroy: () => void;
+
+  /** Get value(s) of the DOM element */
+  getValues?: () => SearchTerm | SearchTerm[] | undefined;
 
   /** Set value(s) on the DOM element */
   setValues: (values: SearchTerm | SearchTerm[] | undefined) => void;

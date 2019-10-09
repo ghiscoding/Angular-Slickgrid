@@ -8,7 +8,8 @@ import {
   Formatters,
   GridOption,
   GridState,
-  GridStateChange
+  GridStateChange,
+  MultipleSelectOption
 } from './../modules/angular-slickgrid';
 
 function randomBetween(min, max) {
@@ -23,7 +24,7 @@ const NB_ITEMS = 500;
 export class GridStateComponent implements OnInit {
   title = 'Example 16: Grid State & Presets using Local Storage';
   subTitle = `
-    Grid State & Preset (<a href="https://github.com/ghiscoding/aurelia-slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki docs</a>)
+    Grid State & Preset (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki docs</a>)
     <br/>
     <ul class="small">
       <li>Uses Local Storage to persist the Grid State and uses Grid Options "presets" to put the grid back to it's previous state</li>
@@ -44,17 +45,21 @@ export class GridStateComponent implements OnInit {
     this.selectedLanguage = this.translate.getDefaultLang();
   }
 
-  angularGridReady(angularGrid: any) {
+  angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
   }
 
   ngOnInit(): void {
     const presets = JSON.parse(localStorage[LOCAL_STORAGE_KEY] || null);
 
-    // use some Grid State preset defaults if you wish
+    // use some Grid State preset defaults if you wish or just restore from Locale Storage
     // presets = presets || this.useDefaultPresets();
-
     this.defineGrid(presets);
+
+    // always start with English for Cypress E2E tests to be consistent
+    const defaultLang = 'en';
+    this.translate.use(defaultLang);
+    this.selectedLanguage = defaultLang;
   }
 
   /** Clear the Grid State from Local Storage and reset the grid to it's original state */
@@ -100,16 +105,15 @@ export class GridStateComponent implements OnInit {
         filter: {
           collection: multiSelectFilterArray,
           model: Filters.multipleSelect,
-          searchTerms: [1, 33, 44, 50, 66], // default selection
           // we could add certain option(s) to the "multiple-select" plugin
           filterOptions: {
             maxHeight: 250,
             width: 175
-          }
+          } as MultipleSelectOption
         }
       },
       {
-        id: 'complete', name: '% Complete', field: 'percentComplete', minWidth: 70, type: FieldType.number, sortable: true, width: 100,
+        id: 'complete', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', minWidth: 70, type: FieldType.number, sortable: true, width: 100,
         formatter: Formatters.percentCompleteBar, filterable: true, filter: { model: Filters.slider, operator: '>' }
       },
       {
@@ -126,9 +130,7 @@ export class GridStateComponent implements OnInit {
           model: Filters.singleSelect,
 
           // we could add certain option(s) to the "multiple-select" plugin
-          filterOptions: {
-            autoDropWidth: true
-          },
+          filterOptions: { autoDropWidth: true } as MultipleSelectOption,
         }
       }
     ];
@@ -141,7 +143,13 @@ export class GridStateComponent implements OnInit {
       enableCheckboxSelector: true,
       enableFiltering: true,
       enableTranslate: true,
-      i18n: this.translate
+      i18n: this.translate,
+      columnPicker: {
+        hideForceFitButton: true
+      },
+      gridMenu: {
+        hideForceFitButton: true
+      },
     };
 
     // reload the Grid State with the grid options presets
@@ -196,8 +204,8 @@ export class GridStateComponent implements OnInit {
   }
 
   switchLanguage() {
-    this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(this.selectedLanguage);
+    const nextLocale = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
   }
 
   useDefaultPresets() {

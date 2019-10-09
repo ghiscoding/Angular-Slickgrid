@@ -6,28 +6,42 @@ import {
   EditorValidator,
   MultipleSelectOption,
 } from './../models/index';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 export interface ColumnEditor {
+  /**
+   * Defaults to false, when set to True and user presses the ENTER key (on Editors that supports it),
+   * it will always call a Save regardless if the current value is null and/or previous value was null
+   */
+  alwaysSaveOnEnterKey?: boolean;
+
   /** A collection of items/options that will be loaded asynchronously (commonly used with a Select/Multi-Select Editor) */
   collectionAsync?: Promise<any> | Observable<any>;
 
-  /** A collection of items/options (commonly used with a Select/Multi-Select Editor) */
+  /**
+   * A collection of items/options (commonly used with a Select/Multi-Select Editor)
+   * It can be a collection of string or label/value pair (the pair can be customized via the "customStructure" option)
+   */
   collection?: any[];
 
-  /** We could filter some items from the collection */
-  collectionFilterBy?: CollectionFilterBy;
+  /** We could filter some 1 or more items from the collection */
+  collectionFilterBy?: CollectionFilterBy | CollectionFilterBy[];
 
   /** Options to change the behavior of the "collection" */
   collectionOptions?: CollectionOption;
 
-  /** We could sort the collection by their value, or by translated value when enableTranslateLabel is True */
-  collectionSortBy?: CollectionSortBy;
+  /** We could sort the collection by 1 or more properties, or by translated value(s) when enableTranslateLabel is True */
+  collectionSortBy?: CollectionSortBy | CollectionSortBy[];
 
   /** A custom structure can be used instead of the default label/value pair. Commonly used with Select/Multi-Select Editor */
   customStructure?: CollectionCustomStructure;
 
-  /** Options that could be provided to the Editor, example: { container: 'body', maxHeight: 250} */
+  /**
+   * Options that could be provided to the Editor, example: { container: 'body', maxHeight: 250}
+   *
+   * Please note that if you use options that have existed model interfaces, you should cast with "as X",
+   * for example { editorOptions: {maxHeight: 250} as MultipleSelectOption }
+   */
   editorOptions?: MultipleSelectOption | any;
 
   /**
@@ -50,6 +64,27 @@ export interface ColumnEditor {
 
   /** Any inline editor function that implements Editor for the cell */
   model?: any;
+
+  /**
+   * Placeholder text that can be used by some Editors.
+   * Note that this will override the default placeholder configured in the global config
+   */
+  placeholder?: string;
+
+  /**
+   * Title attribute that can be used in some Editors as tooltip (usually the "input" editors).
+   *
+   * To use this as a Tooltip, Angular-Slickgrid doesn't (and will never) use any Angular 3rd party lib to display a real Tooltip,
+   * for that you can use any jQuery 3rd party lib like tipsy for example (we use it in our own project and it works)
+   * https://www.npmjs.com/package/jquery.tipsy
+   */
+  title?: string;
+
+  /**
+   * Defaults to false, is the field required to be valid?
+   * Only on Editors that supports it.
+   */
+  required?: boolean;
 
   /** Editor Validator */
   validator?: EditorValidator;

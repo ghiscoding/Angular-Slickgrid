@@ -1,23 +1,29 @@
-<!--The content below is only a placeholder and can be replaced.-->
 <div class="container-fluid">
-    <h2>{{title}}</h2>
-    <div class="subtitle" [innerHTML]="subTitle"></div>
+  <h2>{{title}}</h2>
+  <div class="subtitle"
+       [innerHTML]="subTitle"></div>
 
-    <button class="btn btn-default btn-sm" (click)="clearGridStateFromLocalStorage()">
-        <i class="fa fa-times"></i>
-        Clear Grid State from Local Storage &amp; Reset Grid
-    </button>
-    <button class="btn btn-default btn-sm" (click)="switchLanguage()">
-        <i class="fa fa-language"></i>
-        Switch Language
-    </button>
+  <button class="btn btn-default btn-sm"
+          (click)="clearGridStateFromLocalStorage()"
+          data-test="reset-button">
+    <i class="fa fa-times"></i>
+    Clear Grid State from Local Storage &amp; Reset Grid
+  </button>
+  <button class="btn btn-default btn-sm"
+          (click)="switchLanguage()"
+          data-test="language-button">
+    <i class="fa fa-language"></i>
+    Switch Language
+  </button>
+  <b>Locale:</b> <span style="font-style: italic"
+        data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
 
-    <angular-slickgrid gridId="grid16"
-              [columnDefinitions]="columnDefinitions"
-              [gridOptions]="gridOptions"
-              [dataset]="dataset"
-              (onAngularGridCreated)="angularGridReady($event)"
-              (onGridStateChanged)="gridStateChanged($event)"
-              (onBeforeGridDestroy)="saveCurrentGridState($event)">
-    </angular-slickgrid>
-  </div>
+  <angular-slickgrid gridId="grid16"
+                     [columnDefinitions]="columnDefinitions"
+                     [gridOptions]="gridOptions"
+                     [dataset]="dataset"
+                     (onAngularGridCreated)="angularGridReady($event)"
+                     (onGridStateChanged)="gridStateChanged($event)"
+                     (onBeforeGridDestroy)="saveCurrentGridState($event)">
+  </angular-slickgrid>
+</div>

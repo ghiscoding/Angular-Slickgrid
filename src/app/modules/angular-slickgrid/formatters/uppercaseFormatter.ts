@@ -6,6 +6,5 @@ export const uppercaseFormatter: Formatter = (row: number, cell: number, value: 
   if (value !== undefined && typeof value !== 'string') {
     value = value + '';
   }
-
   return value ? value.toUpperCase() : '';
 };

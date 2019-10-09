@@ -1,18 +1,22 @@
 import { TranslateService } from '@ngx-translate/core';
+import { Constants } from '../constants';
 import {
   CollectionCustomStructure,
   CollectionOption,
   Column,
+  ColumnEditor,
   Editor,
+  EditorArguments,
   EditorValidator,
   EditorValidatorOutput,
+  FieldType,
   GridOption,
   MultipleSelectOption,
   SelectOption,
 } from './../models/index';
 import { CollectionService } from '../services/index';
-import { arraysEqual, findOrDefault, getDescendantProperty, htmlEncode, unsubscribeAllObservables } from '../services/utilities';
-import { Subscription } from 'rxjs/Subscription';
+import { charArraysEqual, findOrDefault, getDescendantProperty, htmlEncode, setDeepValue, unsubscribeAllObservables } from '../services/utilities';
+import { Subscription } from 'rxjs';
 import * as DOMPurify_ from 'dompurify';
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
 
@@ -35,8 +39,8 @@ export class SelectEditor implements Editor {
   /** The multiple-select options for a multiple select list */
   defaultOptions: MultipleSelectOption;
 
-  /** The default item values that are set */
-  defaultValue: any[];
+  /** The original item values that are set at the beginning */
+  originalValue: any[];
 
   /** The property name for values in the collection */
   valueName: string;
@@ -50,6 +54,9 @@ export class SelectEditor implements Editor {
   /** The property name for a suffix that can be added to the labels in the collection */
   labelSuffixName: string;
 
+  /** A label that can be added to each option and can be used as an alternative to display selected options */
+  optionLabel: string;
+
   /** Grid options */
   gridOptions: GridOption;
 
@@ -59,20 +66,33 @@ export class SelectEditor implements Editor {
   /** Observable Subscriptions */
   _subscriptions: Subscription[] = [];
 
+  // flag to signal that the editor is destroying itself, helps prevent
+  // commit changes from being called twice and erroring
+  protected _destroying = false;
+
   /** Collection Service */
   protected _collectionService: CollectionService;
 
-  /** The i18n aurelia library */
+  /** The translate library */
   protected _translate: TranslateService;
 
-  constructor(protected args: any, protected isMultipleSelect) {
-    this.gridOptions = this.args.grid.getOptions() as GridOption;
-    const gridOptions = this.gridOptions || this.args.column.params || {};
-    this._translate = gridOptions.i18n;
+  /** SlickGrid Grid object */
+  grid: any;
+
+  constructor(protected args: EditorArguments, protected isMultipleSelect) {
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
+    }
+    this.grid = args.grid;
+    this.gridOptions = this.grid.getOptions() as GridOption;
+    const options = this.gridOptions || this.args.column.params || {};
+    if (options && options.i18n instanceof TranslateService) {
+      this._translate = options.i18n;
+    }
 
     // provide the name attribute to the DOM element which will be needed to auto-adjust drop position (dropup / dropdown)
-    const fieldId = this.columnDef && this.columnDef.field || this.columnDef && this.columnDef.id;
-    this.elementName = `editor_${fieldId}`;
+    const fieldId = this.columnDef && this.columnDef.id;
+    this.elementName = `editor-${fieldId}`;
 
     const libOptions: MultipleSelectOption = {
       autoAdjustDropHeight: true,
@@ -88,6 +108,7 @@ export class SelectEditor implements Editor {
         const isRenderHtmlEnabled = this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.enableRenderHtml || false;
         return isRenderHtmlEnabled ? $elm.text() : $elm.html();
       },
+      onClose: () => this.save(),
     };
 
     if (isMultipleSelect) {
@@ -110,23 +131,29 @@ export class SelectEditor implements Editor {
   }
 
   /** Get the Collection */
-  get collection(): any[] {
-    return this.columnDef && this.columnDef && this.columnDef.internalColumnEditor.collection || [];
+  get collection(): SelectOption[] {
+    return this.columnDef && this.columnDef.internalColumnEditor.collection || [];
   }
+
 
   /** Getter for the Collection Options */
   get collectionOptions(): CollectionOption {
-    return this.columnDef && this.columnDef.filter && this.columnDef.filter.collectionOptions;
+    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionOptions;
   }
 
   /** Get Column Definition object */
-  get columnDef(): Column {
-    return this.args && this.args.column || {};
+  get columnDef(): Column | undefined {
+    return this.args && this.args.column;
   }
 
   /** Get Column Editor object */
-  get columnEditor(): any {
-    return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor || {};
+  get columnEditor(): ColumnEditor | undefined {
+    return this.columnDef && this.columnDef.internalColumnEditor;
+  }
+
+  /** Get the Editor DOM Element */
+  get editorDomElement(): any {
+    return this.$editorElm;
   }
 
   /** Getter for the Custom Structure if exist */
@@ -134,43 +161,89 @@ export class SelectEditor implements Editor {
     return this.columnDef && this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.customStructure;
   }
 
+  get hasAutoCommitEdit() {
+    return this.grid.getOptions().autoCommitEdit;
+  }
+
   /**
    * The current selected values (multiple select) from the collection
    */
   get currentValues() {
+    const elmValue = this.$editorElm.val();
+
+    // collection of strings, just return the filtered string that are equals
+    if (this.collection.every(x => typeof x === 'string')) {
+      return this.collection.filter(c => elmValue.indexOf(c.toString()) !== -1);
+    }
+
+    // collection of label/value pair
     const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
     const isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
 
     return this.collection
-      .filter(c => this.$editorElm.val().indexOf(c[this.valueName].toString()) !== -1)
+      .filter(c => elmValue.indexOf(c.hasOwnProperty(this.valueName) && c[this.valueName].toString()) !== -1)
       .map(c => {
         const labelText = c[this.valueName];
-        const prefixText = c[this.labelPrefixName] || '';
-        const suffixText = c[this.labelSuffixName] || '';
+        let prefixText = c[this.labelPrefixName] || '';
+        let suffixText = c[this.labelSuffixName] || '';
+
+        // when it's a complex object, then pull the object name only, e.g.: "user.firstName" => "user"
+        const fieldName = this.columnDef && this.columnDef.field;
+
+        // is the field a complex object, "address.streetNumber"
+        const isComplexObject = fieldName.indexOf('.') > 0;
+        if (isComplexObject && typeof c === 'object') {
+          return c;
+        }
+
+        // also translate prefix/suffix if enableTranslateLabel is true and text is a string
+        prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+        suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
 
         if (isIncludingPrefixSuffix) {
-          return (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+          const tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text); // add to a temp array for joining purpose and filter out empty text
+          return tmpOptionArray.join(separatorBetweenLabels);
         }
         return labelText;
       });
   }
 
-
   /**
    * The current selected values (single select) from the collection
    */
   get currentValue() {
+    const elmValue = this.$editorElm.val();
+
+    // collection of strings, just return the filtered string that are equals
+    if (this.collection.every(x => typeof x === 'string')) {
+      return findOrDefault(this.collection, (c: any) => c.toString() === elmValue);
+    }
+
+    // collection of label/value pair
     const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
     const isIncludingPrefixSuffix = this.collectionOptions && this.collectionOptions.includePrefixSuffixToSelectedValues || false;
-    const itemFound = findOrDefault(this.collection, (c: any) => c[this.valueName].toString() === this.$editorElm.val());
+    const itemFound = findOrDefault(this.collection, (c: any) => c.hasOwnProperty(this.valueName) && c[this.valueName].toString() === elmValue);
 
-    if (itemFound) {
+    // is the field a complex object, "address.streetNumber"
+    const fieldName = this.columnDef && this.columnDef.field;
+    const isComplexObject = fieldName.indexOf('.') > 0;
+
+    if (isComplexObject && typeof itemFound === 'object') {
+      return itemFound;
+    } else if (itemFound) {
       const labelText = itemFound[this.valueName];
 
       if (isIncludingPrefixSuffix) {
-        const prefixText = itemFound[this.labelPrefixName] || '';
-        const suffixText = itemFound[this.labelSuffixName] || '';
-        return (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+        let prefixText = itemFound[this.labelPrefixName] || '';
+        let suffixText = itemFound[this.labelSuffixName] || '';
+
+        // also translate prefix/suffix if enableTranslateLabel is true and text is a string
+        prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+        suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
+
+        // add to a temp array for joining purpose and filter out empty text
+        const tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
+        return tmpOptionArray.join(separatorBetweenLabels);
       }
 
       return labelText;
@@ -186,10 +259,6 @@ export class SelectEditor implements Editor {
   }
 
   init() {
-    if (!this.args) {
-      throw new Error('[Angular-SlickGrid] An editor must always have an "init()" with valid arguments.');
-    }
-
     if (!this.columnDef || !this.columnDef.internalColumnEditor || (!this.columnDef.internalColumnEditor.collection && !this.columnDef.internalColumnEditor.collectionAsync)) {
       throw new Error(`[Angular-SlickGrid] You need to pass a "collection" (or "collectionAsync") inside Column Definition Editor for the MultipleSelect/SingleSelect Editor to work correctly.
       Also each option should include a value/label pair (or value/labelKey when using Locale).
@@ -198,85 +267,180 @@ export class SelectEditor implements Editor {
 
     this._collectionService = new CollectionService(this._translate);
     this.enableTranslateLabel = (this.columnDef.internalColumnEditor.enableTranslateLabel) ? this.columnDef.internalColumnEditor.enableTranslateLabel : false;
-    this.labelName = (this.customStructure) ? this.customStructure.label : 'label';
-    this.labelPrefixName = (this.customStructure) ? this.customStructure.labelPrefix : 'labelPrefix';
-    this.labelSuffixName = (this.customStructure) ? this.customStructure.labelSuffix : 'labelSuffix';
-    this.valueName = (this.customStructure) ? this.customStructure.value : 'value';
+    this.labelName = this.customStructure && this.customStructure.label || 'label';
+    this.labelPrefixName = this.customStructure && this.customStructure.labelPrefix || 'labelPrefix';
+    this.labelSuffixName = this.customStructure && this.customStructure.labelSuffix || 'labelSuffix';
+    this.optionLabel = this.customStructure && this.customStructure.optionLabel || 'value';
+    this.valueName = this.customStructure && this.customStructure.value || 'value';
+
+    if (this.enableTranslateLabel && (!this._translate || typeof this._translate.instant !== 'function')) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
 
     // always render the Select (dropdown) DOM element, even if user passed a "collectionAsync",
     // if that is the case, the Select will simply be without any options but we still have to render it (else SlickGrid would throw an error)
     this.renderDomElement(this.collection);
   }
 
+  getValue(): any | any[] {
+    return (this.isMultipleSelect) ? this.currentValues : this.currentValue;
+  }
+
+  setValue(value: any | any[]) {
+    if (this.isMultipleSelect && Array.isArray(value)) {
+      this.loadMultipleValues(value);
+    } else {
+      this.loadSingleValue(value);
+    }
+  }
+
+  hide() {
+    if (this.$editorElm && typeof this.$editorElm.multipleSelect === 'function') {
+      this.$editorElm.multipleSelect('close');
+    }
+  }
+
+  show() {
+    if (this.$editorElm && typeof this.$editorElm.multipleSelect === 'function') {
+      this.$editorElm.multipleSelect('open');
+    }
+  }
+
   applyValue(item: any, state: any): void {
-    item[this.columnDef.field] = state;
+    const fieldName = this.columnDef && this.columnDef.field;
+    const fieldType = this.columnDef && this.columnDef.type;
+    let newValue = state;
+
+    // when the provided user defined the column field type as a possible number then try parsing the state value as that
+    if (fieldType === FieldType.number || fieldType === FieldType.integer || fieldType === FieldType.boolean) {
+      newValue = parseFloat(state);
+    }
+
+    // when set as a multiple selection, we can assume that the 3rd party lib multiple-select will return a CSV string
+    // we need to re-split that into an array to be the same as the original column
+    if (this.isMultipleSelect && typeof state === 'string' && state.indexOf(',') >= 0) {
+      newValue = state.split(',');
+    }
+
+    // is the field a complex object, "address.streetNumber"
+    const isComplexObject = fieldName.indexOf('.') > 0;
+
+    // validate the value before applying it (if not valid we'll set an empty string)
+    const validation = this.validate(newValue);
+    newValue = (validation && validation.valid) ? newValue : '';
+
+    // set the new value to the item datacontext
+    if (isComplexObject) {
+      setDeepValue(item, fieldName, newValue);
+    } else {
+      item[fieldName] = newValue;
+    }
   }
 
   destroy() {
-    if (this.$editorElm) {
+    this._destroying = true;
+    if (this.$editorElm && typeof this.$editorElm.multipleSelect === 'function') {
+      this.$editorElm.multipleSelect('destroy');
+      const elementClassName = this.elementName.toString().replace('.', '\\.'); // make sure to escape any dot "." from CSS class to avoid console error
+      $(`[name=${elementClassName}].ms-drop`).remove();
+    }
+    if (this.$editorElm && typeof this.$editorElm.remove === 'function') {
       this.$editorElm.remove();
     }
     this._subscriptions = unsubscribeAllObservables(this._subscriptions);
   }
 
   loadValue(item: any): void {
-    if (this.isMultipleSelect) {
-      // convert to string because that is how the DOM will return these values
-      this.defaultValue = item[this.columnDef.field].map((i: any) => i.toString());
+    const fieldName = this.columnDef && this.columnDef.field;
 
-      this.$editorElm.find('option').each((i: number, $e: any) => {
-        if (this.defaultValue.indexOf($e.value) !== -1) {
-          $e.selected = true;
-        } else {
-          $e.selected = false;
-        }
-      });
-    } else {
-      this.loadSingleValue(item);
+    // is the field a complex object, "address.streetNumber"
+    const isComplexObject = fieldName.indexOf('.') > 0;
+
+    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
+      const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
+      if (this.isMultipleSelect && Array.isArray(value)) {
+        this.loadMultipleValues(value);
+      } else {
+        this.loadSingleValue(value);
+      }
+      this.refresh();
     }
-
-    this.refresh();
   }
 
-  loadSingleValue(item: any) {
+  loadMultipleValues(currentValues: any[]) {
     // convert to string because that is how the DOM will return these values
-    // make sure the prop exists first
-    this.defaultValue = item[this.columnDef.field] && item[this.columnDef.field].toString();
+    if (Array.isArray(currentValues)) {
+      // keep the default values in memory for references
+      this.originalValue = currentValues.map((i: any) => i);
 
+      // compare all the array values but as string type since multiple-select always return string
+      const currentStringValues = currentValues.map((i: any) => i.toString());
+      this.$editorElm.find('option').each((i: number, $e: any) => {
+        $e.selected = (currentStringValues.indexOf($e.value) !== -1);
+      });
+    }
+  }
+
+  loadSingleValue(currentValue: any) {
+    // keep the default value in memory for references
+    this.originalValue = currentValue;
+    this.$editorElm.val(currentValue);
+
+    // make sure the prop exists first
     this.$editorElm.find('option').each((i: number, $e: any) => {
-      if (this.defaultValue === $e.value) {
-        $e.selected = true;
-      } else {
-        $e.selected = false;
-      }
+      // check equality after converting originalValue to string since the DOM value will always be of type string
+      const strValue = currentValue && currentValue.toString && currentValue.toString();
+      $e.selected = (strValue === $e.value);
     });
   }
 
-  serializeValue(): any {
+  save() {
+    // autocommit will not focus the next editor
+    const validation = this.validate();
+    if (validation && validation.valid && this.isValueChanged()) {
+      if (!this._destroying && this.hasAutoCommitEdit) {
+        // do not use args.commitChanges() as this sets the focus to the next
+        // row. Also the select list will stay shown when clicking off the grid
+        this.grid.getEditorLock().commitCurrentEdit();
+      }
+    }
+  }
+
+  serializeValue(): any | any[] {
     return (this.isMultipleSelect) ? this.currentValues : this.currentValue;
   }
 
   focus() {
-    this.$editorElm.focus();
+    if (this.$editorElm && this.$editorElm.multipleSelect) {
+      this.$editorElm.multipleSelect('focus');
+    }
   }
 
   isValueChanged(): boolean {
     if (this.isMultipleSelect) {
-      return !arraysEqual(this.$editorElm.val(), this.defaultValue);
+      return !charArraysEqual(this.$editorElm.val(), this.originalValue);
     }
-    return this.$editorElm.val() !== this.defaultValue;
+    return this.$editorElm.val() !== this.originalValue;
   }
 
-  validate(): EditorValidatorOutput {
+  validate(inputValue?: any): EditorValidatorOutput {
+    const isRequired = this.columnEditor.required;
+    const elmValue = (inputValue !== undefined) ? inputValue : this.$editorElm && this.$editorElm.val && this.$editorElm.val();
+    const errorMsg = this.columnEditor.errorMessage;
+
     if (this.validator) {
-      const validationResults = this.validator(this.isMultipleSelect ? this.currentValues : this.currentValue);
-      if (!validationResults.valid) {
-        return validationResults;
-      }
+      const value = (inputValue !== undefined) ? inputValue : (this.isMultipleSelect ? this.currentValues : this.currentValue);
+      return this.validator(value, this.args);
     }
 
-    // by default the editor is always valid
-    // if user want it to be a required checkbox, he would have to provide his own validator
+    // by default the editor is almost always valid (except when it's required but not provided)
+    if (isRequired && (elmValue === '' || (Array.isArray(elmValue) && elmValue.length === 0))) {
+      return {
+        valid: false,
+        msg: errorMsg || Constants.VALIDATION_REQUIRED_FIELD
+      };
+    }
+
     return {
       valid: true,
       msg: null
@@ -296,9 +460,10 @@ export class SelectEditor implements Editor {
     let outputCollection = inputCollection;
 
     // user might want to filter certain items of the collection
-    if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionFilterBy) {
-      const filterBy = this.columnDef.internalColumnEditor.collectionFilterBy;
-      outputCollection = this._collectionService.filterCollection(outputCollection, filterBy);
+    if (this.columnEditor && this.columnEditor.collectionFilterBy) {
+      const filterBy = this.columnEditor.collectionFilterBy;
+      const filterCollectionBy = this.columnEditor.collectionOptions && this.columnEditor.collectionOptions.filterResultAfterEachPass || null;
+      outputCollection = this._collectionService.filterCollection(outputCollection, filterBy, filterCollectionBy);
     }
 
     return outputCollection;
@@ -315,18 +480,19 @@ export class SelectEditor implements Editor {
     // user might want to sort the collection
     if (this.columnDef.internalColumnEditor && this.columnDef.internalColumnEditor.collectionSortBy) {
       const sortBy = this.columnDef.internalColumnEditor.collectionSortBy;
-      outputCollection = this._collectionService.sortCollection(outputCollection, sortBy, this.enableTranslateLabel);
+      outputCollection = this._collectionService.sortCollection(this.columnDef, outputCollection, sortBy, this.enableTranslateLabel);
     }
 
     return outputCollection;
   }
 
   protected renderDomElement(collection: any[]) {
-    if (!Array.isArray(collection) && this.collectionOptions && this.collectionOptions.collectionInObjectProperty) {
-      collection = getDescendantProperty(collection, this.collectionOptions.collectionInObjectProperty);
+    if (!Array.isArray(collection) && this.collectionOptions && (this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty)) {
+      const collectionInsideObjectProperty = this.collectionOptions.collectionInsideObjectProperty || this.collectionOptions.collectionInObjectProperty;
+      collection = getDescendantProperty(collection, collectionInsideObjectProperty);
     }
     if (!Array.isArray(collection)) {
-      throw new Error('The "collection" passed to the Select Editor is not a valid array');
+      throw new Error('The "collection" passed to the Select Editor is not a valid array.');
     }
 
     // user can optionally add a blank entry at the beginning of the collection
@@ -350,33 +516,52 @@ export class SelectEditor implements Editor {
 
   protected buildTemplateHtmlString(collection: any[]) {
     let options = '';
+    const fieldId = this.columnDef && this.columnDef.id;
     const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
     const isRenderHtmlEnabled = this.columnDef.internalColumnEditor.enableRenderHtml || false;
     const sanitizedOptions = this.gridOptions && this.gridOptions.sanitizeHtmlOptions || {};
 
-    collection.forEach((option: SelectOption) => {
-      if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
-        throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
-      }
-      const labelKey = (option.labelKey || option[this.labelName]) as string;
-      const labelText = ((option.labelKey || this.enableTranslateLabel) && this._translate && typeof this._translate.instant === 'function') ? this._translate.instant(labelKey || ' ') : labelKey;
-      const prefixText = option[this.labelPrefixName] || '';
-      const suffixText = option[this.labelSuffixName] || '';
-      let optionText = (prefixText + separatorBetweenLabels + labelText + separatorBetweenLabels + suffixText);
+    // collection could be an Array of Strings OR Objects
+    if (collection.every(x => typeof x === 'string')) {
+      collection.forEach((option: string) => {
+        options += `<option value="${option}" label="${option}">${option}</option>`;
+      });
+    } else {
+      // array of objects will require a label/value pair unless a customStructure is passed
+      collection.forEach((option: SelectOption) => {
+        if (!option || (option[this.labelName] === undefined && option.labelKey === undefined)) {
+          throw new Error(`[select-editor] A collection with value/label (or value/labelKey when using Locale) is required to populate the Select list, for example: { collection: [ { value: '1', label: 'One' } ])`);
+        }
+        const labelKey = (option.labelKey || option[this.labelName]) as string;
+        const labelText = ((option.labelKey || this.enableTranslateLabel) && labelKey) ? this._translate.instant(labelKey || ' ') : labelKey;
+        let prefixText = option[this.labelPrefixName] || '';
+        let suffixText = option[this.labelSuffixName] || '';
+        let optionLabel = option[this.optionLabel] || '';
+        optionLabel = optionLabel.toString().replace(/\"/g, '\''); // replace double quotes by single quotes to avoid interfering with regular html
 
-      // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
-      // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
-      if (isRenderHtmlEnabled) {
-        // sanitize any unauthorized html tags like script and others
-        // for the remaining allowed tags we'll permit all attributes
-        const sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
-        optionText = htmlEncode(sanitizedText);
-      }
+        // also translate prefix/suffix if enableTranslateLabel is true and text is a string
+        prefixText = (this.enableTranslateLabel && prefixText && typeof prefixText === 'string') ? this._translate.instant(prefixText || ' ') : prefixText;
+        suffixText = (this.enableTranslateLabel && suffixText && typeof suffixText === 'string') ? this._translate.instant(suffixText || ' ') : suffixText;
+        optionLabel = (this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? this._translate.instant(optionLabel || ' ') : optionLabel;
 
-      options += `<option value="${option[this.valueName]}">${optionText}</option>`;
-    });
+        // add to a temp array for joining purpose and filter out empty text
+        const tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
+        let optionText = tmpOptionArray.join(separatorBetweenLabels);
 
-    return `<select id="${this.elementName}" class="ms-filter search-filter" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
+        // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
+        // also, the 3rd party lib will saninitze any html code unless it's encoded, so we'll do that
+        if (isRenderHtmlEnabled) {
+          // sanitize any unauthorized html tags like script and others
+          // for the remaining allowed tags we'll permit all attributes
+          const sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
+          optionText = htmlEncode(sanitizedText);
+        }
+
+        options += `<option value="${option[this.valueName]}" label="${optionLabel}">${optionText}</option>`;
+      });
+    }
+
+    return `<select id="${this.elementName}" class="ms-filter search-filter editor-${fieldId}" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
   }
 
   /** Create a blank entry that can be added to the collection. It will also reuse the same customStructure if need be */
@@ -402,6 +587,10 @@ export class SelectEditor implements Editor {
       this.$editorElm.appendTo(this.args.container);
     }
 
+    // add placeholder when found
+    const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
+    this.defaultOptions.placeholder = placeholder || '';
+
     if (typeof this.$editorElm.multipleSelect !== 'function') {
       // fallback to bootstrap
       this.$editorElm.addClass('form-control');
@@ -409,7 +598,7 @@ export class SelectEditor implements Editor {
       const elementOptions = (this.columnDef.internalColumnEditor) ? this.columnDef.internalColumnEditor.elementOptions : {};
       this.editorElmOptions = { ...this.defaultOptions, ...elementOptions };
       this.$editorElm = this.$editorElm.multipleSelect(this.editorElmOptions);
-      setTimeout(() => this.$editorElm.multipleSelect('open'));
+      setTimeout(() => this.show());
     }
   }
 

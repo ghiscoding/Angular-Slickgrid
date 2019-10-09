@@ -4,7 +4,13 @@
     {
       "label": "Build Library",
       "type": "shell",
-      "command": "yarn run build-lib",
+      "command": "yarn run build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Library (with E2E Cypress tests, Dev Site must be running)",
+      "type": "shell",
+      "command": "yarn run build:with-e2e",
       "problemMatcher": []
     },
     {
@@ -14,9 +20,51 @@
       "problemMatcher": []
     },
     {
+      "label": "Publish Library with (Beta Tag) to NPM",
+      "type": "shell",
+      "command": "npm publish dist --tag beta",
+      "problemMatcher": []
+    },
+    {
       "label": "Start Library Development",
       "type": "shell",
       "command": "yarn start",
+      "problemMatcher": []
+    },
+    {
+      "label": "Cypress Open Tool",
+      "type": "shell",
+      "command": "yarn run cypress:open",
+      "problemMatcher": []
+    },
+    {
+      "label": "Cypress CI (mochawesome)",
+      "type": "shell",
+      "command": "yarn run cypress:ci:mochawesome",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Jest Tests with Coverage",
+      "type": "shell",
+      "command": "yarn test:coverage",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Jest Watch",
+      "type": "shell",
+      "command": "yarn test:watch",
+      "problemMatcher": []
+    },
+    {
+      "label": "Prepare Release as Minor (0.x.0) -- Make sure to NPM Publish DIST folder",
+      "type": "shell",
+      "command": "yarn run release -- --release-as minor --infile ./CHANGELOG.md",
+      "problemMatcher": []
+    },
+    {
+      "label": "Prepare Release as Patch (0.0.x) -- Make sure to NPM Publish DIST folder",
+      "type": "shell",
+      "command": "yarn run release -- --release-as patch --infile ./CHANGELOG.md",
       "problemMatcher": []
     }
   ]

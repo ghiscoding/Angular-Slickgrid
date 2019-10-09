@@ -4,6 +4,9 @@ export interface ExportOption {
   /** export delimiter, can be (comma, tab, ... or even custom string). */
   delimiter?: DelimiterType | string;
 
+  /** Allows you to override for the export delimiter, useful when adding the "listSeparator" to the GraphQL query */
+  delimiterOverride?: DelimiterType | string;
+
   /** Defaults to false, which leads to all Formatters of the grid being evaluated on export. You can also override a column by changing the propery on the column itself */
   exportWithFormatter?: boolean;
 

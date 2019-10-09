@@ -1,7 +1,8 @@
-import { FieldType } from './../models/index';
+import { Column, FieldType, SortDirectionNumber, Sorter } from './../models/index';
 import { Sorters } from './index';
+import { getAssociatedDateSorter } from './dateUtilities';
 
-export function sortByFieldType(value1: any, value2: any, fieldType: FieldType, sortDirection: number) {
+export function sortByFieldType(fieldType: FieldType, value1: any, value2: any, sortDirection: number | SortDirectionNumber, sortColumn?: Column) {
   let sortResult = 0;
 
   switch (fieldType) {
@@ -9,16 +10,35 @@ export function sortByFieldType(value1: any, value2: any, fieldType: FieldType, 
       sortResult = Sorters.numeric(value1, value2, sortDirection);
       break;
     case FieldType.date:
-      sortResult = Sorters.date(value1, value2, sortDirection);
-      break;
     case FieldType.dateIso:
-      sortResult = Sorters.dateIso(value1, value2, sortDirection);
-      break;
+    case FieldType.dateUtc:
+    case FieldType.dateTime:
+    case FieldType.dateTimeIso:
+    case FieldType.dateTimeIsoAmPm:
+    case FieldType.dateTimeIsoAM_PM:
+    case FieldType.dateTimeShortIso:
+    case FieldType.dateEuro:
+    case FieldType.dateEuroShort:
+    case FieldType.dateTimeShortEuro:
+    case FieldType.dateTimeEuro:
+    case FieldType.dateTimeEuroAmPm:
+    case FieldType.dateTimeEuroAM_PM:
+    case FieldType.dateTimeEuroShort:
+    case FieldType.dateTimeEuroShortAmPm:
+    case FieldType.dateTimeEuroShortAM_PM:
     case FieldType.dateUs:
-      sortResult = Sorters.dateUs(value1, value2, sortDirection);
-      break;
     case FieldType.dateUsShort:
-      sortResult = Sorters.dateUsShort(value1, value2, sortDirection);
+    case FieldType.dateTimeShortUs:
+    case FieldType.dateTimeUs:
+    case FieldType.dateTimeUsAmPm:
+    case FieldType.dateTimeUsAM_PM:
+    case FieldType.dateTimeUsShort:
+    case FieldType.dateTimeUsShortAmPm:
+    case FieldType.dateTimeUsShortAM_PM:
+      sortResult = getAssociatedDateSorter(fieldType).call(this, value1, value2, sortDirection);
+      break;
+    case FieldType.object:
+      sortResult = Sorters.objectString(value1, value2, sortDirection, sortColumn);
       break;
     default:
       sortResult = Sorters.string(value1, value2, sortDirection);

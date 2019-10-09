@@ -1,13 +1,20 @@
 import { Column, GroupTotalsFormatter } from './../models/index';
+import { formatNumber } from '../services/utilities';
+import { getValueFromParamsOrGridOptions } from '../formatters/formatterUtilities';
 
 export const sumTotalsFormatter: GroupTotalsFormatter = (totals: any, columnDef: Column, grid?: any) => {
   const field = columnDef.field || '';
   const val = totals.sum && totals.sum[field];
-  const prefix = (columnDef.params && columnDef.params.groupFormatterPrefix) ? columnDef.params.groupFormatterPrefix : '';
-  const suffix = (columnDef.params && columnDef.params.groupFormatterSuffix) ? columnDef.params.groupFormatterSuffix : '';
+  const params = columnDef && columnDef.params;
+  const prefix = params && params.groupFormatterPrefix || '';
+  const suffix = params && params.groupFormatterSuffix || '';
+  const minDecimal = getValueFromParamsOrGridOptions('minDecimal', columnDef, grid);
+  const maxDecimal = getValueFromParamsOrGridOptions('maxDecimal', columnDef, grid);
+  const displayNegativeNumberWithParentheses = getValueFromParamsOrGridOptions('displayNegativeNumberWithParentheses', columnDef, grid, false);
 
-  if (val != null) {
-    return prefix + ((Math.round(parseFloat(val) * 1000000) / 1000000)) + suffix;
+  if (val != null && !isNaN(+val)) {
+    const formattedNumber = formatNumber(val, minDecimal, maxDecimal, displayNegativeNumberWithParentheses);
+    return `${prefix}${formattedNumber}${suffix}`;
   }
   return '';
 };

@@ -1,5 +1,6 @@
 import { Constants } from '../constants';
-import { Column, Editor, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
+import { Column, ColumnEditor, Editor, EditorArguments, EditorValidator, EditorValidatorOutput, KeyCode } from './../models/index';
+import { setDeepValue, getDescendantProperty } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -11,21 +12,38 @@ const defaultDecimalPlaces = 0;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class FloatEditor implements Editor {
-  $input: any;
-  defaultValue: any;
+  private _lastInputEvent: KeyboardEvent;
+  private _$input: any;
+  originalValue: number | string;
 
-  constructor(private args: any) {
+  /** SlickGrid Grid object */
+  grid: any;
+
+  constructor(private args: EditorArguments) {
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
+    }
+    this.grid = args.grid;
     this.init();
   }
 
   /** Get Column Definition object */
-  get columnDef(): Column {
-    return this.args && this.args.column || {};
+  get columnDef(): Column | undefined {
+    return this.args && this.args.column;
   }
 
   /** Get Column Editor object */
-  get columnEditor(): any {
+  get columnEditor(): ColumnEditor {
     return this.columnDef && this.columnDef.internalColumnEditor || {};
+  }
+
+  /** Get the Editor DOM Element */
+  get editorDomElement(): any {
+    return this._$input;
+  }
+
+  get hasAutoCommitEdit() {
+    return this.grid && this.grid.getOptions && this.grid.getOptions().autoCommitEdit;
   }
 
   /** Get the Validator function, can be passed in Editor property or Column Definition */
@@ -33,30 +51,37 @@ export class FloatEditor implements Editor {
     return this.columnEditor.validator || this.columnDef.validator;
   }
 
-  init(): void {
-    this.$input = $(`<input type="number" class="editor-text" step="${this.getInputDecimalSteps()}" />`)
+  init() {
+    const columnId = this.columnDef && this.columnDef.id;
+    const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
+    const title = this.columnEditor && this.columnEditor.title || '';
+
+    this._$input = $(`<input type="number" role="presentation" autocomplete="off" class="editor-text editor-${columnId}" placeholder="${placeholder}" title="${title}" step="${this.getInputDecimalSteps()}" />`)
       .appendTo(this.args.container)
-      .on('keydown.nav', (e) => {
-        if (e.keyCode === KeyCode.LEFT || e.keyCode === KeyCode.RIGHT) {
-          e.stopImmediatePropagation();
+      .on('keydown.nav', (event: KeyboardEvent) => {
+        this._lastInputEvent = event;
+        if (event.keyCode === KeyCode.LEFT || event.keyCode === KeyCode.RIGHT) {
+          event.stopImmediatePropagation();
         }
       });
 
-    setTimeout(() => {
-      this.$input.focus().select();
-    }, 50);
+    // the lib does not get the focus out event for some reason
+    // so register it here
+    if (this.hasAutoCommitEdit) {
+      this._$input.on('focusout', () => this.save());
+    }
+
+    setTimeout(() => this.focus(), 50);
   }
 
   destroy() {
-    this.$input.remove();
+    if (this._$input) {
+      this._$input.off('keydown.nav').remove();
+    }
   }
 
   focus() {
-    this.$input.focus();
-  }
-
-  getColumnEditor() {
-    return this.args && this.args.column && this.args.column.internalColumnEditor && this.args.column.internalColumnEditor;
+    this._$input.focus();
   }
 
   getDecimalPlaces(): number {
@@ -82,45 +107,87 @@ export class FloatEditor implements Editor {
     return '1';
   }
 
-  loadValue(item: any) {
-    this.defaultValue = item[this.columnDef.field];
+  getValue(): string {
+    return this._$input.val() || '';
+  }
 
-    const decPlaces = this.getDecimalPlaces();
-    if (decPlaces !== null
-      && (this.defaultValue || this.defaultValue === 0)
-      && this.defaultValue.toFixed) {
-      this.defaultValue = this.defaultValue.toFixed(decPlaces);
+  setValue(value: number | string) {
+    this._$input.val(value);
+  }
+
+  applyValue(item: any, state: any) {
+    const fieldName = this.columnDef && this.columnDef.field;
+    const isComplexObject = fieldName.indexOf('.') > 0; // is the field a complex object, "address.streetNumber"
+
+    const validation = this.validate(state);
+    const newValue = (validation && validation.valid) ? state : '';
+
+    // set the new value to the item datacontext
+    if (isComplexObject) {
+      setDeepValue(item, fieldName, newValue);
+    } else {
+      item[fieldName] = newValue;
     }
+  }
 
-    this.$input.val(this.defaultValue);
-    this.$input[0].defaultValue = this.defaultValue;
-    this.$input.select();
+  isValueChanged() {
+    const elmValue = this._$input.val();
+    const lastEvent = this._lastInputEvent && this._lastInputEvent.keyCode;
+    if (this.columnEditor && this.columnEditor.alwaysSaveOnEnterKey && lastEvent === KeyCode.ENTER) {
+      return true;
+    }
+    return (!(elmValue === '' && this.originalValue === null)) && (elmValue !== this.originalValue);
+  }
+
+  loadValue(item: any) {
+    const fieldName = this.columnDef && this.columnDef.field;
+
+    // is the field a complex object, "address.streetNumber"
+    const isComplexObject = fieldName.indexOf('.') > 0;
+
+    if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
+      const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
+      this.originalValue = value;
+      const decPlaces = this.getDecimalPlaces();
+      if (decPlaces !== null && (this.originalValue || this.originalValue === 0) && (+this.originalValue).toFixed) {
+        this.originalValue = (+this.originalValue).toFixed(decPlaces);
+      }
+      this._$input.val(this.originalValue);
+      this._$input.select();
+    }
+  }
+
+  save() {
+    const validation = this.validate();
+    if (validation && validation.valid && this.isValueChanged()) {
+      if (this.hasAutoCommitEdit) {
+        this.grid.getEditorLock().commitCurrentEdit();
+      } else {
+        this.args.commitChanges();
+      }
+    }
   }
 
   serializeValue() {
-    let rtn = parseFloat(this.$input.val()) || 0;
+    const elmValue = this._$input.val();
+    if (elmValue === '' || isNaN(elmValue)) {
+      return elmValue;
+    }
+
+    let rtn = parseFloat(elmValue);
     const decPlaces = this.getDecimalPlaces();
-    if (decPlaces !== null
-      && (rtn || rtn === 0)
-      && rtn.toFixed) {
+    if (decPlaces !== null && (rtn || rtn === 0) && rtn.toFixed) {
       rtn = parseFloat(rtn.toFixed(decPlaces));
     }
 
     return rtn;
   }
 
-  applyValue(item: any, state: any) {
-    item[this.columnDef.field] = state;
-  }
-
-  isValueChanged() {
-    const elmValue = this.$input.val();
-    return (!(elmValue === '' && this.defaultValue === null)) && (elmValue !== this.defaultValue);
-  }
-
-  validate(): EditorValidatorOutput {
-    const elmValue = this.$input.val();
+  validate(inputValue?: any): EditorValidatorOutput {
+    const elmValue = (inputValue !== undefined) ? inputValue : this._$input && this._$input.val && this._$input.val();
+    const floatNumber = !isNaN(elmValue as number) ? parseFloat(elmValue) : null;
     const decPlaces = this.getDecimalPlaces();
+    const isRequired = this.columnEditor.required;
     const minValue = this.columnEditor.minValue;
     const maxValue = this.columnEditor.maxValue;
     const errorMsg = this.columnEditor.errorMessage;
@@ -130,41 +197,46 @@ export class FloatEditor implements Editor {
       '{{minDecimal}}': 0,
       '{{maxDecimal}}': decPlaces
     };
+    let isValid = true;
+    let outputMsg = '';
 
     if (this.validator) {
-      const validationResults = this.validator(elmValue);
-      if (!validationResults.valid) {
-        return validationResults;
-      }
-    } else if (isNaN(elmValue as number) || (decPlaces === 0 && !/^(\d+(\.)?(\d)*)$/.test(elmValue))) {
+      return this.validator(elmValue, this.args);
+    } else if (isRequired && elmValue === '') {
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_REQUIRED_FIELD;
+    } else if (isNaN(elmValue as number) || (decPlaces === 0 && !/^[-+]?(\d+(\.)?(\d)*)$/.test(elmValue))) {
       // when decimal value is 0 (which is the default), we accept 0 or more decimal values
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER
-      };
-    } else if (minValue !== undefined && (elmValue < minValue || elmValue > maxValue)) {
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_VALID_NUMBER;
+    } else if (minValue !== undefined && maxValue !== undefined && floatNumber !== null && (floatNumber < minValue || floatNumber > maxValue)) {
+      // MIN & MAX Values provided
       // when decimal value is bigger than 0, we only accept the decimal values as that value set
       // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => {
-          return mapValidation[matched];
-        })
-      };
-    } else if ((decPlaces > 0 && !new RegExp(`^(\\d+(\\.)?(\\d){0,${decPlaces}})$`).test(elmValue))) {
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_NUMBER_BETWEEN.replace(/{{minValue}}|{{maxValue}}/gi, (matched) => mapValidation[matched]);
+    } else if (minValue !== undefined && floatNumber !== null && floatNumber <= minValue) {
+      // MIN VALUE ONLY
       // when decimal value is bigger than 0, we only accept the decimal values as that value set
       // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
-      return {
-        valid: false,
-        msg: errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, (matched) => {
-          return mapValidation[matched];
-        })
-      };
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MIN.replace(/{{minValue}}/gi, (matched) => mapValidation[matched]);
+    } else if (maxValue !== undefined && floatNumber !== null && floatNumber >= maxValue) {
+      // MAX VALUE ONLY
+      // when decimal value is bigger than 0, we only accept the decimal values as that value set
+      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_NUMBER_MAX.replace(/{{maxValue}}/gi, (matched) => mapValidation[matched]);
+    } else if ((decPlaces > 0 && !new RegExp(`^[-+]?(\\d*(\\.)?(\\d){0,${decPlaces}})$`).test(elmValue))) {
+      // when decimal value is bigger than 0, we only accept the decimal values as that value set
+      // for example if we set decimalPlaces to 2, we will only accept numbers between 0 and 2 decimals
+      isValid = false;
+      outputMsg = errorMsg || Constants.VALIDATION_EDITOR_DECIMAL_BETWEEN.replace(/{{minDecimal}}|{{maxDecimal}}/gi, (matched) => mapValidation[matched]);
     }
 
     return {
-      valid: true,
-      msg: null
+      valid: isValid,
+      msg: outputMsg
     };
   }
 }

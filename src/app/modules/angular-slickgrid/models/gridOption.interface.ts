@@ -5,13 +5,21 @@ import {
   Column,
   ColumnPicker,
   CheckboxSelector,
+  DraggableGrouping,
   EditCommand,
+  ExcelCopyBufferOption,
   ExportOption,
+  FormatterOption,
   GridMenu,
   GridState,
   HeaderButton,
   HeaderMenu,
-  Pagination
+  Locale,
+  OperatorType,
+  OperatorString,
+  Pagination,
+  RowDetailView,
+  RowMoveManager
 } from './../models/index';
 
 export interface GridOption {
@@ -33,13 +41,16 @@ export interface GridOption {
   /** Defaults to 40, which is the delay before the asynchronous post renderer start cleanup execution */
   asyncPostRenderCleanupDelay?: number;
 
+  /** Defaults to false, when enabled will try to commit the current edit without focusing on the next row. If a custom editor is implemented and the grid cannot auto commit, you must use this option to implement it yourself */
+  autoCommitEdit?: boolean;
+
   /** Defaults to false, when enabled will automatically open the inlined editor as soon as there is a focus on the cell (can be combined with "enableCellNavigation: true"). */
   autoEdit?: boolean;
 
   /** Defaults to true, which leads to automatically adjust the size of each column with the available space. Similar to "Force Fit Column" but only happens on first page/component load. */
   autoFitColumnsOnFirstLoad?: boolean;
 
-  /** Defaults to false, when enabled will automatically adjust grid height. */
+  /** Defaults to false, which leads to automatically adjust the size (height) of the grid to display the entire content without any scrolling in the grid. */
   autoHeight?: boolean;
 
   /** Auto-resize options (bottom padding, minHeight, ...)  */
@@ -69,7 +80,7 @@ export interface GridOption {
   /** Checkbox Select Plugin options (columnId, cssClass, toolTip, width) */
   checkboxSelector?: CheckboxSelector;
 
-  /** Checkbox Select Plugin options (columnTitle, forceFitTitle, syncResizeTitle) */
+  /** Column Picker Plugin options (columnTitle, forceFitTitle, syncResizeTitle) */
   columnPicker?: ColumnPicker;
 
   /** Defaults to false, which leads to create the footer row of the grid */
@@ -90,14 +101,29 @@ export interface GridOption {
   /** Unique property name on the dataset used by Slick.Data.DataView */
   datasetIdPropertyName?: string;
 
+  /** Some of the SlickGrid DataView options */
+  dataView?: {
+    /**
+     * If you don't want the items that are not visible (due to being filtered out or being on a different page)
+     * to stay selected, the set this property as 'false'. You can also set any of the preserve options instead of a boolean value.
+     */
+    syncGridSelection?: boolean | { preserveHidden: boolean; preserveHiddenOnSelectionChange: boolean; };
+  };
+
   /** Default column width, is set to 80 when null */
   defaultColumnWidth?: number;
 
-  /** Default placeholder to use in Filters that support placeholder (input, flatpickr) */
-  defaultFilterPlaceholder?: string;
-
   /** The default filter model to use when none is specified */
   defaultFilter?: any;
+
+  /** Default placeholder to use in Filters that support placeholder (autocomplete, input, flatpickr, select, ...) */
+  defaultFilterPlaceholder?: string;
+
+  /** Defaults to 'RangeExclusive', allows to change the default filter range operator */
+  defaultFilterRangeOperator?: OperatorString | OperatorType;
+
+  /** Draggable Grouping Plugin options & events */
+  draggableGrouping?: DraggableGrouping;
 
   /** Defaults to false, when enabled will give the possibility to edit cell values with inline editors. */
   editable?: boolean;
@@ -144,6 +170,9 @@ export interface GridOption {
   /** Defaults to true, which permits the user to move an entire column from a position to another. */
   enableColumnReorder?: boolean;
 
+  /** Defaults to false, do we want to enable the Draggable Grouping Plugin? */
+  enableDraggableGrouping?: boolean;
+
   /** Defaults to true, which leads to use an Excel like copy buffer that gets copied in clipboard and can be pasted back in Excel or any other app */
   enableExcelCopyBuffer?: boolean;
 
@@ -153,10 +182,16 @@ export interface GridOption {
   /** Do we want to enable Filters? */
   enableFiltering?: boolean;
 
+  /**
+   * Defaults to false, do we want to globally trim white spaces on all filter values typed by the user?
+   * User can choose to override the default
+   */
+  enableFilterTrimWhiteSpace?: boolean;
+
   /** Do we want to enable Grid Menu (aka hamburger menu) */
   enableGridMenu?: boolean;
 
-  /** Defaults to false, do we want to enable the Grouping & Aggregator? */
+  /** Defaults to false, do we want to enable the Grouping & Aggregator Plugin? */
   enableGrouping?: boolean;
 
   /** Do we want to enable Header Buttons? (buttons with commands that can be shown beside each column)  */
@@ -171,6 +206,12 @@ export interface GridOption {
   /** Do we want to enable pagination? Currently only works with a Backend Service API */
   enablePagination?: boolean;
 
+  /** Defaults to false, do we want to enable the Row Detail Plugin? */
+  enableRowDetailView?: boolean;
+
+  /** Defaults to false, when enabled it will make possible to move rows in the grid. */
+  enableRowMoveManager?: boolean;
+
   /** Do we want to enable row selection? */
   enableRowSelection?: boolean;
 
@@ -182,6 +223,9 @@ export interface GridOption {
 
   /** Do we want to enable localization translation (i18n)? */
   enableTranslate?: boolean;
+
+  /** Options for the ExcelCopyBuffer Extension */
+  excelCopyBufferOptions?: ExcelCopyBufferOption;
 
   /** Do we want explicit grid initialization? */
   explicitInitialization?: boolean;
@@ -200,6 +244,18 @@ export interface GridOption {
 
   /** Formatter classes factory */
   formatterFactory?: any;
+
+  /** Formatter commonly used options defined for the entire grid */
+  formatterOptions?: FormatterOption;
+
+  /** Defaults to false, do we want to freeze (pin) the bottom portion instead of the top */
+  frozenBottom?: boolean;
+
+  /** Number of column(s) to freeze (pin) in the grid */
+  frozenColumn?: number;
+
+  /** Number of row(s) to freeze (pin) in the grid */
+  frozenRow?: number;
 
   /** Defaults to false, which leads to have row with full width */
   fullWidthRows?: boolean;
@@ -224,6 +280,9 @@ export interface GridOption {
 
   /** ngx-translate i18n translation service instance */
   i18n?: TranslateService;
+
+  /** Locale translations used by the library */
+  locales?: Locale;
 
   /** Do we leave space for new rows in the DOM visible buffer */
   leaveSpaceForNewRows?: boolean;
@@ -261,8 +320,14 @@ export interface GridOption {
   /** Register 1 or more Slick Plugins */
   registerPlugins?: any | any[];
 
+  /** Row Detail View Plugin options & events (columnId, cssClass, toolTip, width) */
+  rowDetailView?: RowDetailView;
+
   /** Grid row height in pixels (only type the number). Row of cell values. */
   rowHeight?: number;
+
+  /** Row Move Manager Plugin options & events */
+  rowMoveManager?: RowMoveManager;
 
   /** Row selection options */
   rowSelectionOptions?: {
@@ -302,6 +367,9 @@ export interface GridOption {
    * This flag should be enabled especially when mixing these 2 features (Row Selections & Inline Editors)
    */
   suppressActiveCellChangeOnEdit?: boolean;
+
+  /** Defaults to false, when set to True will sync the column cell resize & apply the column width */
+  syncColumnCellResize?: boolean;
 
   /** What is the top panel height in pixels (only type the number) */
   topPanelHeight?: number;

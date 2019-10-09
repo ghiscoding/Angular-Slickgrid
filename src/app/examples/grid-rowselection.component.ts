@@ -1,5 +1,13 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption } from './../modules/angular-slickgrid';
+import {
+  AngularGridInstance,
+  Column,
+  Editors,
+  FieldType,
+  Filters,
+  Formatters,
+  GridOption
+} from './../modules/angular-slickgrid';
 
 @Component({
   templateUrl: './grid-rowselection.component.html'
@@ -13,6 +21,7 @@ export class GridRowSelectionComponent implements OnInit {
       <li>Single Select, you can click on any cell to make the row active</li>
       <li>Multiple Selections, you need to specifically click on the checkbox to make 1 or more selections</li>
       <li>Note that "enableExcelCopyBuffer" cannot be used at the same time as Row Selection because there can exist only 1 SelectionModel at a time</li>
+      <li>You can use "selectableOverride()" callback to override logic to display checkbox on every row (for example only show it every 2nd row)</li>
     </ul>
   `;
 
@@ -52,33 +61,95 @@ export class GridRowSelectionComponent implements OnInit {
       { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, editor: { model: Editors.date }, exportWithFormatter: true },
       { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, sortable: true }
     ];
+
     this.columnDefinitions2 = [
-      { id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string },
-      { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number },
-      { id: 'complete', name: '% Complete', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, sortable: true },
-      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.dateIso, exportWithFormatter: true  },
-      { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, exportWithFormatter: true },
-      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', formatter: Formatters.checkmark, type: FieldType.number, sortable: true }
+      {
+        id: 'title', name: 'Title', field: 'title',
+        sortable: true,
+        type: FieldType.string,
+        filterable: true
+      },
+      {
+        id: 'duration', name: 'Duration (days)', field: 'duration',
+        sortable: true,
+        type: FieldType.number,
+        filterable: true
+      },
+      {
+        id: 'complete', name: '% Complete', field: 'percentComplete',
+        formatter: Formatters.percentCompleteBar,
+        type: FieldType.number,
+        filterable: true,
+        sortable: true
+      },
+      {
+        id: 'start', name: 'Start', field: 'start',
+        filterable: true,
+        sortable: true,
+        formatter: Formatters.dateIso,
+        exportWithFormatter: true,
+        type: FieldType.date,
+        filter: { model: Filters.compoundDate },
+      },
+      {
+        id: 'finish', name: 'Finish', field: 'finish',
+        filterable: true,
+        sortable: true,
+        formatter: Formatters.dateIso,
+        exportWithFormatter: true,
+        type: FieldType.date,
+        filter: { model: Filters.compoundDate },
+      },
+      {
+        id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
+        formatter: Formatters.checkmark,
+        type: FieldType.boolean,
+        sortable: true,
+        filterable: true,
+        filter: {
+          collection: [{ value: '', label: '' }, { value: true, label: 'true' }, { value: false, label: 'false' }],
+          model: Filters.singleSelect,
+        }
+      }
     ];
+
     this.gridOptions1 = {
       editable: true,
-      autoEdit: true,
+      autoEdit: false,
       enableAutoResize: false,
       enableCellNavigation: true,
+      enableFiltering: false,
       enableCheckboxSelector: true,
+      enableRowSelection: true,
       checkboxSelector: {
         // remove the unnecessary "Select All" checkbox in header when in single selection mode
-        hideSelectAllCheckbox: true
+        hideSelectAllCheckbox: true,
+
+        // you can override the logic for showing (or not) the expand icon
+        // for example, display the expand icon only on every 2nd row
+        // selectableOverride: (row: number, dataContext: any, grid: any) => (dataContext.id % 2 === 1)
       },
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
         selectActiveRow: true
       },
-      enableRowSelection: true
+      columnPicker: {
+        hideForceFitButton: true
+      },
+      gridMenu: {
+        hideForceFitButton: true
+      }
     };
+
     this.gridOptions2 = {
       enableAutoResize: false,
       enableCellNavigation: true,
+      enableFiltering: true,
+      checkboxSelector: {
+        // you can toggle these 2 properties to show the "select all" checkbox in different location
+        hideInFilterHeaderRow: false,
+        hideInColumnTitleRow: true
+      },
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
         selectActiveRow: false

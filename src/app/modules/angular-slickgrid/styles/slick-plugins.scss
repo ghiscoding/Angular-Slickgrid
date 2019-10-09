@@ -73,19 +73,20 @@
   }
 }
 .slick-header-menu {
-  background: none repeat scroll 0 0 white;
-  border: 1px solid #BFBDBD;
-  min-width: 175px;
-  padding: 4px;
+  position: absolute;
+  margin: 0;
+  background: none repeat scroll 0 0 $header-menu-bg-color;
+  border: $header-menu-border;
+  border-radius: $header-menu-border-radius;
+  min-width: $header-menu-min-width;
+  padding: $header-menu-padding;
   z-index: 100000;
   cursor: default;
   display: inline-block;
-  margin: 0;
-  position: absolute;
 
   button {
-    border: 1px solid #BFBDBD;
-    background-color: white;
+    border: $header-menu-button-border;
+    background-color: $header-menu-button-bg-color;
     width: 45px;
     padding: 4px;
     margin: 4px 4px 4px 0;
@@ -116,21 +117,34 @@
 }
 
 .slick-header-menuitem {
-  border: 1px solid transparent;
-  padding: 2px 4px;
   cursor: pointer;
+  border: $header-menu-item-border;
+  padding: $header-menu-item-padding;
   list-style: none outside none;
   margin: 0;
+
+  &.slick-header-menuitem-divider {
+    cursor: default;
+    border: none;
+    overflow: hidden;
+    padding: 0;
+    height: $header-menu-divider-height;
+    margin: $header-menu-divider-margin;
+    background-color: $header-menu-divider-color;
+  }
+}
+.slick-header-menuitem-divider.slick-header-menuitem:hover {
+  background-color: $header-menu-divider-color;
 }
 
 .slick-header-menuicon {
   background-position: center center;
   background-repeat: no-repeat;
   display: inline-block;
-  height: 16px;
-  margin-right: 4px;
+  height: $header-menu-icon-height;
+  margin-right: $header-menu-icon-margin-right;
   vertical-align: middle;
-  width: 16px;
+  width: $header-menu-icon-width;
 
   /* Font Awesome sorting icons are not aligned in middle, let's align them ourselves */
   &.fa-sort-asc {
@@ -148,7 +162,7 @@
 
 .slick-header-menuitem:hover {
   border-color: #BFBDBD;
-  background-color: rgb(246, 246, 246);
+  background-color: $header-menu-icon-hover-color;
 }
 .slick-header-menuitem-disabled {
   border-color: transparent !important;
@@ -160,30 +174,55 @@
 }
 
 // ----------------------------------------------
+// Row Move Manager Plugin
+// ----------------------------------------------
+.slick-cell.cell-reorder:before {
+  font-family: $icon-font-family;
+  font-size: $row-move-plugin-size;
+  content: $row-move-plugin-icon;
+}
+.slick-cell.cell-reorder {
+  cursor: $row-move-plugin-cursor;
+}
+
+// ----------------------------------------------
 // Checkbox Selector Plugin
 // ----------------------------------------------
+.slick-headerrow-column,
+.slick-column-name,
+.slick-cell-checkboxsel {
+  input[type=checkbox],
+  #filter-checkbox-selectall-container > input[type=checkbox] {
+    display:none;  /* to hide the checkbox itself */
+  }
 
-.slick-column-name > input[type=checkbox],
-.slick-cell-checkboxsel > input[type=checkbox] {
-  display:none;  /* to hide the checkbox itself */
-}
-.slick-column-name > input[type=checkbox] + label:before,
-.slick-cell-checkboxsel > input[type=checkbox] + label:before {
-  font-family: $icon-font-family;
-  color: $chekbox-selector-color;
-  font-weight: bold;
-  display: inline-block;
-  content: $chekbox-selector-icon;
-  font-size: $chekbox-selector-size;
-  cursor: pointer;
-}
-.slick-column-name > input[type=checkbox] + label:before,
-.slick-cell-checkboxsel > input[type=checkbox] + label:before {
-  opacity: $chekbox-selector-opacity; /* unchecked icon */
-}
-.slick-column-name > input[type=checkbox]:checked + label:before,
-.slick-cell-checkboxsel > input[type=checkbox]:checked + label:before {
-  opacity: 1; /* checked icon */
+  input[type=checkbox],
+  #filter-checkbox-selectall-container > input[type=checkbox] + label {
+    margin-left: 4px;
+    margin-top: 3px;
+  }
+
+  input[type=checkbox] + label:before,
+  #filter-checkbox-selectall-container > input[type=checkbox] + label:before {
+    cursor: pointer;
+    content: $checkbox-selector-icon;
+    color: $checkbox-selector-color;
+    display: inline-block;
+    font-weight: bold;
+    font-family: $icon-font-family;
+    font-size: $checkbox-selector-size;
+    opacity: $checkbox-selector-opacity; /* unchecked icon */
+  }
+
+  input[type=checkbox] + label:hover:before,
+  #filter-checkbox-selectall-container > input[type=checkbox] + label:hover:before {
+    opacity: $checkbox-selector-opacity-hover;
+  }
+
+  input[type=checkbox]:checked + label:before,
+  #filter-checkbox-selectall-container > input[type=checkbox]:checked + label:before {
+    opacity: 1; /* checked icon */
+  }
 }
 
 // ----------------------------------------------
@@ -196,9 +235,15 @@
 }
 .ms-choice {
   border: $multiselect-input-filter-border;
+  background-color: transparent;
+
   span {
     font-size: $multiselect-input-filter-font-size;
-    font-family: $multiselect-input-filter-font-family
+    font-family: $multiselect-input-filter-font-family;
+  }
+  .placeholder {
+    font-family: $multiselect-placeholder-font-family;
+    font-size: ($multiselect-input-filter-font-size + 2px);
   }
 }
 .ms-filter.search-filter {
@@ -241,6 +286,8 @@
     }
   }
   label {
+    margin-bottom: $multiselect-label-margin-bottom;
+
     span {
       cursor: pointer;
       margin-left: $multiselect-checkbox-margin-left;
@@ -332,29 +379,124 @@ input.search-filter {
 // ----------------------------------------------
 // Date Picker Filter
 // ----------------------------------------------
-.input-group.flatpickr {
+
+.search-filter .flatpickr {
   .flatpickr {
     flex: 1;
+    cursor: pointer;
 
+    input.flatpickr.form-control,
     .flatpickr-input.form-control {
-        background-color: $flatpickr-bgcolor !important;
+        background-color: $flatpickr-bgcolor;
         font-family: $filter-placeholder-font-family;
         font-size: $font-size-base;
         border-radius: $compound-filter-border-radius;
+        width: 100%;
+        &[readonly] {
+          background-color: $flatpickr-bgcolor;
+        }
+    }
+    .flatpickr.form-control[readonly] {
+      background-color: $flatpickr-bgcolor;
+    }
+  }
+}
+input.flatpickr-input.form-control,
+input.flatpickr.form-control {
+  cursor: pointer;
+  font-family: $filter-placeholder-font-family;
+  font-size: $font-size-base;
+  border-radius: $date-range-filter-border-radius;
+  &[readonly] {
+    background-color: $flatpickr-bgcolor;
+  }
+}
+
+// ----------------------------------------------
+// Draggable Grouping Plugin
+// ----------------------------------------------
+
+.slick-preheader-panel {
+  .ui-droppable, .ui-droppable-hover {
+    padding: $draggable-group-drop-padding;
+    height: $draggable-group-drop-height;
+    border: $draggable-group-drop-border !important;
+    width: $draggable-group-drop-width !important;
+    border-radius: $draggable-group-drop-radius;
+    background-color: $draggable-group-drop-bgcolor;
+
+    .slick-placeholder {
+      font-style: $draggable-group-placeholder-font-style;
+      color: $draggable-group-placeholder-color;
+    }
+
+    .slick-group-toggle-all {
+      position: absolute;
+      cursor: pointer;
+      font-family: $icon-font-family;
+      color: $draggable-group-toggle-all-color;
+      display: $draggable-group-toggle-all-display !important;
+      top: $draggable-group-toggle-all-pos-top;
+      right: $draggable-group-toggle-all-pos-right;
+
+      &.expanded:before {
+        content: $draggable-group-toggle-expanded-icon;
+      }
+      &.collapsed:before {
+        content: $draggable-group-toggle-collapsed-icon;
+      }
+    }
+
+    .slick-dropped-grouping {
+      display: inline-block;
+      vertical-align: middle;
+      cursor: move;
+    }
+
+    .slick-groupby-remove {
+      cursor: pointer;
+      display: inline-flex;
+      color: $draggable-group-delete-color;
+      padding-left: $draggable-group-delete-padding-left;
+      padding-right: $draggable-group-delete-padding-right;
+      font-size: $draggable-group-delete-font-size;
+      &:hover {
+        color: $draggable-group-delete-hover-color;
+      }
+    }
+  }
+  .ui-droppable-active {
+    background-color: $draggable-group-droppable-active-bgcolor;
+  }
+  .ui-droppable-hover {
+    background-color: $draggable-group-droppable-hover-bgcolor;
+  }
+}
+
+.slick-header {
+  .slick-header-columns {
+    .slick-column-groupable {
+      display: inline-block;
+      font-weight: $draggable-group-column-icon-font-weight;
+      color: $draggable-group-column-icon-color;
+      width: $draggable-group-column-icon-width;
+      height: $draggable-group-column-icon-height;
+      margin-left: $draggable-group-column-icon-margin-left;
     }
   }
 }
 
 // ----------------------------------------------
-// Input Range Filter (Slider)
+// Input Slider Filter (with vanilla html)
 // ----------------------------------------------
 input.slider-editor-input[type=range],
 input.slider-filter-input[type=range] {
   /*removes default webkit styles*/
   -webkit-appearance: none;
   height: $slider-filter-height;
+  flex: 1;
 
-  padding: $slider-filter-runnable-track-padding !important;
+  padding: $slider-filter-runnable-track-padding;
 
   /* change runnable track color while in focus on all browsers */
   &:focus {
@@ -382,11 +524,12 @@ input.slider-filter-input[type=range] {
     border-radius: 3px;
   }
   &::-webkit-slider-thumb {
+    cursor: $slider-filter-thumb-cursor;
     -webkit-appearance: none;
     border: none;
     height: $slider-filter-thumb-size;
     width: $slider-filter-thumb-size;
-    border-radius: 50%;
+    border-radius: $slider-filter-thumb-border-radius;
     border: $slider-filter-thumb-border;
     background: $slider-filter-thumb-color;
     margin-top: -4px;
@@ -405,9 +548,10 @@ input.slider-filter-input[type=range] {
   }
   &::-moz-range-thumb {
     border: none;
+    cursor: $slider-filter-thumb-cursor;
     height: $slider-filter-thumb-size - 2px;
     width: $slider-filter-thumb-size - 2px;
-    border-radius: 50%;
+    border-radius: $slider-filter-thumb-border-radius;
     border: $slider-filter-thumb-border;
     background: $slider-filter-thumb-color;
   }
@@ -442,9 +586,10 @@ input.slider-filter-input[type=range] {
   }
   &::-ms-thumb {
     border: none;
+    cursor: $slider-filter-thumb-cursor;
     height: $slider-filter-thumb-size - 2px;
     width: $slider-filter-thumb-size - 2px;
-    border-radius: 50%;
+    border-radius: $slider-filter-thumb-border-radius;
     border: $slider-filter-thumb-border;
     background: $slider-filter-thumb-color;
     margin-top: 1px;
@@ -457,30 +602,143 @@ input.slider-filter-input[type=range] {
   .slider-value {
     padding: 0;
     .input-group-text {
-      padding: $slider-filter-number-padding !important;
-      font-size: $slider-filter-number-font-size !important;
-      height: $slider-filter-height;
+      padding: $slider-filter-number-padding;
+      font-size: $slider-filter-number-font-size;
     }
   }
 }
 input.slider-filter-input[type=range] {
-  padding: $slider-filter-runnable-track-padding !important;
-  height: $slider-filter-height !important;
+  padding: $slider-filter-runnable-track-padding;
+  height: $slider-filter-height;
 }
 
 /* Slider Editor */
 input.slider-editor-input[type=range] {
-  padding: $slider-editor-runnable-track-padding !important;
-  height: $slider-editor-height !important;
+  padding: $slider-editor-runnable-track-padding;
+  height: $slider-editor-height;
 }
 
 .slider-editor {
   .slider-value {
     padding: 0;
+    height: $header-input-height;
     .input-group-text {
-      padding: $slider-editor-number-padding !important;
-      font-size: $slider-filter-number-font-size !important;
+      padding: $slider-editor-number-padding;
+      font-size: $slider-filter-number-font-size;
       height: $slider-editor-height;
+    }
+  }
+}
+
+// ----------------------------------------------
+// Input Slider Range Filter (using jQuery UI)
+// ----------------------------------------------
+.slider-range-container {
+  height: $slider-range-filter-height;
+  padding: $slider-range-filter-padding;
+
+  .ui-slider {
+    position: relative;
+
+    .ui-slider-handle {
+      position: absolute;
+      top: $slider-range-filter-thumb-top;
+      border-radius: $slider-range-filter-thumb-border-radius;
+      cursor: $slider-range-filter-thumb-cursor;
+      border: $slider-range-filter-thumb-border;
+      height: $slider-range-filter-thumb-size;
+      width: $slider-range-filter-thumb-size;
+      background-color: $slider-range-filter-thumb-color;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  .ui-slider-horizontal {
+    top: $slider-range-filter-runnable-track-top;
+    height: $slider-range-filter-runnable-track-height;
+    background-color: $slider-range-filter-bgcolor;
+  }
+  .input-group-text {
+    border: 0;
+
+  }
+}
+.slider-range-container.slider-values {
+  padding: 0;
+  .ui-slider-horizontal {
+    flex: 1;
+    width: $slider-range-filter-values-slider-width;
+    top: $slider-range-filter-values-slider-top;
+    margin: $slider-range-filter-values-slider-margin;
+  }
+  .slider-range-value {
+    padding: 0;
+    border: 0;
+    height: 100%;
+    .input-group-text {
+      padding: $slider-filter-number-padding;
+      font-size: $slider-filter-number-font-size;
+    }
+  }
+  .input-group-prepend.slider-range-value {
+    border-right: $slider-range-filter-border;
+  }
+  .input-group-append.slider-range-value {
+    border-left: $slider-range-filter-border;
+  }
+}
+
+// ---------------------------------------------------------
+// Row Detail View Plugin
+// ---------------------------------------------------------
+
+.slick-row {
+  .detail-view-toggle {
+    display:          inline-block;
+    cursor:            pointer;
+
+    &.expand {
+      display: inline-block;
+      color: $detail-view-icon-expand-color;
+
+      &:hover {
+        color: darken($detail-view-icon-expand-color, 10%);
+      }
+      &:before {
+        font-family: $icon-font-family;
+        font-size: $detail-view-icon-size;
+        content: $detail-view-icon-expand;
+      }
+    }
+    &.collapse {
+      display: inline-block;
+      color: $detail-view-icon-collapse-color;
+      &:hover {
+        color: darken($detail-view-icon-collapse-color, 10%);
+      }
+      &:before {
+        font-family: $icon-font-family;
+        font-size: $detail-view-icon-size;
+        content: $detail-view-icon-collapse;
+      }
+    }
+  }
+
+  .dynamic-cell-detail {
+    position:           absolute;
+    width:              100%;
+    overflow:           auto;
+    border:             $detail-view-container-border;
+    background-color:   $detail-view-container-bgcolor;
+    padding:            $detail-view-container-padding;
+    z-index:            $detail-view-container-z-index;
+
+    :first-child {
+      vertical-align:     middle;
+      line-height:        13px;
     }
   }
 }

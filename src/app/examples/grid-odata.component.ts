@@ -1,6 +1,17 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Column, FieldType, Filters, GridOdataService, GridOption, Statistic } from './../modules/angular-slickgrid';
+import {
+  AngularGridInstance,
+  Column,
+  FieldType,
+  Filters,
+  GridOdataService,
+  GridOption,
+  GridStateChange,
+  Metrics,
+  OdataOption,
+  OperatorType,
+} from './../modules/angular-slickgrid';
 
 const defaultPageSize = 20;
 const sampleDataRoot = 'assets/data';
@@ -16,6 +27,7 @@ export class GridOdataComponent implements OnInit {
     <br/>
     <ul class="small">
       <li>Only "Name" field is sortable for the demo (because we use JSON files), however "multiColumnSort: true" is also supported</li>
+      <li>This example also demos the Grid State feature, open the console log to see the changes</li>
       <li>String column also support operator (>, >=, <, <=, <>, !=, =, ==, *)
       <ul>
         <li>The (*) can be used as startsWith (ex.: "abc*" => startsWith "abc") / endsWith (ex.: "*xyz" => endsWith "xyz")</li>
@@ -25,32 +37,41 @@ export class GridOdataComponent implements OnInit {
       <li>You can also preload a grid with certain "presets" like Filters / Sorters / Pagination <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grid-State-&-Preset" target="_blank">Wiki - Grid Preset</a>
     </ul>
   `;
+  angularGrid: AngularGridInstance;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset = [];
-  statistics: Statistic;
+  metrics: Metrics;
 
+  isCountEnabled = true;
+  odataVersion = 2;
   odataQuery = '';
   processing = true;
   status = { text: 'processing...', class: 'alert alert-danger' };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
+
+  angularGridReady(angularGrid: AngularGridInstance) {
+    this.angularGrid = angularGrid;
+  }
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'name', name: 'Name', field: 'name', sortable: true, type: FieldType.string,
+      {
+        id: 'name', name: 'Name', field: 'name', sortable: true, type: FieldType.string,
         filterable: true,
         filter: {
           model: Filters.compoundInput
         }
       },
-      { id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
+      {
+        id: 'gender', name: 'Gender', field: 'gender', filterable: true,
         filter: {
           model: Filters.singleSelect,
-          collection: [ { value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' } ]
+          collection: [{ value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' }]
         }
       },
-      { id: 'company', name: 'Company', field: 'company' }
+      { id: 'company', name: 'Company', field: 'company' },
     ];
 
     this.gridOptions = {
@@ -58,6 +79,11 @@ export class GridOdataComponent implements OnInit {
       autoResize: {
         containerId: 'demo-container',
         sidePadding: 15
+      },
+      checkboxSelector: {
+        // you can toggle these 2 properties to show the "select all" checkbox in different location
+        hideInFilterHeaderRow: false,
+        hideInColumnTitleRow: true
       },
       enableCellNavigation: true,
       enableFiltering: true,
@@ -68,12 +94,27 @@ export class GridOdataComponent implements OnInit {
         pageSize: defaultPageSize,
         totalItems: 0
       },
+      presets: {
+        // you can also type operator as string, e.g.: operator: 'EQ'
+        filters: [
+          { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
+        ],
+        sorters: [
+          // direction can be written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
+          { columnId: 'name', direction: 'asc' }
+        ],
+        pagination: { pageNumber: 2, pageSize: 20 }
+      },
       backendServiceApi: {
         service: new GridOdataService(),
+        options: {
+          enableCount: this.isCountEnabled, // add the count in the OData query, which will return a property named "odata.count" (v2) or "@odata.count" (v4)
+          version: this.odataVersion        // defaults to 2, the query string is slightly different between OData 2 and 4
+        } as OdataOption,
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {
-          this.statistics = response.statistics;
+          this.metrics = response.metrics;
           this.displaySpinner(false);
           this.getCustomerCallback(response);
         }
@@ -91,9 +132,13 @@ export class GridOdataComponent implements OnInit {
   getCustomerCallback(data) {
     // totalItems property needs to be filled for pagination to work correctly
     // however we need to force Angular to do a dirty check, doing a clone object will do just that
-    this.gridOptions.pagination.totalItems = data['totalRecordCount'];
-    if (this.statistics) {
-      this.statistics.totalItemCount = data['totalRecordCount'];
+    let countPropName = 'totalRecordCount'; // you can use "totalRecordCount" or any name or "odata.count" when "enableCount" is set
+    if (this.isCountEnabled) {
+      countPropName = (this.odataVersion === 4) ? '@odata.count' : 'odata.count';
+    }
+    this.gridOptions.pagination.totalItems = data[countPropName];
+    if (this.metrics) {
+      this.metrics.totalItemCount = data[countPropName];
     }
     this.gridOptions = Object.assign({}, this.gridOptions);
 
@@ -106,6 +151,14 @@ export class GridOdataComponent implements OnInit {
     // in your case, you will call your WebAPI function (wich needs to return a Promise)
     // for the demo purpose, we will call a mock WebAPI function
     return this.getCustomerDataApiMock(query);
+  }
+
+  goToFirstPage() {
+    this.angularGrid.paginationService.goToFirstPage();
+  }
+
+  goToLastPage() {
+    this.angularGrid.paginationService.goToLastPage();
   }
 
   /** This function is only here to mock a WebAPI call (since we are using a JSON file for the demo)
@@ -133,37 +186,32 @@ export class GridOdataComponent implements OnInit {
         }
         if (param.includes('$filter=')) {
           const filterBy = param.substring('$filter='.length).replace('%20', ' ');
+          if (filterBy.includes('contains')) {
+            const filterMatch = filterBy.match(/contains\(([a-zA-Z\/]+),\s?'(.*?)'/);
+            const fieldName = filterMatch[1].trim();
+            columnFilters[fieldName] = { type: 'substring', term: filterMatch[2].trim() };
+          }
           if (filterBy.includes('substringof')) {
             const filterMatch = filterBy.match(/substringof\('(.*?)',([a-zA-Z ]*)/);
             const fieldName = filterMatch[2].trim();
-            columnFilters[fieldName] = {
-              type: 'substring',
-              term: filterMatch[1].trim()
-            };
+            columnFilters[fieldName] = { type: 'substring', term: filterMatch[1].trim() };
           }
           if (filterBy.includes('eq')) {
             const filterMatch = filterBy.match(/([a-zA-Z ]*) eq '(.*?)'/);
-            const fieldName = filterMatch[1].trim();
-            columnFilters[fieldName] = {
-              type: 'equal',
-              term: filterMatch[2].trim()
-            };
+            if (Array.isArray(filterMatch)) {
+              const fieldName = filterMatch[1].trim();
+              columnFilters[fieldName] = { type: 'equal', term: filterMatch[2].trim() };
+            }
           }
           if (filterBy.includes('startswith')) {
             const filterMatch = filterBy.match(/startswith\(([a-zA-Z ]*),\s?'(.*?)'/);
             const fieldName = filterMatch[1].trim();
-            columnFilters[fieldName] = {
-              type: 'starts',
-              term: filterMatch[2].trim()
-            };
+            columnFilters[fieldName] = { type: 'starts', term: filterMatch[2].trim() };
           }
           if (filterBy.includes('endswith')) {
             const filterMatch = filterBy.match(/endswith\(([a-zA-Z ]*),\s?'(.*?)'/);
             const fieldName = filterMatch[1].trim();
-            columnFilters[fieldName] = {
-              type: 'ends',
-              term: filterMatch[2].trim()
-            };
+            columnFilters[fieldName] = { type: 'ends', term: filterMatch[2].trim() };
           }
         }
       }
@@ -188,7 +236,7 @@ export class GridOdataComponent implements OnInit {
       }
 
       this.http.get(url).subscribe(data => {
-        const dataArray = <any[]> data;
+        const dataArray = <any[]>data;
 
         // Read the result field from the JSON response.
         const firstRow = skip;
@@ -221,9 +269,44 @@ export class GridOdataComponent implements OnInit {
         const updatedData = filteredData.slice(firstRow, firstRow + top);
 
         setTimeout(() => {
-          resolve({ items: updatedData, totalRecordCount: countTotalItems, query });
-        }, 500);
+          let countPropName = 'totalRecordCount';
+          if (this.isCountEnabled) {
+            countPropName = (this.odataVersion === 4) ? '@odata.count' : 'odata.count';
+          }
+          const backendResult = { items: updatedData, [countPropName]: countTotalItems, query };
+          console.log('Backend Result', backendResult);
+          resolve(backendResult);
+        }, 250);
       });
     });
+  }
+
+  /** Dispatched event of a Grid State Changed event */
+  gridStateChanged(gridStateChanges: GridStateChange) {
+    console.log('Client sample, Grid State changed:: ', gridStateChanges);
+  }
+
+  // THE FOLLOWING METHODS ARE ONLY FOR DEMO PURPOSES DO NOT USE THIS CODE
+  // ---
+
+  changeCountEnableFlag() {
+    this.isCountEnabled = !this.isCountEnabled;
+    const odataService = this.gridOptions.backendServiceApi.service;
+
+    // @ts-ignore
+    odataService.updateOptions({ enableCount: this.isCountEnabled } as OdataOption);
+    odataService.clearFilters();
+    this.angularGrid.filterService.clearFilters();
+    return true;
+  }
+
+  setOdataVersion(version: number) {
+    this.odataVersion = version;
+    const odataService = this.gridOptions.backendServiceApi.service;
+    // @ts-ignore
+    odataService.updateOptions({ version: this.odataVersion } as OdataOption);
+    odataService.clearFilters();
+    this.angularGrid.filterService.clearFilters();
+    return true;
   }
 }

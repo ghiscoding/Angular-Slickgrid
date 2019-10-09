@@ -1,0 +1,54 @@
+@import './variables';
+
+// ---------------------------------------------------------
+// jQuery UI AutoComplete for Bootstrap
+// ---------------------------------------------------------
+
+.ui-autocomplete {
+  position: absolute;
+  z-index: $autocomplete-z-index;
+  padding: 0;
+  margin-top: 2px;
+  list-style: none;
+  background-color: $autocomplete-bg-color;
+  border: $autocomplete-border;
+  border-radius: $autocomplete-border-radius;
+  box-shadow: $autocomplete-box-shadow;
+  background-clip: padding-box;
+  max-height: $autocomplete-max-height;
+  min-height: $autocomplete-min-height;
+  min-width: $autocomplete-min-width;
+  overflow-y: auto;
+
+  li {
+    div {
+      clear: both;
+      display: block;
+      color: $autocomplete-text-color;
+      padding: $autocomplete-text-padding;
+      font-weight: normal;
+      line-height: 1.42857143;
+      white-space: nowrap;
+    }
+  }
+}
+
+.ui-state-hover,
+.ui-state-active,
+.ui-state-focus {
+  cursor: pointer;
+  text-decoration: none;
+  color: $autocomplete-hover-color;
+  background-color: $autocomplete-hover-bg-color;
+}
+
+.ui-helper-hidden-accessible {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  position: absolute;
+  padding: 0;
+  width: 1px;
+}

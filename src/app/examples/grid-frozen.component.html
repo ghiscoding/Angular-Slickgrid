@@ -1,0 +1,41 @@
+<div class="container-fluid">
+    <h2>{{title}}</h2>
+    <div class="subtitle" [innerHTML]="subTitle"></div>
+
+    <br>
+
+    <div class="row col-sm-12">
+        <span>
+            <label for="">Pinned Rows: </label>
+            <input type="number" [(ngModel)]="frozenRowCount">
+            <button class="btn btn-default btn-xs" (click)="changeFrozenRowCount()">
+                Set
+            </button>
+        </span>
+        <span style="margin-left: 10px">
+            <label for="">Pinned Columns: </label>
+            <input type="number" [(ngModel)]="frozenColumnCount">
+            <button class="btn btn-default btn-xs" (click)="changeFrozenColumnCount()">
+                Set
+            </button>
+        </span>
+        <span style="margin-left: 15px">
+            <button class="btn btn-default btn-sm" (click)="toggleFrozenBottomRows()">
+               <i class="fa fa-random fa-lg"></i> Toggle Pinned Rows
+            </button>
+            <span style="font-weight: bold;">: {{ isFrozenBottom ? 'Bottom' : 'Top' }}</span>
+        </span>
+    </div>
+
+    <div class="col-sm-12">
+        <hr>
+    </div>
+
+    <angular-slickgrid gridId="grid20"
+              gridWidth="875"
+              [columnDefinitions]="columnDefinitions"
+              [gridOptions]="gridOptions"
+              [dataset]="dataset"
+              (onAngularGridCreated)="angularGridReady($event)">
+    </angular-slickgrid>
+</div>

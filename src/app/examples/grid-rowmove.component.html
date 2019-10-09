@@ -1,0 +1,13 @@
+<div class="container-fluid">
+    <h2>{{title}}</h2>
+    <div class="subtitle" [innerHTML]="subTitle"></div>
+
+    <div class="col-sm-12">
+        <angular-slickgrid gridId="grid2"
+            (onAngularGridCreated)="angularGridReady($event)"
+            [columnDefinitions]="columnDefinitions"
+            [gridOptions]="gridOptions"
+            [dataset]="dataset">
+        </angular-slickgrid>
+    </div>
+</div>

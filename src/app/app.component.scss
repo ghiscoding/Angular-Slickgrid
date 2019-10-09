@@ -1,5 +1,8 @@
-.body-content {
-  margin-top: 50px;
+$navbar-height: 50px;
+$side-menu-width: 250px;
+
+.lightblue {
+  color: lightblue;
 }
 .red {
   color: red;
@@ -10,12 +13,45 @@
 .faded:hover {
     opacity: 0.5;
 }
-.links {
-  background-color: #f9f9f9;
-  border-right: 1px solid #d0d0d0;
-  overflow-y: auto;
-  padding-top: 10px;
+.btn:focus, .btn:active:focus, .btn.active:focus {
+  outline: 0 none;
+}
 
-  /* the height is 100% minus the 2 navbars */
-  height: calc(100vh - 50px);
+/** Sidebar (left) and Content (right) */
+@media (min-width: 1200px) {
+  .panel-wm-content .container {
+      width: calc(1170px - $side-menu-width);
+  }
+}
+
+.panel-wm {
+  padding-top: $navbar-height;
+
+  .nav-stacked {
+    padding-bottom: 30px;
+  }
+
+  .nav > li > a {
+    padding: 10px 15px;
+    border-radius: 0;
+  }
+
+  .panel-wm-content {
+    padding-left: ($side-menu-width + 5px);
+    padding-right: 15px;
+  }
+
+  .panel-wm-left {
+    position: fixed;
+    z-index: 400;
+    transition: left 0.15s;
+    top: calc(#{$navbar-height});
+    bottom: 0;
+    left: 0;
+    background-color: #f5f5f5;
+    transform: translate3d(0, 0, 0);
+    border-right: 1px solid #d0d0d0;
+    overflow-y: auto;
+    width: $side-menu-width;
+  }
 }

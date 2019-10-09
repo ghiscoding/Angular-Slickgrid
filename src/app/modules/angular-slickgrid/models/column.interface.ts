@@ -3,6 +3,7 @@ import { ColumnFilter } from './columnFilter.interface';
 import { EditorValidator } from './editorValidator.interface';
 import { FieldType } from './fieldType.enum';
 import { Formatter } from './formatter.interface';
+import { Grouping } from './grouping.interface';
 import { GroupTotalsFormatter } from './groupTotalsFormatter.interface';
 import { HeaderButtonItem } from './headerButtonItem.interface';
 import { HeaderMenuItem } from './headerMenuItem.interface';
@@ -12,6 +13,9 @@ import { Sorter } from './sorter.interface';
 export interface Column {
   /** async background post-rendering formatter */
   asyncPostRender?: (domCellNode: any, row: number, dataContext: any, columnDef: Column) => void;
+
+  /** Row Move Behavior, used by the Row Move Manager Plugin */
+  behavior?: string;
 
   /** Block event triggering of an insert? */
   cannotTriggerInsert?: boolean;
@@ -25,16 +29,25 @@ export interface Column {
   /** Column span in pixels or `*`, only input the number value */
   colspan?: number | '*';
 
+  /** Data key, for example this could be used as a property key for complex object comparison (e.g. dataKey: 'id') */
+  dataKey?: any;
+
   /** Do we want default sort to be ascending? True by default */
   defaultSortAsc?: boolean;
 
   /** Any inline editor function that implements Editor for the cell value or ColumnEditor */
   editor?: any | ColumnEditor;
 
-  /** Default to false, which leads to exclude the column from the export? */
+  /** Default to false, which leads to exclude the column title from the Column Picker. */
+  excludeFromColumnPicker?: boolean;
+
+  /** Default to false, which leads to exclude the column from the export. */
   excludeFromExport?: boolean;
 
-  /** Defaults to false, which leads to exclude the field from the query (mostly a backend service query) */
+  /** Default to false, which leads to exclude the column title from the Grid Menu. */
+  excludeFromGridMenu?: boolean;
+
+  /** Defaults to false, which leads to exclude the field from the query (typically a backend service query) */
   excludeFromQuery?: boolean;
 
   /** Defaults to false, which leads to exclude the column from getting a header menu. For example, the checkbox row selection should not have a header menu. */
@@ -59,7 +72,13 @@ export interface Column {
    * When set this flag to True, the cell value will be wrapped with an equal sign and double quotes, which forces Excel to evaluate it as a string. The output will be:: ="1E06" */
   exportCsvForceToKeepAsString?: boolean;
 
-  /** Field property name to use from the dataset that is used to display the column data.  */
+  /**
+   * Field property name to use from the dataset that is used to display the column data.
+   * For example: { id: 'firstName', field: 'firstName' }
+   *
+   * NOTE: a field with dot notation (.) will be considered a complex object.
+   * For example: { id: 'Users', field: 'user.firstName' }
+   */
   field: string;
 
   /**
@@ -84,6 +103,9 @@ export interface Column {
   /** Formatter function that can be used to change and format certain column(s) in the grid */
   formatter?: Formatter;
 
+  /** Grouping option used by a Draggable Grouping Column */
+  grouping?: Grouping;
+
   /** Group Totals Formatter function that can be used to add grouping totals in the grid */
   groupTotalsFormatter?: GroupTotalsFormatter;
 
@@ -106,9 +128,13 @@ export interface Column {
   id: number | string;
 
   /**
-   * @internal used internally by Angular-Slickgrid, to copy over the Column Editor Options
+   * @reserved This is a RESERVED property and is used internally by the library to copy over the Column Editor Options.
+   * You can read this property if you wish, but DO NOT override this property (unless you know what you're doing) as it will cause other issues with your editors.
    */
   internalColumnEditor?: ColumnEditor;
+
+  /** Label key, for example this could be used as a property key for complex object label display (e.g. dataKey: 'name') */
+  labelKey?: any;
 
   /** Maximum Width of the column in pixels (number only). */
   maxWidth?: number;
@@ -134,13 +160,22 @@ export interface Column {
   /** The previous column width in pixels (number only) */
   previousWidth?: number;
 
-  /** Useful when you want to display a certain field to the UI, but you want to use another field to query for Filtering/Sorting. */
+  /**
+   * Useful when you want to display a certain field to the UI, but you want to use another field to query when Filtering/Sorting.
+   * Please note that it has higher precendence over the "field" property.
+   */
   queryField?: string;
 
-  /** Similar to "queryField" but only used with Filtering. Useful when you want to display a certain field to the UI, but you want to use another field to query for Filtering. */
+  /**
+   * Similar to "queryField" but only used when Filtering (please note that it has higher precendence over "queryField").
+   * Useful when you want to display a certain field to the UI, but you want to use another field to query for Filtering.
+   */
   queryFieldFilter?: string;
 
-  /** Similar to "queryField" but only used with Sorting. Useful when you want to display a certain field to the UI, but you want to use another field to query for Sorting. */
+  /**
+   * Similar to "queryField" but only used when Sorting (please note that it has higher precendence over "queryField").
+   * Useful when you want to display a certain field to the UI, but you want to use another field to query for Sorting.
+   */
   queryFieldSorter?: string;
 
   /** Is the column resizable, can we make it wider/thinner? A resize cursor will show on the right side of the column when enabled. */
@@ -166,6 +201,9 @@ export interface Column {
 
   /** What is the Field Type, this can be used in the Formatters/Editors/... */
   type?: FieldType;
+
+  /** Defaults to false, when set to True will lead to the column being unselected in the UI */
+  unselectable?: boolean;
 
   /** Editor Validator */
   validator?: EditorValidator;

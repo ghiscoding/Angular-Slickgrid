@@ -1,12 +1,13 @@
 import { BackendService } from './../models';
 import {
-  ControlAndPluginService,
   ExportService,
+  ExtensionService,
   FilterService,
   GridService,
   GridEventService,
   GridStateService,
   GroupingAndColspanService,
+  PaginationService,
   ResizerService,
   SortService
 } from '../services';
@@ -30,8 +31,11 @@ export interface AngularGridInstance {
   /** Backend Service, when available */
   backendService?: BackendService;
 
-  /** Plugin (and Control) Service */
-  pluginService: ControlAndPluginService;
+  /** Extension (Controls & Plugins) Service */
+  extensionService: ExtensionService;
+
+  /** @deprecated, use `extensionService` instead. Plugin and Control Service */
+  pluginService: ExtensionService;
 
   /** Export Service */
   exportService: ExportService;
@@ -50,6 +54,9 @@ export interface AngularGridInstance {
 
   /** Grouping (and colspan) Service */
   groupingService: GroupingAndColspanService;
+
+  /** Pagination Service (allows you to programmatically go to first/last page, etc...) */
+  paginationService: PaginationService;
 
   /** Resizer Service (including auto-resize) */
   resizerService: ResizerService;

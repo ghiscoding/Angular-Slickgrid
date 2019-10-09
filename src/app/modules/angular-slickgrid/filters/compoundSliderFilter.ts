@@ -4,7 +4,6 @@ import {
   Filter,
   FilterArguments,
   FilterCallback,
-  GridOption,
   OperatorString,
   OperatorType,
   SearchTerm
@@ -19,6 +18,8 @@ const DEFAULT_STEP = 1;
 
 export class CompoundSliderFilter implements Filter {
   private _clearFilterTriggered = false;
+  private _currentValue: number;
+  private _shouldTriggerQuery = true;
   private _elementRangeInputId: string;
   private _elementRangeOutputId: string;
   private _operator: OperatorType | OperatorString;
@@ -32,11 +33,6 @@ export class CompoundSliderFilter implements Filter {
   callback: FilterCallback;
 
   constructor() { }
-
-  /** Getter for the Grid Options pulled through the Grid Object */
-  private get gridOptions(): GridOption {
-    return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
-  }
 
   /** Getter for the Filter Generic Params */
   private get filterParams(): any {
@@ -60,60 +56,65 @@ export class CompoundSliderFilter implements Filter {
    * Initialize the Filter
    */
   init(args: FilterArguments) {
-    if (args) {
-      this.grid = args.grid;
-      this.callback = args.callback;
-      this.columnDef = args.columnDef;
-      this.operator = args.operator || '';
-      this.searchTerms = args.searchTerms || [];
-
-      // define the input & slider number IDs
-      this._elementRangeInputId = `rangeInput_${this.columnDef.field}`;
-      this._elementRangeOutputId = `rangeOutput_${this.columnDef.field}`;
-
-      // filter input can only have 1 search term, so we will use the 1st array index if it exist
-      const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms[0]) || '';
-
-      // step 1, create the DOM Element of the filter which contain the compound Operator+Input
-      // and initialize it if searchTerm is filled
-      this.$filterElm = this.createDomElement(searchTerm);
-
-      // step 3, subscribe to the keyup event and run the callback when that happens
-      // also add/remove "filled" class for styling purposes
-      this.$filterInputElm.change((e: any) => {
-        this.onTriggerEvent(e);
-      });
-      this.$selectOperatorElm.change((e: any) => {
-        this.onTriggerEvent(e);
-      });
-
-      // if user chose to display the slider number on the right side, then update it every time it changes
-      // we need to use both "input" and "change" event to be all cross-browser
-      if (!this.filterParams.hideSliderNumber) {
-        this.$filterInputElm.on('input change', (e: { target: HTMLInputElement }) => {
-          const value = e && e.target && e.target.value || '';
-          if (value) {
-            document.getElementById(this._elementRangeOutputId).innerHTML = value;
-          }
-        });
-      }
+    if (!args) {
+      throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
     }
+    this.grid = args.grid;
+    this.callback = args.callback;
+    this.columnDef = args.columnDef;
+    this.operator = args.operator || '';
+    this.searchTerms = (args.hasOwnProperty('searchTerms') ? args.searchTerms : []) || [];
+
+    // define the input & slider number IDs
+    this._elementRangeInputId = `rangeInput_${this.columnDef.field}`;
+    this._elementRangeOutputId = `rangeOutput_${this.columnDef.field}`;
+
+    // filter input can only have 1 search term, so we will use the 1st array index if it exist
+    const searchTerm = (Array.isArray(this.searchTerms) && this.searchTerms.length >= 0) ? this.searchTerms[0] : '';
+
+    // step 1, create the DOM Element of the filter which contain the compound Operator+Input
+    // and initialize it if searchTerm is filled
+    this.$filterElm = this.createDomElement(searchTerm);
+
+    // step 3, subscribe to the keyup event and run the callback when that happens
+    // also add/remove "filled" class for styling purposes
+    this.$filterInputElm.change((e: any) => {
+      this.onTriggerEvent(e);
+    });
+    this.$selectOperatorElm.change((e: any) => {
+      this.onTriggerEvent(e);
+    });
+
+    // if user chose to display the slider number on the right side, then update it every time it changes
+    // we need to use both "input" and "change" event to be all cross-browser
+    if (!this.filterParams.hideSliderNumber) {
+      this.$filterInputElm.on('input change', (e: { target: HTMLInputElement }) => {
+        const value = e && e.target && e.target.value || '';
+        if (value) {
+          document.getElementById(this._elementRangeOutputId).innerHTML = value;
+        }
+      });
+    }
+
   }
 
   /**
    * Clear the filter value
    */
-  clear() {
+  clear(shouldTriggerQuery = true) {
     if (this.$filterElm && this.$selectOperatorElm) {
       this._clearFilterTriggered = true;
+      this._shouldTriggerQuery = shouldTriggerQuery;
       this.searchTerms = [];
       const clearedValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : DEFAULT_MIN_VALUE;
+      this._currentValue = +clearedValue;
       this.$selectOperatorElm.val(0);
       this.$filterInputElm.val(clearedValue);
       if (!this.filterParams.hideSliderNumber) {
         this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(clearedValue);
       }
       this.onTriggerEvent(undefined);
+      this.$filterElm.removeClass('filled');
     }
   }
 
@@ -122,17 +123,30 @@ export class CompoundSliderFilter implements Filter {
    */
   destroy() {
     if (this.$filterElm) {
-      this.$filterElm.off('change').remove();
+      this.$filterElm.off('input change').remove();
     }
+  }
+
+  /**
+   * Get selected value retrieved from the slider element
+   * @params selected items
+   */
+  getValues(): number {
+    return this._currentValue;
   }
 
   /**
    * Set value(s) on the DOM element
    */
-  setValues(values: SearchTerm[]) {
-    if (values && Array.isArray(values)) {
+  setValues(values: SearchTerm | SearchTerm[]) {
+    if (Array.isArray(values)) {
+      this._currentValue = +values[0];
       this.$filterInputElm.val(values[0]);
       this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(values[0]);
+    } else if (values) {
+      this._currentValue = +values;
+      this.$filterInputElm.val(values);
+      this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(values);
     }
   }
 
@@ -176,12 +190,12 @@ export class CompoundSliderFilter implements Filter {
   private getOptionValues(): { operator: OperatorString, description: string }[] {
     return [
       { operator: '' as OperatorString, description: '' },
-      { operator: '=' as OperatorString, description: '' },
-      { operator: '<' as OperatorString, description: '' },
-      { operator: '<=' as OperatorString, description: '' },
-      { operator: '>' as OperatorString, description: '' },
-      { operator: '>=' as OperatorString, description: '' },
-      { operator: '<>' as OperatorString, description: '' }
+      { operator: '=' as OperatorString, description: '=' },
+      { operator: '<' as OperatorString, description: '<' },
+      { operator: '<=' as OperatorString, description: '<=' },
+      { operator: '>' as OperatorString, description: '>' },
+      { operator: '>=' as OperatorString, description: '>=' },
+      { operator: '<>' as OperatorString, description: '<>' }
     ];
   }
 
@@ -189,15 +203,26 @@ export class CompoundSliderFilter implements Filter {
    * Create the DOM element
    */
   private createDomElement(searchTerm?: SearchTerm) {
-    const searchTermInput = (searchTerm || '0') as string;
+    const fieldId = this.columnDef && this.columnDef.id;
+    const minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
+    const startValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
     const $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
     $($headerElm).empty();
+
+    let searchTermInput = (searchTerm || '0') as string;
+    if (+searchTermInput < minValue) {
+      searchTermInput = `${minValue}`;
+    }
+    if (+searchTermInput < startValue) {
+      searchTermInput = `${startValue}`;
+    }
+    this._currentValue = +searchTermInput;
 
     // create the DOM Select dropdown for the Operator
     this.$selectOperatorElm = $(this.buildSelectOperatorHtmlString());
     this.$filterInputElm = $(this.buildTemplateHtmlString());
-    const $filterContainerElm = $(`<div class="form-group search-filter"></div>`);
-    this.$containerInputGroupElm = $(`<div class="input-group search-filter"></div>`);
+    const $filterContainerElm = $(`<div class="form-group slider-container search-filter filter-${fieldId}"></div>`);
+    this.$containerInputGroupElm = $(`<div class="input-group search-filter filter-${fieldId}"></div>`);
     const $operatorInputGroupAddon = $(`<span class="input-group-addon input-group-prepend operator"></span>`);
 
     /* the DOM element final structure will be
@@ -220,17 +245,17 @@ export class CompoundSliderFilter implements Filter {
 
     // create the DOM element & add an ID and filter class
     $filterContainerElm.append(this.$containerInputGroupElm);
-    $filterContainerElm.attr('id', `filter-${this.columnDef.field}`);
+    $filterContainerElm.attr('id', `filter-${fieldId}`);
 
     this.$filterInputElm.val(searchTermInput);
-    this.$filterInputElm.data('columnId', this.columnDef.field);
+    this.$filterInputElm.data('columnId', fieldId);
 
     if (this.operator) {
       this.$selectOperatorElm.val(this.operator);
     }
 
     // if there's a search term, we will add the "filled" class for styling purposes
-    if (searchTerm) {
+    if (searchTerm !== '') {
       $filterContainerElm.addClass('filled');
     }
 
@@ -243,14 +268,19 @@ export class CompoundSliderFilter implements Filter {
   }
 
   private onTriggerEvent(e: Event | undefined) {
+    const value = this.$filterInputElm.val();
+    this._currentValue = +value;
+
     if (this._clearFilterTriggered) {
-      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered });
-      this._clearFilterTriggered = false; // reset flag for next use
+      this.$filterElm.removeClass('filled');
+      this.callback(e, { columnDef: this.columnDef, clearFilterTriggered: this._clearFilterTriggered, shouldTriggerQuery: this._shouldTriggerQuery });
     } else {
+      this.$filterElm.addClass('filled');
       const selectedOperator = this.$selectOperatorElm.find('option:selected').text();
-      const value = this.$filterInputElm.val();
-      (value) ? this.$filterElm.addClass('filled') : this.$filterElm.removeClass('filled');
-      this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value] : null), operator: selectedOperator || '' });
+      this.callback(e, { columnDef: this.columnDef, searchTerms: (value ? [value || '0'] : null), operator: selectedOperator || '', shouldTriggerQuery: this._shouldTriggerQuery });
     }
+    // reset both flags for next use
+    this._clearFilterTriggered = false;
+    this._shouldTriggerQuery = true;
   }
 }

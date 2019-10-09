@@ -111,20 +111,19 @@
     display: block;
     float: right;
     padding: 2px;
-    vertical-align: middle;
 
     select {
-      font-size: ($font-size-base - 2px);
+      font-size: $pagination-page-select-font-size;
       line-height: 1.5;
-      height: 32px;
-      width: 62px;
-      padding: 5px;
+      height: $pagination-page-select-height;
+      width: $pagination-page-select-width;
+      padding: $pagination-page-select-padding;
       border: $pagination-button-border;
-      border-radius: 3px;
+      border-radius: $pagination-page-select-border-radius;
     }
 
     .slick-pagination-count {
-      padding-left: 10px;
+      margin-left: $pagination-count-margin-left;
     }
   }
 }

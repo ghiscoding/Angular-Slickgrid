@@ -1,31 +1,55 @@
-<!--The content below is only a placeholder and can be replaced.-->
 <div class="container-fluid">
   <h2>{{title}}</h2>
   <div class="subtitle row" [innerHTML]="subTitle"></div>
 
   <div class="row">
     <div class="col-sm-4">
-      <div [class]="status.class" role="alert">
+      <div [class]="status.class" role="alert" data-test="status">
         <strong>Status: </strong> {{status.text}}
         <span [hidden]="!processing">
           <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
         </span>
       </div>
-      <span *ngIf="statistics">
-            <b>Statistics:</b> {{statistics.endTime | date: 'yyyy-MM-dd HH:mm aaaaa\'m\''}} | {{statistics.executionTime}}ms | {{statistics.totalItemCount}} items
-        </span>
+      <span *ngIf="metrics">
+        <b>Metrics:</b> {{metrics.endTime | date: 'yyyy-MM-dd HH:mm aaaaa\'m\''}} | {{metrics.executionTime}}ms
+        | {{metrics.totalItemCount}} items
+      </span>
     </div>
     <div class="col-sm-8">
-      <div class="alert alert-info">
-        <strong>OData Query:</strong> {{odataQuery}}
+      <div class="alert alert-info" data-test="alert-odata-query">
+        <strong>OData Query:</strong> <span data-test="odata-query-result">{{odataQuery}}</span>
       </div>
+
+      <label>OData Version: </label>
+      <span data-test="radioVersion">
+        <label class="radio-inline control-label" for="radio2">
+          <input type="radio" name="inlineRadioOptions" data-test="version2" id="radio2" checked [value]="2"
+                 (change)="setOdataVersion(2)"> 2
+        </label>
+        <label class="radio-inline control-label" for="radio4">
+          <input type="radio" name="inlineRadioOptions" data-test="version4" id="radio4" [value]="4"
+                 (change)="setOdataVersion(4)"> 4
+        </label>
+      </span>
+      <label class="checkbox-inline control-label" for="enableCount" style="margin-left: 20px">
+        <input type="checkbox" id="enableCount" data-test="enable-count" [checked]="isCountEnabled"
+               (click)="changeCountEnableFlag()">
+        <span style="font-weight: bold">Enable Count</span> (add to OData query)
+      </label>
     </div>
   </div>
+  <div class="row col-md-12">
+    <label>Programmatically go to first/last page:</label>
+    <button class="btn btn-default btn-xs" (click)="goToFirstPage()">
+      <i class="fa fa-caret-left fa-lg"></i>
+    </button>
+    <button class="btn btn-default btn-xs" (click)="goToLastPage()">
+      <i class="fa fa-caret-right fa-lg"></i>
+    </button>
+  </div>
 
-  <angular-slickgrid gridId="grid4"
-            [columnDefinitions]="columnDefinitions"
-            [gridOptions]="gridOptions"
-            [dataset]="dataset">
+  <angular-slickgrid gridId="grid5" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
+                     [dataset]="dataset" (onGridStateChanged)="gridStateChanged($event)"
+                     (onAngularGridCreated)="angularGridReady($event)">
   </angular-slickgrid>
 </div>
-
