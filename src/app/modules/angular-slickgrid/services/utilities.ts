@@ -508,7 +508,6 @@ export function mapOperatorByFieldType(fieldType: FieldType | string): OperatorT
     case FieldType.number:
     case FieldType.date:
     case FieldType.dateIso:
-    case FieldType.date:
     case FieldType.dateUtc:
     case FieldType.dateTime:
     case FieldType.dateTimeIso:
