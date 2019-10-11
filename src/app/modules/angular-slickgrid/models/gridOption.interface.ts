@@ -8,6 +8,7 @@ import {
   DraggableGrouping,
   EditCommand,
   ExcelCopyBufferOption,
+  ExcelExportOption,
   ExportOption,
   FormatterOption,
   GridMenu,
@@ -176,6 +177,9 @@ export interface GridOption {
   /** Defaults to true, which leads to use an Excel like copy buffer that gets copied in clipboard and can be pasted back in Excel or any other app */
   enableExcelCopyBuffer?: boolean;
 
+  /** Do we want to enable the Excel Export? (if Yes, it will show up in the Grid Menu) */
+  enableExcelExport?: boolean;
+
   /** Do we want to enable the Export to File? (if Yes, it will show up in the Grid Menu) */
   enableExport?: boolean;
 
@@ -229,6 +233,9 @@ export interface GridOption {
 
   /** Do we want explicit grid initialization? */
   explicitInitialization?: boolean;
+
+  /** Some default options to set for the Excel export service */
+  excelExportOptions?: ExcelExportOption;
 
   /** Some default options to set for the export service */
   exportOptions?: ExportOption;

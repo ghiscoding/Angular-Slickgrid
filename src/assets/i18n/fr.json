@@ -9,6 +9,7 @@
   "ENDS_WITH": "Se termine par",
   "EQUALS": "Égale",
   "EXPORT_TO_CSV": "Exporter en format CSV",
+  "EXPORT_TO_EXCEL": "Exporter vers Excel",
   "EXPORT_TO_TAB_DELIMITED": "Exporter en format texte (délimité par tabulation)",
   "FROM_TO_OF_TOTAL_ITEMS": "{{from}}-{{to}} de {{totalItems}} éléments",
   "FORCE_FIT_COLUMNS": "Ajustement forcé des colonnes",

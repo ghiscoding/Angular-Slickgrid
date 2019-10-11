@@ -8,7 +8,12 @@
     "types": [
       "moment",
       "jquery"
-    ]
+    ],
+    "paths": {
+      "jszip": [
+        "../node_modules/jszip/dist/jszip.min.js"
+      ]
+    }
   },
   "exclude": [
     "test.ts",

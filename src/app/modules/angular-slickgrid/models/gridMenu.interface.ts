@@ -31,6 +31,9 @@ export interface GridMenu {
   /** Defaults to false, which will hide the "Export to CSV" command in the Grid Menu (Grid Option "enableExport: true" has to be enabled) */
   hideExportCsvCommand?: boolean;
 
+  /** Defaults to false, which will hide the "Export to Excel" command in the Grid Menu (Grid Option "enableExcelExport: true" has to be enabled) */
+  hideExportExcelCommand?: boolean;
+
   /** Defaults to false, which will hide the "Export to Text Delimited" command in the Grid Menu (Grid Option "enableExport: true" has to be enabled) */
   hideExportTextDelimitedCommand?: boolean;
 
@@ -60,6 +63,9 @@ export interface GridMenu {
 
   /** icon for the "Export to CSV" command */
   iconExportCsvCommand?: string;
+
+  /** icon for the "Export to Excel" command */
+  iconExportExcelCommand?: string;
 
   /** icon for the "Export to Text Delimited" command */
   iconExportTextDelimitedCommand?: string;

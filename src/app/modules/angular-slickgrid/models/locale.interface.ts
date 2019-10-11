@@ -32,6 +32,9 @@ export interface Locale {
   /** Text "Export in Text Format" shown in Grid Menu (when enabled) */
   TEXT_EXPORT_IN_TEXT_FORMAT?: string;
 
+  /** Text "Export to Excel" shown in Grid Menu (when enabled) */
+  TEXT_EXPORT_TO_EXCEL: string;
+
   /** Text "Force fit Columns" displayed in the Column Picker & Grid Menu (when enabled) */
   TEXT_FORCE_FIT_COLUMNS: string;
 

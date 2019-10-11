@@ -36,6 +36,7 @@ export * from './editUndoRedoBuffer.interface';
 export * from './elementPosition.interface';
 export * from './emitterType.enum';
 export * from './excelCopyBufferOption.interface';
+export * from './excelExportOption.interface';
 export * from './exportOption.interface';
 export * from './extension.interface';
 export * from './extensionModel.interface';
