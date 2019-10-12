@@ -7,10 +7,10 @@ import {
   Editors,
   FieldType,
   Filters,
-  Formatter,
   Formatters,
   GridOption,
   OnEventArgs,
+  BsDropDownService,
 } from './../modules/angular-slickgrid';
 import { EditorNgSelectComponent } from './editor-ng-select.component';
 import { CustomActionFormatterComponent } from './custom-actionFormatter.component';
@@ -18,7 +18,7 @@ import { CustomAngularComponentEditor } from './custom-angularComponentEditor';
 import { CustomAngularComponentFilter } from './custom-angularComponentFilter';
 import { CustomTitleFormatterComponent } from './custom-titleFormatter.component';
 import { FilterNgSelectComponent } from './filter-ng-select.component';
-import { BsDropDownService } from './bsDropdown.service';
+import { SharedService } from '../modules/angular-slickgrid/services/shared.service';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -26,16 +26,6 @@ declare var $: any;
 
 const NB_ITEMS = 100;
 
-const customActionFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any) => {
-  // use the same button text "Action" as the "CustomActionFormatterComponent" button text
-  // we basically recreate a dropdown on top of this one here which is just an empty one to show something in the grid
-  return `<div id="myDrop-r${row}-c${cell}" class="dropdown">
-    <a class="dropdown-toggle">
-      Action
-      <span class="caret"></span>
-    </a>
-  </div>`;;
-};
 
 @Component({
   templateUrl: './grid-angular.component.html',
@@ -83,7 +73,7 @@ export class GridAngularComponent implements OnInit {
     { id: '3', name: 'Paul' },
   ];
 
-  constructor(private angularUtilService: AngularUtilService, private translate: TranslateService, private bsDropdown : BsDropDownService) { }
+  constructor(private angularUtilService: AngularUtilService, private translate: TranslateService, private bsDropdown : BsDropDownService, private sharedService : SharedService ) { }
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -237,13 +227,14 @@ export class GridAngularComponent implements OnInit {
         id: 'action',
         name: 'Action',
         field: 'id',
-        cssClass: 'pointer',
-        formatter: customActionFormatter,
-        minWidth: 40,
+        formatter: Formatters.bsDropdown,
+        params: { label : 'Action' },
         onCellClick : (e: Event, args: OnEventArgs) => {
+          this.sharedService.grid = this.angularGrid;
+
           this.bsDropdown.render(
             {
-              grid: this.angularGrid,
+              sharedService : this.sharedService,
               formatter: CustomActionFormatterComponent,
               args,
               parent : this,

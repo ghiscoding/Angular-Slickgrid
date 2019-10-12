@@ -50,7 +50,6 @@ import { SwtCommonGridComponent } from './examples/swt-common-grid.component';
 // https://medium.com/@ngl817/building-an-angular-4-component-library-with-the-angular-cli-and-ng-packagr-53b2ade0701e
 import { AngularSlickgridModule } from './modules/angular-slickgrid/modules/angular-slickgrid.module';
 // import { SlickgridModule } from 'angular-slickgrid';
-import { BsDropDownService } from './examples/bsDropdown.service';
 
 // AoT requires an exported function for factories
 export function createTranslateLoader(http: HttpClient) {
@@ -148,7 +147,6 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     RowDetailViewComponent,
   ],
   providers: [
-    BsDropDownService,
     {
       provide: APP_INITIALIZER,
       useFactory: appInitializerFactory,

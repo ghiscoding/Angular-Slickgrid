@@ -9,6 +9,8 @@ import { GraphqlService } from './../services/graphql.service';
 import { GridOdataService } from './../services/grid-odata.service';
 import { GridOption } from './../models/gridOption.interface';
 import { SlickPaginationComponent } from './../components/slick-pagination.component';
+import { BsDropDownService } from '../services/bsDropdown.service';
+import { SharedService } from '../services/shared.service';
 
 
 @NgModule({
@@ -36,7 +38,9 @@ export class AngularSlickgridModule {
         CollectionService,
         FilterFactory,
         GraphqlService,
-        GridOdataService
+        GridOdataService,
+        BsDropDownService,
+        SharedService
       ]
     };
   }

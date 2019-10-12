@@ -30,6 +30,7 @@ import { translateFormatter } from './translateFormatter';
 import { translateBooleanFormatter } from './translateBooleanFormatter';
 import { uppercaseFormatter } from './uppercaseFormatter';
 import { yesNoFormatter } from './yesNoFormatter';
+import { bsDropdownFormatter } from './bsDropdownFormatter';
 
 /** Provides a list of different Formatters that will change the cell value displayed in the UI */
 export const Formatters = {
@@ -46,6 +47,9 @@ export const Formatters = {
 
   /** show value in bold font weight */
   bold: boldFormatter,
+
+  /** boostrap dropdown formatter */
+  bsDropdown : bsDropdownFormatter,
 
   /** When value is filled (true), it will display a checkbox Unicode icon */
   checkbox: checkboxFormatter,
