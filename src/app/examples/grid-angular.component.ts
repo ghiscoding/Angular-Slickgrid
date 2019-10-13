@@ -231,7 +231,6 @@ export class GridAngularComponent implements OnInit {
         params: { label : 'Action' },
         onCellClick : (e: Event, args: OnEventArgs) => {
           this.sharedService.grid = this.angularGrid;
-
           this.bsDropdown.render(
             {
               sharedService : this.sharedService,
