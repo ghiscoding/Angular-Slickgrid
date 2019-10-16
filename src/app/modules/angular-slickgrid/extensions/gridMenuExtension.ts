@@ -14,6 +14,7 @@ import {
   Locale,
   SlickEventHandler,
 } from '../models';
+import { ExcelExportService } from '../services/excelExport.service';
 import { ExportService } from '../services/export.service';
 import { ExtensionUtility } from './extensionUtility';
 import { FilterService } from '../services/filter.service';
@@ -34,6 +35,7 @@ export class GridMenuExtension implements Extension {
   private _userOriginalGridMenu: GridMenu;
 
   constructor(
+    private excelExportService: ExcelExportService,
     private exportService: ExportService,
     private extensionUtility: ExtensionUtility,
     private filterService: FilterService,
@@ -402,12 +404,10 @@ export class GridMenuExtension implements Extension {
           });
           break;
         case 'export-excel':
-          if (this.sharedService && this.sharedService.excelExportService && this.sharedService.excelExportService.exportToExcel) {
-            this.sharedService.excelExportService.exportToExcel({
-              filename: 'export',
-              format: FileType.xlsx,
-            });
-          }
+          this.excelExportService.exportToExcel({
+            filename: 'export',
+            format: FileType.xlsx,
+          });
           break;
         case 'export-text-delimited':
           this.exportService.exportToFile({

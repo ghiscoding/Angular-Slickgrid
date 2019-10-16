@@ -13,6 +13,11 @@ declare var Slick: any;
 const gridId = 'grid1';
 const gridUid = 'slickgrid_124343';
 const containerId = 'demo-container';
+
+const excelExportServiceStub = {
+  exportToExcel: jest.fn(),
+} as unknown as ExcelExportService;
+
 const exportServiceStub = {
   exportToFile: jest.fn(),
 } as unknown as ExportService;
@@ -114,6 +119,7 @@ describe('gridMenuExtension', () => {
           GridMenuExtension,
           ExtensionUtility,
           SharedService,
+          { provide: ExcelExportService, useValue: excelExportServiceStub },
           { provide: ExportService, useValue: exportServiceStub },
           { provide: FilterService, useValue: filterServiceStub },
           { provide: SortService, useValue: sortServiceStub },
@@ -458,6 +464,7 @@ describe('gridMenuExtension', () => {
           gridMenu: {
             customItems: customItemsMock,
             hideExportCsvCommand: false,
+            hideExportExcelCommand: false,
             hideExportTextDelimitedCommand: true,
             hideRefreshDatasetCommand: true,
             hideSyncResizeButton: true,
@@ -483,6 +490,7 @@ describe('gridMenuExtension', () => {
         extension.register();
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
           { command: 'export-csv', disabled: false, iconCssClass: 'fa fa-download', positionOrder: 53, title: 'Exporter en format CSV' },
+          // { command: 'export-excel', disabled: false, iconCssClass: 'fa fa-file-excel-o text-success', positionOrder: 54, title: 'Exporter vers Excel' },
           { command: 'help', disabled: false, iconCssClass: 'fa fa-question-circle', positionOrder: 99, title: 'Aide', titleKey: 'HELP' },
         ]);
       });
@@ -555,6 +563,20 @@ describe('gridMenuExtension', () => {
         expect(onCommandSpy).toHaveBeenCalled();
         expect(sortSpy).toHaveBeenCalled();
         expect(refreshSpy).toHaveBeenCalled();
+      });
+
+      it('should call "exportToExcel" with CSV set when the command triggered is "export-csv"', () => {
+        const excelExportSpy = jest.spyOn(excelExportServiceStub, 'exportToExcel');
+        const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onCommand');
+
+        const instance = extension.register();
+        instance.onCommand.notify({ grid: gridStub, command: 'export-excel' }, new Slick.EventData(), gridStub);
+
+        expect(onCommandSpy).toHaveBeenCalled();
+        expect(excelExportSpy).toHaveBeenCalledWith({
+          filename: 'export',
+          format: FileType.xlsx,
+        });
       });
 
       it('should call "exportToFile" with CSV set when the command triggered is "export-csv"', () => {
@@ -692,7 +714,7 @@ describe('gridMenuExtension', () => {
   describe('without ngx-translate', () => {
     beforeEach(() => {
       translate = null;
-      extension = new GridMenuExtension({} as ExportService, {} as ExtensionUtility, {} as FilterService, { gridOptions: { enableTranslate: true } } as SharedService, {} as SortService, translate);
+      extension = new GridMenuExtension({} as ExcelExportService, {} as ExportService, {} as ExtensionUtility, {} as FilterService, { gridOptions: { enableTranslate: true } } as SharedService, {} as SortService, translate);
     });
 
     it('should throw an error if "enableTranslate" is set but the I18N Service is null', () => {

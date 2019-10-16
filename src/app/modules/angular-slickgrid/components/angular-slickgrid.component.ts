@@ -79,6 +79,7 @@ const slickgridEventPrefix = 'sg';
     CheckboxSelectorExtension,
     ColumnPickerExtension,
     DraggableGroupingExtension,
+    ExcelExportService,
     ExtensionService,
     ExportService,
     ExtensionUtility,
@@ -170,6 +171,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   constructor(
     private elm: ElementRef,
+    private excelExportService: ExcelExportService,
     private exportService: ExportService,
     private extensionService: ExtensionService,
     private extensionUtility: ExtensionUtility,
@@ -338,10 +340,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // if Excel Export is enabled, initialize the service with the necessary grid and other objects
     if (this.gridOptions.enableExcelExport && this.sharedService) {
       // create an instance of the ExcelExportService only when required (opt-in)
-      this.sharedService.excelExportService = new ExcelExportService(this.translate);
-      this.onGridBeforeExportToExcel = this.sharedService.excelExportService.onGridBeforeExportToExcel;
-      this.onGridAfterExportToExcel = this.sharedService.excelExportService.onGridAfterExportToExcel;
-      this.sharedService.excelExportService.init(this.grid, this.dataView);
+      this.excelExportService = new ExcelExportService(this.translate);
+      this.onGridBeforeExportToExcel = this.excelExportService.onGridBeforeExportToExcel;
+      this.onGridAfterExportToExcel = this.excelExportService.onGridAfterExportToExcel;
+      this.excelExportService.init(this.grid, this.dataView);
     }
 
     // once all hooks are in placed and the grid is initialized, we can emit an event
@@ -365,7 +367,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
       // return all available Services (non-singleton)
       backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
-      excelExportService: this.sharedService && this.sharedService.excelExportService,
+      excelExportService: this.excelExportService,
       exportService: this.exportService,
       extensionService: this.extensionService,
       filterService: this.filterService,
