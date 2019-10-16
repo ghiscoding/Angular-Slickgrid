@@ -6,6 +6,8 @@ export function sortByFieldType(fieldType: FieldType, value1: any, value2: any, 
   let sortResult = 0;
 
   switch (fieldType) {
+    case FieldType.float:
+    case FieldType.integer:
     case FieldType.number:
       sortResult = Sorters.numeric(value1, value2, sortDirection);
       break;
