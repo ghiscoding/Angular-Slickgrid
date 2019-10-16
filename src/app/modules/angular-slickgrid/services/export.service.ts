@@ -9,6 +9,7 @@ import {
   FileType,
   Formatter,
   GridOption,
+  KeyTitlePair,
   Locale,
 } from './../models/index';
 import { Constants } from './../constants';
@@ -16,11 +17,6 @@ import { addWhiteSpaces, htmlEntityDecode, sanitizeHtmlToText, titleCase } from 
 
 // using external non-typed js libraries
 declare let $: any;
-
-export interface ExportColumnHeader {
-  key: string;
-  title: string;
-}
 
 @Injectable()
 export class ExportService {
@@ -31,8 +27,8 @@ export class ExportService {
   private _grid: any;
   private _locales: Locale;
   private _exportQuoteWrapper = '';
-  private _columnHeaders: ExportColumnHeader[];
-  private _groupedHeaders: ExportColumnHeader[];
+  private _columnHeaders: KeyTitlePair[];
+  private _groupedHeaders: KeyTitlePair[];
   private _hasGroupedItems = false;
   private _exportOptions: ExportOption;
   onGridBeforeExportToFile = new Subject<boolean>();
@@ -243,7 +239,7 @@ export class ExportService {
    * Get all header titles and their keys, translate the title when required.
    * @param columns of the grid
    */
-  private getColumnHeaders(columns: Column[]): ExportColumnHeader[] {
+  private getColumnHeaders(columns: Column[]): KeyTitlePair[] {
     if (!columns || !Array.isArray(columns) || columns.length === 0) {
       return null;
     }

@@ -329,7 +329,7 @@ describe('gridMenuExtension', () => {
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
           { iconCssClass: 'fa fa-filter text-danger', title: 'Supprimer tous les filtres', disabled: false, command: 'clear-filter', positionOrder: 50 },
           { iconCssClass: 'fa fa-random', title: 'Basculer la ligne des filtres', disabled: false, command: 'toggle-filter', positionOrder: 52 },
-          { iconCssClass: 'fa fa-refresh', title: 'Rafraîchir les données', disabled: false, command: 'refresh-dataset', positionOrder: 54 }
+          { iconCssClass: 'fa fa-refresh', title: 'Rafraîchir les données', disabled: false, command: 'refresh-dataset', positionOrder: 56 }
         ]);
       });
 
@@ -359,7 +359,7 @@ describe('gridMenuExtension', () => {
         extension.register();
         extension.register(); // calling 2x register to make sure it doesn't duplicate commands
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
-          { iconCssClass: 'fa fa-refresh', title: 'Rafraîchir les données', disabled: false, command: 'refresh-dataset', positionOrder: 54 }
+          { iconCssClass: 'fa fa-refresh', title: 'Rafraîchir les données', disabled: false, command: 'refresh-dataset', positionOrder: 56 }
         ]);
       });
 
@@ -414,13 +414,23 @@ describe('gridMenuExtension', () => {
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([]);
       });
 
+      it('should have the "export-excel" menu command when "enableExport" is set', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: true, enableExport: false, gridMenu: { hideExportCsvCommand: true, hideExportExcelCommand: false } } as unknown as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+        extension.register(); // calling 2x register to make sure it doesn't duplicate commands
+        expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
+          { iconCssClass: 'fa fa-file-excel-o text-success', title: 'Exporter vers Excel', disabled: false, command: 'export-excel', positionOrder: 54 }
+        ]);
+      });
+
       it('should have the "export-text-delimited" menu command when "enableExport" is set', () => {
         const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, gridMenu: { hideExportCsvCommand: true, hideExportExcelCommand: true } } as unknown as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         extension.register(); // calling 2x register to make sure it doesn't duplicate commands
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
-          { iconCssClass: 'fa fa-download', title: 'Exporter en format texte (délimité par tabulation)', disabled: false, command: 'export-text-delimited', positionOrder: 54 }
+          { iconCssClass: 'fa fa-download', title: 'Exporter en format texte (délimité par tabulation)', disabled: false, command: 'export-text-delimited', positionOrder: 55 }
         ]);
       });
 
@@ -473,7 +483,6 @@ describe('gridMenuExtension', () => {
         extension.register();
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
           { command: 'export-csv', disabled: false, iconCssClass: 'fa fa-download', positionOrder: 53, title: 'Exporter en format CSV' },
-          { command: 'export-excel', disabled: false, iconCssClass: 'fa fa-file-excel-o text-success', positionOrder: 53, title: 'Exporter vers Excel' },
           { command: 'help', disabled: false, iconCssClass: 'fa fa-question-circle', positionOrder: 99, title: 'Aide', titleKey: 'HELP' },
         ]);
       });
@@ -483,7 +492,6 @@ describe('gridMenuExtension', () => {
         extension.register();
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
           { command: 'export-csv', disabled: false, iconCssClass: 'fa fa-download', positionOrder: 53, title: 'Exporter en format CSV' },
-          { command: 'export-excel', disabled: false, iconCssClass: 'fa fa-file-excel-o text-success', positionOrder: 53, title: 'Exporter vers Excel' },
           { command: 'help', disabled: false, iconCssClass: 'fa fa-question-circle', positionOrder: 99, title: 'Aide', titleKey: 'HELP' },
         ]);
       });
@@ -684,7 +692,7 @@ describe('gridMenuExtension', () => {
   describe('without ngx-translate', () => {
     beforeEach(() => {
       translate = null;
-      extension = new GridMenuExtension({} as ExportService, {} as ExtensionUtility, {} as FilterService, { gridOptions: { enableTranslate: true } } as SharedService, {} as SortService, {} as ExcelExportService, translate);
+      extension = new GridMenuExtension({} as ExportService, {} as ExtensionUtility, {} as FilterService, { gridOptions: { enableTranslate: true } } as SharedService, {} as SortService, translate);
     });
 
     it('should throw an error if "enableTranslate" is set but the I18N Service is null', () => {

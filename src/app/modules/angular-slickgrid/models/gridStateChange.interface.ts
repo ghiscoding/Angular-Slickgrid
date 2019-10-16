@@ -1,4 +1,4 @@
-import { Column, CurrentFilter, CurrentSorter, GridState, GridStateType, Pagination } from './../models/index';
+import { Column, CurrentFilter, CurrentSorter, GridState, GridStateType, Pagination } from './index';
 
 export interface GridStateChange {
   /** Changes that were triggered */

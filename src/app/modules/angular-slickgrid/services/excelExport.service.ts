@@ -1,28 +1,31 @@
+import { ExcelWorkbook } from './../models/excelWorkbook.interface';
+import { ExcelStylesheet } from './../models/excelStylesheet.interface';
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { TextEncoder } from 'text-encoding-utf-8';
+import * as ExcelBuilder from 'excel-builder-webpack';
 import { Subject } from 'rxjs';
+import * as moment_ from 'moment-mini';
+const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+
 
 import {
   Column,
+  ExcelCellFormat,
   ExcelExportOption,
+  ExcelMetadata,
   FileType,
   Formatter,
   GridOption,
+  KeyTitlePair,
   Locale,
   FieldType,
+  ExcelWorksheet,
 } from '../models/index';
 import { Constants } from '../constants';
-import { addWhiteSpaces, htmlEntityDecode, sanitizeHtmlToText, titleCase } from './utilities';
-import { ExportColumnHeader } from './export.service';
-import * as ExcelBuilder from 'excel-builder-webpack';
+import { addWhiteSpaces, sanitizeHtmlToText, titleCase, mapMomentDateFormatWithFieldType } from './utilities';
 
 // using external non-typed js libraries
 declare let $: any;
-
-export interface ExcelMetadata {
-  style: any;
-}
 
 @Injectable()
 export class ExcelExportService {
@@ -30,13 +33,16 @@ export class ExcelExportService {
   private _dataView: any;
   private _grid: any;
   private _locales: Locale;
-  private _columnHeaders: ExportColumnHeader[];
-  private _groupedHeaders: ExportColumnHeader[];
+  private _columnHeaders: KeyTitlePair[];
+  private _groupedHeaders: KeyTitlePair[];
   private _hasGroupedItems = false;
   private _excelExportOptions: ExcelExportOption;
+  private _sheet: ExcelWorksheet;
+  private _stylesheet: ExcelStylesheet;
   private _stylesheetFormats: any;
+  private _workbook: ExcelWorkbook;
   onGridBeforeExportToExcel = new Subject<boolean>();
-  onGridAfterExportToExcel = new Subject<{ blob?: Blob; filename: string; format?: string; useUtf8WithBom?: boolean; }>();
+  onGridAfterExportToExcel = new Subject<{ blob?: Blob; filename: string; format?: string; }>();
 
   constructor(@Optional() private translate: TranslateService) { }
 
@@ -79,22 +85,24 @@ export class ExcelExportService {
   exportToExcel(options: ExcelExportOption): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.onGridBeforeExportToExcel.next(true);
-      this._excelExportOptions = $.extend(true, {}, this._gridOptions.exportOptions, options);
+      this._excelExportOptions = $.extend(true, {}, this._gridOptions.excelExportOptions, options);
       this._fileFormat = this._excelExportOptions.format || FileType.xlsx;
 
       // prepare the Excel Workbook & Sheet
-      const workbook = new ExcelBuilder.Workbook();
-      const sheet = new ExcelBuilder.Worksheet({ name: this._excelExportOptions.sheetName || 'Sheet1' });
+      this._workbook = new ExcelBuilder.Workbook();
+      this._sheet = new ExcelBuilder.Worksheet({ name: this._excelExportOptions.sheetName || 'Sheet1' });
 
       // add any Excel Format/Stylesheet to current Workbook
-      const stylesheet = workbook.getStyleSheet();
-      const boldFormatter = stylesheet.createFormat({ font: { bold: true } });
-      const numberFormatter = stylesheet.createFormat({ format: '0' });
-      const usdFormatter = stylesheet.createFormat({ format: '$#,##0.00' });
+      this._stylesheet = this._workbook.getStyleSheet();
+      const boldFormatter = this._stylesheet.createFormat({ font: { bold: true } });
+      const stringFormatter = this._stylesheet.createFormat({ format: '@' });
+      const numberFormatter = this._stylesheet.createFormat({ format: '0' });
+      const usdFormatter = this._stylesheet.createFormat({ format: '$#,##0.00' });
       this._stylesheetFormats = {
         boldFormatter,
         dollarFormatter: usdFormatter,
         numberFormatter,
+        stringFormatter,
       };
 
       // get the CSV output from the grid data
@@ -104,24 +112,33 @@ export class ExcelExportService {
       // wrap it into a setTimeout so that the EventAggregator has enough time to start a pre-process like showing a spinner
       setTimeout(async () => {
         try {
+          if (this._gridOptions && this._gridOptions.excelExportOptions && this._gridOptions.excelExportOptions.customExcelHeader) {
+            this._gridOptions.excelExportOptions.customExcelHeader(this._workbook, this._sheet);
+          }
 
-          sheet.setData(dataOutput);
-          workbook.addWorksheet(sheet);
+          const currentSheetData = this._sheet.data;
+          let finalOutput = currentSheetData;
+          if (Array.isArray(currentSheetData) && Array.isArray(dataOutput)) {
+            finalOutput = this._sheet.data.concat(dataOutput);
+          }
 
-          const result = await ExcelBuilder.Builder.createFile(workbook, { type: 'blob' });
+          this._sheet.setData(finalOutput);
+          this._workbook.addWorksheet(this._sheet);
+
+          const excelBlob = await ExcelBuilder.Builder.createFile(this._workbook, { type: 'blob' });
           const downloadOptions = {
             filename: `${this._excelExportOptions.filename}.${this._fileFormat}`,
-            useUtf8WithBom: this._excelExportOptions.hasOwnProperty('useUtf8WithBom') ? this._excelExportOptions.useUtf8WithBom : true
+            format: this._fileFormat
           };
 
           // start downloading but add the Blob property only on the start download not on the event itself
-          this.startDownloadFile({ ...downloadOptions, blob: result });
+          this.startDownloadFile({ ...downloadOptions, blob: excelBlob, data: this._sheet.data });
           this.onGridAfterExportToExcel.next(downloadOptions);
           resolve(true);
         } catch (error) {
           reject(error);
         }
-      }, 0);
+      });
     });
   }
 
@@ -131,7 +148,7 @@ export class ExcelExportService {
    * All other browsers will use plain javascript on client side to produce a file download.
    * @param options
    */
-  startDownloadFile(options: { filename: string, blob: Blob, useUtf8WithBom?: boolean }) {
+  startDownloadFile(options: { filename: string, blob: Blob, data: any[] }) {
     // IE(6-10) don't support javascript download and our service doesn't support either so throw an error, we have to make a round trip to the Web Server for exporting
     if (navigator.appName === 'Microsoft Internet Explorer') {
       throw new Error('Microsoft Internet Explorer 6 to 10 do not support javascript export to Excel. Please upgrade your browser.');
@@ -143,20 +160,22 @@ export class ExcelExportService {
     } else {
       // this trick will generate a temp <a /> tag
       // the code will then trigger a hidden click for it to start downloading
-      const link = document.createElement('a');
-      const csvUrl = URL.createObjectURL(options.blob);
+      const link = document && document.createElement('a');
+      const url = URL.createObjectURL(options.blob);
 
-      link.textContent = 'download';
-      link.href = csvUrl;
-      link.setAttribute('download', options.filename);
+      if (link && document) {
+        link.textContent = 'download';
+        link.href = url;
+        link.setAttribute('download', options.filename);
 
-      // set the visibility to hidden so there is no effect on your web-layout
-      link.style.visibility = 'hidden';
+        // set the visibility to hidden so there is no effect on your web-layout
+        link.style.visibility = 'hidden';
 
-      // this part will append the anchor tag, trigger a click (for download to start) and finally remove the tag once completed
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+        // this part will append the anchor tag, trigger a click (for download to start) and finally remove the tag once completed
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     }
   }
 
@@ -164,20 +183,14 @@ export class ExcelExportService {
   // Private functions
   // -----------------------
 
-  private getDataOutput(): string[][] | { value: any, metadata: ExcelMetadata }[][] {
+  private getDataOutput(): string[][] | ExcelCellFormat[][] {
     const columns = this._grid.getColumns() || [];
 
     // data variable which will hold all the fields data of a row
     const outputData = [];
 
-    // get all column headers
+    // get all column headers (it might include a "Group by" title at A1 cell)
     outputData.push(this.getColumnHeaderData(columns, { style: this._stylesheetFormats.boldFormatter.id }));
-
-    const groupColumnTitles = this.getGroupColumnTitles();
-    if (groupColumnTitles) {
-      outputData.push(groupColumnTitles);
-    }
-
 
     // Populate the rest of the Grid Data
     this.pushAllGridRowDataToArray(outputData, columns);
@@ -186,19 +199,25 @@ export class ExcelExportService {
   }
 
   /** Get all column headers and format them in Bold */
-  private getColumnHeaderData(columns: Column[], metadata: ExcelMetadata): string[] | { value: any, metadata: ExcelMetadata }[] {
+  private getColumnHeaderData(columns: Column[], metadata: ExcelMetadata): string[] | ExcelCellFormat[] {
+    let outputHeaderTitles: ExcelCellFormat[] = [];
+
     this._columnHeaders = this.getColumnHeaders(columns) || [];
     if (this._columnHeaders && Array.isArray(this._columnHeaders) && this._columnHeaders.length > 0) {
       // add the header row + add a new line at the end of the row
-      const outputHeaderTitles = this._columnHeaders.map((header) => {
-        return { value: header.title, metadata };
-      });
-      return outputHeaderTitles;
+      outputHeaderTitles = this._columnHeaders.map((header) => ({ value: header.title, metadata }));
     }
-    return [];
+
+    // do we have a Group by title?
+    const groupTitle = this.getGroupColumnTitle();
+    if (groupTitle) {
+      outputHeaderTitles.unshift({ value: groupTitle, metadata });
+    }
+
+    return outputHeaderTitles;
   }
 
-  private getGroupColumnTitles(): string[] | null {
+  private getGroupColumnTitle(): string | null {
     // Group By text, it could be set in the export options or from translation or if nothing is found then use the English constant text
     let groupByColumnHeader = this._excelExportOptions.groupingColumnHeaderTitle;
     if (!groupByColumnHeader && this._gridOptions.enableTranslate && this.translate && this.translate.instant) {
@@ -207,13 +226,12 @@ export class ExcelExportService {
       groupByColumnHeader = this._locales && this._locales.TEXT_GROUP_BY;
     }
 
-
     // get grouped column titles and if found, we will add a "Group by" column at the first column index
     // if it's a CSV format, we'll escape the text in double quotes
     const grouping = this._dataView.getGrouping();
     if (grouping && Array.isArray(grouping) && grouping.length > 0) {
       this._hasGroupedItems = true;
-      return [`"${groupByColumnHeader}"`];
+      return groupByColumnHeader;
     } else {
       this._hasGroupedItems = false;
     }
@@ -224,7 +242,7 @@ export class ExcelExportService {
    * Get all header titles and their keys, translate the title when required.
    * @param columns of the grid
    */
-  private getColumnHeaders(columns: Column[]): ExportColumnHeader[] {
+  private getColumnHeaders(columns: Column[]): KeyTitlePair[] {
     if (!columns || !Array.isArray(columns) || columns.length === 0) {
       return null;
     }
@@ -255,7 +273,7 @@ export class ExcelExportService {
   /**
    * Get all the grid row data and return that as an output string
    */
-  private pushAllGridRowDataToArray(originalDaraArray: string[][], columns: Column[]): string[][] | { value: any, metadata: ExcelMetadata }[][] {
+  private pushAllGridRowDataToArray(originalDaraArray: string[][], columns: Column[]): string[][] | ExcelCellFormat[][] {
     const lineCount = this._dataView.getLength();
 
     // loop through all the grid rows of data
@@ -290,7 +308,7 @@ export class ExcelExportService {
     for (let col = 0, ln = columns.length; col < ln; col++) {
       const columnDef = columns[col];
       const fieldId = columnDef.field || columnDef.id || '';
-      const fieldType = columnDef.type || FieldType.string;
+      const fieldType = columnDef.outputType || columnDef.type || FieldType.string;
 
       // skip excluded column
       if (columnDef.excludeFromExport) {
@@ -299,8 +317,7 @@ export class ExcelExportService {
 
       // if we are grouping and are on 1st column index, we need to skip this column since it will be used later by the grouping text:: Group by [columnX]
       if (this._hasGroupedItems && idx === 0) {
-        const emptyValue = this._fileFormat === FileType.csv ? `""` : '';
-        rowOutputStrings.push(emptyValue);
+        rowOutputStrings.push('');
       }
 
       // does the user want to evaluate current column Formatter?
@@ -316,7 +333,7 @@ export class ExcelExportService {
         fieldProperty = (props.length > 0) ? props[0] : fieldId;
       }
 
-      let itemData: string | { value: any; metadata: ExcelMetadata; } = '';
+      let itemData: ExcelCellFormat | string = '';
 
       if (itemObj && itemObj.hasOwnProperty(fieldProperty) && exportCustomFormatter !== undefined && exportCustomFormatter !== undefined) {
         const formattedData = exportCustomFormatter(row, col, itemObj[fieldProperty], columnDef, itemObj, this._grid);
@@ -349,10 +366,8 @@ export class ExcelExportService {
       }
 
       // use different Excel Stylesheet Format as per the Field Type
-      switch (fieldType) {
-        case FieldType.number:
-          itemData = { value: +itemData, metadata: { style: this._stylesheetFormats.numberFormatter.id } };
-          break;
+      if (!columnDef.exportWithFormatter) {
+        itemData = this.useCellFormatByFieldType(itemData as string, fieldType);
       }
 
       rowOutputStrings.push(itemData);
@@ -367,10 +382,14 @@ export class ExcelExportService {
    * @param itemObj
    */
   private readGroupedTitleRow(itemObj: any): string {
-    let groupName = sanitizeHtmlToText(itemObj.title);
+    const groupName = sanitizeHtmlToText(itemObj.title);
 
-    groupName = addWhiteSpaces(5 * itemObj.level) + groupName;
-
+    if (this._excelExportOptions && this._excelExportOptions.addGroupIndentation) {
+      const collapsedSymbol = this._excelExportOptions && this._excelExportOptions.groupCollapsedSymbol || '\u25B9';
+      const expandedSymbol = this._excelExportOptions && this._excelExportOptions.groupExpandedSymbol || '\u25BF';
+      const chevron = itemObj.collapsed ? collapsedSymbol : expandedSymbol;
+      return chevron + ' ' + addWhiteSpaces(5 * itemObj.level) + groupName;
+    }
     return groupName;
   }
 
@@ -405,5 +424,52 @@ export class ExcelExportService {
     });
 
     return outputStrings;
+  }
+
+  /** use different Excel Stylesheet Format as per the Field Type */
+  private useCellFormatByFieldType(data: string, fieldType: FieldType): ExcelCellFormat | string {
+    let outputData: ExcelCellFormat | string = data;
+    switch (fieldType) {
+      case FieldType.dateTime:
+      case FieldType.dateTimeIso:
+      case FieldType.dateTimeShortIso:
+      case FieldType.dateTimeIsoAmPm:
+      case FieldType.dateTimeIsoAM_PM:
+      case FieldType.dateEuro:
+      case FieldType.dateEuroShort:
+      case FieldType.dateTimeEuro:
+      case FieldType.dateTimeShortEuro:
+      case FieldType.dateTimeEuroAmPm:
+      case FieldType.dateTimeEuroAM_PM:
+      case FieldType.dateTimeEuroShort:
+      case FieldType.dateTimeEuroShortAmPm:
+      case FieldType.dateUs:
+      case FieldType.dateUsShort:
+      case FieldType.dateTimeUs:
+      case FieldType.dateTimeShortUs:
+      case FieldType.dateTimeUsAmPm:
+      case FieldType.dateTimeUsAM_PM:
+      case FieldType.dateTimeUsShort:
+      case FieldType.dateTimeUsShortAmPm:
+      case FieldType.dateUtc:
+      case FieldType.date:
+      case FieldType.dateIso:
+        outputData = data;
+        if (data) {
+          const defaultDateFormat = mapMomentDateFormatWithFieldType(fieldType);
+          const isDateValid = moment(data as string, defaultDateFormat, false).isValid();
+          const outputDate = (data && isDateValid) ? moment(data as string).format(defaultDateFormat) : data;
+          const dateFormatter = this._stylesheet.createFormat({ format: defaultDateFormat });
+          outputData = { value: outputDate, metadata: { style: dateFormatter.id } };
+        }
+        break;
+      case FieldType.number:
+        const val = isNaN(+data) ? null : data;
+        outputData = { value: val, metadata: { style: this._stylesheetFormats.numberFormatter.id } };
+        break;
+      default:
+        outputData = data;
+    }
+    return outputData;
   }
 }

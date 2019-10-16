@@ -20,7 +20,7 @@ import { Subscription } from 'rxjs';
 @Component({
   templateUrl: './grid-grouping.component.html'
 })
-export class GridGroupingComponent implements OnInit, OnDestroy {
+export class GridGroupingComponent implements OnInit {
   title = 'Example 14: Grouping';
   subTitle = `
   (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Grouping-&-Aggregators" target="_blank">Wiki docs</a>)
@@ -39,15 +39,8 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
   gridObj: any;
   dataviewObj: any;
   processing = false;
-  exportBeforeSub: Subscription;
-  exportAfterSub: Subscription;
 
   constructor() { }
-
-  ngOnDestroy() {
-    this.exportBeforeSub.unsubscribe();
-    this.exportAfterSub.unsubscribe();
-  }
 
   ngOnInit(): void {
     this.columnDefinitions = [
@@ -142,9 +135,13 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
         containerId: 'demo-container',
         sidePadding: 15
       },
+      enableExcelExport: true,
       enableFiltering: true,
       enableGrouping: true,
       exportOptions: {
+        sanitizeDataExport: true
+      },
+      excelExportOptions: {
         sanitizeDataExport: true
       },
       gridMenu: {
@@ -159,10 +156,6 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
     this.angularGrid = angularGrid;
     this.gridObj = angularGrid.slickGrid;
     this.dataviewObj = angularGrid.dataView;
-
-    // display a spinner while downloading
-    this.exportBeforeSub = this.angularGrid.exportService.onGridBeforeExportToFile.subscribe(() => this.processing = true);
-    this.exportAfterSub = this.angularGrid.exportService.onGridAfterExportToFile.subscribe(() => this.processing = false);
   }
 
   loadData(rowCount: number) {
@@ -199,6 +192,13 @@ export class GridGroupingComponent implements OnInit, OnDestroy {
 
   expandAllGroups() {
     this.dataviewObj.expandAllGroups();
+  }
+
+  exportToExcel() {
+    this.angularGrid.excelExportService.exportToExcel({
+      filename: 'Export',
+      format: FileType.xlsx
+    });
   }
 
   exportToCsv(type = 'csv') {

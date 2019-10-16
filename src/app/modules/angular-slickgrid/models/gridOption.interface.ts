@@ -21,7 +21,7 @@ import {
   Pagination,
   RowDetailView,
   RowMoveManager
-} from './../models/index';
+} from './index';
 
 export interface GridOption {
   /** CSS class name used on newly added row */

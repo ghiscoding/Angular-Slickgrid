@@ -1,4 +1,4 @@
-import { BackendService } from './../models';
+import { BackendService } from './index';
 import {
   ExcelExportService,
   ExportService,
@@ -38,8 +38,8 @@ export interface AngularGridInstance {
   /** @deprecated, use `extensionService` instead. Plugin and Control Service */
   pluginService: ExtensionService;
 
-  /** Export Service */
-  excelExportService: ExcelExportService;
+  /** Excel Export Service */
+  excelExportService?: ExcelExportService;
 
   /** Export Service */
   exportService: ExportService;

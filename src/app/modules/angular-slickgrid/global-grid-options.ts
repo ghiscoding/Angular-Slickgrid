@@ -44,13 +44,15 @@ export const GlobalGridOptions: GridOption = {
   enableTextSelectionOnCells: true,
   explicitInitialization: true,
   excelExportOptions: {
+    addGroupIndentation: true,
     exportWithFormatter: false,
     filename: 'export',
     format: FileType.xlsx,
     groupingColumnHeaderTitle: 'Group By',
+    groupCollapsedSymbol: '\u25B9',
+    groupExpandedSymbol: '\u25BF',
     groupingAggregatorRowText: '',
     sanitizeDataExport: false,
-    useUtf8WithBom: true
   },
   exportOptions: {
     delimiter: DelimiterType.comma,
@@ -67,7 +69,7 @@ export const GlobalGridOptions: GridOption = {
     hideClearAllFiltersCommand: false,
     hideClearAllSortingCommand: false,
     hideExportCsvCommand: false,
-    hideExportExcelCommand: true,
+    hideExportExcelCommand: false,
     hideExportTextDelimitedCommand: true,
     hideForceFitButton: false,
     hideRefreshDatasetCommand: false,

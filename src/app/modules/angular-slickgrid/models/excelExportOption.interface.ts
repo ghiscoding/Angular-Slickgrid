@@ -1,6 +1,11 @@
-import { FileType } from './index';
+import { ExcelWorksheet } from './excelWorksheet.interface';
+import { ExcelWorkbook } from './excelWorkbook.interface';
+import { FileType } from './fileType.enum';
 
 export interface ExcelExportOption {
+  /** Defaults to true, when grid is using Grouping, it will show indentation of the text with collapsed/expanded symbol as well */
+  addGroupIndentation?: boolean;
+
   /** Defaults to false, which leads to all Formatters of the grid being evaluated on export. You can also override a column by changing the propery on the column itself */
   exportWithFormatter?: boolean;
 
@@ -16,15 +21,18 @@ export interface ExcelExportOption {
   /** The default text to display in 1st column of the File Export, which will identify that the current row is a Grouping Aggregator */
   groupingAggregatorRowText?: string;
 
+  /** Symbol use to show that the group title is collapsed (you can use unicode like '\u25B9' or '\u25B7') */
+  groupCollapsedSymbol?: string;
+
+  /** Symbol use to show that the group title is expanded (you can use unicode like '\u25BF' or '\u25BD') */
+  groupExpandedSymbol?: string;
+
   /** Defaults to false, which leads to Sanitizing all data (striping out any HTML tags) when being evaluated on export. */
   sanitizeDataExport?: boolean;
 
   /** Defaults to "Sheet1", Excel Sheet Name */
   sheetName?: string;
 
-  /**
-   * If you want to use UTF-8 and unicode, in most case it's better to use it with BOM.
-   * This will basically add a special string  at the beginning of the file "ï»¿" which will tell the application that it is UTF-8 format.
-   */
-  useUtf8WithBom?: boolean;
+  /** Add a Custom Excel Header on first row of the Excel Sheet */
+  customExcelHeader?: (workbook: ExcelWorkbook, sheet: ExcelWorksheet) => void;
 }

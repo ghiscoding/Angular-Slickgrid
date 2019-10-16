@@ -1,9 +1,12 @@
-import { Column, GridOption } from '../models';
 import { Subject } from 'rxjs';
+
+import { ExcelExportService } from './excelExport.service';
+import { Column, GridOption } from '../models';
 
 export class SharedService {
   private _allColumns: Column[];
   private _dataView: any;
+  private _excelExportService: ExcelExportService;
   private _groupItemMetadataProvider: any;
   private _grid: any;
   private _gridOptions: GridOption;
@@ -34,6 +37,15 @@ export class SharedService {
   /** Setter for SlickGrid DataView object */
   set dataView(dataView: any) {
     this._dataView = dataView;
+  }
+
+  /** Getter for SlickGrid DataView object */
+  get excelExportService(): ExcelExportService {
+    return this._excelExportService;
+  }
+  /** Setter for SlickGrid _excelExportService object */
+  set excelExportService(service: ExcelExportService) {
+    this._excelExportService = service;
   }
 
   /** Getter for SlickGrid Grid object */

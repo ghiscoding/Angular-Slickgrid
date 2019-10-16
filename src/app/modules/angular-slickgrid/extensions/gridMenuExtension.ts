@@ -14,7 +14,6 @@ import {
   Locale,
   SlickEventHandler,
 } from '../models';
-import { ExcelExportService } from '../services/excelExport.service';
 import { ExportService } from '../services/export.service';
 import { ExtensionUtility } from './extensionUtility';
 import { FilterService } from '../services/filter.service';
@@ -40,7 +39,6 @@ export class GridMenuExtension implements Extension {
     private filterService: FilterService,
     private sharedService: SharedService,
     private sortService: SortService,
-    @Optional() private excelExportService: ExcelExportService,
     @Optional() private translate: TranslateService,
   ) {
     this._eventHandler = new Slick.EventHandler();
@@ -279,7 +277,7 @@ export class GridMenuExtension implements Extension {
               title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('REFRESH_DATASET') : this._locales && this._locales.TEXT_REFRESH_DATASET,
               disabled: false,
               command: commandName,
-              positionOrder: 54
+              positionOrder: 56
             }
           );
         }
@@ -339,7 +337,7 @@ export class GridMenuExtension implements Extension {
     }
 
     // show grid menu: Export to Excel
-    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportExcelCommand) {
+    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExcelExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportExcelCommand) {
       const commandName = 'export-excel';
       if (!originalCustomItems.find((item) => item.command === commandName)) {
         gridMenuCustomItems.push(
@@ -348,7 +346,7 @@ export class GridMenuExtension implements Extension {
             title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_EXCEL') : this._locales && this._locales.TEXT_EXPORT_TO_EXCEL,
             disabled: false,
             command: commandName,
-            positionOrder: 53
+            positionOrder: 54
           }
         );
       }
@@ -364,7 +362,7 @@ export class GridMenuExtension implements Extension {
             title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : this._locales && this._locales.TEXT_EXPORT_IN_TEXT_FORMAT,
             disabled: false,
             command: commandName,
-            positionOrder: 54
+            positionOrder: 55
           }
         );
       }
@@ -404,10 +402,12 @@ export class GridMenuExtension implements Extension {
           });
           break;
         case 'export-excel':
-          this.excelExportService.exportToExcel({
-            filename: 'export',
-            format: FileType.xlsx,
-          });
+          if (this.sharedService && this.sharedService.excelExportService && this.sharedService.excelExportService.exportToExcel) {
+            this.sharedService.excelExportService.exportToExcel({
+              filename: 'export',
+              format: FileType.xlsx,
+            });
+          }
           break;
         case 'export-text-delimited':
           this.exportService.exportToFile({
