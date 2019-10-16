@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { GridService, ExtensionService, FilterService, GridStateService, SortService } from '..';
 import { CellArgs, Column, OnEventArgs, GridOption } from './../../models';
-import { Subject } from 'rxjs/internal/Subject';
+
 
 declare var Slick: any;
 
