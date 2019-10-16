@@ -473,7 +473,7 @@ describe('ExcelExportService', () => {
           { id: 'lastName', field: 'lastName', width: 100, sanitizeDataExport: true, exportWithFormatter: true },
           { id: 'position', field: 'position', width: 100 },
           { id: 'startDate', field: 'startDate', type: FieldType.dateIso, width: 100, exportWithFormatter: false },
-          { id: 'endDate', field: 'endDate', width: 100, formatter: Formatters.dateTimeIsoAmPm, type: FieldType.dateUtc, exportWithFormatter: true, outputType: FieldType.dateTimeIsoAmPm },
+          { id: 'endDate', field: 'endDate', width: 100, formatter: Formatters.dateIso, type: FieldType.dateUtc, exportWithFormatter: true, outputType: FieldType.dateIso },
         ] as Column[];
 
         jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
@@ -482,8 +482,8 @@ describe('ExcelExportService', () => {
 
       it(`should Date exported correctly when Field Type is provided and we use "exportWithFormatter" set to True & False`, async () => {
         mockCollection = [
-          { id: 0, userId: '1E06', firstName: 'John', lastName: 'Z', position: 'SALES_REP', startDate: '2005-12-20T18:19:19.992+05:00', endDate: null },
-          { id: 1, userId: '1E09', firstName: 'Jane', lastName: 'Doe', position: 'HUMAN_RESOURCES', startDate: '2010-10-09T18:19:19.992+05:00', endDate: '2024-07-24T23:12:12.857+05:00' },
+          { id: 0, userId: '1E06', firstName: 'John', lastName: 'Z', position: 'SALES_REP', startDate: '2005-12-20T18:19:19.992Z', endDate: null },
+          { id: 1, userId: '1E09', firstName: 'Jane', lastName: 'Doe', position: 'HUMAN_RESOURCES', startDate: '2010-10-09T18:19:19.992Z', endDate: '2024-01-02T16:02:02.000Z' },
         ];
         jest.spyOn(dataViewStub, 'getLength').mockReturnValue(mockCollection.length);
         jest.spyOn(dataViewStub, 'getItem').mockReturnValue(null).mockReturnValueOnce(mockCollection[0]).mockReturnValueOnce(mockCollection[1]);
@@ -509,7 +509,7 @@ describe('ExcelExportService', () => {
               { metadata: { style: 1, }, value: 'EndDate', },
             ],
             ['1E06', 'John', 'Z', 'SALES_REP', { metadata: { style: 5, }, value: '2005-12-20' }, ''],
-            ['1E09', 'Jane', 'Doe', 'HUMAN_RESOURCES', { metadata: { style: 6, }, value: '2010-10-09' }, '2024-07-24 02:12:12 pm'],
+            ['1E09', 'Jane', 'Doe', 'HUMAN_RESOURCES', { metadata: { style: 6, }, value: '2010-10-09' }, '2024-01-02'],
           ]
         });
       });
