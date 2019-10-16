@@ -316,7 +316,7 @@ export class GridService {
 
     // if row selection (checkbox selector) is enabled, we'll select the row in the grid
     if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
-      this._grid.setSelectedRows([rowNumber]);
+      this.setSelectedRow(rowNumber);
     }
 
     // do we want to trigger an event after adding the item
@@ -362,7 +362,7 @@ export class GridService {
 
     // select the row in the grid
     if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
-      this._grid.setSelectedRows(rowNumbers);
+      this.setSelectedRows(rowNumbers);
     }
 
     // do we want to trigger an event after adding the item
@@ -452,7 +452,7 @@ export class GridService {
 
     // when user has row selection enabled, we should clear any selection to avoid confusion after a delete
     if (this._grid && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
-      this._grid.setSelectedRows([]);
+      this.setSelectedRows([]);
     }
 
     // delete the item from the dataView
@@ -549,7 +549,7 @@ export class GridService {
 
     // select the row in the grid
     if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
-      this._grid.setSelectedRows(gridRowNumbers);
+      this.setSelectedRows(gridRowNumbers);
     }
 
     // do we want to trigger an event after updating the item
@@ -595,7 +595,7 @@ export class GridService {
 
       // select the row in the grid
       if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
-        this._grid.setSelectedRows([rowNumber]);
+        this.setSelectedRow(rowNumber);
       }
 
       // do we want to trigger an event after updating the item
@@ -634,22 +634,20 @@ export class GridService {
     if (!Array.isArray(items)) {
       return [this.upsertItem(items, options)];
     }
-
     const upsertedRows: { added: number, updated: number }[] = [];
     items.forEach((item: any) => {
       upsertedRows.push(this.upsertItem(item, { ...options, highlightRow: false, resortGrid: false, selectRow: false, triggerEvent: false }));
     });
-
+    const rowNumbers = upsertedRows.map((upsertRow) => upsertRow.added !== undefined ? upsertRow.added : upsertRow.updated);
     // only highlight at the end, all at once
     // we have to do this because doing highlight 1 by 1 would only re-select the last highlighted row which is wrong behavior
     if (options.highlightRow) {
-      const rowNumbers = upsertedRows.map((upsertRow) => upsertRow.added !== undefined ? upsertRow.added : upsertRow.updated);
       this.highlightRow(rowNumbers);
     }
 
     // select the row in the grid
     if (options.selectRow && this._gridOptions && (this._gridOptions.enableCheckboxSelector || this._gridOptions.enableRowSelection)) {
-      this._grid.setSelectedRows(upsertedRows);
+      this.setSelectedRows(rowNumbers);
     }
 
     // do we want to trigger an event after updating the item
