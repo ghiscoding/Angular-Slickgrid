@@ -295,6 +295,21 @@ describe('Grid Service', () => {
       expect(rxSpy).toHaveBeenCalledWith(mockItem);
     });
 
+    it('should expect the service to call the "updateItemById" when calling "updateItem" and setting the "selecRow" flag and the grid option "enableRowSelection" is set', () => {
+      const mockItem = { id: 0, user: { firstName: 'John', lastName: 'Doe' } };
+      const getRowIdSpy = jest.spyOn(dataviewStub, 'getRowById').mockReturnValue(mockItem.id);
+      const getRowIndexSpy = jest.spyOn(dataviewStub, 'getIdxById').mockReturnValue(mockItem.id);
+      const serviceHighlightSpy = jest.spyOn(service, 'highlightRow');
+      const rxSpy = jest.spyOn(service.onItemUpdated, 'next');
+
+      service.updateItemById(0, mockItem, { selectRow: true });
+
+      expect(getRowIdSpy).toHaveBeenCalledWith(0);
+      expect(getRowIndexSpy).toHaveBeenCalledWith(0);
+      expect(serviceHighlightSpy).toHaveBeenCalledWith(0);
+      expect(rxSpy).toHaveBeenCalledWith(mockItem);
+    });
+
     it('should expect the service to call the "updateItemById" multiple times when calling "updateItems" with an array of items', () => {
       const mockItems = [{ id: 0, user: { firstName: 'John', lastName: 'Doe' } }, { id: 5, user: { firstName: 'Jane', lastName: 'Doe' } }];
       const getRowIdSpy = jest.spyOn(dataviewStub, 'getRowById').mockReturnValue(0).mockReturnValueOnce(0).mockReturnValueOnce(1);
@@ -404,6 +419,22 @@ describe('Grid Service', () => {
       expect(addSpy).toHaveBeenCalledTimes(1);
       expect(addSpy).toHaveBeenCalledWith(0, mockItem);
       expect(scrollSpy).toHaveBeenCalledWith(0);
+      expect(rxSpy).toHaveBeenCalledWith(mockItem);
+    });
+
+    it('should expect the row to be selected when calling "addItem" with an item when setting the "selecRow" flag and the grid option "enableRowSelection" is set', () => {
+      const mockItem = { id: 0, user: { firstName: 'John', lastName: 'Doe' } };
+      jest.spyOn(dataviewStub, 'getRowById').mockReturnValue(0);
+      jest.spyOn(gridStub, 'getOptions').mockReturnValue({ enableAutoResize: true, enableRowSelection: true } as GridOption);
+      const addSpy = jest.spyOn(dataviewStub, 'insertItem');
+      const selectSpy = jest.spyOn(gridStub, 'setSelectedRows');
+      const rxSpy = jest.spyOn(service.onItemAdded, 'next');
+
+      service.addItem(mockItem, { selectRow: true });
+
+      expect(addSpy).toHaveBeenCalledTimes(1);
+      expect(addSpy).toHaveBeenCalledWith(0, mockItem);
+      expect(selectSpy).toHaveBeenCalledWith([0]);
       expect(rxSpy).toHaveBeenCalledWith(mockItem);
     });
 
@@ -527,7 +558,7 @@ describe('Grid Service', () => {
     });
 
     it('should expect the row to be selected when calling "addItems" with an item wich is not an array when setting the "selecRow" flag and the grid option "enableRowSelection" is set', () => {
-      const mockItem = {id: 0, user: {firstName: 'John', lastName: 'Doe'}};
+      const mockItem = { id: 0, user: { firstName: 'John', lastName: 'Doe' } };
       jest.spyOn(dataviewStub, 'getRowById').mockReturnValue(0);
       jest.spyOn(gridStub, 'getOptions').mockReturnValue({
         enableRowSelection: true,
@@ -537,7 +568,7 @@ describe('Grid Service', () => {
       const selectSpy = jest.spyOn(service, 'setSelectedRow');
       const rxSpy = jest.spyOn(service.onItemAdded, 'next');
 
-      service.addItems(mockItem, {selectRow: true});
+      service.addItems(mockItem, { selectRow: true });
 
       expect(addSpy).toHaveBeenCalledTimes(1);
       expect(addSpy).toHaveBeenCalledWith(0, mockItem);
