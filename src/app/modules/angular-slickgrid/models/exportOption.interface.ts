@@ -13,7 +13,7 @@ export interface ExportOption {
   /** filename (without extension) */
   filename?: string;
 
-  /** file type format, typically csv or txt (this will provide the extension) */
+  /** file type format, .csv/.txt (this will provide the extension) */
   format?: FileType;
 
   /** The column header title (at A0 in Excel) of the Group by. If nothing is provided it will use "Group By" (which is a translated value of GROUP_BY i18n) */

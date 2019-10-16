@@ -1,5 +1,6 @@
-import { Column, GridOption } from '../models';
 import { Subject } from 'rxjs';
+
+import { Column, GridOption } from '../models';
 
 export class SharedService {
   private _allColumns: Column[];

@@ -1,6 +1,7 @@
 export * from './angularUtil.service';
 export * from './backend-utilities';
 export * from './collection.service';
+export * from './excelExport.service';
 export * from './export.service';
 export * from './extension.service';
 export * from './filter.service';

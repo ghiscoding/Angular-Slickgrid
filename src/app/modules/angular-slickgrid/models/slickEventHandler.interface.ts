@@ -1,4 +1,4 @@
-import { SlickEvent } from '..';
+import { SlickEvent } from './index';
 
 export interface SlickEventHandler {
   /** Subscribe to a SlickGrid Event and execute its handler callback */

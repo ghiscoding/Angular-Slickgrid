@@ -122,7 +122,7 @@ export class GridClientSideComponent implements OnInit {
         filterable: true, filter: { model: Filters.compoundInputNumber }
       },
       {
-        id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true,
+        id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: false,
         type: FieldType.date, filterable: true, filter: { model: Filters.compoundDate }
       },
       {
@@ -175,6 +175,7 @@ export class GridClientSideComponent implements OnInit {
         containerId: 'demo-container',
         sidePadding: 15
       },
+      enableExcelExport: true,
       enableExcelCopyBuffer: true,
       enableFiltering: true,
       // enableFilterTrimWhiteSpace: true,
@@ -235,7 +236,6 @@ export class GridClientSideComponent implements OnInit {
         }
       });
     }
-
     return tempDataset;
   }
 

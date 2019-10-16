@@ -1,54 +1,59 @@
 <div class="container-fluid">
-    <h2>{{title}}</h2>
-    <div class="subtitle" [innerHTML]="subTitle"></div>
-    <div class="row col-sm-12">
-        <button class="btn btn-default btn-xs" (click)="loadData(500)">
-            500 rows
-        </button>
-        <button class="btn btn-default btn-xs" (click)="loadData(50000)">
-            50k rows
-        </button>
-        <button class="btn btn-default btn-xs" (click)="clearGrouping()">
-          <i class="fa fa-times"></i> Clear grouping
-        </button>
-        <button class="btn btn-default btn-xs" (click)="collapseAllGroups()">
-          <i class="fa fa-compress"></i> Collapse all groups
-        </button>
-        <button class="btn btn-default btn-xs" (click)="expandAllGroups()">
-          <i class="fa fa-expand"></i> Expand all groups
-        </button>
-        <button class="btn btn-default btn-xs" (click)="exportToCsv('csv')">
-            <i class="fa fa-download"></i> Export to CSV
-        </button>
-    </div>
-    <hr/>
-    <div class="row col-sm-12">
-        <button class="btn btn-default btn-xs" (click)="groupByDuration()">
-            Group by duration &amp; sort groups by value
-        </button>
-        <button class="btn btn-default btn-xs" (click)="groupByDurationOrderByCount(false)">
-            Group by duration &amp; sort groups by count
-        </button>
-    </div>
-    <div class="row col-sm-12">
-        <button class="btn btn-default btn-xs" (click)="groupByDurationOrderByCount(true)">
-            Group by duration &amp; sort groups by count, aggregate collapsed
-        </button>
-        <button class="btn btn-default btn-xs" (click)="groupByDurationEffortDriven()">
-            Group by duration then effort-driven
-        </button>
-        <button class="btn btn-default btn-xs" (click)="groupByDurationEffortDrivenPercent()">
-            Group by duration then effort-driven then percent.
-        </button>
-        <span [hidden]="!processing">
-            <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
-        </span>
-    </div>
+  <h2>{{title}}</h2>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
+  <div class="row col-sm-12">
+    <button class="btn btn-default btn-xs" (click)="loadData(500)">
+      500 rows
+    </button>
+    <button class="btn btn-default btn-xs" (click)="loadData(50000)">
+      50k rows
+    </button>
+    <button class="btn btn-default btn-xs" (click)="clearGrouping()">
+      <i class="fa fa-times"></i> Clear grouping
+    </button>
+    <button class="btn btn-default btn-xs" (click)="collapseAllGroups()">
+      <i class="fa fa-compress"></i> Collapse all groups
+    </button>
+    <button class="btn btn-default btn-xs" (click)="expandAllGroups()">
+      <i class="fa fa-expand"></i> Expand all groups
+    </button>
+    <button class="btn btn-default btn-xs" (click)="exportToCsv('csv')">
+      <i class="fa fa-download"></i> Export to CSV
+    </button>
+    <button class="btn btn-default btn-xs" (click)="exportToExcel()">
+      <i class="fa fa-file-excel-o text-success"></i> Export to Excel
+    </button>
+  </div>
+  <hr />
+  <div class="row col-sm-12">
+    <button class="btn btn-default btn-xs" (click)="groupByDuration()">
+      Group by duration &amp; sort groups by value
+    </button>
+    <button class="btn btn-default btn-xs" (click)="groupByDurationOrderByCount(false)">
+      Group by duration &amp; sort groups by count
+    </button>
+  </div>
+  <div class="row col-sm-12">
+    <button class="btn btn-default btn-xs" (click)="groupByDurationOrderByCount(true)">
+      Group by duration &amp; sort groups by count, aggregate collapsed
+    </button>
+    <button class="btn btn-default btn-xs" (click)="groupByDurationEffortDriven()">
+      Group by duration then effort-driven
+    </button>
+    <button class="btn btn-default btn-xs" (click)="groupByDurationEffortDrivenPercent()">
+      Group by duration then effort-driven then percent.
+    </button>
+    <span [hidden]="!processing">
+      <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
+    </span>
+  </div>
 
-    <angular-slickgrid gridId="grid2"
-        [dataset]="dataset"
-        [columnDefinitions]="columnDefinitions"
-        [gridOptions]="gridOptions"
-        (onAngularGridCreated)="angularGridReady($event)">
-    </angular-slickgrid>
+  <angular-slickgrid gridId="grid2"
+                     [dataset]="dataset"
+                     [columnDefinitions]="columnDefinitions"
+                     [gridOptions]="gridOptions"
+                     (onGridBeforeExportToFile)="processing = true"
+                     (onGridAfterExportToFile)="processing = false"
+                     (onAngularGridCreated)="angularGridReady($event)">
+  </angular-slickgrid>
 </div>

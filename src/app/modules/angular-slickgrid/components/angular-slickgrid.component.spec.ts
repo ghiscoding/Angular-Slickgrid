@@ -10,6 +10,7 @@ import { SlickPaginationComponent } from './slick-pagination.component';
 import { CollectionService } from '../services/collection.service';
 import {
   AngularUtilService,
+  ExcelExportService,
   ExportService,
   ExtensionService,
   FilterService,
@@ -74,6 +75,7 @@ describe('App Component', () => {
       providers: [
         AngularUtilService,
         CollectionService,
+        ExcelExportService,
         ExportService,
         ExtensionService,
         ExtensionUtility,

@@ -81,6 +81,7 @@
     "@ngx-translate/http-loader": "^4.0.0",
     "core-js": "^2.6.1",
     "dompurify": "^1.0.9",
+    "excel-builder-webpack": "^1.0.3",
     "flatpickr": ">=4.5.0",
     "font-awesome": "^4.7.0",
     "jquery": ">=3.2.1",

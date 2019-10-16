@@ -1,17 +1,23 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
+
 import { GridOption } from '../../models/gridOption.interface';
 import { GridMenuExtension } from '../gridMenuExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
 import { Column, DelimiterType, FileType } from '../../models';
-import { ExportService, FilterService, SortService } from '../../services';
+import { ExcelExportService, ExportService, FilterService, SortService } from '../../services';
 
 declare var Slick: any;
 
 const gridId = 'grid1';
 const gridUid = 'slickgrid_124343';
 const containerId = 'demo-container';
+
+const excelExportServiceStub = {
+  exportToExcel: jest.fn(),
+} as unknown as ExcelExportService;
+
 const exportServiceStub = {
   exportToFile: jest.fn(),
 } as unknown as ExportService;
@@ -113,6 +119,7 @@ describe('gridMenuExtension', () => {
           GridMenuExtension,
           ExtensionUtility,
           SharedService,
+          { provide: ExcelExportService, useValue: excelExportServiceStub },
           { provide: ExportService, useValue: exportServiceStub },
           { provide: FilterService, useValue: filterServiceStub },
           { provide: SortService, useValue: sortServiceStub },
@@ -127,6 +134,7 @@ describe('gridMenuExtension', () => {
         CLEAR_ALL_FILTERS: 'Supprimer tous les filtres',
         CLEAR_ALL_SORTING: 'Supprimer tous les tris',
         EXPORT_TO_CSV: 'Exporter en format CSV',
+        EXPORT_TO_EXCEL: 'Exporter vers Excel',
         EXPORT_TO_TAB_DELIMITED: 'Exporter en format texte (délimité par tabulation)',
         HELP: 'Aide',
         COMMANDS: 'Commandes',
@@ -327,7 +335,7 @@ describe('gridMenuExtension', () => {
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
           { iconCssClass: 'fa fa-filter text-danger', title: 'Supprimer tous les filtres', disabled: false, command: 'clear-filter', positionOrder: 50 },
           { iconCssClass: 'fa fa-random', title: 'Basculer la ligne des filtres', disabled: false, command: 'toggle-filter', positionOrder: 52 },
-          { iconCssClass: 'fa fa-refresh', title: 'Rafraîchir les données', disabled: false, command: 'refresh-dataset', positionOrder: 54 }
+          { iconCssClass: 'fa fa-refresh', title: 'Rafraîchir les données', disabled: false, command: 'refresh-dataset', positionOrder: 56 }
         ]);
       });
 
@@ -357,7 +365,7 @@ describe('gridMenuExtension', () => {
         extension.register();
         extension.register(); // calling 2x register to make sure it doesn't duplicate commands
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
-          { iconCssClass: 'fa fa-refresh', title: 'Rafraîchir les données', disabled: false, command: 'refresh-dataset', positionOrder: 54 }
+          { iconCssClass: 'fa fa-refresh', title: 'Rafraîchir les données', disabled: false, command: 'refresh-dataset', positionOrder: 56 }
         ]);
       });
 
@@ -396,7 +404,7 @@ describe('gridMenuExtension', () => {
       });
 
       it('should have the "export-csv" menu command when "enableExport" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, gridMenu: { hideExportTextDelimitedCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, gridMenu: { hideExportExcelCommand: true, hideExportTextDelimitedCommand: true } } as unknown as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         extension.register(); // calling 2x register to make sure it doesn't duplicate commands
@@ -406,24 +414,34 @@ describe('gridMenuExtension', () => {
       });
 
       it('should not have the "export-csv" menu command when "enableExport" and "hideExportCsvCommand" are set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, gridMenu: { hideExportCsvCommand: true, hideExportTextDelimitedCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, gridMenu: { hideExportExcelCommand: true, hideExportCsvCommand: true, hideExportTextDelimitedCommand: true } } as unknown as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([]);
       });
 
-      it('should have the "export-text-delimited" menu command when "enableExport" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, gridMenu: { hideExportCsvCommand: true } } as unknown as GridOption;
+      it('should have the "export-excel" menu command when "enableExport" is set', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: true, enableExport: false, gridMenu: { hideExportCsvCommand: true, hideExportExcelCommand: false } } as unknown as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         extension.register(); // calling 2x register to make sure it doesn't duplicate commands
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
-          { iconCssClass: 'fa fa-download', title: 'Exporter en format texte (délimité par tabulation)', disabled: false, command: 'export-text-delimited', positionOrder: 54 }
+          { iconCssClass: 'fa fa-file-excel-o text-success', title: 'Exporter vers Excel', disabled: false, command: 'export-excel', positionOrder: 54 }
+        ]);
+      });
+
+      it('should have the "export-text-delimited" menu command when "enableExport" is set', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, gridMenu: { hideExportCsvCommand: true, hideExportExcelCommand: true } } as unknown as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+        extension.register(); // calling 2x register to make sure it doesn't duplicate commands
+        expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
+          { iconCssClass: 'fa fa-download', title: 'Exporter en format texte (délimité par tabulation)', disabled: false, command: 'export-text-delimited', positionOrder: 55 }
         ]);
       });
 
       it('should not have the "export-text-delimited" menu command when "enableExport" and "hideExportCsvCommand" are set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, gridMenu: { hideExportCsvCommand: true, hideExportTextDelimitedCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, gridMenu: { hideExportExcelCommand: true, hideExportCsvCommand: true, hideExportTextDelimitedCommand: true } } as unknown as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([]);
@@ -446,6 +464,7 @@ describe('gridMenuExtension', () => {
           gridMenu: {
             customItems: customItemsMock,
             hideExportCsvCommand: false,
+            hideExportExcelCommand: false,
             hideExportTextDelimitedCommand: true,
             hideRefreshDatasetCommand: true,
             hideSyncResizeButton: true,
@@ -471,6 +490,7 @@ describe('gridMenuExtension', () => {
         extension.register();
         expect(SharedService.prototype.gridOptions.gridMenu.customItems).toEqual([
           { command: 'export-csv', disabled: false, iconCssClass: 'fa fa-download', positionOrder: 53, title: 'Exporter en format CSV' },
+          // { command: 'export-excel', disabled: false, iconCssClass: 'fa fa-file-excel-o text-success', positionOrder: 54, title: 'Exporter vers Excel' },
           { command: 'help', disabled: false, iconCssClass: 'fa fa-question-circle', positionOrder: 99, title: 'Aide', titleKey: 'HELP' },
         ]);
       });
@@ -543,6 +563,20 @@ describe('gridMenuExtension', () => {
         expect(onCommandSpy).toHaveBeenCalled();
         expect(sortSpy).toHaveBeenCalled();
         expect(refreshSpy).toHaveBeenCalled();
+      });
+
+      it('should call "exportToExcel" with CSV set when the command triggered is "export-csv"', () => {
+        const excelExportSpy = jest.spyOn(excelExportServiceStub, 'exportToExcel');
+        const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onCommand');
+
+        const instance = extension.register();
+        instance.onCommand.notify({ grid: gridStub, command: 'export-excel' }, new Slick.EventData(), gridStub);
+
+        expect(onCommandSpy).toHaveBeenCalled();
+        expect(excelExportSpy).toHaveBeenCalledWith({
+          filename: 'export',
+          format: FileType.xlsx,
+        });
       });
 
       it('should call "exportToFile" with CSV set when the command triggered is "export-csv"', () => {
@@ -680,7 +714,7 @@ describe('gridMenuExtension', () => {
   describe('without ngx-translate', () => {
     beforeEach(() => {
       translate = null;
-      extension = new GridMenuExtension({} as ExportService, {} as ExtensionUtility, {} as FilterService, { gridOptions: { enableTranslate: true } } as SharedService, {} as SortService, translate);
+      extension = new GridMenuExtension({} as ExcelExportService, {} as ExportService, {} as ExtensionUtility, {} as FilterService, { gridOptions: { enableTranslate: true } } as SharedService, {} as SortService, translate);
     });
 
     it('should throw an error if "enableTranslate" is set but the I18N Service is null', () => {

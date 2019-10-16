@@ -1,4 +1,4 @@
-import { SortDirection, SortDirectionString } from './../models/index';
+import { SortDirection, SortDirectionString } from './index';
 
 export interface GraphqlSortingOption {
   field: string;

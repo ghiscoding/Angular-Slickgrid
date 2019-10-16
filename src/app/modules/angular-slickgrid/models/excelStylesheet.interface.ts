@@ -1,0 +1,32 @@
+export interface ExcelStylesheet {
+  createFill: (instructions: any) => any;
+  createSimpleFormatter: (type: any) => any;
+  createFormat: (instructions: any) => any;
+  createNumberFormatter: (instructions: any) => any;
+  createDifferentialStyle: (instructions: any) => any;
+  createTableStyle: (instructions: any) => any;
+  createBorderFormatter: (border: any) => any;
+  exportCellFormatElement: (doc: any, instructions: any) => any;
+  exportAlignment: (doc: any, alignmentData: any) => any;
+  createFontStyle: (instructions: any) => any;
+  exportBorder: (doc: any, data: any[]) => any;
+  exportBorders: (doc: any) => any;
+  exportColor: (doc: any, color: any) => any;
+  exportFont: (doc: any, fd: any) => any;
+  exportFonts: (doc: any) => any;
+  exportFill: (doc: any, fd: any) => any;
+  exportFills: (doc: any) => any;
+  exportGradientFill: (doc: any, data: any[]) => any;
+  exportPatternFill: (doc: any, data: any[]) => any;
+  exportNumberFormatter: (doc: any, fd: any) => any;
+  exportNumberFormatters: (doc: any) => any;
+  exportCellStyles: (doc: any) => any;
+  exportDifferentialStyles: (doc: any) => any;
+  exportMasterCellFormats: (doc: any) => any;
+  exportMasterCellStyles: (doc: any) => any;
+  exportTableStyle: (doc: any, style: any) => any;
+  exportTableStyles: (doc: any) => any;
+  exportProtection: (doc: any, protectionData: any) => any;
+  exportDFX: (doc: any, style: any) => any;
+  toXML: () => any;
+}

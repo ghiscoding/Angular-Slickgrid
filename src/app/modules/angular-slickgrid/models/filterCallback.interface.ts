@@ -1,4 +1,4 @@
-import { Column, OperatorString, OperatorType, SearchTerm } from './../models/index';
+import { Column, OperatorString, OperatorType, SearchTerm } from './index';
 
 export interface FilterCallbackArg {
   /** Was the last event a Clear Filter that was triggered? */

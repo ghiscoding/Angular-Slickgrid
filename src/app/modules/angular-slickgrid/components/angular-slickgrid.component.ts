@@ -29,10 +29,11 @@ import {
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
-import { isObservable, Observable, Subscription } from 'rxjs';
+import { isObservable, Observable, Subscription, Subject } from 'rxjs';
 
 // Services
 import { AngularUtilService } from '../services/angularUtil.service';
+import { ExcelExportService } from '../services/excelExport.service';
 import { ExportService } from './../services/export.service';
 import { ExtensionService } from '../services/extension.service';
 import { ExtensionUtility } from '../extensions/extensionUtility';
@@ -78,6 +79,7 @@ const slickgridEventPrefix = 'sg';
     CheckboxSelectorExtension,
     ColumnPickerExtension,
     DraggableGroupingExtension,
+    ExcelExportService,
     ExtensionService,
     ExportService,
     ExtensionUtility,
@@ -131,6 +133,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   @Output() onBeforeGridDestroy = new EventEmitter<any>();
   @Output() onAfterGridDestroyed = new EventEmitter<boolean>();
   @Output() onGridStateChanged = new EventEmitter<GridStateChange>();
+  @Output() onGridBeforeExportToFile = this.exportService.onGridBeforeExportToFile;
+  @Output() onGridAfterExportToFile = this.exportService.onGridAfterExportToFile;
+  @Output() onGridBeforeExportToExcel = new Subject<boolean>();
+  @Output() onGridAfterExportToExcel = new Subject<any>();
   @Input() customDataView: any;
   @Input() gridId: string;
   @Input() gridOptions: GridOption;
@@ -165,6 +171,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   constructor(
     private elm: ElementRef,
+    private excelExportService: ExcelExportService,
     private exportService: ExportService,
     private extensionService: ExtensionService,
     private extensionUtility: ExtensionUtility,
@@ -330,6 +337,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.exportService.init(this.grid, this.dataView);
     }
 
+    // if Excel Export is enabled, initialize the service with the necessary grid and other objects
+    if (this.gridOptions.enableExcelExport && this.sharedService) {
+      // create an instance of the ExcelExportService only when required (opt-in)
+      this.excelExportService = new ExcelExportService(this.translate);
+      this.onGridBeforeExportToExcel = this.excelExportService.onGridBeforeExportToExcel;
+      this.onGridAfterExportToExcel = this.excelExportService.onGridAfterExportToExcel;
+      this.excelExportService.init(this.grid, this.dataView);
+    }
+
     // once all hooks are in placed and the grid is initialized, we can emit an event
     this.onGridInitialized.emit(this.grid);
 
@@ -351,6 +367,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
       // return all available Services (non-singleton)
       backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
+      excelExportService: this.excelExportService,
       exportService: this.exportService,
       extensionService: this.extensionService,
       filterService: this.filterService,
