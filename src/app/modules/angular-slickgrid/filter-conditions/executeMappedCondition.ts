@@ -8,6 +8,7 @@ import { FieldType, FilterCondition, FilterConditionOption, OperatorType } from 
 import { mapMomentDateFormatWithFieldType } from './../services/utilities';
 import { testFilterCondition } from './filterUtilities';
 import * as moment_ from 'moment-mini';
+
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
 export const executeMappedCondition: FilterCondition = (options: FilterConditionOption) => {
@@ -48,6 +49,8 @@ export const executeMappedCondition: FilterCondition = (options: FilterCondition
     case FieldType.dateTimeUsShortAmPm:
     case FieldType.dateTimeUsShortAM_PM:
       return executeAssociatedDateCondition(options);
+    case FieldType.integer:
+    case FieldType.float:
     case FieldType.number:
       return numberFilterCondition(options);
     case FieldType.object:
