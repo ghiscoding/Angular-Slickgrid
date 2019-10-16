@@ -340,7 +340,7 @@ export class GridService {
     if (!Array.isArray(items)) {
       return [this.addItem(items, options)];
     } else {
-      items.forEach((item: any) => this.addItem(item, { ...options, highlightRow: false, resortGrid: false, triggerEvent: false }));
+      items.forEach((item: any) => this.addItem(item, { ...options, highlightRow: false, resortGrid: false, triggerEvent: false, selectRow: false }));
     }
 
     // do we want the item to be sorted in the grid, when set to False it will insert on first row (defaults to false)
