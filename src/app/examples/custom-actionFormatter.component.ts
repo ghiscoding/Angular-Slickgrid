@@ -24,5 +24,5 @@ export class CustomActionFormatterComponent {
   row: number;
   dataContext: any;
   dropdownId = 'myDrop';
-  dropDownToggleId = 'togleDrop';
+  dropDownToggleId = 'toggleDrop';
 }

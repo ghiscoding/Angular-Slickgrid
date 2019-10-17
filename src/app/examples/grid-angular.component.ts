@@ -25,7 +25,6 @@ declare var $: any;
 
 const NB_ITEMS = 100;
 
-
 @Component({
   templateUrl: './grid-angular.component.html',
   styleUrls: ['./grid-angular.component.scss'],
