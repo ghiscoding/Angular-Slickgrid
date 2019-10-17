@@ -26,7 +26,6 @@ export class GridMenuComponent implements OnInit {
   gridOptions: GridOption;
   dataset: any[];
   selectedLanguage: string;
-  visibleColumns: Column[];
 
   constructor(private translate: TranslateService) {
     // always start with English for Cypress E2E tests to be consistent
@@ -59,8 +58,6 @@ export class GridMenuComponent implements OnInit {
         }
       }
     ];
-
-    this.visibleColumns = this.columnDefinitions;
 
     this.gridOptions = {
       columnPicker: {
