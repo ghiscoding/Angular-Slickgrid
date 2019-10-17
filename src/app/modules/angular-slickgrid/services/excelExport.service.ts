@@ -184,7 +184,7 @@ export class ExcelExportService {
   // -----------------------
 
   private getDataOutput(): string[][] | ExcelCellFormat[][] {
-    const columns = this._grid.getColumns() || [];
+    const columns = this._grid && this._grid.getColumns && this._grid.getColumns() || [];
 
     // data variable which will hold all the fields data of a row
     const outputData = [];
@@ -228,7 +228,7 @@ export class ExcelExportService {
 
     // get grouped column titles and if found, we will add a "Group by" column at the first column index
     // if it's a CSV format, we'll escape the text in double quotes
-    const grouping = this._dataView.getGrouping();
+    const grouping = this._dataView && this._dataView.getGrouping && this._dataView.getGrouping();
     if (grouping && Array.isArray(grouping) && grouping.length > 0) {
       this._hasGroupedItems = true;
       return groupByColumnHeader;
@@ -274,7 +274,7 @@ export class ExcelExportService {
    * Get all the grid row data and return that as an output string
    */
   private pushAllGridRowDataToArray(originalDaraArray: string[][], columns: Column[]): string[][] | ExcelCellFormat[][] {
-    const lineCount = this._dataView.getLength();
+    const lineCount = this._dataView && this._dataView.getLength && this._dataView.getLength();
 
     // loop through all the grid rows of data
     for (let rowNumber = 0; rowNumber < lineCount; rowNumber++) {
