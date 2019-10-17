@@ -1,7 +1,6 @@
 // Public classes.
 export * from './models/index';
 export * from './services/index';
-export * from './services/bsDropdown.service';
 export * from './aggregators/index';
 export * from './editors/index';
 export * from './extensions/index';
