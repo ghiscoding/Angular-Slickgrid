@@ -35,8 +35,8 @@ export const GlobalGridOptions: GridOption = {
   enableCellNavigation: false,
   enableColumnPicker: true,
   enableColumnReorder: true,
-  enableExcelExport: false,
-  enableExport: true, // CSV by default (could export to CSV)
+  enableExcelExport: true, // Excel Export is the new default,
+  enableExport: false, // CSV/Text with Tab Delimited
   enableGridMenu: true,
   enableHeaderMenu: true,
   enableMouseHoverHighlightRow: true,

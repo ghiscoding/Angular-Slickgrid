@@ -286,6 +286,13 @@ export class GridDraggableGroupingComponent implements OnInit {
     this.dataviewObj.expandAllGroups();
   }
 
+  exportToExcel() {
+    this.angularGrid.excelExportService.exportToExcel({
+      filename: 'Export',
+      format: FileType.xlsx
+    });
+  }
+  
   exportToCsv(type = 'csv') {
     this.angularGrid.exportService.exportToFile({
       delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
