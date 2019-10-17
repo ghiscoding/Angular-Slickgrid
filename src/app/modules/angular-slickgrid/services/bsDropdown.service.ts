@@ -28,83 +28,115 @@ declare var $: any;
 // Boostrap dropdown service
 @Injectable()
 export class BsDropDownService {
+  private _domContainerElement: any;
+  private _domElement: any;
+
   constructor(private angularUtilService: AngularUtilService) { }
 
-  render(dropdownParams: DropDownServiceParams) {
-    const { component, args, parent, offsetTop, offsetLeft, offsetDropupBottom } = dropdownParams;
+  get domElement() {
+    return this._domElement;
+  }
 
-    const cell = args.cell;
-    const row = args.row;
+  get domContainerElement() {
+    return this._domContainerElement;
+  }
 
-    // hide the dropdown we created as a formatter Component, we'll redisplay it later
-    const cellPos = $(`#myDrop-r${row}-c${cell}`).offset();
+  get gridViewport() {
+    return $('.slick-viewport');
+  }
 
-    const componentOutput = this.angularUtilService.createAngularComponent(component);
-    const componentInstance = componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance;
-
-    if (componentInstance) {
-      const myDropId = componentInstance.dropdownId || 'myDrop';
-      const dropDownToggleId = componentInstance.dropDownToggleId || 'dropdownMenu1';
-
-      // make sure to remove previous Action dropdown to avoid having multiple element of the same on top of each other
-      $('#' + myDropId).remove();
-
-      // assign the row data to the dropdown component instance
-      Object.assign(componentInstance, { parent, row: args.row, dataContext: args.grid.getDataItem(args.row) });
-
-      // use a delay to make sure Angular ran at least a full cycle and make sure it finished rendering the Component before using it
-      setTimeout(() => {
-        const elm = $(componentOutput.domElement);
-        const topPos = (cellPos && cellPos.top || 0) + 30 + (offsetTop || 0);
-        const leftPos = (cellPos && cellPos.left || 0) + (offsetLeft || 0);
-        elm.appendTo('body');
-        elm.css('position', 'absolute');
-        elm.css('top', topPos);
-        elm.css('left', leftPos);
-        $(`#${myDropId}`).addClass('open');
-        $(`#${dropDownToggleId}`).hide();
-
-        // check if it should drop Up or Down
-        const offset = 35;
-        const iElement = $('.dropdown-menu');
-        const iElementWrapper = iElement.parent();
-        const IElementWrapperOffset = iElementWrapper.offset() || {};
-        const iElementWrapperOffsetTop = IElementWrapperOffset.top;
-        const iElementHeight = iElement.height();
-        const windowHeight = $(window).height();
-        const shouldDropUp = (windowHeight - iElementHeight - offset) < iElementWrapperOffsetTop;
-        let menuMarginTop = '0px';
-        if (shouldDropUp) {
-          const offsetBottom = offsetDropupBottom || 0;
-          menuMarginTop = '-'.concat(`${iElementHeight + offset + offsetBottom + 5}`, 'px');
-        }
-        elm.css({ 'margin-top': menuMarginTop });
-
-        // set dropdown margin left according to the document width
-        const parentOffset = IElementWrapperOffset.left;
-        const leftMargin = parentOffset - $(document).width();
-        elm.css({ 'margin-left': (elm.width() + leftMargin + 60) + 'px' });
-
-        try {
-          $(`#${myDropId}`).dropdown('show'); // required for Bootstrap 4 only
-        } catch (e) {
-          // Bootstrap 3 wil throw an error since that method doesn't exist, we can safely disregard it
-        }
-
-        $(`#${myDropId}`).on('hidden.bs.dropdown', () => {
-          $(`#myDrop-r${row}-c${cell}`).show();
-        });
-
-        // hide dropdown menu on grid scroll
-        $('.slick-viewport').on('scroll', () => {
-          $(`#${myDropId}`).remove();
-        });
-
-        // hide on dropdown click
-        $(`#${myDropId}`).on('click', () => {
-          $(`#${myDropId}`).remove();
-        });
-      });
+  dispose() {
+    if (this._domElement && this._domElement.remove) {
+      this._domElement.remove();
     }
+  }
+
+  dropContainerShow() {
+    if (this._domContainerElement && this._domContainerElement.show) {
+      this._domContainerElement.show();
+    }
+  }
+
+  render(dropdownParams: DropDownServiceParams) {
+    return new Promise((resolve) => {
+      const { component, args, parent, offsetTop, offsetLeft, offsetDropupBottom } = dropdownParams;
+
+      const cell = args.cell;
+      const row = args.row;
+
+      this._domContainerElement = $(`#myDrop-r${row}-c${cell}`);
+
+      if (this._domContainerElement) {
+        // hide the dropdown we created as a formatter Component, we'll redisplay it later
+        const cellPos = this._domContainerElement.offset();
+
+        const componentOutput = this.angularUtilService.createAngularComponent(component);
+        const componentInstance = componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance;
+
+        if (componentInstance) {
+          const myDropId = componentInstance.dropdownId || 'myDrop';
+          const dropDownToggleId = componentInstance.dropDownToggleId || 'dropdownMenu1';
+          this._domElement = $(`#${myDropId}`);
+
+          if (this._domElement) {
+            // make sure to remove any previous Action dropdown elements, to avoid having multiple element of the same on top of each other
+            this.dispose();
+
+            // assign the row data to the dropdown component instance
+            Object.assign(componentInstance, { parent, row: args.row, dataContext: args.grid.getDataItem(args.row) });
+
+            // use a delay to make sure Angular ran at least a full cycle and make sure it finished rendering the Component before using it
+            setTimeout(() => {
+              // create a new dropdown element
+              this._domElement = $(componentOutput.domElement);
+              const topPos = (cellPos && cellPos.top || 0) + 30 + (offsetTop || 0);
+              const leftPos = (cellPos && cellPos.left || 0) + (offsetLeft || 0);
+              this._domElement.appendTo('body');
+              this._domElement.css('position', 'absolute');
+              this._domElement.css('top', topPos);
+              this._domElement.css('left', leftPos);
+              $(`#${myDropId}`).addClass('open');
+              $(`#${dropDownToggleId}`).hide();
+
+              // check if it should drop Up or Down
+              const offset = 35;
+              const iElement = $('.dropdown-menu');
+              const iElementWrapper = iElement.parent();
+              const IElementWrapperOffset = iElementWrapper.offset() || {};
+              const iElementWrapperOffsetTop = IElementWrapperOffset.top;
+              const iElementHeight = iElement.height();
+              const windowHeight = $(window).height();
+              const shouldDropUp = (windowHeight - iElementHeight - offset) < iElementWrapperOffsetTop;
+              let menuMarginTop = '0px';
+              if (shouldDropUp) {
+                const offsetBottom = offsetDropupBottom || 0;
+                menuMarginTop = '-'.concat(`${iElementHeight + offset + offsetBottom + 5}`, 'px');
+              }
+              this._domElement.css({ 'margin-top': menuMarginTop });
+
+              // set dropdown margin left according to the document width
+              const parentOffset = IElementWrapperOffset.left;
+              const leftMargin = parentOffset - $(document).width();
+              this._domElement.css({ 'margin-left': (this._domElement.width() + leftMargin + 60) + 'px' });
+
+              try {
+                this._domElement.dropdown('show'); // required for Bootstrap 4 only
+              } catch (e) {
+                // Bootstrap 3 wil throw an error since that method doesn't exist, we can safely disregard it
+              }
+
+              this._domElement.on('hidden.bs.dropdown', () => this.dropContainerShow());
+
+              // hide dropdown menu on grid scroll
+              this.gridViewport.on('scroll', () => this.dispose());
+
+              // hide on dropdown click
+              this._domElement.on('click', () => this.dispose());
+              resolve(true);
+            });
+          }
+        }
+      }
+    });
   }
 }

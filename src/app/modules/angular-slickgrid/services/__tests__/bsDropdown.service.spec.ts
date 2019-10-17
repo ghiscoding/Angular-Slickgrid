@@ -4,8 +4,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AngularUtilService } from '../angularUtil.service';
 import { BsDropDownService } from '../bsDropdown.service';
 
-const DOM_ELEMENT_ID = 'row-detail123';
-const DOM_PARENT_ID = 'parent-detail';
+const gridId = 'grid1';
+const gridUid = 'slickgrid_124343';
+const containerId = 'demo-container';
 
 const angularUtilServiceStub = {
   createAngularComponent: jest.fn(),
@@ -15,6 +16,16 @@ const angularUtilServiceStub = {
 const gridStub = {
   getDataItem: jest.fn(),
 };
+
+// define a <div> container to simulate the grid container
+const gridTemplate =
+  `<div id="${containerId}" style="height: 800px; width: 600px; overflow: hidden; display: block;">
+    <div id="slickGridContainer-${gridId}" class="gridPane" style="width: 100%;">
+    <div id="${gridId}" class="${gridUid}" style="width: 100%">
+      <div class="slick-viewport" style="height: 300px"></div>
+    </div>
+    </div>
+  </div>`;
 
 @Component({
   template: `<h4>Test Component...</h4>`
@@ -30,7 +41,7 @@ describe('bsdropdown-service', () => {
   beforeEach(() => {
     // define a <div> container to simulate a row detail DOM element
     div = document.createElement('div');
-    div.innerHTML = `<div id="${DOM_PARENT_ID}">parent text</div><div id="${DOM_ELEMENT_ID}">some text</div>`;
+    div.innerHTML = gridTemplate;
     document.body.appendChild(div);
 
     TestBed.configureTestingModule({
@@ -51,25 +62,85 @@ describe('bsdropdown-service', () => {
     });
 
     describe('render method', () => {
-      it('should show check is the dropdown is displayed after clic', (done) => {
-        const mockComponent = {
+      let mockComponent;
+
+      beforeEach(() => {
+        mockComponent = {
           domElement: div,
           componentRef: {
             instance: { dropdownId: 'myDropId2', dropDownToggleId: 'myToggleId2' }
           }
         };
+      });
+
+      it('should render the dropdown DOM element', async () => {
         const spy = jest.spyOn(angularUtilServiceStub, 'createAngularComponent').mockReturnValue(mockComponent);
 
-        service.render({
+        await service.render({
           component: TestComponent,
           args: { row: 0, cell: 0, grid: gridStub },
           parent: {}
         });
 
-        setTimeout(() => {
-          expect(spy).toHaveBeenCalledWith(TestComponent);
-          done();
+        expect(spy).toHaveBeenCalledWith(TestComponent);
+        expect(service.domElement).toBeTruthy();
+        expect(service.domContainerElement).toBeTruthy();
+      });
+
+      it('should remove the DOM element when scrolling the grid', async () => {
+        const compSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponent').mockReturnValue(mockComponent);
+        const disposeSpy = jest.spyOn(service, 'dispose');
+
+        await service.render({
+          component: TestComponent,
+          args: { row: 0, cell: 0, grid: gridStub },
+          parent: {}
         });
+
+        service.gridViewport.trigger('scroll');
+
+        expect(compSpy).toHaveBeenCalledWith(TestComponent);
+        expect(service.gridViewport).toBeTruthy();
+        expect(disposeSpy).toHaveBeenCalledTimes(2);
+        expect(service.domContainerElement).toBeTruthy();
+      });
+
+      it('should remove the DOM element after clicking on an item from the Action list', async () => {
+        const compSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponent').mockReturnValue(mockComponent);
+        const disposeSpy = jest.spyOn(service, 'dispose');
+
+        await service.render({
+          component: TestComponent,
+          args: { row: 0, cell: 0, grid: gridStub },
+          parent: {}
+        });
+
+        service.domElement.trigger('click');
+
+        expect(compSpy).toHaveBeenCalledWith(TestComponent);
+        expect(service.domElement).toBeTruthy();
+        expect(disposeSpy).toHaveBeenCalledTimes(2);
+        expect(service.domContainerElement).toBeTruthy();
+      });
+
+      it('should show the dropdown container DOM element after dropdown triggers an hiding event', async () => {
+        const compSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponent').mockReturnValue(mockComponent);
+        const disposeSpy = jest.spyOn(service, 'dispose');
+        const showSpy = jest.spyOn(service, 'dropContainerShow');
+
+        await service.render({
+          component: TestComponent,
+          args: { row: 0, cell: 0, grid: gridStub },
+          parent: {}
+        });
+
+        service.domElement.trigger('hidden.bs.dropdown');
+
+        expect(compSpy).toHaveBeenCalledWith(TestComponent);
+        expect(service.domElement).toBeTruthy();
+        expect(disposeSpy).toHaveBeenCalledTimes(1);
+        expect(showSpy).toHaveBeenCalled();
+        expect(service.domContainerElement).toBeTruthy();
       });
     });
   });
