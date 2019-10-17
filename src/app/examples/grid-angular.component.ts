@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
   AngularUtilService,
+  BsDropDownService,
   Column,
   Editors,
   FieldType,
@@ -10,7 +11,6 @@ import {
   Formatters,
   GridOption,
   OnEventArgs,
-  BsDropDownService,
 } from './../modules/angular-slickgrid';
 import { EditorNgSelectComponent } from './editor-ng-select.component';
 import { CustomActionFormatterComponent } from './custom-actionFormatter.component';
@@ -18,7 +18,6 @@ import { CustomAngularComponentEditor } from './custom-angularComponentEditor';
 import { CustomAngularComponentFilter } from './custom-angularComponentFilter';
 import { CustomTitleFormatterComponent } from './custom-titleFormatter.component';
 import { FilterNgSelectComponent } from './filter-ng-select.component';
-import { SharedService } from '../modules/angular-slickgrid/services/shared.service';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -73,7 +72,7 @@ export class GridAngularComponent implements OnInit {
     { id: '3', name: 'Paul' },
   ];
 
-  constructor(private angularUtilService: AngularUtilService, private translate: TranslateService, private bsDropdown : BsDropDownService, private sharedService : SharedService ) { }
+  constructor(private angularUtilService: AngularUtilService, private bsDropdown: BsDropDownService, private translate: TranslateService) { }
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -223,23 +222,22 @@ export class GridAngularComponent implements OnInit {
           model: Editors.date
         },
       },
-      { 
+      {
         id: 'action',
         name: 'Action',
         field: 'id',
         formatter: Formatters.bsDropdown,
-        params: { label : 'Action' },
-        onCellClick : (e: Event, args: OnEventArgs) => {
-          this.sharedService.grid = this.angularGrid;
-          this.bsDropdown.render(
-            {
-              sharedService : this.sharedService,
-              formatter: CustomActionFormatterComponent,
-              args,
-              parent : this,
-            }
-          )
-        }}
+        params: { label: 'Action' },
+        onCellClick: (e: Event, args: OnEventArgs) => {
+          this.bsDropdown.render({
+            component: CustomActionFormatterComponent,
+            args,
+            offsetLeft: 92,
+            offsetDropupBottom: 15,
+            parent: this, // provide this object to the child component so we can call a method from here if we wish
+          });
+        }
+      }
     ];
 
     this.gridOptions = {
@@ -360,5 +358,4 @@ export class GridAngularComponent implements OnInit {
     const item = this.angularGrid.dataView.getItem(rowNumber);
     this.angularGrid.gridService.deleteItemById(item.id);
   }
-
 }

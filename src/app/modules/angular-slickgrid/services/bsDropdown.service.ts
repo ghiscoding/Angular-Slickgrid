@@ -1,82 +1,99 @@
 
 import { Injectable } from '@angular/core';
 import { AngularUtilService } from './angularUtil.service';
-import { SharedService } from './shared.service';
-
 
 interface DropDownServiceParams {
-  formatter: any, // the custom action component that contains the dropdown
-  args: any, // help to get the data context
-  parent : any,
-  sharedService : SharedService
+  /** the custom action formatter component that contains the dropdown */
+  component: any;
+
+  /** help to get the data context */
+  args: any;
+
+  /** parent container */
+  parent: any;
+
+  /** Offset bottom when using a Drop Up, if we need to reposition the dropdown component */
+  offsetDropupBottom?: number;
+
+  /** Offset left if we need to reposition the dropdown component */
+  offsetLeft?: number;
+
+  /** Offset top if we need to reposition the dropdown component */
+  offsetTop?: number;
 }
 
-declare var $:any;
+// using external non-typed js libraries
+declare var $: any;
 
 // Boostrap dropdown service
 @Injectable()
 export class BsDropDownService {
+  constructor(private angularUtilService: AngularUtilService) { }
 
-  constructor(private angularUtilService: AngularUtilService) {}
+  render(dropdownParams: DropDownServiceParams) {
+    const { component, args, parent, offsetTop, offsetLeft, offsetDropupBottom } = dropdownParams;
 
-  render(Params: DropDownServiceParams) {
-    const { sharedService, formatter, args, parent} = Params;
-    // get dropdown ids
-    const dropDownComponent = new formatter();
-  
-    const myDropId = dropDownComponent.dropdownId || 'myDrop';
-    const dropDownTogleId = dropDownComponent.dropDownTogleId || 'dropdownMenu1';
-
-    $('#'+ myDropId).remove(); // make sure to remove previous Action dropdown, you don't want to have 100 after a 100 clicks...
     const cell = args.cell;
     const row = args.row;
 
-    // hide the dropdown we created as a Formatter, we'll redisplay it later
+    // hide the dropdown we created as a formatter Component, we'll redisplay it later
     const cellPos = $(`#myDrop-r${row}-c${cell}`).offset();
 
-    const componentOutput = this.angularUtilService.createAngularComponent(formatter);
+    const componentOutput = this.angularUtilService.createAngularComponent(component);
+    const componentInstance = componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance;
 
-    // pass "this" and the row number to the Component instance (CustomActionFormatter) so that we can call "parent.deleteCell(row)" with (click)
-    const metadata = sharedService.grid.gridService.getColumnFromEventArguments(args);
-    Object.assign(componentOutput.componentRef.instance, { parent, row: args.row, dataContext: metadata.dataContext });
+    if (componentInstance) {
+      const myDropId = componentInstance.dropdownId || 'myDrop';
+      const dropDownToggleId = componentInstance.dropDownToggleId || 'dropdownMenu1';
 
-    // use a delay to make sure Angular ran at least a full cycle and make sure it finished rendering the Component before using it
-    setTimeout(() => {
- 
-      const elm = $(componentOutput.domElement);
-      elm.appendTo('body');
-      elm.css('position', 'absolute');
-      elm.css('top', cellPos.top + 30);
-      elm.css('left', cellPos.left);
-      $(`#${myDropId}`).addClass('open');
-      $(`#${dropDownTogleId}`).hide();
-      // check if it should drop up or drop down
-      var offset = 35;
-      const iElement = $('.dropdown-menu');
-      const iElementWrapper = iElement.parent();
-      const iElementWrapperOffsetTop = iElementWrapper.offset().top;
-      const iElementHeight = iElement.height();
-      const windowHeight = $(window).height();
-      const shouldDropUp = (windowHeight - iElementHeight - offset) < iElementWrapperOffsetTop;
-      const menuMarginTop = shouldDropUp ? '-'.concat(`${iElementHeight + offset + 5}`, 'px') : '0px';
-      elm.css({ 'margin-top': menuMarginTop });
+      // make sure to remove previous Action dropdown to avoid having multiple element of the same on top of each other
+      $('#' + myDropId).remove();
 
-      // set dropdown margin left according to the document width
-      const parentOfset = iElementWrapper.offset().left;
-      const leftMargin = parentOfset - $(document).width();;
-      elm.css({'margin-left': (elm.width() + leftMargin + 60) + 'px' });
+      // assign the row data to the dropdown component instance
+      Object.assign(componentInstance, { parent, row: args.row, dataContext: args.grid.getDataItem(args.row) });
 
-      //
-      $(`#${myDropId}`).on('hidden.bs.dropdown', () => {
-        $(`#myDrop-r${row}-c${cell}`).show();
+      // use a delay to make sure Angular ran at least a full cycle and make sure it finished rendering the Component before using it
+      setTimeout(() => {
+        const elm = $(componentOutput.domElement);
+        const topPos = (cellPos && cellPos.top || 0) + 30 + (offsetTop || 0);
+        const leftPos = (cellPos && cellPos.left || 0) + (offsetLeft || 0);
+        elm.appendTo('body');
+        elm.css('position', 'absolute');
+        elm.css('top', topPos);
+        elm.css('left', leftPos);
+        $(`#${myDropId}`).addClass('open');
+        $(`#${dropDownToggleId}`).hide();
+
+        // check if it should drop Up or Down
+        const offset = 35;
+        const iElement = $('.dropdown-menu');
+        const iElementWrapper = iElement.parent();
+        const IElementWrapperOffset = iElementWrapper.offset() || {};
+        const iElementWrapperOffsetTop = IElementWrapperOffset.top;
+        const iElementHeight = iElement.height();
+        const windowHeight = $(window).height();
+        const shouldDropUp = (windowHeight - iElementHeight - offset) < iElementWrapperOffsetTop;
+        let menuMarginTop = '0px';
+        if (shouldDropUp) {
+          const offsetBottom = offsetDropupBottom || 0;
+          menuMarginTop = '-'.concat(`${iElementHeight + offset + offsetBottom + 5}`, 'px');
+        }
+        elm.css({ 'margin-top': menuMarginTop });
+
+        // set dropdown margin left according to the document width
+        const parentOffset = IElementWrapperOffset.left;
+        const leftMargin = parentOffset - $(document).width();
+        elm.css({ 'margin-left': (elm.width() + leftMargin + 60) + 'px' });
+
+        $(`#${myDropId}`).on('hidden.bs.dropdown', () => {
+          $(`#myDrop-r${row}-c${cell}`).show();
+        });
+
+        // hide dropdown menu on grid scroll
+        $('.slick-viewport').on('scroll', () => {
+          $(`#${myDropId}`).remove();
+        });
       });
-    
-      // hide dropdown menu on grid scroll
-      $(".slick-viewport").on( 'scroll', function(){
-        $(`#${myDropId}`).remove();
-     });
-
-    });
-
+    }
   }
 }

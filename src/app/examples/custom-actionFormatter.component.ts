@@ -1,10 +1,10 @@
-import { Component} from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   template: `
   <div id="{{dropdownId}}" class="dropdown" style="position:absolute; z-index:12000;">
     <a class="dropdown-toggle"
-       id="{{dropDownTogleId}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+       id="{{dropDownToggleId}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       Actions
       <span class="caret"></span>
     </a>
@@ -18,14 +18,11 @@ import { Component} from '@angular/core';
     </ul>
   </div>
   `
-
 })
-export class CustomActionFormatterComponent{
-
+export class CustomActionFormatterComponent {
   parent: any; // parent component context
   row: number;
-  dataContext : any
+  dataContext: any;
   dropdownId = 'myDrop';
-  dropDownTogleId = 'togleDrop';
-
+  dropDownToggleId = 'togleDrop';
 }
