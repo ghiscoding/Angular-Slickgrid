@@ -22,6 +22,7 @@ import { executeBackendCallback } from './backend-utilities';
 import { getDescendantProperty } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { FilterFactory } from '../filters/filterFactory';
+import { SharedService } from './shared.service';
 import { Subject } from 'rxjs';
 import * as isequal_ from 'lodash.isequal';
 const isequal = isequal_; // patch to fix rollup to work
@@ -47,7 +48,7 @@ export class FilterService {
   onFilterChanged = new Subject<CurrentFilter[]>();
   onFilterCleared = new Subject<boolean>();
 
-  constructor(private filterFactory: FilterFactory) {
+  constructor(private filterFactory: FilterFactory, private sharedService: SharedService) {
     this._eventHandler = new Slick.EventHandler();
     this._onSearchChange = new Slick.Event();
   }
@@ -238,10 +239,19 @@ export class FilterService {
     const dataView = args && args.dataView;
     for (const columnId of Object.keys(args.columnFilters)) {
       const columnFilter = args.columnFilters[columnId];
-      const columnIndex = args.grid.getColumnIndex(columnId);
-      const columnDef = args.grid.getColumns()[columnIndex];
+      let columnIndex = args.grid.getColumnIndex(columnId);
+      let columnDef = args.grid.getColumns()[columnIndex];
+
+      // it might be a hidden column, if so it won't be part of the getColumns (because it we hide a column via setColumns)
+      // when that happens we can try to get the column definition from all defined columns
+      if (!columnDef && this.sharedService && Array.isArray(this.sharedService.allColumns)) {
+        columnIndex = this.sharedService.allColumns.findIndex((col) => col.field === columnId);
+        columnDef = this.sharedService.allColumns[columnIndex];
+      }
+
+      // if we still don't have a column definition then we should return then row anyway (true)
       if (!columnDef) {
-        return false;
+        return true;
       }
 
       // Row Detail View plugin, if the row is padding we just get the value we're filtering on from it's parent
