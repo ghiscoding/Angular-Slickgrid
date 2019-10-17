@@ -85,12 +85,23 @@ export class BsDropDownService {
         const leftMargin = parentOffset - $(document).width();
         elm.css({ 'margin-left': (elm.width() + leftMargin + 60) + 'px' });
 
+        try {
+          $(`#${myDropId}`).dropdown('show'); // required for Bootstrap 4 only
+        } catch (e) {
+          // Bootstrap 3 wil throw an error since that method doesn't exist, we can safely disregard it
+        }
+
         $(`#${myDropId}`).on('hidden.bs.dropdown', () => {
           $(`#myDrop-r${row}-c${cell}`).show();
         });
 
         // hide dropdown menu on grid scroll
         $('.slick-viewport').on('scroll', () => {
+          $(`#${myDropId}`).remove();
+        });
+
+        // hide on dropdown click
+        $(`#${myDropId}`).on('click', () => {
           $(`#${myDropId}`).remove();
         });
       });
