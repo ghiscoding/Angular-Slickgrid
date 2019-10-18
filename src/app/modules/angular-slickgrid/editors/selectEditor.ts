@@ -322,7 +322,7 @@ export class SelectEditor implements Editor {
       newValue = state.split(',');
     }
 
-    // is the field a complex object, "address.streetNumber"
+    // is the field a complex object, "user.address.streetNumber"
     const isComplexObject = fieldName.indexOf('.') > 0;
 
     // validate the value before applying it (if not valid we'll set an empty string)
@@ -331,7 +331,10 @@ export class SelectEditor implements Editor {
 
     // set the new value to the item datacontext
     if (isComplexObject) {
-      setDeepValue(item, fieldName, newValue);
+      // when it's a complex object, user could override the object path (where the editable object is located)
+      // else we use the path provided in the Field Column Definition
+      const objectPath = this.columnEditor && this.columnEditor.complexObjectPath || fieldName;
+      setDeepValue(item, objectPath, newValue);
     } else {
       item[fieldName] = newValue;
     }
@@ -357,7 +360,12 @@ export class SelectEditor implements Editor {
     const isComplexObject = fieldName.indexOf('.') > 0;
 
     if (item && this.columnDef && (item.hasOwnProperty(fieldName) || isComplexObject)) {
-      const value = (isComplexObject) ? getDescendantProperty(item, fieldName) : item[fieldName];
+      // when it's a complex object, user could override the object path (where the editable object is located)
+      // else we use the path provided in the Field Column Definition
+      const objectPath = this.columnEditor && this.columnEditor.complexObjectPath || fieldName;
+      const currentValue = (isComplexObject) ? getDescendantProperty(item, objectPath) : item[fieldName];
+      const value = (isComplexObject && currentValue.hasOwnProperty(this.valueName)) ? currentValue[this.valueName] : currentValue;
+
       if (this.isMultipleSelect && Array.isArray(value)) {
         this.loadMultipleValues(value);
       } else {
@@ -383,7 +391,7 @@ export class SelectEditor implements Editor {
 
   loadSingleValue(currentValue: any) {
     // keep the default value in memory for references
-    this.originalValue = currentValue;
+    this.originalValue = typeof currentValue === 'number' ? `${currentValue}` : currentValue;
     this.$editorElm.val(currentValue);
 
     // make sure the prop exists first
