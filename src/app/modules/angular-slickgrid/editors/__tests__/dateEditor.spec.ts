@@ -187,19 +187,21 @@ describe('DateEditor', () => {
         mockItemData = { id: 1, startDate: '2001-01-02T11:02:02.000Z', isActive: true };
 
         editor = new DateEditor(editorArguments);
+        editor.loadValue(mockItemData);
         editor.focus();
         const editorInputElm = divContainer.querySelector<HTMLInputElement>('input.flatpickr');
-        editorInputElm.value = '2001-01-02T16:02:02.239Z';
+        editorInputElm.value = '2024-04-02T16:02:02.239Z';
         editorInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 13, bubbles: true, cancelable: true }));
 
         expect(editor.isValueChanged()).toBe(true);
       });
 
-      it('should return True when date in the picker is the same as the current date', () => {
+      it('should return False when date in the picker is the same as the current date', () => {
         mockItemData = { id: 1, startDate: '2001-01-02T11:02:02.000Z', isActive: true };
         mockColumn.internalColumnEditor.editorOptions = { allowInput: true }; // change to allow input value only for testing purposes
 
         editor = new DateEditor(editorArguments);
+        editor.loadValue(mockItemData);
         const editorInputElm = divContainer.querySelector<HTMLInputElement>('input.flatpickr-alt-input');
         editorInputElm.value = '2001-01-02T11:02:02.000Z';
         editorInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keydown', { keyCode: 13, bubbles: true, cancelable: true }));
@@ -307,6 +309,7 @@ describe('DateEditor', () => {
 
         editor = new DateEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue('2022-03-02T16:02:02.000+05:00');
         editor.save();
 
         expect(spy).toHaveBeenCalled();
@@ -319,6 +322,7 @@ describe('DateEditor', () => {
 
         editor = new DateEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue('2022-03-02T16:02:02.000+05:00');
         editor.save();
 
         expect(spy).toHaveBeenCalled();
