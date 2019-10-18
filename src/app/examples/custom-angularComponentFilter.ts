@@ -77,6 +77,10 @@ export class CustomAngularComponentFilter implements Filter {
       setTimeout(() => {
         const $headerElm = this.grid.getHeaderRowColumn(this.columnDef.id);
         $($headerElm).empty();
+        // don't forget to destroy here because of the columns hide reorder or grid reset
+        if (this.componentRef) {
+          this.destroy();
+        }
         const componentOuput = this.angularUtilService.createAngularComponentAppendToDom(this.columnFilter.params.component, $headerElm);
         this.componentRef = componentOuput.componentRef;
 
