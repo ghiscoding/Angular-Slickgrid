@@ -194,8 +194,8 @@ describe('SliderEditor', () => {
       mockColumn.internalColumnEditor.params = { hideSliderNumber: false };
       mockItemData = { id: 1, price: 32, isActive: true };
       editor = new SliderEditor(editorArguments);
-      editor.setValue(17);
       editor.loadValue(mockItemData);
+      editor.setValue(17);
 
       const editorElm = divContainer.querySelector('.slider-container.slider-editor');
       const editorNumberElm = divContainer.querySelector<HTMLInputElement>('.input-group-text');
@@ -209,8 +209,11 @@ describe('SliderEditor', () => {
 
     describe('isValueChanged method', () => {
       it('should return True when previously dispatched change event is a different slider input number', () => {
+        mockColumn.internalColumnEditor.params = { sliderStartValue: 5 };
+        mockItemData = { id: 1, price: 32, isActive: true };
         editor = new SliderEditor(editorArguments);
-        editor.setValue(17);
+        editor.loadValue(mockItemData);
+        editor.setValue(45);
 
         const editorElm = divContainer.querySelector<HTMLInputElement>('.slider-editor input.editor-price');
         editorElm.dispatchEvent(new CustomEvent('change'));
@@ -219,8 +222,9 @@ describe('SliderEditor', () => {
       });
 
       it('should return False when previously dispatched change event is the same as default (0) slider input number', () => {
+        mockItemData = { id: 1, price: 0, isActive: true };
         editor = new SliderEditor(editorArguments);
-        editor.setValue(0);
+        editor.loadValue(mockItemData);
 
         const editorElm = divContainer.querySelector<HTMLInputElement>('.slider-editor input.editor-price');
         editorElm.dispatchEvent(new CustomEvent('change'));
@@ -229,8 +233,9 @@ describe('SliderEditor', () => {
       });
 
       it('should return False when previously dispatched change event is the same as default (0) slider input number but provided as a string', () => {
+        mockItemData = { id: 1, price: '0', isActive: true };
         editor = new SliderEditor(editorArguments);
-        editor.setValue('0');
+        editor.loadValue(mockItemData);
 
         const editorElm = divContainer.querySelector<HTMLInputElement>('.slider-editor input.editor-price');
         editorElm.dispatchEvent(new CustomEvent('change'));
@@ -240,8 +245,9 @@ describe('SliderEditor', () => {
 
       it('should return False when previously dispatched change event is the same input number as "sliderStartValue" provided by the user', () => {
         mockColumn.internalColumnEditor.params = { sliderStartValue: 5 };
+        mockItemData = { id: 1, price: 5, isActive: true };
         editor = new SliderEditor(editorArguments);
-        editor.setValue(5);
+        editor.loadValue(mockItemData);
 
         const editorElm = divContainer.querySelector<HTMLInputElement>('.slider-editor input.editor-price');
         editorElm.dispatchEvent(new CustomEvent('change'));
@@ -364,6 +370,7 @@ describe('SliderEditor', () => {
 
         editor = new SliderEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue(35);
         editor.save();
 
         expect(spy).toHaveBeenCalled();
@@ -376,6 +383,7 @@ describe('SliderEditor', () => {
 
         editor = new SliderEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue(35);
         editor.save();
 
         expect(spy).toHaveBeenCalled();
@@ -400,6 +408,7 @@ describe('SliderEditor', () => {
 
         editor = new SliderEditor(editorArguments);
         editor.loadValue(mockItemData);
+        editor.setValue(35);
         const spySave = jest.spyOn(editor, 'save');
         const editorElm = editor.editorDomElement;
 
