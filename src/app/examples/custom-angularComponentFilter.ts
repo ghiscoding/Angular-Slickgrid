@@ -92,6 +92,9 @@ export class CustomAngularComponentFilter implements Filter {
           this.callback(undefined, { columnDef: this.columnDef, operator: this.operator, searchTerms: [item.id], shouldTriggerQuery: this._shouldTriggerQuery });
           // reset flag for next use
           this._shouldTriggerQuery = true;
+          if (this.columnDef && this.columnDef.filter) {
+            this.columnDef.filter.searchTerms = [item.id];
+          }
         });
       });
     }
@@ -104,6 +107,9 @@ export class CustomAngularComponentFilter implements Filter {
     this._shouldTriggerQuery = shouldTriggerQuery;
     if (this.componentRef && this.componentRef.instance && this.componentRef.instance.hasOwnProperty('selectedId')) {
       this.componentRef.instance.selectedId = 0;
+    }
+    if (this.columnDef && this.columnDef.filter) {
+      this.columnDef.filter.searchTerms = [];
     }
   }
 
