@@ -264,15 +264,27 @@ describe('SelectEditor', () => {
         expect(mockItemData).toEqual({ id: 1, gender: 'female', isActive: true });
       });
 
-      it('should apply the value to the gender property with a field having dot notation (complex object) that passes validation', () => {
+      it('should apply the value to the gender (last property) when field has a dot notation (complex object) that passes validation', () => {
         mockColumn.internalColumnEditor.validator = null;
-        mockColumn.field = 'part.gender';
-        mockItemData = { id: 1, part: { gender: 'male' }, isActive: true };
+        mockColumn.field = 'person.bio.gender';
+        mockItemData = { id: 1, person: { bio: { gender: 'male' } }, isActive: true };
 
         editor = new SelectEditor(editorArguments, true);
         editor.applyValue(mockItemData, 'female');
 
-        expect(mockItemData).toEqual({ id: 1, part: { gender: 'female' }, isActive: true });
+        expect(mockItemData).toEqual({ id: 1, person: { bio: { gender: 'female' } }, isActive: true });
+      });
+
+      it('should apply the value to the bio property (second last) when field has a dot notation (complex object) value provided is an object and it that passes validation', () => {
+        mockColumn.internalColumnEditor.validator = null;
+        mockColumn.internalColumnEditor.complexObjectPath = 'person.bio';
+        mockColumn.field = 'person.bio.gender';
+        mockItemData = { id: 1, person: { bio: { gender: 'male' } }, isActive: true };
+
+        editor = new SelectEditor(editorArguments, true);
+        editor.applyValue(mockItemData, { gender: 'female' });
+
+        expect(mockItemData).toEqual({ id: 1, person: { bio: { gender: 'female' } }, isActive: true });
       });
 
       it('should return item data with an empty string in its value when it fails the custom validation', () => {
@@ -344,10 +356,21 @@ describe('SelectEditor', () => {
         expect(output).toEqual([]);
       });
 
+      it('should return value as a string when using a dot (.) notation for complex object with a collection of string values', () => {
+        mockColumn.field = 'employee.gender';
+        mockColumn.internalColumnEditor.collection = ['male', 'female'];
+        mockItemData = { id: 1, employee: { id: 24, gender: 'male' }, isActive: true };
+
+        editor = new SelectEditor(editorArguments, true);
+        editor.loadValue(mockItemData);
+        const output = editor.serializeValue();
+
+        expect(output).toEqual(['male']);
+      });
+
       it('should return object value when using a dot (.) notation for complex object with a collection of option/label pair', () => {
         mockColumn.field = 'employee.gender';
-        mockItemData = { id: 1, employee: { gender: ['male', 'other'] }, isActive: true };
-
+        mockItemData = { id: 1, employee: { id: 24, gender: ['male', 'other'] }, isActive: true };
         editor = new SelectEditor(editorArguments, true);
         editor.loadValue(mockItemData);
         const output = editor.serializeValue();
@@ -355,16 +378,15 @@ describe('SelectEditor', () => {
         expect(output).toEqual([{ label: 'male', value: 'male' }, { label: 'other', value: 'other' }]);
       });
 
-      it('should return value as a string when using a dot (.) notation for complex object with a collection of string values', () => {
-        mockColumn.field = 'employee.gender';
-        mockColumn.internalColumnEditor.collection = ['male', 'female'];
-        mockItemData = { id: 1, employee: { gender: 'male' }, isActive: true };
-
+      it('should return object value when using a dot (.) notation and we override the object path using "complexObjectPath" to find correct values', () => {
+        mockColumn.field = 'employee.bio';
+        mockItemData = { id: 1, employee: { id: 24, bio: { gender: ['male', 'other'] } }, isActive: true };
+        mockColumn.internalColumnEditor.complexObjectPath = 'employee.bio.gender';
         editor = new SelectEditor(editorArguments, true);
         editor.loadValue(mockItemData);
         const output = editor.serializeValue();
 
-        expect(output).toEqual(['male']);
+        expect(output).toEqual([{ label: 'male', value: 'male' }, { label: 'other', value: 'other' }]);
       });
     });
 
