@@ -155,6 +155,16 @@ describe('ExportService', () => {
         jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
       });
 
+      it('should throw an error when trying call exportToExcel" without a grid and/or dataview object initialized', (done) => {
+        try {
+          service.init(null, null);
+          service.exportToFile(mockExportTxtOptions);
+        } catch (e) {
+          expect(e.toString()).toContain('[Angular-Slickgrid] it seems that the SlickGrid & DataView objects are not initialized did you forget to enable the grid option flag "enableExcelExport"?');
+          done();
+        }
+      });
+
       it('should trigger an event before exporting the file', () => {
         const spyOnBefore = jest.spyOn(service.onGridBeforeExportToFile, 'next');
 

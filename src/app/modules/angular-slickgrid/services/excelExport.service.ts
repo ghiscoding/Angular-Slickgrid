@@ -83,6 +83,10 @@ export class ExcelExportService {
    * Example: exportToExcel({ format: FileType.csv, delimiter: DelimiterType.comma })
    */
   exportToExcel(options: ExcelExportOption): Promise<boolean> {
+    if (!this._grid || !this._dataView) {
+      throw new Error('[Angular-Slickgrid] it seems that the SlickGrid & DataView objects are not initialized did you forget to enable the grid option flag "enableExcelExport"?');
+    }
+
     return new Promise((resolve, reject) => {
       this.onGridBeforeExportToExcel.next(true);
       this._excelExportOptions = $.extend(true, {}, this._gridOptions.excelExportOptions, options);
