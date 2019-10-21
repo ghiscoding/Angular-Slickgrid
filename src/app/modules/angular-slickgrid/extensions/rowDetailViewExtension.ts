@@ -204,6 +204,54 @@ export class RowDetailViewExtension implements Extension {
     return null;
   }
 
+  /** Redraw (re-render) all the expanded row detail View Components */
+  redrawAllViewComponents() {
+    this._views.forEach((compRef) => {
+      this.redrawViewComponent(compRef);
+    });
+  }
+
+  /** Render all the expanded row detail View Components */
+  renderAllViewComponents() {
+    this._views.forEach((view) => {
+      if (view && view.dataContext) {
+        this.renderViewModel(view.dataContext);
+      }
+    });
+  }
+
+  /** Redraw the necessary View Component */
+  redrawViewComponent(createdView: CreatedView) {
+    const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${createdView.id}`);
+    if (containerElements && containerElements.length) {
+      this.renderViewModel(createdView.dataContext);
+    }
+  }
+
+  /** Render (or rerender) the View Component (Row Detail) */
+  renderPreloadView() {
+    const containerElements = document.getElementsByClassName(`${PRELOAD_CONTAINER_PREFIX}`);
+    if (containerElements && containerElements.length) {
+      this.angularUtilService.createAngularComponentAppendToDom(this._preloadComponent, containerElements[0], true);
+    }
+  }
+
+  /** Render (or rerender) the View Component (Row Detail) */
+  renderViewModel(item: any) {
+    const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item.id}`);
+    if (containerElements && containerElements.length) {
+      const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[0], true);
+      if (componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance) {
+        Object.assign(componentOutput.componentRef.instance, { model: item });
+
+        const viewObj = this._views.find((obj) => obj.id === item.id);
+        if (viewObj) {
+          viewObj.componentRef = componentOutput.componentRef;
+        }
+      }
+    }
+  }
+
   // --
   // private functions
   // ------------------
@@ -292,54 +340,6 @@ export class RowDetailViewExtension implements Extension {
           this.redrawViewComponent(view);
         }
       });
-    }
-  }
-
-  /** Redraw (re-render) all the expanded row detail View Components */
-  private redrawAllViewComponents() {
-    this._views.forEach((compRef) => {
-      this.redrawViewComponent(compRef);
-    });
-  }
-
-  /** Render all the expanded row detail View Components */
-  private renderAllViewComponents() {
-    this._views.forEach((view) => {
-      if (view && view.dataContext) {
-        this.renderViewModel(view.dataContext);
-      }
-    });
-  }
-
-  /** Redraw the necessary View Component */
-  private redrawViewComponent(createdView: CreatedView) {
-    const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${createdView.id}`);
-    if (containerElements && containerElements.length) {
-      this.renderViewModel(createdView.dataContext);
-    }
-  }
-
-  /** Render (or rerender) the View Component (Row Detail) */
-  private renderPreloadView() {
-    const containerElements = document.getElementsByClassName(`${PRELOAD_CONTAINER_PREFIX}`);
-    if (containerElements && containerElements.length) {
-      this.angularUtilService.createAngularComponentAppendToDom(this._preloadComponent, containerElements[0], true);
-    }
-  }
-
-  /** Render (or rerender) the View Component (Row Detail) */
-  private renderViewModel(item: any) {
-    const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item.id}`);
-    if (containerElements && containerElements.length) {
-      const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[0], true);
-      if (componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance) {
-        Object.assign(componentOutput.componentRef.instance, { model: item });
-
-        const viewObj = this._views.find((obj) => obj.id === item.id);
-        if (viewObj) {
-          viewObj.componentRef = componentOutput.componentRef;
-        }
-      }
     }
   }
 }
