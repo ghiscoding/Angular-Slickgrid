@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### [2.12.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.12.1...v2.12.2) (2019-10-21)
 
 
-### Features
+### Bug Fixes
 
 * **frozen:** fix header grouping grid with frozen columns, fixes [#290](https://github.com/ghiscoding/angular-slickgrid/issues/290) ([b851224](https://github.com/ghiscoding/angular-slickgrid/commit/b851224))
 
