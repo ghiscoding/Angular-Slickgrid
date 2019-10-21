@@ -41,19 +41,14 @@ export class GroupingAndColspanService {
       // When dealing with Pre-Header Grouping colspan, we need to re-create the pre-header in multiple occasions
       // for all these events, we have to trigger a re-create
       if (this._gridOptions.createPreHeaderPanel) {
-        this._eventHandler.subscribe(grid.onSort, (e: Event, args: any) => {
-          this.createPreHeaderRowGroupingTitle();
-        });
-        this._eventHandler.subscribe(grid.onColumnsResized, (e: Event, args: any) => {
-          this.createPreHeaderRowGroupingTitle();
-        });
-        this._eventHandler.subscribe(dataView.onRowCountChanged, (e: Event, args: any) => {
-          this.createPreHeaderRowGroupingTitle();
-        });
+        // on all following events, call the
+        this._eventHandler.subscribe(grid.onSort, () => this.renderPreHeaderRowGroupingTitles());
+        this._eventHandler.subscribe(grid.onColumnsResized, () => this.renderPreHeaderRowGroupingTitles());
+        this._eventHandler.subscribe(dataView.onRowCountChanged, () => this.renderPreHeaderRowGroupingTitles());
 
         // also not sure why at this point, but it seems that I need to call the 1st create in a delayed execution
         // probably some kind of timing issues and delaying it until the grid is fully ready does help
-        setTimeout(() => this.createPreHeaderRowGroupingTitle(), 50);
+        setTimeout(() => this.renderPreHeaderRowGroupingTitles(), 50);
       }
     }
   }
@@ -63,7 +58,8 @@ export class GroupingAndColspanService {
     this._eventHandler.unsubscribeAll();
   }
 
-  createPreHeaderRowGroupingTitle() {
+  /** Create or Render the Pre-Header Row Grouping Titles */
+  renderPreHeaderRowGroupingTitles() {
     if (this._gridOptions && this._gridOptions.frozenColumn >= 0) {
       // Add column groups to left panel
       let $preHeaderPanel = $(this._grid.getPreHeaderPanelLeft());
