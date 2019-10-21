@@ -64,21 +64,36 @@ export class GroupingAndColspanService {
   }
 
   createPreHeaderRowGroupingTitle() {
-    const $preHeaderPanel = $(this._grid.getPreHeaderPanel())
-      .empty()
+    if (this._gridOptions && this._gridOptions.frozenColumn >= 0) {
+      // Add column groups to left panel
+      let $preHeaderPanel = $(this._grid.getPreHeaderPanelLeft());
+      this.renderHeaderGroups($preHeaderPanel, 0, this._gridOptions.frozenColumn + 1);
+
+      // Add column groups to right panel
+      $preHeaderPanel = $(this._grid.getPreHeaderPanelRight());
+      this.renderHeaderGroups($preHeaderPanel, this._gridOptions.frozenColumn + 1, this._columnDefinitions.length);
+    } else {
+      // regular grid (not a frozen grid)
+      const $preHeaderPanel = $(this._grid.getPreHeaderPanel());
+      this.renderHeaderGroups($preHeaderPanel, 0, this._columnDefinitions.length);
+    }
+  }
+
+  renderHeaderGroups(preHeaderPanel: any, start: number, end: number) {
+    preHeaderPanel.empty()
       .addClass('slick-header-columns')
       .css('left', '-1000px')
       .width(this._grid.getHeadersWidth());
-
-    $preHeaderPanel.parent().addClass('slick-header');
+    preHeaderPanel.parent().addClass('slick-header');
 
     const headerColumnWidthDiff = this._grid.getHeaderColumnWidthDiff();
+
     let m;
     let header;
     let lastColumnGroup = '';
     let widthTotal = 0;
 
-    for (let i = 0; i < this._columnDefinitions.length; i++) {
+    for (let i = start; i < end; i++) {
       m = this._columnDefinitions[i];
       if (lastColumnGroup === m.columnGroup && i > 0) {
         widthTotal += m.width;
@@ -88,7 +103,7 @@ export class GroupingAndColspanService {
         header = $(`<div class="ui-state-default slick-header-column" />`)
           .html(`<span class="slick-column-name">${m.columnGroup || ''}</span>`)
           .width(m.width - headerColumnWidthDiff)
-          .appendTo($preHeaderPanel);
+          .appendTo(preHeaderPanel);
       }
       lastColumnGroup = m.columnGroup;
     }
