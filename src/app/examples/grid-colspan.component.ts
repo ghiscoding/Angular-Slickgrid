@@ -1,12 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Column, FieldType, Formatter, Formatters, GridOption } from './../modules/angular-slickgrid';
-
-// create my custom Formatter with the Formatter type
-const myCustomCheckmarkFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any) =>
-  value ? `<i class="fa fa-fire" aria-hidden="true"></i>` : '<i class="fa fa-snowflake-o" aria-hidden="true"></i>';
+import { Column, FieldType, GridOption } from './../modules/angular-slickgrid';
 
 @Component({
-  templateUrl: './grid-colspan.component.html'
+  templateUrl: './grid-colspan.component.html',
+  styleUrls: ['./grid-colspan.component.scss'],
 })
 export class GridColspanComponent implements OnInit {
   title = 'Example 15: Column Span & Header Grouping';
@@ -14,7 +11,7 @@ export class GridColspanComponent implements OnInit {
   This example demonstrates how to easily span a row over multiple columns & how to group header titles.
   <ul>
     <li>
-      Row Colspan - (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Row-Colspan" target="_blank">Wiki docs</a>) |
+      Row Colspan - (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Row-Colspan" target="_blank">Wiki docs</a>) /
       Header Grouping - (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Header-Title-Grouping" target="_blank">Wiki docs</a>)
     </li>
     <li>Note that you can add Sort but remember that it will sort by the data that the row contains, even if the data is visually hidden by colspan it will still sort it</li>
@@ -25,12 +22,20 @@ export class GridColspanComponent implements OnInit {
   </ul>
   `;
 
-  columnDefinitions: Column[];
-  gridOptions: GridOption;
-  dataset = [];
+  columnDefinitions1: Column[];
+  columnDefinitions2: Column[];
+  gridOptions1: GridOption;
+  gridOptions2: GridOption;
+  dataset1 = [];
+  dataset2 = [];
 
   ngOnInit(): void {
-    this.columnDefinitions = [
+    this.prepareGrid1();
+    this.prepareGrid2();
+  }
+
+  prepareGrid1() {
+    this.columnDefinitions1 = [
       { id: 'title', name: 'Title', field: 'title', sortable: true, columnGroup: 'Common Factor' },
       { id: 'duration', name: 'Duration', field: 'duration', columnGroup: 'Common Factor' },
       { id: 'start', name: 'Start', field: 'start', columnGroup: 'Period' },
@@ -39,7 +44,7 @@ export class GridColspanComponent implements OnInit {
       { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', type: FieldType.boolean, columnGroup: 'Analysis' }
     ];
 
-    this.gridOptions = {
+    this.gridOptions1 = {
       enableAutoResize: false,
       enableCellNavigation: true,
       enableColumnReorder: false,
@@ -51,15 +56,40 @@ export class GridColspanComponent implements OnInit {
       colspanCallback: this.renderDifferentColspan
     };
 
-    this.getData();
+    this.dataset1 = this.getData(500);
   }
 
-  getData() {
+  prepareGrid2() {
+    this.columnDefinitions2 = [
+      { id: 'title', name: 'Title', field: 'title', sortable: true, columnGroup: 'Common Factor' },
+      { id: 'duration', name: 'Duration', field: 'duration', columnGroup: 'Common Factor' },
+      { id: 'start', name: 'Start', field: 'start', columnGroup: 'Period' },
+      { id: 'finish', name: 'Finish', field: 'finish', columnGroup: 'Period' },
+      { id: '%', name: '% Complete', field: 'percentComplete', selectable: false, columnGroup: 'Analysis' },
+      { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', type: FieldType.boolean, columnGroup: 'Analysis' }
+    ];
+
+    this.gridOptions2 = {
+      alwaysShowVerticalScroll: false, // disable scroll since we don't want it to show on the left pinned columns
+      enableCellNavigation: true,
+      enableColumnReorder: false,
+      createPreHeaderPanel: true,
+      showPreHeaderPanel: true,
+      preHeaderPanelHeight: 25,
+      explicitInitialization: true,
+      frozenColumn: 1,
+    };
+
+    this.dataset2 = this.getData(500);
+  }
+
+  getData(count: number) {
     // Set up some test columns.
     const mockDataset = [];
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < count; i++) {
       mockDataset[i] = {
         id: i,
+        num: i,
         title: 'Task ' + i,
         duration: '5 days',
         percentComplete: Math.round(Math.random() * 100),
@@ -68,7 +98,7 @@ export class GridColspanComponent implements OnInit {
         effortDriven: (i % 5 === 0)
       };
     }
-    this.dataset = mockDataset;
+    return mockDataset;
   }
 
   /**

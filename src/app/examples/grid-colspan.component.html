@@ -1,12 +1,24 @@
 <div class="container-fluid">
-    <h2>{{title}}</h2>
-    <div class="subtitle" [innerHTML]="subTitle"></div>
+  <h2>{{title}}</h2>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
 
-    <angular-slickgrid gridId="grid2"
-        [columnDefinitions]="columnDefinitions"
-        [gridOptions]="gridOptions"
-        [dataset]="dataset"
-        gridHeight="500"
-        gridWidth="800">
-    </angular-slickgrid>
-  </div>
+  <h3>Grid 1 <small>(with Header Grouping &amp; Colspan)</small></h3>
+  <angular-slickgrid gridId="grid1"
+                     [columnDefinitions]="columnDefinitions1"
+                     [gridOptions]="gridOptions1"
+                     [dataset]="dataset1"
+                     gridHeight="275"
+                     gridWidth="800">
+  </angular-slickgrid>
+
+  <hr />
+
+  <h3>Grid 2 <small>(with Header Grouping &amp; Frozen/Pinned Columns)</small></h3>
+  <angular-slickgrid gridId="grid2"
+                     [columnDefinitions]="columnDefinitions2"
+                     [gridOptions]="gridOptions2"
+                     [dataset]="dataset2"
+                     gridHeight="275"
+                     gridWidth="800">
+  </angular-slickgrid>
+</div>

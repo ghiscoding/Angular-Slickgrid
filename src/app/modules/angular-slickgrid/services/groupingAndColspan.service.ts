@@ -41,19 +41,14 @@ export class GroupingAndColspanService {
       // When dealing with Pre-Header Grouping colspan, we need to re-create the pre-header in multiple occasions
       // for all these events, we have to trigger a re-create
       if (this._gridOptions.createPreHeaderPanel) {
-        this._eventHandler.subscribe(grid.onSort, (e: Event, args: any) => {
-          this.createPreHeaderRowGroupingTitle();
-        });
-        this._eventHandler.subscribe(grid.onColumnsResized, (e: Event, args: any) => {
-          this.createPreHeaderRowGroupingTitle();
-        });
-        this._eventHandler.subscribe(dataView.onRowCountChanged, (e: Event, args: any) => {
-          this.createPreHeaderRowGroupingTitle();
-        });
+        // on all following events, call the
+        this._eventHandler.subscribe(grid.onSort, () => this.renderPreHeaderRowGroupingTitles());
+        this._eventHandler.subscribe(grid.onColumnsResized, () => this.renderPreHeaderRowGroupingTitles());
+        this._eventHandler.subscribe(dataView.onRowCountChanged, () => this.renderPreHeaderRowGroupingTitles());
 
         // also not sure why at this point, but it seems that I need to call the 1st create in a delayed execution
         // probably some kind of timing issues and delaying it until the grid is fully ready does help
-        setTimeout(() => this.createPreHeaderRowGroupingTitle(), 50);
+        setTimeout(() => this.renderPreHeaderRowGroupingTitles(), 50);
       }
     }
   }
@@ -63,22 +58,38 @@ export class GroupingAndColspanService {
     this._eventHandler.unsubscribeAll();
   }
 
-  createPreHeaderRowGroupingTitle() {
-    const $preHeaderPanel = $(this._grid.getPreHeaderPanel())
-      .empty()
+  /** Create or Render the Pre-Header Row Grouping Titles */
+  renderPreHeaderRowGroupingTitles() {
+    if (this._gridOptions && this._gridOptions.frozenColumn >= 0) {
+      // Add column groups to left panel
+      let $preHeaderPanel = $(this._grid.getPreHeaderPanelLeft());
+      this.renderHeaderGroups($preHeaderPanel, 0, this._gridOptions.frozenColumn + 1);
+
+      // Add column groups to right panel
+      $preHeaderPanel = $(this._grid.getPreHeaderPanelRight());
+      this.renderHeaderGroups($preHeaderPanel, this._gridOptions.frozenColumn + 1, this._columnDefinitions.length);
+    } else {
+      // regular grid (not a frozen grid)
+      const $preHeaderPanel = $(this._grid.getPreHeaderPanel());
+      this.renderHeaderGroups($preHeaderPanel, 0, this._columnDefinitions.length);
+    }
+  }
+
+  renderHeaderGroups(preHeaderPanel: any, start: number, end: number) {
+    preHeaderPanel.empty()
       .addClass('slick-header-columns')
       .css('left', '-1000px')
       .width(this._grid.getHeadersWidth());
-
-    $preHeaderPanel.parent().addClass('slick-header');
+    preHeaderPanel.parent().addClass('slick-header');
 
     const headerColumnWidthDiff = this._grid.getHeaderColumnWidthDiff();
+
     let m;
     let header;
     let lastColumnGroup = '';
     let widthTotal = 0;
 
-    for (let i = 0; i < this._columnDefinitions.length; i++) {
+    for (let i = start; i < end; i++) {
       m = this._columnDefinitions[i];
       if (lastColumnGroup === m.columnGroup && i > 0) {
         widthTotal += m.width;
@@ -88,7 +99,7 @@ export class GroupingAndColspanService {
         header = $(`<div class="ui-state-default slick-header-column" />`)
           .html(`<span class="slick-column-name">${m.columnGroup || ''}</span>`)
           .width(m.width - headerColumnWidthDiff)
-          .appendTo($preHeaderPanel);
+          .appendTo(preHeaderPanel);
       }
       lastColumnGroup = m.columnGroup;
     }
