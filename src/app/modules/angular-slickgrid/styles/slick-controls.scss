@@ -62,10 +62,17 @@
   }
 }
 
-.slick-columnpicker-list > hr {
-  margin: 6px 0;
-  border: 0;
-  border-top: 1px solid #d5d5d5;
+.slick-columnpicker-list {
+  /** make sure the hidden class exist, it was removed in BS4 */
+  li.hidden {
+    display: none;
+  }
+
+  hr {
+    margin: 6px 0;
+    border: 0;
+    border-top: 1px solid #d5d5d5;
+  }
 }
 
 
@@ -185,10 +192,18 @@
   display: inline-block;
   vertical-align: middle;
 }
-.slick-gridmenu-list > hr {
-  margin: 6px 0;
-  border: 0;
-  border-top: 1px solid #dddddd;
+
+.slick-gridmenu-list {
+  /** make sure the hidden class exist, it was removed in BS4 */
+  li.hidden {
+    display: none;
+  }
+
+  hr {
+    margin: 6px 0;
+    border: 0;
+    border-top: 1px solid #dddddd;
+  }
 }
 
 /* Disabled */
