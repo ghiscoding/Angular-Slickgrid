@@ -122,6 +122,10 @@
   padding: $header-menu-item-padding;
   list-style: none outside none;
   margin: 0;
+  &:hover {
+    border: $header-menu-item-hover-border;
+    background-color: $header-menu-item-hover-color;
+  }
 
   &.slick-header-menuitem-divider {
     cursor: default;
@@ -131,6 +135,10 @@
     height: $header-menu-divider-height;
     margin: $header-menu-divider-margin;
     background-color: $header-menu-divider-color;
+    &:hover {
+      border: none;
+      background-color: transparent;
+    }
   }
 }
 .slick-header-menuitem-divider.slick-header-menuitem:hover {
@@ -160,17 +168,12 @@
   vertical-align: middle;
 }
 
-.slick-header-menuitem:hover {
-  border-color: #BFBDBD;
-  background-color: $header-menu-icon-hover-color;
-}
+/* Disabled */
 .slick-header-menuitem-disabled {
   border-color: transparent !important;
   background: inherit !important;
-}
-/* Disabled */
-.slick-header-menuitem-disabled {
   color: silver;
+  cursor: inherit;
 }
 
 // ----------------------------------------------
