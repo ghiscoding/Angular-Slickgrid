@@ -1,10 +1,10 @@
-import { async, ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
 import { SlickPaginationComponent } from './slick-pagination.component';
-import { Column, GridOption, Pager } from './../models';
+import { Column, GridOption, Locale, Pager } from './../models';
 import { PaginationService } from '../services';
 
 const dataviewStub = {
@@ -105,11 +105,9 @@ describe('App Component', () => {
     fixture.detectChanges();
   }));
 
-
-
-  it('should create the Slick-Pagination component', async(() => {
+  it('should create the Slick-Pagination component', () => {
     expect(component).toBeTruthy();
-  }));
+  });
 
   describe('Integration Tests', () => {
     beforeEach(() => {
@@ -153,6 +151,7 @@ describe('App Component', () => {
 
       expect(elm.innerHTML).toContain('slick-pagination-nav');
       expect(pageInfo.innerHTML).toBe('<span>5-10 de 100 éléments</span>');
+      expect(component.totalItems).toBe(100);
     });
 
     it('should call changeToFirstPage() from the View and expect the pagination service to be called with correct method', fakeAsync(() => {
@@ -209,7 +208,7 @@ describe('App Component', () => {
       expect(spy).toHaveBeenCalled();
     }));
 
-    it('should change the page number and expect the pagination service to go to that page', () => {
+    it('should change the page number and expect the pagination service to go to that page', (done) => {
       const spy = jest.spyOn(paginationServiceStub, 'goToPageNumber');
 
       const newPageNumber = 3;
@@ -218,7 +217,25 @@ describe('App Component', () => {
       input.triggerEventHandler('change', mockEvent);
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalledWith(newPageNumber, mockEvent);
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalledWith(newPageNumber, mockEvent);
+        done();
+      });
+    });
+
+    it('should change the changeItemPerPage select dropdown and expect the pagination service call a change', (done) => {
+      const spy = jest.spyOn(paginationServiceStub, 'changeItemPerPage');
+
+      const newItemsPerPage = 10;
+      const mockEvent = { currentTarget: { value: newItemsPerPage } };
+      const select = fixture.debugElement.query(By.css('select'));
+      select.triggerEventHandler('change', mockEvent);
+      fixture.detectChanges();
+
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalledWith(newItemsPerPage, mockEvent);
+        done();
+      });
     });
   });
 });
