@@ -77,6 +77,47 @@ describe('Example 6 - GraphQL Grid', () => {
       });
   });
 
+  it('should change Pagination to first page using the external button', () => {
+    cy.get('[data-test=goto-first-page')
+      .click();
+
+    // wait for the query to finish
+    cy.get('[data-test=status]').should('contain', 'done');
+
+    cy.get('[data-test=graphql-query-result]')
+      .should(($span) => {
+        const text = removeSpaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeSpaces(`query { users (first:20,offset:0,
+          orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
+          filterBy:[
+            {field:"gender",operator:EQ,value:"male"},
+            {field:"name",operator:Contains,value:"John Doe"},
+            {field:"company",operator:IN,value:"xyz"},
+            {field:"finish",operator:GE,value:"${presetLowestDay}"},
+            {field:"finish",operator:LE,value:"${presetHighestDay}"}
+          ],locale:"en",userId:123) { totalCount, nodes { id,name,gender,company,billing{address{street,zip}},finish } } }`));
+      });
+  });
+
+  it('should change Pagination to last page using the external button', () => {
+    cy.get('[data-test=goto-last-page')
+      .click();
+
+    // wait for the query to finish
+    cy.get('[data-test=status]').should('contain', 'done');
+
+    cy.get('[data-test=graphql-query-result]')
+      .should(($span) => {
+        const text = removeSpaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeSpaces(`query{users(first:20,offset:80,
+          orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
+          filterBy:[
+            {field:"gender",operator:EQ,value:"male"},{field:"name",operator:Contains,value:"JohnDoe"},
+            {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+      });
+  });
+
   it('should change Pagination to first page with 30 items', () => {
     cy.get('.icon-seek-first').click();
 

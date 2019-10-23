@@ -192,7 +192,8 @@ describe('Example 9 - Grid Menu', () => {
         .children('.slick-header-menubutton')
         .should('be.hidden')
         .invoke('show')
-        .click();
+        .click()
+        .trigger('click', { force: true });
 
       cy.get('.slick-header-menu')
         .should('be.visible')
