@@ -54,6 +54,32 @@ describe('Example 5 - OData Grid', () => {
         });
     });
 
+    it('should change Pagination to first page using the external button', () => {
+      cy.get('[data-test=goto-first-page')
+        .click();
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'done');
+
+      cy.get('[data-test=odata-query-result]')
+        .should(($span) => {
+          expect($span.text()).to.eq(`$inlinecount=allpages&$top=10&$orderby=Name asc&$filter=(Gender eq 'male')`);
+        });
+    });
+
+    it('should change Pagination to last page using the external button', () => {
+      cy.get('[data-test=goto-last-page')
+        .click();
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'done');
+
+      cy.get('[data-test=odata-query-result]')
+        .should(($span) => {
+          expect($span.text()).to.eq(`$inlinecount=allpages&$top=10&$skip=40&$orderby=Name asc&$filter=(Gender eq 'male')`);
+        });
+    });
+
     it('should clear all Filters and expect to go back to first page', () => {
       cy.get('#grid5')
         .find('button.slick-gridmenu-button')
