@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { GridOption } from '../../models/gridOption.interface';
+
 import { ExtensionUtility } from '../extensionUtility';
+import { ExtensionName, GridOption } from '../../models';
 import { SharedService } from '../../services/shared.service';
-import { ExtensionName } from '../../models';
 
 declare var Slick: any;
 
@@ -109,7 +109,7 @@ describe('ExtensionUtility', () => {
 
       it('should sort the items by their order property when found and then return the object without the property', () => {
         const inputArray = [{ field: 'field1', order: 3 }, { field: 'field3', order: 2 }, { field: 'field2' }];
-        const expectedArray = [{ field: 'field3', order: 2 }, { field: 'field1', order: 3 }, { field: 'field2' }];
+        const expectedArray = [{ field: 'field2' }, { field: 'field3', order: 2 }, { field: 'field1', order: 3 }];
 
         utility.sortItems(inputArray, 'order');
 

@@ -3,9 +3,9 @@ import { By } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
-import { SlickPaginationComponent } from './slick-pagination.component';
-import { Column, GridOption, Locale, Pager } from './../models';
-import { PaginationService } from '../services';
+import { SlickPaginationComponent } from '../slick-pagination.component';
+import { Column, GridOption, Pager } from '../../models';
+import { PaginationService } from '../../services';
 
 const dataviewStub = {
   onRowCountChanged: jest.fn(),
