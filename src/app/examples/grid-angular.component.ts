@@ -180,7 +180,7 @@ export class GridAngularComponent implements OnInit {
             label: 'label',
             labelSuffix: 'symbol'
           },
-          elementOptions: {
+          editorOptions: {
             maxHeight: 400
           }
         },

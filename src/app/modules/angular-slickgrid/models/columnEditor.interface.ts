@@ -51,6 +51,13 @@ export interface ColumnEditor {
    */
   editorOptions?: MultipleSelectOption | any;
 
+
+  /**
+   * @deprecated please use "editorOptions" property instead.
+   * DOM element extra options.
+   */
+  elementOptions?: any;
+
   /**
    * Defaults to false, when set it will render any HTML code instead of removing it (sanitized)
    * Only used so far in the MultipleSelect & SingleSelect Filters will support it
@@ -98,9 +105,6 @@ export interface ColumnEditor {
 
   /** Step value of the filter, works only with Filters supporting it (input text, number, float, range, slider) */
   valueStep?: number | string;
-
-  /** DOM element extra options */
-  elementOptions?: any;
 
   /**
    * Use "params" to pass any type of arguments to your Custom Editor

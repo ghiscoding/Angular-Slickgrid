@@ -604,7 +604,8 @@ export class SelectEditor implements Editor {
       this.$editorElm.addClass('form-control');
     } else {
       const elementOptions = (this.columnDef.internalColumnEditor) ? this.columnDef.internalColumnEditor.elementOptions : {};
-      this.editorElmOptions = { ...this.defaultOptions, ...elementOptions };
+      const editorOptions = (this.columnDef.internalColumnEditor) ? this.columnDef.internalColumnEditor.editorOptions : {};
+      this.editorElmOptions = { ...this.defaultOptions, ...elementOptions, ...editorOptions };
       this.$editorElm = this.$editorElm.multipleSelect(this.editorElmOptions);
       setTimeout(() => this.show());
     }

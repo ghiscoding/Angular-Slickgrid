@@ -239,7 +239,7 @@ export class GridEditorComponent implements OnInit {
             value: 0,
             operator: OperatorType.notEqual
           },
-          elementOptions: {
+          editorOptions: {
             maxHeight: 400
           }
         },
