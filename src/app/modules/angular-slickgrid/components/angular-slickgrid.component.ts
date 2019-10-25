@@ -204,7 +204,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   destroy(shouldEmptyDomElementContainer = false) {
-    const gridContainerId = this.gridOptions && this.gridOptions.gridContainerId;
     this.dataView = undefined;
     this.gridOptions = {};
     this.extensionService.dispose();
@@ -222,12 +221,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.grid.destroy();
     }
 
+    // we could optionally also empty the content of the grid container DOM element
     if (shouldEmptyDomElementContainer) {
-      $(gridContainerId).empty();
+      this.destroyGridContainerElm();
     }
 
     // also unsubscribe all RxJS subscriptions
     this.subscriptions = unsubscribeAllObservables(this.subscriptions);
+  }
+
+  destroyGridContainerElm() {
+    const gridContainerId = this.gridOptions && this.gridOptions.gridContainerId;
+    $(gridContainerId).empty();
   }
 
   ngAfterViewInit() {
@@ -393,13 +398,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
           if (processResult && processResult.data && processResult.data[datasetName]) {
             this._dataset = processResult.data[datasetName].nodes;
-            if (processResult.data[datasetName].listSeparator) {
-              // if the "listSeparator" is available in the GraphQL result, we'll override the ExportOptions Delimiter with this new info
-              if (!this.gridOptions.exportOptions) {
-                this.gridOptions.exportOptions = {};
-              }
-              this.gridOptions.exportOptions.delimiterOverride = processResult.data[datasetName].listSeparator.toString();
-            }
             this.refreshGridData(this._dataset, processResult.data[datasetName].totalCount);
           } else {
             this._dataset = [];

@@ -9,7 +9,6 @@ export interface GraphqlResult {
       pageInfo: {
         hasNextPage: boolean;
       };
-      listSeparator?: DelimiterType;
       totalCount: number;
     }
   };

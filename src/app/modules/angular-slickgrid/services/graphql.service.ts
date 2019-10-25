@@ -115,11 +115,6 @@ export class GraphqlService implements BackendService {
       graphqlFields = ['totalCount', dataQb];
     }
 
-    // are we adding the current user listSeparator to the fields query result?
-    if (this.options.addListSeparator) {
-      graphqlFields.unshift('listSeparator');
-    }
-
     // properties to be returned by the query
     datasetQb.find(graphqlFields);
 
