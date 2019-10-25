@@ -48,9 +48,35 @@ Object.defineProperty(sharedServiceStub, 'dataView', {
   set: jest.fn()
 });
 
+const excelExportServiceStub = {
+  init: jest.fn(),
+  dispose: jest.fn(),
+} as unknown as ExcelExportService;
+
+const exportServiceStub = {
+  init: jest.fn(),
+  dispose: jest.fn(),
+} as unknown as ExportService;
+
+const extensionServiceStub = {
+  bindDifferentExtensions: jest.fn(),
+  createExtensionsBeforeGridCreation: jest.fn(),
+  dispose: jest.fn(),
+  renderColumnHeaders: jest.fn(),
+  translateColumnHeaders: jest.fn(),
+  translateColumnPicker: jest.fn(),
+  translateGridMenu: jest.fn(),
+  translateHeaderMenu: jest.fn(),
+} as unknown as ExtensionService;
+
 const extensionUtilityStub = {
   loadExtensionDynamically: jest.fn()
 } as unknown as ExtensionUtility;
+
+const groupingAndColspanServiceStub = {
+  init: jest.fn(),
+  dispose: jest.fn(),
+} as unknown as GroupingAndColspanService;
 
 const sortServiceStub = {
   bindLocalOnSort: jest.fn(),
@@ -70,8 +96,8 @@ const mockGroupItemMetaProvider = {
   getGroupRowMetadata: jest.fn(),
   getTotalsRowMetadata: jest.fn(),
 };
-const mockGroupItemMetaProviderImplementation = jest.fn().mockImplementation(() => (mockGroupItemMetaProvider));
-const mockDataView = jest.fn().mockImplementation(() => ({
+
+const mockDataView = {
   constructor: jest.fn(),
   init: jest.fn(),
   destroy: jest.fn(),
@@ -79,29 +105,43 @@ const mockDataView = jest.fn().mockImplementation(() => ({
   endUpdate: jest.fn(),
   setItems: jest.fn(),
   syncGridSelection: jest.fn(),
-}));
-const mockSlickCore = jest.fn().mockImplementation(() => ({
+};
+
+const mockDraggableGrouping = {
+  constructor: jest.fn(),
+  init: jest.fn(),
+  destroy: jest.fn(),
+}
+
+const mockSlickCore = {
   subscribe: jest.fn(),
   unsubscribe: jest.fn(),
   unsubscribeAll: jest.fn(),
-}));
-const mockGrid = jest.fn().mockImplementation(() => ({
+};
+
+const mockGrid = {
   autosizeColumns: jest.fn(),
   destroy: jest.fn(),
   init: jest.fn(),
   getScrollbarDimensions: jest.fn(),
   resizeCanvas: jest.fn(),
+  setHeaderRowVisibility: jest.fn(),
   onDataviewCreated: new Slick.Event(),
-}));
-
-jest.mock('slickgrid/slick.core', () => mockSlickCore);
-jest.mock('slickgrid/slick.grid', () => mockGrid);
-Slick.Data = {
-  DataView: mockDataView,
-  GroupItemMetadataProvider: mockGroupItemMetaProviderImplementation
 };
-Slick.EventHandler = mockSlickCore;
-Slick.Grid = mockGrid;
+
+const mockSlickCoreImplementation = jest.fn().mockImplementation(() => (mockSlickCore));
+const mockDataViewImplementation = jest.fn().mockImplementation(() => (mockDataView));
+const mockGroupItemMetaProviderImplementation = jest.fn().mockImplementation(() => (mockGroupItemMetaProvider));
+const mockGridImplementation = jest.fn().mockImplementation(() => (mockGrid));
+const mockDraggableGroupingImplementation = jest.fn().mockImplementation(() => (mockDraggableGrouping));
+
+jest.mock('slickgrid/slick.core', () => mockSlickCoreImplementation);
+jest.mock('slickgrid/slick.grid', () => mockGridImplementation);
+jest.mock('slickgrid/plugins/slick.draggablegrouping', () => mockDraggableGroupingImplementation);
+Slick.Grid = mockGridImplementation;
+Slick.EventHandler = mockSlickCoreImplementation;
+Slick.Data = { DataView: mockDataViewImplementation, GroupItemMetadataProvider: mockGroupItemMetaProviderImplementation };
+Slick.DraggableGrouping = mockDraggableGroupingImplementation;
 
 describe('App Component', () => {
   let fixture: ComponentFixture<AngularSlickgridComponent>;
@@ -116,15 +156,11 @@ describe('App Component', () => {
       providers: [
         AngularUtilService,
         CollectionService,
-        ExcelExportService,
-        ExportService,
-        ExtensionService,
         FilterFactory,
         FilterService,
         GridService,
         GridEventService,
         GridStateService,
-        GroupingAndColspanService,
         PaginationService,
         ResizerService,
         SharedService,
@@ -142,7 +178,11 @@ describe('App Component', () => {
         RowMoveManagerExtension,
         RowSelectionExtension,
         SlickgridConfig,
+        { provide: ExcelExportService, useValue: excelExportServiceStub },
+        { provide: ExportService, useValue: exportServiceStub },
+        { provide: ExtensionService, useValue: extensionServiceStub },
         { provide: ExtensionUtility, useValue: extensionUtilityStub },
+        { provide: GroupingAndColspanService, useValue: groupingAndColspanServiceStub },
         { provide: SortService, useValue: sortServiceStub },
       ],
       imports: [
@@ -206,20 +246,31 @@ describe('App Component', () => {
   describe('initialization method', () => {
     beforeEach(() => {
       component.destroy();
-      // component.ngAfterViewInit();
-    });
-
-    afterEach(() => {
     });
 
     describe('use grouping', () => {
       it('should load groupItemMetaProvider to the DataView when using "draggableGrouping" feature', () => {
         const extensionSpy = jest.spyOn(extensionUtilityStub, 'loadExtensionDynamically');
-        const dataviewSpy = jest.spyOn(mockDataView.prototype, 'constructor');
+        const dataviewSpy = jest.spyOn(mockDataViewImplementation.prototype, 'constructor');
         const groupMetaSpy = jest.spyOn(mockGroupItemMetaProviderImplementation.prototype, 'constructor');
         const sharedMetaSpy = jest.spyOn(SharedService.prototype, 'groupItemMetadataProvider', 'set');
 
-        component.gridOptions = { draggableGrouping: true } as GridOption;
+        component.gridOptions = { draggableGrouping: {} } as GridOption;
+        component.ngAfterViewInit();
+
+        expect(extensionSpy).toHaveBeenCalledWith('groupItemMetaProvider');
+        expect(dataviewSpy).toHaveBeenCalledWith({ groupItemMetadataProvider: expect.anything() });
+        expect(groupMetaSpy).toHaveBeenCalledWith();
+        expect(sharedMetaSpy).toHaveBeenCalledWith(mockGroupItemMetaProvider);
+      });
+
+      it('should load groupItemMetaProvider to the DataView when using "enableGrouping" feature', () => {
+        const extensionSpy = jest.spyOn(extensionUtilityStub, 'loadExtensionDynamically');
+        const dataviewSpy = jest.spyOn(mockDataViewImplementation.prototype, 'constructor');
+        const groupMetaSpy = jest.spyOn(mockGroupItemMetaProviderImplementation.prototype, 'constructor');
+        const sharedMetaSpy = jest.spyOn(SharedService.prototype, 'groupItemMetadataProvider', 'set');
+
+        component.gridOptions = { enableGrouping: true } as GridOption;
         component.ngAfterViewInit();
 
         expect(extensionSpy).toHaveBeenCalledWith('groupItemMetaProvider');
@@ -278,6 +329,66 @@ describe('App Component', () => {
 
         expect(dataView).toBeTruthy();
         expect(dataViewSpy).toHaveBeenCalledWith(component.grid, true, false);
+      });
+    });
+
+    describe('flag checks', () => {
+      afterEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call "showHeaderRow" method with false when its flag is disabled', () => {
+        component.gridOptions = { showHeaderRow: false } as GridOption;
+        const gridSpy = jest.spyOn(mockGrid, 'setHeaderRowVisibility');
+
+        component.ngAfterViewInit();
+
+        expect(gridSpy).toHaveBeenCalledWith(false);
+      });
+
+      it('should initialize groupingAndColspanService when "createPreHeaderPanel" grid option is enabled and "enableDraggableGrouping" is disabled', () => {
+        component.gridOptions = { createPreHeaderPanel: true, enableDraggableGrouping: false } as GridOption;
+        const spy = jest.spyOn(groupingAndColspanServiceStub, 'init');
+
+        component.ngAfterViewInit();
+
+        expect(spy).toHaveBeenCalledWith(mockGrid, mockDataView);
+      });
+
+      it('should not initialize groupingAndColspanService when "createPreHeaderPanel" grid option is enabled and "enableDraggableGrouping" is also enabled', () => {
+        component.gridOptions = { createPreHeaderPanel: true, enableDraggableGrouping: true } as GridOption;
+        const spy = jest.spyOn(groupingAndColspanServiceStub, 'init');
+
+        component.ngAfterViewInit();
+
+        expect(spy).not.toHaveBeenCalled();
+      });
+
+      it('should call "translateColumnHeaders" from ExtensionService when "enableTranslate" is set', () => {
+        component.gridOptions = { enableTranslate: true } as GridOption;
+        const spy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
+
+        component.ngAfterViewInit();
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('should initialize ExportService when "enableExport" is set', () => {
+        component.gridOptions = { enableExport: true } as GridOption;
+        const spy = jest.spyOn(exportServiceStub, 'init');
+
+        component.ngAfterViewInit();
+
+        expect(spy).toHaveBeenCalled();
+      });
+
+      it('should initialize excelExportService when "enableExcelExport" is set', () => {
+        component.gridOptions = { enableExcelExport: true } as GridOption;
+        const spy = jest.spyOn(excelExportServiceStub, 'init');
+
+        component.ngAfterViewInit();
+
+        expect(spy).toHaveBeenCalled();
       });
     });
   });
