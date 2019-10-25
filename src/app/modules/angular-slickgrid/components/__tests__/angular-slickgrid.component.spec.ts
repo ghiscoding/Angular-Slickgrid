@@ -7,7 +7,8 @@ import { AngularSlickgridComponent } from '../angular-slickgrid.component';
 import { SlickPaginationComponent } from '../slick-pagination.component';
 import { SlickgridConfig } from '../../slickgrid-config';
 import { FilterFactory } from '../../filters/filterFactory';
-import { CurrentSorter, GridOption } from '../../models';
+import { Filters } from '../../filters';
+import { CurrentFilter, CurrentSorter, GridOption } from '../../models';
 import {
   AngularUtilService,
   CollectionService,
@@ -15,6 +16,7 @@ import {
   ExportService,
   ExtensionService,
   FilterService,
+  GraphqlService,
   GridService,
   GridEventService,
   GridStateService,
@@ -22,7 +24,7 @@ import {
   PaginationService,
   ResizerService,
   SharedService,
-  SortService
+  SortService,
 } from '../../services';
 import {
   ExtensionUtility,
@@ -78,13 +80,32 @@ const groupingAndColspanServiceStub = {
   dispose: jest.fn(),
 } as unknown as GroupingAndColspanService;
 
+const mockGraphqlService = {
+  getDatasetName: jest.fn(),
+  updateFilters: jest.fn(),
+  updateSorters: jest.fn(),
+  updatePagination: jest.fn(),
+} as unknown as GraphqlService;
+
+const filterServiceStub = {
+  dispose: jest.fn(),
+  init: jest.fn(),
+  bindBackendOnFilter: jest.fn(),
+  bindLocalOnFilter: jest.fn(),
+  populateColumnFilterSearchTermPresets: jest.fn(),
+  getColumnFilters: jest.fn(),
+  onFilterCleared: new Subject<CurrentFilter[]>(),
+  onFilterChanged: new Subject<CurrentFilter[]>(),
+} as unknown as FilterService;
+
 const sortServiceStub = {
+  bindBackendOnSort: jest.fn(),
   bindLocalOnSort: jest.fn(),
   dispose: jest.fn(),
   loadLocalGridPresets: jest.fn(),
   onSortChanged: new Subject<CurrentSorter[]>(),
   onSortCleared: new Subject<boolean>()
-};
+} as unknown as SortService;
 
 const mockGroupItemMetaProvider = {
   init: jest.fn(),
@@ -146,6 +167,7 @@ Slick.DraggableGrouping = mockDraggableGroupingImplementation;
 describe('App Component', () => {
   let fixture: ComponentFixture<AngularSlickgridComponent>;
   let component: AngularSlickgridComponent;
+  let graphqlService: GraphqlService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -157,7 +179,6 @@ describe('App Component', () => {
         AngularUtilService,
         CollectionService,
         FilterFactory,
-        FilterService,
         GridService,
         GridEventService,
         GridStateService,
@@ -178,6 +199,8 @@ describe('App Component', () => {
         RowMoveManagerExtension,
         RowSelectionExtension,
         SlickgridConfig,
+        { provide: FilterService, useValue: filterServiceStub },
+        { provide: GraphqlService, useValue: mockGraphqlService },
         { provide: ExcelExportService, useValue: excelExportServiceStub },
         { provide: ExportService, useValue: exportServiceStub },
         { provide: ExtensionService, useValue: extensionServiceStub },
@@ -198,6 +221,7 @@ describe('App Component', () => {
     // create the component
     fixture = TestBed.createComponent(AngularSlickgridComponent);
     component = fixture.debugElement.componentInstance;
+    graphqlService = TestBed.get(GraphqlService);
 
     // setup bindable properties
     component.gridId = 'grid1';
@@ -389,6 +413,79 @@ describe('App Component', () => {
         component.ngAfterViewInit();
 
         expect(spy).toHaveBeenCalled();
+      });
+
+      it('should destroy component and its DOM element when requested', () => {
+        const spy = jest.spyOn(component, 'destroyGridContainerElm');
+
+        component.ngAfterViewInit();
+        component.destroy(true);
+
+        expect(spy).toHaveBeenCalledWith();
+      });
+    });
+
+    describe('Backend Service API', () => {
+      beforeEach(() => {
+        component.gridOptions = {
+          backendServiceApi: {
+            service: graphqlService,
+            preProcess: () => jest.fn(),
+            process: (query) => new Promise((resolve) => resolve('process resolved')),
+          }
+        };
+      });
+
+      afterEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call the "createBackendApiInternalPostProcessCallback" method when Backend Service API is defined with a Graphql Service', () => {
+        const spy = jest.spyOn(component, 'createBackendApiInternalPostProcessCallback');
+
+        component.ngAfterViewInit();
+
+        expect(spy).toHaveBeenCalled();
+        expect(component.gridOptions.backendServiceApi.internalPostProcess).toEqual(expect.any(Function));
+      });
+
+      it('should invoke "updateFilters" method with filters returned from "getColumnFilters" of the Filter Service when there is no Presets defined', () => {
+        const mockColumnFilter = { name: { columnId: 'name', columnDef: { id: 'name', field: 'name', filter: { model: Filters.autoComplete } }, operator: 'EQ', searchTerms: ['john'] } };
+        // @ts-ignore
+        jest.spyOn(filterServiceStub, 'getColumnFilters').mockReturnValue(mockColumnFilter);
+        const backendSpy = jest.spyOn(mockGraphqlService, 'updateFilters');
+
+        component.gridOptions.presets = undefined;
+        component.ngAfterViewInit();
+
+        expect(backendSpy).toHaveBeenCalledWith(mockColumnFilter, false);
+      });
+
+      it('should call the "updateFilters" method when filters are defined in the "presets" property', () => {
+        const spy = jest.spyOn(mockGraphqlService, 'updateFilters');
+        const mockFilters = [{ columnId: 'company', searchTerms: ['xyz'], operator: 'IN' }] as CurrentFilter[];
+        component.gridOptions.presets = { filters: mockFilters };
+        component.ngAfterViewInit();
+
+        expect(spy).toHaveBeenCalledWith(mockFilters, true);
+      });
+
+      it('should call the "updateSorters" method when filters are defined in the "presets" property', () => {
+        const spy = jest.spyOn(mockGraphqlService, 'updateSorters');
+        const mockSorters = [{ columnId: 'name', direction: 'asc' }] as CurrentSorter[];
+        component.gridOptions.presets = { sorters: mockSorters };
+        component.ngAfterViewInit();
+
+        expect(spy).toHaveBeenCalledWith(undefined, mockSorters);
+      });
+
+      it('should call the "updatePagination" method when filters are defined in the "presets" property', () => {
+        const spy = jest.spyOn(mockGraphqlService, 'updatePagination');
+
+        component.gridOptions.presets = { pagination: { pageNumber: 2, pageSize: 20 } };
+        component.ngAfterViewInit();
+
+        expect(spy).toHaveBeenCalledWith(2, 20);
       });
     });
   });

@@ -248,165 +248,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  initialization() {
-    // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
-    this._dataset = this._dataset || [];
-    this.gridOptions = this.mergeGridOptions(this.gridOptions);
-    this.paginationOptions = this.gridOptions.pagination;
-    this.locales = this.gridOptions && this.gridOptions.locales || Constants.locales;
-    this.backendServiceApi = this.gridOptions && this.gridOptions.backendServiceApi;
-    this.createBackendApiInternalPostProcessCallback(this.gridOptions);
-
-    if (!this.customDataView) {
-      if (this.gridOptions.draggableGrouping || this.gridOptions.enableGrouping) {
-        this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
-        this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
-        this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
-        this.dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
-      } else {
-        this.dataView = new Slick.Data.DataView();
-      }
-    }
-
-    // for convenience to the user, we provide the property "editor" as an Angular-Slickgrid editor complex object
-    // however "editor" is used internally by SlickGrid for it's own Editor Factory
-    // so in our lib we will swap "editor" and copy it into a new property called "internalColumnEditor"
-    // then take back "editor.model" and make it the new "editor" so that SlickGrid Editor Factory still works
-    this._columnDefinitions = this.swapInternalEditorToSlickGridFactoryEditor(this._columnDefinitions);
-
-    // save reference for all columns before they optionally become hidden/visible
-    this.sharedService.allColumns = this._columnDefinitions;
-    this.sharedService.visibleColumns = this._columnDefinitions;
-    this.extensionService.createExtensionsBeforeGridCreation(this._columnDefinitions, this.gridOptions);
-
-    // build SlickGrid Grid, also user might optionally pass a custom dataview (e.g. remote model)
-    this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView || this.dataView, this._columnDefinitions, this.gridOptions);
-
-    this.sharedService.dataView = this.dataView;
-    this.sharedService.grid = this.grid;
-
-    this.extensionService.bindDifferentExtensions();
-    this.bindDifferentHooks(this.grid, this.gridOptions, this.dataView);
-
-    // emit the Grid & DataView object to make them available in parent component
-    this.onGridCreated.emit(this.grid);
-
-    // initialize the SlickGrid grid
-    this.grid.init();
-
-    if (!this.customDataView && (this.dataView && this.dataView.beginUpdate && this.dataView.setItems && this.dataView.endUpdate)) {
-      this.onDataviewCreated.emit(this.dataView);
-      this.dataView.beginUpdate();
-      this.dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
-      this.dataView.endUpdate();
-
-      // if you don't want the items that are not visible (due to being filtered out or being on a different page)
-      // to stay selected, pass 'false' to the second arg
-      if (this.gridOptions && this.gridOptions.dataView && this.gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
-        const syncGridSelection = this.gridOptions.dataView.syncGridSelection;
-        if (typeof syncGridSelection === 'boolean') {
-          this.dataView.syncGridSelection(this.grid, this.gridOptions.dataView.syncGridSelection);
-        } else {
-          this.dataView.syncGridSelection(this.grid, syncGridSelection.preserveHidden, syncGridSelection.preserveHiddenOnSelectionChange);
-        }
-      }
-    }
-
-    // user might want to hide the header row on page load but still have `enableFiltering: true`
-    // if that is the case, we need to hide the headerRow ONLY AFTER all filters got created & dataView exist
-    if (this._hideHeaderRowAfterPageLoad) {
-      this.showHeaderRow(false);
-    }
-
-    // after the DataView is created & updated execute some processes
-    this.executeAfterDataviewCreated(this.grid, this.gridOptions, this.dataView);
-
-    // bind resize ONLY after the dataView is ready
-    this.bindResizeHook(this.grid, this.gridOptions);
-
-    // bind & initialize grouping and header grouping colspan service
-    if (this.gridOptions.createPreHeaderPanel && !this.gridOptions.enableDraggableGrouping) {
-      this.groupingAndColspanService.init(this.grid, this.dataView);
-    }
-
-    // bind & initialize the grid service
-    this.gridService.init(this.grid, this.dataView);
-
-    // when user enables translation, we need to translate Headers on first pass & subsequently in the bindDifferentHooks
-    if (this.gridOptions.enableTranslate) {
-      this.extensionService.translateColumnHeaders();
-    }
-
-    // if Export is enabled, initialize the service with the necessary grid and other objects
-    if (this.gridOptions.enableExport) {
-      this.exportService.init(this.grid, this.dataView);
-    }
-
-    // if Excel Export is enabled, initialize the service with the necessary grid and other objects
-    if (this.gridOptions.enableExcelExport && this.sharedService) {
-      this.excelExportService.init(this.grid, this.dataView);
-    }
-
-    // once all hooks are in placed and the grid is initialized, we can emit an event
-    this.onGridInitialized.emit(this.grid);
-
-    // bind the Backend Service API callback functions only after the grid is initialized
-    // because the preProcess() and onInit() might get triggered
-    if (this.gridOptions && this.gridOptions.backendServiceApi) {
-      this.bindBackendCallbackFunctions(this.gridOptions);
-    }
-
-    this.gridStateService.init(this.grid);
-
-    this.onAngularGridCreated.emit({
-      // Slick Grid & DataView objects
-      dataView: this.dataView,
-      slickGrid: this.grid,
-
-      // public methods
-      destroy: this.destroy.bind(this),
-
-      // return all available Services (non-singleton)
-      backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
-      excelExportService: this.excelExportService,
-      exportService: this.exportService,
-      extensionService: this.extensionService,
-      filterService: this.filterService,
-      gridEventService: this.gridEventService,
-      gridStateService: this.gridStateService,
-      gridService: this.gridService,
-      groupingService: this.groupingAndColspanService,
-      paginationService: this.paginationService,
-      resizerService: this.resizer,
-      sortService: this.sortService,
-
-      /** @deprecated please use "extensionService" instead */
-      pluginService: this.extensionService,
-    });
-  }
-
-  /**
-   * Define our internal Post Process callback, it will execute internally after we get back result from the Process backend call
-   * For now, this is GraphQL Service ONLY feature and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
-   */
-  createBackendApiInternalPostProcessCallback(gridOptions: GridOption) {
-    const backendApi = gridOptions && gridOptions.backendServiceApi;
-    if (backendApi) {
-      // internalPostProcess only works (for now) with a GraphQL Service, so make sure it is that type
-      if (backendApi && backendApi.service instanceof GraphqlService) {
-        backendApi.internalPostProcess = (processResult: GraphqlResult) => {
-          const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
-          if (processResult && processResult.data && processResult.data[datasetName]) {
-            this._dataset = processResult.data[datasetName].nodes;
-            this.refreshGridData(this._dataset, processResult.data[datasetName].totalCount);
-          } else {
-            this._dataset = [];
-          }
-        };
-      }
-    }
-  }
-
   bindDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
     // on locale change, we have to manually translate the Headers, GridMenu
     if (this.translate && this.translate.onLangChange) {
@@ -523,13 +364,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   bindBackendCallbackFunctions(gridOptions: GridOption) {
     const backendApi = gridOptions.backendServiceApi;
-    const serviceOptions: BackendServiceOption = (backendApi && backendApi.service && backendApi.service.options) ? backendApi.service.options : {};
+    const backendService = backendApi.service;
+    const serviceOptions: BackendServiceOption = backendService && backendService.options;
     const isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && serviceOptions.hasOwnProperty('executeProcessCommandOnInit')) ? serviceOptions['executeProcessCommandOnInit'] : true);
 
-    // update backend filters (if need be) before the query runs
-    if (backendApi) {
-      const backendService = backendApi.service;
-
+    if (backendService) {
+      // update backend filters (if need be) BEFORE the query runs (via the onInit command a few lines below)
       // if user entered some any "presets", we need to reflect them all in the grid
       if (gridOptions && gridOptions.presets) {
         // Filters "presets"
@@ -542,7 +382,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         }
         // Pagination "presets"
         if (backendService && backendService.updatePagination && gridOptions.presets.pagination) {
-          backendService.updatePagination(gridOptions.presets.pagination.pageNumber, gridOptions.presets.pagination.pageSize);
+          const { pageNumber, pageSize } = gridOptions.presets.pagination;
+          backendService.updatePagination(pageNumber, pageSize);
         }
       } else {
         const columnFilters = this.filterService.getColumnFilters();
@@ -550,36 +391,37 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           backendService.updateFilters(columnFilters, false);
         }
       }
-    }
 
-    if (backendApi && backendApi.service && (backendApi.onInit || isExecuteCommandOnInit)) {
-      const query = (typeof backendApi.service.buildQuery === 'function') ? backendApi.service.buildQuery() : '';
-      const process = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
+      // execute onInit command when necessary
+      if (backendApi && backendService && (backendApi.onInit || isExecuteCommandOnInit)) {
+        const query = (typeof backendService.buildQuery === 'function') ? backendService.buildQuery() : '';
+        const process = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
 
-      // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
-      setTimeout(() => {
-        // keep start time & end timestamps & return it after process execution
-        const startTime = new Date();
+        // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
+        setTimeout(() => {
+          // keep start time & end timestamps then return these metrics after the process execution
+          const startTime = new Date();
 
-        // run any pre-process, if defined, for example a spinner
-        if (backendApi.preProcess) {
-          backendApi.preProcess();
-        }
-
-        try {
-          // the processes can be Observables (like HttpClient) or Promises
-          if (process instanceof Promise && process.then) {
-            process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions.pagination.totalItems));
-          } else if (isObservable(process)) {
-            process.subscribe(
-              (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions.pagination.totalItems),
-              (error: any) => onBackendError(error, backendApi)
-            );
+          // run any pre-process, if defined, for example a spinner
+          if (backendApi.preProcess) {
+            backendApi.preProcess();
           }
-        } catch (error) {
-          onBackendError(error, backendApi);
-        }
-      });
+
+          try {
+            // the processes can be Promises or Observables (like Angular HttpClient)
+            if (process instanceof Promise && process.then) {
+              process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions.pagination.totalItems));
+            } else if (isObservable(process)) {
+              process.subscribe(
+                (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions.pagination.totalItems),
+                (error: any) => onBackendError(error, backendApi)
+              );
+            }
+          } catch (error) {
+            onBackendError(error, backendApi);
+          }
+        });
+      }
     }
   }
 
@@ -602,6 +444,28 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.resizer.bindAutoResizeDataGrid();
       if (grid && options.autoFitColumnsOnFirstLoad && options.enableAutoSizeColumns) {
         grid.autosizeColumns();
+      }
+    }
+  }
+
+  /**
+   * Define our internal Post Process callback, it will execute internally after we get back result from the Process backend call
+   * For now, this is GraphQL Service ONLY feature and it will basically refresh the Dataset & Pagination without having the user to create his own PostProcess every time
+   */
+  createBackendApiInternalPostProcessCallback(gridOptions: GridOption) {
+    const backendApi = gridOptions && gridOptions.backendServiceApi;
+    if (backendApi && backendApi.service) {
+      // internalPostProcess only works (for now) with a GraphQL Service, so make sure it is of that type
+      if (backendApi.service instanceof GraphqlService || typeof backendApi.service.getDatasetName === 'function') {
+        backendApi.internalPostProcess = (processResult: GraphqlResult) => {
+          const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
+          if (processResult && processResult.data && processResult.data[datasetName]) {
+            this._dataset = processResult.data[datasetName].nodes;
+            this.refreshGridData(this._dataset, processResult.data[datasetName].totalCount);
+          } else {
+            this._dataset = [];
+          }
+        };
       }
     }
   }
@@ -755,6 +619,143 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         collectionAsync.subscribe((resolvedCollection) => this.updateEditorCollection(column, resolvedCollection))
       );
     }
+  }
+
+  private initialization() {
+    // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
+    this._dataset = this._dataset || [];
+    this.gridOptions = this.mergeGridOptions(this.gridOptions);
+    this.paginationOptions = this.gridOptions.pagination;
+    this.locales = this.gridOptions && this.gridOptions.locales || Constants.locales;
+    this.backendServiceApi = this.gridOptions && this.gridOptions.backendServiceApi;
+    this.createBackendApiInternalPostProcessCallback(this.gridOptions);
+
+    if (!this.customDataView) {
+      if (this.gridOptions.draggableGrouping || this.gridOptions.enableGrouping) {
+        this.extensionUtility.loadExtensionDynamically(ExtensionName.groupItemMetaProvider);
+        this.groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
+        this.sharedService.groupItemMetadataProvider = this.groupItemMetadataProvider;
+        this.dataView = new Slick.Data.DataView({ groupItemMetadataProvider: this.groupItemMetadataProvider });
+      } else {
+        this.dataView = new Slick.Data.DataView();
+      }
+    }
+
+    // for convenience to the user, we provide the property "editor" as an Angular-Slickgrid editor complex object
+    // however "editor" is used internally by SlickGrid for it's own Editor Factory
+    // so in our lib we will swap "editor" and copy it into a new property called "internalColumnEditor"
+    // then take back "editor.model" and make it the new "editor" so that SlickGrid Editor Factory still works
+    this._columnDefinitions = this.swapInternalEditorToSlickGridFactoryEditor(this._columnDefinitions);
+
+    // save reference for all columns before they optionally become hidden/visible
+    this.sharedService.allColumns = this._columnDefinitions;
+    this.sharedService.visibleColumns = this._columnDefinitions;
+    this.extensionService.createExtensionsBeforeGridCreation(this._columnDefinitions, this.gridOptions);
+
+    // build SlickGrid Grid, also user might optionally pass a custom dataview (e.g. remote model)
+    this.grid = new Slick.Grid(`#${this.gridId}`, this.customDataView || this.dataView, this._columnDefinitions, this.gridOptions);
+
+    this.sharedService.dataView = this.dataView;
+    this.sharedService.grid = this.grid;
+
+    this.extensionService.bindDifferentExtensions();
+    this.bindDifferentHooks(this.grid, this.gridOptions, this.dataView);
+
+    // emit the Grid & DataView object to make them available in parent component
+    this.onGridCreated.emit(this.grid);
+
+    // initialize the SlickGrid grid
+    this.grid.init();
+
+    if (!this.customDataView && (this.dataView && this.dataView.beginUpdate && this.dataView.setItems && this.dataView.endUpdate)) {
+      this.onDataviewCreated.emit(this.dataView);
+      this.dataView.beginUpdate();
+      this.dataView.setItems(this._dataset, this.gridOptions.datasetIdPropertyName);
+      this.dataView.endUpdate();
+
+      // if you don't want the items that are not visible (due to being filtered out or being on a different page)
+      // to stay selected, pass 'false' to the second arg
+      if (this.gridOptions && this.gridOptions.dataView && this.gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
+        const syncGridSelection = this.gridOptions.dataView.syncGridSelection;
+        if (typeof syncGridSelection === 'boolean') {
+          this.dataView.syncGridSelection(this.grid, this.gridOptions.dataView.syncGridSelection);
+        } else {
+          this.dataView.syncGridSelection(this.grid, syncGridSelection.preserveHidden, syncGridSelection.preserveHiddenOnSelectionChange);
+        }
+      }
+    }
+
+    // user might want to hide the header row on page load but still have `enableFiltering: true`
+    // if that is the case, we need to hide the headerRow ONLY AFTER all filters got created & dataView exist
+    if (this._hideHeaderRowAfterPageLoad) {
+      this.showHeaderRow(false);
+    }
+
+    // after the DataView is created & updated execute some processes
+    this.executeAfterDataviewCreated(this.grid, this.gridOptions, this.dataView);
+
+    // bind resize ONLY after the dataView is ready
+    this.bindResizeHook(this.grid, this.gridOptions);
+
+    // bind & initialize grouping and header grouping colspan service
+    if (this.gridOptions.createPreHeaderPanel && !this.gridOptions.enableDraggableGrouping) {
+      this.groupingAndColspanService.init(this.grid, this.dataView);
+    }
+
+    // bind & initialize the grid service
+    this.gridService.init(this.grid, this.dataView);
+
+    // when user enables translation, we need to translate Headers on first pass & subsequently in the bindDifferentHooks
+    if (this.gridOptions.enableTranslate) {
+      this.extensionService.translateColumnHeaders();
+    }
+
+    // if Export is enabled, initialize the service with the necessary grid and other objects
+    if (this.gridOptions.enableExport) {
+      this.exportService.init(this.grid, this.dataView);
+    }
+
+    // if Excel Export is enabled, initialize the service with the necessary grid and other objects
+    if (this.gridOptions.enableExcelExport && this.sharedService) {
+      this.excelExportService.init(this.grid, this.dataView);
+    }
+
+    // once all hooks are in placed and the grid is initialized, we can emit an event
+    this.onGridInitialized.emit(this.grid);
+
+    // bind the Backend Service API callback functions only after the grid is initialized
+    // because the preProcess() and onInit() might get triggered
+    if (this.gridOptions && this.gridOptions.backendServiceApi) {
+      this.bindBackendCallbackFunctions(this.gridOptions);
+    }
+
+    this.gridStateService.init(this.grid);
+
+    this.onAngularGridCreated.emit({
+      // Slick Grid & DataView objects
+      dataView: this.dataView,
+      slickGrid: this.grid,
+
+      // public methods
+      destroy: this.destroy.bind(this),
+
+      // return all available Services (non-singleton)
+      backendService: this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.backendServiceApi.service,
+      excelExportService: this.excelExportService,
+      exportService: this.exportService,
+      extensionService: this.extensionService,
+      filterService: this.filterService,
+      gridEventService: this.gridEventService,
+      gridStateService: this.gridStateService,
+      gridService: this.gridService,
+      groupingService: this.groupingAndColspanService,
+      paginationService: this.paginationService,
+      resizerService: this.resizer,
+      sortService: this.sortService,
+
+      /** @deprecated please use "extensionService" instead */
+      pluginService: this.extensionService,
+    });
   }
 
   /**
