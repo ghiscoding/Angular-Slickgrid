@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Injectable, Input, OnDestroy, Optional, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, Optional, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
@@ -47,6 +47,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
   /** Constructor */
   constructor(private paginationService: PaginationService, @Optional() private translate: TranslateService) {
     // translate all the text using ngx-translate or custom locales
+    this.translateAllUiTexts(this.locales);
     if (translate && translate.onLangChange) {
       this.subscriptions.push(this.translate.onLangChange.subscribe(() => this.translateAllUiTexts(this.locales)));
     }
