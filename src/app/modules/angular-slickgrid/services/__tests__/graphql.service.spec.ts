@@ -221,6 +221,28 @@ describe('GraphqlService', () => {
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
     });
 
+    it('should make sure the offset pagination is never below zero, even when new page is 0', () => {
+      const expectation = `query{ users(first:20, offset:0){ totalCount, nodes{ id, field1, field2 }}}`;
+      const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+
+      service.init({ datasetName: 'users', columnDefinitions: columns }, paginationOptions, gridStub);
+      service.updatePagination(0, 20);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
+    it('should make sure the offset pagination is never below zero, even when new is 1 the offset should remain 0', () => {
+      const expectation = `query{ users(first:20, offset:0){ totalCount, nodes{ id, field1, field2 }}}`;
+      const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+
+      service.init({ datasetName: 'users', columnDefinitions: columns }, paginationOptions, gridStub);
+      service.updatePagination(1, 20);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
     it('should be able to provide "sortingOptions" and see the query string include the sorting', () => {
       const expectation = `query{ users(first:20, offset:40,orderBy:[{field:field1, direction:DESC}]){ totalCount, nodes{ id, field1, field2 }}}`;
       const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
