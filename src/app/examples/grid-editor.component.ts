@@ -255,7 +255,7 @@ export class GridEditorComponent implements OnInit {
         filter: { model: Filters.compoundDate },
         formatter: Formatters.multiple,
         params: {
-          formatters: [Formatters.complexObject, Formatters.dateIso,]
+          formatters: [Formatters.complexObject, Formatters.dateIso]
         },
         exportWithFormatter: true,
         sortable: true,
