@@ -121,7 +121,7 @@ export class PaginationService {
   }
 
   goToLastPage(event?: any): Promise<any> {
-    this._pageNumber = this._pageCount;
+    this._pageNumber = this._pageCount || 1;
     return this.processOnPageChanged(this._pageNumber, event);
   }
 
@@ -253,7 +253,7 @@ export class PaginationService {
       this._dataTo = 0;
       this._pageNumber = 0;
     } else {
-      this._dataFrom = (this._pageNumber * this._itemsPerPage) - this._itemsPerPage + 1;
+      this._dataFrom = this._pageNumber > 1 ? ((this._pageNumber * this._itemsPerPage) - this._itemsPerPage + 1) : 1;
       this._dataTo = (this._totalItems < this._itemsPerPage) ? this._totalItems : (this._pageNumber * this._itemsPerPage);
       if (this._dataTo > this._totalItems) {
         this._dataTo = this._totalItems;

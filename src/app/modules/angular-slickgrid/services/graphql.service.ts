@@ -462,7 +462,7 @@ export class GraphqlService implements BackendService {
     } else {
       paginationOptions = {
         first: pageSize,
-        offset: (newPage - 1) * pageSize
+        offset: (newPage > 1) ? ((newPage - 1) * pageSize) : 0 // recalculate offset but make sure the result is always over 0
       };
     }
 
