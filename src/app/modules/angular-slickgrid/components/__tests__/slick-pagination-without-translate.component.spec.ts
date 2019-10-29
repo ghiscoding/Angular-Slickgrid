@@ -1,10 +1,10 @@
-import { async, ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 
-import { SlickPaginationComponent } from './slick-pagination.component';
-import { Column, GridOption, Locale, Pager } from '../models';
-import { PaginationService } from '../services';
+import { SlickPaginationComponent } from '../slick-pagination.component';
+import { Column, GridOption, Locale, Pager } from '../../models';
+import { PaginationService } from '../../services';
 
 const dataviewStub = {
   onRowCountChanged: jest.fn(),

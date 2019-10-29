@@ -265,16 +265,6 @@ describe('GraphqlService', () => {
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
     });
 
-    it('should include "listSeparator" in the query string when option "addListSeparator" is enabled', () => {
-      const expectation = `query{ users(first:10, offset:0){ listSeparator, totalCount, nodes{ id, field1, field2 }}}`;
-      const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
-
-      service.init({ datasetName: 'users', columnDefinitions: columns, addListSeparator: true }, paginationOptions, gridStub);
-      const query = service.buildQuery();
-
-      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
-    });
-
     it('should include default locale "en" in the query string when option "addLocaleIntoQuery" is enabled and i18n is not defined', () => {
       const expectation = `query{ users(first:10, offset:0, locale: "en"){ totalCount, nodes{ id, field1, field2 }}}`;
       const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
@@ -447,7 +437,6 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query with the new filter', () => {
-      serviceOptions.addListSeparator = false;
       const expectation = `query{users(first:10, offset:0, filterBy:[{field:gender, operator:EQ, value:"female"}]) { totalCount,nodes{ id,field1,field2 } }}`;
       const querySpy = jest.spyOn(service, 'buildQuery');
       const resetSpy = jest.spyOn(service, 'resetPaginationOptions');
@@ -474,10 +463,9 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query with a new filter when previous filters exists', () => {
-      serviceOptions.addListSeparator = true;
       const expectation = `query{users(first:10, offset:0,
                           filterBy:[{field:gender, operator:EQ, value:"female"}, {field:firstName, operator:StartsWith, value:"John"}])
-                          { listSeparator, totalCount,nodes{ id,field1,field2 } }}`;
+                          { totalCount,nodes{ id,field1,field2 } }}`;
       const querySpy = jest.spyOn(service, 'buildQuery');
       const resetSpy = jest.spyOn(service, 'resetPaginationOptions');
       const mockColumn = { id: 'gender', field: 'gender' } as Column;
@@ -510,7 +498,6 @@ describe('GraphqlService', () => {
 
   describe('processOnPaginationChanged method', () => {
     it('should return a query with the new pagination', () => {
-      serviceOptions.addListSeparator = false;
       const expectation = `query{users(first:20, offset:40) { totalCount,nodes { id, field1, field2 }}}`;
       const querySpy = jest.spyOn(service, 'buildQuery');
 
@@ -524,8 +511,7 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query with the new pagination and use pagination size options that was passed to service options when it is not provided as argument to "processOnPaginationChanged"', () => {
-      serviceOptions.addListSeparator = true;
-      const expectation = `query{users(first:10, offset:20) { listSeparator, totalCount,nodes { id, field1, field2 }}}`;
+      const expectation = `query{users(first:10, offset:20) { totalCount,nodes { id, field1, field2 }}}`;
       const querySpy = jest.spyOn(service, 'buildQuery');
 
       service.init(serviceOptions, paginationOptions, gridStub);
@@ -555,7 +541,6 @@ describe('GraphqlService', () => {
 
   describe('processOnSortChanged method', () => {
     it('should return a query with the new sorting when using single sort', () => {
-      serviceOptions.addListSeparator = false;
       const expectation = `query{ users(first:10, offset:0, orderBy:[{field:gender, direction: DESC}]) { totalCount,nodes{ id,field1,field2 } }}`;
       const querySpy = jest.spyOn(service, 'buildQuery');
       const mockColumn = { id: 'gender', field: 'gender' } as Column;
@@ -569,10 +554,9 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query with the multiple new sorting when using multiColumnSort', () => {
-      serviceOptions.addListSeparator = true;
       const expectation = `query{ users(first:10, offset:0,
                             orderBy:[{field:gender, direction: DESC}, {field:firstName, direction: ASC}]) {
-                            listSeparator, totalCount,nodes{ id,field1,field2 } }}`;
+                            totalCount,nodes{ id,field1,field2 } }}`;
       const querySpy = jest.spyOn(service, 'buildQuery');
       const mockColumn = { id: 'gender', field: 'gender' } as Column;
       const mockColumnName = { id: 'firstName', field: 'firstName' } as Column;
@@ -591,7 +575,6 @@ describe('GraphqlService', () => {
   describe('updateFilters method', () => {
     beforeEach(() => {
       serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'name', field: 'name' }];
-      serviceOptions.addListSeparator = false;
     });
 
     it('should throw an error when filter columnId is not found to be part of the column definitions', () => {
@@ -608,9 +591,8 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query with the new filter when filters are passed as a filter trigger by a filter event and is of type ColumnFilters', () => {
-      serviceOptions.addListSeparator = true;
-      const expectation = `query{users(first:10, offset:0, filterBy:[{field:gender, operator:EQ, value:"female"}]) {
-        listSeparator, totalCount,nodes{ id,company,gender,name } }}`;
+      const expectation = `query{users(first:10, offset:0, filterBy:[{field:gender, operator:EQ, value:"female"}])
+        { totalCount,nodes{ id,company,gender,name } }}`;
       const mockColumn = { id: 'gender', field: 'gender' } as Column;
       const mockColumnFilters = {
         gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['female'], operator: 'EQ' },
@@ -954,8 +936,7 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query without any sorting after clearFilters was called', () => {
-      serviceOptions.addListSeparator = true;
-      const expectation = `query{ users(first:10,offset:0) { listSeparator, totalCount, nodes {id, company, gender,name} }}`;
+      const expectation = `query{ users(first:10,offset:0) { totalCount, nodes {id, company, gender,name} }}`;
       const mockColumn = { id: 'gender', field: 'gender' } as Column;
       const mockColumnFilters = {
         gender: { columnId: 'gender', columnDef: mockColumn, searchTerms: ['female'], operator: 'EQ' },
@@ -975,13 +956,11 @@ describe('GraphqlService', () => {
   describe('presets', () => {
     beforeEach(() => {
       serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration' }, { id: 'startDate', field: 'startDate' }];
-      serviceOptions.addListSeparator = false;
     });
 
     it('should return a query with search having a range of exclusive numbers when the search value contains 2 (..) to represent a range of numbers', () => {
-      serviceOptions.addListSeparator = true;
       const expectation = `query{users(first:10, offset:0, filterBy:[{field:duration, operator:GT, value:"2"}, {field:duration, operator:LT, value:"33"}]) {
-        listSeparator, totalCount,nodes{ id,company,gender,duration,startDate } }}`;
+        totalCount,nodes{ id,company,gender,duration,startDate } }}`;
       const presetFilters = [
         { columnId: 'duration', searchTerms: ['2..33'] },
       ] as CurrentFilter[];
@@ -1089,14 +1068,12 @@ describe('GraphqlService', () => {
   describe('updateSorters method', () => {
     beforeEach(() => {
       serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'name', field: 'name' }];
-      serviceOptions.addListSeparator = false;
     });
 
     it('should return a query with the multiple new sorting when using multiColumnSort', () => {
-      serviceOptions.addListSeparator = true;
       const expectation = `query{ users(first:10, offset:0,
                             orderBy:[{field:gender, direction: DESC}, {field:firstName, direction: ASC}]) {
-                            listSeparator, totalCount,nodes{ id, company, gender, name } }}`;
+                            totalCount,nodes{ id, company, gender, name } }}`;
       const mockColumnSort = [
         { columnId: 'gender', sortCol: { id: 'gender', field: 'gender' }, sortAsc: false },
         { columnId: 'firstName', sortCol: { id: 'firstName', field: 'firstName' }, sortAsc: true }
@@ -1183,9 +1160,8 @@ describe('GraphqlService', () => {
     });
 
     it('should return a query without any sorting after clearSorters was called', () => {
-      serviceOptions.addListSeparator = true;
       const expectation = `query { users(first:10, offset:0) {
-        listSeparator, totalCount, nodes { id,company,gender,name }}}`;
+        totalCount, nodes { id,company,gender,name }}}`;
       const mockColumnSort = [
         { columnId: 'gender', sortCol: { id: 'gender', field: 'gender' }, sortAsc: false },
         { columnId: 'firstName', sortCol: { id: 'firstName', field: 'firstName' }, sortAsc: true }

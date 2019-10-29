@@ -12,12 +12,6 @@ export interface GraphqlServiceOption extends BackendServiceOption {
    */
   addLocaleIntoQuery?: boolean;
 
-  /**
-   * Add the Current User List Separator to the result query (in English the separator is comma ",").
-   * This is useful to set the "delimiter" property when using Export CSV, for example French uses semicolon ";" as a delimiter/separator
-   */
-  addListSeparator?: boolean;
-
   /** What is the dataset, this is required for the GraphQL query to be built */
   datasetName?: string;
 
