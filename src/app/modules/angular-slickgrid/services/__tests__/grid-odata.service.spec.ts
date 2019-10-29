@@ -576,6 +576,22 @@ describe('GridOdataService', () => {
       expect(query).toBe(expectation);
     });
 
+    it('should escape single quote by doubling the quote when filter includes a single quote', () => {
+      const expectation = `$top=10&$filter=(Gender eq 'female' and not substringof('abc''s', Company))`;
+      const mockColumnGender = { id: 'gender', field: 'gender' } as Column;
+      const mockColumnCompany = { id: 'company', field: 'company' } as Column;
+      const mockColumnFilters = {
+        gender: { columnId: 'gender', columnDef: mockColumnGender, searchTerms: ['female'], operator: 'EQ' },
+        company: { columnId: 'company', columnDef: mockColumnCompany, searchTerms: [`abc's`], operator: OperatorType.notContains },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
     it('should return a query with multiple filters and expect same query string result as previous test even with "isUpdatedByPreset" enabled', () => {
       const expectation = `$top=10&$filter=(Gender eq 'female' and substringof('abc', Company))`;
       const mockColumnGender = { id: 'gender', field: 'gender' } as Column;
@@ -1349,7 +1365,7 @@ describe('GridOdataService', () => {
       expect(currentFilters).toEqual(presetFilters);
     });
 
-    it('should return a query with a filter with range of numbers with decimals when the preset is a filter range with 3 dots (..) separator', () => {
+    it('should return a query with a filter with range of numbers with decimals when the preset is a filter range with 3 dots (...) separator', () => {
       serviceOptions.columnDefinitions = [{ id: 'company', field: 'company' }, { id: 'gender', field: 'gender' }, { id: 'duration', field: 'duration', type: FieldType.number }];
       const expectation = `$top=10&$filter=(Duration gt 0.5 and Duration lt .88)`;
       const presetFilters = [

@@ -327,7 +327,8 @@ export class GridOdataService implements BackendService {
             if (operator === 'IN') {
               // example:: (Stage eq "Expired" or Stage eq "Renewal")
               for (let j = 0, lnj = searchTerms.length; j < lnj; j++) {
-                tmpSearchTerms.push(`${fieldName} eq '${searchTerms[j]}'`);
+                const searchVal = searchTerms[j].replace(`'`, `''`);
+                tmpSearchTerms.push(`${fieldName} eq '${searchVal}'`);
               }
               searchBy = tmpSearchTerms.join(' or ');
               if (!(typeof searchBy === 'string' && searchBy[0] === '(' && searchBy.slice(-1) === ')')) {
@@ -336,7 +337,8 @@ export class GridOdataService implements BackendService {
             } else {
               // example:: (Stage ne "Expired" and Stage ne "Renewal")
               for (let k = 0, lnk = searchTerms.length; k < lnk; k++) {
-                tmpSearchTerms.push(`${fieldName} ne '${searchTerms[k]}'`);
+                const searchVal = searchTerms[k].replace(`'`, `''`);
+                tmpSearchTerms.push(`${fieldName} ne '${searchVal}'`);
               }
               searchBy = tmpSearchTerms.join(' and ');
               if (!(typeof searchBy === 'string' && searchBy[0] === '(' && searchBy.slice(-1) === ')')) {
@@ -349,7 +351,7 @@ export class GridOdataService implements BackendService {
           } else if (fieldType === FieldType.string) {
             // string field needs to be in single quotes
             if (operator === '' || operator === OperatorType.contains || operator === OperatorType.notContains) {
-              searchBy = this.odataQueryVersionWrapper('substring', odataVersion, fieldName, searchTerms);
+              searchBy = this.odataQueryVersionWrapper('substring', odataVersion, fieldName, searchValue);
               if (operator === OperatorType.notContains) {
                 searchBy = `not ${searchBy}`;
               }
@@ -373,7 +375,7 @@ export class GridOdataService implements BackendService {
           // push to our temp array and also trim white spaces
           if (searchBy !== '') {
             searchByArray.push(searchBy.trim());
-            this.saveColumnFilter(fieldName || '', fieldSearchValue, searchTerms);
+            this.saveColumnFilter(fieldName || '', fieldSearchValue, searchValue);
           }
         }
       }
