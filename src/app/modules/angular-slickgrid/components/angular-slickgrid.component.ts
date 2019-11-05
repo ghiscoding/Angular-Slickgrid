@@ -26,6 +26,7 @@ import {
   GridStateType,
   Locale,
   Pagination,
+  SlickEventHandler,
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
@@ -107,7 +108,7 @@ const slickgridEventPrefix = 'sg';
 export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnInit {
   private _dataset: any[];
   private _columnDefinitions: Column[];
-  private _eventHandler: any = new Slick.EventHandler();
+  private _eventHandler: SlickEventHandler = new Slick.EventHandler();
   private _fixedHeight: number | null;
   private _fixedWidth: number | null;
   private _hideHeaderRowAfterPageLoad = false;
@@ -169,6 +170,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     return this.dataView.getItems();
   }
 
+  get eventHandler(): SlickEventHandler {
+    return this._eventHandler;
+  }
+
   constructor(
     private elm: ElementRef,
     private excelExportService: ExcelExportService,
@@ -176,8 +181,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     private extensionService: ExtensionService,
     private extensionUtility: ExtensionUtility,
     private filterService: FilterService,
-    private gridService: GridService,
     private gridEventService: GridEventService,
+    private gridService: GridService,
     private gridStateService: GridStateService,
     private groupingAndColspanService: GroupingAndColspanService,
     private paginationService: PaginationService,
@@ -308,8 +313,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // expose all Slick Grid Events through dispatch
     for (const prop in grid) {
       if (grid.hasOwnProperty(prop) && prop.startsWith('on')) {
-        this._eventHandler.subscribe(grid[prop], (e: any, args: any) => {
-          return this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
+        this._eventHandler.subscribe(grid[prop], (event: Event, args: any) => {
+          return this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: event, args });
         });
       }
     }
@@ -317,8 +322,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // expose all Slick DataView Events through dispatch
     for (const prop in dataView) {
       if (dataView.hasOwnProperty(prop) && prop.startsWith('on')) {
-        this._eventHandler.subscribe(dataView[prop], (e: any, args: any) => {
-          return this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: e, args });
+        this._eventHandler.subscribe(dataView[prop], (event: Event, args: any) => {
+          return this.dispatchCustomEvent(`${slickgridEventPrefix}${titleCase(prop)}`, { eventData: event, args });
         });
       }
     }
@@ -336,9 +341,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.gridEventService.bindOnClick(grid, dataView);
 
     if (dataView && grid) {
-      this._eventHandler.subscribe(dataView.onRowCountChanged, (e: any, args: any) => {
-        grid.invalidate();
-      });
+      this._eventHandler.subscribe(dataView.onRowCountChanged, () => grid.invalidate());
 
       // without this, filtering data with local dataset will not always show correctly
       // also don't use "invalidateRows" since it destroys the entire row and as bad user experience when updating a row
@@ -354,11 +357,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
 
     // does the user have a colspan callback?
-    if (gridOptions.colspanCallback) {
-      this.dataView.getItemMetadata = (rowNumber: number) => {
-        const item = this.dataView.getItem(rowNumber);
-        return gridOptions.colspanCallback(item);
-      };
+    if (gridOptions && gridOptions.colspanCallback && dataView && dataView.getItem && dataView.getItemMetadata) {
+      dataView.getItemMetadata = (rowNumber: number) => gridOptions.colspanCallback(dataView.getItem(rowNumber));
     }
   }
 
@@ -407,18 +407,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
             backendApi.preProcess();
           }
 
-          try {
-            // the processes can be Promises or Observables (like Angular HttpClient)
-            if (process instanceof Promise && process.then) {
-              process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions.pagination.totalItems));
-            } else if (isObservable(process)) {
-              process.subscribe(
-                (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions.pagination.totalItems),
-                (error: any) => onBackendError(error, backendApi)
-              );
-            }
-          } catch (error) {
-            onBackendError(error, backendApi);
+          // the processes can be Promises or Observables (like Angular HttpClient)
+          if (process instanceof Promise && process.then) {
+            process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions.pagination.totalItems))
+              .catch((error: any) => onBackendError(error, backendApi));
+          } else if (isObservable(process)) {
+            process.subscribe(
+              (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions.pagination.totalItems),
+              (error: any) => onBackendError(error, backendApi)
+            );
           }
         });
       }
@@ -583,19 +580,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
-  /** Toggle the filter row displayed on first row
-   * @param isShowing
+  /**
+   * Show the filter row displayed on first row, we can optionally pass false to hide it.
+   * @param showing
    */
-  showHeaderRow(isShowing: boolean) {
-    this.grid.setHeaderRowVisibility(isShowing);
-    return isShowing;
-  }
-
-  /** Toggle the filter row displayed on first row */
-  toggleHeaderRow() {
-    const isShowing = !this.grid.getOptions().showHeaderRow;
-    this.grid.setHeaderRowVisibility(isShowing);
-    return isShowing;
+  showHeaderRow(showing = true) {
+    this.grid.setHeaderRowVisibility(showing);
+    return showing;
   }
 
   //

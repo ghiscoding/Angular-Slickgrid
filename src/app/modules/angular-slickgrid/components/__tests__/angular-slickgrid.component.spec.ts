@@ -140,6 +140,11 @@ const mockSlickCore = {
   unsubscribeAll: jest.fn(),
 };
 
+const mockGetEditorLock = {
+  isActive: () => true,
+  commitCurrentEdit: jest.fn(),
+};
+
 const mockGrid = {
   autosizeColumns: jest.fn(),
   destroy: jest.fn(),
@@ -147,6 +152,8 @@ const mockGrid = {
   getScrollbarDimensions: jest.fn(),
   resizeCanvas: jest.fn(),
   setHeaderRowVisibility: jest.fn(),
+  onRendered: jest.fn(),
+  onScroll: jest.fn(),
   onDataviewCreated: new Slick.Event(),
 };
 
@@ -168,6 +175,7 @@ describe('App Component', () => {
   let fixture: ComponentFixture<AngularSlickgridComponent>;
   let component: AngularSlickgridComponent;
   let graphqlService: GraphqlService;
+  let translate: TranslateService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -222,6 +230,7 @@ describe('App Component', () => {
     fixture = TestBed.createComponent(AngularSlickgridComponent);
     component = fixture.debugElement.componentInstance;
     graphqlService = TestBed.get(GraphqlService);
+    translate = TestBed.get(TranslateService);
 
     // setup bindable properties
     component.gridId = 'grid1';
@@ -486,6 +495,36 @@ describe('App Component', () => {
         component.ngAfterViewInit();
 
         expect(spy).toHaveBeenCalledWith(2, 20);
+      });
+    });
+
+    describe('bindDifferentHooks private method called by "ngAfterViewInit"', () => {
+      beforeEach(() => {
+        component.columnDefinitions = [{ id: 'firstName', field: 'firstName' }];
+      });
+
+      afterEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call multiple translate methods when locale changes', (done) => {
+        const transColHeaderSpy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
+        const transColPickerSpy = jest.spyOn(extensionServiceStub, 'translateColumnPicker');
+        const transGridMenuSpy = jest.spyOn(extensionServiceStub, 'translateGridMenu');
+        const transHeaderMenuSpy = jest.spyOn(extensionServiceStub, 'translateHeaderMenu');
+
+        component.gridOptions = { enableTranslate: true } as GridOption;
+        component.ngAfterViewInit();
+
+        translate.use('fr');
+
+        setTimeout(() => {
+          expect(transColHeaderSpy).toHaveBeenCalled();
+          expect(transColPickerSpy).toHaveBeenCalled();
+          expect(transGridMenuSpy).toHaveBeenCalled();
+          expect(transHeaderMenuSpy).toHaveBeenCalled();
+          done();
+        });
       });
     });
   });
