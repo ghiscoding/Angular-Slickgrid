@@ -1,5 +1,5 @@
 import { ElementRef } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
 import { AngularSlickgridComponent } from '../angular-slickgrid.component';
 import { ExtensionUtility } from '../../extensions';
@@ -24,6 +24,7 @@ import { Editors } from '../../editors';
 import * as utilities from '../../services/backend-utilities';
 import { Subject, of } from 'rxjs';
 import { GridStateChange } from 'dist/public_api';
+import { TestBed } from '@angular/core/testing';
 
 
 const mockExecuteBackendProcess = jest.fn();
@@ -217,6 +218,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
   let divContainer: HTMLDivElement;
   let cellDiv: HTMLDivElement;
   let mockElementRef: ElementRef;
+  let translate: TranslateService;
 
   const template = `
   <div id="grid1" style="height: 800px; width: 600px;">
@@ -237,6 +239,11 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     divContainer.appendChild(cellDiv);
     document.body.appendChild(divContainer);
 
+    TestBed.configureTestingModule({
+      imports: [TranslateModule.forRoot()]
+    });
+    translate = TestBed.get(TranslateService);
+
     mockElementRef = {
       nativeElement: divContainer
     } as ElementRef;
@@ -256,7 +263,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       resizerServiceStub,
       sharedService,
       sortServiceStub,
-      {} as TranslateService,
+      translate,
       {} as GridOption
     );
 
@@ -731,40 +738,6 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         jest.clearAllMocks();
       });
 
-      it('should trigger a DOM element dispatch event when a DataView onX event is triggered', () => {
-        const eventSpy = jest.spyOn(divContainer, 'dispatchEvent');
-        const gridElm = mockElementRef.nativeElement;
-        const mockEvent = () => 'blah';
-
-        component.ngAfterViewInit();
-        // @ts-ignore
-        const handlerSpy = jest.spyOn(component.eventHandler, 'subscribe').mockReturnValueOnce('onRowsChanged', mockEvent);
-        mockEvent();
-        mockDataView.onSetItemsCalled();
-        mockDataView.onRowsChanged();
-        gridElm.dispatchEvent(new CustomEvent('onRowsChanged'));
-
-        expect(eventSpy).toHaveBeenCalledWith(new CustomEvent('onRowsChanged', expect.anything()));
-        expect(handlerSpy).toHaveBeenCalled();
-      });
-
-      it('should trigger a DOM element dispatch event when a SlickGrid onX event is triggered', () => {
-        const eventSpy = jest.spyOn(divContainer, 'dispatchEvent');
-        const gridElm = mockElementRef.nativeElement;
-        const mockEvent = () => 'blah';
-
-        component.ngAfterViewInit();
-        // @ts-ignore
-        const handlerSpy = jest.spyOn(component.eventHandler, 'subscribe').mockReturnValueOnce('onRendered', mockEvent);
-        mockEvent();
-        mockGrid.onRendered();
-        mockGrid.onScroll();
-        gridElm.dispatchEvent(new CustomEvent('onRendered'));
-
-        expect(eventSpy).toHaveBeenCalledWith(new CustomEvent('onRendered', expect.anything()));
-        expect(handlerSpy).toHaveBeenCalled();
-      });
-
       it('should reflect columns in the grid', () => {
         const mockColsPresets = [{ columnId: 'firstName', width: 100 }];
         const mockCols = [{ id: 'firstName', field: 'firstName' }];
@@ -907,6 +880,26 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         expect(itemSpy).toHaveBeenCalledWith(2);
         expect(mockCallback).toHaveBeenCalledWith(mockItem);
+      });
+
+      it('should call multiple translate methods when locale changes', (done) => {
+        const transColHeaderSpy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
+        const transColPickerSpy = jest.spyOn(extensionServiceStub, 'translateColumnPicker');
+        const transGridMenuSpy = jest.spyOn(extensionServiceStub, 'translateGridMenu');
+        const transHeaderMenuSpy = jest.spyOn(extensionServiceStub, 'translateHeaderMenu');
+
+        component.gridOptions = { enableTranslate: true } as GridOption;
+        component.ngAfterViewInit();
+
+        translate.use('fr');
+
+        setTimeout(() => {
+          expect(transColHeaderSpy).toHaveBeenCalled();
+          expect(transColPickerSpy).toHaveBeenCalled();
+          expect(transGridMenuSpy).toHaveBeenCalled();
+          expect(transHeaderMenuSpy).toHaveBeenCalled();
+          done();
+        });
       });
     });
 
