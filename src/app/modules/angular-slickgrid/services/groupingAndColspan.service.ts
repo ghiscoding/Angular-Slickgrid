@@ -60,7 +60,7 @@ export class GroupingAndColspanService {
 
   /** Create or Render the Pre-Header Row Grouping Titles */
   renderPreHeaderRowGroupingTitles() {
-    if (this._gridOptions && this._gridOptions.frozenColumn >= 0) {
+    if (this._gridOptions && this._gridOptions.frozenColumn !== undefined && this._gridOptions.frozenColumn >= 0) {
       // Add column groups to left panel
       let $preHeaderPanel = $(this._grid.getPreHeaderPanelLeft());
       this.renderHeaderGroups($preHeaderPanel, 0, this._gridOptions.frozenColumn + 1);
@@ -84,24 +84,28 @@ export class GroupingAndColspanService {
 
     const headerColumnWidthDiff = this._grid.getHeaderColumnWidthDiff();
 
-    let m;
+    let colDef;
     let header;
     let lastColumnGroup = '';
     let widthTotal = 0;
 
     for (let i = start; i < end; i++) {
-      m = this._columnDefinitions[i];
-      if (lastColumnGroup === m.columnGroup && i > 0) {
-        widthTotal += m.width;
-        header.width(widthTotal - headerColumnWidthDiff);
-      } else {
-        widthTotal = m.width;
-        header = $(`<div class="ui-state-default slick-header-column" />`)
-          .html(`<span class="slick-column-name">${m.columnGroup || ''}</span>`)
-          .width(m.width - headerColumnWidthDiff)
-          .appendTo(preHeaderPanel);
+      colDef = this._columnDefinitions[i];
+      if (colDef) {
+        if (lastColumnGroup === colDef.columnGroup && i > 0) {
+          widthTotal += colDef.width || 0;
+          if (header && header.width) {
+            header.width(widthTotal - headerColumnWidthDiff);
+          }
+        } else {
+          widthTotal = colDef.width || 0;
+          header = $(`<div class="ui-state-default slick-header-column" />`)
+            .html(`<span class="slick-column-name">${colDef.columnGroup || ''}</span>`)
+            .width(widthTotal - headerColumnWidthDiff)
+            .appendTo(preHeaderPanel);
+        }
+        lastColumnGroup = colDef.columnGroup || '';
       }
-      lastColumnGroup = m.columnGroup;
     }
   }
 }

@@ -249,7 +249,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   destroyGridContainerElm() {
-    const gridContainerId = this.gridOptions && this.gridOptions.gridContainerId;
+    const gridContainerId = this.gridOptions && this.gridOptions.gridContainerId || 'grid1';
     $(gridContainerId).empty();
   }
 
@@ -481,44 +481,50 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // does the user have a colspan callback?
     if (gridOptions && gridOptions.colspanCallback && dataView && dataView.getItem && dataView.getItemMetadata) {
-      dataView.getItemMetadata = (rowNumber: number) => gridOptions.colspanCallback(dataView.getItem(rowNumber));
+      dataView.getItemMetadata = (rowNumber: number) => {
+        let callbackResult = null;
+        if (gridOptions.colspanCallback && gridOptions.colspanCallback) {
+          callbackResult = gridOptions.colspanCallback(dataView.getItem(rowNumber));
+        }
+        return callbackResult;
+      };
     }
   }
 
   private bindBackendCallbackFunctions(gridOptions: GridOption) {
     const backendApi = gridOptions.backendServiceApi;
-    const backendService = backendApi.service;
-    const serviceOptions: BackendServiceOption = backendService && backendService.options;
+    const backendApiService = backendApi && backendApi.service;
+    const serviceOptions: BackendServiceOption = backendApiService && backendApiService.options || {};
     const isExecuteCommandOnInit = (!serviceOptions) ? false : ((serviceOptions && serviceOptions.hasOwnProperty('executeProcessCommandOnInit')) ? serviceOptions['executeProcessCommandOnInit'] : true);
 
-    if (backendService) {
+    if (backendApiService) {
       // update backend filters (if need be) BEFORE the query runs (via the onInit command a few lines below)
       // if user entered some any "presets", we need to reflect them all in the grid
       if (gridOptions && gridOptions.presets) {
         // Filters "presets"
-        if (backendService && backendService.updateFilters && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
-          backendService.updateFilters(gridOptions.presets.filters, true);
+        if (backendApiService.updateFilters && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
+          backendApiService.updateFilters(gridOptions.presets.filters, true);
         }
         // Sorters "presets"
-        if (backendService && backendService.updateSorters && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
-          backendService.updateSorters(undefined, gridOptions.presets.sorters);
+        if (backendApiService.updateSorters && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
+          backendApiService.updateSorters(undefined, gridOptions.presets.sorters);
         }
         // Pagination "presets"
-        if (backendService && backendService.updatePagination && gridOptions.presets.pagination) {
+        if (backendApiService.updatePagination && gridOptions.presets.pagination) {
           const { pageNumber, pageSize } = gridOptions.presets.pagination;
-          backendService.updatePagination(pageNumber, pageSize);
+          backendApiService.updatePagination(pageNumber, pageSize);
         }
       } else {
         const columnFilters = this.filterService.getColumnFilters();
-        if (columnFilters && backendService && backendService.updateFilters) {
-          backendService.updateFilters(columnFilters, false);
+        if (columnFilters && backendApiService.updateFilters) {
+          backendApiService.updateFilters(columnFilters, false);
         }
       }
 
       // execute onInit command when necessary
-      if (backendApi && backendService && (backendApi.onInit || isExecuteCommandOnInit)) {
-        const query = (typeof backendService.buildQuery === 'function') ? backendService.buildQuery() : '';
-        const process = (isExecuteCommandOnInit) ? backendApi.process(query) : backendApi.onInit(query);
+      if (backendApi && backendApiService && (backendApi.onInit || isExecuteCommandOnInit)) {
+        const query = (typeof backendApiService.buildQuery === 'function') ? backendApiService.buildQuery() : '';
+        const process = (isExecuteCommandOnInit) ? (backendApi.process && backendApi.process(query) || null) : (backendApi.onInit && backendApi.onInit(query) || null);
 
         // wrap this inside a setTimeout to avoid timing issue since the gridOptions needs to be ready before running this onInit
         setTimeout(() => {
