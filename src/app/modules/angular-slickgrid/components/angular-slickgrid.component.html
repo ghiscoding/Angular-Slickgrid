@@ -2,15 +2,9 @@
   <div attr.id='{{gridId}}' class="slickgrid-container" style="width: 100%" [style.height]="gridHeightString">
   </div>
 
-  <slick-pagination id="slickPagingContainer-{{gridId}}"
-                    *ngIf="showPagination"
-                    (onPaginationChanged)="paginationChanged($event)"
-                    [enableTranslate]="gridOptions.enableTranslate"
-                    [dataView]="dataView"
-                    [grid]="grid"
-                    [options]="paginationOptions"
-                    [locales]="locales"
-                    [totalItems]="totalItems"
-                    [backendServiceApi]="backendServiceApi">
+  <slick-pagination id="slickPagingContainer-{{gridId}}" *ngIf="showPagination"
+    (onPaginationChanged)="paginationChanged($event)" [enableTranslate]="gridOptions.enableTranslate"
+    [dataView]="dataView" [grid]="grid" [options]="paginationOptions" [locales]="locales" [totalItems]="totalItems"
+    [backendServiceApi]="backendServiceApi">
   </slick-pagination>
 </div>

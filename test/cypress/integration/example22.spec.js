@@ -27,7 +27,7 @@ describe('Example 22 - Use of Angular Components', () => {
       .click();
 
     cy.contains('Delete Row')
-      .trigger('click');
+      .trigger('click', { force: true });
 
     // after deleting the row
     cy.get('#grid22')
