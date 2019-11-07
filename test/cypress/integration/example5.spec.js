@@ -24,6 +24,22 @@ describe('Example 5 - OData Grid', () => {
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'done');
 
+      cy.get('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('3'));
+
+      cy.get('[data-test=page-count]')
+        .contains('3');
+
+      cy.get('[data-test=item-from]')
+        .contains('41');
+
+      cy.get('[data-test=item-to]')
+        .contains('50');
+
+      cy.get('[data-test=total-items]')
+        .contains('50');
+
       cy.get('[data-test=odata-query-result]')
         .should(($span) => {
           expect($span.text()).to.eq(`$inlinecount=allpages&$top=20&$skip=40&$orderby=Name asc&$filter=(Gender eq 'male')`);
@@ -36,6 +52,22 @@ describe('Example 5 - OData Grid', () => {
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'done');
 
+      cy.get('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('1'));
+
+      cy.get('[data-test=page-count]')
+        .contains('5');
+
+      cy.get('[data-test=item-from]')
+        .contains('1');
+
+      cy.get('[data-test=item-to]')
+        .contains('10');
+
+      cy.get('[data-test=total-items]')
+        .contains('50');
+
       cy.get('[data-test=odata-query-result]')
         .should(($span) => {
           expect($span.text()).to.eq(`$inlinecount=allpages&$top=10&$orderby=Name asc&$filter=(Gender eq 'male')`);
@@ -47,6 +79,22 @@ describe('Example 5 - OData Grid', () => {
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'done');
+
+      cy.get('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('5'));
+
+      cy.get('[data-test=page-count]')
+        .contains('5');
+
+      cy.get('[data-test=item-from]')
+        .contains('41');
+
+      cy.get('[data-test=item-to]')
+        .contains('50');
+
+      cy.get('[data-test=total-items]')
+        .contains('50');
 
       cy.get('[data-test=odata-query-result]')
         .should(($span) => {
@@ -61,6 +109,22 @@ describe('Example 5 - OData Grid', () => {
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'done');
 
+      cy.get('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('1'));
+
+      cy.get('[data-test=page-count]')
+        .contains('5');
+
+      cy.get('[data-test=item-from]')
+        .contains('1');
+
+      cy.get('[data-test=item-to]')
+        .contains('10');
+
+      cy.get('[data-test=total-items]')
+        .contains('50');
+
       cy.get('[data-test=odata-query-result]')
         .should(($span) => {
           expect($span.text()).to.eq(`$inlinecount=allpages&$top=10&$orderby=Name asc&$filter=(Gender eq 'male')`);
@@ -73,6 +137,22 @@ describe('Example 5 - OData Grid', () => {
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'done');
+
+      cy.get('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('5'));
+
+      cy.get('[data-test=page-count]')
+        .contains('5');
+
+      cy.get('[data-test=item-from]')
+        .contains('41');
+
+      cy.get('[data-test=item-to]')
+        .contains('50');
+
+      cy.get('[data-test=total-items]')
+        .contains('50');
 
       cy.get('[data-test=odata-query-result]')
         .should(($span) => {
@@ -95,6 +175,22 @@ describe('Example 5 - OData Grid', () => {
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'done');
+
+      cy.get('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('1'));
+
+      cy.get('[data-test=page-count]')
+        .contains('10');
+
+      cy.get('[data-test=item-from]')
+        .contains('1');
+
+      cy.get('[data-test=item-to]')
+        .contains('10');
+
+      cy.get('[data-test=total-items]')
+        .contains('100');
 
       cy.get('[data-test=odata-query-result]')
         .should(($span) => {
@@ -306,6 +402,36 @@ describe('Example 5 - OData Grid', () => {
       cy.get('#grid5')
         .find('.slick-row')
         .should('have.length', 1);
+    });
+  });
+
+  describe('General Pagination Behaviors', () => {
+    it('should display page 1 of 1 but hide pagination from/to numbers when filtered data returns an empty dataset', () => {
+      cy.get('.search-filter.filter-name')
+        .find('input')
+        .clear()
+        .type('xyz');
+
+      cy.get('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('1'));
+
+      cy.get('[data-test=page-count]')
+        .contains('1');
+
+      cy.get('[data-test=item-from]')
+        .should('not.exist');
+
+      cy.get('[data-test=item-to]')
+        .should('not.exist');
+
+      cy.get('[data-test=total-items]')
+        .contains('0');
+
+      cy.get('[data-test=odata-query-result]')
+        .should(($span) => {
+          expect($span.text()).to.eq(`$top=10&$filter=(contains(Name, 'xyz'))`);
+        });
     });
   });
 });
