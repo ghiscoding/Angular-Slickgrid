@@ -147,10 +147,12 @@ describe('App Component', () => {
       fixture.detectChanges();
 
       const elm = document.querySelector('.slick-pagination');
-      const pageInfo = fixture.debugElement.query(By.css('.slick-pagination-count')).nativeElement;
+      const pageInfoFromTo = fixture.debugElement.query(By.css('.page-info-from-to')).nativeElement;
+      const pageInfoTotalItems = fixture.debugElement.query(By.css('.page-info-total-items')).nativeElement;
 
       expect(elm.innerHTML).toContain('slick-pagination-nav');
-      expect(pageInfo.innerHTML).toBe('<span>5-10 de 100 éléments</span>');
+      expect(pageInfoFromTo.innerHTML).toBe('<span data-test="item-from">5</span>-<span data-test="item-to">10</span> de ');
+      expect(pageInfoTotalItems.innerHTML).toBe('<span data-test="total-items">100</span> éléments ');
       expect(component.totalItems).toBe(100);
     });
 

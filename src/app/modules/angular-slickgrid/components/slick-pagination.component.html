@@ -45,11 +45,13 @@
     </select>
     <span>{{textItemsPerPage}}</span>,
     <span class="slick-pagination-count">
-      <span>
-        <span *ngIf="pager?.totalItems">
+      <span *ngIf="pager?.totalItems">
+        <span class="page-info-from-to">
           <span data-test="item-from">{{pager?.from}}</span>-<span data-test="item-to">{{pager?.to}}</span>
           {{textOf}}
         </span>
+      </span>
+      <span class="page-info-total-items">
         <span data-test="total-items">{{pager?.totalItems}}</span> {{textItems}}
       </span>
     </span>
