@@ -43,7 +43,19 @@ describe('sumTotalsDollarFormatter', () => {
     expect(output2).toBe('-$34.57');
   });
 
-  it('should display a negative sum in red with at least 2 decimals in parentheses instead of the negative sign when its input is negative', () => {
+  it('should display a negative sum and thousand separator when its input is negative', () => {
+    const totals = { sum: { column1: -12345678, column2: -345678.5678, column3: -2.4 } };
+
+    const output1 = sumTotalsDollarFormatter(totals, { id: 'column1', field: 'column1', params: { thousandSeparator: ',' } } as Column, {});
+    const output2 = sumTotalsDollarFormatter(totals, { id: 'column2', field: 'column2', params: { maxDecimal: 2, thousandSeparator: ',' } } as Column, {});
+    const output3 = sumTotalsDollarFormatter(totals, { id: 'column2', field: 'column2', params: { maxDecimal: 2, decimalSeparator: ',', thousandSeparator: '_' } } as Column, {});
+
+    expect(output1).toBe('-$12,345,678.00');
+    expect(output2).toBe('-$345,678.57');
+    expect(output3).toBe('-$345_678,57');
+  });
+
+  it('should display a negative sum with parentheses instead of the negative sign when its input is negative', () => {
     const totals = { sum: { column1: -123, column2: -34.5678, column3: -2.4 } };
 
     const output1 = sumTotalsDollarFormatter(totals, { id: 'column1', field: 'column1', params: { displayNegativeNumberWithParentheses: true } } as Column, {});
@@ -53,7 +65,19 @@ describe('sumTotalsDollarFormatter', () => {
     expect(output2).toBe('($34.57)');
   });
 
-  it('should display a negative sum with parentheses when input is negative and "displayNegativeNumberWithParentheses" is enabled in the Grid Options', () => {
+  it('should display a negative sum with thousand separator and parentheses instead of the negative sign when its input is negative', () => {
+    const totals = { sum: { column1: -12345678, column2: -345678.5678, column3: -2.4 } };
+
+    const output1 = sumTotalsDollarFormatter(totals, { id: 'column1', field: 'column1', params: { displayNegativeNumberWithParentheses: true, thousandSeparator: ',' } } as Column, {});
+    const output2 = sumTotalsDollarFormatter(totals, { id: 'column2', field: 'column2', params: { maxDecimal: 2, displayNegativeNumberWithParentheses: true, thousandSeparator: ',' } } as Column, {});
+    const output3 = sumTotalsDollarFormatter(totals, { id: 'column2', field: 'column2', params: { maxDecimal: 2, displayNegativeNumberWithParentheses: true, decimalSeparator: ',', thousandSeparator: '_' } } as Column, {});
+
+    expect(output1).toBe('($12,345,678.00)');
+    expect(output2).toBe('($345,678.57)');
+    expect(output3).toBe('($345_678,57)');
+  });
+
+  it('should display a negative sum with parentheses when input is negative and "displayNegativeNumberWithParentheses" is enabled in the Formatter Options', () => {
     gridStub.getOptions.mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true } } as GridOption);
     const columnDef = { id: 'column3', field: 'column3' } as Column;
     const totals = { sum: { column1: 123, column2: 345, column3: -2.4 } };
@@ -122,5 +146,21 @@ describe('sumTotalsDollarFormatter', () => {
     expect(output1).toBe('sum: $123.46');
     expect(output2).toBe('$345.2 (max)');
     expect(output3).toBe('sum: ($2.450)/item');
+  });
+
+  it('should display a sum number with prefix, suffix and thousand separator', () => {
+    const totals = { sum: { column1: 12345678.45678, column2: 345678.2, column3: -345678.45 } };
+
+    const output1 = sumTotalsDollarFormatter(totals, { id: 'column1', field: 'column1', params: { maxDecimal: 2, groupFormatterPrefix: 'Sum: ', decimalSeparator: ',', thousandSeparator: '_' } } as Column, {});
+    const output2 = sumTotalsDollarFormatter(totals, { id: 'column2', field: 'column2', params: { minDecimal: 0, groupFormatterSuffix: ' (sum)', decimalSeparator: ',', thousandSeparator: '_' } } as Column, {});
+    const output3 = sumTotalsDollarFormatter(
+      totals, {
+        id: 'column3', field: 'column3',
+        params: { minDecimal: 3, displayNegativeNumberWithParentheses: true, groupFormatterPrefix: 'Sum: ', groupFormatterSuffix: '/item', decimalSeparator: ',', thousandSeparator: '_' }
+      } as Column);
+
+    expect(output1).toBe('Sum: $12_345_678,46');
+    expect(output2).toBe('$345_678,2 (sum)');
+    expect(output3).toBe('Sum: ($345_678,450)/item');
   });
 });
