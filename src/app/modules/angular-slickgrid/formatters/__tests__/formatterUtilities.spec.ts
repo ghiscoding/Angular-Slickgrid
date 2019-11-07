@@ -1,4 +1,4 @@
-import { getAssociatedDateFormatter, getValueFromParamsOrGridOptions } from '../formatterUtilities';
+import { getAssociatedDateFormatter, getValueFromParamsOrFormatterOptions } from '../formatterUtilities';
 import { FieldType, Column, GridOption } from '../../models';
 
 describe('formatterUtilities', () => {
@@ -11,7 +11,7 @@ describe('formatterUtilities', () => {
       const gridOptions = { formatterOptions: { minDecimal: 2 } } as GridOption;
       const gridSpy = gridStub.getOptions.mockReturnValue(gridOptions);
 
-      const output = getValueFromParamsOrGridOptions('minDecimal', {} as Column, gridStub, -1);
+      const output = getValueFromParamsOrFormatterOptions('minDecimal', {} as Column, gridStub, -1);
 
       expect(gridSpy).toHaveBeenCalled();
       expect(output).toBe(2);
@@ -21,7 +21,7 @@ describe('formatterUtilities', () => {
       const gridOptions = { formatterOptions: { minDecimal: 2 } } as GridOption;
       const gridSpy = gridStub.getOptions.mockReturnValue(gridOptions);
 
-      const output = getValueFromParamsOrGridOptions('minDecimal', { params: { minDecimal: 3 } } as Column, gridStub, -1);
+      const output = getValueFromParamsOrFormatterOptions('minDecimal', { params: { minDecimal: 3 } } as Column, gridStub, -1);
 
       expect(gridSpy).toHaveBeenCalled();
       expect(output).toBe(3);
@@ -29,7 +29,7 @@ describe('formatterUtilities', () => {
 
     it('should return default value when not found in "params" (columnDef) neither the "formatterOptions" (gridOption)', () => {
       const defaultValue = 5;
-      const output = getValueFromParamsOrGridOptions('minDecimal', { field: 'column1' } as Column, {}, defaultValue);
+      const output = getValueFromParamsOrFormatterOptions('minDecimal', { field: 'column1' } as Column, {}, defaultValue);
       expect(output).toBe(defaultValue);
     });
   });

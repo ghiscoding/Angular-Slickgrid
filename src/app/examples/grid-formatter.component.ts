@@ -70,10 +70,16 @@ export class GridFormatterComponent implements OnInit {
       enableAutoResize: true,
       enableCellNavigation: true,
 
-      // you customize the date separator through "formatterOptions"
+      // you customize all formatter at once certain options through "formatterOptions" in the Grid Options
+      // or independently through the column definition "params", the option names are the same
       /*
       formatterOptions: {
-        dateSeparator: '.'
+        dateSeparator: '.',
+        decimalSeparator: ',',
+        displayNegativeNumberWithParentheses: true,
+        minDecimal: 0,
+        maxDecimal: 2,
+        thousandSeparator: '_'
       },
       */
 

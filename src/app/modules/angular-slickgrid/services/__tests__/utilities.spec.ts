@@ -19,6 +19,7 @@ import {
   parseUtcDate,
   sanitizeHtmlToText,
   setDeepValue,
+  thousandSeparatorFormatted,
   titleCase,
   toCamelCase,
   toKebabCase,
@@ -263,6 +264,24 @@ describe('Service/Utilies', () => {
       const output = decimalFormatted(input, 2, 4);
       expect(output).toBe('-456.40');
     });
+
+    it('should return a string with comma as decimal separator when separator is set and maxDecimal is set and will round the decimal', () => {
+      const input = 1234567890.44566;
+      const output = decimalFormatted(input, 2, 4, ',');
+      expect(output).toBe('1234567890,4457');
+    });
+
+    it('should return a string with dot as decimal separator when separator is set and maxDecimal is set and will round the decimal', () => {
+      const input = '1234567890.44566';
+      const output = decimalFormatted(input, 2, 4, ',');
+      expect(output).toBe('1234567890,4457');
+    });
+
+    it('should return a string with thousand separator when separator is set and maxDecimal is set and will round the decimal', () => {
+      const input = 1234567890.44566;
+      const output = decimalFormatted(input, 2, 4, '.', ',');
+      expect(output).toBe('1,234,567,890.4457');
+    });
   });
 
   describe('formatNumber method', () => {
@@ -272,27 +291,62 @@ describe('Service/Utilies', () => {
       expect(output).toBe(input);
     });
 
+    it('should return original value when input provided is not a number even if thousand separator is set', () => {
+      const input = 'abc';
+      const decimalSeparator = ',';
+      const thousandSeparator = '_';
+      const output = formatNumber(input, undefined, undefined, false, '', '', decimalSeparator, thousandSeparator);
+      expect(output).toBe(input);
+    });
+
     it('should return a string with a number formatted to 2 decimals when minDecimal is set to 2', () => {
-      const input = 123;
+      const input = 12345678;
       const output = formatNumber(input, 2);
-      expect(output).toBe('123.00');
+      expect(output).toBe('12345678.00');
+    });
+
+    it('should return a string with thousand separator and a number formatted to 2 decimals when minDecimal is set to 2', () => {
+      const input = 12345678;
+      const decimalSeparator = '.';
+      const thousandSeparator = ',';
+      const output = formatNumber(input, 2, undefined, false, '', '', decimalSeparator, thousandSeparator);
+      expect(output).toBe('12,345,678.00');
     });
 
     it('should return a string with a number formatted and rounded to 4 decimals when maxDecimal is set to 4 and the number provided has extra decimals', () => {
-      const input = 456.4567899;
+      const input = 12345678.4567899;
       const output = formatNumber(input, 0, 4);
-      expect(output).toBe('456.4568');
+      expect(output).toBe('12345678.4568');
+    });
+
+    it('should return a string with thousand separator and a number formatted and rounded to 4 decimals when maxDecimal is set to 4 and the number provided has extra decimals', () => {
+      const input = 12345678.4567899;
+      const decimalSeparator = ',';
+      const thousandSeparator = ' ';
+      const output = formatNumber(input, 0, 4, false, '', '', decimalSeparator, thousandSeparator);
+      expect(output).toBe('12 345 678,4568');
     });
 
     it('should return a string without decimals when these arguments are null or undefined and the input provided is an integer', () => {
-      const input = 456;
+      const input = 12345678;
       const output1 = formatNumber(input);
       const output2 = formatNumber(input, null, null);
       const output3 = formatNumber(input, undefined, undefined);
 
-      expect(output1).toBe('456');
-      expect(output2).toBe('456');
-      expect(output3).toBe('456');
+      expect(output1).toBe('12345678');
+      expect(output2).toBe('12345678');
+      expect(output3).toBe('12345678');
+    });
+
+    it('should return a string without decimals and thousand separator when these arguments are null or undefined and the input provided is an integer', () => {
+      const input = 12345678;
+      const decimalSeparator = '.';
+      const thousandSeparator = ',';
+      const output1 = formatNumber(input, null, null, false, '', '', decimalSeparator, thousandSeparator);
+      const output2 = formatNumber(input, undefined, undefined, false, '', '', decimalSeparator, thousandSeparator);
+
+      expect(output1).toBe('12,345,678');
+      expect(output2).toBe('12,345,678');
     });
 
     it('should return a formatted string wrapped in parentheses when the input number is negative and the displayNegativeNumberWithParentheses argument is enabled', () => {
@@ -300,6 +354,22 @@ describe('Service/Utilies', () => {
       const displayNegativeNumberWithParentheses = true;
       const output = formatNumber(input, 2, 2, displayNegativeNumberWithParentheses);
       expect(output).toBe('(123.00)');
+    });
+
+    it('should return a formatted string wrapped in parentheses when the input number is negative and the displayNegativeNumberWithParentheses argument is enabled', () => {
+      const input = -123;
+      const displayNegativeNumberWithParentheses = true;
+      const output = formatNumber(input, 2, 2, displayNegativeNumberWithParentheses);
+      expect(output).toBe('(123.00)');
+    });
+
+    it('should return a formatted string and thousand separator wrapped in parentheses when the input number is negative and the displayNegativeNumberWithParentheses argument is enabled', () => {
+      const input = -12345678;
+      const displayNegativeNumberWithParentheses = true;
+      const decimalSeparator = ',';
+      const thousandSeparator = '_';
+      const output = formatNumber(input, 2, 2, displayNegativeNumberWithParentheses, '', '', decimalSeparator, thousandSeparator);
+      expect(output).toBe('(12_345_678,00)');
     });
 
     it('should return a formatted currency string when the input number is negative and symbol prefix is provided', () => {
@@ -310,22 +380,54 @@ describe('Service/Utilies', () => {
       expect(output).toBe('-$123.00');
     });
 
+    it('should return a formatted currency string and thousand separator when the input number is negative and symbol prefix is provided', () => {
+      const input = -12345678;
+      const displayNegativeNumberWithParentheses = false;
+      const currencyPrefix = '$';
+      const decimalSeparator = '.';
+      const thousandSeparator = ',';
+      const output = formatNumber(input, 2, 2, displayNegativeNumberWithParentheses, currencyPrefix, '', decimalSeparator, thousandSeparator);
+      expect(output).toBe('-$12,345,678.00');
+    });
+
     it('should return a formatted currency string with symbol prefix/suffix wrapped in parentheses when the input number is negative, when all necessary arguments are filled', () => {
-      const input = -123;
+      const input = -1234;
       const displayNegativeNumberWithParentheses = true;
       const currencyPrefix = '$';
       const currencySuffix = ' CAD';
       const output = formatNumber(input, 2, 2, displayNegativeNumberWithParentheses, currencyPrefix, currencySuffix);
-      expect(output).toBe('($123.00 CAD)');
+      expect(output).toBe('($1234.00 CAD)');
+    });
+
+    it('should return a formatted currency string with symbol prefix/suffix and thousand separator wrapped in parentheses when the input number is negative, when all necessary arguments are filled', () => {
+      const input = -12345678;
+      const displayNegativeNumberWithParentheses = true;
+      const currencyPrefix = '$';
+      const currencySuffix = ' CAD';
+      const decimalSeparator = ',';
+      const thousandSeparator = ' ';
+      const output = formatNumber(input, 2, 2, displayNegativeNumberWithParentheses, currencyPrefix, currencySuffix, decimalSeparator, thousandSeparator);
+      expect(output).toBe('($12 345 678,00 CAD)');
     });
 
     it('should return a formatted currency string with symbol prefix/suffix but without decimals when these arguments are not provided, then wrapped in parentheses when the input number is negative, when all necessary arguments are filled', () => {
-      const input = -123;
+      const input = -1234;
       const displayNegativeNumberWithParentheses = true;
       const currencyPrefix = '$';
       const currencySuffix = ' CAD';
       const output = formatNumber(input, null, null, displayNegativeNumberWithParentheses, currencyPrefix, currencySuffix);
-      expect(output).toBe('($123 CAD)');
+      expect(output).toBe('($1234 CAD)');
+    });
+
+    it('should return a formatted currency string with symbol prefix/suffix and thousand separator but without decimals when these arguments are not provided, then wrapped in parentheses when the input number is negative, when all necessary arguments are filled', () => {
+      const input = -12345678;
+      const displayNegativeNumberWithParentheses = true;
+      const currencyPrefix = '$';
+      const currencySuffix = ' CAD';
+      const decimalSeparator = ',';
+      const thousandSeparator = '_';
+      const output = formatNumber(input, null, null, displayNegativeNumberWithParentheses, currencyPrefix, currencySuffix, decimalSeparator, thousandSeparator);
+      expect(output).toBe('($12_345_678 CAD)');
     });
   });
 
@@ -866,6 +968,44 @@ describe('Service/Utilies', () => {
     it('should be able to update a property that is not a complex object', () => {
       setDeepValue(obj, 'id', 76);
       expect(obj['id']).toBe(76);
+    });
+  });
+
+  describe('thousandSeparatorFormatted method', () => {
+    it('should return original value when input provided is null', () => {
+      const input = null;
+      const output = thousandSeparatorFormatted(input, ',');
+      expect(output).toBe(input);
+    });
+
+    it('should return original value when input provided is undefined', () => {
+      const input = undefined;
+      const output = thousandSeparatorFormatted(input, ',');
+      expect(output).toBe(input);
+    });
+
+    it('should return original value when input provided is not a number', () => {
+      const input = 'abc';
+      const output = thousandSeparatorFormatted(input, ',');
+      expect(output).toBe(input);
+    });
+
+    it('should return a string with a number formatted with every thousand separated with a comma when separator is not defined', () => {
+      const input = 12345678;
+      const output = thousandSeparatorFormatted(input);
+      expect(output).toBe('12,345,678');
+    });
+
+    it('should return a string with a number formatted with every thousand separated with a custom space defined as separator', () => {
+      const input = 12345678;
+      const output = thousandSeparatorFormatted(input, ' ');
+      expect(output).toBe('12 345 678');
+    });
+
+    it('should return a string with a number formatted with every thousand separated with a custom underscore defined as separator', () => {
+      const input = 12345678;
+      const output = thousandSeparatorFormatted(input, '_');
+      expect(output).toBe('12_345_678');
     });
   });
 

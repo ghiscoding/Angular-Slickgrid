@@ -28,6 +28,12 @@ describe('the DollarColored Formatter', () => {
     expect(output).toBe(`<span style="color:red">-$15.00</span>`);
   });
 
+  it('should display a red number with dollar symbol and thousand separator when value is a negative number', () => {
+    const input = -12345678;
+    const output = dollarColoredFormatter(1, 1, input, { params: { thousandSeparator: ',' } } as Column, {});
+    expect(output).toBe(`<span style="color:red">-$12,345,678.00</span>`);
+  });
+
   it('should display a green number with dollar symbol when value greater or equal to 70 and is a type string', () => {
     const input = '70';
     const output = dollarColoredFormatter(1, 1, input, {} as Column, {});
@@ -58,10 +64,22 @@ describe('the DollarColored Formatter', () => {
     expect(output).toBe(`<span style="color:red">($2.40)</span>`);
   });
 
-  it('should display a negative average with parentheses when input is negative and "displayNegativeNumberWithParentheses" is enabled in the Grid Options', () => {
+  it('should display a negative number with parentheses when "displayNegativeNumberWithParentheses" is enabled and thousand separator in the "params"', () => {
+    const input = -12345678.4;
+    const output = dollarColoredFormatter(1, 1, input, { params: { displayNegativeNumberWithParentheses: true, thousandSeparator: ',' } } as Column, {});
+    expect(output).toBe(`<span style="color:red">($12,345,678.40)</span>`);
+  });
+
+  it('should display a negative average with parentheses when input is negative and "displayNegativeNumberWithParentheses" is enabled in the Formatter Options', () => {
     gridStub.getOptions.mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true } } as GridOption);
     const input = -2.4;
     const output = dollarColoredFormatter(1, 1, input, {} as Column, {}, gridStub);
     expect(output).toBe(`<span style="color:red">($2.40)</span>`);
+  });
+  it('should display a negative average with parentheses when input is negative and "displayNegativeNumberWithParentheses" is enabled and thousand separator in the Formatter Options', () => {
+    gridStub.getOptions.mockReturnValue({ formatterOptions: { displayNegativeNumberWithParentheses: true, decimalSeparator: ',', thousandSeparator: ' ' } } as GridOption);
+    const input = -12345678.4;
+    const output = dollarColoredFormatter(1, 1, input, {} as Column, {}, gridStub);
+    expect(output).toBe(`<span style="color:red">($12 345 678,40)</span>`);
   });
 });

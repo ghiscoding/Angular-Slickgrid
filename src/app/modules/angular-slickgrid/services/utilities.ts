@@ -173,7 +173,7 @@ export function findOrDefault(array: any[], logic: (item: any) => boolean, defau
   * @param minDecimal
   * @param maxDecimal
   */
-export function decimalFormatted(input: number | string, minDecimal?: number, maxDecimal?: number): string {
+export function decimalFormatted(input: number | string, minDecimal?: number, maxDecimal?: number, decimalSeparator: '.' | ',' = '.', thousandSeparator: ',' | '_' | '.' | ' ' | '' = ''): string {
   if (isNaN(+input)) {
     return input as string;
   }
@@ -188,10 +188,20 @@ export function decimalFormatted(input: number | string, minDecimal?: number, ma
   while ((amount.length - amount.indexOf('.')) <= minDec) {
     amount += '0';
   }
+
+  // do we want to display our number with a custom separator in each thousand position
+  if (thousandSeparator) {
+    amount = thousandSeparatorFormatted(amount, thousandSeparator);
+  }
+
+  // when using a separator that is not a dot, replace it with the new separator
+  if (decimalSeparator !== '.') {
+    amount = amount.replace('.', decimalSeparator);
+  }
   return amount;
 }
 
-export function formatNumber(input: number | string, minDecimal?: number, maxDecimal?: number, displayNegativeNumberWithParentheses?: boolean, symbolPrefix = '', symbolSuffix = ''): string {
+export function formatNumber(input: number | string, minDecimal?: number, maxDecimal?: number, displayNegativeNumberWithParentheses?: boolean, symbolPrefix = '', symbolSuffix = '', decimalSeparator: '.' | ',' = '.', thousandSeparator: ',' | '_' | '.' | ' ' | '' = ''): string {
   if (isNaN(+input)) {
     return input as string;
   }
@@ -202,20 +212,23 @@ export function formatNumber(input: number | string, minDecimal?: number, maxDec
     const absValue = Math.abs(calculatedValue);
     if (displayNegativeNumberWithParentheses) {
       if (!isNaN(minDecimal) || !isNaN(maxDecimal)) {
-        return `(${symbolPrefix}${decimalFormatted(absValue, minDecimal, maxDecimal)}${symbolSuffix})`;
+        return `(${symbolPrefix}${decimalFormatted(absValue, minDecimal, maxDecimal, decimalSeparator, thousandSeparator)}${symbolSuffix})`;
       }
-      return `(${symbolPrefix}${absValue}${symbolSuffix})`;
+      const formattedValue = thousandSeparatorFormatted(`${absValue}`, thousandSeparator);
+      return `(${symbolPrefix}${formattedValue}${symbolSuffix})`;
     } else {
       if (!isNaN(minDecimal) || !isNaN(maxDecimal)) {
-        return `-${symbolPrefix}${decimalFormatted(absValue, minDecimal, maxDecimal)}${symbolSuffix}`;
+        return `-${symbolPrefix}${decimalFormatted(absValue, minDecimal, maxDecimal, decimalSeparator, thousandSeparator)}${symbolSuffix}`;
       }
-      return `-${symbolPrefix}${absValue}${symbolSuffix}`;
+      const formattedValue = thousandSeparatorFormatted(`${absValue}`, thousandSeparator);
+      return `-${symbolPrefix}${formattedValue}${symbolSuffix}`;
     }
   } else {
     if (!isNaN(minDecimal) || !isNaN(maxDecimal)) {
-      return `${symbolPrefix}${decimalFormatted(input, minDecimal, maxDecimal)}${symbolSuffix}`;
+      return `${symbolPrefix}${decimalFormatted(input, minDecimal, maxDecimal, decimalSeparator, thousandSeparator)}${symbolSuffix}`;
     }
-    return `${symbolPrefix}${input}${symbolSuffix}`;
+    const formattedValue = thousandSeparatorFormatted(`${input}`, thousandSeparator);
+    return `${symbolPrefix}${formattedValue}${symbolSuffix}`;
   }
 }
 
@@ -589,6 +602,21 @@ export function setDeepValue(obj: any, path: string | string[], value: any) {
   } else {
     obj[path[0]] = value;
   }
+}
+
+/**
+ * Format a number or a string into a string that is separated every thousand,
+ * the default separator is a comma but user can optionally pass a different one
+ * @param inputValue
+ * @param separator default to comma ","
+ * @returns string
+ */
+export function thousandSeparatorFormatted(inputValue: string | number | null, separator: ',' | '_' | '.' | ' ' | '' = ','): string | null {
+  if (inputValue !== null && inputValue !== undefined) {
+    const stringValue = `${inputValue}`;
+    return stringValue.replace(/(?<!\.\d+)\B(?=(\d{3})+\b)/g, separator);
+  }
+  return inputValue as null;
 }
 
 /**

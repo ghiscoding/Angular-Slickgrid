@@ -9,7 +9,7 @@ const moment = moment_; // patch to fix rollup "moment has no default export" is
  * 2- Grid Options "formatterOptions"
  * 3- nothing found, return default value provided
  */
-export function getValueFromParamsOrGridOptions(optionName: string, columnDef: Column, grid: any, defaultValue?: any) {
+export function getValueFromParamsOrFormatterOptions(optionName: string, columnDef: Column, grid: any, defaultValue?: any) {
   const gridOptions = ((grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {}) as GridOption;
   const params = columnDef && columnDef.params;
 
