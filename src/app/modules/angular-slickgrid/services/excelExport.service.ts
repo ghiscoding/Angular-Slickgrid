@@ -183,6 +183,53 @@ export class ExcelExportService {
     }
   }
 
+  /** use different Excel Stylesheet Format as per the Field Type */
+  useCellFormatByFieldType(data: string | Date | moment_.Moment, fieldType: FieldType): ExcelCellFormat | string {
+    let outputData: ExcelCellFormat | string | Date | moment_.Moment = data;
+    switch (fieldType) {
+      case FieldType.dateTime:
+      case FieldType.dateTimeIso:
+      case FieldType.dateTimeShortIso:
+      case FieldType.dateTimeIsoAmPm:
+      case FieldType.dateTimeIsoAM_PM:
+      case FieldType.dateEuro:
+      case FieldType.dateEuroShort:
+      case FieldType.dateTimeEuro:
+      case FieldType.dateTimeShortEuro:
+      case FieldType.dateTimeEuroAmPm:
+      case FieldType.dateTimeEuroAM_PM:
+      case FieldType.dateTimeEuroShort:
+      case FieldType.dateTimeEuroShortAmPm:
+      case FieldType.dateUs:
+      case FieldType.dateUsShort:
+      case FieldType.dateTimeUs:
+      case FieldType.dateTimeShortUs:
+      case FieldType.dateTimeUsAmPm:
+      case FieldType.dateTimeUsAM_PM:
+      case FieldType.dateTimeUsShort:
+      case FieldType.dateTimeUsShortAmPm:
+      case FieldType.dateUtc:
+      case FieldType.date:
+      case FieldType.dateIso:
+        outputData = data;
+        if (data) {
+          const defaultDateFormat = mapMomentDateFormatWithFieldType(fieldType);
+          const isDateValid = moment(data as string, defaultDateFormat, false).isValid();
+          const outputDate = (data && isDateValid) ? moment(data as string).format(defaultDateFormat) : data;
+          const dateFormatter = this._stylesheet.createFormat({ format: defaultDateFormat });
+          outputData = { value: outputDate, metadata: { style: dateFormatter.id } };
+        }
+        break;
+      case FieldType.number:
+        const val = isNaN(+data) ? null : data;
+        outputData = { value: val, metadata: { style: this._stylesheetFormats.numberFormatter.id } };
+        break;
+      default:
+        outputData = data;
+    }
+    return outputData as string;
+  }
+
   // -----------------------
   // Private functions
   // -----------------------
@@ -428,52 +475,5 @@ export class ExcelExportService {
     });
 
     return outputStrings;
-  }
-
-  /** use different Excel Stylesheet Format as per the Field Type */
-  private useCellFormatByFieldType(data: string, fieldType: FieldType): ExcelCellFormat | string {
-    let outputData: ExcelCellFormat | string = data;
-    switch (fieldType) {
-      case FieldType.dateTime:
-      case FieldType.dateTimeIso:
-      case FieldType.dateTimeShortIso:
-      case FieldType.dateTimeIsoAmPm:
-      case FieldType.dateTimeIsoAM_PM:
-      case FieldType.dateEuro:
-      case FieldType.dateEuroShort:
-      case FieldType.dateTimeEuro:
-      case FieldType.dateTimeShortEuro:
-      case FieldType.dateTimeEuroAmPm:
-      case FieldType.dateTimeEuroAM_PM:
-      case FieldType.dateTimeEuroShort:
-      case FieldType.dateTimeEuroShortAmPm:
-      case FieldType.dateUs:
-      case FieldType.dateUsShort:
-      case FieldType.dateTimeUs:
-      case FieldType.dateTimeShortUs:
-      case FieldType.dateTimeUsAmPm:
-      case FieldType.dateTimeUsAM_PM:
-      case FieldType.dateTimeUsShort:
-      case FieldType.dateTimeUsShortAmPm:
-      case FieldType.dateUtc:
-      case FieldType.date:
-      case FieldType.dateIso:
-        outputData = data;
-        if (data) {
-          const defaultDateFormat = mapMomentDateFormatWithFieldType(fieldType);
-          const isDateValid = moment(data as string, defaultDateFormat, false).isValid();
-          const outputDate = (data && isDateValid) ? moment(data as string).format(defaultDateFormat) : data;
-          const dateFormatter = this._stylesheet.createFormat({ format: defaultDateFormat });
-          outputData = { value: outputDate, metadata: { style: dateFormatter.id } };
-        }
-        break;
-      case FieldType.number:
-        const val = isNaN(+data) ? null : data;
-        outputData = { value: val, metadata: { style: this._stylesheetFormats.numberFormatter.id } };
-        break;
-      default:
-        outputData = data;
-    }
-    return outputData;
   }
 }
