@@ -1,5 +1,5 @@
 import { Column, Formatter } from './../models/index';
-import { formatNumber, thousandSeparatorFormatted } from './../services/utilities';
+import { formatNumber } from './../services/utilities';
 import { getValueFromParamsOrFormatterOptions } from './formatterUtilities';
 
 export const percentCompleteFormatter: Formatter = (row: number, cell: number, value: any, columnDef: Column, dataContext: any, grid: any): string => {
