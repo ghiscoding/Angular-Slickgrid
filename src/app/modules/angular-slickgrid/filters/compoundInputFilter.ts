@@ -139,7 +139,7 @@ export class CompoundInputFilter implements Filter {
     if (this.columnFilter && this.columnFilter.placeholder) {
       placeholder = this.columnFilter.placeholder;
     }
-    return `<input type="${this._inputType || 'text'}" role="presentation"  autocomplete="off" class="form-control" placeholder="${placeholder}" /><span></span>`;
+    return `<input type="${this._inputType || 'text'}" role="presentation"  autocomplete="off" class="form-control compound-input" placeholder="${placeholder}" /><span></span>`;
   }
 
   private buildSelectOperatorHtmlString() {
@@ -205,7 +205,7 @@ export class CompoundInputFilter implements Filter {
         <div class="input-group-addon input-group-prepend operator">
           <select class="form-control"></select>
         </div>
-        <input class="form-control" type="text" />
+        <input class="form-control compount-input" type="text" />
       </div>
     */
     $operatorInputGroupAddon.append(this.$selectOperatorElm);
