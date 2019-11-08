@@ -49,7 +49,8 @@ describe('Example 5 - OData Grid', () => {
     it('should change Pagination to first page with 10 items', () => {
       cy.get('#items-per-page-label').select('10');
 
-      // wait for the query to finish
+      // wait for the query to start and finish
+      cy.get('[data-test=status]').should('contain', 'processing...');
       cy.get('[data-test=status]').should('contain', 'done');
 
       cy.get('[data-test=page-number-input]')
@@ -301,7 +302,8 @@ describe('Example 5 - OData Grid', () => {
     it('should change Pagination to first page with 10 items', () => {
       cy.get('#items-per-page-label').select('10');
 
-      // wait for the query to finish
+      // wait for the query to start and finish
+      cy.get('[data-test=status]').should('contain', 'processing...');
       cy.get('[data-test=status]').should('contain', 'done');
 
       cy.get('[data-test=odata-query-result]')

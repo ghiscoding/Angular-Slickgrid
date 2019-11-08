@@ -156,6 +156,21 @@ describe('App Component', () => {
       expect(component.totalItems).toBe(100);
     });
 
+    it('should create a the Slick-Pagination component in the DOM and expect different locale when changed', () => {
+      translate.use('en');
+      fixture.detectChanges();
+
+      const elm = document.querySelector('.slick-pagination');
+      const pageInfoFromTo = fixture.debugElement.query(By.css('.page-info-from-to')).nativeElement;
+      const pageInfoTotalItems = fixture.debugElement.query(By.css('.page-info-total-items')).nativeElement;
+
+      expect(translate.currentLang).toBe('en');
+      expect(elm.innerHTML).toContain('slick-pagination-nav');
+      expect(pageInfoFromTo.innerHTML).toBe('<span data-test="item-from">5</span>-<span data-test="item-to">10</span> of ');
+      expect(pageInfoTotalItems.innerHTML).toBe('<span data-test="total-items">100</span> items ');
+      expect(component.totalItems).toBe(100);
+    });
+
     it('should call changeToFirstPage() from the View and expect the pagination service to be called with correct method', fakeAsync(() => {
       const spy = jest.spyOn(paginationServiceStub, 'goToFirstPage');
 
