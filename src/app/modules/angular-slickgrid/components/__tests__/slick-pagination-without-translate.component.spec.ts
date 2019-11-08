@@ -140,10 +140,12 @@ describe('without ngx-translate', () => {
     setTimeout(() => {
       fixture.detectChanges();
       const elm = document.querySelector('.slick-pagination');
-      const pageInfo = fixture.debugElement.query(By.css('.slick-pagination-count')).nativeElement;
+      const pageInfoFromTo = fixture.debugElement.query(By.css('.page-info-from-to')).nativeElement;
+      const pageInfoTotalItems = fixture.debugElement.query(By.css('.page-info-total-items')).nativeElement;
 
       expect(elm.innerHTML).toContain('slick-pagination-nav');
-      expect(pageInfo.innerHTML).toBe('<span>5-10 of 100 items</span>');
+      expect(pageInfoFromTo.innerHTML).toBe('<span data-test="item-from">5</span>-<span data-test="item-to">10</span> of ');
+      expect(pageInfoTotalItems.innerHTML).toBe('<span data-test="total-items">100</span> items ');
       done();
     }, 10);
   });

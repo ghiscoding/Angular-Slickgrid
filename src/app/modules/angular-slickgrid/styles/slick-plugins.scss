@@ -376,6 +376,9 @@ input.search-filter {
 .search-filter {
     input {
         font-family: $filter-placeholder-font-family;
+        &.compound-input {
+          border-radius: $compound-filter-border-radius !important;
+        }
     }
 }
 

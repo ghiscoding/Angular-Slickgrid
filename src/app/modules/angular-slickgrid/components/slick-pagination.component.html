@@ -4,12 +4,12 @@
       <ul class="pagination">
         <li class="page-item" [ngClass]="(pager?.pageNumber === 1 || pager?.totalItems === 0) ? 'disabled' : ''">
           <a class="page-link icon-seek-first fa fa-angle-double-left" aria-label="First"
-             (click)="changeToFirstPage($event)">
+            (click)="changeToFirstPage($event)">
           </a>
         </li>
         <li class="page-item" [ngClass]="(pager?.pageNumber === 1 || pager?.totalItems === 0) ? 'disabled' : ''">
           <a class="page-link icon-seek-prev fa fa-angle-left" aria-label="Previous"
-             (click)="changeToPreviousPage($event)">
+            (click)="changeToPreviousPage($event)">
           </a>
         </li>
       </ul>
@@ -17,23 +17,23 @@
 
     <div class="slick-page-number">
       <span>{{textPage}}</span>
-      <input type="text" class="form-control" [value]="pager?.pageNumber" size="1" [readOnly]="pager?.totalItems === 0"
-             (change)="changeToCurrentPage($event)">
-      <span>{{textOf}}</span><span> {{pager?.pageCount}}</span>
+      <input type="text" class="form-control" data-test="page-number-input" [value]="pager?.pageNumber" size="1"
+        [readOnly]="pager?.totalItems === 0" (change)="changeToCurrentPage($event)">
+      <span>{{textOf}}</span><span data-test="page-count"> {{pager?.pageCount}}</span>
     </div>
 
     <nav aria-label="Page navigation">
       <ul class="pagination">
         <li class="page-item"
-            [ngClass]="(pager?.pageNumber === pager?.pageCount || pager?.totalItems === 0) ? 'disabled' : ''">
+          [ngClass]="(pager?.pageNumber === pager?.pageCount || pager?.totalItems === 0) ? 'disabled' : ''">
           <a class="page-link icon-seek-next text-center fa fa-lg fa-angle-right" aria-label="Next"
-             (click)="changeToNextPage($event)">
+            (click)="changeToNextPage($event)">
           </a>
         </li>
         <li class="page-item"
-            [ngClass]="(pager?.pageNumber === pager?.pageCount || pager?.totalItems === 0) ? 'disabled' : ''">
+          [ngClass]="(pager?.pageNumber === pager?.pageCount || pager?.totalItems === 0) ? 'disabled' : ''">
           <a class="page-link icon-seek-end fa fa-lg fa-angle-double-right" aria-label="Last"
-             (click)="changeToLastPage($event)">
+            (click)="changeToLastPage($event)">
           </a>
         </li>
       </ul>
@@ -45,7 +45,15 @@
     </select>
     <span>{{textItemsPerPage}}</span>,
     <span class="slick-pagination-count">
-      <span>{{pager?.from}}-{{pager?.to}} {{textOf}} {{pager?.totalItems}} {{textItems}}</span>
+      <span *ngIf="pager?.totalItems">
+        <span class="page-info-from-to">
+          <span data-test="item-from">{{pager?.from}}</span>-<span data-test="item-to">{{pager?.to}}</span>
+          {{textOf}}
+        </span>
+      </span>
+      <span class="page-info-total-items">
+        <span data-test="total-items">{{pager?.totalItems}}</span> {{textItems}}
+      </span>
     </span>
   </span>
 </div>

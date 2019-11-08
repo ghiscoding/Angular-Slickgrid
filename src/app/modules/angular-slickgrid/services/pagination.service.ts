@@ -34,7 +34,7 @@ export class PaginationService {
   private _dataFrom = 1;
   private _dataTo = 1;
   private _itemsPerPage: number;
-  private _pageCount = 0;
+  private _pageCount = 1;
   private _pageNumber = 1;
   private _totalItems = 0;
   private _availablePageSizes: number[];
@@ -54,10 +54,10 @@ export class PaginationService {
   get pager(): Pager {
     return {
       from: this._dataFrom,
-      to: this._dataTo,
+      to: this._dataTo || 1,
       itemsPerPage: this._itemsPerPage,
-      pageCount: this._pageCount,
-      pageNumber: this._pageNumber,
+      pageCount: this._pageCount || 1,
+      pageNumber: this._pageNumber || 1,
       availablePageSizes: this._availablePageSizes,
       totalItems: this._totalItems,
     };
@@ -109,8 +109,8 @@ export class PaginationService {
   }
 
   changeItemPerPage(itemsPerPage: number, event?: any): Promise<any> {
+    this._pageNumber = 1;
     this._pageCount = Math.ceil(this._totalItems / itemsPerPage);
-    this._pageNumber = (this._totalItems > 0) ? 1 : 0;
     this._itemsPerPage = itemsPerPage;
     return this.processOnPageChanged(this._pageNumber, event);
   }
@@ -249,9 +249,9 @@ export class PaginationService {
 
   recalculateFromToIndexes() {
     if (this._totalItems === 0) {
-      this._dataFrom = 0;
-      this._dataTo = 0;
-      this._pageNumber = 0;
+      this._dataFrom = 1;
+      this._dataTo = 1;
+      this._pageNumber = 1;
     } else {
       this._dataFrom = this._pageNumber > 1 ? ((this._pageNumber * this._itemsPerPage) - this._itemsPerPage + 1) : 1;
       this._dataTo = (this._totalItems < this._itemsPerPage) ? this._totalItems : (this._pageNumber * this._itemsPerPage);
