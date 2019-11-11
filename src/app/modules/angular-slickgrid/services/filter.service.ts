@@ -18,7 +18,7 @@ import {
   SlickEvent,
   SlickEventHandler,
 } from './../models/index';
-import { executeBackendCallback } from './backend-utilities';
+import { executeBackendCallback, refreshBackendDataset } from './backend-utilities';
 import { getDescendantProperty } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { FilterFactory } from '../filters/filterFactory';
@@ -449,7 +449,7 @@ export class FilterService {
    * This is basically the same as if we would manually add searchTerm(s) to a column filter object in the column definition, but we do it programmatically.
    * At the end of the day, when creating the Filter (DOM Element), it will use these searchTerm(s) so we can take advantage of that without recoding each Filter type (DOM element)
    */
-  populateColumnFilterSearchTermPresets(filters: ColumnFilter[]) {
+  populateColumnFilterSearchTermPresets(filters: CurrentFilter[]) {
     if (Array.isArray(filters) && filters.length > 0) {
       this._columnDefinitions.forEach((columnDef: Column) => {
         // clear any columnDef searchTerms before applying Presets
@@ -469,6 +469,32 @@ export class FilterService {
       });
     }
     return this._columnDefinitions;
+  }
+
+  updateFilters(filters: CurrentFilter[]) {
+    if (Array.isArray(filters)) {
+      // start by clearing all filters before applying any new one
+      this.clearFilters();
+
+      this.populateColumnFilterSearchTermPresets(filters);
+      this.customLocalFilter.bind(this);
+      const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
+      const triggerChange = backendApi ? false : true;
+
+      filters.forEach((newFilter) => {
+        const uiFilter = this._filtersMetadata.find((filter) => newFilter.columnId === filter.columnDef.id);
+        uiFilter.setValues(newFilter.searchTerms, newFilter.operator || uiFilter.defaultOperator, triggerChange);
+        this.updateColumnFilters(newFilter.searchTerms, uiFilter.columnDef, newFilter.operator || uiFilter.defaultOperator);
+      });
+
+      if (backendApi) {
+        const backendApiService = backendApi && backendApi.service;
+        if (backendApiService) {
+          backendApiService.updateFilters(filters, true);
+          refreshBackendDataset(backendApi, this._gridOptions);
+        }
+      }
+    }
   }
 
   // --

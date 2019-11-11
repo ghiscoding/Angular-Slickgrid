@@ -57,6 +57,11 @@ export class CompoundDateFilter implements Filter {
     return this._currentDate;
   }
 
+  /** Getter to know what would be the default operator when none is specified */
+  get defaultOperator(): OperatorType | OperatorString {
+    return OperatorType.empty;
+  }
+
   /** Getter for the Flatpickr Options */
   get flatpickrOptions(): FlatpickrOption {
     return this._flatpickrOptions || {};
@@ -69,7 +74,7 @@ export class CompoundDateFilter implements Filter {
 
   /** Getter for the Filter Operator */
   get operator(): OperatorType | OperatorString {
-    return this._operator || this.columnFilter.operator || OperatorType.empty;
+    return this._operator || this.columnFilter.operator || this.defaultOperator;
   }
 
   /**
@@ -139,16 +144,25 @@ export class CompoundDateFilter implements Filter {
     }
   }
 
-  /**
-   * Set value(s) on the DOM element
-   */
-  setValues(values: SearchTerm | SearchTerm[]) {
+  /** Set value(s) in the DOM element, we can optionally pass an operator and/or trigger a change event */
+  setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString, triggerChange = false) {
     if (this.flatInstance && values && Array.isArray(values)) {
       this._currentDate = values[0] as Date;
       this.flatInstance.setDate(values[0]);
     } else if (this.flatInstance && values && values) {
       this._currentDate = values as Date;
       this.flatInstance.setDate(values);
+    }
+
+    this.operator = operator || this.defaultOperator;
+    if (operator && this.$selectOperatorElm) {
+      this.$selectOperatorElm.val(operator);
+    }
+
+    if (triggerChange) {
+      this._clearFilterTriggered = false;
+      this._shouldTriggerQuery = true;
+      this.onTriggerEvent(new Event('change'));
     }
   }
 

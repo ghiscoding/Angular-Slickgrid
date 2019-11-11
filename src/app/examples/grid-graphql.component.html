@@ -34,6 +34,7 @@
         <button class="btn btn-default btn-xs" data-test="goto-last-page" (click)="goToLastPage()">
           <i class="fa fa-caret-right fa-lg"></i>
         </button>
+        <button class="btn btn-default btn-xs" (click)="setSomeFilters()">Set Some Filters</button>
       </div>
     </div>
     <div class="col-sm-7">
@@ -45,8 +46,7 @@
   </div>
 
   <angular-slickgrid gridId="grid6" [gridHeight]="200" [gridWidth]="900" [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions" [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
-                     (onGridStateChanged)="gridStateChanged($event)"
-                     (onBeforeGridDestroy)="saveCurrentGridState($event)">
+    [gridOptions]="gridOptions" [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
+    (onGridStateChanged)="gridStateChanged($event)" (onBeforeGridDestroy)="saveCurrentGridState($event)">
   </angular-slickgrid>
 </div>

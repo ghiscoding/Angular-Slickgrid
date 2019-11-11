@@ -43,6 +43,11 @@ export class CompoundInputFilter implements Filter {
     return this.columnDef && this.columnDef.filter || {};
   }
 
+  /** Getter to know what would be the default operator when none is specified */
+  get defaultOperator(): OperatorType | OperatorString {
+    return OperatorType.empty;
+  }
+
   /** Getter of input type (text, number, password) */
   get inputType() {
     return this._inputType;
@@ -55,7 +60,7 @@ export class CompoundInputFilter implements Filter {
 
   /** Getter of the Operator to use when doing the filter comparing */
   get operator(): OperatorType | OperatorString {
-    return this._operator || OperatorType.empty;
+    return this._operator || this.defaultOperator;
   }
 
   /** Getter of the Operator to use when doing the filter comparing */
@@ -124,9 +129,20 @@ export class CompoundInputFilter implements Filter {
   /**
    * Set value(s) on the DOM element
    */
-  setValues(values: SearchTerm[]) {
+  setValues(values: SearchTerm[], operator?: OperatorType | OperatorString, triggerChange = false) {
     if (values && Array.isArray(values)) {
       this.$filterInputElm.val(values[0]);
+    }
+
+    this.operator = operator || this.defaultOperator;
+    if (operator && this.$selectOperatorElm) {
+      this.$selectOperatorElm.val(operator);
+    }
+
+    if (triggerChange) {
+      this._clearFilterTriggered = false;
+      this._shouldTriggerQuery = true;
+      this.onTriggerEvent(new Event('change'));
     }
   }
 

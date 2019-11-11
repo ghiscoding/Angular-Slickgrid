@@ -58,6 +58,11 @@ export class DateRangeFilter implements Filter {
     return this._currentDates;
   }
 
+  /** Getter to know what would be the default operator when none is specified */
+  get defaultOperator(): OperatorType | OperatorString {
+    return this.gridOptions.defaultFilterRangeOperator || OperatorType.rangeExclusive;
+  }
+
   /** Getter for the Flatpickr Options */
   get flatpickrOptions(): FlatpickrOption {
     return this._flatpickrOptions || {};
@@ -65,7 +70,14 @@ export class DateRangeFilter implements Filter {
 
   /** Getter of the Operator to use when doing the filter comparing */
   get operator(): OperatorType | OperatorString {
-    return this.columnFilter.operator || this.gridOptions.defaultFilterRangeOperator || OperatorType.rangeExclusive;
+    return this.columnFilter && this.columnFilter.operator || this.defaultOperator;
+  }
+
+  /** Setter for the filter operator */
+  set operator(operator: OperatorType | OperatorString) {
+    if (this.columnFilter) {
+      this.columnFilter.operator = operator;
+    }
   }
 
   /**
@@ -131,7 +143,7 @@ export class DateRangeFilter implements Filter {
    * Set value(s) on the DOM element
    * @params searchTerms
    */
-  setValues(searchTerms: SearchTerm[]) {
+  setValues(searchTerms: SearchTerm[], operator?: OperatorType | OperatorString, triggerChange = false) {
     let pickerValues = [];
 
     // get the picker values, if it's a string with the "..", we'll do the split else we'll use the array of search terms
@@ -144,6 +156,14 @@ export class DateRangeFilter implements Filter {
     if (this.flatInstance && searchTerms) {
       this._currentDates = pickerValues;
       this.flatInstance.setDate(pickerValues);
+    }
+
+    this.operator = operator || this.defaultOperator;
+
+    if (triggerChange) {
+      this._clearFilterTriggered = false;
+      this._shouldTriggerQuery = true;
+      this.onTriggerEvent(undefined);
     }
   }
 

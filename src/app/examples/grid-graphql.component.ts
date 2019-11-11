@@ -264,6 +264,19 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     console.log('GraphQL current grid state', this.angularGrid.gridStateService.getCurrentGridState());
   }
 
+  setSomeFilters() {
+    const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
+    const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
+
+    // we can Set Some Filters (or different filters) afterward through the FilterService
+    this.angularGrid.filterService.updateFilters([
+      { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
+      { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },
+      { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' },
+      { columnId: 'finish', searchTerms: [presetLowestDay, presetHighestDay], operator: OperatorType.rangeInclusive },
+    ]);
+  }
+
   switchLanguage() {
     this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
     this.translate.use(this.selectedLanguage);

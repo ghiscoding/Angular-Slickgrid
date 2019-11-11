@@ -1,5 +1,6 @@
-import { BackendServiceApi, EmitterType, GraphqlResult, GridOption } from '../models';
 import { isObservable } from 'rxjs';
+
+import { BackendServiceApi, EmitterType, GraphqlResult, GridOption } from '../models';
 
 /**
  * Execute the backend callback, which are mainly the "process" & "postProcess" methods.
@@ -59,5 +60,39 @@ export function onBackendError(e: any, backendApi: BackendServiceApi) {
     backendApi.onError(e);
   } else {
     throw e;
+  }
+}
+
+/** Refresh the dataset through the Backend Service */
+export function refreshBackendDataset(backendApi: BackendServiceApi, gridOptions: GridOption) {
+  let query = '';
+
+  if (!backendApi || !backendApi.service || !backendApi.process) {
+    throw new Error(`BackendServiceApi requires at least a "process" function and a "service" defined`);
+  }
+
+  if (backendApi.service) {
+    query = backendApi.service.buildQuery();
+  }
+
+  if (query && query !== '') {
+    // keep start time & end timestamps & return it after process execution
+    const startTime = new Date();
+
+    if (backendApi.preProcess) {
+      backendApi.preProcess();
+    }
+
+    // the processes can be Promises or Observables (like Angular HttpClient)
+    const process = backendApi.process(query);
+    if (process instanceof Promise && process.then) {
+      process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, gridOptions.pagination.totalItems))
+        .catch((error: any) => onBackendError(error, backendApi));
+    } else if (isObservable(process)) {
+      process.subscribe(
+        (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, gridOptions.pagination.totalItems),
+        (error: any) => onBackendError(error, backendApi)
+      );
+    }
   }
 }

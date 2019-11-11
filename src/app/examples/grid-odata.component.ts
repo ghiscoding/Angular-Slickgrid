@@ -161,6 +161,14 @@ export class GridOdataComponent implements OnInit {
     this.angularGrid.paginationService.goToLastPage();
   }
 
+  setSomeFilters() {
+    // we can Set Some Filters (or different filters) afterward through the FilterService
+    this.angularGrid.filterService.updateFilters([
+      // { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
+      { columnId: 'name', searchTerms: ['A'], operator: 'a*' },
+    ]);
+  }
+
   /** This function is only here to mock a WebAPI call (since we are using a JSON file for the demo)
    *  in your case the getCustomer() should be a WebAPI function returning a Promise
    */
