@@ -614,7 +614,11 @@ export function setDeepValue(obj: any, path: string | string[], value: any) {
 export function thousandSeparatorFormatted(inputValue: string | number | null, separator: ',' | '_' | '.' | ' ' | '' = ','): string | null {
   if (inputValue !== null && inputValue !== undefined) {
     const stringValue = `${inputValue}`;
-    return stringValue.replace(/(?<!\.\d+)\B(?=(\d{3})+\b)/g, separator);
+    const decimalSplit = stringValue.split('.');
+    if (decimalSplit.length === 2) {
+      return `${decimalSplit[0].replace(/\B(?=(\d{3})+(?!\d))/g, separator)}.${decimalSplit[1]}`;
+    }
+    return stringValue.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
   }
   return inputValue as null;
 }
