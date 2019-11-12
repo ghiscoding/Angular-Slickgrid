@@ -875,11 +875,12 @@ describe('Grid Service', () => {
 
       setTimeout(() => {
         expect(getItemSpy).toHaveBeenCalledWith(2);
+        expect(updateSpy).toHaveBeenCalledTimes(3);
         expect(updateSpy).toHaveBeenCalledWith(mockColumn.id, mockColumn);
         expect(renderSpy).toHaveBeenCalled();
         expect(getIndexSpy).toHaveBeenCalled();
         done();
-      }, 2);
+      }, 5);
     });
   });
 
