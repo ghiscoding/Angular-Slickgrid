@@ -250,7 +250,7 @@ export class GridClientSideComponent implements OnInit {
   }
 
   setSomeFilters() {
-    // we can Set Some Filters (or different filters) afterward through the FilterService
+    // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
       { columnId: 'duration', searchTerms: [10, 220] },
       { columnId: 'usDateShort', operator: '<', searchTerms: ['4/20/25'] },

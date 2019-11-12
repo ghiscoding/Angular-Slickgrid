@@ -208,17 +208,14 @@ export class SelectFilter implements Filter {
   /**
    * Set value(s) on the DOM element
    */
-  setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString, triggerChange = false) {
+  setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
     if (values && this.$filterElm && typeof this.$filterElm.multipleSelect === 'function') {
       values = Array.isArray(values) ? values : [values];
       this.$filterElm.multipleSelect('setSelects', values);
     }
 
+    // set the operator when defined
     this.operator = operator || this.defaultOperator;
-    if (triggerChange) {
-      this._shouldTriggerQuery = true;
-      this.onTriggerEvent(undefined);
-    }
   }
 
   //

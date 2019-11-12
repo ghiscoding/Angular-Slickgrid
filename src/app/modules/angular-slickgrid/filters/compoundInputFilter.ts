@@ -129,20 +129,15 @@ export class CompoundInputFilter implements Filter {
   /**
    * Set value(s) on the DOM element
    */
-  setValues(values: SearchTerm[], operator?: OperatorType | OperatorString, triggerChange = false) {
-    if (values && Array.isArray(values)) {
-      this.$filterInputElm.val(values[0]);
+  setValues(values: SearchTerm[], operator?: OperatorType | OperatorString) {
+    if (values) {
+      const newValue = Array.isArray(values) ? values[0] : values;
+      this.$filterInputElm.val(newValue);
     }
 
     this.operator = operator || this.defaultOperator;
     if (operator && this.$selectOperatorElm) {
       this.$selectOperatorElm.val(operator);
-    }
-
-    if (triggerChange) {
-      this._clearFilterTriggered = false;
-      this._shouldTriggerQuery = true;
-      this.onTriggerEvent(new Event('change'));
     }
   }
 

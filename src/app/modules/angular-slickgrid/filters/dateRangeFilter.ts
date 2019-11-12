@@ -143,7 +143,7 @@ export class DateRangeFilter implements Filter {
    * Set value(s) on the DOM element
    * @params searchTerms
    */
-  setValues(searchTerms: SearchTerm[], operator?: OperatorType | OperatorString, triggerChange = false) {
+  setValues(searchTerms: SearchTerm[], operator?: OperatorType | OperatorString) {
     let pickerValues = [];
 
     // get the picker values, if it's a string with the "..", we'll do the split else we'll use the array of search terms
@@ -158,13 +158,8 @@ export class DateRangeFilter implements Filter {
       this.flatInstance.setDate(pickerValues);
     }
 
+    // set the operator when defined
     this.operator = operator || this.defaultOperator;
-
-    if (triggerChange) {
-      this._clearFilterTriggered = false;
-      this._shouldTriggerQuery = true;
-      this.onTriggerEvent(undefined);
-    }
   }
 
   //

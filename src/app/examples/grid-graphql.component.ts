@@ -268,7 +268,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
     const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
 
-    // we can Set Some Filters (or different filters) afterward through the FilterService
+    // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
       { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
       { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },

@@ -162,7 +162,7 @@ export class GridOdataComponent implements OnInit {
   }
 
   setSomeFilters() {
-    // we can Set Some Filters (or different filters) afterward through the FilterService
+    // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
       // { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
       { columnId: 'name', searchTerms: ['A'], operator: 'a*' },

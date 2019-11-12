@@ -228,4 +228,17 @@ export class GridRangeComponent implements OnInit {
     const nextLocale = (this.selectedLanguage === 'en') ? 'fr' : 'en';
     this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
   }
+
+  setSomeFilters() {
+    const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
+    const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
+
+    // we can Set Filters Dynamically (or different filters) afterward through the FilterService
+    this.angularGrid.filterService.updateFilters([
+      { columnId: 'duration', searchTerms: ['14..78'] },
+      { columnId: 'complete', searchTerms: ['13..73'] }, // without operator will default to 'RangeExclusive'
+      { columnId: 'complete', operator: 'RangeInclusive', searchTerms: [12, 82] }, // same result with searchTerms: ['5..80']
+      { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [presetLowestDay, presetHighestDay] },
+    ]);
+  }
 }

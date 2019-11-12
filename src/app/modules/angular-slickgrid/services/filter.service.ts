@@ -199,10 +199,11 @@ export class FilterService {
   }
 
   /** Clear the search filters (below the column titles) */
-  clearFilters() {
+  clearFilters(triggerChange = true) {
     this._filtersMetadata.forEach((filter: Filter) => {
       if (filter && filter.clear) {
-        // clear element and trigger a change
+        // clear element but don't trigger individual clear change,
+        // we'll do 1 trigger for all filters at once afterward
         filter.clear(false);
       }
     });
@@ -232,7 +233,9 @@ export class FilterService {
     }
 
     // emit an event when filters are all cleared
-    this.onFilterCleared.next(true);
+    if (triggerChange) {
+      this.onFilterCleared.next(true);
+    }
   }
 
   customLocalFilter(item: any, args: any) {
@@ -473,26 +476,30 @@ export class FilterService {
 
   updateFilters(filters: CurrentFilter[]) {
     if (Array.isArray(filters)) {
-      // start by clearing all filters before applying any new one
-      this.clearFilters();
+      // start by clearing all filters, without trigger an event, before applying any new ones
+      this.clearFilters(false);
 
-      this.populateColumnFilterSearchTermPresets(filters);
-      this.customLocalFilter.bind(this);
-      const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
-      const triggerChange = backendApi ? false : true;
-
+      // pre-fill (value + operator) and render all filters in the DOM
       filters.forEach((newFilter) => {
         const uiFilter = this._filtersMetadata.find((filter) => newFilter.columnId === filter.columnDef.id);
-        uiFilter.setValues(newFilter.searchTerms, newFilter.operator || uiFilter.defaultOperator, triggerChange);
         this.updateColumnFilters(newFilter.searchTerms, uiFilter.columnDef, newFilter.operator || uiFilter.defaultOperator);
+        uiFilter.setValues(newFilter.searchTerms, newFilter.operator || uiFilter.defaultOperator, false);
       });
+
+      const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
+
+      // refresh the DataView and trigger an event after all filters were updated and rendered
+      this._dataView.refresh();
 
       if (backendApi) {
         const backendApiService = backendApi && backendApi.service;
         if (backendApiService) {
           backendApiService.updateFilters(filters, true);
           refreshBackendDataset(backendApi, this._gridOptions);
+          this.emitFilterChanged(EmitterType.remote);
         }
+      } else {
+        this.emitFilterChanged(EmitterType.local);
       }
     }
   }

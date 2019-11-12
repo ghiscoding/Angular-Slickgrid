@@ -292,7 +292,7 @@ export class GridDraggableGroupingComponent implements OnInit {
       format: FileType.xlsx
     });
   }
-  
+
   exportToCsv(type = 'csv') {
     this.angularGrid.exportService.exportToFile({
       delimiter: (type === 'csv') ? DelimiterType.comma : DelimiterType.tab,
@@ -364,5 +364,12 @@ export class GridDraggableGroupingComponent implements OnInit {
   toggleDraggableGroupingRow() {
     this.clearGrouping();
     this.gridObj.setPreHeaderPanelVisibility(!this.gridObj.getOptions().showPreHeaderPanel);
+  }
+
+  setSomeFilters() {
+    // we can Set Filters Dynamically (or different filters) afterward through the FilterService
+    this.angularGrid.filterService.updateFilters([
+      { columnId: 'percentComplete', operator: '>=', searchTerms: ['75'] },
+    ]);
   }
 }
