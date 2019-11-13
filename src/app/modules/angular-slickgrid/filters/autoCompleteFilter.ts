@@ -88,7 +88,7 @@ export class AutoCompleteFilter implements Filter {
 
   /** Getter of the Operator to use when doing the filter comparing */
   get operator(): OperatorType | OperatorString {
-    return this.columnDef && this.columnDef.filter && this.columnDef.filter.operator || this.defaultOperator;
+    return this.columnFilter && this.columnFilter.operator || this.defaultOperator;
   }
 
   /** Setter for the filter operator */

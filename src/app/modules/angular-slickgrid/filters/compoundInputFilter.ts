@@ -1,5 +1,5 @@
-import { Constants } from './../constants';
 import { TranslateService } from '@ngx-translate/core';
+
 import {
   Column,
   ColumnFilter,
@@ -13,6 +13,8 @@ import {
   OperatorType,
   SearchTerm,
 } from './../models/index';
+import { Constants } from './../constants';
+import { mapOperatorToShortDesignation } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -135,9 +137,9 @@ export class CompoundInputFilter implements Filter {
       this.$filterInputElm.val(newValue);
     }
 
-    this.operator = operator || this.defaultOperator;
+    this.operator = mapOperatorToShortDesignation(operator || this.defaultOperator);
     if (operator && this.$selectOperatorElm) {
-      this.$selectOperatorElm.val(operator);
+      this.$selectOperatorElm.val(this.operator);
     }
   }
 

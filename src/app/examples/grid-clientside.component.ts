@@ -249,7 +249,7 @@ export class GridClientSideComponent implements OnInit {
     console.log('Client sample, last Grid State:: ', this.angularGrid.gridStateService.getCurrentGridState());
   }
 
-  setSomeFilters() {
+  setFiltersDynamically() {
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
       { columnId: 'duration', searchTerms: [10, 220] },

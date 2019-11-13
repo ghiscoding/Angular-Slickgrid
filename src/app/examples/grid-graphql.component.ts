@@ -66,7 +66,15 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'name', field: 'name', headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string, width: 60 },
+      {
+        id: 'name', field: 'name', headerKey: 'NAME', width: 60,
+        type: FieldType.string,
+        sortable: true,
+        filterable: true,
+        filter: {
+          model: Filters.compoundInput
+        }
+      },
       {
         id: 'gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true, width: 60,
         filter: {
@@ -264,15 +272,16 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     console.log('GraphQL current grid state', this.angularGrid.gridStateService.getCurrentGridState());
   }
 
-  setSomeFilters() {
+  setFiltersDynamically() {
     const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
     const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
 
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
-      { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
-      { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },
-      { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' },
+      { columnId: 'gender', searchTerms: ['female'], operator: OperatorType.equal },
+      { columnId: 'name', searchTerms: ['Jane'], operator: OperatorType.startsWith },
+      { columnId: 'company', searchTerms: ['acme'], operator: 'IN' },
+      { columnId: 'billing.address.zip', searchTerms: ['11'], operator: OperatorType.greaterThanOrEqual },
       { columnId: 'finish', searchTerms: [presetLowestDay, presetHighestDay], operator: OperatorType.rangeInclusive },
     ]);
   }

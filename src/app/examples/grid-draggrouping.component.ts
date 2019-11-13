@@ -366,7 +366,7 @@ export class GridDraggableGroupingComponent implements OnInit {
     this.gridObj.setPreHeaderPanelVisibility(!this.gridObj.getOptions().showPreHeaderPanel);
   }
 
-  setSomeFilters() {
+  setFiltersDynamically() {
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
       { columnId: 'percentComplete', operator: '>=', searchTerms: ['75'] },

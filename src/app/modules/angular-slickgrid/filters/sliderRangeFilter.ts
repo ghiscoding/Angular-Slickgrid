@@ -52,6 +52,11 @@ export class SliderRangeFilter implements Filter {
     return this._currentValues;
   }
 
+  /** Getter to know what would be the default operator when none is specified */
+  get defaultOperator(): OperatorType | OperatorString {
+    return this.gridOptions.defaultFilterRangeOperator || OperatorType.rangeExclusive;
+  }
+
   /** Getter for the Grid Options pulled through the Grid Object */
   get gridOptions(): GridOption {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
@@ -62,8 +67,16 @@ export class SliderRangeFilter implements Filter {
     return this._sliderOptions || {};
   }
 
+  /** Getter of the Operator to use when doing the filter comparing */
   get operator(): OperatorType | OperatorString {
-    return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || this.gridOptions.defaultFilterRangeOperator || OperatorType.rangeExclusive;
+    return this.columnFilter && this.columnFilter.operator || this.defaultOperator;
+  }
+
+  /** Setter for the filter operator */
+  set operator(operator: OperatorType | OperatorString) {
+    if (this.columnFilter) {
+      this.columnFilter.operator = operator;
+    }
   }
 
   /**
@@ -115,7 +128,7 @@ export class SliderRangeFilter implements Filter {
    * Set value(s) on the DOM element
    * @params searchTerms
    */
-  setValues(searchTerms: SearchTerm | SearchTerm[]) {
+  setValues(searchTerms: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
     if (searchTerms) {
       let sliderValues = [];
 
@@ -133,6 +146,9 @@ export class SliderRangeFilter implements Filter {
         }
       }
     }
+
+    // set the operator when defined
+    this.operator = operator || this.defaultOperator;
   }
 
   //

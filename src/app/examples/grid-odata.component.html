@@ -14,6 +14,7 @@
         <b>Metrics:</b> {{metrics.endTime | date: 'yyyy-MM-dd HH:mm aaaaa\'m\''}} | {{metrics.executionTime}}ms
         | {{metrics.totalItemCount}} items
       </span>
+      <button class="btn btn-default btn-sm" (click)="setFiltersDynamically()">Set Filters Dynamically</button>
     </div>
     <div class="col-sm-8">
       <div class="alert alert-info" data-test="alert-odata-query">
@@ -46,7 +47,6 @@
     <button class="btn btn-default btn-xs" data-test="goto-last-page" (click)="goToLastPage()">
       <i class="fa fa-caret-right fa-lg"></i>
     </button>
-    <button class="btn btn-default btn-xs" (click)="setSomeFilters()">Set Filters Dynamically</button>
   </div>
 
   <angular-slickgrid gridId="grid5" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"

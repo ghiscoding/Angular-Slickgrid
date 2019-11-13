@@ -58,7 +58,8 @@ export class GridOdataComponent implements OnInit {
   ngOnInit(): void {
     this.columnDefinitions = [
       {
-        id: 'name', name: 'Name', field: 'name', sortable: true, type: FieldType.string,
+        id: 'name', name: 'Name', field: 'name', sortable: true,
+        type: FieldType.string,
         filterable: true,
         filter: {
           model: Filters.compoundInput
@@ -161,7 +162,7 @@ export class GridOdataComponent implements OnInit {
     this.angularGrid.paginationService.goToLastPage();
   }
 
-  setSomeFilters() {
+  setFiltersDynamically() {
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
       // { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },

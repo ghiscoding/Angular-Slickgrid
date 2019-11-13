@@ -229,7 +229,7 @@ export class GridRangeComponent implements OnInit {
     this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
   }
 
-  setSomeFilters() {
+  setFiltersDynamically() {
     const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
     const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
 

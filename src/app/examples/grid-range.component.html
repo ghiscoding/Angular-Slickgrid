@@ -9,11 +9,11 @@
   </span>
   <button class="btn btn-default btn-sm" (click)="angularGrid.filterService.clearFilters()">Clear Filters</button>
   <button class="btn btn-default btn-sm" (click)="angularGrid.sortService.clearSorting()">Clear Sorting</button>
+  <button class="btn btn-default btn-sm" (click)="setFiltersDynamically()">Set Filters Dynamically</button>
   <button class="btn btn-default btn-sm" (click)="switchLanguage()" data-test="language">
     <i class="fa fa-language"></i>
     Switch Language
   </button>
-  <button class="btn btn-default btn-sm" (click)="setSomeFilters()">Set Filters Dynamically</button>
   <b>Locale:</b> <span style="font-style: italic" data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
 
   <angular-slickgrid gridId="grid25" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"

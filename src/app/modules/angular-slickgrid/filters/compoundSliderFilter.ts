@@ -8,6 +8,7 @@ import {
   OperatorType,
   SearchTerm
 } from './../models/index';
+import { mapOperatorToShortDesignation } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -155,9 +156,9 @@ export class CompoundSliderFilter implements Filter {
     }
 
     // set the operator, in the DOM as well, when defined
-    this.operator = operator || this.defaultOperator;
+    this.operator = mapOperatorToShortDesignation(operator || this.defaultOperator);
     if (operator && this.$selectOperatorElm) {
-      this.$selectOperatorElm.val(operator);
+      this.$selectOperatorElm.val(this.operator);
     }
   }
 

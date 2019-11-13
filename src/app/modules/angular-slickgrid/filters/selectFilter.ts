@@ -94,10 +94,7 @@ export class SelectFilter implements Filter {
 
   /** Getter for the filter operator */
   get operator(): OperatorType | OperatorString {
-    if (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) {
-      return this.columnDef.filter.operator;
-    }
-    return this.defaultOperator;
+    return this.columnFilter && this.columnFilter.operator || this.defaultOperator;
   }
 
   /** Setter for the filter operator */

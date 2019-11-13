@@ -1,6 +1,8 @@
 import { Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { mapFlatpickrDateFormatWithFieldType } from '../services/utilities';
+import Flatpickr from 'flatpickr';
+import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
+
 import {
   Column,
   ColumnFilter,
@@ -14,8 +16,7 @@ import {
   OperatorType,
   SearchTerm,
 } from './../models/index';
-import Flatpickr from 'flatpickr';
-import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
+import { mapFlatpickrDateFormatWithFieldType, mapOperatorToShortDesignation } from '../services/utilities';
 
 // use Flatpickr from import or 'require', whichever works first
 declare function require(name: string): any;
@@ -69,7 +70,7 @@ export class CompoundDateFilter implements Filter {
 
   /** Getter for the Filter Operator */
   get operator(): OperatorType | OperatorString {
-    return this._operator || this.columnFilter.operator || this.defaultOperator;
+    return (this.columnFilter && this.columnFilter.operator) || this.gridOptions.defaultFilterRangeOperator || this.defaultOperator;
   }
 
   /** Setter for the Filter Operator */
@@ -153,9 +154,9 @@ export class CompoundDateFilter implements Filter {
     }
 
     // set the operator, in the DOM as well, when defined
-    this.operator = operator || this.defaultOperator;
+    this.operator = mapOperatorToShortDesignation(operator || this.defaultOperator);
     if (operator && this.$selectOperatorElm) {
-      this.$selectOperatorElm.val(operator);
+      this.$selectOperatorElm.val(this.operator);
     }
   }
 

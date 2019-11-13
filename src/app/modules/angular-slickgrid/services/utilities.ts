@@ -1,8 +1,9 @@
-import { FieldType, OperatorType } from '../models/index';
 import { Observable, Subscription } from 'rxjs';
-import { first, take } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
+
+import { FieldType, OperatorString, OperatorType } from '../models/index';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -501,6 +502,58 @@ export function mapOperatorType(operator: string): OperatorType {
   }
 
   return map;
+}
+
+/**
+ * Find equivalent short designation of an Operator Type or Operator String.
+ * When using a Compound Filter, we use the short designation and so we need the mapped value.
+ * For example OperatorType.startsWith short designation is "a*", while OperatorType.greaterThanOrEqual is ">="
+ */
+export function mapOperatorToShortDesignation(operator: OperatorType | OperatorString): OperatorString {
+  let shortOperator: OperatorString = '';
+
+  switch (operator) {
+    case OperatorType.startsWith:
+    case 'a*':
+      shortOperator = 'a*';
+      break;
+    case OperatorType.endsWith:
+    case '*z':
+      shortOperator = '*z';
+      break;
+    case OperatorType.greaterThan:
+    case '>':
+      shortOperator = '>';
+      break;
+    case OperatorType.greaterThanOrEqual:
+    case '>=':
+      shortOperator = '>=';
+      break;
+    case OperatorType.lessThan:
+    case '<':
+      shortOperator = '<';
+      break;
+    case OperatorType.lessThanOrEqual:
+    case '<=':
+      shortOperator = '<=';
+      break;
+    case OperatorType.notEqual:
+    case '<>':
+      shortOperator = '<>';
+      break;
+    case OperatorType.equal:
+    case '=':
+    case '==':
+    case 'EQ':
+      shortOperator = '=';
+      break;
+    default:
+      // any other operator will be considered as already a short expression, so we can return same input operator
+      shortOperator = operator;
+      break;
+  }
+
+  return shortOperator;
 }
 
 /**
