@@ -213,12 +213,12 @@ export class GridRangeComponent implements OnInit {
   }
 
   refreshMetrics(e, args) {
-    if (args && args.current > 0) {
+    if (args && args.current >= 0) {
       setTimeout(() => {
         this.metrics = {
           startTime: new Date(),
-          itemCount: args && args.current,
-          totalItemCount: this.dataset.length
+          itemCount: args && args.current || 0,
+          totalItemCount: this.dataset.length || 0
         };
       });
     }

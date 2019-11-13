@@ -148,9 +148,7 @@ export class SliderFilter implements Filter {
     return this._currentValue;
   }
 
-  /**
-   * Set value(s) on the DOM element
-   */
+  /** Set value(s) on the DOM element */
   setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
     if (Array.isArray(values)) {
       this.$filterElm.val(values[0]);

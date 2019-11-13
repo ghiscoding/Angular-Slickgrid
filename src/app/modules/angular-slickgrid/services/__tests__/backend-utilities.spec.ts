@@ -1,16 +1,36 @@
-import { onBackendError, GridOption, executeBackendProcessesCallback } from '../..';
+import { GridOption } from '../../models';
+import main, { executeBackendProcessesCallback, onBackendError, refreshBackendDataset } from '../../services/backend-utilities';
+// import * as BackendUtilities from '../../services/backend-utilities';
+import { GraphqlService } from '../../services/graphql.service';
 
-const gridOptionMock = {
-  enablePagination: true,
-  backendServiceApi: {
-    service: undefined,
-    preProcess: jest.fn(),
-    process: jest.fn(),
-    postProcess: jest.fn(),
-  }
-} as GridOption;
+const graphqlServiceMock = {
+  buildQuery: jest.fn(),
+  updateFilters: jest.fn(),
+  updatePagination: jest.fn(),
+  updateSorters: jest.fn(),
+} as unknown as GraphqlService;
 
 describe('backend-utilities', () => {
+  let gridOptionMock: GridOption;
+
+  beforeEach(() => {
+    gridOptionMock = {
+      enablePagination: true,
+      backendServiceApi: {
+        service: graphqlServiceMock,
+        preProcess: jest.fn(),
+        process: jest.fn(),
+        postProcess: jest.fn(),
+      },
+      pagination: {
+        pageSize: 10,
+        pageSizes: [10, 25, 50],
+        pageNumber: 1,
+        totalItems: 0
+      }
+    } as GridOption;
+  });
+
   describe('executeBackendProcessesCallback method', () => {
     it('should execute the "internalPostProcess" when it is defined', () => {
       const now = new Date();
@@ -65,6 +85,34 @@ describe('backend-utilities', () => {
     it('should throw back the error when callback was provided', () => {
       gridOptionMock.backendServiceApi.onError = undefined;
       expect(() => onBackendError('some error', gridOptionMock.backendServiceApi)).toThrow();
+    });
+  });
+
+  describe('refreshBackendDataset method', () => {
+    let executeSpy;
+
+    beforeAll(() => {
+      executeSpy = jest.spyOn(main, 'executeBackendCallback');
+    });
+
+    it('should call "executeBackendCallback" after calling the "refreshBackendDataset" method', () => {
+      const query = `query { users (first:20,offset:0) { totalCount, nodes { id,name,gender,company } } }`;
+      const querySpy = jest.spyOn(gridOptionMock.backendServiceApi.service, 'buildQuery').mockReturnValue(query);
+
+      refreshBackendDataset(gridOptionMock);
+
+      expect(querySpy).toHaveBeenCalled();
+      expect(executeSpy).toHaveBeenCalledWith(gridOptionMock.backendServiceApi, query, null, expect.toBeDate(), gridOptionMock.pagination.totalItems);
+    });
+
+    it('should throw an error when backendServiceApi is undefined', (done) => {
+      try {
+        gridOptionMock.backendServiceApi = undefined;
+        refreshBackendDataset(undefined);
+      } catch (e) {
+        expect(e.toString()).toContain('BackendServiceApi requires at least a "process" function and a "service" defined');
+        done();
+      }
     });
   });
 });

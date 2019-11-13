@@ -229,13 +229,13 @@ export class GridOdataService implements BackendService {
    * loop through all columns to inspect filters & update backend service filters
    * @param columnFilters
    */
-  updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset?: boolean) {
+  updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPresetOrDynamically?: boolean) {
     let searchBy = '';
     const searchByArray: string[] = [];
     const odataVersion = this._odataService && this._odataService.options && this._odataService.options.version || 2;
 
     // on filter preset load, we need to keep current filters
-    if (isUpdatedByPreset) {
+    if (isUpdatedByPresetOrDynamically) {
       this._currentFilters = this.castFilterToColumnFilters(columnFilters);
     }
 
@@ -246,7 +246,7 @@ export class GridOdataService implements BackendService {
 
         // if user defined some "presets", then we need to find the filters from the column definitions instead
         let columnDef: Column | undefined;
-        if (isUpdatedByPreset && Array.isArray(this._columnDefinitions)) {
+        if (isUpdatedByPresetOrDynamically && Array.isArray(this._columnDefinitions)) {
           columnDef = this._columnDefinitions.find((column: Column) => {
             return column.id === columnFilter.columnId;
           });

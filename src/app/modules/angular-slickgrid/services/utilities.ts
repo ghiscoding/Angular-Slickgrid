@@ -437,60 +437,53 @@ export function mapFlatpickrDateFormatWithFieldType(fieldType: FieldType): strin
  * @param string operator
  * @returns string map
  */
-export function mapOperatorType(operator: string): OperatorType {
+export function mapOperatorType(operator: OperatorType | OperatorString): OperatorType {
   let map: OperatorType;
 
   switch (operator) {
     case '<':
+    case 'LT':
       map = OperatorType.lessThan;
       break;
     case '<=':
+    case 'LE':
       map = OperatorType.lessThanOrEqual;
       break;
     case '>':
+    case 'GT':
       map = OperatorType.greaterThan;
       break;
     case '>=':
+    case 'GE':
       map = OperatorType.greaterThanOrEqual;
       break;
     case '<>':
     case '!=':
-    case 'neq':
-    case 'NEQ':
+    case 'NE':
       map = OperatorType.notEqual;
       break;
     case '*':
-    case '.*':
     case 'a*':
-    case 'startsWith':
     case 'StartsWith':
       map = OperatorType.startsWith;
       break;
-    case '*.':
     case '*z':
-    case 'endsWith':
     case 'EndsWith':
       map = OperatorType.endsWith;
       break;
     case '=':
     case '==':
-    case 'eq':
     case 'EQ':
       map = OperatorType.equal;
       break;
-    case 'in':
     case 'IN':
       map = OperatorType.in;
       break;
-    case 'notIn':
     case 'NIN':
     case 'NOT_IN':
       map = OperatorType.notIn;
       break;
-    case 'not_contains':
     case 'Not_Contains':
-    case 'notContains':
-    case 'NotContains':
     case 'NOT_CONTAINS':
       map = OperatorType.notContains;
       break;
@@ -509,18 +502,10 @@ export function mapOperatorType(operator: string): OperatorType {
  * When using a Compound Filter, we use the short designation and so we need the mapped value.
  * For example OperatorType.startsWith short designation is "a*", while OperatorType.greaterThanOrEqual is ">="
  */
-export function mapOperatorToShortDesignation(operator: OperatorType | OperatorString): OperatorString {
+export function mapOperatorToShorthandDesignation(operator: OperatorType | OperatorString): OperatorString {
   let shortOperator: OperatorString = '';
 
   switch (operator) {
-    case OperatorType.startsWith:
-    case 'a*':
-      shortOperator = 'a*';
-      break;
-    case OperatorType.endsWith:
-    case '*z':
-      shortOperator = '*z';
-      break;
     case OperatorType.greaterThan:
     case '>':
       shortOperator = '>';
@@ -546,6 +531,15 @@ export function mapOperatorToShortDesignation(operator: OperatorType | OperatorS
     case '==':
     case 'EQ':
       shortOperator = '=';
+      break;
+    case OperatorType.startsWith:
+    case 'a*':
+    case '*':
+      shortOperator = 'a*';
+      break;
+    case OperatorType.endsWith:
+    case '*z':
+      shortOperator = '*z';
       break;
     default:
       // any other operator will be considered as already a short expression, so we can return same input operator

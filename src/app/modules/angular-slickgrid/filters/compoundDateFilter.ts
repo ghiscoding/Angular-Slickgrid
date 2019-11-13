@@ -16,7 +16,7 @@ import {
   OperatorType,
   SearchTerm,
 } from './../models/index';
-import { mapFlatpickrDateFormatWithFieldType, mapOperatorToShortDesignation } from '../services/utilities';
+import { mapFlatpickrDateFormatWithFieldType, mapOperatorToShorthandDesignation } from '../services/utilities';
 
 // use Flatpickr from import or 'require', whichever works first
 declare function require(name: string): any;
@@ -70,7 +70,7 @@ export class CompoundDateFilter implements Filter {
 
   /** Getter for the Filter Operator */
   get operator(): OperatorType | OperatorString {
-    return (this.columnFilter && this.columnFilter.operator) || this.gridOptions.defaultFilterRangeOperator || this.defaultOperator;
+    return this._operator || (this.columnFilter && this.columnFilter.operator) || this.gridOptions.defaultFilterRangeOperator || this.defaultOperator;
   }
 
   /** Setter for the Filter Operator */
@@ -154,9 +154,10 @@ export class CompoundDateFilter implements Filter {
     }
 
     // set the operator, in the DOM as well, when defined
-    this.operator = mapOperatorToShortDesignation(operator || this.defaultOperator);
+    this.operator = operator || this.defaultOperator;
     if (operator && this.$selectOperatorElm) {
-      this.$selectOperatorElm.val(this.operator);
+      const operatorShorthand = mapOperatorToShorthandDesignation(this.operator);
+      this.$selectOperatorElm.val(operatorShorthand);
     }
   }
 

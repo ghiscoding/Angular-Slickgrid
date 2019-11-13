@@ -7,7 +7,6 @@ import {
   Extension,
   ExtensionName,
   FileType,
-  GraphqlResult,
   GridOption,
   GridMenu,
   GridMenuItem,
@@ -19,7 +18,6 @@ import { ExportService } from '../services/export.service';
 import { ExtensionUtility } from './extensionUtility';
 import { FilterService } from '../services/filter.service';
 import { SortService } from '../services/sort.service';
-import { castToPromise } from '../services/utilities';
 import { SharedService } from '../services/shared.service';
 import { refreshBackendDataset } from '../services/backend-utilities';
 
@@ -147,9 +145,7 @@ export class GridMenuExtension implements Extension {
     if (gridOptions) {
       this.sharedService.gridOptions = { ...this.sharedService.gridOptions, ...gridOptions };
     }
-
-    const backendApi = this.sharedService.gridOptions.backendServiceApi;
-    refreshBackendDataset(backendApi, this.sharedService.gridOptions);
+    refreshBackendDataset(this.sharedService.gridOptions);
   }
 
   showGridMenu(e) {

@@ -475,15 +475,24 @@ export class FilterService {
   }
 
   updateFilters(filters: CurrentFilter[]) {
+    if (!this._filtersMetadata || this._filtersMetadata.length === 0 || !this._gridOptions || !this._gridOptions.enableFiltering) {
+      throw new Error('[Angular-Slickgrid] in order to use "updateFilters" method, you need to have Filters defined in your grid and "enableFiltering" set in your Grid Options');
+    }
+
     if (Array.isArray(filters)) {
       // start by clearing all filters, without trigger an event, before applying any new ones
       this.clearFilters(false);
 
       // pre-fill (value + operator) and render all filters in the DOM
+      // loop through each Filters provided (which has a columnId property)
+      // then find their associated Filter instances that were originally created in the grid
       filters.forEach((newFilter) => {
         const uiFilter = this._filtersMetadata.find((filter) => newFilter.columnId === filter.columnDef.id);
-        this.updateColumnFilters(newFilter.searchTerms, uiFilter.columnDef, newFilter.operator || uiFilter.defaultOperator);
-        uiFilter.setValues(newFilter.searchTerms, newFilter.operator || uiFilter.defaultOperator, false);
+        if (newFilter && uiFilter) {
+          const newOperator = newFilter.operator || uiFilter.defaultOperator;
+          this.updateColumnFilters(newFilter.searchTerms, uiFilter.columnDef, newOperator);
+          uiFilter.setValues(newFilter.searchTerms, newOperator);
+        }
       });
 
       const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
@@ -495,7 +504,7 @@ export class FilterService {
         const backendApiService = backendApi && backendApi.service;
         if (backendApiService) {
           backendApiService.updateFilters(filters, true);
-          refreshBackendDataset(backendApi, this._gridOptions);
+          refreshBackendDataset(this._gridOptions);
           this.emitFilterChanged(EmitterType.remote);
         }
       } else {

@@ -154,9 +154,7 @@ export class AutoCompleteFilter implements Filter {
     }
   }
 
-  /**
-   * Set value(s) on the DOM element
-   */
+  /** Set value(s) on the DOM element */
   setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
     if (values) {
       this.$filterElm.val(values);

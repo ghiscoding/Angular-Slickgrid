@@ -202,9 +202,7 @@ export class SelectFilter implements Filter {
     return [];
   }
 
-  /**
-   * Set value(s) on the DOM element
-   */
+  /** Set value(s) on the DOM element */
   setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
     if (values && this.$filterElm && typeof this.$filterElm.multipleSelect === 'function') {
       values = Array.isArray(values) ? values : [values];

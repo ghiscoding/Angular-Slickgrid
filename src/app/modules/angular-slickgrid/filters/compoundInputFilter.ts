@@ -14,7 +14,7 @@ import {
   SearchTerm,
 } from './../models/index';
 import { Constants } from './../constants';
-import { mapOperatorToShortDesignation } from '../services/utilities';
+import { mapOperatorToShorthandDesignation, mapOperatorType } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -128,18 +128,18 @@ export class CompoundInputFilter implements Filter {
     }
   }
 
-  /**
-   * Set value(s) on the DOM element
-   */
+  /** Set value(s) on the DOM element */
   setValues(values: SearchTerm[], operator?: OperatorType | OperatorString) {
     if (values) {
       const newValue = Array.isArray(values) ? values[0] : values;
       this.$filterInputElm.val(newValue);
     }
 
-    this.operator = mapOperatorToShortDesignation(operator || this.defaultOperator);
+    // set the operator, in the DOM as well, when defined
+    this.operator = operator || this.defaultOperator;
     if (operator && this.$selectOperatorElm) {
-      this.$selectOperatorElm.val(this.operator);
+      const operatorShorthand = mapOperatorToShorthandDesignation(this.operator);
+      this.$selectOperatorElm.val(operatorShorthand);
     }
   }
 

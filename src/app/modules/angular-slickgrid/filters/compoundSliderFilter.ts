@@ -8,7 +8,7 @@ import {
   OperatorType,
   SearchTerm
 } from './../models/index';
-import { mapOperatorToShortDesignation } from '../services/utilities';
+import { mapOperatorToShorthandDesignation } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -141,24 +141,18 @@ export class CompoundSliderFilter implements Filter {
     return this._currentValue;
   }
 
-  /**
-   * Set value(s) on the DOM element
-   */
+  /** Set value(s) on the DOM element */
   setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
-    if (Array.isArray(values)) {
-      this._currentValue = +values[0];
-      this.$filterInputElm.val(values[0]);
-      this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(values[0]);
-    } else if (values) {
-      this._currentValue = +values;
-      this.$filterInputElm.val(values);
-      this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(values);
-    }
+    const newValue = Array.isArray(values) ? values[0] : values;
+    this._currentValue = +newValue;
+    this.$filterInputElm.val(newValue);
+    this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(newValue);
 
     // set the operator, in the DOM as well, when defined
-    this.operator = mapOperatorToShortDesignation(operator || this.defaultOperator);
+    this.operator = operator || this.defaultOperator;
     if (operator && this.$selectOperatorElm) {
-      this.$selectOperatorElm.val(this.operator);
+      const operatorShorthand = mapOperatorToShorthandDesignation(this.operator);
+      this.$selectOperatorElm.val(operatorShorthand);
     }
   }
 
