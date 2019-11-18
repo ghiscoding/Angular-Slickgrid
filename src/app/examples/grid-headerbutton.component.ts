@@ -49,7 +49,6 @@ export class GridHeaderButtonComponent implements OnInit, OnDestroy {
       enableCellNavigation: true,
       headerButton: {
         onCommand: (e, args) => {
-          console.log(args)
           const column = args.column;
           const button = args.button;
           const command = args.command;

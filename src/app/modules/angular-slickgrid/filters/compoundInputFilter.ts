@@ -1,5 +1,5 @@
-import { Constants } from './../constants';
 import { TranslateService } from '@ngx-translate/core';
+
 import {
   Column,
   ColumnFilter,
@@ -13,6 +13,8 @@ import {
   OperatorType,
   SearchTerm,
 } from './../models/index';
+import { Constants } from './../constants';
+import { mapOperatorToShorthandDesignation, mapOperatorType } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -43,6 +45,11 @@ export class CompoundInputFilter implements Filter {
     return this.columnDef && this.columnDef.filter || {};
   }
 
+  /** Getter to know what would be the default operator when none is specified */
+  get defaultOperator(): OperatorType | OperatorString {
+    return OperatorType.empty;
+  }
+
   /** Getter of input type (text, number, password) */
   get inputType() {
     return this._inputType;
@@ -55,7 +62,7 @@ export class CompoundInputFilter implements Filter {
 
   /** Getter of the Operator to use when doing the filter comparing */
   get operator(): OperatorType | OperatorString {
-    return this._operator || OperatorType.empty;
+    return this._operator || this.defaultOperator;
   }
 
   /** Getter of the Operator to use when doing the filter comparing */
@@ -121,12 +128,18 @@ export class CompoundInputFilter implements Filter {
     }
   }
 
-  /**
-   * Set value(s) on the DOM element
-   */
-  setValues(values: SearchTerm[]) {
-    if (values && Array.isArray(values)) {
-      this.$filterInputElm.val(values[0]);
+  /** Set value(s) on the DOM element */
+  setValues(values: SearchTerm[], operator?: OperatorType | OperatorString) {
+    if (values) {
+      const newValue = Array.isArray(values) ? values[0] : values;
+      this.$filterInputElm.val(newValue);
+    }
+
+    // set the operator, in the DOM as well, when defined
+    this.operator = operator || this.defaultOperator;
+    if (operator && this.$selectOperatorElm) {
+      const operatorShorthand = mapOperatorToShorthandDesignation(this.operator);
+      this.$selectOperatorElm.val(operatorShorthand);
     }
   }
 

@@ -28,6 +28,16 @@ export class SliderFilter implements Filter {
   columnDef: Column;
   callback: FilterCallback;
 
+  /** Getter for the Column Filter */
+  get columnFilter(): ColumnFilter {
+    return this.columnDef && this.columnDef.filter || {};
+  }
+
+  /** Getter to know what would be the default operator when none is specified */
+  get defaultOperator(): OperatorType | OperatorString {
+    return OperatorType.equal;
+  }
+
   /** Getter for the Filter Generic Params */
   private get filterParams(): any {
     return this.columnDef && this.columnDef.filter && this.columnDef.filter.params || {};
@@ -39,7 +49,14 @@ export class SliderFilter implements Filter {
   }
 
   get operator(): OperatorType | OperatorString {
-    return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
+    return this.columnFilter && this.columnFilter.operator || this.defaultOperator;
+  }
+
+  /** Setter for the filter operator */
+  set operator(operator: OperatorType | OperatorString) {
+    if (this.columnFilter) {
+      this.columnFilter.operator = operator;
+    }
   }
 
   /**
@@ -131,10 +148,8 @@ export class SliderFilter implements Filter {
     return this._currentValue;
   }
 
-  /**
-   * Set value(s) on the DOM element
-   */
-  setValues(values: SearchTerm | SearchTerm[]) {
+  /** Set value(s) on the DOM element */
+  setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
     if (Array.isArray(values)) {
       this.$filterElm.val(values[0]);
       this._currentValue = +values[0];
@@ -142,6 +157,9 @@ export class SliderFilter implements Filter {
       this.$filterElm.val(values);
       this._currentValue = +values;
     }
+
+    // set the operator when defined
+    this.operator = operator || this.defaultOperator;
   }
 
   //

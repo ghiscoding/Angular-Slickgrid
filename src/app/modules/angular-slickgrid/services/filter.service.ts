@@ -18,7 +18,7 @@ import {
   SlickEvent,
   SlickEventHandler,
 } from './../models/index';
-import { executeBackendCallback } from './backend-utilities';
+import { executeBackendCallback, refreshBackendDataset } from './backend-utilities';
 import { getDescendantProperty } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { FilterFactory } from '../filters/filterFactory';
@@ -199,10 +199,11 @@ export class FilterService {
   }
 
   /** Clear the search filters (below the column titles) */
-  clearFilters() {
+  clearFilters(triggerChange = true) {
     this._filtersMetadata.forEach((filter: Filter) => {
       if (filter && filter.clear) {
-        // clear element and trigger a change
+        // clear element but don't trigger individual clear change,
+        // we'll do 1 trigger for all filters at once afterward
         filter.clear(false);
       }
     });
@@ -232,7 +233,9 @@ export class FilterService {
     }
 
     // emit an event when filters are all cleared
-    this.onFilterCleared.next(true);
+    if (triggerChange) {
+      this.onFilterCleared.next(true);
+    }
   }
 
   customLocalFilter(item: any, args: any) {
@@ -449,7 +452,7 @@ export class FilterService {
    * This is basically the same as if we would manually add searchTerm(s) to a column filter object in the column definition, but we do it programmatically.
    * At the end of the day, when creating the Filter (DOM Element), it will use these searchTerm(s) so we can take advantage of that without recoding each Filter type (DOM element)
    */
-  populateColumnFilterSearchTermPresets(filters: ColumnFilter[]) {
+  populateColumnFilterSearchTermPresets(filters: CurrentFilter[]) {
     if (Array.isArray(filters) && filters.length > 0) {
       this._columnDefinitions.forEach((columnDef: Column) => {
         // clear any columnDef searchTerms before applying Presets
@@ -469,6 +472,45 @@ export class FilterService {
       });
     }
     return this._columnDefinitions;
+  }
+
+  updateFilters(filters: CurrentFilter[]) {
+    if (!this._filtersMetadata || this._filtersMetadata.length === 0 || !this._gridOptions || !this._gridOptions.enableFiltering) {
+      throw new Error('[Angular-Slickgrid] in order to use "updateFilters" method, you need to have Filters defined in your grid and "enableFiltering" set in your Grid Options');
+    }
+
+    if (Array.isArray(filters)) {
+      // start by clearing all filters, without trigger an event, before applying any new ones
+      this.clearFilters(false);
+
+      // pre-fill (value + operator) and render all filters in the DOM
+      // loop through each Filters provided (which has a columnId property)
+      // then find their associated Filter instances that were originally created in the grid
+      filters.forEach((newFilter) => {
+        const uiFilter = this._filtersMetadata.find((filter) => newFilter.columnId === filter.columnDef.id);
+        if (newFilter && uiFilter) {
+          const newOperator = newFilter.operator || uiFilter.defaultOperator;
+          this.updateColumnFilters(newFilter.searchTerms, uiFilter.columnDef, newOperator);
+          uiFilter.setValues(newFilter.searchTerms, newOperator);
+        }
+      });
+
+      const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
+
+      // refresh the DataView and trigger an event after all filters were updated and rendered
+      this._dataView.refresh();
+
+      if (backendApi) {
+        const backendApiService = backendApi && backendApi.service;
+        if (backendApiService) {
+          backendApiService.updateFilters(filters, true);
+          refreshBackendDataset(this._gridOptions);
+          this.emitFilterChanged(EmitterType.remote);
+        }
+      } else {
+        this.emitFilterChanged(EmitterType.local);
+      }
+    }
   }
 
   // --

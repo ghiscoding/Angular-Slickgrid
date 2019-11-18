@@ -19,7 +19,7 @@ import {
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
-const NB_ITEMS = 500;
+const NB_ITEMS = 1500;
 const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_500_numbers.json';
 
 @Component({
@@ -209,8 +209,8 @@ export class GridClientSideComponent implements OnInit {
     const tempDataset = [];
     for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
       const randomDuration = Math.round(Math.random() * 100);
-      const randomYear = randomBetween(2000, 2025);
-      const randomYearShort = randomBetween(10, 25);
+      const randomYear = randomBetween(2000, 2035);
+      const randomYearShort = randomBetween(10, 35);
       const randomMonth = randomBetween(1, 12);
       const randomMonthStr = (randomMonth < 10) ? `0${randomMonth}` : randomMonth;
       const randomDay = randomBetween(10, 28);
@@ -249,13 +249,23 @@ export class GridClientSideComponent implements OnInit {
     console.log('Client sample, last Grid State:: ', this.angularGrid.gridStateService.getCurrentGridState());
   }
 
+  setFiltersDynamically() {
+    // we can Set Filters Dynamically (or different filters) afterward through the FilterService
+    this.angularGrid.filterService.updateFilters([
+      { columnId: 'duration', searchTerms: [2, 25, 48, 50] },
+      { columnId: 'complete', searchTerms: [95], operator: '<' },
+      { columnId: 'effort-driven', searchTerms: [true] },
+      { columnId: 'start', operator: '>=', searchTerms: ['2001-02-28'] },
+    ]);
+  }
+
   refreshMetrics(e, args) {
-    if (args && args.current > 0) {
+    if (args && args.current >= 0) {
       setTimeout(() => {
         this.metrics = {
           startTime: new Date(),
-          itemCount: args && args.current,
-          totalItemCount: this.dataset.length
+          itemCount: args && args.current || 0,
+          totalItemCount: this.dataset.length || 0
         };
       });
     }

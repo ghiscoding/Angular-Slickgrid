@@ -22,7 +22,7 @@ import { GridOption, CurrentFilter, CurrentSorter, GridStateType, Pagination, Gr
 import { Filters } from '../../filters';
 import { Editors } from '../../editors';
 import * as utilities from '../../services/backend-utilities';
-import { Subject, of } from 'rxjs';
+import { Subject, of, throwError, Observable } from 'rxjs';
 import { GridStateChange } from 'dist/public_api';
 import { TestBed } from '@angular/core/testing';
 
@@ -710,7 +710,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         }, 5);
       });
 
-      xit('should throw an error when the process method on initialization when "executeProcessCommandOnInit" is set as a backend service options', (done) => {
+      it('should throw an error when the process method on initialization when "executeProcessCommandOnInit" is set as a backend service options from a Promise', (done) => {
         const mockError = { error: '404' };
         const query = `query { users (first:20,offset:0) { totalCount, nodes { id,name,gender,company } } }`;
         const promise = new Promise((resolve, reject) => setTimeout(() => reject(mockError), 1));
@@ -722,10 +722,27 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         expect(processSpy).toHaveBeenCalled();
 
-        setTimeout(() => {
-          expect(mockBackendError).toHaveBeenCalledWith(mockError, component.gridOptions.backendServiceApi);
+        promise.catch((e) => {
+          expect(e).toBe(mockError);
           done();
-        }, 10);
+        });
+      });
+
+      it('should throw an error when the process method on initialization when "executeProcessCommandOnInit" is set as a backend service options from an Observable', (done) => {
+        const mockError = { error: '404' };
+        const query = `query { users (first:20,offset:0) { totalCount, nodes { id,name,gender,company } } }`;
+        const processSpy = jest.spyOn(component.gridOptions.backendServiceApi, 'process').mockReturnValue(throwError(mockError));
+        jest.spyOn(component.gridOptions.backendServiceApi.service, 'buildQuery').mockReturnValue(query);
+
+        component.gridOptions.backendServiceApi.service.options = { executeProcessCommandOnInit: true };
+        component.ngAfterViewInit();
+
+        expect(processSpy).toHaveBeenCalled();
+
+        setTimeout(() => {
+          expect(mockBackendError).toHaveBeenCalled();
+          done();
+        });
       });
     });
 

@@ -32,13 +32,25 @@ export class NativeSelectFilter implements Filter {
     return this.columnDef && this.columnDef.filter;
   }
 
+  /** Getter to know what would be the default operator when none is specified */
+  get defaultOperator(): OperatorType | OperatorString {
+    return OperatorType.equal;
+  }
+
   /** Getter for the Grid Options pulled through the Grid Object */
   protected get gridOptions(): GridOption {
     return (this.grid && this.grid.getOptions) ? this.grid.getOptions() : {};
   }
 
   get operator(): OperatorType | OperatorString {
-    return (this.columnDef && this.columnDef.filter && this.columnDef.filter.operator) || OperatorType.equal;
+    return this.columnFilter && this.columnFilter.operator || this.defaultOperator;
+  }
+
+  /** Setter for the filter operator */
+  set operator(operator: OperatorType | OperatorString) {
+    if (this.columnFilter) {
+      this.columnFilter.operator = operator;
+    }
   }
 
   /**
@@ -123,10 +135,8 @@ export class NativeSelectFilter implements Filter {
     return this._currentValues;
   }
 
-  /**
-   * Set value(s) on the DOM element
-   */
-  setValues(values: SearchTerm | SearchTerm[]) {
+  /** Set value(s) on the DOM element */
+  setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
     if (Array.isArray(values)) {
       this.$filterElm.val(values[0]);
       this._currentValues = values;
@@ -134,6 +144,9 @@ export class NativeSelectFilter implements Filter {
       this.$filterElm.val(values);
       this._currentValues = [values];
     }
+
+    // set the operator when defined
+    this.operator = operator || this.defaultOperator;
   }
 
   //

@@ -66,7 +66,15 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'name', field: 'name', headerKey: 'NAME', filterable: true, sortable: true, type: FieldType.string, width: 60 },
+      {
+        id: 'name', field: 'name', headerKey: 'NAME', width: 60,
+        type: FieldType.string,
+        sortable: true,
+        filterable: true,
+        filter: {
+          model: Filters.compoundInput
+        }
+      },
       {
         id: 'gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true, width: 60,
         filter: {
@@ -86,9 +94,9 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           } as MultipleSelectOption
         }
       },
-      { id: 'billing.address.street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', width: 60, filterable: true, sortable: true },
+      { id: 'billingAddressStreet', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', width: 60, filterable: true, sortable: true },
       {
-        id: 'billing.address.zip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', width: 60,
+        id: 'billingAddressZip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', width: 60,
         type: FieldType.number,
         filterable: true, sortable: true,
         filter: {
@@ -142,8 +150,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           { columnId: 'name', width: 100 },
           { columnId: 'gender', width: 55 },
           { columnId: 'company' },
-          { columnId: 'billing.address.zip' }, // flip column position of Street/Zip to Zip/Street
-          { columnId: 'billing.address.street', width: 120 },
+          { columnId: 'billingAddressZip' }, // flip column position of Street/Zip to Zip/Street
+          { columnId: 'billingAddressStreet', width: 120 },
           { columnId: 'finish', width: 130 },
         ],
         filters: [
@@ -262,6 +270,20 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   /** Save current Filters, Sorters in LocaleStorage or DB */
   saveCurrentGridState(grid) {
     console.log('GraphQL current grid state', this.angularGrid.gridStateService.getCurrentGridState());
+  }
+
+  setFiltersDynamically() {
+    const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
+    const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
+
+    // we can Set Filters Dynamically (or different filters) afterward through the FilterService
+    this.angularGrid.filterService.updateFilters([
+      { columnId: 'gender', searchTerms: ['female'], operator: OperatorType.equal },
+      { columnId: 'name', searchTerms: ['Jane'], operator: OperatorType.startsWith },
+      { columnId: 'company', searchTerms: ['acme'], operator: 'IN' },
+      { columnId: 'billingAddressZip', searchTerms: ['11'], operator: OperatorType.greaterThanOrEqual },
+      { columnId: 'finish', searchTerms: [presetLowestDay, presetHighestDay], operator: OperatorType.rangeInclusive },
+    ]);
   }
 
   switchLanguage() {

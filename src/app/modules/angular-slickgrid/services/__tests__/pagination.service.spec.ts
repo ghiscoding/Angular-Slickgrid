@@ -597,5 +597,21 @@ describe('PaginationService', () => {
         done();
       });
     });
+
+    it('should call "processOnItemAddedOrRemoved" and expect the (To) to equal the total items when it is lower than the total itemsPerPage count', (done) => {
+      mockGridOption.pagination.pageNumber = 4;
+      mockGridOption.pagination.totalItems = 100;
+      const mockItems = { name: 'John' };
+
+      service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
+      gridServiceStub.onItemAdded.next(mockItems);
+      service.changeItemPerPage(200);
+
+      setTimeout(() => {
+        expect(service.pager.from).toBe(1);
+        expect(service.pager.to).toBe(101);
+        done();
+      });
+    });
   });
 });

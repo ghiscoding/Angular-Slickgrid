@@ -1,6 +1,8 @@
 import { Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { mapFlatpickrDateFormatWithFieldType } from '../services/utilities';
+import Flatpickr from 'flatpickr';
+import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
+
 import {
   Column,
   ColumnFilter,
@@ -14,8 +16,7 @@ import {
   OperatorType,
   SearchTerm,
 } from './../models/index';
-import Flatpickr from 'flatpickr';
-import { BaseOptions as FlatpickrBaseOptions } from 'flatpickr/dist/types/options';
+import { mapFlatpickrDateFormatWithFieldType, mapOperatorToShorthandDesignation } from '../services/utilities';
 
 // use Flatpickr from import or 'require', whichever works first
 declare function require(name: string): any;
@@ -57,19 +58,24 @@ export class CompoundDateFilter implements Filter {
     return this._currentDate;
   }
 
+  /** Getter to know what would be the default operator when none is specified */
+  get defaultOperator(): OperatorType | OperatorString {
+    return OperatorType.empty;
+  }
+
   /** Getter for the Flatpickr Options */
   get flatpickrOptions(): FlatpickrOption {
     return this._flatpickrOptions || {};
   }
 
+  /** Getter for the Filter Operator */
+  get operator(): OperatorType | OperatorString {
+    return this._operator || this.columnFilter.operator || this.defaultOperator;
+  }
+
   /** Setter for the Filter Operator */
   set operator(op: OperatorType | OperatorString) {
     this._operator = op;
-  }
-
-  /** Getter for the Filter Operator */
-  get operator(): OperatorType | OperatorString {
-    return this._operator || this.columnFilter.operator || OperatorType.empty;
   }
 
   /**
@@ -139,16 +145,19 @@ export class CompoundDateFilter implements Filter {
     }
   }
 
-  /**
-   * Set value(s) on the DOM element
-   */
-  setValues(values: SearchTerm | SearchTerm[]) {
-    if (this.flatInstance && values && Array.isArray(values)) {
-      this._currentDate = values[0] as Date;
-      this.flatInstance.setDate(values[0]);
-    } else if (this.flatInstance && values && values) {
-      this._currentDate = values as Date;
-      this.flatInstance.setDate(values);
+  /** Set value(s) in the DOM element, we can optionally pass an operator and/or trigger a change event */
+  setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
+    if (this.flatInstance && values) {
+      const newValue = Array.isArray(values) ? values[0] : values;
+      this._currentDate = newValue as Date;
+      this.flatInstance.setDate(newValue);
+    }
+
+    // set the operator, in the DOM as well, when defined
+    this.operator = operator || this.defaultOperator;
+    if (operator && this.$selectOperatorElm) {
+      const operatorShorthand = mapOperatorToShorthandDesignation(this.operator);
+      this.$selectOperatorElm.val(operatorShorthand);
     }
   }
 

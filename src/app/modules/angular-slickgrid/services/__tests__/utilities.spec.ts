@@ -13,8 +13,9 @@ import {
   htmlEntityEncode,
   mapMomentDateFormatWithFieldType,
   mapFlatpickrDateFormatWithFieldType,
-  mapOperatorType,
   mapOperatorByFieldType,
+  mapOperatorToShorthandDesignation,
+  mapOperatorType,
   parseBoolean,
   parseUtcDate,
   sanitizeHtmlToText,
@@ -687,115 +688,227 @@ describe('Service/Utilies', () => {
 
   describe('mapOperatorType method', () => {
     it('should return OperatoryType associated to "<"', () => {
-      const output = mapOperatorType('<');
-      expect(output).toBe(OperatorType.lessThan);
+      const expectation = OperatorType.lessThan;
+
+      const output1 = mapOperatorType('<');
+      const output2 = mapOperatorType('LT');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
     });
 
     it('should return OperatoryType associated to "<="', () => {
-      const output = mapOperatorType('<=');
-      expect(output).toBe(OperatorType.lessThanOrEqual);
+      const expectation = OperatorType.lessThanOrEqual;
+
+      const output1 = mapOperatorType('<=');
+      const output2 = mapOperatorType('LE');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
     });
 
     it('should return OperatoryType associated to ">"', () => {
-      const output = mapOperatorType('>');
-      expect(output).toBe(OperatorType.greaterThan);
+      const expectation = OperatorType.greaterThan;
+
+      const output1 = mapOperatorType('>');
+      const output2 = mapOperatorType('GT');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
     });
 
     it('should return OperatoryType associated to ">="', () => {
-      const output = mapOperatorType('>=');
-      expect(output).toBe(OperatorType.greaterThanOrEqual);
+      const expectation = OperatorType.greaterThanOrEqual;
+
+      const output1 = mapOperatorType('>=');
+      const output2 = mapOperatorType('GE');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
     });
 
     it('should return OperatoryType associated to "<>", "!=", "neq" or "NEQ"', () => {
+      const expectation = OperatorType.notEqual;
+
       const output1 = mapOperatorType('<>');
       const output2 = mapOperatorType('!=');
-      const output3 = mapOperatorType('neq');
-      const output4 = mapOperatorType('NEQ');
+      const output3 = mapOperatorType('NE');
 
-      expect(output1).toBe(OperatorType.notEqual);
-      expect(output2).toBe(OperatorType.notEqual);
-      expect(output3).toBe(OperatorType.notEqual);
-      expect(output4).toBe(OperatorType.notEqual);
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
+      expect(output3).toBe(expectation);
     });
 
     it('should return OperatoryType associated to "*", "a*", ".*", "startsWith"', () => {
-      const output1 = mapOperatorType('*');
-      const output2 = mapOperatorType('.*');
-      const output3 = mapOperatorType('a*');
-      const output4 = mapOperatorType('startsWith');
-      const output5 = mapOperatorType('StartsWith');
+      const expectation = OperatorType.startsWith;
 
-      expect(output1).toBe(OperatorType.startsWith);
-      expect(output2).toBe(OperatorType.startsWith);
-      expect(output3).toBe(OperatorType.startsWith);
-      expect(output4).toBe(OperatorType.startsWith);
-      expect(output5).toBe(OperatorType.startsWith);
+      const output1 = mapOperatorType('*');
+      const output2 = mapOperatorType('a*');
+      const output3 = mapOperatorType('StartsWith');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
+      expect(output3).toBe(expectation);
     });
 
     it('should return OperatoryType associated to "*.", "*z", "endsWith"', () => {
-      const output1 = mapOperatorType('*.');
-      const output2 = mapOperatorType('*z');
-      const output3 = mapOperatorType('endsWith');
-      const output4 = mapOperatorType('EndsWith');
+      const expectation = OperatorType.endsWith;
 
-      expect(output1).toBe(OperatorType.endsWith);
-      expect(output2).toBe(OperatorType.endsWith);
-      expect(output3).toBe(OperatorType.endsWith);
-      expect(output4).toBe(OperatorType.endsWith);
+      const output1 = mapOperatorType('*z');
+      const output2 = mapOperatorType('EndsWith');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
     });
 
     it('should return OperatoryType associated to "=", "==", "eq" or "EQ"', () => {
+      const expectation = OperatorType.equal;
+
       const output1 = mapOperatorType('=');
       const output2 = mapOperatorType('==');
-      const output3 = mapOperatorType('eq');
-      const output4 = mapOperatorType('EQ');
+      const output3 = mapOperatorType('EQ');
 
-      expect(output1).toBe(OperatorType.equal);
-      expect(output2).toBe(OperatorType.equal);
-      expect(output3).toBe(OperatorType.equal);
-      expect(output4).toBe(OperatorType.equal);
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
+      expect(output3).toBe(expectation);
     });
 
     it('should return OperatoryType associated to "in", "IN"', () => {
-      const output1 = mapOperatorType('in');
-      const output2 = mapOperatorType('IN');
+      const expectation = OperatorType.in;
 
-      expect(output1).toBe(OperatorType.in);
-      expect(output2).toBe(OperatorType.in);
+      const output1 = mapOperatorType('IN');
+
+      expect(output1).toBe(expectation);
     });
 
     it('should return OperatoryType associated to "notIn", "NIN", "NOT_IN"', () => {
-      const output1 = mapOperatorType('notIn');
-      const output2 = mapOperatorType('NIN');
-      const output3 = mapOperatorType('NOT_IN');
+      const expectation = OperatorType.notIn;
 
-      expect(output1).toBe(OperatorType.notIn);
-      expect(output2).toBe(OperatorType.notIn);
-      expect(output3).toBe(OperatorType.notIn);
+      const output1 = mapOperatorType('NIN');
+      const output2 = mapOperatorType('NOT_IN');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
     });
 
     it('should return OperatoryType associated to "not_contains", "Not_Contains", "notContains"', () => {
-      const output1 = mapOperatorType('not_contains');
-      const output2 = mapOperatorType('Not_Contains');
-      const output3 = mapOperatorType('notContains');
-      const output4 = mapOperatorType('NotContains');
-      const output5 = mapOperatorType('NOT_CONTAINS');
+      const expectation = OperatorType.notContains;
 
-      expect(output1).toBe(OperatorType.notContains);
-      expect(output2).toBe(OperatorType.notContains);
-      expect(output3).toBe(OperatorType.notContains);
-      expect(output4).toBe(OperatorType.notContains);
-      expect(output5).toBe(OperatorType.notContains);
+      const output1 = mapOperatorType('Not_Contains');
+      const output2 = mapOperatorType('NOT_CONTAINS');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
     });
 
     it('should return default OperatoryType associated to contains', () => {
+      const expectation = OperatorType.contains;
+
       const output1 = mapOperatorType('');
       const output2 = mapOperatorType('Contains');
       const output3 = mapOperatorType('CONTAINS');
 
-      expect(output1).toBe(OperatorType.contains);
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
+      expect(output3).toBe(expectation);
+    });
+  });
+
+  describe('mapOperatorToShorthandDesignation method', () => {
+    it('should return Operator shorthand of ">"', () => {
+      const expectation = '>';
+      const output1 = mapOperatorToShorthandDesignation(OperatorType.greaterThan);
+      const output2 = mapOperatorToShorthandDesignation('>');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
+    });
+
+    it('should return Operator shorthand of ">="', () => {
+      const expectation = '>=';
+      const output1 = mapOperatorToShorthandDesignation(OperatorType.greaterThanOrEqual);
+      const output2 = mapOperatorToShorthandDesignation('>=');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
+    });
+
+    it('should return Operator shorthand of "<"', () => {
+      const expectation = '<';
+      const output1 = mapOperatorToShorthandDesignation(OperatorType.lessThan);
+      const output2 = mapOperatorToShorthandDesignation('<');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
+    });
+
+    it('should return Operator shorthand of "<="', () => {
+      const expectation = '<=';
+      const output1 = mapOperatorToShorthandDesignation(OperatorType.lessThanOrEqual);
+      const output2 = mapOperatorToShorthandDesignation('<=');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
+    });
+
+    it('should return Operator shorthand of "<>"', () => {
+      const expectation = '<>';
+      const output1 = mapOperatorToShorthandDesignation(OperatorType.notEqual);
+      const output2 = mapOperatorToShorthandDesignation('<>');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
+    });
+
+    it('should return Operator shorthand of "="', () => {
+      const expectation = '=';
+      const output1 = mapOperatorToShorthandDesignation(OperatorType.equal);
+      const output2 = mapOperatorToShorthandDesignation('=');
+      const output3 = mapOperatorToShorthandDesignation('==');
+      const output4 = mapOperatorToShorthandDesignation('EQ');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
+      expect(output3).toBe(expectation);
+      expect(output4).toBe(expectation);
+    });
+
+    it('should return Operator shorthand of "a*" to represent starts with', () => {
+      const expectation = 'a*';
+      const output1 = mapOperatorToShorthandDesignation(OperatorType.startsWith);
+      const output2 = mapOperatorToShorthandDesignation('a*');
+      const output3 = mapOperatorToShorthandDesignation('*');
+      const output4 = mapOperatorToShorthandDesignation('StartsWith');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
+      expect(output3).toBe(expectation);
+      expect(output4).toBe(expectation);
+    });
+
+    it('should return Operator shorthand of "*z" to represent ends with', () => {
+      const expectation = '*z';
+      const output1 = mapOperatorToShorthandDesignation(OperatorType.endsWith);
+      const output2 = mapOperatorToShorthandDesignation('*z');
+      const output3 = mapOperatorToShorthandDesignation('EndsWith');
+
+      expect(output1).toBe(expectation);
+      expect(output2).toBe(expectation);
+      expect(output3).toBe(expectation);
+    });
+
+    it('should return same input Operator when no shorthand is found', () => {
+      const output1 = mapOperatorToShorthandDesignation(OperatorType.in);
+      const output2 = mapOperatorToShorthandDesignation(OperatorType.contains);
+      const output3 = mapOperatorToShorthandDesignation(OperatorType.notContains);
+      const output4 = mapOperatorToShorthandDesignation(OperatorType.rangeExclusive);
+      const output5 = mapOperatorToShorthandDesignation(OperatorType.rangeInclusive);
+
+      expect(output1).toBe(OperatorType.in);
       expect(output2).toBe(OperatorType.contains);
-      expect(output3).toBe(OperatorType.contains);
+      expect(output3).toBe(OperatorType.notContains);
+      expect(output4).toBe(OperatorType.rangeExclusive);
+      expect(output5).toBe(OperatorType.rangeInclusive);
     });
   });
 

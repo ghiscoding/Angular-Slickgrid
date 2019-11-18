@@ -43,9 +43,11 @@ const dataViewStub = {
 };
 
 const backendServiceStub = {
+  buildQuery: jest.fn(),
   clearFilters: jest.fn(),
   getCurrentFilters: jest.fn(),
   getCurrentPagination: jest.fn(),
+  updateFilters: jest.fn(),
   processOnFilterChanged: (event: Event, args: FilterChangedArgs) => 'backend query',
 } as unknown as BackendService;
 
@@ -904,6 +906,82 @@ describe('FilterService', () => {
         { id: 'name', field: 'name' },
         { id: 'gender', field: 'gender', filter: { operator: '', searchTerms: ['male'] } },
       ]);
+    });
+  });
+
+  describe('updateFilters method', () => {
+    let mockColumn1: Column;
+    let mockColumn2: Column;
+    let mockArgs1;
+    let mockArgs2;
+    let mockNewFilters: CurrentFilter[];
+
+    beforeEach(() => {
+      gridOptionMock.enableFiltering = true;
+      gridOptionMock.backendServiceApi = undefined;
+      mockColumn1 = { id: 'firstName', name: 'firstName', field: 'firstName', filterable: true, filter: { model: Filters.compoundInputText } };
+      mockColumn2 = { id: 'isActive', name: 'isActive', field: 'isActive', filterable: true, filter: { model: Filters.singleSelect, collection: [{ value: true, label: 'True' }, { value: false, label: 'False' }], } };
+      mockArgs1 = { grid: gridStub, column: mockColumn1, node: document.getElementById(DOM_ELEMENT_ID) };
+      mockArgs2 = { grid: gridStub, column: mockColumn2, node: document.getElementById(DOM_ELEMENT_ID) };
+      mockNewFilters = [
+        { columnId: 'firstName', searchTerms: ['Jane'], operator: 'StartsWith' },
+        { columnId: 'isActive', searchTerms: [false] }
+      ];
+    });
+
+    it('should throw an error when there are no filters defined in the column definitions', (done) => {
+      try {
+        gridOptionMock.enableFiltering = false;
+        service.init(gridStub);
+        service.bindLocalOnFilter(gridStub, dataViewStub);
+        service.updateFilters([{ columnId: 'firstName', searchTerms: ['John'] }]);
+      } catch (e) {
+        expect(e.toString()).toContain('[Angular-Slickgrid] in order to use "updateFilters" method, you need to have Filters defined in your grid');
+        done();
+      }
+    });
+
+    it('should call "clearFilters" without triggering a clear event but trigger an "emitFilterChanged" local when using "bindLocalOnFilter" and also expect filters to be set in ColumnFilters', () => {
+      const clearSpy = jest.spyOn(service, 'clearFilters');
+      const emitSpy = jest.spyOn(service, 'emitFilterChanged');
+
+      service.init(gridStub);
+      service.bindLocalOnFilter(gridStub, dataViewStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs1, new Slick.EventData(), gridStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs2, new Slick.EventData(), gridStub);
+      service.updateFilters(mockNewFilters);
+
+      expect(emitSpy).toHaveBeenCalledWith('local');
+      expect(clearSpy).toHaveBeenCalledWith(false);
+      expect(service.getColumnFilters()).toEqual({
+        firstName: { columnId: 'firstName', columnDef: mockColumn1, searchTerms: ['Jane'], operator: 'StartsWith' },
+        isActive: { columnId: 'isActive', columnDef: mockColumn2, searchTerms: [false], operator: 'EQ' }
+      });
+    });
+
+    it('should call "clearFilters" without triggering a clear event but trigger an "emitFilterChanged" remote when using "bindLocalOnFilter" and also expect filters to be set in ColumnFilters', () => {
+      gridOptionMock.backendServiceApi = {
+        filterTypingDebounce: 0,
+        service: backendServiceStub,
+        process: () => new Promise((resolve) => resolve(jest.fn())),
+      };
+      const clearSpy = jest.spyOn(service, 'clearFilters');
+      const emitSpy = jest.spyOn(service, 'emitFilterChanged');
+      const backendUpdateSpy = jest.spyOn(backendServiceStub, 'updateFilters');
+
+      service.init(gridStub);
+      service.bindLocalOnFilter(gridStub, dataViewStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs1, new Slick.EventData(), gridStub);
+      gridStub.onHeaderRowCellRendered.notify(mockArgs2, new Slick.EventData(), gridStub);
+      service.updateFilters(mockNewFilters);
+
+      expect(emitSpy).toHaveBeenCalledWith('remote');
+      expect(clearSpy).toHaveBeenCalledWith(false);
+      expect(backendUpdateSpy).toHaveBeenCalledWith(mockNewFilters, true);
+      expect(service.getColumnFilters()).toEqual({
+        firstName: { columnId: 'firstName', columnDef: mockColumn1, searchTerms: ['Jane'], operator: 'StartsWith' },
+        isActive: { columnId: 'isActive', columnDef: mockColumn2, searchTerms: [false], operator: 'EQ' }
+      });
     });
   });
 });

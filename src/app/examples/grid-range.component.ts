@@ -17,7 +17,7 @@ import {
 } from '../modules/angular-slickgrid';
 import * as moment from 'moment-mini';
 
-const NB_ITEMS = 1200;
+const NB_ITEMS = 1500;
 
 function randomBetween(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -213,12 +213,12 @@ export class GridRangeComponent implements OnInit {
   }
 
   refreshMetrics(e, args) {
-    if (args && args.current > 0) {
+    if (args && args.current >= 0) {
       setTimeout(() => {
         this.metrics = {
           startTime: new Date(),
-          itemCount: args && args.current,
-          totalItemCount: this.dataset.length
+          itemCount: args && args.current || 0,
+          totalItemCount: this.dataset.length || 0
         };
       });
     }
@@ -227,5 +227,17 @@ export class GridRangeComponent implements OnInit {
   switchLanguage() {
     const nextLocale = (this.selectedLanguage === 'en') ? 'fr' : 'en';
     this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
+  }
+
+  setFiltersDynamically() {
+    const presetLowestDay = moment().add(-5, 'days').format('YYYY-MM-DD');
+    const presetHighestDay = moment().add(25, 'days').format('YYYY-MM-DD');
+
+    // we can Set Filters Dynamically (or different filters) afterward through the FilterService
+    this.angularGrid.filterService.updateFilters([
+      { columnId: 'duration', searchTerms: ['14..78'], operator: 'RangeInclusive' },
+      { columnId: 'complete', operator: 'RangeExclusive', searchTerms: [12, 82] },
+      { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [presetLowestDay, presetHighestDay] },
+    ]);
   }
 }

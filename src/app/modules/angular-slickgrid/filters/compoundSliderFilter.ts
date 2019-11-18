@@ -8,6 +8,7 @@ import {
   OperatorType,
   SearchTerm
 } from './../models/index';
+import { mapOperatorToShorthandDesignation } from '../services/utilities';
 
 // using external non-typed js libraries
 declare var $: any;
@@ -34,6 +35,11 @@ export class CompoundSliderFilter implements Filter {
 
   constructor() { }
 
+  /** Getter to know what would be the default operator when none is specified */
+  get defaultOperator(): OperatorType | OperatorString {
+    return OperatorType.empty;
+  }
+
   /** Getter for the Filter Generic Params */
   private get filterParams(): any {
     return this.columnDef && this.columnDef.filter && this.columnDef.filter.params || {};
@@ -44,12 +50,12 @@ export class CompoundSliderFilter implements Filter {
     return this.columnDef && this.columnDef.filter;
   }
 
-  set operator(op: OperatorType | OperatorString) {
-    this._operator = op;
+  get operator(): OperatorType | OperatorString {
+    return this._operator || this.defaultOperator;
   }
 
-  get operator(): OperatorType | OperatorString {
-    return this._operator || OperatorType.empty;
+  set operator(op: OperatorType | OperatorString) {
+    this._operator = op;
   }
 
   /**
@@ -135,18 +141,18 @@ export class CompoundSliderFilter implements Filter {
     return this._currentValue;
   }
 
-  /**
-   * Set value(s) on the DOM element
-   */
-  setValues(values: SearchTerm | SearchTerm[]) {
-    if (Array.isArray(values)) {
-      this._currentValue = +values[0];
-      this.$filterInputElm.val(values[0]);
-      this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(values[0]);
-    } else if (values) {
-      this._currentValue = +values;
-      this.$filterInputElm.val(values);
-      this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(values);
+  /** Set value(s) on the DOM element */
+  setValues(values: SearchTerm | SearchTerm[], operator?: OperatorType | OperatorString) {
+    const newValue = Array.isArray(values) ? values[0] : values;
+    this._currentValue = +newValue;
+    this.$filterInputElm.val(newValue);
+    this.$containerInputGroupElm.children('div.input-group-addon.input-group-append').children().last().html(newValue);
+
+    // set the operator, in the DOM as well, when defined
+    this.operator = operator || this.defaultOperator;
+    if (operator && this.$selectOperatorElm) {
+      const operatorShorthand = mapOperatorToShorthandDesignation(this.operator);
+      this.$selectOperatorElm.val(operatorShorthand);
     }
   }
 

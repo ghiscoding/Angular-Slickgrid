@@ -21,7 +21,26 @@ describe('Example 6 - GraphQL Grid', () => {
       .should('have.css', 'height', '200px');
   });
 
-  it('should have default GraphQL query', () => {
+  it('should have GraphQL query with defined Grid Presets', () => {
+    cy.get('.search-filter.filter-name select')
+      .should('not.have.value')
+
+    cy.get('.search-filter.filter-name')
+      .find('input')
+      .invoke('val')
+      .then(text => expect(text).to.eq('John Doe'));
+
+    cy.get('.search-filter.filter-gender .ms-choice > span')
+      .contains('Male');
+
+    cy.get('.search-filter.filter-company .ms-choice > span')
+      .contains('Company XYZ');
+
+    cy.get('.search-filter.filter-finish')
+      .find('input')
+      .invoke('val')
+      .then(text => expect(text).to.eq(`${presetLowestDay} to ${presetHighestDay}`));
+
     cy.get('[data-test=alert-graphql-query]').should('exist');
     cy.get('[data-test=alert-graphql-query]').should('contain', 'GraphQL Query');
 
@@ -260,6 +279,52 @@ describe('Example 6 - GraphQL Grid', () => {
         expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC}],
           locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+      });
+  });
+
+  it('should click on Set Dynamic Filter and expect query and filters to be changed', () => {
+    cy.get('[data-test=set-dynamic-filter]')
+      .click();
+
+    cy.get('.search-filter.filter-name select')
+      .should('have.value', 'a*')
+
+    cy.get('.search-filter.filter-name')
+      .find('input')
+      .invoke('val')
+      .then(text => expect(text).to.eq('Jane'));
+
+    cy.get('.search-filter.filter-gender .ms-choice > span')
+      .contains('Female');
+
+    cy.get('.search-filter.filter-company .ms-choice > span')
+      .contains('Acme');
+
+    cy.get('.search-filter.filter-billingAddressZip select')
+      .should('have.value', '>=')
+
+    cy.get('.search-filter.filter-billingAddressZip')
+      .find('input')
+      .invoke('val')
+      .then(text => expect(text).to.eq('11'));
+
+    cy.get('.search-filter.filter-finish')
+      .find('input')
+      .invoke('val')
+      .then(text => expect(text).to.eq(`${presetLowestDay} to ${presetHighestDay}`));
+
+    // wait for the query to finish
+    cy.get('[data-test=status]').should('contain', 'done');
+
+    cy.get('[data-test=graphql-query-result]')
+      .should(($span) => {
+        const text = removeSpaces($span.text()); // remove all white spaces
+        expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
+          orderBy:[{field:"name",direction:ASC}],
+          filterBy:[{field:"gender",operator:EQ,value:"female"},{field:"name",operator:StartsWith,value:"Jane"},
+          {field:"company",operator:IN,value:"acme"},{field:"billing.address.zip",operator:GE,value:"11"},
+          {field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}],locale:"en",userId:123)
+          {totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
       });
   });
 });

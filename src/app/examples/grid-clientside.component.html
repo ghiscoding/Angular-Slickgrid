@@ -9,14 +9,13 @@
   </span>
   <button class="btn btn-default btn-sm" (click)="angularGrid.filterService.clearFilters()">Clear Filters</button>
   <button class="btn btn-default btn-sm" (click)="angularGrid.sortService.clearSorting()">Clear Sorting</button>
+  <button class="btn btn-default btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
+    Set Filters Dynamically
+  </button>
 
-  <angular-slickgrid gridId="grid2"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event)"
-                     (onGridStateChanged)="gridStateChanged($event)"
-                     (onBeforeGridDestroy)="saveCurrentGridState($event)"
-                     (sgOnRowCountChanged)="refreshMetrics($event.detail.eventData, $event.detail.args)">
+  <angular-slickgrid gridId="grid4" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
+    [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
+    (onGridStateChanged)="gridStateChanged($event)" (onBeforeGridDestroy)="saveCurrentGridState($event)"
+    (sgOnRowCountChanged)="refreshMetrics($event.detail.eventData, $event.detail.args)">
   </angular-slickgrid>
 </div>

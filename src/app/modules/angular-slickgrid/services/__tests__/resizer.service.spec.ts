@@ -80,7 +80,20 @@ describe('Resizer Service', () => {
       beforeEach(() => {
         // @ts-ignore
         navigator.__defineGetter__('userAgent', () => 'Netscape');
+        gridOptionMock.gridId = 'grid1';
       });
+    });
+
+    it('should return null when calling "bindAutoResizeDataGrid" method with a gridId that is not found in the DOM', () => {
+      gridOptionMock.gridId = 'unknown';
+      const output = service.bindAutoResizeDataGrid();
+      expect(output).toBe(null);
+    });
+
+    it('should return null when calling "calculateGridNewDimensions" method with a gridId that is not found in the DOM', () => {
+      gridOptionMock.gridId = 'unknown';
+      const output = service.calculateGridNewDimensions(gridOptionMock);
+      expect(output).toBe(null);
     });
 
     it('should trigger a grid resize when a window resize event occurs', () => {

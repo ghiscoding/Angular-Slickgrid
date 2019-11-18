@@ -58,7 +58,8 @@ export class GridOdataComponent implements OnInit {
   ngOnInit(): void {
     this.columnDefinitions = [
       {
-        id: 'name', name: 'Name', field: 'name', sortable: true, type: FieldType.string,
+        id: 'name', name: 'Name', field: 'name', sortable: true,
+        type: FieldType.string,
         filterable: true,
         filter: {
           model: Filters.compoundInput
@@ -159,6 +160,14 @@ export class GridOdataComponent implements OnInit {
 
   goToLastPage() {
     this.angularGrid.paginationService.goToLastPage();
+  }
+
+  setFiltersDynamically() {
+    // we can Set Filters Dynamically (or different filters) afterward through the FilterService
+    this.angularGrid.filterService.updateFilters([
+      // { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
+      { columnId: 'name', searchTerms: ['A'], operator: 'a*' },
+    ]);
   }
 
   /** This function is only here to mock a WebAPI call (since we are using a JSON file for the demo)

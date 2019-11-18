@@ -111,9 +111,7 @@ export class CustomAngularComponentFilter implements Filter {
     }
   }
 
-  /**
-   * Set value(s) on the DOM element
-   */
+  /** Set value(s) on the DOM element */
   setValues(values) {
     if (this.componentRef && this.componentRef.instance && this.componentRef.instance.hasOwnProperty('selectedId')) {
       this.componentRef.instance.selectedId = values;

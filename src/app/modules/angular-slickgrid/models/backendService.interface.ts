@@ -43,7 +43,7 @@ export interface BackendService {
   resetPaginationOptions: () => void;
 
   /** Update the Filters options with a set of new options */
-  updateFilters?: (columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset: boolean) => void;
+  updateFilters?: (columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPresetOrDynamically: boolean) => void;
 
   /** Update the Pagination component with it's new page number and size */
   updatePagination?: (newPage: number, pageSize: number) => void;

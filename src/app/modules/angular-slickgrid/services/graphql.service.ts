@@ -23,7 +23,8 @@ import {
   PaginationChangedArgs,
   SortChangedArgs,
   SortDirection,
-  SortDirectionString
+  SortDirectionString,
+  OperatorString
 } from './../models/index';
 import QueryBuilder from './graphqlQueryBuilder';
 
@@ -345,12 +346,12 @@ export class GraphqlService implements BackendService {
    * loop through all columns to inspect filters & update backend service filteringOptions
    * @param columnFilters
    */
-  updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPreset: boolean) {
+  updateFilters(columnFilters: ColumnFilters | CurrentFilter[], isUpdatedByPresetOrDynamically: boolean) {
     const searchByArray: GraphqlFilteringOption[] = [];
     let searchValue: string | string[];
 
     // on filter preset load, we need to keep current filters
-    if (isUpdatedByPreset) {
+    if (isUpdatedByPresetOrDynamically) {
       this._currentFilters = this.castFilterToColumnFilters(columnFilters);
     }
 
@@ -360,7 +361,7 @@ export class GraphqlService implements BackendService {
 
         // if user defined some "presets", then we need to find the filters from the column definitions instead
         let columnDef: Column | undefined;
-        if (isUpdatedByPreset && Array.isArray(this._columnDefinitions)) {
+        if (isUpdatedByPresetOrDynamically && Array.isArray(this._columnDefinitions)) {
           columnDef = this._columnDefinitions.find((column: Column) => column.id === columnFilter.columnId);
         } else {
           columnDef = columnFilter.columnDef;
@@ -402,7 +403,7 @@ export class GraphqlService implements BackendService {
           // escaping the search value
           searchValue = searchValue.replace(`'`, `''`); // escape single quotes by doubling them
           if (operator === '*' || operator === 'a*' || operator === '*z' || lastValueChar === '*') {
-            operator = (operator === '*' || operator === '*z') ? 'endsWith' : 'startsWith';
+            operator = ((operator === '*' || operator === '*z') ? 'EndsWith' : 'StartsWith') as OperatorString;
           }
         }
 
@@ -572,7 +573,7 @@ export class GraphqlService implements BackendService {
   // private functions
   // -------------------
   /**
-   * Cast provided filters (could be in multiple formats) into an array of ColumnFilter
+   * Cast provided filters (could be in multiple formats) into an array of CurrentFilter
    * @param columnFilters
    */
   private castFilterToColumnFilters(columnFilters: ColumnFilters | CurrentFilter[]): CurrentFilter[] {
