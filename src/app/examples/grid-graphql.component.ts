@@ -94,9 +94,9 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           } as MultipleSelectOption
         }
       },
-      { id: 'billing.address.street', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', width: 60, filterable: true, sortable: true },
+      { id: 'billingAddressStreet', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET', width: 60, filterable: true, sortable: true },
       {
-        id: 'billing.address.zip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', width: 60,
+        id: 'billingAddressZip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', width: 60,
         type: FieldType.number,
         filterable: true, sortable: true,
         filter: {
@@ -150,8 +150,8 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
           { columnId: 'name', width: 100 },
           { columnId: 'gender', width: 55 },
           { columnId: 'company' },
-          { columnId: 'billing.address.zip' }, // flip column position of Street/Zip to Zip/Street
-          { columnId: 'billing.address.street', width: 120 },
+          { columnId: 'billingAddressZip' }, // flip column position of Street/Zip to Zip/Street
+          { columnId: 'billingAddressStreet', width: 120 },
           { columnId: 'finish', width: 130 },
         ],
         filters: [
@@ -281,7 +281,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       { columnId: 'gender', searchTerms: ['female'], operator: OperatorType.equal },
       { columnId: 'name', searchTerms: ['Jane'], operator: OperatorType.startsWith },
       { columnId: 'company', searchTerms: ['acme'], operator: 'IN' },
-      { columnId: 'billing.address.zip', searchTerms: ['11'], operator: OperatorType.greaterThanOrEqual },
+      { columnId: 'billingAddressZip', searchTerms: ['11'], operator: OperatorType.greaterThanOrEqual },
       { columnId: 'finish', searchTerms: [presetLowestDay, presetHighestDay], operator: OperatorType.rangeInclusive },
     ]);
   }

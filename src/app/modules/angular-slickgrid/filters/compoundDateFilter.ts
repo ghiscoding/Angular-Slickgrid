@@ -70,7 +70,7 @@ export class CompoundDateFilter implements Filter {
 
   /** Getter for the Filter Operator */
   get operator(): OperatorType | OperatorString {
-    return this._operator || (this.columnFilter && this.columnFilter.operator) || this.gridOptions.defaultFilterRangeOperator || this.defaultOperator;
+    return this._operator || this.columnFilter.operator || this.defaultOperator;
   }
 
   /** Setter for the Filter Operator */

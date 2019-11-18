@@ -258,6 +258,31 @@ describe('Example 5 - OData Grid', () => {
         .find('.slick-row')
         .should('have.length', 1);
     });
+
+    it('should click on Set Dynamic Filter and expect query and filters to be changed', () => {
+      cy.get('[data-test=set-dynamic-filter]')
+        .click();
+
+      cy.get('.search-filter.filter-name select')
+        .should('have.value', 'a*')
+
+      cy.get('.search-filter.filter-name')
+        .find('input')
+        .invoke('val')
+        .then(text => expect(text).to.eq('A'));
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'done');
+
+      cy.get('[data-test=odata-query-result]')
+        .should(($span) => {
+          expect($span.text()).to.eq(`$count=true&$top=10&$filter=(startswith(Name, 'A'))`);
+        });
+
+      cy.get('#grid5')
+        .find('.slick-row')
+        .should('have.length', 5);
+    });
   });
 
   describe('when "enableCount" is unchecked (not set)', () => {
@@ -362,6 +387,31 @@ describe('Example 5 - OData Grid', () => {
         .should(($span) => {
           expect($span.text()).to.eq(`$top=10&$skip=90`);
         });
+    });
+
+    it('should click on Set Dynamic Filter and expect query and filters to be changed', () => {
+      cy.get('[data-test=set-dynamic-filter]')
+        .click();
+
+      cy.get('.search-filter.filter-name select')
+        .should('have.value', 'a*')
+
+      cy.get('.search-filter.filter-name')
+        .find('input')
+        .invoke('val')
+        .then(text => expect(text).to.eq('A'));
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'done');
+
+      cy.get('[data-test=odata-query-result]')
+        .should(($span) => {
+          expect($span.text()).to.eq(`$top=10&$filter=(startswith(Name, 'A'))`);
+        });
+
+      cy.get('#grid5')
+        .find('.slick-row')
+        .should('have.length', 5);
     });
 
     it('should use "substringof" when OData version is set to 2', () => {

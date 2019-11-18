@@ -25,7 +25,6 @@
       <button class="btn btn-default btn-xs" (click)="exportToExcel()">
         <i class="fa fa-file-excel-o text-success"></i> Export to Excel
       </button>
-      <button class="btn btn-default btn-sm" (click)="setFiltersDynamically()">Set Filters Dynamically</button>
     </div>
 
     <div class="row col-sm-12">
@@ -37,6 +36,9 @@
       </button>
       <button class="btn btn-default btn-xs" (click)="groupByDurationEffortDriven()">
         Group by Duration then Effort-Driven
+      </button>
+      <button class="btn btn-default btn-xs" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
+        Set Filters Dynamically
       </button>
     </div>
     <div class="col-sm-12">

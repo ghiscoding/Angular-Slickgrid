@@ -19,7 +19,7 @@ import {
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
-const NB_ITEMS = 1000;
+const NB_ITEMS = 1500;
 const URL_SAMPLE_COLLECTION_DATA = 'assets/data/collection_500_numbers.json';
 
 @Component({
@@ -252,8 +252,10 @@ export class GridClientSideComponent implements OnInit {
   setFiltersDynamically() {
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
-      { columnId: 'duration', searchTerms: [10, 220] },
-      { columnId: 'usDateShort', operator: '<', searchTerms: ['4/20/25'] },
+      { columnId: 'duration', searchTerms: [2, 25, 48, 50] },
+      { columnId: 'complete', searchTerms: [95], operator: '<' },
+      { columnId: 'effort-driven', searchTerms: [true] },
+      { columnId: 'start', operator: '>=', searchTerms: ['2001-02-28'] },
     ]);
   }
 

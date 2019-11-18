@@ -327,7 +327,7 @@ export class SelectFilter implements Filter {
   /** Create the HTML template as a string */
   protected buildTemplateHtmlString(optionCollection: any[], searchTerms: SearchTerm[]) {
     let options = '';
-    const fieldId = this.columnDef && this.columnDef.id;
+    const columnId = this.columnDef && this.columnDef.id;
     const separatorBetweenLabels = this.collectionOptions && this.collectionOptions.separatorBetweenTextLabels || '';
     const isEnableTranslate = this.gridOptions && this.gridOptions.enableTranslate;
     const isRenderHtmlEnabled = this.columnFilter && this.columnFilter.enableRenderHtml || false;
@@ -390,7 +390,7 @@ export class SelectFilter implements Filter {
       }
     }
 
-    return `<select class="ms-filter search-filter filter-${fieldId}" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
+    return `<select class="ms-filter search-filter filter-${columnId}" ${this.isMultipleSelect ? 'multiple="multiple"' : ''}>${options}</select>`;
   }
 
   /** Create a blank entry that can be added to the collection. It will also reuse the same customStructure if need be */

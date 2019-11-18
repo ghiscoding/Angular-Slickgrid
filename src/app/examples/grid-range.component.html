@@ -9,7 +9,9 @@
   </span>
   <button class="btn btn-default btn-sm" (click)="angularGrid.filterService.clearFilters()">Clear Filters</button>
   <button class="btn btn-default btn-sm" (click)="angularGrid.sortService.clearSorting()">Clear Sorting</button>
-  <button class="btn btn-default btn-sm" (click)="setFiltersDynamically()">Set Filters Dynamically</button>
+  <button class="btn btn-default btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
+    Set Filters Dynamically
+  </button>
   <button class="btn btn-default btn-sm" (click)="switchLanguage()" data-test="language">
     <i class="fa fa-language"></i>
     Switch Language

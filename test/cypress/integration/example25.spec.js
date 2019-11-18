@@ -2,7 +2,9 @@
 import moment from 'moment-mini';
 
 const presetMinComplete = 5;
-const presetMaxComplete = 88;
+const presetMaxComplete = 80;
+const presetMinDuration = 4;
+const presetMaxDuration = 88;
 const presetLowestDay = moment().add(-2, 'days').format('YYYY-MM-DD');
 const presetHighestDay = moment().add(20, 'days').format('YYYY-MM-DD');
 
@@ -50,9 +52,8 @@ describe('Example 25 - Range Filters', () => {
           .each(($cell) => {
             const value = parseInt($cell.text().trim(), 10);
             if (!isNaN(value)) {
-              console.log('duration', value, presetMinComplete, presetMaxComplete, value > presetMinComplete, value < presetMaxComplete)
-              expect(value > presetMinComplete).to.eq(true);
-              expect(value < presetMaxComplete).to.eq(true);
+              expect(value > presetMinDuration).to.eq(true);
+              expect(value < presetMaxDuration).to.eq(true);
             }
           });
       });
@@ -116,7 +117,6 @@ describe('Example 25 - Range Filters', () => {
       });
   });
 
-
   xit('should change the "Finish" date in the picker and expect all rows to be within new dates range', () => {
     cy.contains('Clear Filters')
       .click({ force: true });
@@ -145,5 +145,69 @@ describe('Example 25 - Range Filters', () => {
             expect(isDateBetween).to.eq(true);
           });
       });
+  });
+
+  describe('Set Dymamic Filters', () => {
+    const dynamicMinComplete = 12;
+    const dynamicMaxComplete = 82;
+    const dynamicMinDuration = 14;
+    const dynamicMaxDuration = 78;
+    const dynamicLowestDay = moment().add(-5, 'days').format('YYYY-MM-DD');
+    const dynamicHighestDay = moment().add(25, 'days').format('YYYY-MM-DD');
+
+    it('should click on Set Dynamic Filters', () => {
+      cy.get('[data-test=set-dynamic-filter]')
+        .click();
+    });
+
+    it('should have "% Complete" fields within the exclusive range of the filters presets', () => {
+      cy.get('#grid25')
+        .find('.slick-row')
+        .each(($row) => {
+          cy.wrap($row)
+            .children('.slick-cell:nth(2)')
+            .each(($cell) => {
+              const value = parseInt($cell.text().trim(), 10);
+              if (!isNaN(value)) {
+                expect(value > dynamicMinComplete).to.eq(true);
+                expect(value < dynamicMaxComplete).to.eq(true);
+              }
+            });
+        });
+    });
+
+    it('should have "Duration" fields within the inclusive range of the dynamic filters', () => {
+      cy.get('#grid25')
+        .find('.slick-row')
+        .each(($row) => {
+          cy.wrap($row)
+            .children('.slick-cell:nth(5)')
+            .each(($cell) => {
+              const value = parseInt($cell.text().trim(), 10);
+              if (!isNaN(value)) {
+                expect(value >= dynamicMinDuration).to.eq(true);
+                expect(value <= dynamicMaxDuration).to.eq(true);
+              }
+            });
+        });
+    });
+
+    it('should have Finish Dates within the range (inclusive) of the dynamic filters', () => {
+      cy.get('.search-filter.filter-finish')
+        .find('input')
+        .invoke('val')
+        .then(text => expect(text).to.eq(`${dynamicLowestDay} to ${dynamicHighestDay}`));
+
+      cy.get('#grid25')
+        .find('.slick-row')
+        .each(($row) => {
+          cy.wrap($row)
+            .children('.slick-cell:nth(4)')
+            .each(($cell) => {
+              const isDateBetween = moment($cell.text()).isBetween(dynamicLowestDay, dynamicHighestDay, null, '[]'); // [] is inclusive, () is exclusive
+              expect(isDateBetween).to.eq(true);
+            });
+        });
+    });
   });
 });
