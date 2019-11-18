@@ -67,15 +67,10 @@ export function htmlEncode(inputValue: string): string {
     '<': '&lt;',
     '>': '&gt;',
     '"': '&quot;',
-    '\'': '&#39;',
-    // '/': '&#x2F;',
-    // '`': '&#x60;',
-    // '=': '&#x3D;'
+    '\'': '&#39;'
   };
   // all symbols::  /[&<>"'`=\/]/g
-  return inputValue.replace(/[&<>"']/g, (s) => {
-    return entityMap[s];
-  });
+  return inputValue.replace(/[&<>"']/g, (s) => entityMap[s]);
 }
 
 /** decode text into html entity

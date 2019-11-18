@@ -76,7 +76,7 @@ export class ResizerService {
     const gridDomElm = $(`#${gridOptions.gridId}`);
     const autoResizeOptions = gridOptions && gridOptions.autoResize || {};
     const containerElm = (autoResizeOptions && autoResizeOptions.containerId) ? $(`#${autoResizeOptions.containerId}`) : $(`#${gridOptions.gridContainerId}`);
-    if (!window || containerElm === undefined || gridDomElm === undefined) {
+    if (!window || containerElm === undefined || gridDomElm === undefined || gridDomElm.offset() === undefined) {
       return null;
     }
 

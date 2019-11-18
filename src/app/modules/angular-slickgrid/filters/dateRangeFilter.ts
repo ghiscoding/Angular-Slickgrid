@@ -209,11 +209,8 @@ export class DateRangeFilter implements Filter {
 
         // when using the time picker, we can simulate a keyup event to avoid multiple backend request
         // since backend request are only executed after user start typing, changing the time should be treated the same way
-        if (pickerOptions.enableTime) {
-          this.onTriggerEvent(new CustomEvent('keyup'));
-        } else {
-          this.onTriggerEvent(undefined);
-        }
+        const newEvent = pickerOptions.enableTime ? new CustomEvent('keyup') : undefined;
+        this.onTriggerEvent(newEvent);
       }
     };
 

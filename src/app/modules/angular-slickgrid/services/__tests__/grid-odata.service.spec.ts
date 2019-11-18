@@ -1292,6 +1292,22 @@ describe('GridOdataService', () => {
       expect(currentSorters).toEqual([]);
     });
 
+    it('should return a query with the multiple new sorting when "updateSorters" with currentSorter defined as preset on 2nd argument', () => {
+      const expectation = `$top=10&$orderby=Gender asc,FirstName desc`;
+      const mockCurrentSorter = [
+        { columnId: 'gender', direction: 'asc' },
+        { columnId: 'firstName', direction: 'DESC' }
+      ] as CurrentSorter[];
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateSorters(null, mockCurrentSorter);
+      const query = service.buildQuery();
+      const currentSorters = service.getCurrentSorters();
+
+      expect(query).toBe(expectation);
+      expect(currentSorters).toEqual([{ columnId: 'gender', direction: 'asc' }, { columnId: 'firstName', direction: 'desc' }]);
+    });
+
     describe('set "enablePagination" to False', () => {
       beforeEach(() => {
         gridOptionMock.enablePagination = false;
