@@ -108,8 +108,8 @@ describe('ExtensionUtility', () => {
       });
 
       it('should sort the items by their order property when found and then return the object without the property', () => {
-        const inputArray = [{ field: 'field1', order: 3 }, { field: 'field3', order: 2 }, { field: 'field2', order: -1 }];
-        const expectedArray = [{ field: 'field2', order: -1 }, { field: 'field3', order: 2 }, { field: 'field1', order: 3 }];
+        const inputArray = [{ field: 'field1', order: 3 }, { field: 'field3', order: 2 }, { field: 'field2' }];
+        const expectedArray = [{ field: 'field3', order: 2 }, { field: 'field1', order: 3 }, { field: 'field2' }];
 
         utility.sortItems(inputArray, 'order');
 

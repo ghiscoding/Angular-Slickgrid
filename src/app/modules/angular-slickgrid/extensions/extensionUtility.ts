@@ -125,7 +125,7 @@ export class ExtensionUtility {
       if (itemA && itemB && itemA.hasOwnProperty(propertyName) && itemB.hasOwnProperty(propertyName)) {
         return itemA[propertyName] - itemB[propertyName];
       }
-      return -1;
+      return 0;
     });
   }
 
