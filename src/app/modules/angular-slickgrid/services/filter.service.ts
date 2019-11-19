@@ -1,4 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
+import * as isequal_ from 'lodash.isequal';
+const isequal = isequal_; // patch to fix rollup to work
+
 import {
   Column,
   ColumnFilter,
@@ -23,9 +27,6 @@ import { getDescendantProperty } from './utilities';
 import { FilterConditions } from './../filter-conditions';
 import { FilterFactory } from '../filters/filterFactory';
 import { SharedService } from './shared.service';
-import { Subject } from 'rxjs';
-import * as isequal_ from 'lodash.isequal';
-const isequal = isequal_; // patch to fix rollup to work
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -476,7 +477,7 @@ export class FilterService {
 
   updateFilters(filters: CurrentFilter[]) {
     if (!this._filtersMetadata || this._filtersMetadata.length === 0 || !this._gridOptions || !this._gridOptions.enableFiltering) {
-      throw new Error('[Angular-Slickgrid] in order to use "updateFilters" method, you need to have Filters defined in your grid and "enableFiltering" set in your Grid Options');
+      throw new Error('[Angular-Slickgrid] in order to use "updateFilters" method, you need to have Filterable Columns defined in your grid and "enableFiltering" set in your Grid Options');
     }
 
     if (Array.isArray(filters)) {

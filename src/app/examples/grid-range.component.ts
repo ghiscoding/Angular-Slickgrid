@@ -224,11 +224,6 @@ export class GridRangeComponent implements OnInit {
     }
   }
 
-  switchLanguage() {
-    const nextLocale = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
-  }
-
   setFiltersDynamically() {
     const presetLowestDay = moment().add(-5, 'days').format('YYYY-MM-DD');
     const presetHighestDay = moment().add(25, 'days').format('YYYY-MM-DD');
@@ -239,5 +234,18 @@ export class GridRangeComponent implements OnInit {
       { columnId: 'complete', operator: 'RangeExclusive', searchTerms: [12, 82] },
       { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [presetLowestDay, presetHighestDay] },
     ]);
+  }
+
+  setSortingDynamically() {
+    this.angularGrid.sortService.updateSorting([
+      // orders matter, whichever is first in array will be the first sorted column
+      { columnId: 'start', direction: 'DESC' },
+      { columnId: 'complete', direction: 'ASC' },
+    ]);
+  }
+
+  switchLanguage() {
+    const nextLocale = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
   }
 }

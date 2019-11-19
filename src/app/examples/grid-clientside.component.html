@@ -12,6 +12,9 @@
   <button class="btn btn-default btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
     Set Filters Dynamically
   </button>
+  <button class="btn btn-default btn-sm" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
+    Set Sorting Dynamically
+  </button>
 
   <angular-slickgrid gridId="grid4" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
     [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
