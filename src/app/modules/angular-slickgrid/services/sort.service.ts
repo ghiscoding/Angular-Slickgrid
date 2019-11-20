@@ -183,16 +183,36 @@ export class SortService {
     return [];
   }
 
-  /**
-   * Load any presets, if there are any, that are defined in the Grid Options
-   * @param grid
-   * @param dataView
-   */
-  loadLocalGridPresets(grid: any, dataView: any) {
-    const sorters = this._gridOptions && this._gridOptions.presets && this._gridOptions.presets.sorters;
+  /** Load defined Sorting (sorters) into the grid */
+  loadGridSorters(sorters: CurrentSorter[]): ColumnSort[] {
+    this._currentLocalSorters = []; // reset current local sorters
+    const sortCols: ColumnSort[] = [];
+
     if (Array.isArray(sorters)) {
-      this.loadGridSorting(sorters);
+      sorters.forEach((presetSorting: CurrentSorter) => {
+        const gridColumn = this._columnDefinitions.find((col: Column) => col.id === presetSorting.columnId);
+        if (gridColumn) {
+          sortCols.push({
+            columnId: gridColumn.id,
+            sortAsc: ((presetSorting.direction.toUpperCase() === SortDirection.ASC) ? true : false),
+            sortCol: gridColumn
+          });
+
+          // keep current sorters
+          this._currentLocalSorters.push({
+            columnId: gridColumn.id + '',
+            direction: presetSorting.direction.toUpperCase() as SortDirectionString
+          });
+        }
+      });
     }
+
+    if (sortCols.length > 0) {
+      this.onLocalSortChanged(this._grid, this._dataView, sortCols);
+      this._grid.setSortColumns(sortCols); // use this to add sort icon(s) in UI
+    }
+
+    return sortCols;
   }
 
   onBackendSortChanged(event: Event, args: any) {
@@ -282,44 +302,8 @@ export class SortService {
         this.emitSortChanged(EmitterType.remote);
       }
     } else {
-      this.loadGridSorting(sorters);
+      this.loadGridSorters(sorters);
       this.emitSortChanged(EmitterType.local);
     }
-  }
-
-  // --
-  // private functions
-  // -------------------
-
-  /** Load a defined Sort into the grid */
-  private loadGridSorting(sorters: CurrentSorter[]): ColumnSort[] {
-    this._currentLocalSorters = []; // reset current local sorters
-    const sortCols: ColumnSort[] = [];
-
-    if (Array.isArray(sorters)) {
-      sorters.forEach((presetSorting: CurrentSorter) => {
-        const gridColumn = this._columnDefinitions.find((col: Column) => col.id === presetSorting.columnId);
-        if (gridColumn) {
-          sortCols.push({
-            columnId: gridColumn.id,
-            sortAsc: ((presetSorting.direction.toUpperCase() === SortDirection.ASC) ? true : false),
-            sortCol: gridColumn
-          });
-
-          // keep current sorters
-          this._currentLocalSorters.push({
-            columnId: gridColumn.id + '',
-            direction: presetSorting.direction.toUpperCase() as SortDirectionString
-          });
-        }
-      });
-    }
-
-    if (sortCols.length > 0) {
-      this.onLocalSortChanged(this._grid, this._dataView, sortCols);
-      this._grid.setSortColumns(sortCols); // use this to add sort icon(s) in UI
-    }
-
-    return sortCols;
   }
 }

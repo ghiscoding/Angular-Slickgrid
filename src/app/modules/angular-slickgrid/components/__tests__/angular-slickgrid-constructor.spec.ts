@@ -130,7 +130,7 @@ const sortServiceStub = {
   bindBackendOnSort: jest.fn(),
   bindLocalOnSort: jest.fn(),
   dispose: jest.fn(),
-  loadLocalGridPresets: jest.fn(),
+  loadGridSorters: jest.fn(),
 } as unknown as SortService;
 
 const mockGroupItemMetaProvider = {
@@ -458,9 +458,9 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(spy).toHaveBeenCalledWith(expect.any(Object));
       });
 
-      it('should call the "executeAfterDataviewCreated" and "loadLocalGridPresets" methods and Sorter Presets are provided in the Grid Options', () => {
+      it('should call the "executeAfterDataviewCreated" and "loadGridSorters" methods and Sorter Presets are provided in the Grid Options', () => {
         const spy = jest.spyOn(component.onDataviewCreated, 'emit');
-        const sortSpy = jest.spyOn(sortServiceStub, 'loadLocalGridPresets');
+        const sortSpy = jest.spyOn(sortServiceStub, 'loadGridSorters');
 
         component.gridOptions = { presets: { sorters: [{ columnId: 'field1', direction: 'DESC' }] } } as GridOption;
         component.ngAfterViewInit();

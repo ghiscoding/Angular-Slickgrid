@@ -405,7 +405,7 @@ describe('SortService', () => {
     });
   });
 
-  describe('loadLocalGridPresets method', () => {
+  describe('loadGridSorters method', () => {
     const mockColumns = [{ id: 'firstName', field: 'firstName' }, { id: 'lastName', field: 'lastName' }] as Column[];
 
     beforeEach(() => {
@@ -424,7 +424,7 @@ describe('SortService', () => {
       ];
 
       service.bindLocalOnSort(gridStub, dataViewStub);
-      service.loadLocalGridPresets(gridStub, dataViewStub);
+      service.loadGridSorters(gridOptionMock.presets.sorters);
 
       expect(spySetCols).toHaveBeenCalledWith(expectation);
       expect(spySortChanged).toHaveBeenCalledWith(gridStub, dataViewStub, expectation);
@@ -440,7 +440,7 @@ describe('SortService', () => {
       gridStub.getColumns = undefined;
 
       service.bindLocalOnSort(gridStub, dataViewStub);
-      service.loadLocalGridPresets(gridStub, dataViewStub);
+      service.loadGridSorters(gridOptionMock.presets.sorters);
 
       expect(spySetCols).not.toHaveBeenCalled();
     });
@@ -450,7 +450,7 @@ describe('SortService', () => {
       gridStub.getOptions = undefined;
 
       service.bindLocalOnSort(gridStub, dataViewStub);
-      service.loadLocalGridPresets(gridStub, dataViewStub);
+      service.loadGridSorters(gridOptionMock.presets.sorters);
 
       expect(spySetCols).not.toHaveBeenCalled();
     });

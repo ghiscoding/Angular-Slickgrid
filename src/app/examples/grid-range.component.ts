@@ -239,7 +239,7 @@ export class GridRangeComponent implements OnInit {
   setSortingDynamically() {
     this.angularGrid.sortService.updateSorting([
       // orders matter, whichever is first in array will be the first sorted column
-      { columnId: 'start', direction: 'DESC' },
+      { columnId: 'finish', direction: 'DESC' },
       { columnId: 'complete', direction: 'ASC' },
     ]);
   }
