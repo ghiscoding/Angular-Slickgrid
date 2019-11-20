@@ -231,7 +231,7 @@ export class GridRangeComponent implements OnInit {
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
       { columnId: 'duration', searchTerms: ['14..78'], operator: 'RangeInclusive' },
-      { columnId: 'complete', operator: 'RangeExclusive', searchTerms: [12, 82] },
+      { columnId: 'complete', operator: 'RangeExclusive', searchTerms: [10, 80] },
       { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [presetLowestDay, presetHighestDay] },
     ]);
   }
