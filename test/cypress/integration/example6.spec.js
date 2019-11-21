@@ -327,4 +327,42 @@ describe('Example 6 - GraphQL Grid', () => {
           {totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
       });
   });
+
+  describe('Set Dynamic Sorting', () => {
+    it('should click on "Clear All Filters & Sorting" then "Set Dynamic Sorting" buttons', () => {
+      cy.get('[data-test=clear-filters-sorting]')
+        .click();
+
+      cy.get('[data-test=set-dynamic-sorting]')
+        .click();
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'processing');
+      cy.get('[data-test=status]').should('contain', 'done');
+    });
+
+    it('should expect the grid to be sorted by "Zip" descending then by "Company" ascending', () => {
+      cy.get('#grid6')
+        .get('.slick-header-column:nth(2)')
+        .find('.slick-sort-indicator-asc')
+        .should('have.length', 1)
+        .siblings('.slick-sort-indicator-numbered')
+        .contains('2');
+
+      cy.get('#grid6')
+        .get('.slick-header-column:nth(3)')
+        .find('.slick-sort-indicator-desc')
+        .should('have.length', 1)
+        .siblings('.slick-sort-indicator-numbered')
+        .contains('1');
+
+      cy.get('[data-test=graphql-query-result]')
+        .should(($span) => {
+          const text = removeSpaces($span.text()); // remove all white spaces
+          expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
+            orderBy:[{field:"billing.address.zip",direction:DESC},{field:"company",direction:ASC}],locale:"en",userId:123){
+            totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+        });
+    });
+  });
 });

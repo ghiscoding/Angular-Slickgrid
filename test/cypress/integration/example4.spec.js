@@ -44,6 +44,36 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
             });
         });
     });
+
+    it('should expect the grid to be sorted by "Duration" descending and "% Complete" ascending', () => {
+      cy.get('#grid4')
+        .get('.slick-header-column:nth(2)')
+        .find('.slick-sort-indicator-desc')
+        .should('have.length', 1)
+        .siblings('.slick-sort-indicator-numbered')
+        .contains('1');
+
+      cy.get('#grid4')
+        .get('.slick-header-column:nth(3)')
+        .find('.slick-sort-indicator-asc')
+        .should('have.length', 1)
+        .siblings('.slick-sort-indicator-numbered')
+        .contains('2');
+
+      cy.get('.slick-row')
+        .first()
+        .children('.slick-cell:nth(2)')
+        .should('contain', '98');
+
+      cy.get('.slick-viewport-top.slick-viewport-left')
+        .scrollTo('bottom')
+        .wait(50);
+
+      cy.get('.slick-row')
+        .last()
+        .children('.slick-cell:nth(2)')
+        .should('contain', '10');
+    });
   });
 
   describe('Set Dymamic Filters', () => {
@@ -103,6 +133,56 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
               expect(isDateValid).to.eq(true);
             });
         });
+    });
+  });
+
+  describe('Set Dynamic Sorting', () => {
+    it('should click on "Clear Filters" then "Set Dynamic Sorting" buttons', () => {
+      cy.get('[data-test=clear-filters]')
+        .click();
+
+      cy.get('[data-test=set-dynamic-sorting]')
+        .click();
+    });
+
+    it('should expect the grid to be sorted by "Duration" ascending and "Start" descending', () => {
+      cy.get('#grid4')
+        .get('.slick-header-column:nth(2)')
+        .find('.slick-sort-indicator-asc')
+        .should('have.length', 1)
+        .siblings('.slick-sort-indicator-numbered')
+        .contains('1');
+
+      cy.get('#grid4')
+        .get('.slick-header-column:nth(4)')
+        .find('.slick-sort-indicator-desc')
+        .should('have.length', 1)
+        .siblings('.slick-sort-indicator-numbered')
+        .contains('2');
+
+      cy.get('.slick-row')
+        .first()
+        .children('.slick-cell:nth(2)')
+        .should('contain', '0');
+
+      // cy.get('.slick-row')
+      //   .first()
+      //   .children('.slick-cell:nth(4)')
+      //   .should('not.contain', '');
+
+      cy.get('.slick-viewport-top.slick-viewport-left')
+        .scrollTo('bottom')
+        .wait(50);
+
+      cy.get('.slick-row')
+        .last()
+        .children('.slick-cell:nth(2)')
+        .should('contain', '100');
+
+      cy.get('.slick-row')
+        .last()
+        .children('.slick-cell:nth(4)')
+        .should('contain', '');
     });
   });
 });

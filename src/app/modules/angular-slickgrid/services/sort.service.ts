@@ -189,19 +189,19 @@ export class SortService {
     const sortCols: ColumnSort[] = [];
 
     if (Array.isArray(sorters)) {
-      sorters.forEach((presetSorting: CurrentSorter) => {
-        const gridColumn = this._columnDefinitions.find((col: Column) => col.id === presetSorting.columnId);
+      sorters.forEach((sorter: CurrentSorter) => {
+        const gridColumn = this._columnDefinitions.find((col: Column) => col.id === sorter.columnId);
         if (gridColumn) {
           sortCols.push({
             columnId: gridColumn.id,
-            sortAsc: ((presetSorting.direction.toUpperCase() === SortDirection.ASC) ? true : false),
+            sortAsc: ((sorter.direction.toUpperCase() === SortDirection.ASC) ? true : false),
             sortCol: gridColumn
           });
 
           // keep current sorters
           this._currentLocalSorters.push({
             columnId: gridColumn.id + '',
-            direction: presetSorting.direction.toUpperCase() as SortDirectionString
+            direction: sorter.direction.toUpperCase() as SortDirectionString
           });
         }
       });
