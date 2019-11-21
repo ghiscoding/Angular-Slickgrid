@@ -233,7 +233,7 @@ export class SortService {
       backendApi.preProcess();
     }
 
-    // query backend, except when it's called by a ClearFilters then we won't
+    // query backend
     const query = backendApi.service.processOnSortChanged(event, args);
     const totalItems = gridOptions && gridOptions.pagination && gridOptions.pagination.totalItems;
     executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitSortChanged.bind(this));
@@ -287,23 +287,40 @@ export class SortService {
     return SortDirectionNumber.neutral;
   }
 
-  updateSorting(sorters: CurrentSorter[]) {
+  /**
+   * Update Sorting (sorters) dynamically just by providing an array of sorter(s).
+   * You can also choose emit (default) a Sort Changed event that will be picked by the Grid State Service.
+   *
+   * Also for backend service only, you can choose to trigger a backend query (default) or not if you wish to do it later,
+   * this could be useful when using updateFilters & updateSorting and you wish to only send the backend query once.
+   * @param sorters array
+   * @param triggerEvent defaults to True, do we want to emit a sort changed event?
+   * @param triggerBackendQuery defaults to True, which will query the backend.
+   */
+  updateSorting(sorters: CurrentSorter[], emitChangedEvent = true, triggerBackendQuery = true) {
     if (!this._gridOptions || !this._gridOptions.enableSorting) {
       throw new Error('[Angular-Slickgrid] in order to use "updateSorting" method, you need to have Sortable Columns defined in your grid and "enableSorting" set in your Grid Options');
     }
 
-    const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
+    if (Array.isArray(sorters)) {
+      const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
 
-    if (backendApi) {
-      const backendApiService = backendApi && backendApi.service;
-      if (backendApiService) {
-        backendApiService.updateSorters(undefined, sorters);
-        refreshBackendDataset(this._gridOptions);
-        this.emitSortChanged(EmitterType.remote);
+      if (backendApi) {
+        const backendApiService = backendApi && backendApi.service;
+        if (backendApiService) {
+          backendApiService.updateSorters(undefined, sorters);
+          if (triggerBackendQuery) {
+            refreshBackendDataset(this._gridOptions);
+          }
+        }
+      } else {
+        this.loadGridSorters(sorters);
       }
-    } else {
-      this.loadGridSorters(sorters);
-      this.emitSortChanged(EmitterType.local);
+
+      if (emitChangedEvent) {
+        const emitterType = backendApi ? EmitterType.remote : EmitterType.local;
+        this.emitSortChanged(emitterType);
+      }
     }
   }
 }
