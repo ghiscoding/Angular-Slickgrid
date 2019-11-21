@@ -102,10 +102,10 @@ export class BsDropDownService {
               const offset = 35;
               const iElement = $('.dropdown-menu');
               const iElementWrapper = iElement.parent();
-              const IElementWrapperOffset = iElementWrapper.offset() || {};
-              const iElementWrapperOffsetTop = IElementWrapperOffset.top;
+              const iElementWrapperOffset = iElementWrapper.offset() || {};
+              const iElementWrapperOffsetTop = iElementWrapperOffset.top || iElementWrapper && iElementWrapper.length > 0 && iElementWrapper[0].offsetTop;
               const iElementHeight = iElement.height();
-              const windowHeight = $(window).height();
+              const windowHeight = window.innerHeight;
               const shouldDropUp = (windowHeight - iElementHeight - offset) < iElementWrapperOffsetTop;
               let menuMarginTop = '0px';
               if (shouldDropUp) {
@@ -115,7 +115,7 @@ export class BsDropDownService {
               this._domElement.css({ 'margin-top': menuMarginTop });
 
               // set dropdown margin left according to the document width
-              const parentOffset = IElementWrapperOffset.left;
+              const parentOffset = iElementWrapperOffset.left;
               const leftMargin = parentOffset - $(document).width();
               this._domElement.css({ 'margin-left': (this._domElement.width() + leftMargin + 60) + 'px' });
 

@@ -142,6 +142,35 @@ describe('bsdropdown-service', () => {
         expect(showSpy).toHaveBeenCalled();
         expect(service.domContainerElement).toBeTruthy();
       });
+
+      it('should drop up when window height is below parent div offset top', async () => {
+        const divDropdown = document.createElement('div');
+        divDropdown.className = 'dropdown-menu';
+        divDropdown.style.height = '200px';
+        div.appendChild(divDropdown);
+        const compSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponent').mockReturnValue(mockComponent);
+        const disposeSpy = jest.spyOn(service, 'dispose');
+        const showSpy = jest.spyOn(service, 'dropContainerShow');
+
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 100 });
+        Object.defineProperty(div, 'offsetTop', { writable: true, configurable: true, value: 150 });
+        window.dispatchEvent(new Event('resize'));
+        div.dispatchEvent(new Event('resize'));
+        await service.render({
+          component: TestComponent,
+          args: { row: 0, cell: 0, grid: gridStub },
+          parent: {}
+        });
+
+        service.domElement.trigger('hidden.bs.dropdown');
+
+        expect(service.domElement[0].style.marginTop).toBe('-40px');
+        expect(compSpy).toHaveBeenCalledWith(TestComponent);
+        expect(service.domElement).toBeTruthy();
+        expect(disposeSpy).toHaveBeenCalledTimes(1);
+        expect(showSpy).toHaveBeenCalled();
+        expect(service.domContainerElement).toBeTruthy();
+      });
     });
   });
 });

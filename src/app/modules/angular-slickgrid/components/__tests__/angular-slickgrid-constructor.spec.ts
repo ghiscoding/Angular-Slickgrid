@@ -22,7 +22,7 @@ import { GridOption, CurrentFilter, CurrentSorter, GridStateType, Pagination, Gr
 import { Filters } from '../../filters';
 import { Editors } from '../../editors';
 import * as utilities from '../../services/backend-utilities';
-import { Subject, of, throwError, Observable } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { GridStateChange } from 'dist/public_api';
 import { TestBed } from '@angular/core/testing';
 
