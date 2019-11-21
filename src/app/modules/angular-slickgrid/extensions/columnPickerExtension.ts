@@ -81,7 +81,9 @@ export class ColumnPickerExtension implements Extension {
       this.extensionUtility.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
 
       // update the Titles of each sections (command, customTitle, ...)
-      this._addon.updateAllTitles(this.sharedService.gridOptions.columnPicker);
+      if (this._addon && this._addon.updateAllTitles) {
+        this._addon.updateAllTitles(this.sharedService.gridOptions.columnPicker);
+      }
     }
   }
 
