@@ -327,8 +327,13 @@ export class GridOdataService implements BackendService {
             if (operator === 'IN') {
               // example:: (Stage eq "Expired" or Stage eq "Renewal")
               for (let j = 0, lnj = searchTerms.length; j < lnj; j++) {
-                const searchVal = searchTerms[j].replace(`'`, `''`);
-                tmpSearchTerms.push(`${fieldName} eq '${searchVal}'`);
+                if (fieldType === FieldType.string) {
+                  const searchVal = searchTerms[j].replace(`'`, `''`);
+                  tmpSearchTerms.push(`${fieldName} eq '${searchVal}'`);
+                } else {
+                  // Single quote escape is not needed for non string type
+                  tmpSearchTerms.push(`${fieldName} eq ${searchTerms[j]}`);
+                }
               }
               searchBy = tmpSearchTerms.join(' or ');
               if (!(typeof searchBy === 'string' && searchBy[0] === '(' && searchBy.slice(-1) === ')')) {
