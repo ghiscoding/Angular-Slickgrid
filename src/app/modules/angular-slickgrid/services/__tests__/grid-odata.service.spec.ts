@@ -720,6 +720,20 @@ describe('GridOdataService', () => {
       expect(query).toBe(expectation);
     });
 
+    it('should return a query with a CSV string when the filter operator is IN for numeric column type', () => {
+      const expectation = `$top=10&$filter=(Id eq 100 or Id eq 101)`;
+      const mockColumn = { id: 'id', field: 'id', type: FieldType.number } as Column;
+      const mockColumnFilters = {
+        gender: { columnId: 'id', columnDef: mockColumn, searchTerms: [100, 101], operator: 'IN' },
+      } as ColumnFilters;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      service.updateFilters(mockColumnFilters, false);
+      const query = service.buildQuery();
+
+      expect(query).toBe(expectation);
+    });
+
     it('should return a query with a CSV string when the filter operator is NOT_IN', () => {
       const expectation = `$top=10&$filter=(Gender ne 'female' and Gender ne 'male')`;
       const mockColumn = { id: 'gender', field: 'gender' } as Column;
