@@ -170,6 +170,12 @@ export class GridOdataComponent implements OnInit {
     ]);
   }
 
+  setSortingDynamically() {
+    this.angularGrid.sortService.updateSorting([
+      { columnId: 'name', direction: 'DESC' },
+    ]);
+  }
+
   /** This function is only here to mock a WebAPI call (since we are using a JSON file for the demo)
    *  in your case the getCustomer() should be a WebAPI function returning a Promise
    */

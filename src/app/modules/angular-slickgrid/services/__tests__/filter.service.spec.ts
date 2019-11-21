@@ -3,6 +3,8 @@ import '../../../../../assets/lib/multiple-select/multiple-select';
 
 import { TestBed, async } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
+import { of, throwError } from 'rxjs';
+
 import {
   BackendService,
   Column,
@@ -17,7 +19,11 @@ import { FilterService } from '../filter.service';
 import { FilterFactory } from '../../filters/filterFactory';
 import { SharedService } from '../shared.service';
 import { SlickgridConfig, CollectionService } from '../..';
-import { of, throwError } from 'rxjs';
+import * as utilities from '../../services/backend-utilities';
+
+const mockRefreshBackendDataset = jest.fn();
+// @ts-ignore
+utilities.refreshBackendDataset = mockRefreshBackendDataset;
 
 declare var Slick: any;
 const DOM_ELEMENT_ID = 'row-detail123';
@@ -936,7 +942,7 @@ describe('FilterService', () => {
         service.bindLocalOnFilter(gridStub, dataViewStub);
         service.updateFilters([{ columnId: 'firstName', searchTerms: ['John'] }]);
       } catch (e) {
-        expect(e.toString()).toContain('[Angular-Slickgrid] in order to use "updateFilters" method, you need to have Filters defined in your grid');
+        expect(e.toString()).toContain('[Angular-Slickgrid] in order to use "updateFilters" method, you need to have Filterable Columns defined in your grid');
         done();
       }
     });
@@ -976,12 +982,13 @@ describe('FilterService', () => {
       service.updateFilters(mockNewFilters);
 
       expect(emitSpy).toHaveBeenCalledWith('remote');
-      expect(clearSpy).toHaveBeenCalledWith(false);
       expect(backendUpdateSpy).toHaveBeenCalledWith(mockNewFilters, true);
       expect(service.getColumnFilters()).toEqual({
         firstName: { columnId: 'firstName', columnDef: mockColumn1, searchTerms: ['Jane'], operator: 'StartsWith' },
         isActive: { columnId: 'isActive', columnDef: mockColumn2, searchTerms: [false], operator: 'EQ' }
       });
+      expect(clearSpy).toHaveBeenCalledWith(false);
+      expect(mockRefreshBackendDataset).toHaveBeenCalledWith(gridOptionMock);
     });
   });
 });

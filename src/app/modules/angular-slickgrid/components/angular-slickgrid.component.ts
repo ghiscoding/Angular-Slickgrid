@@ -578,7 +578,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     // if user entered some Sort "presets", we need to reflect them all in the DOM
     if (gridOptions.enableSorting) {
       if (gridOptions.presets && Array.isArray(gridOptions.presets.sorters) && gridOptions.presets.sorters.length > 0) {
-        this.sortService.loadLocalGridPresets(grid, dataView);
+        this.sortService.loadGridSorters(gridOptions.presets.sorters);
       }
     }
   }

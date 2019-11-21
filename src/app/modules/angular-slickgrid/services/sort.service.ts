@@ -1,3 +1,5 @@
+import { Subject } from 'rxjs';
+
 import {
   Column,
   ColumnSort,
@@ -10,10 +12,9 @@ import {
   SortDirectionNumber,
   SortDirectionString,
 } from './../models/index';
-import { executeBackendCallback } from './backend-utilities';
+import { executeBackendCallback, refreshBackendDataset } from './backend-utilities';
 import { getDescendantProperty } from './utilities';
 import { sortByFieldType } from '../sorters/sorterUtilities';
-import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -182,39 +183,36 @@ export class SortService {
     return [];
   }
 
-  /**
-   * Load any presets, if there are any, that are defined in the Grid Options
-   * @param grid
-   * @param dataView
-   */
-  loadLocalGridPresets(grid: any, dataView: any) {
-    const sortCols: ColumnSort[] = [];
+  /** Load defined Sorting (sorters) into the grid */
+  loadGridSorters(sorters: CurrentSorter[]): ColumnSort[] {
     this._currentLocalSorters = []; // reset current local sorters
-    if (this._gridOptions && this._gridOptions.presets && this._gridOptions.presets.sorters) {
-      const sorters = this._gridOptions.presets.sorters;
+    const sortCols: ColumnSort[] = [];
 
-      sorters.forEach((presetSorting: CurrentSorter) => {
-        const gridColumn = this._columnDefinitions.find((col: Column) => col.id === presetSorting.columnId);
+    if (Array.isArray(sorters)) {
+      sorters.forEach((sorter: CurrentSorter) => {
+        const gridColumn = this._columnDefinitions.find((col: Column) => col.id === sorter.columnId);
         if (gridColumn) {
           sortCols.push({
             columnId: gridColumn.id,
-            sortAsc: ((presetSorting.direction.toUpperCase() === SortDirection.ASC) ? true : false),
+            sortAsc: ((sorter.direction.toUpperCase() === SortDirection.ASC) ? true : false),
             sortCol: gridColumn
           });
 
           // keep current sorters
           this._currentLocalSorters.push({
             columnId: gridColumn.id + '',
-            direction: presetSorting.direction.toUpperCase() as SortDirectionString
+            direction: sorter.direction.toUpperCase() as SortDirectionString
           });
         }
       });
-
-      if (sortCols.length > 0) {
-        this.onLocalSortChanged(grid, dataView, sortCols);
-        grid.setSortColumns(sortCols); // use this to add sort icon(s) in UI
-      }
     }
+
+    if (sortCols.length > 0) {
+      this.onLocalSortChanged(this._grid, this._dataView, sortCols);
+      this._grid.setSortColumns(sortCols); // use this to add sort icon(s) in UI
+    }
+
+    return sortCols;
   }
 
   onBackendSortChanged(event: Event, args: any) {
@@ -287,5 +285,25 @@ export class SortService {
       }
     }
     return SortDirectionNumber.neutral;
+  }
+
+  updateSorting(sorters: CurrentSorter[]) {
+    if (!this._gridOptions || !this._gridOptions.enableSorting) {
+      throw new Error('[Angular-Slickgrid] in order to use "updateSorting" method, you need to have Sortable Columns defined in your grid and "enableSorting" set in your Grid Options');
+    }
+
+    const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
+
+    if (backendApi) {
+      const backendApiService = backendApi && backendApi.service;
+      if (backendApiService) {
+        backendApiService.updateSorters(undefined, sorters);
+        refreshBackendDataset(this._gridOptions);
+        this.emitSortChanged(EmitterType.remote);
+      }
+    } else {
+      this.loadGridSorters(sorters);
+      this.emitSortChanged(EmitterType.local);
+    }
   }
 }

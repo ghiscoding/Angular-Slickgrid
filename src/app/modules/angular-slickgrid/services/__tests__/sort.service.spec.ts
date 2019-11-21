@@ -1,3 +1,5 @@
+import { of, throwError } from 'rxjs';
+
 import {
   BackendService,
   Column,
@@ -11,9 +13,13 @@ import {
 } from '../../models';
 import { Sorters } from '../../sorters';
 import { SortService } from '../sort.service';
-import { of, throwError } from 'rxjs';
+import * as utilities from '../../services/backend-utilities';
 
 declare var Slick: any;
+
+const mockRefreshBackendDataset = jest.fn();
+// @ts-ignore
+utilities.refreshBackendDataset = mockRefreshBackendDataset;
 
 const gridOptionMock = {
   enablePagination: true,
@@ -32,10 +38,12 @@ const dataViewStub = {
 };
 
 const backendServiceStub = {
+  buildQuery: jest.fn(),
   clearSorters: jest.fn(),
   getCurrentFilters: jest.fn(),
   getCurrentPagination: jest.fn(),
   getCurrentSorters: jest.fn(),
+  updateSorters: jest.fn(),
   processOnSortChanged: (event: Event, args: SortChangedArgs) => 'backend query',
 } as unknown as BackendService;
 
@@ -405,7 +413,7 @@ describe('SortService', () => {
     });
   });
 
-  describe('loadLocalGridPresets method', () => {
+  describe('loadGridSorters method', () => {
     const mockColumns = [{ id: 'firstName', field: 'firstName' }, { id: 'lastName', field: 'lastName' }] as Column[];
 
     beforeEach(() => {
@@ -424,7 +432,7 @@ describe('SortService', () => {
       ];
 
       service.bindLocalOnSort(gridStub, dataViewStub);
-      service.loadLocalGridPresets(gridStub, dataViewStub);
+      service.loadGridSorters(gridOptionMock.presets.sorters);
 
       expect(spySetCols).toHaveBeenCalledWith(expectation);
       expect(spySortChanged).toHaveBeenCalledWith(gridStub, dataViewStub, expectation);
@@ -440,7 +448,7 @@ describe('SortService', () => {
       gridStub.getColumns = undefined;
 
       service.bindLocalOnSort(gridStub, dataViewStub);
-      service.loadLocalGridPresets(gridStub, dataViewStub);
+      service.loadGridSorters(gridOptionMock.presets.sorters);
 
       expect(spySetCols).not.toHaveBeenCalled();
     });
@@ -450,7 +458,7 @@ describe('SortService', () => {
       gridStub.getOptions = undefined;
 
       service.bindLocalOnSort(gridStub, dataViewStub);
-      service.loadLocalGridPresets(gridStub, dataViewStub);
+      service.loadGridSorters(gridOptionMock.presets.sorters);
 
       expect(spySetCols).not.toHaveBeenCalled();
     });
@@ -587,6 +595,67 @@ describe('SortService', () => {
         { firstName: 'Christopher', lastName: 'McDonald', age: 40, address: { zip: 555555 } },
       ]);
     });
+  });
 
+  describe('updateSorting method', () => {
+    let mockColumn1: Column;
+    let mockColumn2: Column;
+    let mockNewSorters: CurrentSorter[];
+
+    beforeEach(() => {
+      gridStub.getOptions = () => gridOptionMock;
+      gridOptionMock.enableSorting = true;
+      gridOptionMock.backendServiceApi = undefined;
+
+      mockNewSorters = [
+        { columnId: 'firstName', direction: 'ASC' },
+        { columnId: 'isActive', direction: 'desc' }
+      ];
+      mockColumn1 = { id: 'firstName', name: 'firstName', field: 'firstName', sortable: true };
+      mockColumn2 = { id: 'isActive', name: 'isActive', field: 'isActive', sortable: true };
+      gridStub.getColumns = jest.fn();
+      jest.spyOn(gridStub, 'getColumns').mockReturnValue([mockColumn1, mockColumn2]);
+    });
+
+    it('should throw an error when there are no filters defined in the column definitions', (done) => {
+      try {
+        gridOptionMock.enableSorting = false;
+        service.bindLocalOnSort(gridStub, dataViewStub);
+        service.updateSorting([{ columnId: 'firstName', direction: 'ASC' }]);
+      } catch (e) {
+        expect(e.toString()).toContain('[Angular-Slickgrid] in order to use "updateSorting" method, you need to have Sortable Columns defined in your grid');
+        done();
+      }
+    });
+
+    it('should trigger an "emitSortChanged" local when using "bindLocalOnSort" and also expect sorters to be set in ColumnFilters', () => {
+      const emitSpy = jest.spyOn(service, 'emitSortChanged');
+
+      service.bindLocalOnSort(gridStub, dataViewStub);
+      service.updateSorting(mockNewSorters);
+
+      expect(emitSpy).toHaveBeenCalledWith('local');
+      expect(service.getCurrentLocalSorters()).toEqual([
+        { columnId: 'firstName', direction: 'ASC' },
+        { columnId: 'isActive', direction: 'DESC' }
+      ]);
+    });
+
+    it('should trigger an "emitSortChanged" remote when using "bindLocalOnSort" and also expect sorters to be set in ColumnFilters', () => {
+      gridOptionMock.backendServiceApi = {
+        service: backendServiceStub,
+        process: () => new Promise((resolve) => resolve(jest.fn())),
+      };
+      const emitSpy = jest.spyOn(service, 'emitSortChanged');
+      const backendUpdateSpy = jest.spyOn(backendServiceStub, 'updateSorters');
+
+      service.bindLocalOnSort(gridStub, dataViewStub);
+      service.updateSorting(mockNewSorters);
+
+      expect(emitSpy).toHaveBeenCalledWith('remote');
+      expect(service.getCurrentLocalSorters()).toEqual([]);
+      expect(backendUpdateSpy).toHaveBeenCalledWith(undefined, mockNewSorters);
+      expect(mockRefreshBackendDataset).toHaveBeenCalledWith(gridOptionMock);
+    });
   });
 });

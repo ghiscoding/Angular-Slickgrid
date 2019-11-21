@@ -224,11 +224,6 @@ export class GridRangeComponent implements OnInit {
     }
   }
 
-  switchLanguage() {
-    const nextLocale = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
-  }
-
   setFiltersDynamically() {
     const presetLowestDay = moment().add(-5, 'days').format('YYYY-MM-DD');
     const presetHighestDay = moment().add(25, 'days').format('YYYY-MM-DD');
@@ -236,8 +231,21 @@ export class GridRangeComponent implements OnInit {
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
       { columnId: 'duration', searchTerms: ['14..78'], operator: 'RangeInclusive' },
-      { columnId: 'complete', operator: 'RangeExclusive', searchTerms: [12, 82] },
+      { columnId: 'complete', operator: 'RangeExclusive', searchTerms: [10, 80] },
       { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [presetLowestDay, presetHighestDay] },
     ]);
+  }
+
+  setSortingDynamically() {
+    this.angularGrid.sortService.updateSorting([
+      // orders matter, whichever is first in array will be the first sorted column
+      { columnId: 'finish', direction: 'DESC' },
+      { columnId: 'complete', direction: 'ASC' },
+    ]);
+  }
+
+  switchLanguage() {
+    const nextLocale = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
   }
 }

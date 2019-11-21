@@ -11,7 +11,8 @@
         </span>
       </div>
 
-      <button class="btn btn-default btn-sm" (click)="clearAllFiltersAndSorts()" title="Clear all Filters & Sorts">
+      <button class="btn btn-default btn-sm" data-test="clear-filters-sorting" (click)="clearAllFiltersAndSorts()"
+        title="Clear all Filters & Sorts">
         <i class="fa fa-filter text-danger"></i>
         Clear all Filter & Sorts
       </button>
@@ -36,6 +37,9 @@
         </button>
         <button class="btn btn-default btn-xs" data-test="goto-last-page" (click)="goToLastPage()">
           <i class="fa fa-caret-right fa-lg"></i>
+        </button>
+        <button class="btn btn-default btn-sm" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
+          Set Sorting Dynamically
         </button>
       </div>
     </div>

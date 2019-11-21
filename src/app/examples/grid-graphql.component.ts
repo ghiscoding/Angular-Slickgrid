@@ -286,6 +286,14 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
     ]);
   }
 
+  setSortingDynamically() {
+    this.angularGrid.sortService.updateSorting([
+      // orders matter, whichever is first in array will be the first sorted column
+      { columnId: 'billingAddressZip', direction: 'DESC' },
+      { columnId: 'company', direction: 'ASC' },
+    ]);
+  }
+
   switchLanguage() {
     this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
     this.translate.use(this.selectedLanguage);

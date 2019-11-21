@@ -486,4 +486,45 @@ describe('Example 5 - OData Grid', () => {
         });
     });
   });
+
+  describe('Set Dynamic Sorting', () => {
+    it('should click on "Set Filters Dynamically" then on "Set Sorting Dynamically"', () => {
+      cy.get('[data-test=set-dynamic-filter]')
+        .click();
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'processing');
+      cy.get('[data-test=status]').should('contain', 'done');
+
+      cy.get('[data-test=set-dynamic-sorting]')
+        .click();
+
+      cy.get('[data-test=status]').should('contain', 'processing');
+      cy.get('[data-test=status]').should('contain', 'done');
+    });
+
+    it('should expect the grid to be sorted by "Name" descending', () => {
+      cy.get('#grid5')
+        .get('.slick-header-column:nth(1)')
+        .find('.slick-sort-indicator-desc')
+        .should('have.length', 1);
+
+      cy.get('.slick-row')
+        .first()
+        .children('.slick-cell:nth(1)')
+        .should('contain', 'Ayers Hood');
+
+      cy.get('.slick-row')
+        .last()
+        .children('.slick-cell:nth(1)')
+        .should('contain', 'Alexander Foley');
+
+
+
+      cy.get('[data-test=odata-query-result]')
+        .should(($span) => {
+          expect($span.text()).to.eq(`$top=10&$orderby=Name desc&$filter=(startswith(Name, 'A'))`);
+        });
+    });
+  });
 });

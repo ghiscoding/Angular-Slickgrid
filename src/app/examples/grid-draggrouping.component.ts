@@ -361,16 +361,23 @@ export class GridDraggableGroupingComponent implements OnInit {
     return index;
   }
 
-  toggleDraggableGroupingRow() {
-    this.clearGrouping();
-    this.gridObj.setPreHeaderPanelVisibility(!this.gridObj.getOptions().showPreHeaderPanel);
-  }
-
   setFiltersDynamically() {
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
       { columnId: 'percentComplete', operator: '>=', searchTerms: ['55'] },
       { columnId: 'cost', operator: '<', searchTerms: ['80'] },
     ]);
+  }
+
+  setSortingDynamically() {
+    this.angularGrid.sortService.updateSorting([
+      // orders matter, whichever is first in array will be the first sorted column
+      { columnId: 'percentComplete', direction: 'ASC' },
+    ]);
+  }
+
+  toggleDraggableGroupingRow() {
+    this.clearGrouping();
+    this.gridObj.setPreHeaderPanelVisibility(!this.gridObj.getOptions().showPreHeaderPanel);
   }
 }

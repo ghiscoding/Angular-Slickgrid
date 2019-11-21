@@ -184,7 +184,7 @@ export class GridClientSideComponent implements OnInit {
       // use columnDef searchTerms OR use presets as shown below
       presets: {
         filters: [
-          { columnId: 'duration', searchTerms: [10, 220] },
+          { columnId: 'duration', searchTerms: [10, 98] },
           // { columnId: 'complete', searchTerms: ['5'], operator: '>' },
           { columnId: 'usDateShort', operator: '<', searchTerms: ['4/20/25'] },
           // { columnId: 'effort-driven', searchTerms: [true] },
@@ -256,6 +256,14 @@ export class GridClientSideComponent implements OnInit {
       { columnId: 'complete', searchTerms: [95], operator: '<' },
       { columnId: 'effort-driven', searchTerms: [true] },
       { columnId: 'start', operator: '>=', searchTerms: ['2001-02-28'] },
+    ]);
+  }
+
+  setSortingDynamically() {
+    this.angularGrid.sortService.updateSorting([
+      // orders matter, whichever is first in array will be the first sorted column
+      { columnId: 'duration', direction: 'ASC' },
+      { columnId: 'start', direction: 'DESC' },
     ]);
   }
 

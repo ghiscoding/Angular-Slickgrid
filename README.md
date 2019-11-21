@@ -26,20 +26,6 @@ You like and use this great library `Angular-Slickgrid`? Please upvote :star: an
 - [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap3-demo-with-translate)
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate)
 
-### Angular Compatibility
-- version `1.x.x` for Angular 4 to 6 
-   - Angular 6, is only supported through `rxjs-compat` as shown in this [post](https://github.com/ghiscoding/Angular-Slickgrid/issues/36#issuecomment-395710915). It's preferable to upgrade to Angular 7+ to avoid using the `rxjs-compat` version. 
-- version `2.x.x` for Angular 7+
-
-#### Angular 8+
-When running `ng update` to upgrade to Angular 8, one of the biggest change which is noticeable in the build, is that they change the target to `ES2015`. At first there was some issues, but starting with version `2.11.0`, the build target of `ES2015` should work and allow you to use smaller bundles on mordern browser. If you see any bundle problems, please try to switch to `ES5` and see if that makes a difference before opening an issue.
-
-### Installation
-Refer to the [Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step)
-
-#### How to load data with `HttpClient`?
-You might notice that all demos are coded with mocked dataset in each examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
-
 #### Working Demo
 For a complete and working local demo, you can clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. That repo is updated frequently and is used for both the [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
 ```bash
@@ -48,6 +34,18 @@ cd bootstrap4-demo-with-translate
 npm install
 npm start
 ```
+
+### Angular Compatibility
+- version `1.x.x` for Angular 4 to 6 
+   - Angular 6, is only supported through `rxjs-compat` as shown in this [post](https://github.com/ghiscoding/Angular-Slickgrid/issues/36#issuecomment-395710915). It's preferable to upgrade to Angular 7+ to avoid using the `rxjs-compat` package. 
+- version `2.x.x` for Angular 7+ 
+  - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
+
+### Installation
+Refer to the [Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step) and/or clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos).
+
+#### How to load data with `HttpClient`?
+You might notice that all demos are coded with mocked dataset in each examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
 
 #### Material Theme
 Technically speaking, `Material` theme is not provided, but it should still work. 

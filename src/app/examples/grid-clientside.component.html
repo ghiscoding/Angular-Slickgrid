@@ -7,10 +7,17 @@
     <b>Metrics:</b> {{metrics.startTime | date: 'yyyy-MM-dd HH:mm aaaaa\'m\''}} | {{metrics.itemCount}} of
     {{metrics.totalItemCount}} items
   </span>
-  <button class="btn btn-default btn-sm" (click)="angularGrid.filterService.clearFilters()">Clear Filters</button>
-  <button class="btn btn-default btn-sm" (click)="angularGrid.sortService.clearSorting()">Clear Sorting</button>
+  <button class="btn btn-default btn-sm" data-test="clear-filters" (click)="angularGrid.filterService.clearFilters()">
+    Clear Filters
+  </button>
+  <button class="btn btn-default btn-sm" data-test="clear-sorting" (click)="angularGrid.sortService.clearSorting()">
+    Clear Sorting
+  </button>
   <button class="btn btn-default btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
     Set Filters Dynamically
+  </button>
+  <button class="btn btn-default btn-sm" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
+    Set Sorting Dynamically
   </button>
 
   <angular-slickgrid gridId="grid4" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
