@@ -475,13 +475,23 @@ export class FilterService {
     return this._columnDefinitions;
   }
 
-  updateFilters(filters: CurrentFilter[]) {
+  /**
+   * Update Filters dynamically just by providing an array of filter(s).
+   * You can also choose emit (default) a Filter Changed event that will be picked by the Grid State Service.
+   *
+   * Also for backend service only, you can choose to trigger a backend query (default) or not if you wish to do it later,
+   * this could be useful when using updateFilters & updateSorting and you wish to only send the backend query once.
+   * @param filters array
+   * @param triggerEvent defaults to True, do we want to emit a filter changed event?
+   * @param triggerBackendQuery defaults to True, which will query the backend.
+   */
+  updateFilters(filters: CurrentFilter[], emitChangedEvent = true, triggerBackendQuery = true) {
     if (!this._filtersMetadata || this._filtersMetadata.length === 0 || !this._gridOptions || !this._gridOptions.enableFiltering) {
       throw new Error('[Angular-Slickgrid] in order to use "updateFilters" method, you need to have Filterable Columns defined in your grid and "enableFiltering" set in your Grid Options');
     }
 
     if (Array.isArray(filters)) {
-      // start by clearing all filters, without trigger an event, before applying any new ones
+      // start by clearing all filters (without triggering an event) before applying any new filters
       this.clearFilters(false);
 
       // pre-fill (value + operator) and render all filters in the DOM
@@ -505,11 +515,15 @@ export class FilterService {
         const backendApiService = backendApi && backendApi.service;
         if (backendApiService) {
           backendApiService.updateFilters(filters, true);
-          refreshBackendDataset(this._gridOptions);
-          this.emitFilterChanged(EmitterType.remote);
+          if (triggerBackendQuery) {
+            refreshBackendDataset(this._gridOptions);
+          }
         }
-      } else {
-        this.emitFilterChanged(EmitterType.local);
+      }
+
+      if (emitChangedEvent) {
+        const emitterType = backendApi ? EmitterType.remote : EmitterType.local;
+        this.emitFilterChanged(emitterType);
       }
     }
   }
