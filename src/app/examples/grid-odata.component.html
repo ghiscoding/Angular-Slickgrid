@@ -10,13 +10,17 @@
           <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
         </span>
       </div>
+      <button class="btn btn-default btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
+        Set Filters Dynamically
+      </button>
+      <button class="btn btn-default btn-sm" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
+        Set Sorting Dynamically
+      </button>
+      <br>
       <span *ngIf="metrics">
         <b>Metrics:</b> {{metrics.endTime | date: 'yyyy-MM-dd HH:mm aaaaa\'m\''}} | {{metrics.executionTime}}ms
         | {{metrics.totalItemCount}} items
       </span>
-      <button class="btn btn-default btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
-        Set Filters Dynamically
-      </button>
     </div>
     <div class="col-sm-8">
       <div class="alert alert-info" data-test="alert-odata-query">
@@ -48,9 +52,6 @@
     </button>
     <button class="btn btn-default btn-xs" data-test="goto-last-page" (click)="goToLastPage()">
       <i class="fa fa-caret-right fa-lg"></i>
-    </button>
-    <button class="btn btn-default btn-sm" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
-      Set Sorting Dynamically
     </button>
   </div>
 

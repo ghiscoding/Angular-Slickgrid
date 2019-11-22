@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
+* **odata:** no single quote escape required for IN operator for non-string column ([6e4a855](https://github.com/ghiscoding/Angular-Slickgrid/pull/341/commits/6e4a85537dbb628c3f174d939fca888f7d443e45))
 * **picker:** make sure picker addon is available before translating ([e295c26](https://github.com/ghiscoding/angular-slickgrid/commit/e295c26b99a59664219fd457215308f305933d6a))
 
 ### [2.13.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.13.0...v2.13.1) (2019-11-12)
