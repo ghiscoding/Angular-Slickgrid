@@ -267,7 +267,7 @@ export class GridRangeComponent implements OnInit {
         ];
         break;
       case 'nextYearTasks':
-        filters = [{ columnId: 'start', operator: '>=', searchTerms: [`${currentYear}-01-01`] }];
+        filters = [{ columnId: 'start', operator: '>=', searchTerms: [`${currentYear + 1}-01-01`] }];
         break;
     }
     this.angularGrid.filterService.updateFilters(filters);
