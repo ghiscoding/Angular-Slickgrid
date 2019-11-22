@@ -7,23 +7,35 @@
     <b>Metrics:</b> {{metrics.startTime | date: 'yyyy-MM-dd HH:mm aaaaa\'m\''}} | {{metrics.itemCount}} of
     {{metrics.totalItemCount}} items
   </span>
-  <button class="btn btn-default btn-sm" data-test="clear-filters" (click)="angularGrid.filterService.clearFilters()">
-    Clear Filters
-  </button>
-  <button class="btn btn-default btn-sm" data-test="clear-sorting" (click)="angularGrid.sortService.clearSorting()">
-    Clear Sorting
-  </button>
-  <button class="btn btn-default btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
-    Set Filters Dynamically
-  </button>
-  <button class="btn btn-default btn-sm" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
-    Set Sorting Dynamically
-  </button>
-  <button class="btn btn-default btn-sm" (click)="switchLanguage()" data-test="language">
-    <i class="fa fa-language"></i>
-    Switch Language
-  </button>
-  <b>Locale:</b> <span style="font-style: italic" data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
+
+  <form class="form-inline">
+    <button class="btn btn-default btn-sm" data-test="clear-filters" (click)="clearFilters()">
+      Clear Filters
+    </button>
+    <button class="btn btn-default btn-sm" data-test="clear-sorting" (click)="angularGrid.sortService.clearSorting()">
+      Clear Sorting
+    </button>
+    <button class="btn btn-default btn-sm" data-test="set-dynamic-filter" (click)="setFiltersDynamically()">
+      Set Filters Dynamically
+    </button>
+    <button class="btn btn-default btn-sm" data-test="set-dynamic-sorting" (click)="setSortingDynamically()">
+      Set Sorting Dynamically
+    </button>
+
+    <label for="selectedFilter" style="margin-left: 10px">Predefined Filters</label>
+    <select name="selectedFilter" class="form-control" [(ngModel)]="selectedPredefinedFilter"
+      data-test="select-dynamic-filter" (ngModelChange)="usePredefinedFilter($event)">
+      <option [ngValue]="filter.value" *ngFor="let filter of filterList">{{filter.label}}</option>
+    </select>
+  </form>
+
+  <div class="row">
+    <button class="btn btn-default btn-sm" (click)="switchLanguage()" data-test="language">
+      <i class="fa fa-language"></i>
+      Switch Language
+    </button>
+    <b>Locale:</b> <span style="font-style: italic" data-test="selected-locale">{{selectedLanguage + '.json'}}</span>
+  </div>
 
   <angular-slickgrid gridId="grid25" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
     [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"

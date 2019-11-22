@@ -61,6 +61,12 @@ export class GridRangeComponent implements OnInit {
   dataset: any[];
   selectedLanguage: string;
   metrics: Metrics;
+  filterList = [
+    { value: '', label: '' },
+    { value: 'currentYearTasks', label: 'Current Year Completed Tasks' },
+    { value: 'nextYearTasks', label: 'Next Year Active Tasks' }
+  ];
+  selectedPredefinedFilter: { value: string; label: string; };
 
   constructor(private translate: TranslateService) {
     // always start with English for Cypress E2E tests to be consistent
@@ -87,7 +93,7 @@ export class GridRangeComponent implements OnInit {
         }
       },
       {
-        id: 'complete', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', minWidth: 120,
+        id: 'percentComplete', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', minWidth: 120,
         sortable: true,
         formatter: Formatters.progressBar,
         type: FieldType.number,
@@ -153,16 +159,16 @@ export class GridRangeComponent implements OnInit {
         filters: [
           //  you can use the 2 dots separator on all Filters which support ranges
           { columnId: 'duration', searchTerms: ['4..88'] },
-          // { columnId: 'complete', searchTerms: ['5..80'] }, // without operator will default to 'RangeExclusive'
+          // { columnId: 'percentComplete', searchTerms: ['5..80'] }, // without operator will default to 'RangeExclusive'
           // { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [`${presetLowestDay}..${presetHighestDay}`] },
 
           // or you could also use 2 searchTerms values, instead of using the 2 dots (only works with SliderRange & DateRange Filters)
           // BUT make sure to provide the operator, else the filter service won't know that this is really a range
-          { columnId: 'complete', operator: 'RangeInclusive', searchTerms: [5, 80] }, // same result with searchTerms: ['5..80']
+          { columnId: 'percentComplete', operator: 'RangeInclusive', searchTerms: [5, 80] }, // same result with searchTerms: ['5..80']
           { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [presetLowestDay, presetHighestDay] },
         ],
         sorters: [
-          { columnId: 'complete', direction: 'DESC' },
+          { columnId: 'percentComplete', direction: 'DESC' },
           { columnId: 'duration', direction: 'ASC' },
         ],
       }
@@ -200,6 +206,11 @@ export class GridRangeComponent implements OnInit {
     }
 
     return tempDataset;
+  }
+
+  clearFilters() {
+    this.selectedPredefinedFilter = { value: '', label: '' };
+    this.angularGrid.filterService.clearFilters();
   }
 
   /** Dispatched event of a Grid State Changed event */
@@ -242,6 +253,24 @@ export class GridRangeComponent implements OnInit {
       { columnId: 'finish', direction: 'DESC' },
       { columnId: 'complete', direction: 'ASC' },
     ]);
+  }
+
+  usePredefinedFilter(filterValue) {
+    let filters = [];
+    const currentYear = moment().year();
+
+    switch (filterValue) {
+      case 'currentYearTasks':
+        filters = [
+          { columnId: 'finish', operator: OperatorType.rangeInclusive, searchTerms: [`${currentYear}-01-01`, `${currentYear}-12-31`] },
+          { columnId: 'completed', operator: OperatorType.equal, searchTerms: [true] },
+        ];
+        break;
+      case 'nextYearTasks':
+        filters = [{ columnId: 'start', operator: '>=', searchTerms: [`${currentYear}-01-01`] }];
+        break;
+    }
+    this.angularGrid.filterService.updateFilters(filters);
   }
 
   switchLanguage() {
