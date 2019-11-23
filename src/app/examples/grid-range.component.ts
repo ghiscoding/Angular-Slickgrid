@@ -242,7 +242,7 @@ export class GridRangeComponent implements OnInit {
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.angularGrid.filterService.updateFilters([
       { columnId: 'duration', searchTerms: ['14..78'], operator: 'RangeInclusive' },
-      { columnId: 'complete', operator: 'RangeExclusive', searchTerms: [15, 85] },
+      { columnId: 'percentComplete', operator: 'RangeExclusive', searchTerms: [15, 85] },
       { columnId: 'finish', operator: 'RangeInclusive', searchTerms: [presetLowestDay, presetHighestDay] },
     ]);
   }
@@ -251,7 +251,7 @@ export class GridRangeComponent implements OnInit {
     this.angularGrid.sortService.updateSorting([
       // orders matter, whichever is first in array will be the first sorted column
       { columnId: 'finish', direction: 'DESC' },
-      { columnId: 'complete', direction: 'ASC' },
+      { columnId: 'percentComplete', direction: 'ASC' },
     ]);
   }
 

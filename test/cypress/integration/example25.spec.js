@@ -82,12 +82,12 @@ describe('Example 25 - Range Filters', () => {
     cy.get('.ui-slider-range')
       .click('bottom', { force: true });
 
-    cy.get('.lowest-range-complete')
+    cy.get('.lowest-range-percentComplete')
       .then(($lowest) => {
         newLowest = parseInt($lowest.text(), 10);
       });
 
-    cy.get('.highest-range-complete')
+    cy.get('.highest-range-percentComplete')
       .then(($highest) => {
         newHighest = parseInt($highest.text(), 10);
       });
@@ -164,10 +164,11 @@ describe('Example 25 - Range Filters', () => {
   });
 
   describe('Set Dymamic Filters', () => {
-    const dynamicMinComplete = 10;
-    const dynamicMaxComplete = 80;
+    const dynamicMinComplete = 15;
+    const dynamicMaxComplete = 85;
     const dynamicMinDuration = 14;
     const dynamicMaxDuration = 78;
+    const currentYear = moment().year();
     const dynamicLowestDay = moment().add(-5, 'days').format('YYYY-MM-DD');
     const dynamicHighestDay = moment().add(25, 'days').format('YYYY-MM-DD');
 
@@ -224,6 +225,19 @@ describe('Example 25 - Range Filters', () => {
               expect(isDateBetween).to.eq(true);
             });
         });
+    });
+
+    it('should change dynamic filters from the select and choose "Current Year Completed Tasks" and expect 2 filters set', () => {
+      cy.get('[data-test=select-dynamic-filter]')
+        .select('1: currentYearTasks');
+
+      cy.get('.search-filter.filter-finish')
+        .find('input')
+        .invoke('val')
+        .then(text => expect(text).to.eq(`${currentYear}-01-01 to ${currentYear}-12-31`));
+
+      cy.get('.ms-parent.search-filter.filter-completed > button > span')
+        .should('contain', 'True');
     });
   });
 
