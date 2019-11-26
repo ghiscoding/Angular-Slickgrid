@@ -59,7 +59,7 @@ export interface BackendService {
   // -----------------
 
   /** Execute when any of the filters changed */
-  // @deprecated return output should be string only not Promise
+  // @deprecated return string output only in the future and remove Promise type
   processOnFilterChanged: (event: Event, args: FilterChangedArgs) => string | Promise<string>;
 
   /** Execute when the pagination changed */

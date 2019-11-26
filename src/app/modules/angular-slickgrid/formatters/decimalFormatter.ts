@@ -14,9 +14,11 @@ export const decimalFormatter: Formatter = (row: number, cell: number, value: an
   // @deprecated: decimalPlaces, minDecimalPlaces, maxDecimalPlaces
   // add these extra checks to support previous way of passing the decimal count
   if ((params.minDecimalPlaces !== null && params.minDecimalPlaces) || (params.decimalPlaces !== null && params.decimalPlaces)) {
+    console.warn('[Angular-Slickgrid] please consider using "minDecimal" (instead of "minDecimalPlaces" or "decimalPlaces").');
     minDecimal = (params.minDecimalPlaces !== null && params.minDecimalPlaces) || (params.decimalPlaces !== null && params.decimalPlaces);
   }
   if (params.maxDecimalPlaces !== null && params.maxDecimalPlaces) {
+    console.warn('[Angular-Slickgrid] please consider using "maxDecimalPlaces" (instead of "maxDecimalPlacesPlaces").');
     maxDecimal = (params.maxDecimalPlaces !== null && params.maxDecimalPlaces);
   }
 

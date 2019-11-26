@@ -217,11 +217,13 @@ export class FilterService {
 
     // when using backend service, we need to query only once so it's better to do it here
     const backendApi = this._gridOptions && this._gridOptions.backendServiceApi;
-    if (backendApi) {
-      const callbackArgs = { clearFilterTriggered: true, shouldTriggerQuery: true, grid: this._grid, columnFilters: this._columnFilters };
+    if (backendApi && triggerChange) {
+      const callbackArgs = { clearFilterTriggered: true, shouldTriggerQuery: triggerChange, grid: this._grid, columnFilters: this._columnFilters };
       const queryResponse = backendApi.service.processOnFilterChanged(undefined, callbackArgs as FilterChangedArgs);
-      // @deprecated, processOnFilterChanged in the future should be return as a query string NOT a Promise
       if (queryResponse instanceof Promise && queryResponse.then) {
+        // @deprecated, processOnFilterChanged in the future should be returned as a query string NOT as a Promise
+        console.warn(`[Angular-Slickgrid] please note that the "processOnFilterChanged" method signature, from Backend Service, should return a string instead of a Promise,
+          returning a Promise will be deprecated in the future.`);
         queryResponse.then((query: string) => {
           const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems;
           executeBackendCallback(backendApi, query, callbackArgs, new Date(), totalItems, this.emitFilterChanged.bind(this));
