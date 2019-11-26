@@ -992,6 +992,7 @@ describe('FilterService', () => {
       const clearSpy = jest.spyOn(service, 'clearFilters');
       const emitSpy = jest.spyOn(service, 'emitFilterChanged');
       const backendUpdateSpy = jest.spyOn(backendServiceStub, 'updateFilters');
+      const backendProcessSpy = jest.spyOn(backendServiceStub, 'processOnFilterChanged');
 
       service.init(gridStub);
       service.bindBackendOnFilter(gridStub, dataViewStub);
@@ -1000,6 +1001,7 @@ describe('FilterService', () => {
       service.updateFilters(mockNewFilters);
 
       expect(emitSpy).toHaveBeenCalledWith('remote');
+      expect(backendProcessSpy).not.toHaveBeenCalled();
       expect(backendUpdateSpy).toHaveBeenCalledWith(mockNewFilters, true);
       expect(service.getColumnFilters()).toEqual({
         firstName: { columnId: 'firstName', columnDef: mockColumn1, searchTerms: ['Jane'], operator: 'StartsWith' },
@@ -1018,6 +1020,7 @@ describe('FilterService', () => {
       const clearSpy = jest.spyOn(service, 'clearFilters');
       const emitSpy = jest.spyOn(service, 'emitFilterChanged');
       const backendUpdateSpy = jest.spyOn(backendServiceStub, 'updateFilters');
+      const backendProcessSpy = jest.spyOn(backendServiceStub, 'processOnFilterChanged');
 
       service.init(gridStub);
       service.bindBackendOnFilter(gridStub, dataViewStub);
@@ -1026,6 +1029,7 @@ describe('FilterService', () => {
       service.updateFilters(mockNewFilters, false, false);
 
       expect(emitSpy).not.toHaveBeenCalled();
+      expect(backendProcessSpy).not.toHaveBeenCalled();
       expect(mockRefreshBackendDataset).not.toHaveBeenCalled();
       expect(backendUpdateSpy).toHaveBeenCalledWith(mockNewFilters, true);
       expect(service.getColumnFilters()).toEqual({
