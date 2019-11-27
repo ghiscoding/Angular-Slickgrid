@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.14.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.14.1...v2.14.2) (2019-11-27)
+
+
+### Features
+
+* **tests:** add missing unit tests to have 100% test coverage ([99736fc](https://github.com/ghiscoding/angular-slickgrid/commit/99736fc39476428c08914aa4438af185642008d8))
+* **tests:** add more unit tests & cleanup some code ([644e1dc](https://github.com/ghiscoding/angular-slickgrid/commit/644e1dc14b3bb09b29901955514c413639c51e0e))
+
+
+### Bug Fixes
+
+* **editor:** Select Editor with option "0" were incorrectly filtered out ([e116340](https://github.com/ghiscoding/angular-slickgrid/commit/e116340bbc0c2af17ba22b63053a886b220f48b7))
+
 ### [2.14.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.14.0...v2.14.1) (2019-11-26)
 
 
