@@ -175,6 +175,7 @@ describe('DateEditor', () => {
       const spy = jest.spyOn(editor.flatInstance, 'open');
       const calendarElm = document.body.querySelector<HTMLDivElement>('.flatpickr-calendar');
       editor.show();
+      editor.focus();
 
       expect(calendarElm).toBeTruthy();
       expect(spy).toHaveBeenCalled();

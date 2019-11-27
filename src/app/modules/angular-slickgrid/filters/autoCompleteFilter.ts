@@ -23,6 +23,7 @@ declare var $: any;
 
 @Injectable()
 export class AutoCompleteFilter implements Filter {
+  private _autoCompleteOptions: AutocompleteOption;
   private _clearFilterTriggered = false;
   private _collection: any[];
   private _shouldTriggerQuery = true;
@@ -55,6 +56,11 @@ export class AutoCompleteFilter implements Filter {
    * Initialize the Filter
    */
   constructor(protected translate: TranslateService, protected collectionService: CollectionService) { }
+
+  /** Getter for the Autocomplete Option */
+  get autoCompleteOptions(): Partial<AutocompleteOption> {
+    return this._autoCompleteOptions || {};
+  }
 
   /** Getter for the Collection Options */
   protected get collectionOptions(): CollectionOption {
@@ -337,13 +343,16 @@ export class AutoCompleteFilter implements Filter {
     // we still need to provide our own "select" callback implementation
     if (autoCompleteOptions) {
       autoCompleteOptions.select = (event: Event, ui: any) => this.onSelect(event, ui);
+      this._autoCompleteOptions = { ...autoCompleteOptions };
       $filterElm.autocomplete(autoCompleteOptions);
     } else {
-      $filterElm.autocomplete({
+      const definedOptions: AutocompleteOption = {
         minLength: 0,
         source: collection,
         select: (event: Event, ui: any) => this.onSelect(event, ui),
-      });
+      };
+      this._autoCompleteOptions = { ...definedOptions, ...(this.columnFilter.filterOptions as AutocompleteOption) };
+      $filterElm.autocomplete(this._autoCompleteOptions);
     }
 
     $filterElm.val(searchTermInput);
