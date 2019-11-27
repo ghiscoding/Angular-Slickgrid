@@ -539,14 +539,12 @@ describe('SelectFilter', () => {
     });
   });
 
-  xit('should throw an error when "collectionAsync" Observable does not return a valid array', (done) => {
-    try {
-      mockColumn.filter.collectionAsync = of({ hello: 'world' });
-      filter.init(filterArguments, true);
-    } catch (e) {
+  it('should throw an error when "collectionAsync" Observable does not return a valid array', (done) => {
+    mockColumn.filter.collectionAsync = of({ hello: 'world' });
+    filter.init(filterArguments, true).catch((e) => {
       expect(e.toString()).toContain(`Something went wrong while trying to pull the collection from the "collectionAsync" call in the Select Filter, the collection is not a valid array.`);
       done();
-    }
+    });
   });
 
   it('should create the multi-select filter with a default search term and have the HTML rendered when "enableRenderHtml" is set', () => {

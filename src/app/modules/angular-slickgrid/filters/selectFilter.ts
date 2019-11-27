@@ -107,7 +107,7 @@ export class SelectFilter implements Filter {
   /**
    * Initialize the filter template
    */
-  init(args: FilterArguments, isFilterFirstRender: boolean) {
+  init(args: FilterArguments, isFilterFirstRender: boolean): Promise<boolean> {
     if (!args) {
       throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
     }
@@ -155,7 +155,9 @@ export class SelectFilter implements Filter {
     // if "collectionAsync" is already set by the user, it will resolve it first then after it will replace it with a Subject
     const collectionAsync = this.columnFilter && this.columnFilter.collectionAsync;
     if (collectionAsync) {
-      this.renderOptionsAsync(collectionAsync); // create Subject after resolve (createCollectionAsyncSubject)
+      return this.renderOptionsAsync(collectionAsync); // create Subject after resolve (createCollectionAsyncSubject)
+    } else {
+      return new Promise((resolve) => resolve(true));
     }
   }
 
@@ -252,7 +254,7 @@ export class SelectFilter implements Filter {
     return outputCollection;
   }
 
-  protected async renderOptionsAsync(collectionAsync: Promise<any> | Observable<any> | Subject<any>) {
+  protected async renderOptionsAsync(collectionAsync: Promise<any> | Observable<any> | Subject<any>): Promise<boolean> {
     let awaitedCollection: any = [];
 
     if (collectionAsync) {
@@ -264,6 +266,7 @@ export class SelectFilter implements Filter {
       // doing this provide the user a way to call a "collectionAsync.next()"
       this.createCollectionAsyncSubject();
     }
+    return true;
   }
 
   /** Create or recreate an Observable Subject and reassign it to the "collectionAsync" object so user can call a "collectionAsync.next()" on it */
