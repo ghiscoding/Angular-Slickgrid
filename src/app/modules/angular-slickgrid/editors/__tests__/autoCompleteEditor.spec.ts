@@ -454,6 +454,38 @@ describe('AutoCompleteEditor', () => {
         expect(spyCommitEdit).toHaveBeenCalled();
         expect(spySetValue).toHaveBeenCalledWith('Female');
       });
+
+      it('should expect the "onSelect" method to be called when the callback method is triggered', () => {
+        gridOptionMock.autoCommitEdit = true;
+        mockColumn.internalColumnEditor.collection = [{ value: 'm', label: 'Male' }, { value: 'f', label: 'Female' }];
+        mockItemData = { id: 123, gender: { value: 'f', label: 'Female' }, isActive: true };
+
+        const event = new CustomEvent('change');
+        editor = new AutoCompleteEditor(editorArguments);
+        const spy = jest.spyOn(editor, 'onSelect');
+        editor.autoCompleteOptions.select(event, { item: 'fem' });
+
+        expect(spy).toHaveBeenCalledWith(event, { item: 'fem' });
+      });
+
+      it('should initialize the editor with editorOptions and expect the "onSelect" method to be called when the callback method is triggered', (done) => {
+        gridOptionMock.autoCommitEdit = true;
+        mockColumn.internalColumnEditor.collection = [{ value: 'm', label: 'Male' }, { value: 'f', label: 'Female' }];
+        mockColumn.internalColumnEditor.editorOptions = { minLength: 3 } as AutocompleteOption;
+        mockItemData = { id: 123, gender: { value: 'f', label: 'Female' }, isActive: true };
+
+        const event = new CustomEvent('change');
+        editor = new AutoCompleteEditor(editorArguments);
+        const onSelectSpy = jest.spyOn(editor, 'onSelect');
+        const focusSpy = jest.spyOn(editor, 'focus');
+        editor.autoCompleteOptions.select(event, { item: 'fem' });
+
+        expect(onSelectSpy).toHaveBeenCalledWith(event, { item: 'fem' });
+        setTimeout(() => {
+          expect(focusSpy).toHaveBeenCalled();
+          done();
+        }, 51);
+      });
     });
   });
 });

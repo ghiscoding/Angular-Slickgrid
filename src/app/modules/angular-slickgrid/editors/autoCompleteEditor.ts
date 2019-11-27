@@ -24,6 +24,7 @@ const MIN_LENGTH = 3;
  * KeyDown events are also handled to provide handling for Tab, Shift-Tab, Esc and Ctrl-Enter.
  */
 export class AutoCompleteEditor implements Editor {
+  private _autoCompleteOptions: AutocompleteOption;
   private _currentValue: any;
   private _defaultTextValue: string;
   private _elementCollection: any[];
@@ -49,6 +50,11 @@ export class AutoCompleteEditor implements Editor {
     }
     this.grid = args.grid;
     this.init();
+  }
+
+  /** Getter for the Autocomplete Option */
+  get autoCompleteOptions(): Partial<AutocompleteOption> {
+    return this._autoCompleteOptions || {};
   }
 
   /** Get the Collection */
@@ -289,13 +295,16 @@ export class AutoCompleteEditor implements Editor {
     // we still need to provide our own "select" callback implementation
     if (autoCompleteOptions) {
       autoCompleteOptions.select = (event: Event, ui: any) => this.onSelect(event, ui);
+      this._autoCompleteOptions = { ...autoCompleteOptions };
       this._$editorElm.autocomplete(autoCompleteOptions);
     } else {
-      this._$editorElm.autocomplete({
+      const definedOptions: AutocompleteOption = {
         source: finalCollection,
         minLength: 0,
         select: (event: Event, ui: any) => this.onSelect(event, ui),
-      });
+      };
+      this._autoCompleteOptions = { ...definedOptions, ...(this.columnEditor.editorOptions as AutocompleteOption) };
+      this._$editorElm.autocomplete(this._autoCompleteOptions);
     }
 
     setTimeout(() => this.focus(), 50);

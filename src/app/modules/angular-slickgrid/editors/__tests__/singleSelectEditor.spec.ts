@@ -241,7 +241,7 @@ describe('SelectEditor', () => {
         const editorListElm = divContainer.querySelectorAll<HTMLInputElement>(`[name=editor-gender].ms-drop ul>li span`);
         editorBtnElm.click();
 
-        expect(editor.getValue()).toEqual(undefined);
+        expect(editor.getValue()).toEqual('');
         expect(editorListElm.length).toBe(2);
         expect(editorListElm[0].innerHTML).toBe('<i class="fa fa-check"></i> True');
       });

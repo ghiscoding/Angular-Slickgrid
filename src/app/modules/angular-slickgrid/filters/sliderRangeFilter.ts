@@ -125,6 +125,23 @@ export class SliderRangeFilter implements Filter {
   }
 
   /**
+   * Render both slider values (low/high) on screen
+   * @param lowestValue number
+   * @param highestValue number
+   */
+  renderSliderValues(lowestValue: number | string, highestValue: number | string) {
+    const columndId = this.columnDef && this.columnDef.id;
+    const lowerElm = document.querySelector(`.lowest-range-${columndId}`);
+    const highestElm = document.querySelector(`.highest-range-${columndId}`);
+    if (lowerElm && lowerElm.innerHTML) {
+      lowerElm.innerHTML = lowestValue.toString();
+    }
+    if (highestElm && highestElm.innerHTML) {
+      highestElm.innerHTML = highestValue.toString();
+    }
+  }
+
+  /**
    * Set value(s) on the DOM element
    * @params searchTerms
    */
@@ -252,22 +269,5 @@ export class SliderRangeFilter implements Filter {
     // reset both flags for next use
     this._clearFilterTriggered = false;
     this._shouldTriggerQuery = true;
-  }
-
-  /**
-   * Render both slider values (low/high) on screen
-   * @param lowestValue number
-   * @param highestValue number
-   */
-  private renderSliderValues(lowestValue: number | string, highestValue: number | string) {
-    const fieldId = this.columnDef && this.columnDef.id;
-    const lowerElm = document.querySelector(`.lowest-range-${fieldId}`);
-    const highestElm = document.querySelector(`.highest-range-${fieldId}`);
-    if (lowerElm && lowerElm.innerHTML) {
-      lowerElm.innerHTML = lowestValue.toString();
-    }
-    if (highestElm && highestElm.innerHTML) {
-      highestElm.innerHTML = highestValue.toString();
-    }
   }
 }

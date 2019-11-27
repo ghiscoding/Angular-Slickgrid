@@ -230,7 +230,7 @@ export class SelectEditor implements Editor {
 
     if (isComplexObject && typeof itemFound === 'object') {
       return itemFound;
-    } else if (itemFound) {
+    } else if (itemFound && itemFound.hasOwnProperty(this.valueName)) {
       const labelText = itemFound[this.valueName];
 
       if (isIncludingPrefixSuffix) {
@@ -553,7 +553,7 @@ export class SelectEditor implements Editor {
         optionLabel = (this.enableTranslateLabel && optionLabel && typeof optionLabel === 'string') ? this._translate.instant(optionLabel || ' ') : optionLabel;
 
         // add to a temp array for joining purpose and filter out empty text
-        const tmpOptionArray = [prefixText, labelText, suffixText].filter((text) => text);
+        const tmpOptionArray = [prefixText, labelText, suffixText].filter(text => (text !== undefined && text !== ''));
         let optionText = tmpOptionArray.join(separatorBetweenLabels);
 
         // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default
@@ -599,10 +599,7 @@ export class SelectEditor implements Editor {
     const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
     this.defaultOptions.placeholder = placeholder || '';
 
-    if (typeof this.$editorElm.multipleSelect !== 'function') {
-      // fallback to bootstrap
-      this.$editorElm.addClass('form-control');
-    } else {
+    if (typeof this.$editorElm.multipleSelect === 'function') {
       const elementOptions = (this.columnDef.internalColumnEditor) ? this.columnDef.internalColumnEditor.elementOptions : {};
       const editorOptions = (this.columnDef && this.columnDef.internalColumnEditor) ? this.columnDef.internalColumnEditor.editorOptions : {};
       this.editorElmOptions = { ...this.defaultOptions, ...elementOptions, ...editorOptions };

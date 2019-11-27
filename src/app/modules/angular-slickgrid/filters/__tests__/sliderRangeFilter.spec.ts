@@ -228,4 +228,23 @@ describe('SliderRangeFilter', () => {
     expect(filter.currentValues).toEqual([4, 69]);
     expect(spyCallback).toHaveBeenLastCalledWith(null, { columnDef: mockColumn, clearFilterTriggered: true, shouldTriggerQuery: false });
   });
+
+  it('should expect the slider values to be rendered when the callback method is triggered', () => {
+    const spy = jest.spyOn(filter, 'renderSliderValues');
+
+    mockColumn.filter = { minValue: 4, maxValue: 69, valueStep: 5 };
+    filter.init(filterArguments);
+    filter.sliderOptions.slide(new CustomEvent('change'), { handle: document.createElement('div'), handleIndex: 1, value: 2, values: [2, 3] });
+
+    expect(spy).toHaveBeenCalledWith(2, 3);
+    expect(filter.sliderOptions).toEqual({
+      change: expect.anything(),
+      max: 69,
+      min: 4,
+      range: true,
+      slide: expect.anything(),
+      step: 5,
+      values: [4, 69],
+    });
+  });
 });

@@ -23,6 +23,7 @@ declare var $: any;
 
 @Injectable()
 export class AutoCompleteFilter implements Filter {
+  private _autoCompleteOptions: AutocompleteOption;
   private _clearFilterTriggered = false;
   private _collection: any[];
   private _shouldTriggerQuery = true;
@@ -55,6 +56,11 @@ export class AutoCompleteFilter implements Filter {
    * Initialize the Filter
    */
   constructor(protected translate: TranslateService, protected collectionService: CollectionService) { }
+
+  /** Getter for the Autocomplete Option */
+  get autoCompleteOptions(): Partial<AutocompleteOption> {
+    return this._autoCompleteOptions || {};
+  }
 
   /** Getter for the Collection Options */
   protected get collectionOptions(): CollectionOption {
@@ -101,7 +107,7 @@ export class AutoCompleteFilter implements Filter {
   /**
    * Initialize the filter template
    */
-  init(args: FilterArguments) {
+  init(args: FilterArguments): Promise<boolean> {
     if (!args) {
       throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
     }
@@ -128,7 +134,9 @@ export class AutoCompleteFilter implements Filter {
     // if "collectionAsync" is already set by the user, it will resolve it first then after it will replace it with a Subject
     const collectionAsync = this.columnFilter && this.columnFilter.collectionAsync;
     if (collectionAsync) {
-      this.renderOptionsAsync(collectionAsync); // create Subject after resolve (createCollectionAsyncSubject)
+      return this.renderOptionsAsync(collectionAsync); // create Subject after resolve (createCollectionAsyncSubject)
+    } else {
+      return new Promise((resolve) => resolve(true));
     }
   }
 
@@ -203,7 +211,7 @@ export class AutoCompleteFilter implements Filter {
     return outputCollection;
   }
 
-  protected async renderOptionsAsync(collectionAsync: Promise<any> | Observable<any> | Subject<any>) {
+  protected async renderOptionsAsync(collectionAsync: Promise<any> | Observable<any> | Subject<any>): Promise<boolean> {
     let awaitedCollection: any = [];
 
     if (collectionAsync) {
@@ -215,6 +223,7 @@ export class AutoCompleteFilter implements Filter {
       // doing this provide the user a way to call a "collectionAsync.next()"
       this.createCollectionAsyncSubject();
     }
+    return true;
   }
 
   /** Create or recreate an Observable Subject and reassign it to the "collectionAsync" object so user can call a "collectionAsync.next()" on it */
@@ -337,13 +346,16 @@ export class AutoCompleteFilter implements Filter {
     // we still need to provide our own "select" callback implementation
     if (autoCompleteOptions) {
       autoCompleteOptions.select = (event: Event, ui: any) => this.onSelect(event, ui);
+      this._autoCompleteOptions = { ...autoCompleteOptions };
       $filterElm.autocomplete(autoCompleteOptions);
     } else {
-      $filterElm.autocomplete({
+      const definedOptions: AutocompleteOption = {
         minLength: 0,
         source: collection,
         select: (event: Event, ui: any) => this.onSelect(event, ui),
-      });
+      };
+      this._autoCompleteOptions = { ...definedOptions, ...(this.columnFilter.filterOptions as AutocompleteOption) };
+      $filterElm.autocomplete(this._autoCompleteOptions);
     }
 
     $filterElm.val(searchTermInput);

@@ -4,7 +4,7 @@ import { Filters } from '..';
 import { AutoCompleteFilter } from '../autoCompleteFilter';
 import { AutocompleteOption, Column, FieldType, FilterArguments, GridOption, OperatorType } from '../../models';
 import { CollectionService } from './../../services/collection.service';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 const containerId = 'demo-container';
 
@@ -109,14 +109,12 @@ describe('AutoCompleteFilter', () => {
     }
   });
 
-  xit('should throw an error when "collectionAsync" Observable does not return a valid array', (done) => {
-    try {
-      mockColumn.filter.collectionAsync = of({ hello: 'world' });
-      filter.init(filterArguments);
-    } catch (e) {
+  it('should throw an error when "collectionAsync" Observable does not return a valid array', (done) => {
+    mockColumn.filter.collectionAsync = of({ hello: 'world' });
+    filter.init(filterArguments).catch((e) => {
       expect(e.toString()).toContain(`Something went wrong while trying to pull the collection from the "collectionAsync" call in the AutoComplete Filter, the collection is not a valid array.`);
       done();
-    }
+    });
   });
 
   it('should initialize the filter', () => {
@@ -299,6 +297,33 @@ describe('AutoCompleteFilter', () => {
     });
   });
 
+  it('should create the multi-select filter with a "collectionAsync" as an Observable and be able to call next on it', (done) => {
+    const mockCollection = ['male', 'female'];
+    mockColumn.filter.collectionAsync = of(mockCollection);
+
+    filterArguments.searchTerms = ['female'];
+    filter.init(filterArguments);
+
+    setTimeout(() => {
+      const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-gender');
+      filter.setValues('male');
+
+      filterElm.focus();
+      filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+
+      // after await (or timeout delay) we'll get the Subject Observable
+      mockCollection.push('other');
+      (mockColumn.filter.collectionAsync as Subject<any[]>).next(mockCollection);
+
+      const autocompleteUlElms = document.body.querySelectorAll<HTMLUListElement>('ul.ui-autocomplete');
+      const filterFilledElms = divContainer.querySelectorAll<HTMLInputElement>('input.filter-gender.filled');
+
+      expect(autocompleteUlElms.length).toBe(1);
+      expect(filterFilledElms.length).toBe(1);
+      done();
+    });
+  });
+
   it('should create the filter and filter the string collection when "collectionFilterBy" is set', () => {
     mockColumn.filter = {
       collection: ['other', 'male', 'female'],
@@ -472,6 +497,29 @@ describe('AutoCompleteFilter', () => {
       expect(output).toBe(false);
       expect(spySetValue).toHaveBeenCalledWith('Female');
       expect(spyCallback).toHaveBeenCalledWith(null, { columnDef: mockColumn, operator: 'EQ', searchTerms: ['f'], shouldTriggerQuery: true });
+    });
+
+    it('should expect the "onSelect" method to be called when the callback method is triggered', () => {
+      const spy = jest.spyOn(filter, 'onSelect');
+      const event = new CustomEvent('change');
+
+      mockColumn.filter.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+      filter.init(filterArguments);
+      filter.autoCompleteOptions.select(event, { item: 'fem' });
+
+      expect(spy).toHaveBeenCalledWith(event, { item: 'fem' });
+    });
+
+    it('should initialize the filter with filterOptions and expect the "onSelect" method to be called when the callback method is triggered', () => {
+      const spy = jest.spyOn(filter, 'onSelect');
+      const event = new CustomEvent('change');
+
+      mockColumn.filter.collection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+      mockColumn.filter.filterOptions = { minLength: 3 } as AutocompleteOption;
+      filter.init(filterArguments);
+      filter.autoCompleteOptions.select(event, { item: 'fem' });
+
+      expect(spy).toHaveBeenCalledWith(event, { item: 'fem' });
     });
   });
 });
