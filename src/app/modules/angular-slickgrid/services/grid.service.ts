@@ -261,13 +261,13 @@ export class GridService {
 
   /** @deprecated please use "addItem" method instead */
   addItemToDatagrid(item: any, shouldHighlightRow = true, shouldResortGrid = false, shouldTriggerEvent = true, shouldSelectRow = true): number {
-    console.warn('[Angular-Slickgrid - GridService] please consider using the new "addItem" method since "addItemToDatagrid" will be deprecated in the future');
+    console.warn('[Angular-Slickgrid - GridService] please consider using the new "addItem" method since "addItemToDatagrid" will be deprecated in the future.');
     return this.addItem(item, { highlightRow: shouldHighlightRow, resortGrid: shouldResortGrid, triggerEvent: shouldTriggerEvent, selectRow: shouldSelectRow });
   }
 
   /** @deprecated please use "addItems" method instead */
   addItemsToDatagrid(items: any[], shouldHighlightRow = true, shouldResortGrid = false, shouldTriggerEvent = true, shouldSelectRow = true): number[] {
-    console.warn('[Angular-Slickgrid - GridService] please consider using the new "addItems" method since "addItemsToDatagrid" will be deprecated in the future');
+    console.warn('[Angular-Slickgrid - GridService] please consider using the new "addItems" method since "addItemsToDatagrid" will be deprecated in the future.');
     return this.addItems(items, { highlightRow: shouldHighlightRow, resortGrid: shouldResortGrid, triggerEvent: shouldTriggerEvent, selectRow: shouldSelectRow });
   }
 
@@ -377,25 +377,25 @@ export class GridService {
 
   /** @deprecated please use "deleteItem" method instead */
   deleteDataGridItem(item: any, shouldTriggerEvent = true) {
-    console.warn('[Angular-Slickgrid - GridService] please consider using the new "deleteItem" method since "deleteDataGridItem" will be deprecated in the future');
+    console.warn('[Angular-Slickgrid - GridService] please consider using the new "deleteItem" method since "deleteDataGridItem" will be deprecated in the future.');
     this.deleteItem(item, { triggerEvent: shouldTriggerEvent });
   }
 
   /** @deprecated please use "deleteItems" method instead */
   deleteDataGridItems(items: any[], shouldTriggerEvent = true) {
-    console.warn('[Angular-Slickgrid - GridService] please consider using the new "deleteItems" method since "deleteDataGridItems" will be deprecated in the future');
+    console.warn('[Angular-Slickgrid - GridService] please consider using the new "deleteItems" method since "deleteDataGridItems" will be deprecated in the future.');
     this.deleteItems(items, { triggerEvent: shouldTriggerEvent });
   }
 
   /** @deprecated please use "deleteItemById" method instead */
   deleteDataGridItemById(itemId: string | number, shouldTriggerEvent = true) {
-    console.warn('[Angular-Slickgrid - GridService] please consider using the new "deleteItemById" method since "deleteDataGridItemById" will be deprecated in the future');
+    console.warn('[Angular-Slickgrid - GridService] please consider using the new "deleteItemById" method since "deleteDataGridItemById" will be deprecated in the future.');
     this.deleteItemById(itemId, { triggerEvent: shouldTriggerEvent });
   }
 
   /** @deprecated please use "deleteItemByIds" method instead */
   deleteDataGridItemByIds(itemIds: number[] | string[], shouldTriggerEvent = true) {
-    console.warn('[Angular-Slickgrid - GridService] please consider using the new "deleteItemByIds" method since "deleteDataGridItemByIds" will be deprecated in the future');
+    console.warn('[Angular-Slickgrid - GridService] please consider using the new "deleteItemByIds" method since "deleteDataGridItemByIds" will be deprecated in the future.');
     this.deleteItemByIds(itemIds, { triggerEvent: shouldTriggerEvent });
   }
 
@@ -498,19 +498,19 @@ export class GridService {
 
   /** @deprecated please use "updateItem" method instead */
   updateDataGridItem(item: any, shouldHighlightRow = true, shouldTriggerEvent = true, shouldSelectRow = true): number {
-    console.warn('[Angular-Slickgrid - GridService] please consider using the new "updateItem" method since "updateDataGridItem" will be deprecated in the future');
+    console.warn('[Angular-Slickgrid - GridService] please consider using the new "updateItem" method since "updateDataGridItem" will be deprecated in the future.');
     return this.updateItem(item, { highlightRow: shouldHighlightRow, triggerEvent: shouldTriggerEvent, selectRow: shouldSelectRow });
   }
 
   /** @deprecated please use "updateItems" method instead */
   updateDataGridItems(items: any | any[], shouldHighlightRow = true, shouldTriggerEvent = true, shouldSelectRow = true): number[] {
-    console.warn('[Angular-Slickgrid - GridService] please consider using the new "updateItems" method since "updateDataGridItems" will be deprecated in the future');
+    console.warn('[Angular-Slickgrid - GridService] please consider using the new "updateItems" method since "updateDataGridItems" will be deprecated in the future.');
     return this.updateItems(items, { highlightRow: shouldHighlightRow, triggerEvent: shouldTriggerEvent, selectRow: shouldSelectRow });
   }
 
   /** @deprecated please use "updateItemById" method instead */
   updateDataGridItemById(itemId: number | string, item: any, shouldHighlightRow = true, shouldTriggerEvent = true, shouldSelectRow = true): number {
-    console.warn('[Angular-Slickgrid - GridService] please consider using the new "updateItemById" method since "updateDataGridItemById" will be deprecated in the future');
+    console.warn('[Angular-Slickgrid - GridService] please consider using the new "updateItemById" method since "updateDataGridItemById" will be deprecated in the future.');
     return this.updateItemById(itemId, item, { highlightRow: shouldHighlightRow, triggerEvent: shouldTriggerEvent, selectRow: shouldSelectRow });
   }
 
