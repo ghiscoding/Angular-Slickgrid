@@ -12,6 +12,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
+    "ng:build": "ng build",
     "start": "ng serve --port 4300 --open",
     "prebuild": "npm-run-all delete:dist test:coverage",
     "build": "npm run packagr",
