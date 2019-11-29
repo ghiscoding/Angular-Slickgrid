@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.14.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.14.2...v2.14.3) (2019-11-29)
+
+
+### Bug Fixes
+
+* **filter:** Date Filters using Flatpickr throw error w/invalid locale ([7c55a26](https://github.com/ghiscoding/angular-slickgrid/commit/7c55a26b35969d1071f3af28389564d6a39c6e4d)), closes [#346](https://github.com/ghiscoding/angular-slickgrid/issues/346)
+* **filter:** default operator of input filter should be empty ([17c905d](https://github.com/ghiscoding/angular-slickgrid/commit/17c905da02fcf53c9c1ffac95569babbf09b4c80))
+* **filter:** number filter condition, parse number before comparing ([55f5fc9](https://github.com/ghiscoding/angular-slickgrid/commit/55f5fc9e87a5f3d73cec680f0e19245a3e38d432))
+
 ### [2.14.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.14.1...v2.14.2) (2019-11-27)
 
 
