@@ -77,6 +77,7 @@ describe('FilterService', () => {
   let service: FilterService;
   let sharedService: SharedService;
   let slickgridEventHandler: SlickEventHandler;
+  const consoleSpy = jest.spyOn(global.console, 'warn').mockReturnValue();
 
   beforeEach(async(() => {
     // define a <div> container to simulate a row detail DOM element
@@ -459,7 +460,7 @@ describe('FilterService', () => {
         expect(spyEmitter).not.toHaveBeenCalled();
       });
 
-      it('should clear all the Filters when the query response is a Promise', (done) => {
+      it('should clear all the Filters when the query response is a Promise (will be deprecated in future)', (done) => {
         gridOptionMock.backendServiceApi.service.processOnFilterChanged = () => Promise.resolve('filter query from Promise');
         const spyClear = jest.spyOn(service.getFiltersMetadata()[0], 'clear');
         const spyFilterChange = jest.spyOn(service, 'onBackendFilterChange');
@@ -476,6 +477,7 @@ describe('FilterService', () => {
           expect(service.getColumnFilters()).toEqual({});
           expect(spyFilterChange).not.toHaveBeenCalled();
           expect(spyEmitter).not.toHaveBeenCalled();
+          expect(consoleSpy).toHaveBeenCalledWith(expect.toInclude('[Angular-Slickgrid] please note that the "processOnFilterChanged" method signature, from Backend Service'));
           done();
         });
       });

@@ -235,6 +235,28 @@ describe('DateRangeFilter', () => {
     expect(selectonOptionElms[0].textContent).toBe('janvier');
   });
 
+  it('should throw an error and use English locale when user tries to load an unsupported Flatpickr locale', () => {
+    translate.use('zx');
+    const consoleSpy = jest.spyOn(global.console, 'warn').mockReturnValue();
+
+    filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z', '2000-01-31T05:00:00.000Z'];
+    mockColumn.filter.operator = 'RangeInclusive';
+
+    filter.init(filterArguments);
+    const filterInputElm = divContainer.querySelector<HTMLInputElement>('input.flatpickr.search-filter.filter-finish');
+    const calendarElm = document.body.querySelector<HTMLDivElement>('.flatpickr-calendar');
+    const selectonOptionElms = calendarElm.querySelectorAll<HTMLSelectElement>(' .flatpickr-monthDropdown-months option');
+
+    filter.show();
+
+    filterInputElm.focus();
+    filterInputElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.toInclude('[Angular-Slickgrid - DateRange Filter] It seems that "zx" is not a locale supported by Flatpickr'));
+    expect(selectonOptionElms.length).toBe(12);
+    expect(selectonOptionElms[0].textContent).toBe('January');
+  });
+
   it('should trigger a callback with the clear filter set when calling the "clear" method', () => {
     filterArguments.searchTerms = ['2000-01-01T05:00:00.000Z', '2000-01-31T05:00:00.000Z'];
     const spyCallback = jest.spyOn(filterArguments, 'callback');

@@ -2,6 +2,12 @@ import { Column, GridOption } from '../../models';
 import { decimalFormatter } from '../decimalFormatter';
 
 describe('the Decimal Formatter', () => {
+  let consoleSpy;
+
+  beforeEach(() => {
+    consoleSpy = jest.spyOn(global.console, 'warn').mockReturnValue();
+  });
+
   const gridStub = {
     getOptions: jest.fn()
   };
@@ -58,6 +64,7 @@ describe('the Decimal Formatter', () => {
     expect(output2).toBe('12345678.10');
     expect(output3).toBe('12,345,678.10');
     expect(output4).toBe('12 345 678,10');
+    expect(consoleSpy).toHaveBeenCalledWith('[Angular-Slickgrid] please consider using "minDecimal" (instead of "minDecimalPlaces" or "decimalPlaces").');
   });
 
   it('should display a number with dollar sign and use "maxDecimal" params', () => {
@@ -70,6 +77,7 @@ describe('the Decimal Formatter', () => {
     const input = 88.156789;
     const output = decimalFormatter(1, 1, input, { params: { maxDecimalPlaces: 3 } } as Column, {});
     expect(output).toBe(`88.157`);
+    expect(consoleSpy).toHaveBeenCalledWith('[Angular-Slickgrid] please consider using "maxDecimal" (instead of "maxDecimalPlaces").');
   });
 
   it('should display a negative number with parentheses when "displayNegativeNumberWithParentheses" is enabled in the "params"', () => {
