@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 describe('Example 1 - Basic Grids', () => {
   const titles = ['Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 

@@ -85,15 +85,15 @@ describe('InputMaskFilter', () => {
     filterElm.focus();
     filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
 
-    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['1234567890'], shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['1234567890'], shouldTriggerQuery: true });
   });
 
-  it('should call "setValues" with 10 digits and expect input value to be formatted as a phone as the mask format specifies', () => {
+  it('should call "setValues" an operator and with with 10 digits and expect input value to be formatted as a phone as the mask format specifies', () => {
     mockColumn.filter.params = { mask: '(000) 000-0000' };
     const spyCallback = jest.spyOn(filterArguments, 'callback');
 
     filter.init(filterArguments);
-    filter.setValues('1234567890');
+    filter.setValues('1234567890', 'EQ');
     const filterElm = divContainer.querySelector<HTMLInputElement>('input.filter-mask');
     filterElm.focus();
     filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
@@ -113,7 +113,7 @@ describe('InputMaskFilter', () => {
     filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('(123) 456-7890');
-    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['1234567890'], shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['1234567890'], shouldTriggerQuery: true });
   });
 
   it('should call "setValues" with 10 digits and expect it to work with using 9 instead of 0 in the mask', () => {
@@ -127,7 +127,7 @@ describe('InputMaskFilter', () => {
     filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('(123) 456-7890');
-    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['1234567890'], shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['1234567890'], shouldTriggerQuery: true });
   });
 
   it('should call "setValues" with a characters & numbers mask (e.g. postal code) and expect it to returned a formatted string', () => {
@@ -141,7 +141,7 @@ describe('InputMaskFilter', () => {
     filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('H1H 1H1');
-    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['H1H1H1'], shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['H1H1H1'], shouldTriggerQuery: true });
   });
 
   it('should call "setValues" with 10 digits and expect it to work even if input as extra spaces at the beginning when "enableFilterTrimWhiteSpace" is enabled in grid options', () => {
@@ -156,7 +156,7 @@ describe('InputMaskFilter', () => {
     filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('(123) 456-7890');
-    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['1234567890'], shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['1234567890'], shouldTriggerQuery: true });
   });
 
   it('should call "setValues" with 10 digits and expect it to work even if input as extra spaces at the beginning when "enableTrimWhiteSpace" is enabled in the column filter', () => {
@@ -172,7 +172,7 @@ describe('InputMaskFilter', () => {
     filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('(123) 456-7890');
-    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: ['1234567890'], shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: ['1234567890'], shouldTriggerQuery: true });
   });
 
   it('should call "setValues" all invalid characters and expect an empty shell as it does not match the mask', () => {
@@ -186,7 +186,7 @@ describe('InputMaskFilter', () => {
     filterElm.dispatchEvent(new (window.window as any).KeyboardEvent('keyup', { keyCode: 97, bubbles: true, cancelable: true }));
 
     expect(filterElm.value).toBe('() -');
-    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: 'EQ', searchTerms: [''], shouldTriggerQuery: true });
+    expect(spyCallback).toHaveBeenCalledWith(expect.anything(), { columnDef: mockColumn, operator: '', searchTerms: [''], shouldTriggerQuery: true });
   });
 
   it('should trigger the callback method when user types something in the input', () => {

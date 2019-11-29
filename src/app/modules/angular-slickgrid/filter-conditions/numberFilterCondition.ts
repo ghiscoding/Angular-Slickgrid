@@ -15,7 +15,7 @@ export const numberFilterCondition: FilterCondition = (options: FilterConditionO
     searchValue1 = parseFloat(Array.isArray(searchValues) && searchValues[0] + '');
     searchValue2 = parseFloat(Array.isArray(searchValues) && searchValues[1] + '');
   } else {
-    searchValue1 = searchTerms[0];
+    searchValue1 = parseFloat(searchTerms[0] + '');
   }
 
   if (!searchValue1 && !options.operator) {

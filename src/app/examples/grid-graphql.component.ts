@@ -57,7 +57,10 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   gridStateSub: Subscription;
 
   constructor(private translate: TranslateService) {
-    this.selectedLanguage = this.translate.getDefaultLang();
+    // always start with English for Cypress E2E tests to be consistent
+    const defaultLang = 'en';
+    this.translate.use(defaultLang);
+    this.selectedLanguage = defaultLang;
   }
 
   ngOnDestroy() {

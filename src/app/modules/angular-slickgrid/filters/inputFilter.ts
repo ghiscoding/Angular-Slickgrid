@@ -32,7 +32,7 @@ export class InputFilter implements Filter {
 
   /** Getter to know what would be the default operator when none is specified */
   get defaultOperator(): OperatorType | OperatorString {
-    return OperatorType.equal;
+    return OperatorType.empty;
   }
 
   /** Getter of input type (text, number, password) */
