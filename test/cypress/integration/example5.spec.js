@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 describe('Example 5 - OData Grid', () => {
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/odata`);

@@ -511,7 +511,7 @@ describe('SelectFilter', () => {
       expect(filterListElm[1].checked).toBe(true);
       expect(spyCallback).toHaveBeenCalledWith(undefined, { columnDef: mockColumn, operator: 'IN', searchTerms: ['female'], shouldTriggerQuery: true });
       done();
-    });
+    }, 2);
   });
 
   it('should create the multi-select filter with a "collectionAsync" as an Observable and be able to call next on it', (done) => {

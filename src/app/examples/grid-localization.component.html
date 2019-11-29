@@ -5,11 +5,14 @@
   <hr />
 
   <div class="row col-sm-12">
-    <button class="btn btn-default btn-sm" (click)="switchLanguage()">
+    <button class="btn btn-default btn-sm" (click)="switchLanguage()" data-test="language-button">
       <i class="fa fa-language"></i>
       Switch Language
     </button>
-    <b>Locale:</b> <span style="font-style: italic">{{selectedLanguage + '.json'}}</span>
+    <b>Locale:</b>
+    <span style="font-style: italic" data-test="selected-locale">
+      {{selectedLanguage + '.json'}}
+    </span>
 
     <span style="margin-left: 20px">
       <button class="btn btn-default btn-sm" (click)="exportToFile('csv')">
@@ -34,11 +37,8 @@
   </div>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid12"
-                       (onAngularGridCreated)="angularGridReady($event)"
-                       [columnDefinitions]="columnDefinitions"
-                       [gridOptions]="gridOptions"
-                       [dataset]="dataset">
+    <angular-slickgrid gridId="grid12" (onAngularGridCreated)="angularGridReady($event)"
+      [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
     </angular-slickgrid>
   </div>
 </div>
