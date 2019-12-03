@@ -2,7 +2,7 @@ import 'slickgrid/lib/jquery.jsonp-2.4.min';
 import 'slickgrid/slick.remotemodel'; // SlickGrid Remote Plugin
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AngularGridInstance, Column, Formatter, GridOption  } from './../modules/angular-slickgrid';
+import { AngularGridInstance, Column, Formatter, GridOption } from './../modules/angular-slickgrid';
 
 declare var Slick: any;
 
@@ -56,7 +56,7 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
   dataset = [];
   loaderDataView: any;
   loading = false; // spinner when loading data
-  search = 'switch';
+  search: string;
 
   constructor() {
     this.loaderDataView = new Slick.Data.RemoteModel();
@@ -81,7 +81,10 @@ export class GridRemoteComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this.defineGrid();
     this.hookAllLoaderEvents();
-    this.loaderDataView.setSearch(this.search);
+
+    // set default search
+    // this.search = 'switch';
+    // this.loaderDataView.setSearch(this.search);
   }
 
   defineGrid() {
