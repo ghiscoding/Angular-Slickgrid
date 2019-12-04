@@ -1,10 +1,33 @@
 import { Component, OnInit, Injectable, ViewEncapsulation } from '@angular/core';
-import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption, GridService, OnEventArgs } from './../modules/angular-slickgrid';
+import {
+  AngularGridInstance,
+  Column,
+  Editors,
+  FieldType,
+  Formatter,
+  Formatters,
+  GridOption,
+  GridService,
+  OnEventArgs
+} from './../modules/angular-slickgrid';
+
+// custom formatter to display priority (from 1 to 3) loop through that count and display them as x number of icon(s)
+const customPriorityFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
+  let output = '';
+  const count = +(value >= 3 ? 3 : value);
+  const color = count === 3 ? 'red' : (count === 1 ? 'grey' : 'orange');
+  const icon = `<i class="fa fa-fire ${color}" aria-hidden="true"></i>`;
+
+  for (let i = 1; i <= count; i++) {
+    output += icon;
+  }
+  return output;
+};
 
 @Component({
-  styles: ['.duration-bg { background-color: #e9d4f1 !important }'],
+  templateUrl: './grid-additem.component.html',
+  styleUrls: ['./grid-additem.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  templateUrl: './grid-additem.component.html'
 })
 @Injectable()
 export class GridAddItemComponent implements OnInit {
@@ -25,6 +48,7 @@ export class GridAddItemComponent implements OnInit {
     <ul>
       <li>Example, click on button "Highlight Rows with Duration over 50" to see row styling changing. <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Dynamically-Add-CSS-Classes-to-Item-Rows" target="_blank">Wiki doc</a></li>
     </ul>
+    <li>Context Menu... Right+Click on any row to show a Context Menu allowing you to change the "Priority" field</li>
   </ul>
   `;
 
@@ -52,6 +76,48 @@ export class GridAddItemComponent implements OnInit {
     this.grid.invalidate();
     this.grid.render();
     */
+
+    const data = angularGrid.dataView.getItems();
+
+    const contextMenuTitle = 'Set priority';
+    const contextMenuList = [
+      { option: 1, label: 'Low' },
+      { option: 2, label: 'Medium' },
+      { option: 3, label: 'High' },
+    ];
+
+    let liOptions = '';
+    for (let i = 0; i < contextMenuList.length; i++) {
+      if (contextMenuList.hasOwnProperty(i)) {
+        const contextItem = contextMenuList[i];
+        liOptions += `<li data="${contextItem.option}">${contextItem.label}</li>`;
+      }
+    }
+
+    const htmlString = `<ul id="contextMenu">
+     <span class="title">${contextMenuTitle}</span>
+     ${liOptions}
+   </ul>`;
+
+    // create context menu, hide it & append it to the body
+    const contextElm = $(htmlString);
+    contextElm.css('display', 'none');
+    contextElm.appendTo($('body'));
+
+    contextElm.click((e: any) => {
+      if (!$(e.target).is('li')) {
+        return;
+      }
+      if (!this.grid.getEditorLock().commitCurrentEdit()) {
+        return;
+      }
+      const row = contextElm.data('row');
+      data[row].priority = $(e.target).attr('data');
+      this.grid.updateRow(row);
+      this.angularGrid.gridService.setSelectedRows([row]);
+
+      // callback, user might want to do something else
+    });
   }
 
   ngOnInit(): void {
@@ -116,6 +182,15 @@ export class GridAddItemComponent implements OnInit {
         type: FieldType.date
       },
       {
+        id: 'priority',
+        name: 'Priority',
+        field: 'priority',
+        minWidth: 100,
+        filterable: true,
+        sortable: true,
+        formatter: customPriorityFormatter,
+      },
+      {
         id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
         formatter: Formatters.checkmark,
         type: FieldType.number,
@@ -153,6 +228,7 @@ export class GridAddItemComponent implements OnInit {
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
+        priority: i % 5 ? 1 : (i % 2 ? 2 : 3),
         effortDriven: (i % 5 === 0)
       };
     }
@@ -174,6 +250,7 @@ export class GridAddItemComponent implements OnInit {
       percentCompleteNumber: randomPercent,
       start: new Date(randomYear, randomMonth, randomDay),
       finish: new Date(randomYear, (randomMonth + 2), randomDay),
+      priority: 1,
       effortDriven: true
     };
     this.angularGrid.gridService.addItem(newItem, { position: insertPosition });
@@ -248,5 +325,21 @@ export class GridAddItemComponent implements OnInit {
 
   scrollGridTop() {
     this.angularGrid.slickGrid.navigateTop();
+  }
+
+  onContextMenu(e) {
+    e.preventDefault();
+    const cell = this.angularGrid.slickGrid.getCellFromEvent(e);
+    const contextElm = $('#contextMenu');
+
+    // reposition the context menu where we right+clicked
+    contextElm
+      .data('row', cell.row)
+      .css('top', e.pageY)
+      .css('left', e.pageX)
+      .show();
+
+    // hide the context menu once user choose an option
+    $('body').one('click', () => contextElm.hide());
   }
 }
