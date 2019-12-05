@@ -2,6 +2,9 @@
   background-color: #e9d4f1 !important;
 }
 
+.italic {
+  font-style: italic;
+}
 .grey {
   color: grey;
 }
@@ -12,7 +15,7 @@
   color: red;
 }
 
-#contextMenu {
+.slick-context-menu {
   position:absolute;
   background: #ffffff;
   border: 1px solid #b8b8b8;
@@ -22,6 +25,9 @@
   min-width: 150px;
   z-index: 99999;
 
+  .slick-context-menu-option-list {
+    margin-bottom: 10px;
+  }
   .title {
     display: inline-block;
     font-size: 16px;
@@ -32,12 +38,34 @@
 
   li {
     border: 1px solid transparent;
-    padding: 4px 4px 4px 14px;
+    padding: 4px;
     list-style: none;
     cursor: pointer;
 
     &:hover {
       border: 1px solid #cccccc;
+      background-color: #fafafa;
+    }
+
+    &.slick-context-menuitem-divider {
+      cursor: default;
+      border: none;
+      overflow: hidden;
+      padding: 0;
+      height: 1px;
+      margin: 8px 3px;
+      background-color: #e5e5e5;
+      &:hover {
+        border: none;
+        background-color: transparent;
+      }
+    }
+
+    &.slick-context-menuitem-disabled {
+      border-color: transparent !important;
+      background: inherit !important;
+      color: silver;
+      cursor: inherit;
     }
   }
 }
