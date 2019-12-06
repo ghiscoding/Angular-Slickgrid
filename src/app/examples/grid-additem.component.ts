@@ -219,7 +219,7 @@ export class GridAddItemComponent implements OnInit {
             break;
           case 'delete-row':
             if (confirm('Are you sure?')) {
-              this.angularGrid.gridService.deleteDataGridItemById(dataContext.id);
+              this.angularGrid.gridService.deleteItemById(dataContext.id);
             }
             break;
           case 'help':
@@ -248,7 +248,7 @@ export class GridAddItemComponent implements OnInit {
         onCellClick: (e: Event, args: OnEventArgs) => {
           console.log(args);
           if (confirm('Are you sure?')) {
-            this.angularGrid.gridService.deleteDataGridItemById(args.dataContext.id);
+            this.angularGrid.gridService.deleteItemById(args.dataContext.id);
           }
         }
       },

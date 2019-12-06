@@ -311,7 +311,7 @@ export class GridAngularComponent implements OnInit {
       // this.angularGrid.gridService.setSelectedRow(args.row);
     } else if (metadata.columnDef.id === 'delete') {
       if (confirm('Are you sure?')) {
-        this.angularGrid.gridService.deleteDataGridItemById(metadata.dataContext.id);
+        this.angularGrid.gridService.deleteItemById(metadata.dataContext.id);
       }
     }
   }

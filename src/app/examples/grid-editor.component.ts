@@ -507,7 +507,7 @@ export class GridEditorComponent implements OnInit {
         const selectCollectionObj = this.sortCollectionDescending(filterCollection).pop();
 
         // then we will delete that item from the grid
-        this.angularGrid.gridService.deleteDataGridItemById(selectCollectionObj.value);
+        this.angularGrid.gridService.deleteItemById(selectCollectionObj.value);
 
         // for the Filter only, we have a trigger an RxJS/Subject change with the new collection
         // we do this because Filter(s) are shown at all time, while on Editor it's unnecessary since they are only shown when opening them
@@ -569,7 +569,7 @@ export class GridEditorComponent implements OnInit {
       // this.angularGrid.gridService.setSelectedRow(args.row);
     } else if (metadata.columnDef.id === 'delete') {
       if (confirm('Are you sure?')) {
-        this.angularGrid.gridService.deleteDataGridItemById(metadata.dataContext.id);
+        this.angularGrid.gridService.deleteItemById(metadata.dataContext.id);
       }
     }
   }
