@@ -326,7 +326,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
         // when we have a totalCount use it, else we'll take it from the pagination object
         // only update the total items if it's different to avoid refreshing the UI
-        const totalRecords = totalCount !== undefined ? totalCount : this.gridOptions.pagination.totalItems;
+        const totalRecords = totalCount !== undefined ? totalCount : (this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems);
         if (totalRecords !== this.totalItems) {
           this.totalItems = totalRecords;
         }
@@ -537,12 +537,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           }
 
           // the processes can be Promises or Observables (like Angular HttpClient)
+          const totalItems = this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems;
           if (process instanceof Promise && process.then) {
-            process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions.pagination.totalItems))
+            process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems))
               .catch((error: any) => onBackendError(error, backendApi));
           } else if (isObservable(process)) {
             process.subscribe(
-              (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, this.gridOptions.pagination.totalItems),
+              (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems),
               (error: any) => onBackendError(error, backendApi)
             );
           }
