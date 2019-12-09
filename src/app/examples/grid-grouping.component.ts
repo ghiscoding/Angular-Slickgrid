@@ -221,9 +221,13 @@ export class GridGroupingComponent implements OnInit {
       aggregateCollapsed: false,
       lazyTotalsCalculation: true
     } as Grouping);
+
+    // you need to manually add the sort icon(s) in UI
+    this.angularGrid.filterService.setSortColumnIcons([{ columnId: 'duration', sortAsc: true }]);
   }
 
   groupByDurationOrderByCount(aggregateCollapsed) {
+    this.angularGrid.filterService.setSortColumnIcons([]);
     this.dataviewObj.setGrouping({
       getter: 'duration',
       formatter: (g) => `Duration: ${g.value} <span style="color:green">(${g.count} items)</span>`,
@@ -240,6 +244,7 @@ export class GridGroupingComponent implements OnInit {
   }
 
   groupByDurationEffortDriven() {
+    this.angularGrid.filterService.setSortColumnIcons([]);
     this.dataviewObj.setGrouping([
       {
         getter: 'duration',
@@ -265,6 +270,7 @@ export class GridGroupingComponent implements OnInit {
   }
 
   groupByDurationEffortDrivenPercent() {
+    this.angularGrid.filterService.setSortColumnIcons([]);
     this.dataviewObj.setGrouping([
       {
         getter: 'duration',

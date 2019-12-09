@@ -478,6 +478,18 @@ export class FilterService {
   }
 
   /**
+   * Set the sort icons in the UI (ONLY the icons, it does not do any sorting)
+   * The column sort icons are not necessarily inter-connected to the sorting functionality itself,
+   * you can change the sorting icons separately by passing an array of columnId/sortAsc and that will change ONLY the icons
+   * @param sortColumns
+   */
+  setSortColumnIcons(sortColumns: { columnId: string, sortAsc: boolean }[]) {
+    if (this._grid && Array.isArray(sortColumns)) {
+      this._grid.setSortColumns(sortColumns);
+    }
+  }
+
+  /**
    * Update Filters dynamically just by providing an array of filter(s).
    * You can also choose emit (default) a Filter Changed event that will be picked by the Grid State Service.
    *

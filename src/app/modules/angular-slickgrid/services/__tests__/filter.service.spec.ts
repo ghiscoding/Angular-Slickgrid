@@ -1041,4 +1041,16 @@ describe('FilterService', () => {
       expect(clearSpy).toHaveBeenCalledWith(false);
     });
   });
+
+  describe('setSortColumnIcons method', () => {
+    it('should set the sorting icon by calling "setSortColumns" on the grid object', () => {
+      const mockSortColumns = [{ columnId: 'duration', sortAsc: true }];
+      const spy = jest.spyOn(gridStub, 'setSortColumns');
+
+      service.init(gridStub);
+      service.setSortColumnIcons(mockSortColumns);
+
+      expect(spy).toHaveBeenCalledWith(mockSortColumns);
+    });
+  });
 });
