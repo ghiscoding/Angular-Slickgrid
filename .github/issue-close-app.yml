@@ -4,9 +4,10 @@ issueConfigs:
 # There can be several configs for different kind of issues.
 - content:
 # Example 1: bug report
+  - "Describe the Bug"
+  - "Steps to Reproduce"
   - "Expected Behavior"
   - "Current Behavior"
-  - "Steps to Reproduce"
 - content:
 # Example 2: feature request
   - "Motivation / Use Case"

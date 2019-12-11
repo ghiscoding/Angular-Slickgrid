@@ -24,15 +24,18 @@ Thanks for filing a Feature Request! However, before you submit, please read the
 | Angular-Slickgrid   | x.y        | 
 | TypeScript              | x.y        | 
 
+### Describe the Bug
+<!-- REQUIRED - could you explain a bit what the Bug is -->
+
+### Steps to Reproduce
+<!-- REQUIRED - please provide steps to reproduce the bug -->
+
 ### Expected Behavior
 <!-- REQUIRED - Tell us what should happen in normal use -->
 
 ### Current Behavior
 <!-- REQUIRED - Tell us what happens instead of the expected behavior -->
 <!--- If you are seeing an error, please include the full error message and stack trace -->
-
-### Steps to Reproduce
-<!-- REQUIRED - please provide steps to reproduce the bug -->
 
 ### Possible Solution
 <!--- Not obligatory, but suggest a fix/reason for the bug -->
