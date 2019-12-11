@@ -11,7 +11,7 @@ assignees: ''
 Thanks for filing a Feature Request! However, before you submit, please read the following:
 1. Search open/closed issues before submitting a new one.
 2. If your issue is more of question... did you read all Wikis? Or haved you considered asking on Stack Overflow?
-3. Also note that we ask you to fill in all sections with an (*) in its title else it will be closed by our bot.
+3. Also note that we ask you to fill in ALL sections defined as REQUIRED else it will be automatically closed by our bot.
 -->
 
 ## I'm submitting a Bug report
@@ -24,15 +24,15 @@ Thanks for filing a Feature Request! However, before you submit, please read the
 | Angular-Slickgrid   | x.y        | 
 | TypeScript              | x.y        | 
 
-### Expected Behavior (*)
-<!--- Tell us what should happen in normal use -->
+### Expected Behavior
+<!-- REQUIRED - Tell us what should happen in normal use -->
 
-### Current Behavior (*)
-<!--- Tell us what happens instead of the expected behavior -->
+### Current Behavior
+<!-- REQUIRED - Tell us what happens instead of the expected behavior -->
 <!--- If you are seeing an error, please include the full error message and stack trace -->
 
-### Steps to Reproduce (*)
-<!-- please provide steps to reproduce the bug -->
+### Steps to Reproduce
+<!-- REQUIRED - please provide steps to reproduce the bug -->
 
 ### Possible Solution
 <!--- Not obligatory, but suggest a fix/reason for the bug -->
