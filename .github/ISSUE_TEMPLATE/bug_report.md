@@ -8,33 +8,31 @@ assignees: ''
 ---
 
 <!---
-Thanks for filing an issue! However, before you submit, please read the following:
-1. Search open/closed issues before submitting since someone might have asked the same thing before!
-2. Is it really an issue or is it a question? If it's a question, have you considered asking on Stack Overflow?
+Thanks for filing a Feature Request! However, before you submit, please read the following:
+1. Search open/closed issues before submitting a new one.
+2. If your issue is more of question... did you read all Wikis? Or haved you considered asking on Stack Overflow?
+3. Also note that we ask you to fill in all sections with an (*) in its title else it will be closed by our bot.
 -->
 
 ## I'm submitting a Bug report
 
 ### Your Environment
-<!--- Include as many relevant details as possible about the environment you experienced the bug in -->
-| Software          | Version(s) |
-| ----------------- | ---------- |
-| Angular           | x.y        | 
-| Angular-Slickgrid | x.y        | 
-| TypeScript        | x.y        | 
-| Operating System  | x.y        | 
-| NPM/Node/Yarn     | x.y        | 
+<!--- Include as many relevant details as possible about the library versions -->
+| Software                | Version(s) |
+| -------------------- | -------- |
+| Angular                  | x.y        | 
+| Angular-Slickgrid   | x.y        | 
+| TypeScript              | x.y        | 
 
-### Context
-<!--- How has this issue affected you? What are you trying to accomplish? -->
-<!--- Providing context helps us come up with a solution that is most useful in the real world -->
+### Expected Behavior (*)
+<!--- Tell us what should happen in normal use -->
 
-### Expected Behavior
-<!--- Tell us what should happen -->
-
-### Current Behavior
+### Current Behavior (*)
 <!--- Tell us what happens instead of the expected behavior -->
 <!--- If you are seeing an error, please include the full error message and stack trace -->
+
+### Steps to Reproduce (*)
+<!-- please provide steps to reproduce the bug -->
 
 ### Possible Solution
 <!--- Not obligatory, but suggest a fix/reason for the bug -->
