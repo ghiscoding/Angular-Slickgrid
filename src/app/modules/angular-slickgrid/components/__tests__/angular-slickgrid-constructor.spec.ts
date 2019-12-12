@@ -54,6 +54,7 @@ const extensionServiceStub = {
   createExtensionsBeforeGridCreation: jest.fn(),
   dispose: jest.fn(),
   renderColumnHeaders: jest.fn(),
+  translateCellMenu: jest.fn(),
   translateColumnHeaders: jest.fn(),
   translateColumnPicker: jest.fn(),
   translateGridMenu: jest.fn(),

@@ -1,6 +1,7 @@
 export * from './autoTooltipExtension';
 export * from './cellExternalCopyManagerExtension';
 export * from './checkboxSelectorExtension';
+export * from './cellMenuExtension';
 export * from './columnPickerExtension';
 export * from './draggableGroupingExtension';
 export * from './extensionUtility';

@@ -19,6 +19,7 @@ import { GridAutoHeightComponent } from './examples/grid-autoheight.component';
 import { GridBasicComponent } from './examples/grid-basic.component';
 import { GridClientSideComponent } from './examples/grid-clientside.component';
 import { GridColspanComponent } from './examples/grid-colspan.component';
+import { GridContextMenuComponent } from './examples/grid-contextmenu.component';
 import { GridDraggableGroupingComponent } from './examples/grid-draggrouping.component';
 import { GridEditorComponent } from './examples/grid-editor.component';
 import { GridAngularComponent } from './examples/grid-angular.component';
@@ -88,6 +89,7 @@ export function appInitializerFactory(translate: TranslateService, injector: Inj
     GridBasicComponent,
     GridClientSideComponent,
     GridColspanComponent,
+    GridContextMenuComponent,
     GridDraggableGroupingComponent,
     GridEditorComponent,
     GridFormatterComponent,

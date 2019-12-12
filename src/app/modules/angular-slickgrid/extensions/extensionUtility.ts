@@ -36,8 +36,14 @@ export class ExtensionUtility {
         case ExtensionName.checkboxSelector:
           require('slickgrid/plugins/slick.checkboxselectcolumn');
           break;
+        case ExtensionName.cellMenu:
+          require('slickgrid/plugins/slick.cellmenu');
+          break;
         case ExtensionName.columnPicker:
           require('slickgrid/controls/slick.columnpicker');
+          break;
+        case ExtensionName.contextMenu:
+          require('slickgrid/plugins/slick.contextmenu');
           break;
         case ExtensionName.draggableGrouping:
           require('slickgrid/plugins/slick.draggablegrouping');

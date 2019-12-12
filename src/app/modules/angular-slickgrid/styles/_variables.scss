@@ -175,6 +175,25 @@ $grid-menu-divider-margin:                8px 3px !default;
 $grid-menu-divider-color:                 #d8d8d8 !default;
 $grid-menu-z-index:                       500 !default;
 
+/* (Action) Cell Menu Plugin */
+$cell-menu-bg-color:                    #ffffff !default;
+$cell-menu-button-bg-color:             #ffffff !default;
+$cell-menu-border:                      1px solid #BFBDBD !default;
+$cell-menu-button-border:               cell-menu-border !default;
+$cell-menu-border-radius:               2px !default;
+$cell-menu-min-width:                   175px !default;
+$cell-menu-padding:                     6px !default;
+$cell-menu-item-border:                 1px solid transparent !default;
+$cell-menu-item-padding:                2px 4px !default;
+$cell-menu-item-hover-border:           1px solid #BFBDBD !default;
+$cell-menu-item-hover-color:            #fafafa !default;
+$cell-menu-icon-height:                 16px !default;
+$cell-menu-icon-margin-right:           4px !default;
+$cell-menu-icon-width:                  16px !default;
+$cell-menu-divider-height:              1px !default;
+$cell-menu-divider-margin:              8px 3px !default;
+$cell-menu-divider-color:               #e5e5e5 !default;
+
 /* Header Menu Plugin */
 $header-menu-bg-color:                    #ffffff !default;
 $header-menu-button-bg-color:             #ffffff !default;

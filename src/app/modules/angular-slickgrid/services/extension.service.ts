@@ -15,6 +15,7 @@ import {
   AutoTooltipExtension,
   CellExternalCopyManagerExtension,
   CheckboxSelectorExtension,
+  CellMenuExtension,
   ColumnPickerExtension,
   DraggableGroupingExtension,
   GridMenuExtension,
@@ -35,6 +36,7 @@ export class ExtensionService {
   constructor(
     private autoTooltipExtension: AutoTooltipExtension,
     private cellExternalCopyExtension: CellExternalCopyManagerExtension,
+    private cellMenuExtension: CellMenuExtension,
     private checkboxSelectorExtension: CheckboxSelectorExtension,
     private columnPickerExtension: ColumnPickerExtension,
     private draggableGroupingExtension: DraggableGroupingExtension,
@@ -129,6 +131,14 @@ export class ExtensionService {
         if (this.cellExternalCopyExtension && this.cellExternalCopyExtension.register) {
           const instance = this.cellExternalCopyExtension.register();
           this._extensionList.push({ name: ExtensionName.cellExternalCopyManager, class: this.cellExternalCopyExtension, addon: instance, instance });
+        }
+      }
+
+      // (Action) Cell Menu Plugin
+      if (this.sharedService.gridOptions.enableCellMenu) {
+        if (this.cellMenuExtension && this.cellMenuExtension.register) {
+          const instance = this.cellMenuExtension.register();
+          this._extensionList.push({ name: ExtensionName.cellMenu, class: this.cellMenuExtension, addon: instance, instance });
         }
       }
 
@@ -291,6 +301,13 @@ export class ExtensionService {
     return columns;
   }
 
+  /** Translate the Cell Menu titles, we need to loop through all column definition to re-translate them */
+  translateCellMenu() {
+    if (this.cellMenuExtension && this.cellMenuExtension.translateCellMenu) {
+      this.cellMenuExtension.translateCellMenu();
+    }
+  }
+
   /** Translate the Column Picker and it's last 2 checkboxes */
   translateColumnPicker() {
     if (this.columnPickerExtension && this.columnPickerExtension.translateColumnPicker) {
@@ -323,7 +340,7 @@ export class ExtensionService {
    * @param new column definitions (optional)
    */
   translateColumnHeaders(locale?: boolean | string, newColumnDefinitions?: Column[]) {
-    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
+    if (this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
       throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
     }
 

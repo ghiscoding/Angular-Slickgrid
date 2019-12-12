@@ -112,6 +112,6 @@ export interface GridMenu {
   /** SlickGrid Event fired when the menu is closing. */
   onMenuClose?: (e: Event, args: any) => void;
 
-  /** SlickGrid Event fired on menu item click for buttons with 'command' specified. */
+  /** SlickGrid Event fired on menu option clicked from the Command items list */
   onCommand?: (e: Event, args: any) => void;
 }

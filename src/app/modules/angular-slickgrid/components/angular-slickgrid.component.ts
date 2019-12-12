@@ -52,6 +52,7 @@ import { SortService } from './../services/sort.service';
 // Extensions (SlickGrid Controls & Plugins)
 import { AutoTooltipExtension } from '../extensions/autoTooltipExtension';
 import { CellExternalCopyManagerExtension } from '../extensions/cellExternalCopyManagerExtension';
+import { CellMenuExtension } from '../extensions/cellMenuExtension';
 import { CheckboxSelectorExtension } from '../extensions/checkboxSelectorExtension';
 import { ColumnPickerExtension } from '../extensions/columnPickerExtension';
 import { DraggableGroupingExtension } from '../extensions/draggableGroupingExtension';
@@ -77,6 +78,7 @@ const slickgridEventPrefix = 'sg';
     AngularUtilService,
     AutoTooltipExtension,
     CellExternalCopyManagerExtension,
+    CellMenuExtension,
     CheckboxSelectorExtension,
     ColumnPickerExtension,
     DraggableGroupingExtension,
@@ -382,6 +384,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.subscriptions.push(
         this.translate.onLangChange.subscribe((event) => {
           if (gridOptions.enableTranslate) {
+            this.extensionService.translateCellMenu();
             this.extensionService.translateColumnHeaders();
             this.extensionService.translateColumnPicker();
             this.extensionService.translateGridMenu();
