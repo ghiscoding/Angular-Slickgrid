@@ -58,7 +58,16 @@ export class GridContextMenuComponent implements OnInit {
     this.selectedLanguage = defaultLang;
   }
 
-  ngOnInit(): void {
+  angularGridReady(angularGrid: AngularGridInstance) {
+    this.angularGrid = angularGrid;
+  }
+
+  ngOnInit() {
+    this.prepareGrid();
+    this.dataset = this.getData(1000);
+  }
+
+  prepareGrid() {
     this.columnDefinitions = [
       {
         id: 'title', name: 'Title', field: 'id', headerKey: 'TITLE', minWidth: 100,
@@ -74,6 +83,7 @@ export class GridContextMenuComponent implements OnInit {
         id: 'action', name: 'Action', field: 'action',
         formatter: actionFormatter,
         cellMenu: {
+          width: 200,
           // you can override the logic of when the menu is usable
           // for example say that we want to show a menu only when then Priority is set to 'High'.
           // Note that this ONLY overrides the usability itself NOT the text displayed in the cell,
@@ -82,6 +92,9 @@ export class GridContextMenuComponent implements OnInit {
           menuUsabilityOverride: (row, dataContext, grid) => {
             return (dataContext.priority === 3); // option 3 is High
           },
+
+          // when using Translate Service, every translation will have the suffix "Key"
+          // else use title without the suffix, for example "commandTitle" (no translations) or "commandTitleKey" (with translations)
           commandTitleKey: 'COMMANDS',
           commandItems: [
             { command: 'command1', title: 'Command 1', cssClass: 'orange' },
@@ -152,10 +165,11 @@ export class GridContextMenuComponent implements OnInit {
       // when using the cellMenu, you can change some of the default options and all use some of the callback methods
       enableCellMenu: true,
       cellMenu: {
-        // minWidth: 200,
+        // all the Cell Menu callback methods (except the action callback)
+        // are available under the grid options as shown below
         onCommand: (e, args) => this.executeCommand(e, args),
         onOptionSelected: (e, args) => {
-          // change Completed flag
+          // change "Completed" property with new option selected from the Cell Menu
           const dataContext = args && args.dataContext;
           if (dataContext && dataContext.hasOwnProperty('completed')) {
             dataContext.completed = args.item.option;
@@ -163,15 +177,13 @@ export class GridContextMenuComponent implements OnInit {
           }
         },
         onBeforeMenuShow: ((e, args) => {
-          // for example, you could select the row it was clicked by calling
+          // for example, you could select the row that the click originated
           // this.angularGrid.gridService.setSelectedRows([args.row]);
           console.log('Before the Cell Menu is shown', args);
         }),
         onBeforeMenuClose: ((e, args) => console.log('Cell Menu is closing', args)),
       }
     };
-
-    this.dataset = this.getData(1000);
   }
 
   executeCommand(e, args) {
@@ -237,10 +249,6 @@ export class GridContextMenuComponent implements OnInit {
       };
     }
     return tmpData;
-  }
-
-  angularGridReady(angularGrid: AngularGridInstance) {
-    this.angularGrid = angularGrid;
   }
 
   switchLanguage() {

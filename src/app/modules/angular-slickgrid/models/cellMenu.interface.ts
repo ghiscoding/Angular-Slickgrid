@@ -63,8 +63,8 @@ export interface CellMenu {
   /** Maximum height that the drop menu will have, can be a number (250) or text ("none") */
   maxHeight?: number | string;
 
-  /** Minimum width that the drop menu will have */
-  minWidth?: number | string;
+  /** Width that the drop menu can have */
+  width?: number | string;
 
   /** Array of Option Items (title, option, disabled, ...) */
   optionItems?: MenuOptionItem[];
