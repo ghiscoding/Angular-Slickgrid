@@ -198,8 +198,36 @@ $cell-menu-divider-color:               #e5e5e5 !default;
 $cell-menu-option-list-margin-bottom:   10px !default;
 $cell-menu-title-border-bottom:         solid 1px #d6d6d6 !default;
 $cell-menu-title-font-size:             16px !default;
+$cell-menu-title-font-weight:           normal !default;
 $cell-menu-title-margin-bottom:         10px !default;
 $cell-menu-title-width:                 calc(100% - 35px) !default;
+
+/* Context Menu Plugin */
+$context-menu-bg-color:                    #ffffff !default;
+$context-menu-button-bg-color:             #ffffff !default;
+$context-menu-border:                      1px solid #BFBDBD !default;
+$context-menu-button-border:               cell-menu-border !default;
+$context-menu-border-radius:               2px !default;
+$context-menu-min-width:                   175px !default;
+$context-menu-padding:                     6px !default;
+$context-menu-item-border:                 1px solid transparent !default;
+$context-menu-item-border-radius:          0px !default;
+$context-menu-item-disabled-color:         silver !default;
+$context-menu-item-padding:                2px 4px !default;
+$context-menu-item-hover-border:           1px solid #BFBDBD !default;
+$context-menu-item-hover-color:            #fafafa !default;
+$context-menu-icon-height:                 16px !default;
+$context-menu-icon-margin-right:           4px !default;
+$context-menu-icon-width:                  16px !default;
+$context-menu-divider-height:              1px !default;
+$context-menu-divider-margin:              8px 3px !default;
+$context-menu-divider-color:               #e5e5e5 !default;
+$context-menu-option-list-margin-bottom:   10px !default;
+$context-menu-title-border-bottom:         solid 1px #d6d6d6 !default;
+$context-menu-title-font-size:             16px !default;
+$context-menu-title-font-weight:           normal !default;
+$context-menu-title-margin-bottom:         10px !default;
+$context-menu-title-width:                 calc(100% - 35px) !default;
 
 /* Header Menu Plugin */
 $header-menu-bg-color:                    #ffffff !default;

@@ -55,6 +55,7 @@ import { CellExternalCopyManagerExtension } from '../extensions/cellExternalCopy
 import { CellMenuExtension } from '../extensions/cellMenuExtension';
 import { CheckboxSelectorExtension } from '../extensions/checkboxSelectorExtension';
 import { ColumnPickerExtension } from '../extensions/columnPickerExtension';
+import { ContextMenuExtension } from '../extensions/contextMenuExtension';
 import { DraggableGroupingExtension } from '../extensions/draggableGroupingExtension';
 import { GridMenuExtension } from '../extensions/gridMenuExtension';
 import { GroupItemMetaProviderExtension } from '../extensions/groupItemMetaProviderExtension';
@@ -81,6 +82,7 @@ const slickgridEventPrefix = 'sg';
     CellMenuExtension,
     CheckboxSelectorExtension,
     ColumnPickerExtension,
+    ContextMenuExtension,
     DraggableGroupingExtension,
     ExcelExportService,
     ExtensionService,
@@ -387,6 +389,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
             this.extensionService.translateCellMenu();
             this.extensionService.translateColumnHeaders();
             this.extensionService.translateColumnPicker();
+            this.extensionService.translateContextMenu();
             this.extensionService.translateGridMenu();
             this.extensionService.translateHeaderMenu();
           }

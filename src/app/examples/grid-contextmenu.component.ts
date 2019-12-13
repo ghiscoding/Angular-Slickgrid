@@ -1,6 +1,15 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { AngularGridInstance, Column, GridOption, FieldType, Formatter, Formatters } from './../modules/angular-slickgrid';
+import {
+  AngularGridInstance,
+  Column,
+  ContextMenu,
+  ExtensionName,
+  FieldType,
+  Formatter,
+  Formatters,
+  GridOption,
+} from './../modules/angular-slickgrid';
 
 const actionFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
   if (dataContext.priority === 3) { // option 3 is High
@@ -9,15 +18,19 @@ const actionFormatter: Formatter = (row, cell, value, columnDef, dataContext) =>
   return `<div class="disabled">Action <i class="fa fa-caret-down"></i></div>`;
 };
 
-const priorityFormatter: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+const priorityFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
   if (!value) {
     return '';
   }
-  const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
-  const translate = gridOptions.i18n;
+  let output = '';
   const count = +(value >= 3 ? 3 : value);
-  const key = count === 3 ? 'HIGH' : (count === 2 ? 'MEDIUM' : 'LOW');
-  return translate && translate.instant && translate.instant(key || ' ');
+  const color = count === 3 ? 'red' : (count === 2 ? 'orange' : 'yellow');
+  const icon = `<i class="fa fa-star ${color}" aria-hidden="true"></i>`;
+
+  for (let i = 1; i <= count; i++) {
+    output += icon;
+  }
+  return output;
 };
 
 const taskTranslateFormatter: Formatter = (row: number, cell: number, value: any, columnDef: any, dataContext: any, grid: any) => {
@@ -36,12 +49,22 @@ export class GridContextMenuComponent implements OnInit {
   title = 'Example 26: Cell Menu / Context Menu';
   subTitle = `Add Cell Menu and Context Menu
     <ul>
-      <li><b>Cell Menu</b> can be used by a cell menu click, like an 'Action' cell click.</li>
-      <li><b>Context Menu</b> shown after a mouse right+click.</li>
-      <li>There 2 ways to execute a Command/Option</li>
+      <li>This example demonstrates 2 SlickGrid plugins
+      <ol>
+        <li>Using the <b>Slick.Plugins.CellMenu</b> plugin, often used for an Action Menu(s) (1x or more).</li>
+        <li>Using the <b>Slick.Plugins.ContextMenu</b> plugin, shown after a mouse right+click (only 1x).</li>
+      </ol>
+      <li>It will also "autoAdjustDrop" (bottom/top) and "autoAlignSide" (left/right) by default but could be turned off</li>
+      <li>Both plugins have 2 sections, 1st section can have an array of Options (to change value of a field) and 2nd section an array of Commands (execute a command)</li>
+      <li>There are 2 ways to execute a Command/Option</li>
       <ol>
         <li>via onCommand/onOptionSelected (use a switch/case to parse command/option and do something with it)</li>
-        <li>via action callback (must be defined on each command/option)</li>
+        <li>via action callback (that can be defined on each command/option)</li>
+      </ol>
+      <li>Use override callback functions to change the properties of show/hide, enable/disable the menu or certain item(s) from the list</li>
+      <ol>
+        <li>These callbacks are: "menuUsabilityOverride", "itemVisibilityOverride", "itemUsabilityOverride"</li>
+        <li>... e.g. in the demo, the "Action" menu is only available when Priority is set to "High" via "menuUsabilityOverride"</li>
       </ol>
     </ul>`;
 
@@ -62,6 +85,14 @@ export class GridContextMenuComponent implements OnInit {
     this.angularGrid = angularGrid;
   }
 
+  get cellMenuInstance(): any {
+    return this.angularGrid && this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.cellMenu) || {};
+  }
+
+  get contextMenuInstance(): any {
+    return this.angularGrid && this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.contextMenu) || {};
+  }
+
   ngOnInit() {
     this.prepareGrid();
     this.dataset = this.getData(1000);
@@ -69,6 +100,7 @@ export class GridContextMenuComponent implements OnInit {
 
   prepareGrid() {
     this.columnDefinitions = [
+      { id: 'id', name: '#', field: 'id', maxWidth: 45 },
       {
         id: 'title', name: 'Title', field: 'id', headerKey: 'TITLE', minWidth: 100,
         formatter: taskTranslateFormatter,
@@ -80,7 +112,7 @@ export class GridContextMenuComponent implements OnInit {
       { id: 'priority', headerKey: 'PRIORITY', field: 'priority', formatter: priorityFormatter },
       { id: 'completed', headerKey: 'COMPLETED', field: 'completed', formatter: Formatters.checkmark },
       {
-        id: 'action', name: 'Action', field: 'action',
+        id: 'action', name: 'Action', field: 'action', width: 110, maxWidth: 200,
         formatter: actionFormatter,
         cellMenu: {
           width: 200,
@@ -119,8 +151,8 @@ export class GridContextMenuComponent implements OnInit {
               }
             },
             // you can pass divider as a string or an object with a boolean
-            // 'divider',
-            { divider: true, command: '' },
+            'divider',
+            // { divider: true, command: '' },
 
             {
               command: 'help',
@@ -162,8 +194,10 @@ export class GridContextMenuComponent implements OnInit {
       enableTranslate: true,
       i18n: this.translate,
 
-      // when using the cellMenu, you can change some of the default options and all use some of the callback methods
+      enableContextMenu: true,
       enableCellMenu: true,
+
+      // when using the cellMenu, you can change some of the default options and all use some of the callback methods
       cellMenu: {
         // all the Cell Menu callback methods (except the action callback)
         // are available under the grid options as shown below
@@ -182,7 +216,10 @@ export class GridContextMenuComponent implements OnInit {
           console.log('Before the Cell Menu is shown', args);
         }),
         onBeforeMenuClose: ((e, args) => console.log('Cell Menu is closing', args)),
-      }
+      },
+
+      // load Context Menu structure
+      contextMenu: this.getContextMenuOptions(),
     };
   }
 
@@ -249,6 +286,112 @@ export class GridContextMenuComponent implements OnInit {
       };
     }
     return tmpData;
+  }
+
+  getContextMenuOptions(): ContextMenu {
+    return {
+      width: 200,
+      // optionally and conditionally define when the the menu is usable,
+      // this should be used with a custom formatter to show/hide/disable the menu
+      menuUsabilityOverride: (row, dataContext, grid) => {
+        return (dataContext.id < 21); // say we want to display the menu only from Task 0 to 20
+      },
+      commandTitleKey: 'COMMANDS',
+      // which column to show the command list? when not defined it will be shown over all columns
+      commandShownOverColumnIds: ['id', 'title', 'percentComplete', 'start', 'finish', 'effortDriven' /*, 'priority'*/],
+      commandItems: [
+        { command: 'copy-text', titleKey: 'COPY', iconCssClass: 'fa fa-clone' },
+        { command: 'delete-row', titleKey: 'DELETE_ROW', iconCssClass: 'fa fa-times', cssClass: 'red', textCssClass: 'bold', },
+        'divider',
+        // { divider: true },
+        {
+          command: 'help', titleKey: 'HELP', iconCssClass: 'fa fa-question-circle',
+          // you can use the 'action' callback and/or subscribe to the 'onCallback' event, they both have the same arguments
+          action: (e, args) => {
+            // action callback.. do something
+          },
+          // only show command to 'Help' when there's no Effort Driven
+          itemVisibilityOverride: (row, dataContext, grid) => {
+            return (!dataContext.effortDriven);
+          }
+        },
+        { command: 'something', titleKey: 'DISABLED_COMMAND', disabled: true },
+      ],
+
+      // Options allows you to edit a column from an option chose a list
+      // for example, changing the Priority value
+      // you can also optionally define an array of column ids that you wish to display this option list (when not defined it will show over all columns)
+      optionTitleKey: 'CHANGE_PRIORITY',
+      optionShownOverColumnIds: ['priority'], // optional, when defined it will only show over the columns (column id) defined in the array
+      optionItems: [
+        {
+          option: 0, title: 'n/a', textCssClass: 'italic',
+          // only enable this option when there's no Effort Driven
+          itemUsabilityOverride: (row, dataContext, grid) => {
+            return (!dataContext.effortDriven);
+          },
+          // you can use the 'action' callback and/or subscribe to the 'onCallback' event, they both have the same arguments
+          action: (e, args) => {
+            // action callback.. do something
+          },
+        },
+        { option: 1, iconCssClass: 'fa fa-star-o yellow', titleKey: 'LOW' },
+        { option: 2, iconCssClass: 'fa fa-star-half-o orange', titleKey: 'MEDIUM' },
+        { option: 3, iconCssClass: 'fa fa-star red', titleKey: 'HIGH' },
+        // you can pass divider as a string or an object with a boolean
+        // 'divider',
+        { divider: true, option: '' },
+        {
+          option: 4, title: 'Extreme', iconCssClass: 'fa fa-thermometer-full', disabled: true,
+          // only shown when there's no Effort Driven
+          itemVisibilityOverride: (row, dataContext, grid) => {
+            return (!dataContext.effortDriven);
+          }
+        },
+      ],
+      // subscribe to Context Menu
+      onBeforeMenuShow: ((e, args) => {
+        // for example, you could select the row it was clicked with
+        // grid.setSelectedRows([args.row]); // select the entire row
+        this.angularGrid.slickGrid.setActiveCell(args.row, args.cell, false); // select the cell that the click originated
+        console.log('Before the global Context Menu is shown', args);
+      }),
+      onBeforeMenuClose: ((e, args) => console.log('Global Context Menu is closing', args)),
+
+      // subscribe to Context Menu onCommand event (or use the action callback on each command)
+      onCommand: ((e, args) => this.executeCommand(e, args)),
+
+      // subscribe to Context Menu onOptionSelected event (or use the action callback on each option)
+      onOptionSelected: ((e, args) => {
+        // change Priority
+        const dataContext = args && args.dataContext;
+        if (dataContext && dataContext.hasOwnProperty('priority')) {
+          dataContext.priority = args.item.option;
+          this.angularGrid.slickGrid.updateRow(args.row);
+        }
+      }),
+    };
+  }
+
+  showContextCommandsAndOptions(showBothList: boolean) {
+    // when showing both Commands/Options, we can just pass an empty array to show over all columns
+    // else show on all columns except Priority
+    const showOverColumnIds = showBothList ? [] : ['id', 'title', 'complete', 'start', 'finish', 'effortDriven'];
+    this.contextMenuInstance.setOptions({
+      commandShownOverColumnIds: showOverColumnIds,
+      // hideCommandSection: !showBothList
+    });
+  }
+
+  showCellMenuCommandsAndOptions(showBothList) {
+    // change via the plugin setOptions
+    this.cellMenuInstance.setOptions({
+      hideOptionSection: !showBothList
+    });
+
+    // OR find the column, then change the same hide property
+    // var actionColumn = columns.find(function (column) { return column.id === 'action' });
+    // actionColumn.cellMenu.hideOptionSection = !showBothList;
   }
 
   switchLanguage() {

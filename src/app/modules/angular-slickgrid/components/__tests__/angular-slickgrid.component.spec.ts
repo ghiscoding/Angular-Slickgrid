@@ -68,6 +68,7 @@ const extensionServiceStub = {
   translateCellMenu: jest.fn(),
   translateColumnHeaders: jest.fn(),
   translateColumnPicker: jest.fn(),
+  translateContextMenu: jest.fn(),
   translateGridMenu: jest.fn(),
   translateHeaderMenu: jest.fn(),
 } as unknown as ExtensionService;

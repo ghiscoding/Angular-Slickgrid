@@ -3,7 +3,29 @@
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <div class="row">
-    <button class="btn btn-default btn-sm" (click)="switchLanguage()">
+    <span class="context-menu">
+      <strong>Context Menu:</strong>
+      <button class="btn btn-default btn-xs" (click)="showContextCommandsAndOptions(false)">
+        Show Priority Options Only
+      </button>
+      <button class="btn btn-default btn-xs" (click)="showContextCommandsAndOptions(true)">
+        Show Commands & Priority Options
+      </button>
+    </span>
+
+    <span class="cell-menu">
+      <strong>Cell Menu:</strong>
+      <button class="btn btn-default btn-xs" (click)="showCellMenuCommandsAndOptions(false)">
+        Show Action Commands Only
+      </button>
+      <button class="btn btn-default btn-xs" (click)="showCellMenuCommandsAndOptions(true)">
+        Show Actions Commands & Effort Options
+      </button>
+    </span>
+  </div>
+
+  <div class="row locale">
+    <button class="btn btn-default btn-xs" (click)="switchLanguage()" data-test="language-button">
       <i class="fa fa-language"></i>
       Switch Language
     </button>
@@ -14,7 +36,7 @@
   </div>
 
   <div class="col-sm-12">
-    <angular-slickgrid gridId="grid2" (onAngularGridCreated)="angularGridReady($event)"
+    <angular-slickgrid gridId="grid26" (onAngularGridCreated)="angularGridReady($event)"
       [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
     </angular-slickgrid>
   </div>

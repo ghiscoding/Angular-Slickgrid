@@ -1,8 +1,8 @@
 import { MenuCommandItem } from './menuCommandItem.interface';
-import { MenuOptionItem } from './menuOptionItem.interface';
 import { MenuItemCallbackArgs } from './menuItemCallbackArgs.interface';
+import { MenuOptionItem } from './menuOptionItem.interface';
 
-export interface CellMenu {
+export interface ContextMenu {
   /** Defaults to true, Auto-align dropup or dropdown menu to the left or right depending on grid viewport available space */
   autoAdjustDrop?: string;
 
@@ -18,13 +18,15 @@ export interface CellMenu {
   /** Array of Command Items (title, command, disabled, ...) */
   commandItems?: Array<MenuCommandItem | 'divider'>;
 
+  /** Defaults to undefined, which column to show the Commands list, when not defined the context menu will be shown over all columns */
+  commandShownOverColumnIds?: string[];
+
   /** Defaults to "Commands" which is the title that shows up over the commands list */
   commandTitle?: string;
 
   /** Same as "commandTitle", except that it's a translation key which can be used on page load and/or when switching locale */
   commandTitleKey?: string;
 
-  /** Whether the command is actually a divider (separator). */
   divider?: string;
 
   /** Defaults to false, Hide the Close button on top right */
@@ -33,11 +35,32 @@ export interface CellMenu {
   /** Defaults to false, Hide the Commands section even when the commandItems array is filled */
   hideCommandSection?: boolean;
 
-  /** Defaults to true, do we want to hide the Cell Menu when a scrolling event occurs? */
-  hideMenuOnScroll?: boolean;
+  /** Defaults to false, which will hide the "Copy Cell Value" command in the menu */
+  hideCopyCellValueCommand?: boolean;
+
+  /** Defaults to false, which will hide the "Export to CSV" command in the menu (Grid Option "enableExport: true" has to be enabled) */
+  hideExportCsvCommand?: boolean;
+
+  /** Defaults to false, which will hide the "Export to Excel" command in the menu (Grid Option "enableExcelExport: true" has to be enabled) */
+  hideExportExcelCommand?: boolean;
+
+  /** Defaults to false, which will hide the "Export to Text Delimited" command in the menu (Grid Option "enableExport: true" has to be enabled) */
+  hideExportTextDelimitedCommand?: boolean;
 
   /** Defaults to false, Hide the Options section even when the optionItems array is filled */
   hideOptionSection?: boolean;
+
+  /** icon for the "Copy Cell Value" command */
+  iconCopyCellValueCommand?: string;
+
+  /** icon for the "Export to CSV" command */
+  iconExportCsvCommand?: string;
+
+  /** icon for the "Export to Excel" command */
+  iconExportExcelCommand?: string;
+
+  /** icon for the "Export to Text Delimited" command */
+  iconExportTextDelimitedCommand?: string;
 
   /** Maximum height that the drop menu will have, can be a number (250) or text ("none") */
   maxHeight?: number | string;
@@ -47,6 +70,9 @@ export interface CellMenu {
 
   /** Array of Option Items (title, option, disabled, ...) */
   optionItems?: Array<MenuOptionItem | 'divider'>;
+
+  /** Defaults to undefined, which column to show the Options list, when not defined the context menu will be shown over all columns */
+  optionShownOverColumnIds?: string[];
 
   /** Title of the Option section */
   optionTitle?: string;

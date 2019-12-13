@@ -3,9 +3,10 @@ import {
   AutoResizeOption,
   BackendServiceApi,
   CellMenu,
+  CheckboxSelector,
   Column,
   ColumnPicker,
-  CheckboxSelector,
+  ContextMenu,
   DraggableGrouping,
   EditCommand,
   ExcelCopyBufferOption,
@@ -87,6 +88,9 @@ export interface GridOption {
 
   /** Column Picker Plugin options (columnTitle, forceFitTitle, syncResizeTitle) */
   columnPicker?: ColumnPicker;
+
+  /** Context menu options (mouse right+click) */
+  contextMenu?: ContextMenu;
 
   /** Defaults to false, which leads to create the footer row of the grid */
   createFooterRow?: boolean;

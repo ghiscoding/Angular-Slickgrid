@@ -1,7 +1,8 @@
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+
 import { Constants } from '../constants';
-import { ExtensionName, Locale } from '../models/index';
+import { ExtensionName } from '../models/index';
 import { SharedService } from '../services/shared.service';
 
 declare function require(name: string);
@@ -79,7 +80,7 @@ export class ExtensionUtility {
    * From a Grid Menu object property name, we will return the correct title output string following this order
    * 1- if user provided a title, use it as the output title
    * 2- else if user provided a title key, use it to translate the output title
-   * 3- else if nothing is provided use
+   * 3- else if nothing is provided use text defined as constants
    */
   getPickerTitleOutputString(propName: string, pickerName: 'gridMenu' | 'columnPicker') {
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {

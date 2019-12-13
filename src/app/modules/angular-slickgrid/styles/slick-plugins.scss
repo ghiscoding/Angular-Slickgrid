@@ -33,6 +33,7 @@
 
   .title {
     font-size: $cell-menu-title-font-size;
+    font-weight: $cell-menu-title-font-weight;
     width: $cell-menu-title-width;
     border-bottom: $cell-menu-title-border-bottom;
     margin-bottom: $cell-menu-title-margin-bottom;
@@ -44,17 +45,6 @@
     width: 45px;
     padding: 4px;
     margin: 4px 4px 4px 0;
-  }
-
-  .filter {
-    border: 1px solid #BFBDBD;
-    font-size: 8pt;
-    height: 400px;
-    margin-top: 6px;
-    overflow: scroll;
-    padding: 4px;
-    white-space: nowrap;
-    width: 200px;
   }
 
   .slick-cell-menu-item {
@@ -113,6 +103,107 @@
   }
 }
 
+// ----------------------------------------------
+// Context Menu Plugin (mouse right+click)
+// ----------------------------------------------
+
+.slick-context-menu {
+  position: absolute;
+  background: $context-menu-bg-color;
+  border: $context-menu-border;
+  border-radius: $context-menu-border-radius;
+  min-width: $context-menu-min-width;
+  padding: $context-menu-padding;
+  z-index: 100000;
+  cursor: default;
+  display: inline-block;
+  overflow: auto;
+  resize: both;
+
+  > .close {
+    float: right;
+    width: 20px;
+    height: 25px;
+    padding: 2px;
+    background-color: $column-picker-close-background-color;
+    border: $column-picker-close-border;
+
+    > span {
+      opacity: $column-picker-close-opacity;
+    }
+  }
+
+  .title {
+    font-size: $context-menu-title-font-size;
+    font-weight: $context-menu-title-font-weight;
+    width: $context-menu-title-width;
+    border-bottom: $context-menu-title-border-bottom;
+    margin-bottom: $context-menu-title-margin-bottom;
+  }
+
+  button {
+    border: $context-menu-button-border;
+    background-color: $context-menu-button-bg-color;
+    width: 45px;
+    padding: 4px;
+    margin: 4px 4px 4px 0;
+  }
+
+  .slick-context-menu-item {
+    cursor: pointer;
+    border: $context-menu-item-border;
+    border-radius: $context-menu-item-border-radius;
+    padding: $context-menu-item-padding;
+    list-style: none outside none;
+    margin: 0;
+
+    &:hover {
+      border: $context-menu-item-hover-border;
+      background-color: $context-menu-item-hover-color;
+    }
+
+    &.slick-context-menu-item-divider {
+      cursor: default;
+      border: none;
+      overflow: hidden;
+      padding: 0;
+      height: $context-menu-divider-height;
+      margin: $context-menu-divider-margin;
+      background-color: $context-menu-divider-color;
+      &:hover {
+        border: none;
+        background-color: $context-menu-divider-color;
+      }
+    }
+
+    .slick-context-menu-icon {
+      background-position: center center;
+      background-repeat: no-repeat;
+      display: inline-block;
+      height: $context-menu-icon-height;
+      margin-right: $context-menu-icon-margin-right;
+      vertical-align: middle;
+      width: $context-menu-icon-width;
+    }
+
+    .slick-context-menu-content {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* Disabled item */
+    &.slick-context-menu-item-disabled {
+      border-color: transparent !important;
+      background: inherit !important;
+      color: $context-menu-item-disabled-color;
+      cursor: inherit;
+    }
+  }
+
+  .slick-context-menu-option-list {
+    margin-bottom: $context-menu-option-list-margin-bottom;
+  }
+}
 
 // ---------------------------------------------------------
 // Header Button Plugin - add button in header with command
