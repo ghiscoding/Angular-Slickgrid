@@ -8,7 +8,8 @@ import {
   Extension,
   ExtensionName,
   MenuCommandItem,
-  MenuItemCallbackArgs,
+  MenuCommandItemCallbackArgs,
+  MenuOptionItemCallbackArgs,
   MenuOptionItem,
   Locale,
   SlickEventHandler,
@@ -75,6 +76,9 @@ export class CellMenuExtension implements Extension {
         this.translateCellMenu();
       }
 
+      // sort all menu items by their position order when defined
+      this.sortMenuItems(this.sharedService.allColumns);
+
       this._addon = new Slick.Plugins.CellMenu(this.sharedService.gridOptions.cellMenu);
       this.sharedService.grid.registerPlugin(this._addon);
 
@@ -83,12 +87,12 @@ export class CellMenuExtension implements Extension {
         if (this.sharedService.gridOptions.cellMenu.onExtensionRegistered) {
           this.sharedService.gridOptions.cellMenu.onExtensionRegistered(this._addon);
         }
-        this._eventHandler.subscribe(this._addon.onCommand, (event: Event, args: MenuItemCallbackArgs<MenuCommandItem>) => {
+        this._eventHandler.subscribe(this._addon.onCommand, (event: Event, args: MenuCommandItemCallbackArgs) => {
           if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onCommand === 'function') {
             this.sharedService.gridOptions.cellMenu.onCommand(event, args);
           }
         });
-        this._eventHandler.subscribe(this._addon.onOptionSelected, (event: Event, args: MenuItemCallbackArgs<MenuOptionItem>) => {
+        this._eventHandler.subscribe(this._addon.onOptionSelected, (event: Event, args: MenuOptionItemCallbackArgs) => {
           if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onOptionSelected === 'function') {
             this.sharedService.gridOptions.cellMenu.onOptionSelected(event, args);
           }
@@ -112,7 +116,7 @@ export class CellMenuExtension implements Extension {
   /** Translate the Cell Menu titles, we need to loop through all column definition to re-translate them */
   translateCellMenu() {
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.cellMenu) {
-      this.resetMenuTranslations(this.sharedService.visibleColumns);
+      this.resetMenuTranslations(this.sharedService.allColumns);
     }
   }
 
@@ -178,6 +182,19 @@ export class CellMenuExtension implements Extension {
             item.title = this.translate && this.translate.instant && this.translate.instant(item.titleKey || ' ') || item.title;
           }
         });
+      }
+    });
+  }
+
+  sortMenuItems(columnDefinitions: Column[]) {
+    columnDefinitions.forEach((columnDef: Column) => {
+      if (columnDef && columnDef.cellMenu && columnDef.cellMenu.commandItems) {
+        // get both items list
+        const columnCellMenuCommandItems: Array<MenuCommandItem | 'divider'> = columnDef.cellMenu.commandItems || [];
+        const columnCellMenuOptionItems: Array<MenuOptionItem | 'divider'> = columnDef.cellMenu.optionItems || [];
+
+        this.extensionUtility.sortItems(columnCellMenuCommandItems, 'positionOrder');
+        this.extensionUtility.sortItems(columnCellMenuOptionItems, 'positionOrder');
       }
     });
   }

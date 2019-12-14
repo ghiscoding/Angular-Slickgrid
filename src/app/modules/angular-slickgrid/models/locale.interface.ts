@@ -8,6 +8,12 @@ export interface Locale {
   /** Text "Clear All Filters" shown in Header Menu */
   TEXT_CLEAR_ALL_FILTERS: string;
 
+  /** Text "Clear all Grouping" displayed in the Context Menu when Grouping is enabled */
+  TEXT_CLEAR_ALL_GROUPING: string;
+
+  /** Text "Collapse all Grouping" displayed in the Context Menu when Grouping is enabled */
+  TEXT_COLLAPSE_ALL_GROUPS: string;
+
   /** Text "Clear All Sorting" shown in Header Menu */
   TEXT_CLEAR_ALL_SORTING: string;
 
@@ -20,11 +26,17 @@ export interface Locale {
   /** Text "Contains" shown in Compound Editors/Filters as an Operator */
   TEXT_CONTAINS: string;
 
+  /** Text "Copy" shown in Context Menu to copy a cell value */
+  TEXT_COPY: string;
+
   /** Text "Starts With" shown in Compound Editors/Filters as an Operator */
   TEXT_ENDS_WITH: string;
 
   /** Text "Equals" shown in Compound Editors/Filters as an Operator */
   TEXT_EQUALS: string;
+
+  /** Text "Expand all Grouping" displayed in the Context Menu when Grouping is enabled */
+  TEXT_EXPAND_ALL_GROUPS: string;
 
   /** Text "Export in CSV Format" shown in Grid Menu (when enabled) */
   TEXT_EXPORT_IN_CSV_FORMAT: string;

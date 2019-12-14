@@ -386,7 +386,7 @@ export class ExcelExportService {
 
       let itemData: ExcelCellFormat | string = '';
 
-      if (itemObj && itemObj.hasOwnProperty(fieldProperty) && exportCustomFormatter !== undefined && exportCustomFormatter !== undefined) {
+      if (itemObj && itemObj.hasOwnProperty(fieldProperty) && exportCustomFormatter !== undefined) {
         const formattedData = exportCustomFormatter(row, col, itemObj[fieldProperty], columnDef, itemObj, this._grid);
         itemData = formattedData as string;
         if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {

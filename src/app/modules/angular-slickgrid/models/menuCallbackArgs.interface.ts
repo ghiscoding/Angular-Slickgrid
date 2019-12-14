@@ -1,6 +1,6 @@
 import { Column } from './column.interface';
 
-export interface MenuItemCallbackArgs<T> {
+export interface MenuCallbackArgs {
   /** Cell or column index */
   cell: number;
 
@@ -8,17 +8,11 @@ export interface MenuItemCallbackArgs<T> {
   row: number;
 
   /** Reference to the grid. */
-  grid: number;
-
-  /** Menu item selected */
-  item: T;
+  grid: any;
 
   /** Cell Column definition */
   columnDef: Column;
 
   /** Cell Data Context(data object) */
   dataContext: any;
-
-  /** Value of the cell we triggered the context menu from */
-  value?: any;
 }

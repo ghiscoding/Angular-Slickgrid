@@ -6,6 +6,7 @@ import {
   ContextMenu,
   ExtensionName,
   FieldType,
+  Filters,
   Formatter,
   Formatters,
   GridOption,
@@ -100,17 +101,52 @@ export class GridContextMenuComponent implements OnInit {
 
   prepareGrid() {
     this.columnDefinitions = [
-      { id: 'id', name: '#', field: 'id', maxWidth: 45 },
+      { id: 'id', name: '#', field: 'id', maxWidth: 45, sortable: true, filterable: true },
       {
         id: 'title', name: 'Title', field: 'id', headerKey: 'TITLE', minWidth: 100,
         formatter: taskTranslateFormatter,
-        sortable: true, type: FieldType.string
+        sortable: true,
+        filterable: true,
+        params: { useFormatterOuputToFilter: true }
       },
-      { id: 'percentComplete', headerKey: 'PERCENT_COMPLETE', field: 'percentComplete', formatter: Formatters.percentCompleteBar, type: FieldType.number, sortable: true, minWidth: 100 },
-      { id: 'start', headerKey: 'START', field: 'start', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, minWidth: 90, exportWithFormatter: true },
-      { id: 'finish', headerKey: 'FINISH', field: 'finish', formatter: Formatters.dateIso, sortable: true, type: FieldType.date, minWidth: 90, exportWithFormatter: true },
-      { id: 'priority', headerKey: 'PRIORITY', field: 'priority', formatter: priorityFormatter },
-      { id: 'completed', headerKey: 'COMPLETED', field: 'completed', formatter: Formatters.checkmark },
+      {
+        id: 'percentComplete', headerKey: 'PERCENT_COMPLETE', field: 'percentComplete', minWidth: 100,
+        sortable: true, filterable: true,
+        filter: { model: Filters.slider, operator: '>=' },
+        formatter: Formatters.percentCompleteBar, type: FieldType.number,
+      },
+      {
+        id: 'start', name: 'Start', field: 'start', headerKey: 'START', minWidth: 100,
+        formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date,
+        filterable: true, filter: { model: Filters.compoundDate }
+      },
+      { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date, minWidth: 100, filterable: true, filter: { model: Filters.compoundDate } },
+      {
+        id: 'priority', headerKey: 'PRIORITY', field: 'priority',
+        formatter: priorityFormatter,
+        sortable: true, filterable: true,
+        filter: {
+          collection: [{ value: '', label: '' }, { value: 1, labelKey: 'LOW' }, { value: 2, labelKey: 'MEDIUM' }, { value: 3, labelKey: 'HIGH' }],
+          model: Filters.singleSelect,
+          enableTranslateLabel: true,
+          filterOptions: {
+            autoDropWidth: true
+          }
+        }
+      },
+      {
+        id: 'completed', headerKey: 'COMPLETED', field: 'completed',
+        formatter: Formatters.checkmark,
+        sortable: true, filterable: true,
+        filter: {
+          collection: [{ value: '', label: '' }, { value: true, labelKey: 'TRUE' }, { value: false, labelKey: 'FALSE' }],
+          model: Filters.singleSelect,
+          enableTranslateLabel: true,
+          filterOptions: {
+            autoDropWidth: true
+          }
+        }
+      },
       {
         id: 'action', name: 'Action', field: 'action', width: 110, maxWidth: 200,
         formatter: actionFormatter,
@@ -121,45 +157,48 @@ export class GridContextMenuComponent implements OnInit {
           // Note that this ONLY overrides the usability itself NOT the text displayed in the cell,
           // if you wish to change the cell text (or hide it)
           // then you SHOULD use it in combination with a custom formatter (actionFormatter) and use the same logic in that formatter
-          menuUsabilityOverride: (row, dataContext, grid) => {
-            return (dataContext.priority === 3); // option 3 is High
+          menuUsabilityOverride: (args) => {
+            return (args.dataContext.priority === 3); // option 3 is High
           },
 
           // when using Translate Service, every translation will have the suffix "Key"
           // else use title without the suffix, for example "commandTitle" (no translations) or "commandTitleKey" (with translations)
           commandTitleKey: 'COMMANDS',
           commandItems: [
-            { command: 'command1', title: 'Command 1', cssClass: 'orange' },
+            // array of command item objects, you can also use the "positionOrder" that will be used to sort the items in the list
             {
-              command: 'command2', title: 'Command 2',
+              command: 'command2', title: 'Command 2', positionOrder: 62,
               // you can use the "action" callback and/or use "onCallback" callback from the grid options, they both have the same arguments
               action: (e, args) => {
                 console.log(args.dataContext, args.columnDef);
                 // action callback.. do something
               },
               // only enable command when the task is not completed
-              itemUsabilityOverride: (row, dataContext, grid) => {
-                return !dataContext.completed;
+              itemUsabilityOverride: (args) => {
+                return !args.dataContext.completed;
               }
             },
+            { command: 'command1', title: 'Command 1', cssClass: 'orange', positionOrder: 61 },
             {
-              command: 'delete-row', titleKey: 'DELETE_ROW',
+              command: 'delete-row', titleKey: 'DELETE_ROW', positionOrder: 64,
               iconCssClass: 'fa fa-times', cssClass: 'red', textCssClass: 'bold',
               // only show command to 'Delete Row' when the task is not completed
-              itemVisibilityOverride: (row, dataContext, grid) => {
-                return !dataContext.completed;
+              itemVisibilityOverride: (args) => {
+                return !args.dataContext.completed;
               }
             },
-            // you can pass divider as a string or an object with a boolean
-            'divider',
-            // { divider: true, command: '' },
+            // you can pass divider as a string or an object with a boolean (if sorting by position, then use the object)
+            // note you should use the "divider" string only when items array is already sorted and positionOrder are not specified
+            { divider: true, command: '', positionOrder: 63 },
+            // 'divider',
 
             {
               command: 'help',
               titleKey: 'HELP', // use "title" without translation and "titleKey" with TranslateService
-              iconCssClass: 'fa fa-question-circle'
+              iconCssClass: 'fa fa-question-circle',
+              positionOrder: 66,
             },
-            { command: 'something', titleKey: 'DISABLED_COMMAND', disabled: true }
+            { command: 'something', titleKey: 'DISABLED_COMMAND', disabled: true, positionOrder: 67, }
           ],
           optionTitleKey: 'CHANGE_COMPLETED_FLAG',
           optionItems: [
@@ -172,12 +211,12 @@ export class GridContextMenuComponent implements OnInit {
                 // action callback.. do something
               },
               // only enable Action menu when the Priority is set to High
-              itemUsabilityOverride: (row, dataContext, grid) => {
-                return (dataContext.priority === 3);
+              itemUsabilityOverride: (args) => {
+                return (args.dataContext.priority === 3);
               },
               // only show command to 'Delete Row' when the task is not completed
-              itemVisibilityOverride: (row, dataContext, grid) => {
-                return !dataContext.completed;
+              itemVisibilityOverride: (args) => {
+                return !args.dataContext.completed;
               }
             },
           ]
@@ -191,7 +230,12 @@ export class GridContextMenuComponent implements OnInit {
         sidePadding: 15
       },
       enableCellNavigation: true,
+      enableFiltering: true,
+      enableSorting: true,
       enableTranslate: true,
+      excelExportOptions: {
+        exportWithFormatter: true
+      },
       i18n: this.translate,
 
       enableContextMenu: true,
@@ -235,9 +279,6 @@ export class GridContextMenuComponent implements OnInit {
       case 'command2':
         alert('Command 2');
         break;
-      case 'copy-text':
-        this.copyCellValue(args.value);
-        break;
       case 'help':
         alert('Please help!');
         break;
@@ -249,29 +290,11 @@ export class GridContextMenuComponent implements OnInit {
     }
   }
 
-  copyCellValue(textToCopy) {
-    try {
-      const range = document.createRange();
-      const tmpElem = $('<div>')
-        .css({ position: 'absolute', left: '-1000px', top: '-1000px' })
-        .text(textToCopy);
-      $('body').append(tmpElem);
-      range.selectNodeContents(tmpElem.get(0));
-      const selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(range);
-      const success = document.execCommand('copy', false, null);
-      if (success) {
-        tmpElem.remove();
-      }
-    } catch (e) { }
-  }
-
   getData(count: number) {
     // mock a dataset
     const tmpData = [];
     for (let i = 0; i < count; i++) {
-      const randomYear = 2000 + Math.floor(Math.random() * 10);
+      const randomYear = 2000 + Math.floor(Math.random() * 30);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
 
@@ -293,29 +316,33 @@ export class GridContextMenuComponent implements OnInit {
       width: 200,
       // optionally and conditionally define when the the menu is usable,
       // this should be used with a custom formatter to show/hide/disable the menu
-      menuUsabilityOverride: (row, dataContext, grid) => {
+      menuUsabilityOverride: (args) => {
+        const dataContext = args && args.dataContext;
         return (dataContext.id < 21); // say we want to display the menu only from Task 0 to 20
       },
       commandTitleKey: 'COMMANDS',
       // which column to show the command list? when not defined it will be shown over all columns
       commandShownOverColumnIds: ['id', 'title', 'percentComplete', 'start', 'finish', 'effortDriven' /*, 'priority'*/],
       commandItems: [
-        { command: 'copy-text', titleKey: 'COPY', iconCssClass: 'fa fa-clone' },
-        { command: 'delete-row', titleKey: 'DELETE_ROW', iconCssClass: 'fa fa-times', cssClass: 'red', textCssClass: 'bold', },
-        'divider',
-        // { divider: true },
+        { divider: true, command: '', positionOrder: 61 },
+        { command: 'delete-row', titleKey: 'DELETE_ROW', iconCssClass: 'fa fa-times', cssClass: 'red', textCssClass: 'bold', positionOrder: 62 },
+        // you can pass divider as a string or an object with a boolean (if sorting by position, then use the object)
+        // note you should use the "divider" string only when items array is already sorted and positionOrder are not specified
+        // 'divider',
+        { divider: true, command: '', positionOrder: 63 },
         {
-          command: 'help', titleKey: 'HELP', iconCssClass: 'fa fa-question-circle',
+          command: 'help', titleKey: 'HELP', iconCssClass: 'fa fa-question-circle', positionOrder: 64,
           // you can use the 'action' callback and/or subscribe to the 'onCallback' event, they both have the same arguments
           action: (e, args) => {
             // action callback.. do something
           },
           // only show command to 'Help' when there's no Effort Driven
-          itemVisibilityOverride: (row, dataContext, grid) => {
+          itemVisibilityOverride: (args) => {
+            const dataContext = args && args.dataContext;
             return (!dataContext.effortDriven);
           }
         },
-        { command: 'something', titleKey: 'DISABLED_COMMAND', disabled: true },
+        { command: 'something', titleKey: 'DISABLED_COMMAND', disabled: true, positionOrder: 65 },
       ],
 
       // Options allows you to edit a column from an option chose a list
@@ -327,7 +354,8 @@ export class GridContextMenuComponent implements OnInit {
         {
           option: 0, title: 'n/a', textCssClass: 'italic',
           // only enable this option when there's no Effort Driven
-          itemUsabilityOverride: (row, dataContext, grid) => {
+          itemUsabilityOverride: (args) => {
+            const dataContext = args && args.dataContext;
             return (!dataContext.effortDriven);
           },
           // you can use the 'action' callback and/or subscribe to the 'onCallback' event, they both have the same arguments
@@ -338,13 +366,15 @@ export class GridContextMenuComponent implements OnInit {
         { option: 1, iconCssClass: 'fa fa-star-o yellow', titleKey: 'LOW' },
         { option: 2, iconCssClass: 'fa fa-star-half-o orange', titleKey: 'MEDIUM' },
         { option: 3, iconCssClass: 'fa fa-star red', titleKey: 'HIGH' },
-        // you can pass divider as a string or an object with a boolean
-        // 'divider',
-        { divider: true, option: '' },
+        // you can pass divider as a string or an object with a boolean (if sorting by position, then use the object)
+        // note you should use the "divider" string only when items array is already sorted and positionOrder are not specified
+        'divider',
+        // { divider: true, option: '', positionOrder: 3 },
         {
           option: 4, title: 'Extreme', iconCssClass: 'fa fa-thermometer-full', disabled: true,
           // only shown when there's no Effort Driven
-          itemVisibilityOverride: (row, dataContext, grid) => {
+          itemVisibilityOverride: (args) => {
+            const dataContext = args && args.dataContext;
             return (!dataContext.effortDriven);
           }
         },
@@ -367,7 +397,7 @@ export class GridContextMenuComponent implements OnInit {
         const dataContext = args && args.dataContext;
         if (dataContext && dataContext.hasOwnProperty('priority')) {
           dataContext.priority = args.item.option;
-          this.angularGrid.slickGrid.updateRow(args.row);
+          this.angularGrid.gridService.updateItem(dataContext);
         }
       }),
     };

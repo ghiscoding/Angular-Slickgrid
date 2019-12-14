@@ -1,4 +1,4 @@
-import { MenuItemCallbackArgs } from './menuItemCallbackArgs.interface';
+import { MenuCallbackArgs } from './menuCallbackArgs.interface';
 
 export interface MenuItem {
   /** A CSS class to be added to the menu item container. */
@@ -35,8 +35,8 @@ export interface MenuItem {
   // action/override callbacks
 
   /** Callback method that user can override the default behavior of showing/hiding an item from the list. */
-  itemVisibilityOverride?: (row: number, dataContext: any, grid: any) => boolean;
+  itemVisibilityOverride?: (args: MenuCallbackArgs) => boolean;
 
   /** Callback method that user can override the default behavior of enabling/disabling an item from the list. */
-  itemUsabilityOverride?: (row: number, dataContext: any, grid: any) => boolean;
+  itemUsabilityOverride?: (args: MenuCallbackArgs) => boolean;
 }
