@@ -170,7 +170,7 @@ export class GridContextMenuComponent implements OnInit {
               command: 'command2', title: 'Command 2', positionOrder: 62,
               // you can use the "action" callback and/or use "onCallback" callback from the grid options, they both have the same arguments
               action: (e, args) => {
-                console.log(args.dataContext, args.columnDef);
+                console.log(args.dataContext, args.column);
                 // action callback.. do something
               },
               // only enable command when the task is not completed
@@ -268,7 +268,7 @@ export class GridContextMenuComponent implements OnInit {
   }
 
   executeCommand(e, args) {
-    const columnDef = args.columnDef;
+    const columnDef = args.column;
     const command = args.command;
     const dataContext = args.dataContext;
 

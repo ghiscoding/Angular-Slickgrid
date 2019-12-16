@@ -11,7 +11,7 @@ export interface MenuCallbackArgs {
   grid: any;
 
   /** Cell Column definition */
-  columnDef: Column;
+  column: Column;
 
   /** Cell Data Context(data object) */
   dataContext: any;

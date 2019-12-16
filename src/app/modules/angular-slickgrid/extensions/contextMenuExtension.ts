@@ -188,7 +188,7 @@ export class ContextMenuExtension implements Extension {
             },
             itemUsabilityOverride: (args: MenuCallbackArgs) => {
               // make sure there's an item to copy before enabling this command
-              const columnDef = args && args.columnDef as Column;
+              const columnDef = args && args.column as Column;
               const dataContext = args && args.dataContext;
               if (columnDef && dataContext.hasOwnProperty(columnDef.field)) {
                 return dataContext[columnDef.field] !== null && dataContext[columnDef.field] !== undefined;
@@ -360,7 +360,7 @@ export class ContextMenuExtension implements Extension {
     try {
       if (args && args.grid && args.command) {
         // get the value, if "exportWithFormatter" is set then we'll use the formatter output
-        const columnDef = (args && args.columnDef || {}) as Column;
+        const columnDef = (args && args.column || {}) as Column;
         const dataContext = args && args.dataContext;
         const gridOptions = this.sharedService && this.sharedService.gridOptions || {};
         const exportWithFormatter = gridOptions.exportOptions.exportWithFormatter || gridOptions.excelExportOptions.exportWithFormatter;
