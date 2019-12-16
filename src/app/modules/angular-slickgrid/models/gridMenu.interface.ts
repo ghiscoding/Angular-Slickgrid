@@ -22,10 +22,10 @@ export interface GridMenu {
   /** Same as "forceFitTitle", except that it's a translation key which can be used on page load and/or when switching locale */
   forceFitTitleKey?: string;
 
-  /** Defaults to false, which will hide the "Clear All Filters" command in the Grid Menu (Grid Option "enableFiltering: true" has to be enabled) */
+  /** Defaults to false, which will hide the "Clear all Filters" command in the Grid Menu (Grid Option "enableFiltering: true" has to be enabled) */
   hideClearAllFiltersCommand?: boolean;
 
-  /** Defaults to false, which will hide the "Clear All Sorting" command in the Grid Menu (Grid Option "enableSorting: true" has to be enabled) */
+  /** Defaults to false, which will hide the "Clear all Sorting" command in the Grid Menu (Grid Option "enableSorting: true" has to be enabled) */
   hideClearAllSortingCommand?: boolean;
 
   /** Defaults to false, which will hide the "Export to CSV" command in the Grid Menu (Grid Option "enableExport: true" has to be enabled) */
@@ -55,10 +55,10 @@ export interface GridMenu {
   /** CSS class for the displaying the Grid menu icon image (basically the hamburger menu) */
   iconCssClass?: string;
 
-  /** icon for the "Clear All Filters" command */
+  /** icon for the "Clear all Filters" command */
   iconClearAllFiltersCommand?: string;
 
-  /** icon for the "Clear All Sorting" command */
+  /** icon for the "Clear all Sorting" command */
   iconClearAllSortingCommand?: string;
 
   /** icon for the "Export to CSV" command */

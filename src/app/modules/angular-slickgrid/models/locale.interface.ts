@@ -5,7 +5,7 @@ export interface Locale {
   /** Text "Cancel" shown in the Long Text Editor dialog */
   TEXT_CANCEL: string;
 
-  /** Text "Clear All Filters" shown in Header Menu */
+  /** Text "Clear all Filters" shown in Header Menu */
   TEXT_CLEAR_ALL_FILTERS: string;
 
   /** Text "Clear all Grouping" displayed in the Context Menu when Grouping is enabled */
@@ -14,7 +14,7 @@ export interface Locale {
   /** Text "Collapse all Grouping" displayed in the Context Menu when Grouping is enabled */
   TEXT_COLLAPSE_ALL_GROUPS: string;
 
-  /** Text "Clear All Sorting" shown in Header Menu */
+  /** Text "Clear all Sorting" shown in Header Menu */
   TEXT_CLEAR_ALL_SORTING: string;
 
   /** Text "Columns" title displayed in the Column Picker & Grid Menu (when enabled) */

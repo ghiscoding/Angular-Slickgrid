@@ -318,7 +318,6 @@ export class GridDraggableGroupingComponent implements OnInit {
   }
 
   groupByDurationEffortDriven() {
-    this.angularGrid.slickGrid.sortColumns([]);
     this.clearGrouping();
     if (this.draggableGroupingPlugin && this.draggableGroupingPlugin.setDroppedGroups) {
       this.showPreHeader();

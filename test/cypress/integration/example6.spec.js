@@ -248,7 +248,7 @@ describe('Example 6 - GraphQL Grid', () => {
       });
   });
 
-  it('should clear all Filters & Sorts', () => {
+  it('should Clear all Filters & Sorts', () => {
     cy.contains('Clear all Filter & Sorts').click();
 
     // wait for the query to finish
@@ -330,7 +330,7 @@ describe('Example 6 - GraphQL Grid', () => {
   });
 
   describe('Set Dynamic Sorting', () => {
-    it('should click on "Clear All Filters & Sorting" then "Set Dynamic Sorting" buttons', () => {
+    it('should click on "Clear all Filters & Sorting" then "Set Dynamic Sorting" buttons', () => {
       cy.get('[data-test=clear-filters-sorting]')
         .click();
 
