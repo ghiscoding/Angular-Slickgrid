@@ -1,38 +1,10 @@
-import { Component, OnInit, Injectable, ViewEncapsulation } from '@angular/core';
-import {
-  AngularGridInstance,
-  Column,
-  Editors,
-  FieldType,
-  FileType,
-  Formatter,
-  Formatters,
-  GridOption,
-  GridService,
-  OnEventArgs
-} from './../modules/angular-slickgrid';
-import { TranslateService } from '@ngx-translate/core';
-
-// custom formatter to display priority (from 1 to 3) loop through that count and display them as x number of icon(s)
-const customPriorityFormatter: Formatter = (row, cell, value, columnDef, dataContext) => {
-  if (!value) {
-    return '';
-  }
-  let output = '';
-  const count = +(value >= 3 ? 3 : value);
-  const color = count === 3 ? 'red' : (count === 2 ? 'orange' : 'grey');
-  const icon = `<i class="fa fa-fire ${color}" aria-hidden="true"></i>`;
-
-  for (let i = 1; i <= count; i++) {
-    output += icon;
-  }
-  return output;
-};
+import { Component, Injectable, OnInit, ViewEncapsulation } from '@angular/core';
+import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption, GridService, OnEventArgs } from './../modules/angular-slickgrid';
 
 @Component({
-  templateUrl: './grid-additem.component.html',
-  styleUrls: ['./grid-additem.component.scss'],
+  styles: ['.duration-bg { background-color: #e9d4f1 !important }'],
   encapsulation: ViewEncapsulation.None,
+  templateUrl: './grid-additem.component.html'
 })
 @Injectable()
 export class GridAddItemComponent implements OnInit {
@@ -53,7 +25,6 @@ export class GridAddItemComponent implements OnInit {
     <ul>
       <li>Example, click on button "Highlight Rows with Duration over 50" to see row styling changing. <a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Dynamically-Add-CSS-Classes-to-Item-Rows" target="_blank">Wiki doc</a></li>
     </ul>
-    <li><b>Context Menu</b> Mouse Right+Click over any row to open a Context Menu with certain commands or over the Priority column to optionally change the "Priority" field from the Context Menu</li>
   </ul>
   `;
 
@@ -66,7 +37,7 @@ export class GridAddItemComponent implements OnInit {
   dataset: any[];
   updatedObject: any;
 
-  constructor(private translate: TranslateService) {
+  constructor() {
     // mock a dataset
     this.dataset = this.mockDataset(1000);
   }
@@ -84,155 +55,6 @@ export class GridAddItemComponent implements OnInit {
     this.grid.invalidate();
     this.grid.render();
     */
-
-    const contextMenu = {
-      // all titles optionally support translation keys, if you wish to use that feature then use the title properties with the 'Key' suffix (e.g: titleKey)
-      // example "commandTitle" for a plain string OR "commandTitleKey" to use a translation key
-      optionTitle: 'Change Priority',
-      commandTitleKey: 'COMMANDS',
-      optionItems: [
-        { option: 0, positionOrder: 0, title: 'none', cssClass: 'italic' },
-        // { option: '', divider: true, positionOrder: 1 },
-        { option: 1, positionOrder: 2, iconCssClass: 'fa fa-fire grey', titleKey: 'LOW' },
-        { option: 3, positionOrder: 4, iconCssClass: 'fa fa-fire red', titleKey: 'HIGH' },
-        { option: 2, positionOrder: 2, iconCssClass: 'fa fa-fire orange', titleKey: 'MEDIUM' },
-        { option: 4, positionOrder: 5, iconCssClass: 'fa fa-fire', title: 'Extreme', disabled: true },
-      ],
-      commandItems: [
-        { command: 'export-excel', titleKey: 'EXPORT_TO_EXCEL', iconCssClass: 'fa fa-file-excel-o text-success', positionOrder: 1, cssClass: '' },
-        { command: 'delete-row', title: 'Delete Row', positionOrder: 4, cssClass: 'red' },
-        { command: 'help', titleKey: 'HELP', iconCssClass: 'fa fa-question-circle', positionOrder: 2 },
-        { divider: true, command: '', positionOrder: 3 },
-      ],
-    };
-
-    let editorOptions = '';
-    const contextMenuOptionList = contextMenu.optionItems.sort((item1, item2) => item1.positionOrder - item2.positionOrder);
-    for (let i = 0; i < contextMenuOptionList.length; i++) {
-      if (contextMenuOptionList.hasOwnProperty(i)) {
-        let cssClasses = '';
-        const contextItem = contextMenuOptionList[i];
-        if (contextItem) {
-          cssClasses += contextItem.hasOwnProperty('cssClass') ? contextItem.cssClass : '';
-          cssClasses += contextItem.hasOwnProperty('disabled') ? ' slick-context-menuitem-disabled' : '';
-          const titleLabel = contextItem.hasOwnProperty('titleKey') ? this.translate.instant(contextItem.titleKey) : contextItem.title;
-
-          if (contextItem.hasOwnProperty('iconCssClass')) {
-            editorOptions += `<li class="slick-context-menu-optionitem ${cssClasses}" data-option="${contextItem.option}">
-                <div class="slick-context-menu-icon ${contextItem.iconCssClass}"></div>
-                ${titleLabel}
-              </li>`;
-          } else if (contextItem.hasOwnProperty('divider')) {
-            editorOptions += `<li class="slick-context-menu-optionitem slick-context-menuitem-divider"></li>`;
-          } else {
-            editorOptions += `<li class="slick-context-menu-optionitem ${cssClasses}" data-option="${contextItem.option}">${titleLabel}</li>`;
-          }
-        }
-      }
-    }
-
-    let commandOptions = '';
-    const contextMenuCommandList = contextMenu.commandItems.sort((item1, item2) => item1.positionOrder - item2.positionOrder);
-    for (let i = 0; i < contextMenuCommandList.length; i++) {
-      if (contextMenuCommandList.hasOwnProperty(i)) {
-        let cssClasses = '';
-        const contextItem = contextMenuCommandList[i];
-
-        if (contextItem) {
-          cssClasses += contextItem.hasOwnProperty('cssClass') ? contextItem.cssClass : '';
-          cssClasses += contextItem.hasOwnProperty('disabled') ? ' slick-context-menuitem-disabled' : '';
-          const titleLabel = contextItem.hasOwnProperty('titleKey') ? this.translate.instant(contextItem.titleKey) : contextItem.title;
-
-          if (contextItem.hasOwnProperty('iconCssClass')) {
-            commandOptions += `<li class="slick-context-menu-commanditem ${cssClasses}" data-command="${contextItem.command}">
-                <div class="slick-context-menu-icon ${contextItem.iconCssClass}"></div>
-                ${titleLabel}
-              </li>`;
-          } else if (contextItem.hasOwnProperty('divider')) {
-            commandOptions += `<li class="slick-context-menu-commanditem slick-context-menuitem-divider"></li>`;
-          } else if (contextItem.hasOwnProperty('disabled')) {
-            commandOptions += `<li class="slick-context-menu-commanditem ${cssClasses}" data-option="${contextItem.command}">${titleLabel}</li>`;
-          } else {
-            commandOptions += `<li class="slick-context-menu-commanditem ${cssClasses}" data-command="${contextItem.command}">${titleLabel}</li>`;
-          }
-        }
-      }
-    }
-
-    let editorOptionHtmlString = '';
-    if (contextMenuOptionList.length > 0) {
-      // @ts-ignore
-      const titleLabel = contextMenu.hasOwnProperty('optionTitleKey') ? this.translate.instant(contextMenu.optionTitleKey) : contextMenu.optionTitle;
-      editorOptionHtmlString = `<div class="slick-context-menu-option-list">
-        <span class="title">${titleLabel}</span>
-        ${editorOptions}
-      </div>`;
-    }
-
-    let commandOptionHtmlString = '';
-    if (contextMenuCommandList.length > 0) {
-      // @ts-ignore
-      const titleLabel = contextMenu.hasOwnProperty('commandTitleKey') ? this.translate.instant(contextMenu.commandTitleKey) : contextMenu.commandTitle;
-      commandOptionHtmlString = `<div class="slick-context-menu-custom">
-          <span class="title">${titleLabel}</span>
-          ${commandOptions}
-        </div>`;
-    }
-
-    const htmlString = `<ul class="slick-context-menu">
-      ${editorOptionHtmlString}
-      ${commandOptionHtmlString}
-   </ul>`;
-
-    // create context menu, hide it & append it to the body
-    const contextElm = $(htmlString);
-    contextElm.css('display', 'none');
-    contextElm.appendTo($('body'));
-
-    contextElm.click((e: any) => {
-      if (!$(e.target).is('li')) {
-        return;
-      }
-      if (!this.grid.getEditorLock().commitCurrentEdit()) {
-        return;
-      }
-      const row = contextElm.data('row');
-      const cell = contextElm.data('cell');
-
-      const grid = this.angularGrid.slickGrid;
-      const columnDef = grid.getColumns()[cell];
-      const dataContext = grid.getDataItem(row);
-
-      console.log(cell, columnDef, dataContext);
-
-      const targetElm = $(e.target);
-      const dataCommand = targetElm.attr('data-command');
-      const dataOption = targetElm.attr('data-option');
-      // data[row].priority = $(e.target).attr('data');
-      if (dataCommand) {
-        switch (dataCommand) {
-          case 'export-excel':
-            this.angularGrid.excelExportService.exportToExcel({
-              filename: 'Export',
-              format: FileType.xlsx
-            });
-            break;
-          case 'delete-row':
-            if (confirm('Are you sure?')) {
-              this.angularGrid.gridService.deleteItemById(dataContext.id);
-            }
-            break;
-          case 'help':
-            alert('Please Help!');
-            break;
-        }
-      } else if (dataOption) {
-        dataContext.priority = dataOption;
-        this.grid.updateRow(row);
-      }
-
-      // callback, user might want to do something else
-    });
   }
 
   ngOnInit(): void {
@@ -297,15 +119,6 @@ export class GridAddItemComponent implements OnInit {
         type: FieldType.date
       },
       {
-        id: 'priority',
-        name: 'Priority',
-        field: 'priority',
-        minWidth: 100,
-        filterable: true,
-        sortable: true,
-        formatter: customPriorityFormatter,
-      },
-      {
         id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven',
         formatter: Formatters.checkmark,
         type: FieldType.number,
@@ -344,7 +157,6 @@ export class GridAddItemComponent implements OnInit {
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
-        priority: i % 3 ? 1 : (i % 2 ? 2 : 3),
         effortDriven: (i % 5 === 0)
       };
     }
@@ -366,7 +178,6 @@ export class GridAddItemComponent implements OnInit {
       percentCompleteNumber: randomPercent,
       start: new Date(randomYear, randomMonth, randomDay),
       finish: new Date(randomYear, (randomMonth + 2), randomDay),
-      priority: 1,
       effortDriven: true
     };
     this.angularGrid.gridService.addItem(newItem, { position: insertPosition });
@@ -441,38 +252,5 @@ export class GridAddItemComponent implements OnInit {
 
   scrollGridTop() {
     this.angularGrid.slickGrid.navigateTop();
-  }
-
-  onContextMenu(e) {
-    e.preventDefault();
-    const grid = this.angularGrid.slickGrid;
-    const cell = grid.getCellFromEvent(e);
-    const columnDef = grid.getColumns()[cell.cell];
-    const columnId = columnDef && columnDef.id;
-
-    // select & highlight the row that the user requested the Context Menu from
-    this.angularGrid.gridService.setSelectedRows([cell.row]);
-
-    // we can decide to show the Context Menu only when originated cell is Priority or from any other cell
-    // display Context Menu editable option list only on Priority field
-    const editableOptionListElm = $('.slick-context-menu-option-list');
-    if (columnId === 'priority') {
-      editableOptionListElm.show();
-    } else {
-      editableOptionListElm.hide();
-    }
-
-
-    const contextElm = $('.slick-context-menu');
-    // reposition the context menu where we right+clicked
-    contextElm
-      .data('cell', cell.cell)
-      .data('row', cell.row)
-      .css('top', e.pageY)
-      .css('left', e.pageX)
-      .show();
-
-    // hide the context menu once user choose an option or click elsewhere
-    $('body').one('click', () => contextElm.hide());
   }
 }
