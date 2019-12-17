@@ -177,10 +177,14 @@ $grid-menu-z-index:                       500 !default;
 
 /* (Action) Cell Menu Plugin */
 $cell-menu-bg-color:                    #ffffff !default;
-$cell-menu-button-bg-color:             #ffffff !default;
 $cell-menu-border:                      1px solid #BFBDBD !default;
-$cell-menu-button-border:               cell-menu-border !default;
 $cell-menu-border-radius:               2px !default;
+$cell-menu-close-border:                0px solid #9c9c9c !default;
+$cell-menu-close-height:                15px !default;
+$cell-menu-close-width:                 15px !default;
+$cell-menu-close-margin:                1px !default;
+$cell-menu-close-padding:               0px !default;
+$cell-menu-close-opacity:               0.9 !default;
 $cell-menu-min-width:                   175px !default;
 $cell-menu-padding:                     6px !default;
 $cell-menu-item-border:                 1px solid transparent !default;
@@ -204,10 +208,14 @@ $cell-menu-title-width:                 calc(100% - 35px) !default;
 
 /* Context Menu Plugin */
 $context-menu-bg-color:                    #ffffff !default;
-$context-menu-button-bg-color:             #ffffff !default;
 $context-menu-border:                      1px solid #BFBDBD !default;
-$context-menu-button-border:               cell-menu-border !default;
 $context-menu-border-radius:               2px !default;
+$context-menu-close-border:                0px solid #9c9c9c !default;
+$context-menu-close-height:                15px !default;
+$context-menu-close-width:                 15px !default;
+$context-menu-close-margin:                1px !default;
+$context-menu-close-padding:               0px !default;
+$context-menu-close-opacity:               0.9 !default;
 $context-menu-min-width:                   175px !default;
 $context-menu-padding:                     6px !default;
 $context-menu-item-border:                 1px solid transparent !default;

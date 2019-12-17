@@ -20,14 +20,14 @@
 
   > .close {
     float: right;
-    width: 20px;
-    height: 25px;
-    padding: 2px;
-    background-color: $column-picker-close-background-color;
-    border: $column-picker-close-border;
+    width: $cell-menu-close-width;
+    height: $cell-menu-close-height;
+    margin: $cell-menu-close-margin;
+    padding: $cell-menu-close-padding;
+    border: $cell-menu-close-border;
 
     > span {
-      opacity: $column-picker-close-opacity;
+      opacity: $cell-menu-close-opacity;
     }
   }
 
@@ -37,14 +37,6 @@
     width: $cell-menu-title-width;
     border-bottom: $cell-menu-title-border-bottom;
     margin-bottom: $cell-menu-title-margin-bottom;
-  }
-
-  button {
-    border: $cell-menu-button-border;
-    background-color: $cell-menu-button-bg-color;
-    width: 45px;
-    padding: 4px;
-    margin: 4px 4px 4px 0;
   }
 
   .slick-cell-menu-item {
@@ -122,14 +114,14 @@
 
   > .close {
     float: right;
-    width: 20px;
-    height: 25px;
-    padding: 2px;
-    background-color: $column-picker-close-background-color;
-    border: $column-picker-close-border;
+    width: $context-menu-close-width;
+    height: $context-menu-close-height;
+    margin: $context-menu-close-margin;
+    padding: $context-menu-close-padding;
+    border: $context-menu-close-border;
 
     > span {
-      opacity: $column-picker-close-opacity;
+      opacity: $context-menu-close-opacity;
     }
   }
 
@@ -139,14 +131,6 @@
     width: $context-menu-title-width;
     border-bottom: $context-menu-title-border-bottom;
     margin-bottom: $context-menu-title-margin-bottom;
-  }
-
-  button {
-    border: $context-menu-button-border;
-    background-color: $context-menu-button-bg-color;
-    width: 45px;
-    padding: 4px;
-    margin: 4px 4px 4px 0;
   }
 
   .slick-context-menu-item {
