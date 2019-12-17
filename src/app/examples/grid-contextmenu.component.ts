@@ -34,6 +34,18 @@ const priorityFormatter: Formatter = (row, cell, value, columnDef, dataContext) 
   return output;
 };
 
+const priorityExportFormatter: Formatter = (row, cell, value, columnDef, dataContext, grid) => {
+  if (!value) {
+    return '';
+  }
+  const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
+  const translate = gridOptions.i18n;
+  const count = +(value >= 3 ? 3 : value);
+  const key = count === 3 ? 'HIGH' : (count === 2 ? 'MEDIUM' : 'LOW');
+
+  return translate && translate.instant && translate.instant(key);
+};
+
 const taskTranslateFormatter: Formatter = (row: number, cell: number, value: any, columnDef: any, dataContext: any, grid: any) => {
   const gridOptions = (grid && typeof grid.getOptions === 'function') ? grid.getOptions() : {};
   const translate = gridOptions.i18n;
@@ -111,6 +123,7 @@ export class GridContextMenuComponent implements OnInit {
       },
       {
         id: 'percentComplete', headerKey: 'PERCENT_COMPLETE', field: 'percentComplete', minWidth: 100,
+        exportWithFormatter: false,
         sortable: true, filterable: true,
         filter: { model: Filters.slider, operator: '>=' },
         formatter: Formatters.percentCompleteBar, type: FieldType.number,
@@ -123,6 +136,7 @@ export class GridContextMenuComponent implements OnInit {
       { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date, minWidth: 100, filterable: true, filter: { model: Filters.compoundDate } },
       {
         id: 'priority', headerKey: 'PRIORITY', field: 'priority',
+        exportCustomFormatter: priorityExportFormatter,
         formatter: priorityFormatter,
         sortable: true, filterable: true,
         filter: {
@@ -136,6 +150,7 @@ export class GridContextMenuComponent implements OnInit {
       },
       {
         id: 'completed', headerKey: 'COMPLETED', field: 'completed',
+        exportCustomFormatter: Formatters.translateBoolean,
         formatter: Formatters.checkmark,
         sortable: true, filterable: true,
         filter: {
@@ -322,7 +337,7 @@ export class GridContextMenuComponent implements OnInit {
       },
       commandTitleKey: 'COMMANDS',
       // which column to show the command list? when not defined it will be shown over all columns
-      commandShownOverColumnIds: ['id', 'title', 'percentComplete', 'start', 'finish', 'effortDriven' /*, 'priority'*/],
+      commandShownOverColumnIds: ['id', 'title', 'percentComplete', 'start', 'finish', 'completed' /*, 'priority'*/],
       commandItems: [
         { divider: true, command: '', positionOrder: 61 },
         { command: 'delete-row', titleKey: 'DELETE_ROW', iconCssClass: 'fa fa-times', cssClass: 'red', textCssClass: 'bold', positionOrder: 62 },
@@ -339,7 +354,7 @@ export class GridContextMenuComponent implements OnInit {
           // only show command to 'Help' when there's no Effort Driven
           itemVisibilityOverride: (args) => {
             const dataContext = args && args.dataContext;
-            return (!dataContext.effortDriven);
+            return (!dataContext.completed);
           }
         },
         { command: 'something', titleKey: 'DISABLED_COMMAND', disabled: true, positionOrder: 65 },
@@ -356,7 +371,7 @@ export class GridContextMenuComponent implements OnInit {
           // only enable this option when there's no Effort Driven
           itemUsabilityOverride: (args) => {
             const dataContext = args && args.dataContext;
-            return (!dataContext.effortDriven);
+            return (!dataContext.completed);
           },
           // you can use the 'action' callback and/or subscribe to the 'onCallback' event, they both have the same arguments
           action: (e, args) => {
@@ -375,7 +390,7 @@ export class GridContextMenuComponent implements OnInit {
           // only shown when there's no Effort Driven
           itemVisibilityOverride: (args) => {
             const dataContext = args && args.dataContext;
-            return (!dataContext.effortDriven);
+            return (!dataContext.completed);
           }
         },
       ],
@@ -406,7 +421,7 @@ export class GridContextMenuComponent implements OnInit {
   showContextCommandsAndOptions(showBothList: boolean) {
     // when showing both Commands/Options, we can just pass an empty array to show over all columns
     // else show on all columns except Priority
-    const showOverColumnIds = showBothList ? [] : ['id', 'title', 'complete', 'start', 'finish', 'effortDriven'];
+    const showOverColumnIds = showBothList ? [] : ['id', 'title', 'complete', 'start', 'finish', 'completed'];
     this.contextMenuInstance.setOptions({
       commandShownOverColumnIds: showOverColumnIds,
       // hideCommandSection: !showBothList

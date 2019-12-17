@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
-import { GridOption } from '../../models/gridOption.interface';
 import { ContextMenuExtension } from '../contextMenuExtension';
 import { ExtensionUtility } from '../extensionUtility';
 import { SharedService } from '../../services/shared.service';
-import { Column, DelimiterType, FileType, MenuCommandItemCallbackArgs, MenuOptionItemCallbackArgs, MenuCommandItem } from '../../models';
 import { ExcelExportService, ExportService } from '../../services';
+import { Column, DelimiterType, FileType, GridOption, MenuCommandItem, MenuCommandItemCallbackArgs, MenuOptionItemCallbackArgs } from '../../models';
+import { Formatters } from '../../formatters';
 
 declare var Slick: any;
 
@@ -23,7 +23,11 @@ const exportServiceStub = {
 } as unknown as ExportService;
 
 const dataViewStub = {
+  collapseAllGroups: jest.fn(),
+  expandAllGroups: jest.fn(),
   refresh: jest.fn(),
+  getGrouping: jest.fn(),
+  setGrouping: jest.fn(),
 };
 
 const gridStub = {
@@ -34,6 +38,7 @@ const gridStub = {
   getUID: () => gridUid,
   registerPlugin: jest.fn(),
   setColumns: jest.fn(),
+  setActiveCell: jest.fn(),
   setHeaderRowVisibility: jest.fn(),
   setTopPanelVisibility: jest.fn(),
   setPreHeaderPanelVisibility: jest.fn(),
@@ -87,7 +92,7 @@ describe('contextMenuExtension', () => {
       autoAdjustDrop: true,
       autoAlignSide: true,
       hideCloseButton: false,
-      hideClearGrouping: false,
+      hideClearAllGrouping: false,
       hideCollapseAllGroups: false,
       hideCommandSection: false,
       hideCopyCellValueCommand: false,
@@ -132,6 +137,7 @@ describe('contextMenuExtension', () => {
       translate = TestBed.get(TranslateService);
       translate.setTranslation('fr', {
         TITLE: 'Titre',
+        COMMANDS: 'Commandes',
         COPY: 'Copier',
         CLEAR_ALL_GROUPING: 'Supprimer tous les groupes',
         COLLAPSE_ALL_GROUPS: 'Réduire tous les groupes',
@@ -140,9 +146,32 @@ describe('contextMenuExtension', () => {
         EXPORT_TO_EXCEL: 'Exporter vers Excel',
         EXPORT_TO_TAB_DELIMITED: 'Exporter en format texte (délimité par tabulation)',
         HELP: 'Aide',
-        COMMANDS: 'Commandes',
+        HIDE_COLUMN: 'Cacher la colonne',
+        OPTIONS_LIST: 'Liste d\'options',
+        REMOVE_FILTER: 'Supprimer le filtre',
+        REMOVE_SORT: 'Supprimer le tri',
+        SORT_ASCENDING: 'Trier par ordre croissant',
+        SORT_DESCENDING: 'Trier par ordre décroissant',
       });
-      translate.setTranslation('en', { TITLE: 'Title', COMMANDS: 'Commands', COLUMNS: 'Columns', FORCE_FIT_COLUMNS: 'Force fit columns', SYNCHRONOUS_RESIZE: 'Synchronous resize' });
+      translate.setTranslation('en', {
+        TITLE: 'Title',
+        COMMANDS: 'Commands',
+        COLUMNS: 'Columns',
+        COPY: 'Copy',
+        CLEAR_ALL_GROUPING: 'Clear all Grouping',
+        COLLAPSE_ALL_GROUPS: 'Collapse all Groups',
+        EXPAND_ALL_GROUPS: 'Expand all Groups',
+        EXPORT_TO_CSV: 'Export to CSV',
+        EXPORT_TO_EXCEL: 'Export to Excel',
+        EXPORT_TO_TAB_DELIMITED: 'Export in Text format (Tab delimited)',
+        HELP: 'Help',
+        HIDE_COLUMN: 'Hide Column',
+        OPTIONS_LIST: 'Options List',
+        REMOVE_FILTER: 'Remove Filter',
+        REMOVE_SORT: 'Remove Sort',
+        SORT_ASCENDING: 'Sort Ascending',
+        SORT_DESCENDING: 'Sort Descending',
+      });
       translate.use('fr');
     });
 
@@ -188,7 +217,7 @@ describe('contextMenuExtension', () => {
           autoAdjustDrop: true,
           autoAlignSide: true,
           hideCloseButton: false,
-          hideClearGrouping: false,
+          hideClearAllGrouping: false,
           hideCollapseAllGroups: false,
           hideCommandSection: false,
           hideCopyCellValueCommand: false,
@@ -307,14 +336,14 @@ describe('contextMenuExtension', () => {
       });
 
       it('should expect an empty "commandItems" array when "hideCopyCellValueCommand" is set True', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, contextMenu: { hideCopyCellValueCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, contextMenu: { hideCopyCellValueCommand: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([]);
       });
 
       it('should have the "copy"  menu command when "hideCopyCellValueCommand" is set to False', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, contextMenu: { hideCopyCellValueCommand: false } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, contextMenu: { hideCopyCellValueCommand: false } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([
@@ -323,7 +352,7 @@ describe('contextMenuExtension', () => {
       });
 
       it('should have the "export-csv" menu command when "enableExport" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, contextMenu: { hideCopyCellValueCommand: true, hideExportExcelCommand: true, hideExportTextDelimitedCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, contextMenu: { hideCopyCellValueCommand: true, hideExportExcelCommand: true, hideExportTextDelimitedCommand: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([
@@ -332,14 +361,14 @@ describe('contextMenuExtension', () => {
       });
 
       it('should not have the "export-csv" menu command when "enableExport" and "hideExportCsvCommand" are set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, contextMenu: { hideCopyCellValueCommand: true, hideExportExcelCommand: true, hideExportCsvCommand: true, hideExportTextDelimitedCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, contextMenu: { hideCopyCellValueCommand: true, hideExportExcelCommand: true, hideExportCsvCommand: true, hideExportTextDelimitedCommand: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([]);
       });
 
       it('should have the "export-excel" menu command when "enableExport" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: true, enableExport: false, contextMenu: { hideCopyCellValueCommand: true, hideExportCsvCommand: true, hideExportExcelCommand: false } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: true, enableExport: false, contextMenu: { hideCopyCellValueCommand: true, hideExportCsvCommand: true, hideExportExcelCommand: false } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([
@@ -348,7 +377,7 @@ describe('contextMenuExtension', () => {
       });
 
       it('should have the "export-text-delimited" menu command when "enableExport" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, contextMenu: { hideCopyCellValueCommand: true, hideExportCsvCommand: true, hideExportExcelCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, contextMenu: { hideCopyCellValueCommand: true, hideExportCsvCommand: true, hideExportExcelCommand: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([
@@ -357,14 +386,14 @@ describe('contextMenuExtension', () => {
       });
 
       it('should not have the "export-text-delimited" menu command when "enableExport" and "hideExportCsvCommand" are set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, contextMenu: { hideCopyCellValueCommand: true, hideExportExcelCommand: true, hideExportCsvCommand: true, hideExportTextDelimitedCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExport: true, contextMenu: { hideCopyCellValueCommand: true, hideExportExcelCommand: true, hideExportCsvCommand: true, hideExportTextDelimitedCommand: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([]);
       });
 
       it('should have the "clear-grouping" menu command when "enableDraggableGrouping" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableDraggableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideCollapseAllGroups: true, hideExpandAllGroups: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableDraggableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideCollapseAllGroups: true, hideExpandAllGroups: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([
@@ -374,7 +403,7 @@ describe('contextMenuExtension', () => {
       });
 
       it('should have the "clear-grouping" menu command when "enableGrouping" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideCollapseAllGroups: true, hideExpandAllGroups: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideCollapseAllGroups: true, hideExpandAllGroups: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([
@@ -383,15 +412,15 @@ describe('contextMenuExtension', () => {
         ]);
       });
 
-      it('should not have the "clear-grouping" menu command when "enableGrouping" and "hideClearGrouping" are set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideCollapseAllGroups: true, hideExpandAllGroups: true, hideClearGrouping: true } } as unknown as GridOption;
+      it('should not have the "clear-grouping" menu command when "enableGrouping" and "hideClearAllGrouping" are set', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideCollapseAllGroups: true, hideExpandAllGroups: true, hideClearAllGrouping: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([{ divider: true, command: '', positionOrder: 54 }]);
       });
 
       it('should have the "collapse-all-groups" menu command when "enableGrouping" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideClearGrouping: true, hideCollapseAllGroups: false, hideExpandAllGroups: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideClearAllGrouping: true, hideCollapseAllGroups: false, hideExpandAllGroups: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([
@@ -400,15 +429,15 @@ describe('contextMenuExtension', () => {
         ]);
       });
 
-      it('should not have the "collapse-all-groups" menu command when "enableGrouping" and "hideClearGrouping" are set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideClearGrouping: true, hideCollapseAllGroups: true, hideExpandAllGroups: true } } as unknown as GridOption;
+      it('should not have the "collapse-all-groups" menu command when "enableGrouping" and "hideClearAllGrouping" are set', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideClearAllGrouping: true, hideCollapseAllGroups: true, hideExpandAllGroups: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([{ divider: true, command: '', positionOrder: 54 }]);
       });
 
       it('should have the "expand-all-groups" menu command when "enableGrouping" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideClearGrouping: true, hideCollapseAllGroups: true, hideExpandAllGroups: false } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideClearAllGrouping: true, hideCollapseAllGroups: true, hideExpandAllGroups: false } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([
@@ -417,15 +446,15 @@ describe('contextMenuExtension', () => {
         ]);
       });
 
-      it('should not have the "expand-all-groups" menu command when "enableGrouping" and "hideClearGrouping" are set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideClearGrouping: true, hideCollapseAllGroups: true, hideExpandAllGroups: true } } as unknown as GridOption;
+      it('should not have the "expand-all-groups" menu command when "enableGrouping" and "hideClearAllGrouping" are set', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true, hideClearAllGrouping: true, hideCollapseAllGroups: true, hideExpandAllGroups: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([{ divider: true, command: '', positionOrder: 54 }]);
       });
 
       it('should have all 3 Grouping commands (clear, collapse, expand) when grouping is enabled and none of the hidden flags are set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCopyCellValueCommand: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([
@@ -437,7 +466,7 @@ describe('contextMenuExtension', () => {
       });
 
       it('should have all 3 Grouping commands (clear, collapse, expand) & the copy command when there no hidden flags in the contextMenu object', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         expect(SharedService.prototype.gridOptions.contextMenu.commandItems).toEqual([
@@ -469,11 +498,11 @@ describe('contextMenuExtension', () => {
             hideExportCsvCommand: false,
             hideExportExcelCommand: false,
             hideExportTextDelimitedCommand: true,
-            hideClearGrouping: true,
+            hideClearAllGrouping: true,
             hideCollapseAllGroups: true,
             hideExpandAllGroups: true,
           }
-        } as unknown as GridOption;
+        } as GridOption;
 
         jest.spyOn(SharedService.prototype, 'dataView', 'get').mockReturnValue(dataViewStub);
         jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
@@ -509,40 +538,161 @@ describe('contextMenuExtension', () => {
     });
 
     describe('executeContextMenuInternalCommandCommands method', () => {
-      // xit('should call "clearFilters" and dataview refresh when the command triggered is "clear-filter"', () => {
-      //   const filterSpy = jest.spyOn(filterServiceStub, 'clearFilters');
-      //   const refreshSpy = jest.spyOn(SharedService.prototype.dataView, 'refresh');
-      //   const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.contextMenu, 'onCommand');
+      beforeEach(() => {
+        if (window.document) {
+          window.document.createRange = () => ({
+            selectNodeContents: () => { },
+            setStart: () => { },
+            setEnd: () => { },
+            // @ts-ignore
+            commonAncestorContainer: { nodeName: 'BODY', ownerDocument: document },
+          });
 
-      //   const instance = extension.register();
-      //   instance.onCommand.notify({ grid: gridStub, command: 'clear-filter' }, new Slick.EventData(), gridStub);
+          window.document.execCommand = () => (true);
 
-      //   expect(onCommandSpy).toHaveBeenCalled();
-      //   expect(filterSpy).toHaveBeenCalled();
-      //   expect(refreshSpy).toHaveBeenCalled();
-      // });
+          // @ts-ignore
+          window.getSelection = () => ({
+            removeAllRanges: () => { },
+            addRange: () => { },
+          });
+        }
+      });
 
-      // xit('should call "clearSorting" and dataview refresh when the command triggered is "clear-sorting"', () => {
-      //   const sortSpy = jest.spyOn(sortServiceStub, 'clearSorting');
-      //   const refreshSpy = jest.spyOn(SharedService.prototype.dataView, 'refresh');
-      //   const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.contextMenu, 'onCommand');
+      it('should call "copyToClipboard", without export formatter, when the command triggered is "copy"', () => {
+        const setActiveCellSpy = jest.spyOn(SharedService.prototype.grid, 'setActiveCell');
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: false, contextMenu: { hideCopyCellValueCommand: false } } as GridOption;
+        const columnMock = { id: 'firstName', name: 'First Name', field: 'firstName' } as Column;
+        const dataContextMock = { id: 123, firstName: 'John', lastName: 'Doe', age: 50 };
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        const execSpy = jest.spyOn(window.document, 'execCommand');
+        extension.register();
+        extension.register();
 
-      //   const instance = extension.register();
-      //   instance.onCommand.notify({ grid: gridStub, command: 'clear-sorting' }, new Slick.EventData(), gridStub);
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'copy') as MenuCommandItem;
+        menuItemCommand.action(new CustomEvent('change'), {
+          command: 'copy',
+          cell: 2,
+          row: 5,
+          grid: gridStub,
+          column: columnMock,
+          dataContext: dataContextMock,
+          item: menuItemCommand,
+          value: 'John'
+        });
 
-      //   expect(onCommandSpy).toHaveBeenCalled();
-      //   expect(sortSpy).toHaveBeenCalled();
-      //   expect(refreshSpy).toHaveBeenCalled();
-      // });
+        expect(setActiveCellSpy).toHaveBeenCalledWith(5, 2, false);
+        expect(execSpy).toHaveBeenCalledWith('copy', false, 'John');
+      });
 
-      it('should call "exportToExcel" when the command triggered is "export-excel"', () => {
-        const excelExportSpy = jest.spyOn(excelExportServiceStub, 'exportToExcel');
-        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: true, enableExport: false, contextMenu: { hideCopyCellValueCommand: true, hideExportCsvCommand: true, hideExportExcelCommand: false } } as unknown as GridOption;
+      it('should call "copyToClipboard", WITH export formatter, when the command triggered is "copy"', () => {
+        const setActiveCellSpy = jest.spyOn(SharedService.prototype.grid, 'setActiveCell');
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: false, exportOptions: { exportWithFormatter: true } } as GridOption;
+        const columnMock = { id: 'firstName', name: 'First Name', field: 'firstName', formatter: Formatters.uppercase } as Column;
+        const dataContextMock = { id: 123, firstName: 'John', lastName: 'Doe', age: 50 };
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        const execSpy = jest.spyOn(window.document, 'execCommand');
+        extension.register();
+
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'copy') as MenuCommandItem;
+        menuItemCommand.action(new CustomEvent('change'), {
+          command: 'copy',
+          cell: 2,
+          row: 5,
+          grid: gridStub,
+          column: columnMock,
+          dataContext: dataContextMock,
+          item: menuItemCommand,
+          value: 'John'
+        });
+
+        expect(setActiveCellSpy).toHaveBeenCalledWith(5, 2, false);
+        expect(execSpy).toHaveBeenCalledWith('copy', false, 'JOHN');
+      });
+
+      it('should expect "itemUsabilityOverride" callback from the "copy" command to return True when a value to copy is found in the dataContext object', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: false, contextMenu: { hideCopyCellValueCommand: false } } as GridOption;
+        const columnMock = { id: 'firstName', name: 'First Name', field: 'firstName' } as Column;
+        const dataContextMock = { id: 123, firstName: 'John', lastName: 'Doe', age: 50 };
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
 
-        const menuItemExport = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'export-excel') as MenuCommandItem;
-        menuItemExport.action();
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'copy') as MenuCommandItem;
+        const isCommandUsable = menuItemCommand.itemUsabilityOverride({
+          cell: 2,
+          row: 2,
+          grid: gridStub,
+          column: columnMock,
+          dataContext: dataContextMock,
+        });
+
+        expect(isCommandUsable).toBe(true);
+      });
+
+      it('should expect "itemUsabilityOverride" callback from the "copy" command to return False when a value to copy is an empty string', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: false, contextMenu: { hideCopyCellValueCommand: false } } as GridOption;
+        const columnMock = { id: 'firstName', name: 'First Name', field: 'firstName' } as Column;
+        const dataContextMock = { id: 123, firstName: '', lastName: 'Doe', age: 50 };
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'copy') as MenuCommandItem;
+        const isCommandUsable = menuItemCommand.itemUsabilityOverride({
+          cell: 2,
+          row: 2,
+          grid: gridStub,
+          column: columnMock,
+          dataContext: dataContextMock,
+        });
+
+        expect(isCommandUsable).toBe(false);
+      });
+
+      it('should expect "itemUsabilityOverride" callback from the "copy" command to return False when a value to copy is null', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: false, contextMenu: { hideCopyCellValueCommand: false } } as GridOption;
+        const columnMock = { id: 'firstName', name: 'First Name', field: 'firstName' } as Column;
+        const dataContextMock = { id: 123, firstName: null, lastName: 'Doe', age: 50 };
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'copy') as MenuCommandItem;
+        const isCommandUsable = menuItemCommand.itemUsabilityOverride({
+          cell: 2,
+          row: 2,
+          grid: gridStub,
+          column: columnMock,
+          dataContext: dataContextMock,
+        });
+
+        expect(isCommandUsable).toBe(false);
+      });
+
+      it('should expect "itemUsabilityOverride" callback from the "copy" command to return False when the dataContext object does not contain the field property specified', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: false, contextMenu: { hideCopyCellValueCommand: false } } as GridOption;
+        const columnMock = { id: 'firstName', name: 'First Name', field: 'firstName' } as Column;
+        const dataContextMock = { id: 123, lastName: 'Doe', age: 50 };
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'copy') as MenuCommandItem;
+        const isCommandUsable = menuItemCommand.itemUsabilityOverride({
+          cell: 2,
+          row: 2,
+          grid: gridStub,
+          column: columnMock,
+          dataContext: dataContextMock,
+        });
+
+        expect(isCommandUsable).toBe(false);
+      });
+
+      it('should call "exportToExcel" when the command triggered is "export-excel"', () => {
+        const excelExportSpy = jest.spyOn(excelExportServiceStub, 'exportToExcel');
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: true, enableExport: false, contextMenu: { hideCopyCellValueCommand: true, hideExportCsvCommand: true, hideExportExcelCommand: false } } as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'export-excel') as MenuCommandItem;
+        menuItemCommand.action(new CustomEvent('change'), { command: 'export-excel', cell: 0, row: 0 } as any);
 
         expect(excelExportSpy).toHaveBeenCalledWith({
           filename: 'export',
@@ -552,12 +702,12 @@ describe('contextMenuExtension', () => {
 
       it('should call "exportToFile" with CSV set when the command triggered is "export-csv"', () => {
         const exportSpy = jest.spyOn(exportServiceStub, 'exportToFile');
-        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: true, contextMenu: { hideCopyCellValueCommand: true, hideExportCsvCommand: false, hideExportExcelCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: true, contextMenu: { hideCopyCellValueCommand: true, hideExportCsvCommand: false, hideExportExcelCommand: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
 
-        const menuItemExport = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'export-csv') as MenuCommandItem;
-        menuItemExport.action();
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'export-csv') as MenuCommandItem;
+        menuItemCommand.action(new CustomEvent('change'), { command: 'export-excel', cell: 0, row: 0 } as any);
 
         expect(exportSpy).toHaveBeenCalledWith({
           delimiter: DelimiterType.comma,
@@ -569,12 +719,12 @@ describe('contextMenuExtension', () => {
 
       it('should call "exportToFile" with CSV set when the command triggered is "export-text-delimited"', () => {
         const exportSpy = jest.spyOn(exportServiceStub, 'exportToFile');
-        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: true, contextMenu: { hideCopyCellValueCommand: true, hideExportCsvCommand: false, hideExportExcelCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableExcelExport: false, enableExport: true, contextMenu: { hideCopyCellValueCommand: true, hideExportCsvCommand: false, hideExportExcelCommand: true } } as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
 
-        const menuItemExport = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'export-text-delimited') as MenuCommandItem;
-        menuItemExport.action();
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'export-text-delimited') as MenuCommandItem;
+        menuItemCommand.action(new CustomEvent('change'), { command: 'export-excel', cell: 0, row: 0 } as any);
 
         expect(exportSpy).toHaveBeenCalledWith({
           delimiter: DelimiterType.tab,
@@ -583,25 +733,160 @@ describe('contextMenuExtension', () => {
           useUtf8WithBom: true
         });
       });
+
+      it('should call "setGrouping" from the DataView when Grouping is enabled and the command triggered is "clear-grouping"', () => {
+        const dataviewSpy = jest.spyOn(SharedService.prototype.dataView, 'setGrouping');
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideClearAllGrouping: false } } as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'clear-grouping') as MenuCommandItem;
+        menuItemCommand.action(new CustomEvent('change'), { command: 'clear-grouping', cell: 0, row: 0 } as any);
+
+        expect(dataviewSpy).toHaveBeenCalledWith([]);
+      });
+
+      it('should call "collapseAllGroups" from the DataView when Grouping is enabled and the command triggered is "collapse-all-groups"', () => {
+        const dataviewSpy = jest.spyOn(SharedService.prototype.dataView, 'collapseAllGroups');
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideCollapseAllGroups: false } } as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'collapse-all-groups') as MenuCommandItem;
+        menuItemCommand.action(new CustomEvent('change'), { command: 'collapse-all-groups', cell: 0, row: 0 } as any);
+
+        expect(dataviewSpy).toHaveBeenCalledWith();
+      });
+
+      it('should call "expandAllGroups" from the DataView when Grouping is enabled and the command triggered is "expand-all-groups"', () => {
+        const dataviewSpy = jest.spyOn(SharedService.prototype.dataView, 'expandAllGroups');
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideExpandAllGroups: false } } as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+
+        const menuItemCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'expand-all-groups') as MenuCommandItem;
+        menuItemCommand.action(new CustomEvent('change'), { command: 'expand-all-groups', cell: 0, row: 0 } as any);
+
+        expect(dataviewSpy).toHaveBeenCalledWith();
+      });
+
+      it('should expect "itemUsabilityOverride" callback on all the Grouping command to return False when there are NO Groups in the grid', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideClearAllGrouping: false } } as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        const dataviewSpy = jest.spyOn(SharedService.prototype.dataView, 'getGrouping').mockReturnValue([]);
+        extension.register();
+
+        const menuClearCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'clear-grouping') as MenuCommandItem;
+        const isClearCommandUsable = menuClearCommand.itemUsabilityOverride({ cell: 2, row: 2, grid: gridStub, } as any);
+        const menuCollapseCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'collapse-all-groups') as MenuCommandItem;
+        const isCollapseCommandUsable = menuCollapseCommand.itemUsabilityOverride({ cell: 2, row: 2, grid: gridStub, } as any);
+        const menuExpandCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'expand-all-groups') as MenuCommandItem;
+        const isExpandCommandUsable = menuExpandCommand.itemUsabilityOverride({ cell: 2, row: 2, grid: gridStub, } as any);
+
+        expect(isClearCommandUsable).toBe(false);
+        expect(isCollapseCommandUsable).toBe(false);
+        expect(isExpandCommandUsable).toBe(false);
+        expect(dataviewSpy).toHaveBeenCalled();
+      });
+
+      it('should expect "itemUsabilityOverride" callback on all the Grouping command to return True when there are Groups defined in the grid', () => {
+        const copyGridOptionsMock = { ...gridOptionsMock, enableGrouping: true, contextMenu: { hideClearAllGrouping: false } } as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        const dataviewSpy = jest.spyOn(SharedService.prototype.dataView, 'getGrouping').mockReturnValue([{ grouped: true }]);
+        extension.register();
+
+        const menuClearCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'clear-grouping') as MenuCommandItem;
+        const isClearCommandUsable = menuClearCommand.itemUsabilityOverride({ cell: 2, row: 2, grid: gridStub, } as any);
+        const menuCollapseCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'collapse-all-groups') as MenuCommandItem;
+        const isCollapseCommandUsable = menuCollapseCommand.itemUsabilityOverride({ cell: 2, row: 2, grid: gridStub, } as any);
+        const menuExpandCommand = copyGridOptionsMock.contextMenu.commandItems.find((item: MenuCommandItem) => item.command === 'expand-all-groups') as MenuCommandItem;
+        const isExpandCommandUsable = menuExpandCommand.itemUsabilityOverride({ cell: 2, row: 2, grid: gridStub, } as any);
+
+        expect(isClearCommandUsable).toBe(true);
+        expect(isCollapseCommandUsable).toBe(true);
+        expect(isExpandCommandUsable).toBe(true);
+        expect(dataviewSpy).toHaveBeenCalled();
+      });
     });
 
     describe('translateContextMenu method', () => {
-      xit('should translate the necessary titles', () => {
-        const utilitySpy = jest.spyOn(extensionUtility, 'getPickerTitleOutputString');
-        const translateSpy = jest.spyOn(extensionUtility, 'translateItems');
+      beforeEach(() => {
+        jest.clearAllMocks();
+      });
 
-        const instance = extension.register();
+      it('should have all context menu commands translated and an extra internal command (copy)', () => {
+        const copyGridOptionsMock = {
+          ...gridOptionsMock,
+          contextMenu: {
+            commandTitleKey: 'COMMANDS',
+            commandItems: [
+              { iconCssClass: 'fa fa-sort-asc', title: 'Trier par ordre croissant', titleKey: 'SORT_ASCENDING', command: 'sort-asc', positionOrder: 60 },
+              { iconCssClass: 'fa fa-sort-desc', title: 'Trier par ordre décroissant', titleKey: 'SORT_DESCENDING', command: 'sort-desc', positionOrder: 61 },
+              { divider: true, command: '', positionOrder: 62 },
+              { iconCssClass: 'fa fa-filter', title: 'Supprimer le filtre', titleKey: 'REMOVE_FILTER', command: 'clear-filter', positionOrder: 63 },
+              { iconCssClass: 'fa fa-unsorted', title: 'Supprimer le tri', titleKey: 'REMOVE_SORT', command: 'clear-sort', positionOrder: 64 },
+              { iconCssClass: 'fa fa-times', command: 'hide', titleKey: 'HIDE_COLUMN', positionOrder: 65, title: 'Cacher la colonne' },
+            ]
+          }
+        } as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+
+        translate.use('en');
         extension.translateContextMenu();
-        const updateColsSpy = jest.spyOn(instance, 'updateAllTitles');
 
-        expect(utilitySpy).toHaveBeenCalled();
-        expect(translateSpy).toHaveBeenCalled();
-        expect(updateColsSpy).toHaveBeenCalledWith(SharedService.prototype.gridOptions.contextMenu);
-        expect(SharedService.prototype.gridOptions.contextMenu.commandTitle).toBe('Commandes');
-        expect(columnsMock).toEqual([
-          { id: 'field1', field: 'field1', width: 100, name: 'Titre', headerKey: 'TITLE' },
-          { id: 'field2', field: 'field2', width: 75 }
-        ]);
+        expect(copyGridOptionsMock.contextMenu).toEqual({
+          commandTitle: 'Commands',
+          commandTitleKey: 'COMMANDS',
+          commandItems: [
+            { action: expect.anything(), iconCssClass: 'fa fa-clone', title: 'Copy', command: 'copy', disabled: false, itemUsabilityOverride: expect.anything(), positionOrder: 50 },
+            { iconCssClass: 'fa fa-sort-asc', title: 'Sort Ascending', titleKey: 'SORT_ASCENDING', command: 'sort-asc', positionOrder: 60 },
+            { iconCssClass: 'fa fa-sort-desc', title: 'Sort Descending', titleKey: 'SORT_DESCENDING', command: 'sort-desc', positionOrder: 61 },
+            { divider: true, command: '', positionOrder: 62 },
+            { iconCssClass: 'fa fa-filter', title: 'Remove Filter', titleKey: 'REMOVE_FILTER', command: 'clear-filter', positionOrder: 63 },
+            { iconCssClass: 'fa fa-unsorted', title: 'Remove Sort', titleKey: 'REMOVE_SORT', command: 'clear-sort', positionOrder: 64 },
+            { iconCssClass: 'fa fa-times', titleKey: 'HIDE_COLUMN', command: 'hide', positionOrder: 65, title: 'Hide Column' },
+          ]
+        });
+      });
+
+      it('should have all context menu options translated', () => {
+        const copyGridOptionsMock = {
+          ...gridOptionsMock,
+          contextMenu: {
+            optionTitleKey: 'OPTIONS_LIST',
+            optionItems: [
+              { iconCssClass: 'fa fa-sort-asc', title: 'Trier par ordre croissant', titleKey: 'SORT_ASCENDING', option: 'sort-asc', positionOrder: 60 },
+              { iconCssClass: 'fa fa-sort-desc', title: 'Trier par ordre décroissant', titleKey: 'SORT_DESCENDING', option: 'sort-desc', positionOrder: 61 },
+              'divider',
+              { iconCssClass: 'fa fa-filter', title: 'Supprimer le filtre', titleKey: 'REMOVE_FILTER', option: 'clear-filter', positionOrder: 63 },
+              { iconCssClass: 'fa fa-unsorted', title: 'Supprimer le tri', titleKey: 'REMOVE_SORT', option: 'clear-sort', positionOrder: 64 },
+              { iconCssClass: 'fa fa-times', option: 'hide', titleKey: 'HIDE_COLUMN', positionOrder: 65, title: 'Cacher la colonne' },
+            ]
+          }
+        } as GridOption;
+        jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
+        extension.register();
+
+        translate.use('en');
+        extension.translateContextMenu();
+
+        expect(copyGridOptionsMock.contextMenu).toEqual({
+          optionTitle: 'Options List',
+          optionTitleKey: 'OPTIONS_LIST',
+          optionItems: [
+            { iconCssClass: 'fa fa-sort-asc', title: 'Sort Ascending', titleKey: 'SORT_ASCENDING', option: 'sort-asc', positionOrder: 60 },
+            { iconCssClass: 'fa fa-sort-desc', title: 'Sort Descending', titleKey: 'SORT_DESCENDING', option: 'sort-desc', positionOrder: 61 },
+            'divider',
+            { iconCssClass: 'fa fa-filter', title: 'Remove Filter', titleKey: 'REMOVE_FILTER', option: 'clear-filter', positionOrder: 63 },
+            { iconCssClass: 'fa fa-unsorted', title: 'Remove Sort', titleKey: 'REMOVE_SORT', option: 'clear-sort', positionOrder: 64 },
+            { iconCssClass: 'fa fa-times', titleKey: 'HIDE_COLUMN', option: 'hide', positionOrder: 65, title: 'Hide Column' },
+          ],
+          commandTitle: 'Commands',
+          commandItems: [
+            { action: expect.anything(), iconCssClass: 'fa fa-clone', title: 'Copy', command: 'copy', disabled: false, itemUsabilityOverride: expect.anything(), positionOrder: 50 },
+          ]
+        });
       });
     });
   });

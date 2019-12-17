@@ -30,7 +30,7 @@ export interface ContextMenu {
   commandTitleKey?: string;
 
   /** Defaults to false, hide the "Clear Grouping" command in the menu (Grid Option "enableGrouping: true" has to be enabled) */
-  hideClearGrouping?: boolean;
+  hideClearAllGrouping?: boolean;
 
   /** Defaults to false, hide the Close button on top right */
   hideCloseButton?: boolean;

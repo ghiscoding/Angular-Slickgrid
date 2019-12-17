@@ -35,7 +35,7 @@ export const GlobalGridOptions: GridOption = {
   enableCellNavigation: false,
   enableColumnPicker: true,
   enableColumnReorder: true,
-  enableContextMenu: false,
+  enableContextMenu: true,
   enableExcelExport: true, // Excel Export is the new default,
   enableExport: false, // CSV/Text with Tab Delimited
   enableGridMenu: true,
@@ -69,7 +69,7 @@ export const GlobalGridOptions: GridOption = {
     autoAdjustDrop: true,
     autoAlignSide: true,
     hideCloseButton: false,
-    hideClearGrouping: false,
+    hideClearAllGrouping: false,
     hideCollapseAllGroups: false,
     hideCommandSection: false,
     hideCopyCellValueCommand: false,
