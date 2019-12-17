@@ -134,56 +134,29 @@ export class CellMenuExtension implements Extension {
    * @param grid menu object
    */
   private resetMenuTranslations(columnDefinitions: Column[]) {
-    columnDefinitions.forEach((columnDef: Column) => {
-      if (columnDef && columnDef.cellMenu && columnDef.cellMenu.commandItems) {
-        // get both items list
-        const columnCellMenuCommandItems: Array<MenuCommandItem | 'divider'> = columnDef.cellMenu.commandItems || [];
-        const columnCellMenuOptionItems: Array<MenuOptionItem | 'divider'> = columnDef.cellMenu.optionItems || [];
+    const gridOptions = this.sharedService && this.sharedService.gridOptions;
 
-        // translate their titles only if they have a titleKey defined
-        if (columnDef.cellMenu.commandTitleKey) {
-          columnDef.cellMenu.commandTitle = this.translate && this.translate.instant && this.translate.instant(columnDef.cellMenu.commandTitleKey) || this._locales && this._locales.TEXT_COMMANDS || columnDef.cellMenu.commandTitle;
+    if (gridOptions && gridOptions.enableTranslate) {
+      columnDefinitions.forEach((columnDef: Column) => {
+        if (columnDef && columnDef.cellMenu && (Array.isArray(columnDef.cellMenu.commandItems) || Array.isArray(columnDef.cellMenu.optionItems))) {
+          // get both items list
+          const columnCellMenuCommandItems: Array<MenuCommandItem | 'divider'> = columnDef.cellMenu.commandItems || [];
+          const columnCellMenuOptionItems: Array<MenuOptionItem | 'divider'> = columnDef.cellMenu.optionItems || [];
+
+          // translate their titles only if they have a titleKey defined
+          if (columnDef.cellMenu.commandTitleKey) {
+            columnDef.cellMenu.commandTitle = this.translate && this.translate.instant && this.translate.instant(columnDef.cellMenu.commandTitleKey) || this._locales && this._locales.TEXT_COMMANDS || columnDef.cellMenu.commandTitle;
+          }
+          if (columnDef.cellMenu.optionTitleKey) {
+            columnDef.cellMenu.optionTitle = this.translate && this.translate.instant && this.translate.instant(columnDef.cellMenu.optionTitleKey) || columnDef.cellMenu.optionTitle;
+          }
+
+          // translate both command/option items (whichever is provided)
+          this.extensionUtility.translateItems(columnCellMenuCommandItems, 'titleKey', 'title');
+          this.extensionUtility.translateItems(columnCellMenuOptionItems, 'titleKey', 'title');
         }
-        if (columnDef.cellMenu.optionTitleKey) {
-          columnDef.cellMenu.optionTitle = this.translate && this.translate.instant && this.translate.instant(columnDef.cellMenu.optionTitleKey) || columnDef.cellMenu.optionTitle;
-        }
-
-        // loop through each commands and translate them
-        // for the built-in item commands, we'll use translations when using TranslateService or Locales when not
-        columnCellMenuCommandItems.forEach((item: MenuCommandItem) => {
-          if (item.hasOwnProperty('command')) {
-            switch (item.command) {
-              case 'export-csv':
-                item.title = this.translate.instant('EXPORT_TO_CSV') || this._locales && this._locales.TEXT_EXPORT_IN_CSV_FORMAT;
-                break;
-              case 'export-excel':
-                item.title = this.translate.instant('EXPORT_TO_EXCEL') || this._locales && this._locales.TEXT_EXPORT_TO_EXCEL;
-                break;
-              case 'export-text-delimited':
-                item.title = this.translate.instant('EXPORT_TO_TAB_DELIMITED') || this._locales && this._locales.TEXT_EXPORT_IN_TEXT_FORMAT;
-                break;
-              default:
-                if (item && item.titleKey) {
-                  item.title = this.translate && this.translate.instant && this.translate.instant(item.titleKey || ' ');
-                }
-                break;
-            }
-          }
-
-          // re-translate if there's a "titleKey"
-          if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate) {
-            this.extensionUtility.translateItems(columnCellMenuCommandItems, 'titleKey', 'title');
-          }
-        });
-
-        // also loop through all Option items list and translate them as well
-        columnCellMenuOptionItems.forEach((item: MenuOptionItem) => {
-          if (item && item.titleKey) {
-            item.title = this.translate && this.translate.instant && this.translate.instant(item.titleKey || ' ') || item.title;
-          }
-        });
-      }
-    });
+      });
+    }
   }
 
   sortMenuItems(columnDefinitions: Column[]) {

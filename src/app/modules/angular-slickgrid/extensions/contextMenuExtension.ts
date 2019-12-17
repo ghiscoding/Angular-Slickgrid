@@ -70,7 +70,7 @@ export class ContextMenuExtension implements Extension {
    */
   register(): any {
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
-      throw new Error('[Aurelia-Slickgrid] requires "I18N" to be installed and configured when the grid option "enableTranslate" is enabled.');
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
     }
 
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions && this.sharedService.gridOptions.contextMenu) {
@@ -211,7 +211,7 @@ export class ContextMenuExtension implements Extension {
             disabled: false,
             command: commandName,
             positionOrder: 51,
-            action: (e, args) => this.exportService.exportToFile({
+            action: () => this.exportService.exportToFile({
               delimiter: DelimiterType.comma,
               filename: 'export',
               format: FileType.csv,
@@ -233,7 +233,7 @@ export class ContextMenuExtension implements Extension {
             disabled: false,
             command: commandName,
             positionOrder: 52,
-            action: (e, args) => this.excelExportService.exportToExcel({
+            action: () => this.excelExportService.exportToExcel({
               filename: 'export',
               format: FileType.xlsx,
             }),
@@ -253,7 +253,7 @@ export class ContextMenuExtension implements Extension {
             disabled: false,
             command: commandName,
             positionOrder: 53,
-            action: (e, args) => this.exportService.exportToFile({
+            action: () => this.exportService.exportToFile({
               delimiter: DelimiterType.tab,
               filename: 'export',
               format: FileType.txt,
@@ -276,11 +276,11 @@ export class ContextMenuExtension implements Extension {
           menuCustomItems.push(
             {
               iconCssClass: contextMenu.iconClearGroupingCommand || 'fa fa-times',
-              title: this.extensionUtility.translateWhenEnabledAndServiceExist('CLEAR_GROUPING', 'TEXT_CLEAR_ALL_GROUPING'),
+              title: this.extensionUtility.translateWhenEnabledAndServiceExist('CLEAR_ALL_GROUPING', 'TEXT_CLEAR_ALL_GROUPING'),
               disabled: false,
               command: commandName,
               positionOrder: 55,
-              action: (e, args) => dataView.setGrouping([]),
+              action: () => dataView.setGrouping([]),
               itemUsabilityOverride: () => {
                 // only enable the command when there's an actually grouping in play
                 const groupingArray = dataView && dataView.getGrouping && dataView.getGrouping();
@@ -302,7 +302,7 @@ export class ContextMenuExtension implements Extension {
               disabled: false,
               command: commandName,
               positionOrder: 56,
-              action: (e, args) => dataView.collapseAllGroups(),
+              action: () => dataView.collapseAllGroups(),
               itemUsabilityOverride: () => {
                 // only enable the command when there's an actually grouping in play
                 const groupingArray = dataView && dataView.getGrouping && dataView.getGrouping();
@@ -324,7 +324,7 @@ export class ContextMenuExtension implements Extension {
               disabled: false,
               command: commandName,
               positionOrder: 57,
-              action: (e, args) => dataView.expandAllGroups(),
+              action: () => dataView.expandAllGroups(),
               itemUsabilityOverride: () => {
                 // only enable the command when there's an actually grouping in play
                 const groupingArray = dataView && dataView.getGrouping && dataView.getGrouping();
