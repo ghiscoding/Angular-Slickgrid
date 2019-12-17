@@ -814,12 +814,19 @@ describe('contextMenuExtension', () => {
         jest.clearAllMocks();
       });
 
-      it('should have all context menu commands translated and an extra internal command (copy)', () => {
+      it('should have all context menu commands translated and an extra internal command (copy) and expect not to see duplicate commands', () => {
         const copyGridOptionsMock = {
           ...gridOptionsMock,
+          enableExcelExport: true,
+          enableExport: true,
           contextMenu: {
+            hideExportTextDelimitedCommand: false,
             commandTitleKey: 'COMMANDS',
             commandItems: [
+              { iconCssClass: 'fa fa-clone', title: 'Copy', command: 'copy', disabled: false, positionOrder: 50 },
+              { iconCssClass: 'fa fa-download', title: 'Export to CSV', command: 'export-csv', disabled: false, positionOrder: 51 },
+              { iconCssClass: 'fa fa-file-excel-o text-success', title: 'Export to Excel', command: 'export-excel', disabled: false, positionOrder: 52 },
+              { iconCssClass: 'fa fa-download', title: 'Export in Text format (Tab delimited)', command: 'export-text-delimited', disabled: false, positionOrder: 53 },
               { iconCssClass: 'fa fa-sort-asc', title: 'Trier par ordre croissant', titleKey: 'SORT_ASCENDING', command: 'sort-asc', positionOrder: 60 },
               { iconCssClass: 'fa fa-sort-desc', title: 'Trier par ordre décroissant', titleKey: 'SORT_DESCENDING', command: 'sort-desc', positionOrder: 61 },
               { divider: true, command: '', positionOrder: 62 },
@@ -836,10 +843,14 @@ describe('contextMenuExtension', () => {
         extension.translateContextMenu();
 
         expect(copyGridOptionsMock.contextMenu).toEqual({
+          hideExportTextDelimitedCommand: false,
           commandTitle: 'Commands',
           commandTitleKey: 'COMMANDS',
           commandItems: [
-            { action: expect.anything(), iconCssClass: 'fa fa-clone', title: 'Copy', command: 'copy', disabled: false, itemUsabilityOverride: expect.anything(), positionOrder: 50 },
+            { iconCssClass: 'fa fa-clone', title: 'Copy', command: 'copy', disabled: false, positionOrder: 50 },
+            { iconCssClass: 'fa fa-download', title: 'Export to CSV', command: 'export-csv', disabled: false, positionOrder: 51 },
+            { iconCssClass: 'fa fa-file-excel-o text-success', title: 'Export to Excel', command: 'export-excel', disabled: false, positionOrder: 52 },
+            { iconCssClass: 'fa fa-download', title: 'Export in Text format (Tab delimited)', command: 'export-text-delimited', disabled: false, positionOrder: 53 },
             { iconCssClass: 'fa fa-sort-asc', title: 'Sort Ascending', titleKey: 'SORT_ASCENDING', command: 'sort-asc', positionOrder: 60 },
             { iconCssClass: 'fa fa-sort-desc', title: 'Sort Descending', titleKey: 'SORT_DESCENDING', command: 'sort-desc', positionOrder: 61 },
             { divider: true, command: '', positionOrder: 62 },

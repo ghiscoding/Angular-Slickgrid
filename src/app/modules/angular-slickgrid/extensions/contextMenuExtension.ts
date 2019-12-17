@@ -86,8 +86,7 @@ export class ContextMenuExtension implements Extension {
       this.sharedService.gridOptions.contextMenu = { ...this.sharedService.gridOptions.contextMenu };
 
       // sort all menu items by their position order when defined
-      const originalCommandItems = this._userOriginalContextMenu && Array.isArray(this._userOriginalContextMenu.commandItems) ? this._userOriginalContextMenu.commandItems : [];
-      this.sharedService.gridOptions.contextMenu.commandItems = [...originalCommandItems, ...this.addMenuCustomCommands(originalCommandItems)];
+      this.sharedService.gridOptions.contextMenu.commandItems = this.addMenuCustomCommands([]);
       this.extensionUtility.sortItems(this.sharedService.gridOptions.contextMenu.commandItems, 'positionOrder');
       this.extensionUtility.sortItems(this.sharedService.gridOptions.contextMenu.optionItems, 'positionOrder');
 
@@ -365,7 +364,8 @@ export class ContextMenuExtension implements Extension {
         // get the value, if "exportWithFormatter" is set then we'll use the formatter output
         const gridOptions = this.sharedService && this.sharedService.gridOptions || {};
         const grid = this.sharedService && this.sharedService.grid;
-        const textToCopy = exportWithFormatterWhenDefined(args.cell, args.row, args.dataContext, args.column, grid, gridOptions);
+        const exportOptions = gridOptions && (gridOptions.excelExportOptions || gridOptions.exportOptions);
+        const textToCopy = exportWithFormatterWhenDefined(args.row, args.cell, args.dataContext, args.column, grid, exportOptions);
 
         // create fake <div> to copy into clipboard & delete it from the DOM once we're done
         const range = document.createRange();

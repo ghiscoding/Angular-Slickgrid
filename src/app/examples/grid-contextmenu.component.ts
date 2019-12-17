@@ -77,7 +77,8 @@ export class GridContextMenuComponent implements OnInit {
       <li>Use override callback functions to change the properties of show/hide, enable/disable the menu or certain item(s) from the list</li>
       <ol>
         <li>These callbacks are: "menuUsabilityOverride", "itemVisibilityOverride", "itemUsabilityOverride"</li>
-        <li>... e.g. in the demo, the "Action" menu is only available when Priority is set to "High" via "menuUsabilityOverride"</li>
+        <li>... e.g. in the demo, the "Action" Cell Menu is only available when Priority is set to "High" via "menuUsabilityOverride"</li>
+        <li>... e.g. in the demo, the Context Menu is only available on the first 20 Tasks via "menuUsabilityOverride"</li>
       </ol>
     </ul>`;
 
@@ -164,6 +165,7 @@ export class GridContextMenuComponent implements OnInit {
       },
       {
         id: 'action', name: 'Action', field: 'action', width: 110, maxWidth: 200,
+        excludeFromExport: true,
         formatter: actionFormatter,
         cellMenu: {
           width: 200,
