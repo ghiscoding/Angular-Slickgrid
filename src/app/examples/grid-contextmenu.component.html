@@ -5,21 +5,25 @@
   <div class="row">
     <span class="context-menu">
       <strong>Context Menu:</strong>
-      <button class="btn btn-default btn-xs" (click)="showContextCommandsAndOptions(false)">
+      <button class="btn btn-default btn-xs" (click)="showContextCommandsAndOptions(false)"
+        data-test="context-menu-priority-only-button">
         Show Priority Options Only
       </button>
-      <button class="btn btn-default btn-xs" (click)="showContextCommandsAndOptions(true)">
+      <button class="btn btn-default btn-xs" (click)="showContextCommandsAndOptions(true)"
+        data-test="context-menu-commands-and-priority-button">
         Show Commands & Priority Options
       </button>
     </span>
 
     <span class="cell-menu">
       <strong>Cell Menu:</strong>
-      <button class="btn btn-default btn-xs" (click)="showCellMenuCommandsAndOptions(false)">
+      <button class="btn btn-default btn-xs" (click)="showCellMenuCommandsAndOptions(false)"
+        data-test="cell-menu-commands-and-options-false-button">
         Show Action Commands Only
       </button>
-      <button class="btn btn-default btn-xs" (click)="showCellMenuCommandsAndOptions(true)">
-        Show Actions Commands & Effort Options
+      <button class="btn btn-default btn-xs" (click)="showCellMenuCommandsAndOptions(true)"
+        data-test="cell-menu-commands-and-options-true-button">
+        Show Actions Commands & Completed Options
       </button>
     </span>
   </div>
