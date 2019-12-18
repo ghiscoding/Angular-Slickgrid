@@ -123,7 +123,7 @@ export class GridService {
    */
   highlightRow(rowNumber: number | number[], fadeDelay = 1500, fadeOutDelay = 300) {
     // create a SelectionModel if there's not one yet
-    if (!this._grid.getSelectionModel()) {
+    if (!this._grid.getSelectionModel() && Slick && Slick.RowSelectionModel) {
       const rowSelectionPlugin = new Slick.RowSelectionModel(this._gridOptions.rowSelectionOptions || {});
       this._grid.setSelectionModel(rowSelectionPlugin);
     }

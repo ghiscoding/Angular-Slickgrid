@@ -225,7 +225,7 @@ describe('GridOdataService', () => {
   });
 
   describe('clearFilters method', () => {
-    it('should call "updateOptions" to clear all filters', () => {
+    it('should call "updateOptions" to Clear all Filters', () => {
       const spy = jest.spyOn(service, 'updateFilters');
       service.clearFilters();
       expect(spy).toHaveBeenCalledWith([]);
@@ -233,7 +233,7 @@ describe('GridOdataService', () => {
   });
 
   describe('clearSorters method', () => {
-    it('should call "updateOptions" to clear all sorting', () => {
+    it('should call "updateOptions" to Clear all Sorting', () => {
       const spy = jest.spyOn(service, 'updateSorters');
       service.clearSorters();
       expect(spy).toHaveBeenCalledWith([]);

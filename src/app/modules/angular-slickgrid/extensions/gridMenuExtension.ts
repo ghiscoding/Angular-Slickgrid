@@ -191,7 +191,7 @@ export class GridMenuExtension implements Extension {
     const gridMenuCustomItems: GridMenuItem[] = [];
 
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableFiltering) {
-      // show grid menu: clear all filters
+      // show grid menu: Clear all Filters
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllFiltersCommand) {
         const commandName = 'clear-filter';
         if (!originalCustomItems.find((item) => item.command === commandName)) {
@@ -259,7 +259,7 @@ export class GridMenuExtension implements Extension {
     }
 
     if (this.sharedService.gridOptions.enableSorting) {
-      // show grid menu: clear all sorting
+      // show grid menu: Clear all Sorting
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllSortingCommand) {
         const commandName = 'clear-sorting';
         if (!originalCustomItems.find((item) => item.command === commandName)) {

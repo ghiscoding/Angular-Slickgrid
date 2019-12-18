@@ -11,7 +11,9 @@ import {
   AutoTooltipExtension,
   CellExternalCopyManagerExtension,
   CheckboxSelectorExtension,
+  CellMenuExtension,
   ColumnPickerExtension,
+  ContextMenuExtension,
   DraggableGroupingExtension,
   GridMenuExtension,
   GroupItemMetaProviderExtension,
@@ -19,7 +21,7 @@ import {
   HeaderMenuExtension,
   RowDetailViewExtension,
   RowMoveManagerExtension,
-  RowSelectionExtension
+  RowSelectionExtension,
 } from '../../extensions';
 import { ExtensionService, SharedService } from '..';
 
@@ -52,6 +54,14 @@ const extensionColumnPickerStub = {
   ...extensionStub,
   translateColumnPicker: jest.fn()
 };
+const extensionCellMenuStub = {
+  ...extensionStub,
+  translateCellMenu: jest.fn()
+};
+const extensionContextMenuStub = {
+  ...extensionStub,
+  translateContextMenu: jest.fn()
+};
 const extensionHeaderMenuStub = {
   ...extensionStub,
   translateHeaderMenu: jest.fn()
@@ -75,7 +85,9 @@ describe('ExtensionService', () => {
           { provide: AutoTooltipExtension, useValue: extensionStub },
           { provide: ColumnPickerExtension, useValue: extensionColumnPickerStub },
           { provide: CellExternalCopyManagerExtension, useValue: extensionStub },
+          { provide: CellMenuExtension, useValue: extensionCellMenuStub },
           { provide: CheckboxSelectorExtension, useValue: extensionStub },
+          { provide: ContextMenuExtension, useValue: extensionContextMenuStub },
           { provide: DraggableGroupingExtension, useValue: extensionStub },
           { provide: GridMenuExtension, useValue: extensionGridMenuStub },
           { provide: GroupItemMetaProviderExtension, useValue: extensionGroupItemMetaStub },
@@ -324,6 +336,32 @@ describe('ExtensionService', () => {
         expect(output).toEqual({ name: ExtensionName.rowSelection, addon: instanceMock, instance: instanceMock, class: extensionStub } as ExtensionModel);
       });
 
+      it('should register the CellMenu addon when "enableCellMenu" is set in the grid options', () => {
+        const gridOptionsMock = { enableCellMenu: true } as GridOption;
+        const extSpy = jest.spyOn(extensionCellMenuStub, 'register').mockReturnValue(instanceMock);
+        const gridSpy = jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
+
+        service.bindDifferentExtensions();
+        const output = service.getExtensionByName(ExtensionName.cellMenu);
+
+        expect(gridSpy).toHaveBeenCalled();
+        expect(extSpy).toHaveBeenCalled();
+        expect(output).toEqual({ name: ExtensionName.cellMenu, addon: instanceMock, instance: instanceMock, class: extensionCellMenuStub } as ExtensionModel);
+      });
+
+      it('should register the ContextMenu addon when "enableContextMenu" is set in the grid options', () => {
+        const gridOptionsMock = { enableContextMenu: true } as GridOption;
+        const extSpy = jest.spyOn(extensionContextMenuStub, 'register').mockReturnValue(instanceMock);
+        const gridSpy = jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
+
+        service.bindDifferentExtensions();
+        const output = service.getExtensionByName(ExtensionName.contextMenu);
+
+        expect(gridSpy).toHaveBeenCalled();
+        expect(extSpy).toHaveBeenCalled();
+        expect(output).toEqual({ name: ExtensionName.contextMenu, addon: instanceMock, instance: instanceMock, class: extensionContextMenuStub } as ExtensionModel);
+      });
+
       it('should register the HeaderButton addon when "enableHeaderButton" is set in the grid options', () => {
         const gridOptionsMock = { enableHeaderButton: true } as GridOption;
         const extSpy = jest.spyOn(extensionStub, 'register').mockReturnValue(instanceMock);
@@ -482,6 +520,18 @@ describe('ExtensionService', () => {
       expect(extSpy).toHaveBeenCalled();
     });
 
+    it('should call the translateCellMenu method on the CellMenu Extension when service with same method name is called', () => {
+      const extSpy = jest.spyOn(extensionCellMenuStub, 'translateCellMenu');
+      service.translateCellMenu();
+      expect(extSpy).toHaveBeenCalled();
+    });
+
+    it('should call the translateContextMenu method on the ContextMenu Extension when service with same method name is called', () => {
+      const extSpy = jest.spyOn(extensionContextMenuStub, 'translateContextMenu');
+      service.translateContextMenu();
+      expect(extSpy).toHaveBeenCalled();
+    });
+
     it('should call the translateGridMenu method on the GridMenu Extension when service with same method name is called', () => {
       const extSpy = jest.spyOn(extensionGridMenuStub, 'translateGridMenu');
       service.translateGridMenu();
@@ -574,18 +624,18 @@ describe('ExtensionService', () => {
 
       it(`should call "setColumns" with the collection provided as argument but NOT override "allColumns" on the Shared Service
     when collection provided is smaller than "allColumns" that already exists`, () => {
-          const columnsMock = [
-            { id: 'field1', field: 'field1', headerKey: 'HELLO' }
-          ] as Column[];
-          jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
-          const spyAllCols = jest.spyOn(SharedService.prototype, 'allColumns', 'set');
-          const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
+        const columnsMock = [
+          { id: 'field1', field: 'field1', headerKey: 'HELLO' }
+        ] as Column[];
+        jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
+        const spyAllCols = jest.spyOn(SharedService.prototype, 'allColumns', 'set');
+        const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
 
-          service.renderColumnHeaders(columnsMock);
+        service.renderColumnHeaders(columnsMock);
 
-          expect(setColumnsSpy).toHaveBeenCalledWith(columnsMock);
-          expect(spyAllCols).not.toHaveBeenCalled();
-        });
+        expect(setColumnsSpy).toHaveBeenCalledWith(columnsMock);
+        expect(spyAllCols).not.toHaveBeenCalled();
+      });
 
       it('should re-register the Column Picker when enable and method is called with new column definition collection provided as argument', () => {
         const instanceMock = { onColumnsChanged: jest.fn() };
@@ -650,8 +700,10 @@ describe('ExtensionService', () => {
         // extensions
         extensionStub as unknown as AutoTooltipExtension,
         extensionStub as unknown as CellExternalCopyManagerExtension,
+        extensionStub as unknown as CellMenuExtension,
         extensionStub as unknown as CheckboxSelectorExtension,
         extensionColumnPickerStub as unknown as ColumnPickerExtension,
+        extensionStub as unknown as ContextMenuExtension,
         extensionStub as unknown as DraggableGroupingExtension,
         extensionGridMenuStub as unknown as GridMenuExtension,
         extensionGroupItemMetaStub as unknown as GroupItemMetaProviderExtension,

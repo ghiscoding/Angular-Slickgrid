@@ -2,8 +2,10 @@
 export enum ExtensionName {
   autoTooltip = 'autoTooltip',
   cellExternalCopyManager = 'cellExternalCopyManager',
+  cellMenu = 'cellMenu',
   checkboxSelector = 'checkboxSelector',
   columnPicker = 'columnPicker',
+  contextMenu = 'contextMenu',
   draggableGrouping = 'draggableGrouping',
   groupItemMetaProvider = 'groupItemMetaProvider',
   gridMenu = 'gridMenu',

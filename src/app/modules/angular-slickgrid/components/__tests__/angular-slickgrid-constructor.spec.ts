@@ -54,8 +54,10 @@ const extensionServiceStub = {
   createExtensionsBeforeGridCreation: jest.fn(),
   dispose: jest.fn(),
   renderColumnHeaders: jest.fn(),
+  translateCellMenu: jest.fn(),
   translateColumnHeaders: jest.fn(),
   translateColumnPicker: jest.fn(),
+  translateContextMenu: jest.fn(),
   translateGridMenu: jest.fn(),
   translateHeaderMenu: jest.fn(),
 } as unknown as ExtensionService;
@@ -900,8 +902,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should call multiple translate methods when locale changes', (done) => {
+        const transCellMenuSpy = jest.spyOn(extensionServiceStub, 'translateCellMenu');
         const transColHeaderSpy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
         const transColPickerSpy = jest.spyOn(extensionServiceStub, 'translateColumnPicker');
+        const transContextMenuSpy = jest.spyOn(extensionServiceStub, 'translateContextMenu');
         const transGridMenuSpy = jest.spyOn(extensionServiceStub, 'translateGridMenu');
         const transHeaderMenuSpy = jest.spyOn(extensionServiceStub, 'translateHeaderMenu');
 
@@ -911,8 +915,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         translate.use('fr');
 
         setTimeout(() => {
+          expect(transCellMenuSpy).toHaveBeenCalled();
           expect(transColHeaderSpy).toHaveBeenCalled();
           expect(transColPickerSpy).toHaveBeenCalled();
+          expect(transContextMenuSpy).toHaveBeenCalled();
           expect(transGridMenuSpy).toHaveBeenCalled();
           expect(transHeaderMenuSpy).toHaveBeenCalled();
           done();

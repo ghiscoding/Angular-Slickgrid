@@ -163,7 +163,7 @@ describe('Example 5 - OData Grid', () => {
         });
     });
 
-    it('should clear all Filters and expect to go back to first page', () => {
+    it('should Clear all Filters and expect to go back to first page', () => {
       cy.get('#grid5')
         .find('button.slick-gridmenu-button')
         .trigger('click')
@@ -173,7 +173,7 @@ describe('Example 5 - OData Grid', () => {
         .find('.slick-gridmenu-item')
         .first()
         .find('span')
-        .contains('Clear All Filters')
+        .contains('Clear all Filters')
         .click();
 
       // wait for the query to finish
@@ -201,7 +201,7 @@ describe('Example 5 - OData Grid', () => {
         });
     });
 
-    it('should clear all Sorting', () => {
+    it('should Clear all Sorting', () => {
       cy.get('#grid5')
         .find('button.slick-gridmenu-button')
         .trigger('click')
@@ -210,7 +210,7 @@ describe('Example 5 - OData Grid', () => {
       cy.get(`.slick-gridmenu:visible`)
         .find('.slick-gridmenu-item:nth(1)')
         .find('span')
-        .contains('Clear All Sorting')
+        .contains('Clear all Sorting')
         .click();
 
       // wait for the query to finish
@@ -288,7 +288,7 @@ describe('Example 5 - OData Grid', () => {
   });
 
   describe('when "enableCount" is unchecked (not set)', () => {
-    it('should clear all Filters, set 20 items per page & uncheck "enableCount"', () => {
+    it('should Clear all Filters, set 20 items per page & uncheck "enableCount"', () => {
       cy.get('#grid5')
         .find('button.slick-gridmenu-button')
         .trigger('click')
@@ -298,7 +298,7 @@ describe('Example 5 - OData Grid', () => {
         .find('.slick-gridmenu-item')
         .first()
         .find('span')
-        .contains('Clear All Filters')
+        .contains('Clear all Filters')
         .click();
 
       cy.get('#items-per-page-label').select('20');
@@ -370,7 +370,7 @@ describe('Example 5 - OData Grid', () => {
         });
     });
 
-    it('should clear all Sorting', () => {
+    it('should Clear all Sorting', () => {
       cy.get('#grid5')
         .find('button.slick-gridmenu-button')
         .trigger('click')
@@ -379,7 +379,7 @@ describe('Example 5 - OData Grid', () => {
       cy.get(`.slick-gridmenu:visible`)
         .find('.slick-gridmenu-item:nth(1)')
         .find('span')
-        .contains('Clear All Sorting')
+        .contains('Clear all Sorting')
         .click();
 
       // wait for the query to finish

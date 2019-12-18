@@ -1,6 +1,212 @@
 /* plugin variables */
 @import './variables';
 
+// ----------------------------------------------
+// Cell Menu Plugin (Action menu
+// ----------------------------------------------
+
+.slick-cell-menu {
+  position: absolute;
+  background: $cell-menu-bg-color;
+  border: $cell-menu-border;
+  border-radius: $cell-menu-border-radius;
+  min-width: $cell-menu-min-width;
+  padding: $cell-menu-padding;
+  z-index: 100000;
+  cursor: default;
+  display: inline-block;
+  overflow: auto;
+  resize: both;
+
+  > .close {
+    float: right;
+    background-color: $cell-menu-close-bg-color;
+    width: $cell-menu-close-width;
+    height: $cell-menu-close-height;
+    margin: $cell-menu-close-margin;
+    padding: $cell-menu-close-padding;
+    border: $cell-menu-close-border;
+
+    > span {
+      opacity: $cell-menu-close-opacity;
+    }
+  }
+
+  .title {
+    font-size: $cell-menu-title-font-size;
+    font-weight: $cell-menu-title-font-weight;
+    width: $cell-menu-title-width;
+    border-bottom: $cell-menu-title-border-bottom;
+    margin-bottom: $cell-menu-title-margin-bottom;
+  }
+
+  .slick-cell-menu-item {
+    cursor: pointer;
+    border: $cell-menu-item-border;
+    border-radius: $cell-menu-item-border-radius;
+    font-size: $cell-menu-item-font-size;
+    padding: $cell-menu-item-padding;
+    list-style: none outside none;
+    margin: 0;
+    width: $cell-menu-item-width;
+
+    &:hover {
+      border: $cell-menu-item-hover-border;
+      background-color: $cell-menu-item-hover-color;
+    }
+
+    &.slick-cell-menu-item-divider {
+      cursor: default;
+      border: none;
+      overflow: hidden;
+      padding: 0;
+      height: $cell-menu-divider-height;
+      margin: $cell-menu-divider-margin;
+      background-color: $cell-menu-divider-color;
+      &:hover {
+        border: none;
+        background-color: $cell-menu-divider-color;
+      }
+    }
+
+    .slick-cell-menu-icon {
+      background-position: center center;
+      background-repeat: no-repeat;
+      display: inline-block;
+      height: $cell-menu-icon-height;
+      margin-right: $cell-menu-icon-margin-right;
+      vertical-align: middle;
+      width: $cell-menu-icon-width;
+    }
+
+    .slick-cell-menu-content {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* Disabled item */
+    &.slick-cell-menu-item-disabled {
+      border-color: transparent !important;
+      background: inherit !important;
+      color: $cell-menu-item-disabled-color;
+      cursor: inherit;
+    }
+  }
+
+  .slick-cell-menu-option-list {
+    margin-bottom: $cell-menu-option-list-margin-bottom;
+  }
+
+  /* resize cell menu item width when there's a close button on same line */
+  button + .slick-cell-menu-command-list .slick-cell-menu-item:first-child,
+  button + .slick-cell-menu-option-list .slick-cell-menu-item:first-child {
+    width: $cell-menu-item-width-when-button;
+  }
+}
+
+// ----------------------------------------------
+// Context Menu Plugin (mouse right+click)
+// ----------------------------------------------
+
+.slick-context-menu {
+  position: absolute;
+  background: $context-menu-bg-color;
+  border: $context-menu-border;
+  border-radius: $context-menu-border-radius;
+  min-width: $context-menu-min-width;
+  padding: $context-menu-padding;
+  z-index: 100000;
+  cursor: default;
+  display: inline-block;
+  overflow: auto;
+  resize: both;
+
+  > .close {
+    float: right;
+    background-color: $context-menu-close-bg-color;
+    width: $context-menu-close-width;
+    height: $context-menu-close-height;
+    margin: $context-menu-close-margin;
+    padding: $context-menu-close-padding;
+    border: $context-menu-close-border;
+
+    > span {
+      opacity: $context-menu-close-opacity;
+    }
+  }
+
+  .title {
+    font-size: $context-menu-title-font-size;
+    font-weight: $context-menu-title-font-weight;
+    width: $context-menu-title-width;
+    border-bottom: $context-menu-title-border-bottom;
+    margin-bottom: $context-menu-title-margin-bottom;
+  }
+
+  .slick-context-menu-item {
+    cursor: pointer;
+    border: $context-menu-item-border;
+    border-radius: $context-menu-item-border-radius;
+    font-size: $context-menu-item-font-size;
+    padding: $context-menu-item-padding;
+    list-style: none outside none;
+    margin: 0;
+    width: $context-menu-item-width;
+
+    &:hover {
+      border: $context-menu-item-hover-border;
+      background-color: $context-menu-item-hover-color;
+    }
+
+    &.slick-context-menu-item-divider {
+      cursor: default;
+      border: none;
+      overflow: hidden;
+      padding: 0;
+      height: $context-menu-divider-height;
+      margin: $context-menu-divider-margin;
+      background-color: $context-menu-divider-color;
+      &:hover {
+        border: none;
+        background-color: $context-menu-divider-color;
+      }
+    }
+
+    .slick-context-menu-icon {
+      background-position: center center;
+      background-repeat: no-repeat;
+      display: inline-block;
+      height: $context-menu-icon-height;
+      margin-right: $context-menu-icon-margin-right;
+      vertical-align: middle;
+      width: $context-menu-icon-width;
+    }
+
+    .slick-context-menu-content {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* Disabled item */
+    &.slick-context-menu-item-disabled {
+      border-color: transparent !important;
+      background: inherit !important;
+      color: $context-menu-item-disabled-color;
+      cursor: inherit;
+    }
+  }
+
+  .slick-context-menu-option-list {
+    margin-bottom: $context-menu-option-list-margin-bottom;
+  }
+
+  /* resize context menu item width when there's a close button on same line */
+  button + .slick-context-menu-command-list .slick-context-menu-item:first-child,
+  button + .slick-context-menu-option-list .slick-context-menu-item:first-child {
+    width: $context-menu-item-width-when-button;
+  }
+}
+
 // ---------------------------------------------------------
 // Header Button Plugin - add button in header with command
 // ---------------------------------------------------------
@@ -55,7 +261,7 @@
   display: none;
   position: absolute;
 
-  // The next few items are already defined in the slick-headermenu.less file and it should stay that way, *unless* you also replace the button image included there.
+  // The next few items are already defined in the slick-headermenu file and it should stay that way, *unless* you also replace the button image included there.
   bottom: 0;
   right: 3px;
   top: 0;
@@ -119,6 +325,7 @@
 .slick-header-menuitem {
   cursor: pointer;
   border: $header-menu-item-border;
+  border-radius: $header-menu-item-border-radius;
   padding: $header-menu-item-padding;
   list-style: none outside none;
   margin: 0;
@@ -137,7 +344,7 @@
     background-color: $header-menu-divider-color;
     &:hover {
       border: none;
-      background-color: transparent;
+      background-color: $header-menu-item-disabled-color;
     }
   }
 }
@@ -172,7 +379,7 @@
 .slick-header-menuitem-disabled {
   border-color: transparent !important;
   background: inherit !important;
-  color: silver;
+  color: $header-menu-item-disabled-color;
   cursor: inherit;
 }
 

@@ -14,8 +14,10 @@ import {
 import {
   AutoTooltipExtension,
   CellExternalCopyManagerExtension,
+  CellMenuExtension,
   CheckboxSelectorExtension,
   ColumnPickerExtension,
+  ContextMenuExtension,
   DraggableGroupingExtension,
   GridMenuExtension,
   GroupItemMetaProviderExtension,
@@ -35,8 +37,10 @@ export class ExtensionService {
   constructor(
     private autoTooltipExtension: AutoTooltipExtension,
     private cellExternalCopyExtension: CellExternalCopyManagerExtension,
+    private cellMenuExtension: CellMenuExtension,
     private checkboxSelectorExtension: CheckboxSelectorExtension,
     private columnPickerExtension: ColumnPickerExtension,
+    private contextMenuExtension: ContextMenuExtension,
     private draggableGroupingExtension: DraggableGroupingExtension,
     private gridMenuExtension: GridMenuExtension,
     private groupItemMetaExtension: GroupItemMetaProviderExtension,
@@ -132,6 +136,14 @@ export class ExtensionService {
         }
       }
 
+      // (Action) Cell Menu Plugin
+      if (this.sharedService.gridOptions.enableCellMenu) {
+        if (this.cellMenuExtension && this.cellMenuExtension.register) {
+          const instance = this.cellMenuExtension.register();
+          this._extensionList.push({ name: ExtensionName.cellMenu, class: this.cellMenuExtension, addon: instance, instance });
+        }
+      }
+
       // Row Selection Plugin
       // this extension should be registered BEFORE the Checkbox Selector & Row Detail since it can be use by these 2 plugins
       if (!this.getExtensionByName(ExtensionName.rowSelection) && (this.sharedService.gridOptions.enableRowSelection || this.sharedService.gridOptions.enableCheckboxSelector || this.sharedService.gridOptions.enableRowDetailView)) {
@@ -157,6 +169,14 @@ export class ExtensionService {
         if (this.columnPickerExtension && this.columnPickerExtension.register) {
           const instance = this.columnPickerExtension.register();
           this._extensionList.push({ name: ExtensionName.columnPicker, class: this.columnPickerExtension, addon: instance, instance });
+        }
+      }
+
+      // Context Menu Control
+      if (this.sharedService.gridOptions.enableContextMenu) {
+        if (this.contextMenuExtension && this.contextMenuExtension.register) {
+          const instance = this.contextMenuExtension.register();
+          this._extensionList.push({ name: ExtensionName.contextMenu, class: this.contextMenuExtension, addon: instance, instance });
         }
       }
 
@@ -291,10 +311,24 @@ export class ExtensionService {
     return columns;
   }
 
+  /** Translate the Cell Menu titles, we need to loop through all column definition to re-translate them */
+  translateCellMenu() {
+    if (this.cellMenuExtension && this.cellMenuExtension.translateCellMenu) {
+      this.cellMenuExtension.translateCellMenu();
+    }
+  }
+
   /** Translate the Column Picker and it's last 2 checkboxes */
   translateColumnPicker() {
     if (this.columnPickerExtension && this.columnPickerExtension.translateColumnPicker) {
       this.columnPickerExtension.translateColumnPicker();
+    }
+  }
+
+  /** Translate the Context Menu titles, we need to loop through all column definition to re-translate them */
+  translateContextMenu() {
+    if (this.contextMenuExtension && this.contextMenuExtension.translateContextMenu) {
+      this.contextMenuExtension.translateContextMenu();
     }
   }
 
@@ -323,7 +357,7 @@ export class ExtensionService {
    * @param new column definitions (optional)
    */
   translateColumnHeaders(locale?: boolean | string, newColumnDefinitions?: Column[]) {
-    if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
+    if (this.sharedService && this.sharedService.gridOptions && this.sharedService.gridOptions.enableTranslate && (!this.translate || !this.translate.instant)) {
       throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
     }
 

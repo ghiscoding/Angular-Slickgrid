@@ -11,7 +11,7 @@ export interface HeaderMenu {
   /** an extra CSS class to add to the menu button */
   buttonCssClass?: string;
 
-  /** a url to the menu button image (default '../images/down.gif') */
+  /** a url to the menu button image */
   buttonImage?: string;
 
   /** A command identifier to be passed to the onCommand event handlers. */

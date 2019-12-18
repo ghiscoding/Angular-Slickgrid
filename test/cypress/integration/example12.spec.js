@@ -59,7 +59,7 @@ describe('Example 12: Localization (i18n)', () => {
         .find('.slick-gridmenu-item')
         .first()
         .find('span')
-        .contains('Clear All Filters')
+        .contains('Clear all Filters')
         .click();
 
       cy.get('[data-test=language-button]')

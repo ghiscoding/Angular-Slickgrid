@@ -1,3 +1,4 @@
+import { CellMenu } from './cellMenu.interface';
 import { ColumnEditor } from './columnEditor.interface';
 import { ColumnFilter } from './columnFilter.interface';
 import { EditorValidator } from './editorValidator.interface';
@@ -19,6 +20,9 @@ export interface Column {
 
   /** Block event triggering of an insert? */
   cannotTriggerInsert?: boolean;
+
+  /** Options that can be provide to the Cell Context Menu Plugin */
+  cellMenu?: CellMenu;
 
   /** Column group name for grouping of column headers spanning accross multiple columns */
   columnGroup?: string;
@@ -109,13 +113,11 @@ export interface Column {
   /** Group Totals Formatter function that can be used to add grouping totals in the grid */
   groupTotalsFormatter?: GroupTotalsFormatter;
 
-  /** Options that can be provide to the Header Menu Plugin */
+  /** Options that can be provided to the Header Menu Plugin */
   header?: {
     /** list of Buttons to show in the header */
     buttons?: HeaderButtonItem[];
-    menu?: {
-      items: HeaderMenuItem[];
-    };
+    menu?: { items: HeaderMenuItem[]; };
   };
 
   /** CSS class that can be added to the column header */

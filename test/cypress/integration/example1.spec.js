@@ -110,7 +110,7 @@ describe('Example 1 - Basic Grids', () => {
       .contains('2');
   });
 
-  it('should clear sorting of grid2 using the Grid Menu "Clear All Sorting" command', () => {
+  it('should clear sorting of grid2 using the Grid Menu "Clear all Sorting" command', () => {
     cy.get('#grid2')
       .find('button.slick-gridmenu-button')
       .trigger('click')
@@ -132,7 +132,7 @@ describe('Example 1 - Basic Grids', () => {
           .find('.slick-gridmenu-item')
           .first()
           .find('span')
-          .contains('Clear All Sorting')
+          .contains('Clear all Sorting')
           .click();
 
         cy.get('#grid2')

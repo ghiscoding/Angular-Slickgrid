@@ -7,12 +7,12 @@ import {
   Column,
   ExportOption,
   FileType,
-  Formatter,
   GridOption,
   KeyTitlePair,
   Locale,
 } from './../models/index';
 import { Constants } from './../constants';
+import { exportWithFormatterWhenDefined } from './export-utilities';
 import { addWhiteSpaces, htmlEntityDecode, sanitizeHtmlToText, titleCase } from './../services/utilities';
 
 // using external non-typed js libraries
@@ -283,7 +283,6 @@ export class ExportService {
 
     for (let col = 0, ln = columns.length; col < ln; col++) {
       const columnDef = columns[col];
-      const fieldId = columnDef.field || columnDef.id || '';
 
       // skip excluded column
       if (columnDef.excludeFromExport) {
@@ -296,45 +295,8 @@ export class ExportService {
         rowOutputStrings.push(emptyValue);
       }
 
-      // does the user want to evaluate current column Formatter?
-      const isEvaluatingFormatter = (columnDef.exportWithFormatter !== undefined) ? columnDef.exportWithFormatter : this._exportOptions.exportWithFormatter;
-
-      // did the user provide a Custom Formatter for the export
-      const exportCustomFormatter: Formatter | undefined = (columnDef.exportCustomFormatter !== undefined) ? columnDef.exportCustomFormatter : undefined;
-
-      // does the field have the dot (.) notation and is a complex object? if so pull the first property name
-      let fieldProperty = fieldId;
-      if (typeof fieldId === 'string' && fieldId.indexOf('.') > 0) {
-        const props = fieldId.split('.');
-        fieldProperty = (props.length > 0) ? props[0] : fieldId;
-      }
-
-      let itemData = '';
-
-      if (itemObj && itemObj.hasOwnProperty(fieldProperty) && exportCustomFormatter !== undefined && exportCustomFormatter !== undefined) {
-        const formattedData = exportCustomFormatter(row, col, itemObj[fieldProperty], columnDef, itemObj, this._grid);
-        itemData = formattedData as string;
-        if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
-          itemData = formattedData.text;
-        }
-        if (itemData === null || itemData === undefined) {
-          itemData = '';
-        }
-      } else if (isEvaluatingFormatter && itemObj.hasOwnProperty(fieldProperty) && columnDef.formatter) {
-        const formattedData = columnDef.formatter(row, col, itemObj[fieldProperty], columnDef, itemObj, this._grid);
-        itemData = formattedData as string;
-        if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
-          itemData = formattedData.text;
-        }
-        if (itemData === null || itemData === undefined) {
-          itemData = '';
-        }
-      } else {
-        itemData = (!itemObj.hasOwnProperty(fieldProperty)) ? '' : itemObj[fieldProperty];
-        if (itemData === null || itemData === undefined) {
-          itemData = '';
-        }
-      }
+      // get the output by analyzing if we'll pull the value from the cell or from a formatter
+      let itemData = exportWithFormatterWhenDefined(row, col, itemObj, columnDef, this._grid, this._exportOptions);
 
       // does the user want to sanitize the output data (remove HTML tags)?
       if (columnDef.sanitizeDataExport || this._exportOptions.sanitizeDataExport) {

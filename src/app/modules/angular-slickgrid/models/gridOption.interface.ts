@@ -2,9 +2,11 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   AutoResizeOption,
   BackendServiceApi,
+  CellMenu,
+  CheckboxSelector,
   Column,
   ColumnPicker,
-  CheckboxSelector,
+  ContextMenu,
   DraggableGrouping,
   EditCommand,
   ExcelCopyBufferOption,
@@ -78,11 +80,17 @@ export interface GridOption {
   /** CSS class name used when highlighting a cell value. Useful to change background color of the activated cell */
   cellHighlightCssClass?: string | null;
 
+  /** Cell menu options (Action menu) */
+  cellMenu?: CellMenu;
+
   /** Checkbox Select Plugin options (columnId, cssClass, toolTip, width) */
   checkboxSelector?: CheckboxSelector;
 
   /** Column Picker Plugin options (columnTitle, forceFitTitle, syncResizeTitle) */
   columnPicker?: ColumnPicker;
+
+  /** Context menu options (mouse right+click) */
+  contextMenu?: ContextMenu;
 
   /** Defaults to false, which leads to create the footer row of the grid */
   createFooterRow?: boolean;
@@ -159,6 +167,9 @@ export interface GridOption {
   /** Defaults to false, which leads to showing tooltip over cell & header values that are not shown completely (... ellipsis) */
   enableAutoTooltip?: boolean;
 
+  /** Do we want to enable Cell Menu? (Action menu cell click) */
+  enableCellMenu?: boolean;
+
   /** Defaults to false, which will let user click on cell and navigate with arrow keys. */
   enableCellNavigation?: boolean;
 
@@ -170,6 +181,9 @@ export interface GridOption {
 
   /** Defaults to true, which permits the user to move an entire column from a position to another. */
   enableColumnReorder?: boolean;
+
+  /** Do we want to enable Context Menu? (mouse right+click) */
+  enableContextMenu?: boolean;
 
   /** Defaults to false, do we want to enable the Draggable Grouping Plugin? */
   enableDraggableGrouping?: boolean;

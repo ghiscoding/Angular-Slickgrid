@@ -44,10 +44,10 @@ export class GridHeaderMenuComponent implements OnInit {
       columnDef.header = {
         menu: {
           items: [
-            // add Custom Header Menu Item Commands at the bottom of the already existing internal custom items
+            // add Custom Header Menu Item Commands which will be appended to the existing internal custom items
             // you cannot override an internal command but you can hide them and create your own
             // also note that the internal custom commands are in the positionOrder range of 50-60,
-            // if you want yours at the bottom then start with 61, below 50 will make your command(s) on top
+            // if you want yours at the bottom then start with 61, below 50 will make your command(s) show on top
             {
               iconCssClass: 'fa fa-question-circle',
               disabled: (columnDef.id === 'effort-driven'), // you can disable a command with certain logic

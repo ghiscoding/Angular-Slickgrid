@@ -565,7 +565,7 @@ describe('gridMenuExtension', () => {
         expect(refreshSpy).toHaveBeenCalled();
       });
 
-      it('should call "exportToExcel" with CSV set when the command triggered is "export-csv"', () => {
+      it('should call "exportToExcel" when the command triggered is "export-excel"', () => {
         const excelExportSpy = jest.spyOn(excelExportServiceStub, 'exportToExcel');
         const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.gridMenu, 'onCommand');
 

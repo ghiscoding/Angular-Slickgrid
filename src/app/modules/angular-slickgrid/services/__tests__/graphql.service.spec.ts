@@ -344,7 +344,7 @@ describe('GraphqlService', () => {
   });
 
   describe('clearFilters method', () => {
-    it('should call "updateOptions" to clear all filters', () => {
+    it('should call "updateOptions" to Clear all Filters', () => {
       const spy = jest.spyOn(service, 'updateOptions');
       service.clearFilters();
       expect(spy).toHaveBeenCalledWith({ filteringOptions: [] });
@@ -352,7 +352,7 @@ describe('GraphqlService', () => {
   });
 
   describe('clearSorters method', () => {
-    it('should call "updateOptions" to clear all sorting', () => {
+    it('should call "updateOptions" to Clear all Sorting', () => {
       const spy = jest.spyOn(service, 'updateOptions');
       service.clearSorters();
       expect(spy).toHaveBeenCalledWith({ sortingOptions: [] });

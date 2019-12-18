@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
@@ -30,7 +30,6 @@ const NB_ITEMS = 100;
   styleUrls: ['./grid-angular.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-@Injectable()
 export class GridAngularComponent implements OnInit {
   title = 'Example 22: Use of Angular Components';
   subTitle = `
@@ -311,7 +310,7 @@ export class GridAngularComponent implements OnInit {
       // this.angularGrid.gridService.setSelectedRow(args.row);
     } else if (metadata.columnDef.id === 'delete') {
       if (confirm('Are you sure?')) {
-        this.angularGrid.gridService.deleteDataGridItemById(metadata.dataContext.id);
+        this.angularGrid.gridService.deleteItemById(metadata.dataContext.id);
       }
     }
   }

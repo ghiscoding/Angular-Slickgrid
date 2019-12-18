@@ -1,4 +1,4 @@
-import { Component, OnInit, Injectable, ViewEncapsulation } from '@angular/core';
+import { Component, Injectable, OnInit, ViewEncapsulation } from '@angular/core';
 import { AngularGridInstance, Column, Editors, FieldType, Formatters, GridOption, GridService, OnEventArgs } from './../modules/angular-slickgrid';
 
 @Component({
@@ -37,7 +37,10 @@ export class GridAddItemComponent implements OnInit {
   dataset: any[];
   updatedObject: any;
 
-  constructor() { }
+  constructor() {
+    // mock a dataset
+    this.dataset = this.mockDataset(1000);
+  }
 
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
@@ -67,7 +70,7 @@ export class GridAddItemComponent implements OnInit {
         onCellClick: (e: Event, args: OnEventArgs) => {
           console.log(args);
           if (confirm('Are you sure?')) {
-            this.angularGrid.gridService.deleteDataGridItemById(args.dataContext.id);
+            this.angularGrid.gridService.deleteItemById(args.dataContext.id);
           }
         }
       },
@@ -136,15 +139,16 @@ export class GridAddItemComponent implements OnInit {
       enableCellNavigation: true,
       enableRowSelection: true
     };
+  }
 
+  mockDataset(itemCount: number) {
     // mock a dataset
     const mockedDataset = [];
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < itemCount; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
       const randomPercent = Math.round(Math.random() * 100);
-
       mockedDataset[i] = {
         id: i,
         title: 'Task ' + i,
@@ -156,7 +160,7 @@ export class GridAddItemComponent implements OnInit {
         effortDriven: (i % 5 === 0)
       };
     }
-    this.dataset = mockedDataset;
+    return mockedDataset;
   }
 
   addNewItem(insertPosition?: 'top' | 'bottom') {
