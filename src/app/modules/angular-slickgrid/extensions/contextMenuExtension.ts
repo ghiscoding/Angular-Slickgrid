@@ -13,6 +13,7 @@ import {
   MenuCallbackArgs,
   MenuCommandItem,
   MenuCommandItemCallbackArgs,
+  MenuOnBeforeMenuShowArgs,
   MenuOptionItemCallbackArgs,
   SlickEventHandler,
 } from '../models/index';
@@ -113,7 +114,7 @@ export class ContextMenuExtension implements Extension {
             this.sharedService.gridOptions.contextMenu.onOptionSelected(event, args);
           }
         });
-        this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
+        this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: MenuOnBeforeMenuShowArgs) => {
           if (this.sharedService.gridOptions.contextMenu && typeof this.sharedService.gridOptions.contextMenu.onBeforeMenuShow === 'function') {
             this.sharedService.gridOptions.contextMenu.onBeforeMenuShow(event, args);
           }

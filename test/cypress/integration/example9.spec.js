@@ -4,6 +4,13 @@ describe('Example 9 - Grid Menu', () => {
   const fullEnglishTitles = ['Title', 'Duration', '% Complete', 'Start', 'Finish', 'Completed'];
   const fullFrenchTitles = ['Titre', 'Durée', '% Achevée', 'Début', 'Fin', 'Terminé'];
 
+  beforeEach(() => {
+    // create a console.log spy for later use
+    cy.window().then((win) => {
+      cy.spy(win.console, 'log');
+    });
+  });
+
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/gridmenu`);
     cy.get('h2').should('contain', 'Example 9: Grid Menu Control');
@@ -17,6 +24,27 @@ describe('Example 9 - Grid Menu', () => {
         .each(($child, index) => expect($child.text()).to.eq(fullEnglishTitles[index]));
     });
 
+    it('should open the Grid Menu and expect a title for "Custom Menus" and for "Columns"', () => {
+      cy.get('#grid9')
+        .find('button.slick-gridmenu-button')
+        .trigger('click')
+        .click({ force: true });
+
+      cy.get('.slick-gridmenu-custom')
+        .find('.title')
+        .contains('Custom Commands');
+
+      cy.get('.slick-gridmenu')
+        .find('.title')
+        .contains('Columns');
+
+      cy.get('#grid9')
+        .get('.slick-gridmenu:visible')
+        .find('span.close')
+        .trigger('click')
+        .click({ force: true });
+    });
+
     it('should hover over the Title column and click on "Hide Column" command and remove 1st column from grid', () => {
       const smallerTitleList = fullEnglishTitles.slice(1);
 
@@ -34,7 +62,7 @@ describe('Example 9 - Grid Menu', () => {
         .children('.slick-header-menuitem:nth-child(2)')
         .children('.slick-header-menucontent')
         .should('contain', 'Hide Column')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .find('.slick-header-columns')
@@ -42,11 +70,68 @@ describe('Example 9 - Grid Menu', () => {
         .each(($child, index) => expect($child.text()).to.eq(smallerTitleList[index]));
     });
 
+    it('should type a filter and then open the Grid Menu and expect the "Command 1" to NOT be usable and expect "Command 2" to NOT be visible', () => {
+      const alertStub = cy.stub();
+      cy.on('window:alert', alertStub);
+
+      cy.get('input.search-filter.filter-duration')
+        .type('10');
+
+      cy.get('#grid9')
+        .find('button.slick-gridmenu-button')
+        .trigger('click')
+        .click({ force: true });
+
+      cy.get('.slick-gridmenu-item.red')
+        .should('not.exist');
+
+      cy.get('.slick-gridmenu-item.orange')
+        .find('.slick-gridmenu-content')
+        .contains('Command 1')
+        .click()
+        .then(() => expect(alertStub.getCall(0)).to.be.null);
+    });
+
+    it('should clear all filters and expect no filters in the grid', () => {
+      cy.get('#grid9')
+        .find('button.slick-gridmenu-button')
+        .trigger('click')
+        .click({ force: true });
+
+      cy.get('.slick-gridmenu-item')
+        .find('.slick-gridmenu-content')
+        .contains('Clear all Filters')
+        .click();
+
+      cy.get('input.search-filter.filter-duration')
+        .each(($elm) => expect($elm.text()).to.eq(''));
+    });
+
+    it('should clear the filters and then open the Grid Menu and expect the "Command 1" to now be usable and expect "Command 2" to now be visible', () => {
+      const alertStub = cy.stub();
+      cy.on('window:alert', alertStub);
+
+      cy.get('#grid9')
+        .find('button.slick-gridmenu-button')
+        .trigger('click')
+        .click({ force: true });
+
+      cy.get('.slick-gridmenu-item.red')
+        .find('.slick-gridmenu-content.italic')
+        .should('contain', 'Command 2');
+
+      cy.get('.slick-gridmenu-item.orange')
+        .find('.slick-gridmenu-content')
+        .contains('Command 1')
+        .click()
+        .then(() => expect(alertStub.getCall(0)).to.be.calledWith('command1'));
+    });
+
     it('should click on the Grid Menu to show the Title as 1st column again', () => {
       cy.get('#grid9')
         .find('button.slick-gridmenu-button')
         .trigger('click')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .get('.slick-gridmenu:visible')
@@ -54,13 +139,13 @@ describe('Example 9 - Grid Menu', () => {
         .children('li:nth-child(1)')
         .children('label')
         .should('contain', 'Title')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .get('.slick-gridmenu:visible')
         .find('span.close')
         .trigger('click')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .find('.slick-header-columns')
@@ -85,7 +170,7 @@ describe('Example 9 - Grid Menu', () => {
         .children('.slick-header-menuitem:nth-child(2)')
         .children('.slick-header-menucontent')
         .should('contain', 'Hide Column')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .find('.slick-header-columns')
@@ -96,7 +181,7 @@ describe('Example 9 - Grid Menu', () => {
     it('should click on the External Grid Menu to show the Title as 1st column again', () => {
       cy.get('[data-test=external-gridmenu]')
         .trigger('click')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .get('.slick-gridmenu:visible')
@@ -104,13 +189,13 @@ describe('Example 9 - Grid Menu', () => {
         .children('li:nth-child(1)')
         .children('label')
         .should('contain', 'Title')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .get('.slick-gridmenu:visible')
         .find('span.close')
         .trigger('click')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .find('.slick-header-columns')
@@ -128,7 +213,7 @@ describe('Example 9 - Grid Menu', () => {
   describe('switch to French language', () => {
     it('should switch locale to French and have column header titles in French', () => {
       cy.get('[data-test=language]')
-        .click();
+        .click({ force: true });
 
       cy.get('[data-test=selected-locale]')
         .should('contain', 'fr.json');
@@ -156,7 +241,7 @@ describe('Example 9 - Grid Menu', () => {
         .children('.slick-header-menuitem:nth-child(2)')
         .children('.slick-header-menucontent')
         .should('contain', 'Cacher la colonne')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .find('.slick-header-columns')
@@ -168,7 +253,7 @@ describe('Example 9 - Grid Menu', () => {
       cy.get('#grid9')
         .find('button.slick-gridmenu-button')
         .trigger('click')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .get('.slick-gridmenu:visible')
@@ -176,7 +261,7 @@ describe('Example 9 - Grid Menu', () => {
         .children('li:nth-child(1)')
         .children('label')
         .should('contain', 'Titre')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .find('.slick-header-columns')
@@ -201,7 +286,7 @@ describe('Example 9 - Grid Menu', () => {
         .children('.slick-header-menuitem:nth-child(2)')
         .children('.slick-header-menucontent')
         .should('contain', 'Cacher la colonne')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .find('.slick-header-columns')
@@ -212,7 +297,7 @@ describe('Example 9 - Grid Menu', () => {
     it('should click on the External Grid Menu to show the Title as 1st column again', () => {
       cy.get('[data-test=external-gridmenu]')
         .trigger('click')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .get('.slick-gridmenu:visible')
@@ -220,13 +305,13 @@ describe('Example 9 - Grid Menu', () => {
         .children('li:nth-child(1)')
         .children('label')
         .should('contain', 'Titre')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .get('.slick-gridmenu:visible')
         .find('span.close')
         .trigger('click')
-        .click();
+        .click({ force: true });
 
       cy.get('#grid9')
         .find('.slick-header-columns')

@@ -1,5 +1,7 @@
+import { TestBed } from '@angular/core/testing';
 import { ElementRef } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { of, Subject, throwError } from 'rxjs';
 
 import { AngularSlickgridComponent } from '../angular-slickgrid.component';
 import { ExtensionUtility } from '../../extensions';
@@ -18,13 +20,10 @@ import {
   SharedService,
   SortService,
 } from '../../services';
-import { GridOption, CurrentFilter, CurrentSorter, GridStateType, Pagination, GridState, Column } from '../../models';
+import { Column, CurrentFilter, CurrentSorter, GridOption, GridState, GridStateChange, GridStateType, Pagination } from '../../models';
 import { Filters } from '../../filters';
 import { Editors } from '../../editors';
 import * as utilities from '../../services/backend-utilities';
-import { of, Subject, throwError } from 'rxjs';
-import { GridStateChange } from 'dist/public_api';
-import { TestBed } from '@angular/core/testing';
 
 
 const mockExecuteBackendProcess = jest.fn();

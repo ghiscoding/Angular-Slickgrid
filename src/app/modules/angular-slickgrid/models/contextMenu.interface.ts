@@ -1,6 +1,7 @@
 import { MenuCallbackArgs } from './menuCallbackArgs.interface';
 import { MenuCommandItem } from './menuCommandItem.interface';
 import { MenuCommandItemCallbackArgs } from './menuCommandItemCallbackArgs.interface';
+import { MenuOnBeforeMenuShowArgs } from './menuOnBeforeMenuShowArgs.interface';
 import { MenuOptionItem } from './menuOptionItem.interface';
 import { MenuOptionItemCallbackArgs } from './menuOptionItemCallbackArgs.interface';
 
@@ -114,7 +115,7 @@ export interface ContextMenu {
   onExtensionRegistered?: (plugin: any) => void;
 
   /** SlickGrid Event fired before the menu is shown. */
-  onBeforeMenuShow?: (e: Event, args: any) => void;
+  onBeforeMenuShow?: (e: Event, args: MenuOnBeforeMenuShowArgs) => void;
 
   /** SlickGrid Event fired when any of the columns checkbox selection changes. */
   onColumnsChanged?: (e: Event, args: any) => void;

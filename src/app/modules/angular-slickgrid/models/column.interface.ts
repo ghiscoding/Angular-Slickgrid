@@ -7,9 +7,9 @@ import { Formatter } from './formatter.interface';
 import { Grouping } from './grouping.interface';
 import { GroupTotalsFormatter } from './groupTotalsFormatter.interface';
 import { HeaderButtonItem } from './headerButtonItem.interface';
-import { HeaderMenuItem } from './headerMenuItem.interface';
 import { OnEventArgs } from './onEventArgs.interface';
 import { Sorter } from './sorter.interface';
+import { MenuCommandItem } from './menuCommandItem.interface';
 
 export interface Column {
   /** async background post-rendering formatter */
@@ -116,8 +116,8 @@ export interface Column {
   /** Options that can be provided to the Header Menu Plugin */
   header?: {
     /** list of Buttons to show in the header */
-    buttons?: HeaderButtonItem[];
-    menu?: { items: HeaderMenuItem[]; };
+    buttons?: Array<HeaderButtonItem | 'divider'>;
+    menu?: { items: Array<MenuCommandItem | 'divider'> };
   };
 
   /** CSS class that can be added to the column header */
