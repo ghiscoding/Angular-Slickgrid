@@ -136,7 +136,7 @@ export class ContextMenuExtension implements Extension {
       const menuOptions: Partial<ContextMenu> = {};
 
       if (contextMenu.commandTitleKey) {
-        contextMenu.commandTitle = this.translate && this.translate.instant && this.translate.instant(contextMenu.commandTitleKey) || this._locales && this._locales.TEXT_COMMANDS || contextMenu.commandTitle;
+        contextMenu.commandTitle = this.translate && this.translate.instant && this.translate.instant(contextMenu.commandTitleKey) || contextMenu.commandTitle;
         menuOptions.commandTitle = contextMenu.commandTitle;
       }
       if (contextMenu.optionTitleKey) {
@@ -336,17 +336,6 @@ export class ContextMenuExtension implements Extension {
           );
         }
       }
-    }
-
-    // add the "Commands" title if there are any commands
-    if (this.sharedService && this.sharedService.gridOptions && contextMenu && (Array.isArray(menuCustomItems) && menuCustomItems.length > 0 || (Array.isArray(contextMenu.commandItems) && contextMenu.commandItems.length > 0))) {
-      let commandTitle = contextMenu.commandTitle || '';
-      if (contextMenu.commandTitleKey) {
-        commandTitle = this.extensionUtility.translateWhenEnabledAndServiceExist(contextMenu.commandTitleKey, 'TEXT_COMMANDS') || contextMenu.commandTitle;
-      } else if (!commandTitle) {
-        commandTitle = this._locales && this._locales.TEXT_COMMANDS;
-      }
-      contextMenu.commandTitle = commandTitle;
     }
 
     return menuCustomItems;

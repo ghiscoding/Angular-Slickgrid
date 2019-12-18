@@ -20,6 +20,7 @@
 
   > .close {
     float: right;
+    background-color: $cell-menu-close-bg-color;
     width: $cell-menu-close-width;
     height: $cell-menu-close-height;
     margin: $cell-menu-close-margin;
@@ -43,9 +44,11 @@
     cursor: pointer;
     border: $cell-menu-item-border;
     border-radius: $cell-menu-item-border-radius;
+    font-size: $cell-menu-item-font-size;
     padding: $cell-menu-item-padding;
     list-style: none outside none;
     margin: 0;
+    width: $cell-menu-item-width;
 
     &:hover {
       border: $cell-menu-item-hover-border;
@@ -93,6 +96,12 @@
   .slick-cell-menu-option-list {
     margin-bottom: $cell-menu-option-list-margin-bottom;
   }
+
+  /* resize cell menu item width when there's a close button on same line */
+  button + .slick-cell-menu-command-list .slick-cell-menu-item:first-child,
+  button + .slick-cell-menu-option-list .slick-cell-menu-item:first-child {
+    width: $cell-menu-item-width-when-button;
+  }
 }
 
 // ----------------------------------------------
@@ -114,6 +123,7 @@
 
   > .close {
     float: right;
+    background-color: $context-menu-close-bg-color;
     width: $context-menu-close-width;
     height: $context-menu-close-height;
     margin: $context-menu-close-margin;
@@ -137,9 +147,11 @@
     cursor: pointer;
     border: $context-menu-item-border;
     border-radius: $context-menu-item-border-radius;
+    font-size: $context-menu-item-font-size;
     padding: $context-menu-item-padding;
     list-style: none outside none;
     margin: 0;
+    width: $context-menu-item-width;
 
     &:hover {
       border: $context-menu-item-hover-border;
@@ -186,6 +198,12 @@
 
   .slick-context-menu-option-list {
     margin-bottom: $context-menu-option-list-margin-bottom;
+  }
+
+  /* resize context menu item width when there's a close button on same line */
+  button + .slick-context-menu-command-list .slick-context-menu-item:first-child,
+  button + .slick-context-menu-option-list .slick-context-menu-item:first-child {
+    width: $context-menu-item-width-when-button;
   }
 }
 

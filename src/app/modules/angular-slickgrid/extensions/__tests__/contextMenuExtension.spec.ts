@@ -213,7 +213,6 @@ describe('contextMenuExtension', () => {
             positionOrder: 50,
             title: 'Copier',
           }],
-          commandTitle: 'Commands',
           autoAdjustDrop: true,
           autoAlignSide: true,
           hideCloseButton: false,
@@ -893,7 +892,6 @@ describe('contextMenuExtension', () => {
             { iconCssClass: 'fa fa-unsorted', title: 'Remove Sort', titleKey: 'REMOVE_SORT', option: 'clear-sort', positionOrder: 64 },
             { iconCssClass: 'fa fa-times', titleKey: 'HIDE_COLUMN', option: 'hide', positionOrder: 65, title: 'Hide Column' },
           ],
-          commandTitle: 'Commands',
           commandItems: [
             { action: expect.anything(), iconCssClass: 'fa fa-clone', title: 'Copy', command: 'copy', disabled: false, itemUsabilityOverride: expect.anything(), positionOrder: 50 },
           ]

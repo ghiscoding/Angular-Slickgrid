@@ -168,6 +168,7 @@ export class GridContextMenuComponent implements OnInit {
         excludeFromExport: true,
         formatter: actionFormatter,
         cellMenu: {
+          hideCloseButton: false,
           width: 200,
           // you can override the logic of when the menu is usable
           // for example say that we want to show a menu only when then Priority is set to 'High'.
@@ -180,7 +181,7 @@ export class GridContextMenuComponent implements OnInit {
 
           // when using Translate Service, every translation will have the suffix "Key"
           // else use title without the suffix, for example "commandTitle" (no translations) or "commandTitleKey" (with translations)
-          commandTitleKey: 'COMMANDS',
+          commandTitleKey: 'COMMANDS', // optional title, use "commandTitle" when not using Translate
           commandItems: [
             // array of command item objects, you can also use the "positionOrder" that will be used to sort the items in the list
             {
@@ -330,6 +331,7 @@ export class GridContextMenuComponent implements OnInit {
 
   getContextMenuOptions(): ContextMenu {
     return {
+      hideCloseButton: false,
       width: 200,
       // optionally and conditionally define when the the menu is usable,
       // this should be used with a custom formatter to show/hide/disable the menu
@@ -337,9 +339,9 @@ export class GridContextMenuComponent implements OnInit {
         const dataContext = args && args.dataContext;
         return (dataContext.id < 21); // say we want to display the menu only from Task 0 to 20
       },
-      commandTitleKey: 'COMMANDS',
       // which column to show the command list? when not defined it will be shown over all columns
-      commandShownOverColumnIds: ['id', 'title', 'percentComplete', 'start', 'finish', 'completed' /*, 'priority'*/],
+      commandShownOverColumnIds: ['id', 'title', 'percentComplete', 'start', 'finish', 'completed' /*, 'priority', 'action' */],
+      commandTitleKey: 'COMMANDS', // this title is optional, you could also use "commandTitle" when not using Translate
       commandItems: [
         { divider: true, command: '', positionOrder: 61 },
         { command: 'delete-row', titleKey: 'DELETE_ROW', iconCssClass: 'fa fa-times', cssClass: 'red', textCssClass: 'bold', positionOrder: 62 },
@@ -353,7 +355,7 @@ export class GridContextMenuComponent implements OnInit {
           action: (e, args) => {
             // action callback.. do something
           },
-          // only show command to 'Help' when there's no Effort Driven
+          // only show command to 'Help' when the task is Not Completed
           itemVisibilityOverride: (args) => {
             const dataContext = args && args.dataContext;
             return (!dataContext.completed);
@@ -370,7 +372,7 @@ export class GridContextMenuComponent implements OnInit {
       optionItems: [
         {
           option: 0, title: 'n/a', textCssClass: 'italic',
-          // only enable this option when there's no Effort Driven
+          // only enable this option when the task is Not Completed
           itemUsabilityOverride: (args) => {
             const dataContext = args && args.dataContext;
             return (!dataContext.completed);
@@ -388,8 +390,8 @@ export class GridContextMenuComponent implements OnInit {
         'divider',
         // { divider: true, option: '', positionOrder: 3 },
         {
-          option: 4, title: 'Extreme', iconCssClass: 'fa fa-thermometer-full', disabled: true,
-          // only shown when there's no Effort Driven
+          option: 4, title: 'Extreme', iconCssClass: 'fa fa-fire', disabled: true,
+          // only shown when the task is Not Completed
           itemVisibilityOverride: (args) => {
             const dataContext = args && args.dataContext;
             return (!dataContext.completed);
@@ -423,7 +425,7 @@ export class GridContextMenuComponent implements OnInit {
   showContextCommandsAndOptions(showBothList: boolean) {
     // when showing both Commands/Options, we can just pass an empty array to show over all columns
     // else show on all columns except Priority
-    const showOverColumnIds = showBothList ? [] : ['id', 'title', 'complete', 'start', 'finish', 'completed'];
+    const showOverColumnIds = showBothList ? [] : ['id', 'title', 'complete', 'start', 'finish', 'completed', 'action'];
     this.contextMenuInstance.setOptions({
       commandShownOverColumnIds: showOverColumnIds,
       // hideCommandSection: !showBothList
