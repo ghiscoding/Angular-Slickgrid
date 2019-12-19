@@ -5,6 +5,9 @@ export interface ColumnPicker {
   /** Defaults to "Force fit columns" which is 1 of the last 2 checkbox title shown at the end of the picker list */
   forceFitTitle?: string;
 
+  /** Animation fade speed when opening/closing the column picker */
+  fadeSpeed?: number;
+
   /** Defaults to True, show/hide 1 of the last 2 checkbox at the end of the picker list */
   hideForceFitButton?: boolean;
 

@@ -20,7 +20,9 @@ export const GlobalGridOptions: GridOption = {
   checkboxSelector: {
     cssClass: 'slick-cell-checkboxsel'
   },
+  fadeSpeed: 0, // this should go inside columnPicker but there's a bug in that plugin and it's pulling it from grid options instead
   columnPicker: {
+    fadeSpeed: 0,
     hideForceFitButton: false,
     hideSyncResizeButton: true
   },
