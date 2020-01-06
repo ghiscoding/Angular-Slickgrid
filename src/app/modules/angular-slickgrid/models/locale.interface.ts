@@ -39,10 +39,13 @@ export interface Locale {
   TEXT_EXPAND_ALL_GROUPS: string;
 
   /** Text "Export in CSV Format" shown in Grid Menu (when enabled) */
-  TEXT_EXPORT_IN_CSV_FORMAT: string;
+  TEXT_EXPORT_TO_CSV: string;
+
+  /** Text "Export in Text format (Tab delimited)" shown in Grid Menu (when enabled) */
+  TEXT_EXPORT_TO_TAB_DELIMITED?: string;
 
   /** Text "Export in Text Format" shown in Grid Menu (when enabled) */
-  TEXT_EXPORT_IN_TEXT_FORMAT?: string;
+  TEXT_EXPORT_TO_TEXT_FORMAT?: string;
 
   /** Text "Export to Excel" shown in Grid Menu (when enabled) */
   TEXT_EXPORT_TO_EXCEL: string;

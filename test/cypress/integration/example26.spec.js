@@ -361,13 +361,10 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', () => {
 
   describe('French Locale', () => {
     it('should switch locale to French', () => {
-      cy.get('#grid26')
-        .find('button.slick-gridmenu-button')
-        .trigger('click')
-        .click();
-
       cy.get('[data-test=language-button]')
         .click();
+
+      cy.wait(10);
 
       cy.get('[data-test=selected-locale]')
         .should('contain', 'fr.json');

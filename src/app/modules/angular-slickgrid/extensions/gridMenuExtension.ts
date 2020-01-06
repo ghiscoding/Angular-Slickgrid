@@ -285,7 +285,7 @@ export class GridMenuExtension implements Extension {
         gridMenuCustomItems.push(
           {
             iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
-            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : this._locales && this._locales.TEXT_EXPORT_IN_CSV_FORMAT,
+            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_CSV') : this._locales && this._locales.TEXT_EXPORT_TO_CSV,
             disabled: false,
             command: commandName,
             positionOrder: 53
@@ -317,7 +317,7 @@ export class GridMenuExtension implements Extension {
         gridMenuCustomItems.push(
           {
             iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',
-            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : this._locales && this._locales.TEXT_EXPORT_IN_TEXT_FORMAT,
+            title: this.sharedService.gridOptions.enableTranslate ? this.translate.instant('EXPORT_TO_TAB_DELIMITED') : this._locales && this._locales.TEXT_EXPORT_TO_TAB_DELIMITED,
             disabled: false,
             command: commandName,
             positionOrder: 55

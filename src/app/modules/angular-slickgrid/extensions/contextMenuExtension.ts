@@ -1,7 +1,6 @@
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Constants } from '../constants';
 import {
   Column,
   ContextMenu,
@@ -30,7 +29,6 @@ declare var Slick: any;
 export class ContextMenuExtension implements Extension {
   private _addon: any;
   private _eventHandler: SlickEventHandler;
-  private _locales: Locale;
   private _userOriginalContextMenu: ContextMenu;
 
   constructor(
@@ -76,22 +74,21 @@ export class ContextMenuExtension implements Extension {
     }
 
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions && this.sharedService.gridOptions.contextMenu) {
-      // keep original user context menu, useful when switching locale to translate
-      this._userOriginalContextMenu = { ...this.sharedService.gridOptions.contextMenu };
+      const contextMenu = this.sharedService.gridOptions.contextMenu;
 
-      // get locales provided by user in main file or else use default English locales via the Constants
-      this._locales = this.sharedService.gridOptions && this.sharedService.gridOptions.locales || Constants.locales;
+      // keep original user context menu, useful when switching locale to translate
+      this._userOriginalContextMenu = { ...contextMenu };
 
       // dynamically import the SlickGrid plugin (addon) with RequireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.contextMenu);
-      this.sharedService.gridOptions.contextMenu = { ...this.sharedService.gridOptions.contextMenu };
+      this.sharedService.gridOptions.contextMenu = { ...contextMenu };
 
       // sort all menu items by their position order when defined
-      this.sharedService.gridOptions.contextMenu.commandItems = this.addMenuCustomCommands([]);
-      this.extensionUtility.sortItems(this.sharedService.gridOptions.contextMenu.commandItems, 'positionOrder');
-      this.extensionUtility.sortItems(this.sharedService.gridOptions.contextMenu.optionItems, 'positionOrder');
+      contextMenu.commandItems = this.addMenuCustomCommands([]);
+      this.extensionUtility.sortItems(contextMenu.commandItems || [], 'positionOrder');
+      this.extensionUtility.sortItems(contextMenu.optionItems || [], 'positionOrder');
 
-      this._addon = new Slick.Plugins.ContextMenu(this.sharedService.gridOptions.contextMenu);
+      this._addon = new Slick.Plugins.ContextMenu(contextMenu);
       this.sharedService.grid.registerPlugin(this._addon);
 
       // translate the item keys when necessary
@@ -100,28 +97,28 @@ export class ContextMenuExtension implements Extension {
       }
 
       // hook all events
-      if (this.sharedService.grid && this.sharedService.gridOptions.contextMenu) {
-        if (this.sharedService.gridOptions.contextMenu.onExtensionRegistered) {
-          this.sharedService.gridOptions.contextMenu.onExtensionRegistered(this._addon);
+      if (this.sharedService.grid && contextMenu) {
+        if (contextMenu.onExtensionRegistered) {
+          contextMenu.onExtensionRegistered(this._addon);
         }
         this._eventHandler.subscribe(this._addon.onCommand, (event: Event, args: MenuCommandItemCallbackArgs) => {
-          if (this.sharedService.gridOptions.contextMenu && typeof this.sharedService.gridOptions.contextMenu.onCommand === 'function') {
-            this.sharedService.gridOptions.contextMenu.onCommand(event, args);
+          if (contextMenu && typeof contextMenu.onCommand === 'function') {
+            contextMenu.onCommand(event, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onOptionSelected, (event: Event, args: MenuOptionItemCallbackArgs) => {
-          if (this.sharedService.gridOptions.contextMenu && typeof this.sharedService.gridOptions.contextMenu.onOptionSelected === 'function') {
-            this.sharedService.gridOptions.contextMenu.onOptionSelected(event, args);
+          if (contextMenu && typeof contextMenu.onOptionSelected === 'function') {
+            contextMenu.onOptionSelected(event, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: MenuOnBeforeMenuShowArgs) => {
-          if (this.sharedService.gridOptions.contextMenu && typeof this.sharedService.gridOptions.contextMenu.onBeforeMenuShow === 'function') {
-            this.sharedService.gridOptions.contextMenu.onBeforeMenuShow(event, args);
+          if (contextMenu && typeof contextMenu.onBeforeMenuShow === 'function') {
+            contextMenu.onBeforeMenuShow(event, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onBeforeMenuClose, (event: Event, args: { cell: number; row: number; grid: any; menu: any; }) => {
-          if (this.sharedService.gridOptions.contextMenu && typeof this.sharedService.gridOptions.contextMenu.onBeforeMenuClose === 'function') {
-            this.sharedService.gridOptions.contextMenu.onBeforeMenuClose(event, args);
+          if (contextMenu && typeof contextMenu.onBeforeMenuClose === 'function') {
+            contextMenu.onBeforeMenuClose(event, args);
           }
         });
       }
@@ -149,10 +146,10 @@ export class ContextMenuExtension implements Extension {
       menuOptions.commandItems = contextMenu.commandItems; // copy it also to the menuOptions else they won't be translated when locale changes
 
       // translate all command/options and resort them afterward
-      this.extensionUtility.translateItems(contextMenu.commandItems, 'titleKey', 'title');
-      this.extensionUtility.translateItems(contextMenu.optionItems, 'titleKey', 'title');
-      this.extensionUtility.sortItems(this.sharedService.gridOptions.contextMenu.commandItems, 'positionOrder');
-      this.extensionUtility.sortItems(this.sharedService.gridOptions.contextMenu.optionItems, 'positionOrder');
+      this.extensionUtility.translateItems(contextMenu.commandItems || [], 'titleKey', 'title');
+      this.extensionUtility.translateItems(contextMenu.optionItems || [], 'titleKey', 'title');
+      this.extensionUtility.sortItems(contextMenu.commandItems || [], 'positionOrder');
+      this.extensionUtility.sortItems(contextMenu.optionItems || [], 'positionOrder');
 
       // update the title options so that it has latest translated values
       if (this._addon && this._addon.setOptions) {
@@ -210,7 +207,7 @@ export class ContextMenuExtension implements Extension {
         menuCustomItems.push(
           {
             iconCssClass: contextMenu.iconExportCsvCommand || 'fa fa-download',
-            title: this.extensionUtility.translateWhenEnabledAndServiceExist('EXPORT_TO_CSV', 'TEXT_EXPORT_IN_CSV_FORMAT'),
+            title: this.extensionUtility.translateWhenEnabledAndServiceExist('EXPORT_TO_CSV', 'TEXT_EXPORT_TO_CSV'),
             disabled: false,
             command: commandName,
             positionOrder: 51,
@@ -252,7 +249,7 @@ export class ContextMenuExtension implements Extension {
         menuCustomItems.push(
           {
             iconCssClass: contextMenu.iconExportTextDelimitedCommand || 'fa fa-download',
-            title: this.extensionUtility.translateWhenEnabledAndServiceExist('EXPORT_TO_TAB_DELIMITED', 'TEXT_EXPORT_IN_TEXT_FORMAT'),
+            title: this.extensionUtility.translateWhenEnabledAndServiceExist('EXPORT_TO_TAB_DELIMITED', 'TEXT_EXPORT_TO_TAB_DELIMITED'),
             disabled: false,
             command: commandName,
             positionOrder: 53,
@@ -353,9 +350,13 @@ export class ContextMenuExtension implements Extension {
       if (args && args.grid && args.command) {
         // get the value, if "exportWithFormatter" is set then we'll use the formatter output
         const gridOptions = this.sharedService && this.sharedService.gridOptions || {};
+        const cell = args && args.cell || 0;
+        const row = args && args.row || 0;
+        const column = args && args.column;
+        const dataContext = args && args.dataContext;
         const grid = this.sharedService && this.sharedService.grid;
         const exportOptions = gridOptions && (gridOptions.excelExportOptions || gridOptions.exportOptions);
-        const textToCopy = exportWithFormatterWhenDefined(args.row, args.cell, args.dataContext, args.column, grid, exportOptions);
+        const textToCopy = exportWithFormatterWhenDefined(row, cell, dataContext, column, grid, exportOptions);
 
         // create fake <div> to copy into clipboard & delete it from the DOM once we're done
         const range = document.createRange();
@@ -363,11 +364,13 @@ export class ContextMenuExtension implements Extension {
         $('body').append(tmpElem);
         range.selectNodeContents(tmpElem.get(0));
         const selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-        const success = document.execCommand('copy', false, textToCopy);
-        if (success) {
-          tmpElem.remove();
+        if (selection && selection.addRange && selection.removeAllRanges) {
+          selection.removeAllRanges();
+          selection.addRange(range);
+          const success = document.execCommand('copy', false, textToCopy);
+          if (success) {
+            tmpElem.remove();
+          }
         }
       }
     } catch (e) { }
