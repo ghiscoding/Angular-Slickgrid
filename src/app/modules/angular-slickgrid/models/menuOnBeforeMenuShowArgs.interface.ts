@@ -1,6 +1,9 @@
 import { Column } from './column.interface';
 
-export interface MenuCallbackArgs {
+export interface MenuOption {
+  tooltip: string;
+}
+export interface MenuOnBeforeMenuShowArgs {
   /** Cell or column index */
   cell?: number;
 
@@ -13,6 +16,6 @@ export interface MenuCallbackArgs {
   /** Cell Column definition */
   column: Column;
 
-  /** Cell Data Context(data object) */
-  dataContext?: any;
+  /** Menu DOM element */
+  menu: MenuOption;
 }

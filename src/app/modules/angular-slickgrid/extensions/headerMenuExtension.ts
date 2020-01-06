@@ -10,10 +10,10 @@ import {
   ExtensionName,
   GridOption,
   HeaderMenu,
-  HeaderMenuItem,
-  HeaderMenuOnCommandArgs,
-  HeaderMenuOnBeforeMenuShowArgs,
   Locale,
+  MenuCommandItem,
+  MenuCommandItemCallbackArgs,
+  MenuOnBeforeMenuShowArgs,
   SlickEventHandler,
 } from '../models/index';
 import { FilterService } from '../services/filter.service';
@@ -87,13 +87,13 @@ export class HeaderMenuExtension implements Extension {
         if (this.sharedService.gridOptions.headerMenu.onExtensionRegistered) {
           this.sharedService.gridOptions.headerMenu.onExtensionRegistered(this._addon);
         }
-        this._eventHandler.subscribe(this._addon.onCommand, (e: any, args: HeaderMenuOnCommandArgs) => {
+        this._eventHandler.subscribe(this._addon.onCommand, (e: any, args: MenuCommandItemCallbackArgs) => {
           this.executeHeaderMenuInternalCommands(e, args);
           if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onCommand === 'function') {
             this.sharedService.gridOptions.headerMenu.onCommand(e, args);
           }
         });
-        this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (e: any, args: HeaderMenuOnBeforeMenuShowArgs) => {
+        this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (e: any, args: MenuOnBeforeMenuShowArgs) => {
           if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
             this.sharedService.gridOptions.headerMenu.onBeforeMenuShow(e, args);
           }
@@ -124,11 +124,11 @@ export class HeaderMenuExtension implements Extension {
             };
           }
 
-          const columnHeaderMenuItems: HeaderMenuItem[] = columnDef && columnDef.header && columnDef.header.menu && columnDef.header.menu.items || [];
+          const columnHeaderMenuItems: Array<MenuCommandItem | 'divider'> = columnDef && columnDef.header && columnDef.header.menu && columnDef.header.menu.items || [];
 
           // Sorting Commands
           if (options.enableSorting && columnDef.sortable && headerMenuOptions && !headerMenuOptions.hideSortCommands) {
-            if (columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'sort-asc').length === 0) {
+            if (columnHeaderMenuItems.filter((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === 'sort-asc').length === 0) {
               columnHeaderMenuItems.push({
                 iconCssClass: headerMenuOptions.iconSortAscCommand || 'fa fa-sort-asc',
                 title: options.enableTranslate ? this.translate.instant('SORT_ASCENDING') : this._locales && this._locales.TEXT_SORT_ASCENDING,
@@ -136,7 +136,7 @@ export class HeaderMenuExtension implements Extension {
                 positionOrder: 50
               });
             }
-            if (columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'sort-desc').length === 0) {
+            if (columnHeaderMenuItems.filter((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === 'sort-desc').length === 0) {
               columnHeaderMenuItems.push({
                 iconCssClass: headerMenuOptions.iconSortDescCommand || 'fa fa-sort-desc',
                 title: options.enableTranslate ? this.translate.instant('SORT_DESCENDING') : this._locales && this._locales.TEXT_SORT_DESCENDING,
@@ -146,11 +146,11 @@ export class HeaderMenuExtension implements Extension {
             }
 
             // add a divider (separator) between the top sort commands and the other clear commands
-            if (columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.positionOrder === 52).length === 0) {
+            if (columnHeaderMenuItems.filter((item: MenuCommandItem) => item.hasOwnProperty('command') && item.positionOrder === 52).length === 0) {
               columnHeaderMenuItems.push({ divider: true, command: '', positionOrder: 52 });
             }
 
-            if (!headerMenuOptions.hideClearSortCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'clear-sort').length === 0) {
+            if (!headerMenuOptions.hideClearSortCommand && columnHeaderMenuItems.filter((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === 'clear-sort').length === 0) {
               columnHeaderMenuItems.push({
                 iconCssClass: headerMenuOptions.iconClearSortCommand || 'fa fa-unsorted',
                 title: options.enableTranslate ? this.translate.instant('REMOVE_SORT') : this._locales && this._locales.TEXT_REMOVE_SORT,
@@ -162,7 +162,7 @@ export class HeaderMenuExtension implements Extension {
 
           // Filtering Commands
           if (options.enableFiltering && columnDef.filterable && headerMenuOptions && !headerMenuOptions.hideFilterCommands) {
-            if (!headerMenuOptions.hideClearFilterCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'clear-filter').length === 0) {
+            if (!headerMenuOptions.hideClearFilterCommand && columnHeaderMenuItems.filter((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === 'clear-filter').length === 0) {
               columnHeaderMenuItems.push({
                 iconCssClass: headerMenuOptions.iconClearFilterCommand || 'fa fa-filter',
                 title: options.enableTranslate ? this.translate.instant('REMOVE_FILTER') : this._locales && this._locales.TEXT_REMOVE_FILTER,
@@ -173,7 +173,7 @@ export class HeaderMenuExtension implements Extension {
           }
 
           // Hide Column Command
-          if (headerMenuOptions && !headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter((item: HeaderMenuItem) => item.command === 'hide').length === 0) {
+          if (headerMenuOptions && !headerMenuOptions.hideColumnHideCommand && columnHeaderMenuItems.filter((item: MenuCommandItem) => item.hasOwnProperty('command') && item.command === 'hide').length === 0) {
             columnHeaderMenuItems.push({
               iconCssClass: headerMenuOptions.iconColumnHideCommand || 'fa fa-times',
               title: options.enableTranslate ? this.translate.instant('HIDE_COLUMN') : this._locales && this._locales.TEXT_HIDE_COLUMN,
@@ -234,24 +234,26 @@ export class HeaderMenuExtension implements Extension {
     columnDefinitions.forEach((columnDef: Column) => {
       if (columnDef && columnDef.header && columnDef.header && columnDef.header.menu && columnDef.header.menu.items) {
         if (!columnDef.excludeFromHeaderMenu) {
-          const columnHeaderMenuItems: HeaderMenuItem[] = columnDef.header.menu.items || [];
-          columnHeaderMenuItems.forEach((item) => {
-            switch (item.command) {
-              case 'clear-filter':
-                item.title = this.translate.instant('REMOVE_FILTER') || this._locales && this._locales.TEXT_REMOVE_FILTER;
-                break;
-              case 'clear-sort':
-                item.title = this.translate.instant('REMOVE_SORT') || this._locales && this._locales.TEXT_REMOVE_SORT;
-                break;
-              case 'sort-asc':
-                item.title = this.translate.instant('SORT_ASCENDING') || this._locales && this._locales.TEXT_SORT_ASCENDING;
-                break;
-              case 'sort-desc':
-                item.title = this.translate.instant('SORT_DESCENDING') || this._locales && this._locales.TEXT_SORT_DESCENDING;
-                break;
-              case 'hide':
-                item.title = this.translate.instant('HIDE_COLUMN') || this._locales && this._locales.TEXT_HIDE_COLUMN;
-                break;
+          const columnHeaderMenuItems: Array<MenuCommandItem | 'divider'> = columnDef.header.menu.items || [];
+          columnHeaderMenuItems.forEach((item: MenuCommandItem) => {
+            if (item.hasOwnProperty('command')) {
+              switch (item.command) {
+                case 'clear-filter':
+                  item.title = this.translate.instant('REMOVE_FILTER') || this._locales && this._locales.TEXT_REMOVE_FILTER;
+                  break;
+                case 'clear-sort':
+                  item.title = this.translate.instant('REMOVE_SORT') || this._locales && this._locales.TEXT_REMOVE_SORT;
+                  break;
+                case 'sort-asc':
+                  item.title = this.translate.instant('SORT_ASCENDING') || this._locales && this._locales.TEXT_SORT_ASCENDING;
+                  break;
+                case 'sort-desc':
+                  item.title = this.translate.instant('SORT_DESCENDING') || this._locales && this._locales.TEXT_SORT_DESCENDING;
+                  break;
+                case 'hide':
+                  item.title = this.translate.instant('HIDE_COLUMN') || this._locales && this._locales.TEXT_HIDE_COLUMN;
+                  break;
+              }
             }
 
             // re-translate if there's a "titleKey"
@@ -265,14 +267,14 @@ export class HeaderMenuExtension implements Extension {
   }
 
   /** Clear the Filter on the current column (if it's actually filtered) */
-  private clearColumnFilter(event: Event, args: HeaderMenuOnCommandArgs) {
+  private clearColumnFilter(event: Event, args: MenuCommandItemCallbackArgs) {
     if (args && args.column) {
       this.filterService.clearFilterByColumnId(event, args.column.id);
     }
   }
 
   /** Clear the Sort on the current column (if it's actually sorted) */
-  private clearColumnSort(event: Event, args: HeaderMenuOnCommandArgs) {
+  private clearColumnSort(event: Event, args: MenuCommandItemCallbackArgs) {
     if (args && args.column && this.sharedService) {
       // get current sorted columns, prior to calling the new column sort
       const allSortedCols: ColumnSort[] = this.sortService.getCurrentColumnSorts();
@@ -304,7 +306,7 @@ export class HeaderMenuExtension implements Extension {
   }
 
   /** Execute the Header Menu Commands that was triggered by the onCommand subscribe */
-  private executeHeaderMenuInternalCommands(event: Event, args: HeaderMenuOnCommandArgs) {
+  private executeHeaderMenuInternalCommands(event: Event, args: MenuCommandItemCallbackArgs) {
     if (args && args.command) {
       switch (args.command) {
         case 'hide':
@@ -331,7 +333,7 @@ export class HeaderMenuExtension implements Extension {
   }
 
   /** Sort the current column */
-  private sortColumn(event: Event, args: HeaderMenuOnCommandArgs, isSortingAsc = true) {
+  private sortColumn(event: Event, args: MenuCommandItemCallbackArgs, isSortingAsc = true) {
     if (args && args.column) {
       // get previously sorted columns
       const sortedColsWithoutCurrent: ColumnSort[] = this.sortService.getCurrentColumnSorts(args.column.id + '');

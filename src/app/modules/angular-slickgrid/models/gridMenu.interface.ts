@@ -1,8 +1,9 @@
 import { GridMenuItem } from './gridMenuItem.interface';
+import { MenuCallbackArgs } from './menuCallbackArgs.interface';
 
 export interface GridMenu {
   /** Array of Custom Items (title, command, disabled, ...) */
-  customItems?: GridMenuItem[];
+  customItems?: Array<GridMenuItem | 'divider'>;
 
   /** Defaults to "Commands" which is the title that shows up over the custom commands list */
   customTitle?: string;
@@ -96,6 +97,13 @@ export interface GridMenu {
 
   /** Same as "syncResizeTitle", except that it's a translation key which can be used on page load and/or when switching locale */
   syncResizeTitleKey?: string;
+
+  // --
+  // action/override callbacks
+
+  /** Callback method that user can override the default behavior of enabling/disabling an item from the list. */
+  menuUsabilityOverride?: (args: MenuCallbackArgs) => boolean;
+
 
   // --
   // Events

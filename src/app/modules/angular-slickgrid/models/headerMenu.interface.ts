@@ -1,5 +1,5 @@
-import { HeaderMenuOnBeforeMenuShowArgs } from './headerMenuOnBeforeMenuShowArgs.interface';
-import { HeaderButtonOnCommandArgs } from './headerButtonOnCommandArgs.interface';
+import { MenuCommandItemCallbackArgs } from './menuCommandItemCallbackArgs.interface';
+import { MenuOnBeforeMenuShowArgs } from './menuOnBeforeMenuShowArgs.interface';
 
 export interface HeaderMenu {
   /** Auto-align drop menu to the left when not enough viewport space to show on the right */
@@ -73,8 +73,8 @@ export interface HeaderMenu {
   onExtensionRegistered?: (plugin: any) => void;
 
   /** Fired before the header menu shows up. */
-  onBeforeMenuShow?: (e: Event, args: HeaderMenuOnBeforeMenuShowArgs) => void;
+  onBeforeMenuShow?: (e: Event, args: MenuOnBeforeMenuShowArgs) => void;
 
   /** Fired when a command is clicked */
-  onCommand?: (e: Event, args: HeaderButtonOnCommandArgs) => void;
+  onCommand?: (e: Event, args: MenuCommandItemCallbackArgs) => void;
 }

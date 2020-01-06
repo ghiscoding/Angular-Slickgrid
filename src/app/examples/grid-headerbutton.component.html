@@ -1,10 +1,10 @@
 <div class="container-fluid">
-    <h2>{{title}}</h2>
-    <div class="subtitle" [innerHTML]="subTitle"></div>
+  <h2>{{title}}</h2>
+  <div class="subtitle" [innerHTML]="subTitle"></div>
 
-    <div class="col-sm-12">
-        <angular-slickgrid gridId="grid2" (onDataviewCreated)="dataviewReady($event)" (onGridCreated)="gridReady($event)"
-            [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
-        </angular-slickgrid>
-    </div>
+  <div class="col-sm-12">
+    <angular-slickgrid gridId="grid7" (onDataviewCreated)="dataviewReady($event)" (onGridCreated)="gridReady($event)"
+      [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions" [dataset]="dataset">
+    </angular-slickgrid>
+  </div>
 </div>

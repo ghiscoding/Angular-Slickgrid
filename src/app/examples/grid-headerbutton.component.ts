@@ -25,6 +25,12 @@ export class GridHeaderButtonComponent implements OnInit, OnDestroy {
       <li>Mouse hover the 2nd column to see it's icon/command</li>
       <li>For all the other columns, click on top-right red circle icon to enable highlight of negative numbers.</li>
       <li>Note: The "Header Button" & "Header Menu" Plugins cannot be used at the same time</li>
+      <li>Use override callback functions to change the properties of show/hide, enable/disable the menu or certain item(s) from the list</li>
+      <ol>
+        <li>These callbacks are: "itemVisibilityOverride", "itemUsabilityOverride"</li>
+        <li>for example the "Column E" does not show the header button via "itemVisibilityOverride"</li>
+        <li>for example the "Column J" header button is displayed but it not usable via "itemUsabilityOverride"</li>
+      </ol>
     </ul>
   `;
 
@@ -48,6 +54,7 @@ export class GridHeaderButtonComponent implements OnInit, OnDestroy {
       enableFiltering: false,
       enableCellNavigation: true,
       headerButton: {
+        // you can use the "onCommand" (in Grid Options) and/or the "action" callback (in Column Definition)
         onCommand: (e, args) => {
           const column = args.column;
           const button = args.button;
@@ -82,12 +89,12 @@ export class GridHeaderButtonComponent implements OnInit, OnDestroy {
 
   getData() {
     // Set up some test columns.
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 10; i++) {
       this.columnDefinitions.push({
         id: i,
-        name: 'Column' + (i + 1),
+        name: 'Column ' + String.fromCharCode('A'.charCodeAt(0) + i),
         field: i + '',
-        width: 100, // have the 2 first columns wider
+        width: i === 0 ? 70 : 100, // have the 2 first columns wider
         sortable: true,
         formatter: highlightingFormatter,
         header: {
@@ -95,7 +102,20 @@ export class GridHeaderButtonComponent implements OnInit, OnDestroy {
             {
               cssClass: 'fa fa-circle-o red faded',
               command: 'toggle-highlight',
-              tooltip: 'Highlight negative numbers.'
+              tooltip: 'Highlight negative numbers.',
+              itemVisibilityOverride: (args) => {
+                // for example don't show the header button on column "E"
+                return args.column.name !== 'Column E';
+              },
+              itemUsabilityOverride: (args) => {
+                // for example the button usable everywhere except on last column ='J"
+                return args.column.name !== 'Column J';
+              },
+              action: (e, args) => {
+                // you can use the "action" callback and/or subscribe to the "onCallback" event, they both have the same arguments
+                // do something
+                console.log(`execute a callback action to "${args.command}" on ${args.column.name}`);
+              }
             }
           ]
         }

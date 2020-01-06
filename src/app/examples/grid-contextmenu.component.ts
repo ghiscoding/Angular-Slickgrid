@@ -59,7 +59,7 @@ const taskTranslateFormatter: Formatter = (row: number, cell: number, value: any
   encapsulation: ViewEncapsulation.None
 })
 export class GridContextMenuComponent implements OnInit {
-  title = 'Example 26: Cell Menu / Context Menu';
+  title = 'Example 26: Cell Menu & Context Menu Plugins';
   subTitle = `Add Cell Menu and Context Menu
     <ul>
       <li>This example demonstrates 2 SlickGrid plugins

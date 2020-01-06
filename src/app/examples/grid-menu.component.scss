@@ -10,3 +10,19 @@ $grid-menu-checkbox-opacity-hover:        1;
 
 /* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
 @import '../modules/angular-slickgrid/styles/slickgrid-theme-bootstrap.scss';
+
+.blue {
+  color: rgb(73, 73, 255);
+}
+.orange {
+  color: orange;
+}
+.red {
+  color: red;
+}
+.bold {
+  font-weight: bold;
+}
+.italic {
+  font-style: italic;
+}

@@ -11,6 +11,8 @@ import {
   GridMenu,
   GridMenuItem,
   Locale,
+  MenuCommandItemCallbackArgs,
+  MenuOnBeforeMenuShowArgs,
   SlickEventHandler,
 } from '../models';
 import { ExcelExportService } from '../services/excelExport.service';
@@ -110,13 +112,13 @@ export class GridMenuExtension implements Extension {
             this.sharedService.visibleColumns = args.columns;
           }
         });
-        this._eventHandler.subscribe(this._addon.onCommand, (e: any, args: any) => {
+        this._eventHandler.subscribe(this._addon.onCommand, (e: any, args: MenuCommandItemCallbackArgs) => {
           this.executeGridMenuInternalCustomCommands(e, args);
           if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onCommand === 'function') {
             this.sharedService.gridOptions.gridMenu.onCommand(e, args);
           }
         });
-        this._eventHandler.subscribe(this._addon.onMenuClose, (e: any, args: CellArgs) => {
+        this._eventHandler.subscribe(this._addon.onMenuClose, (e: any, args: MenuOnBeforeMenuShowArgs) => {
           if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onMenuClose === 'function') {
             this.sharedService.gridOptions.gridMenu.onMenuClose(e, args);
           }
@@ -186,15 +188,15 @@ export class GridMenuExtension implements Extension {
   // ------------------
 
   /** Create Grid Menu with Custom Commands if user has enabled Filters and/or uses a Backend Service (OData, GraphQL) */
-  private addGridMenuCustomCommands(originalCustomItems: GridMenuItem[]) {
+  private addGridMenuCustomCommands(originalCustomItems: Array<GridMenuItem | 'divider'>) {
     const backendApi = this.sharedService.gridOptions.backendServiceApi || null;
-    const gridMenuCustomItems: GridMenuItem[] = [];
+    const gridMenuCustomItems: Array<GridMenuItem | 'divider'> = [];
 
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableFiltering) {
       // show grid menu: Clear all Filters
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllFiltersCommand) {
         const commandName = 'clear-filter';
-        if (!originalCustomItems.find((item) => item.command === commandName)) {
+        if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
           gridMenuCustomItems.push(
             {
               iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearAllFiltersCommand || 'fa fa-filter text-danger',
@@ -210,7 +212,7 @@ export class GridMenuExtension implements Extension {
       // show grid menu: toggle filter row
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideToggleFilterCommand) {
         const commandName = 'toggle-filter';
-        if (!originalCustomItems.find((item) => item.command === commandName)) {
+        if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
           gridMenuCustomItems.push(
             {
               iconCssClass: this.sharedService.gridOptions.gridMenu.iconToggleFilterCommand || 'fa fa-random',
@@ -226,7 +228,7 @@ export class GridMenuExtension implements Extension {
       // show grid menu: refresh dataset
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideRefreshDatasetCommand && backendApi) {
         const commandName = 'refresh-dataset';
-        if (!originalCustomItems.find((item) => item.command === commandName)) {
+        if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
           gridMenuCustomItems.push(
             {
               iconCssClass: this.sharedService.gridOptions.gridMenu.iconRefreshDatasetCommand || 'fa fa-refresh',
@@ -244,7 +246,7 @@ export class GridMenuExtension implements Extension {
       // show grid menu: toggle pre-header row
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideTogglePreHeaderCommand) {
         const commandName = 'toggle-preheader';
-        if (!originalCustomItems.find((item) => item.command === commandName)) {
+        if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
           gridMenuCustomItems.push(
             {
               iconCssClass: this.sharedService.gridOptions.gridMenu.iconTogglePreHeaderCommand || 'fa fa-random',
@@ -262,7 +264,7 @@ export class GridMenuExtension implements Extension {
       // show grid menu: Clear all Sorting
       if (this.sharedService.gridOptions && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideClearAllSortingCommand) {
         const commandName = 'clear-sorting';
-        if (!originalCustomItems.find((item) => item.command === commandName)) {
+        if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
           gridMenuCustomItems.push(
             {
               iconCssClass: this.sharedService.gridOptions.gridMenu.iconClearAllSortingCommand || 'fa fa-unsorted text-danger',
@@ -279,7 +281,7 @@ export class GridMenuExtension implements Extension {
     // show grid menu: Export to file
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportCsvCommand) {
       const commandName = 'export-csv';
-      if (!originalCustomItems.find((item) => item.command === commandName)) {
+      if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
         gridMenuCustomItems.push(
           {
             iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportCsvCommand || 'fa fa-download',
@@ -295,7 +297,7 @@ export class GridMenuExtension implements Extension {
     // show grid menu: Export to Excel
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExcelExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportExcelCommand) {
       const commandName = 'export-excel';
-      if (!originalCustomItems.find((item) => item.command === commandName)) {
+      if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
         gridMenuCustomItems.push(
           {
             iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportExcelCommand || 'fa fa-file-excel-o text-success',
@@ -311,7 +313,7 @@ export class GridMenuExtension implements Extension {
     // show grid menu: export to text file as tab delimited
     if (this.sharedService.gridOptions && this.sharedService.gridOptions.enableExport && this.sharedService.gridOptions.gridMenu && !this.sharedService.gridOptions.gridMenu.hideExportTextDelimitedCommand) {
       const commandName = 'export-text-delimited';
-      if (!originalCustomItems.find((item) => item.command === commandName)) {
+      if (!originalCustomItems.find((item: GridMenuItem) => item.hasOwnProperty('command') && item.command === commandName)) {
         gridMenuCustomItems.push(
           {
             iconCssClass: this.sharedService.gridOptions.gridMenu.iconExportTextDelimitedCommand || 'fa fa-download',

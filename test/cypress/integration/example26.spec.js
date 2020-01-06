@@ -1,12 +1,12 @@
 /// <reference types="cypress" />
 
-describe('Example 26 - Cell Menu / Context Menu', () => {
+describe('Example 26 - Cell Menu & Context Menu Plugins', () => {
   const fullEnglishTitles = ['#', 'Title', '% Complete', 'Start', 'Finish', 'Priority', 'Completed', 'Action'];
   const fullFrenchTitles = ['#', 'Titre', '% Achevée', 'Début', 'Fin', 'Priorité', 'Terminé', 'Action'];
 
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/context`);
-    cy.get('h2').should('contain', 'Example 26: Cell Menu / Context Menu');
+    cy.get('h2').should('contain', 'Example 26: Cell Menu & Context Menu Plugins');
   });
 
   describe('English Locale', () => {
@@ -100,8 +100,8 @@ describe('Example 26 - Cell Menu / Context Menu', () => {
     });
 
     it('should change the Completed to "False" in that same Action and then expect the "Command 2" to enabled and clickable', () => {
-      const stub = cy.stub();
-      cy.on('window:alert', stub);
+      const alertStub = cy.stub();
+      cy.on('window:alert', alertStub);
 
       cy.get('.slick-cell-menu .slick-cell-menu-option-list')
         .find('.slick-cell-menu-item')
@@ -116,7 +116,7 @@ describe('Example 26 - Cell Menu / Context Menu', () => {
       cy.get('.slick-cell-menu .slick-cell-menu-item')
         .contains('Command 2')
         .click()
-        .then(() => expect(stub.getCall(0)).to.be.calledWith('Command 2'));
+        .then(() => expect(alertStub.getCall(0)).to.be.calledWith('Command 2'));
     });
 
     it('should expect the Context Menu now have the "Help" menu when Completed is set to False', () => {

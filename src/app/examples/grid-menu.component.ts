@@ -79,6 +79,10 @@ export class GridMenuComponent implements OnInit {
       enableFiltering: true,
       enableCellNavigation: true,
       gridMenu: {
+        menuUsabilityOverride: (args) => {
+          // we could disable the menu entirely by returning false
+          return true;
+        },
         // all titles optionally support translation keys, if you wish to use that feature then use the title properties with the 'Key' suffix (e.g: titleKey)
         // example "customTitle" for a plain string OR "customTitleKey" to use a translation key
         customTitleKey: 'CUSTOM_COMMANDS',
@@ -98,13 +102,43 @@ export class GridMenuComponent implements OnInit {
             titleKey: 'HELP',
             disabled: false,
             command: 'help',
-            positionOrder: 99
+            positionOrder: 90,
+            cssClass: 'bold',     // container css class
+            textCssClass: 'blue'  // just the text css class
           },
-          // you can also add divider between commands (command is a required property but you can set it to empty string)
+          // you can pass divider as a string or an object with a boolean (if sorting by position, then use the object)
+          // note you should use the "divider" string only when items array is already sorted and positionOrder are not specified
+          { divider: true, command: '', positionOrder: 89 },
+          // 'divider',
           {
-            divider: true,
-            command: '',
-            positionOrder: 98
+            title: 'Command 1',
+            command: 'command1',
+            positionOrder: 91,
+            cssClass: 'orange',
+            // you can use the "action" callback and/or use "onCallback" callback from the grid options, they both have the same arguments
+            action: (e, args) => alert(args.command),
+            itemUsabilityOverride: (args) => {
+              // for example disable the command if there's any filter entered
+              if (this.angularGrid) {
+                return this.isObjectEmpty(this.angularGrid.filterService.getColumnFilters());
+              }
+              return true;
+            },
+          },
+          {
+            title: 'Command 2',
+            command: 'command2',
+            positionOrder: 92,
+            cssClass: 'red',        // container css class
+            textCssClass: 'italic', // just the text css class
+            action: (e, args) => alert(args.command),
+            itemVisibilityOverride: (args) => {
+              // for example hide this command from the menu if there's any filter entered
+              if (this.angularGrid) {
+                return this.isObjectEmpty(this.angularGrid.filterService.getColumnFilters());
+              }
+              return true;
+            },
           },
           {
             title: 'Disabled command',
@@ -113,6 +147,7 @@ export class GridMenuComponent implements OnInit {
             positionOrder: 98
           }
         ],
+        // you can use the "action" callback and/or use "onCallback" callback from the grid options, they both have the same arguments
         onCommand: (e, args) => {
           if (args.command === 'help') {
             alert('Please help!!!');
@@ -169,5 +204,14 @@ export class GridMenuComponent implements OnInit {
       const gridMenuInstance = this.angularGrid.extensionService.getSlickgridAddonInstance(ExtensionName.gridMenu);
       gridMenuInstance.showGridMenu(e);
     }
+  }
+
+  private isObjectEmpty(obj) {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && obj[key] !== '') {
+        return false;
+      }
+    }
+    return true;
   }
 }
