@@ -301,7 +301,7 @@ export class GridContextMenuComponent implements OnInit {
         alert('Please help!');
         break;
       case 'delete-row':
-        if (confirm(`Do you really want to delete row ${args.row + 1} with ${dataContext.title}?`)) {
+        if (confirm(`Do you really want to delete row ${args.row + 1} with ${this.translate.instant('TASK_X', { x: dataContext.id })}`)) {
           this.angularGrid.dataView.deleteItem(dataContext.id);
         }
         break;

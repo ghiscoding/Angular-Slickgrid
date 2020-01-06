@@ -1,17 +1,17 @@
 import { Column, ExportOption, ExcelExportOption, Formatter } from '../models/index';
 
-export function exportWithFormatterWhenDefined(row: number, col: number, dataContext: any, columnDef: Column, grid: any, exportOptions: ExportOption | ExcelExportOption) {
+export function exportWithFormatterWhenDefined(row: number, col: number, dataContext: any, columnDef: Column, grid: any, exportOptions?: ExportOption | ExcelExportOption) {
   let output = '';
   let isEvaluatingFormatter = false;
 
   // first check if there are any export options provided (as Grid Options)
-  if (exportOptions) {
-    isEvaluatingFormatter = exportOptions.exportWithFormatter;
+  if (exportOptions && exportOptions.hasOwnProperty('exportWithFormatter')) {
+    isEvaluatingFormatter = !!exportOptions.exportWithFormatter;
   }
 
   // second check if "exportWithFormatter" is provided in the column definition, if so it will have precendence over the Grid Options exportOptions
-  if (columnDef.hasOwnProperty('exportWithFormatter')) {
-    isEvaluatingFormatter = columnDef.exportWithFormatter;
+  if (columnDef && columnDef.hasOwnProperty('exportWithFormatter')) {
+    isEvaluatingFormatter = !!columnDef.exportWithFormatter;
   }
 
   // did the user provide a Custom Formatter for the export
