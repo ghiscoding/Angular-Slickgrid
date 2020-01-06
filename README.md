@@ -27,7 +27,7 @@ You like and use this great library `Angular-Slickgrid`? Please upvote :star: an
 - [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos) / [examples repo](https://github.com/ghiscoding/angular-slickgrid-demos/tree/master/bootstrap4-demo-with-translate)
 
 #### Working Demo
-For a complete and working local demo, you can clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. That repo is updated frequently and is used for both the [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
+For a complete and working local demo, you can clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository. That repo is updated frequently and is used for demoing both the [Bootstrap 3 demo](https://ghiscoding.github.io/Angular-Slickgrid) and [Bootstrap 4 demo](https://ghiscoding.github.io/angular-slickgrid-demos).
 ```bash
 git clone https://github.com/ghiscoding/angular-slickgrid-demos
 cd bootstrap4-demo-with-translate
@@ -42,10 +42,10 @@ npm start
   - since version `2.11.0`, you can also change your build `target` to `ES2015` for modern browser.
 
 ### Fully Tested
-Angular-Slickgrid recently reached **100%** Test Coverage, we are talking about ~8200 lines of code that are now fully tested with [Jest](https://jestjs.io/).
+Angular-Slickgrid recently reached **100%** Test Coverage, we are talking about ~8200 lines of code (~2400 unit tests) that are now fully tested with [Jest](https://jestjs.io/).
 
 ### Installation
-Refer to the [Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step) and/or clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos).
+Refer to the [Wiki - HOWTO Step by Step](https://github.com/ghiscoding/angular-slickgrid/wiki/HOWTO---Step-by-Step) and/or clone the [Angular-Slickgrid Demos](https://github.com/ghiscoding/angular-slickgrid-demos) repository.
 
 #### How to load data with `HttpClient`?
 You might notice that all demos are coded with mocked dataset in each examples, that is mainly for demo purposes, but you might be wondering how to connect this with an `HttpClient`? Easy... just replace the mocked data, assigned to the `dataset` property, by your `HttpClient` call and that's it. The `dataset` property can be changed or refreshed at any time, which is why you can use local data and/or connect it to a `Promise` or an `Observable` with `HttpClient` (internally it's just a SETTER that refreshes the grid). See [Example 24](https://ghiscoding.github.io/Angular-Slickgrid/#/gridtabs) for a demo showing how to load a JSON file with `HttpClient`.
