@@ -25,7 +25,7 @@ export function exportWithFormatterWhenDefined(row: number, col: number, dataCon
     fieldProperty = (props.length > 0) ? props[0] : columnDef.field;
   }
 
-  if (dataContext && dataContext.hasOwnProperty(fieldProperty) && exportCustomFormatter !== undefined && exportCustomFormatter !== undefined) {
+  if (dataContext && dataContext.hasOwnProperty(fieldProperty) && exportCustomFormatter !== undefined) {
     const formattedData = exportCustomFormatter(row, col, dataContext[fieldProperty], columnDef, dataContext, grid);
     output = formattedData as string;
     if (formattedData && typeof formattedData === 'object' && formattedData.hasOwnProperty('text')) {
