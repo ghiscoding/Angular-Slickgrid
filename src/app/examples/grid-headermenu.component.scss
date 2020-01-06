@@ -1,3 +1,12 @@
+$header-menu-button-border:               1px solid #cfcfcf;
+$header-menu-button-border-width:         0px 1px;
+$header-menu-button-icon:                 "\f0d7";
+$header-menu-button-width:                16px;
+$header-menu-button-padding:              10px 0 0 3px;
+
+/* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
+@import '../modules/angular-slickgrid/styles/slickgrid-theme-bootstrap.scss';
+
 .blue {
   color: rgb(73, 73, 255);
 }

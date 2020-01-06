@@ -260,17 +260,20 @@
   cursor: pointer;
   display: none;
   position: absolute;
+  border: $header-menu-button-border;
+  border-width: $header-menu-button-border-width;
+  padding: $header-menu-button-padding;
 
   // The next few items are already defined in the slick-headermenu file and it should stay that way, *unless* you also replace the button image included there.
   bottom: 0;
   right: 3px;
   top: 0;
-  width: 14px;
+  width: $header-menu-button-width;
 }
 .slick-header-menubutton:before {
   font-family: $icon-font-family;
   font-size: 14px;
-  content: "\f13a";
+  content: $header-menu-button-icon;
 }
 
 .slick-header-column:hover {
@@ -289,14 +292,6 @@
   z-index: 100000;
   cursor: default;
   display: inline-block;
-
-  button {
-    border: $header-menu-button-border;
-    background-color: $header-menu-button-bg-color;
-    width: 45px;
-    padding: 4px;
-    margin: 4px 4px 4px 0;
-  }
 
   .filter {
     border: 1px solid #BFBDBD;
