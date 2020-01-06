@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.14.5](https://github.com/ghiscoding/angular-slickgrid/compare/v2.14.4...v2.14.5) (2020-01-06)
+
+
+### Features
+
+* **cellMenu:** starting adding new CellMenu Extension ([5ab64a1](https://github.com/ghiscoding/angular-slickgrid/commit/5ab64a12406ee7eb1374ca2d284250f12cea89c5))
+* **github:** change issue templates and add auto close bot ([90271bf](https://github.com/ghiscoding/angular-slickgrid/commit/90271bf1fa5079f9a481f196717ee1d520e8a7ae))
+* **menu:** add action & override callbacks to all Menu plugins ([a7967bb](https://github.com/ghiscoding/angular-slickgrid/commit/a7967bbae769b73f9a21e8454542a39b6a43660e))
+* **menu:** add Context Menu feature POC ([8d04406](https://github.com/ghiscoding/angular-slickgrid/commit/8d04406545cb4687966784128bf8279055374b07))
+* **menu:** starting adding new ContextMenu Extension ([95d3227](https://github.com/ghiscoding/angular-slickgrid/commit/95d322782f1eff77dc8e084a12ad6aab50c8bdb2))
+* **styling:** change Column Picker & Grid Menu styling ([b9dc977](https://github.com/ghiscoding/angular-slickgrid/commit/b9dc977a03e9bd4ed1740430d1c22934453bc4a6))
+* **styling:** change Column Picker & Grid Menu styling ([d91086b](https://github.com/ghiscoding/angular-slickgrid/commit/d91086bf1734b392adaf4c13cb5e42672cb5eb8e))
+
+
+### Bug Fixes
+
+* **graphql:** disable pagination should remove any page info from query ([63190c8](https://github.com/ghiscoding/angular-slickgrid/commit/63190c8bdca3312a317480772c48fdf7bd7edb50))
+* **sort:** add sort icons to grouping examples ([0bb9844](https://github.com/ghiscoding/angular-slickgrid/commit/0bb98444a9be52d20e0f77e78b61c163ca7c0a82))
+* **translations:** align all Export translations and add missing locales ([d3e45bc](https://github.com/ghiscoding/angular-slickgrid/commit/d3e45bc799aa7fad0b7fe615effd1a0a6b502786))
+
 ### [2.14.4](https://github.com/ghiscoding/angular-slickgrid/compare/v2.14.3...v2.14.4) (2019-12-06)
 
 
