@@ -1,7 +1,6 @@
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Constants } from '../constants';
 import {
   Column,
   ContextMenu,
@@ -30,7 +29,6 @@ declare var Slick: any;
 export class ContextMenuExtension implements Extension {
   private _addon: any;
   private _eventHandler: SlickEventHandler;
-  private _locales: Locale;
   private _userOriginalContextMenu: ContextMenu;
 
   constructor(
@@ -78,9 +76,6 @@ export class ContextMenuExtension implements Extension {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions && this.sharedService.gridOptions.contextMenu) {
       // keep original user context menu, useful when switching locale to translate
       this._userOriginalContextMenu = { ...this.sharedService.gridOptions.contextMenu };
-
-      // get locales provided by user in main file or else use default English locales via the Constants
-      this._locales = this.sharedService.gridOptions && this.sharedService.gridOptions.locales || Constants.locales;
 
       // dynamically import the SlickGrid plugin (addon) with RequireJS
       this.extensionUtility.loadExtensionDynamically(ExtensionName.contextMenu);
@@ -210,7 +205,7 @@ export class ContextMenuExtension implements Extension {
         menuCustomItems.push(
           {
             iconCssClass: contextMenu.iconExportCsvCommand || 'fa fa-download',
-            title: this.extensionUtility.translateWhenEnabledAndServiceExist('EXPORT_TO_CSV', 'TEXT_EXPORT_IN_CSV_FORMAT'),
+            title: this.extensionUtility.translateWhenEnabledAndServiceExist('EXPORT_TO_CSV', 'TEXT_EXPORT_TO_CSV'),
             disabled: false,
             command: commandName,
             positionOrder: 51,
@@ -252,7 +247,7 @@ export class ContextMenuExtension implements Extension {
         menuCustomItems.push(
           {
             iconCssClass: contextMenu.iconExportTextDelimitedCommand || 'fa fa-download',
-            title: this.extensionUtility.translateWhenEnabledAndServiceExist('EXPORT_TO_TAB_DELIMITED', 'TEXT_EXPORT_IN_TEXT_FORMAT'),
+            title: this.extensionUtility.translateWhenEnabledAndServiceExist('EXPORT_TO_TAB_DELIMITED', 'TEXT_EXPORT_TO_TAB_DELIMITED'),
             disabled: false,
             command: commandName,
             positionOrder: 53,
