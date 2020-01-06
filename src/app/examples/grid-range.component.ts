@@ -188,7 +188,7 @@ export class GridRangeComponent implements OnInit {
     for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
       const randomDuration = randomBetween(0, 365);
       const randomYear = randomBetween(moment().year(), moment().year() + 1);
-      const randomMonth = randomBetween(1, 12);
+      const randomMonth = randomBetween(0, 12);
       const randomDay = randomBetween(10, 28);
       const randomPercent = randomBetween(0, 100);
 
@@ -200,7 +200,7 @@ export class GridRangeComponent implements OnInit {
         percentComplete: randomPercent,
         percentCompleteNumber: randomPercent,
         start: (i % 4) ? null : new Date(randomYear, randomMonth, randomDay),          // provide a Date format
-        finish: new Date(randomYear, (randomMonth + 1), randomDay),
+        finish: new Date(randomYear, randomMonth, randomDay),
         completed: (randomPercent === 100) ? true : false,
       });
     }
