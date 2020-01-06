@@ -102,7 +102,7 @@
 
   input[type=checkbox] + label:before {
     cursor: pointer;
-    content: $column-picker-checkbox-icon;
+    content: $column-picker-checkbox-icon-unchecked;
     color: $column-picker-checkbox-color;
     display: inline-block;
     font-weight: bold;
@@ -110,6 +110,7 @@
     font-size: $column-picker-checkbox-size;
     opacity: $column-picker-checkbox-opacity; /* unchecked icon */
     margin-right: 4px;
+    width: $column-picker-checkbox-width;
   }
 
   input[type=checkbox] + label:hover:before {
@@ -118,6 +119,8 @@
 
   input[type=checkbox]:checked + label:before {
     opacity: 1; /* checked icon */
+    content: $column-picker-checkbox-icon-checked;
+    width: $column-picker-checkbox-width;
   }
 }
 
@@ -291,7 +294,7 @@
 
   input[type=checkbox] + label:before {
     cursor: pointer;
-    content: $grid-menu-checkbox-icon;
+    content: $grid-menu-checkbox-icon-unchecked;
     color: $grid-menu-checkbox-color;
     display: inline-block;
     font-weight: bold;
@@ -299,6 +302,7 @@
     font-size: $grid-menu-checkbox-size;
     opacity: $grid-menu-checkbox-opacity; /* unchecked icon */
     margin-right: 4px;
+    width: $grid-menu-checkbox-width;
   }
 
   input[type=checkbox] + label:hover:before {
@@ -306,7 +310,9 @@
   }
 
   input[type=checkbox]:checked + label:before {
+    content: $grid-menu-checkbox-icon-checked;
     opacity: 1; /* checked icon */
+    width: $grid-menu-checkbox-width;
   }
 }
 
