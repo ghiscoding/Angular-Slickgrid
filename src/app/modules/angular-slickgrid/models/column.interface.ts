@@ -7,9 +7,9 @@ import { Formatter } from './formatter.interface';
 import { Grouping } from './grouping.interface';
 import { GroupTotalsFormatter } from './groupTotalsFormatter.interface';
 import { HeaderButtonItem } from './headerButtonItem.interface';
+import { MenuCommandItem } from './menuCommandItem.interface';
 import { OnEventArgs } from './onEventArgs.interface';
 import { Sorter } from './sorter.interface';
-import { MenuCommandItem } from './menuCommandItem.interface';
 
 export interface Column {
   /** async background post-rendering formatter */

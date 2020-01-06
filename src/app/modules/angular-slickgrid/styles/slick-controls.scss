@@ -22,10 +22,12 @@
 
   > .close {
     float: right;
-    width: 20px;
-    height: 25px;
-    padding: 2px;
-    background-color: $column-picker-close-background-color;
+    width: $column-picker-close-width;
+    height: $column-picker-close-height;
+    margin: $column-picker-close-margin;
+    padding: $column-picker-close-padding;
+
+    background-color: $column-picker-close-bg-color;
     border: $column-picker-close-border;
 
     > span {
@@ -68,10 +70,57 @@
     display: none;
   }
 
+  li {
+    border: $column-picker-item-border;
+    border-radius: $column-picker-item-border-radius;
+    padding: $column-picker-item-padding;
+    list-style: none outside none;
+    margin: 0;
+    &:hover {
+      border: $column-picker-item-hover-border;
+      background-color: $column-picker-item-hover-color;
+    }
+    label {
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0px;
+    }
+  }
+
   hr {
     margin: 6px 0;
     border: 0;
     border-top: 1px solid #d5d5d5;
+  }
+
+  /* replace checkboxes by Font-Awesome icons */
+  input[type=checkbox] {
+    display:none;  /* to hide the checkbox itself */
+    margin-left: 4px;
+    margin-top: 3px;
+  }
+
+  input[type=checkbox] + label:before {
+    cursor: pointer;
+    content: $column-picker-checkbox-icon-unchecked;
+    color: $column-picker-checkbox-color;
+    display: inline-block;
+    font-weight: bold;
+    font-family: $icon-font-family;
+    font-size: $column-picker-checkbox-size;
+    opacity: $column-picker-checkbox-opacity; /* unchecked icon */
+    margin-right: 4px;
+    width: $column-picker-checkbox-width;
+  }
+
+  input[type=checkbox] + label:hover:before {
+    opacity: $column-picker-checkbox-opacity-hover;
+  }
+
+  input[type=checkbox]:checked + label:before {
+    opacity: 1; /* checked icon */
+    content: $column-picker-checkbox-icon-checked;
+    width: $column-picker-checkbox-width;
   }
 }
 
@@ -95,8 +144,19 @@
 
   > .close {
     float: right;
-    opacity: 0.5;
+    width: $grid-menu-close-width;
+    height: $grid-menu-close-height;
+    margin: $grid-menu-close-margin;
+    padding: $grid-menu-close-padding;
+
+    background-color: $grid-menu-close-bg-color;
+    border: $grid-menu-close-border;
+
+    > span {
+      opacity: $grid-menu-close-opacity;
+    }
   }
+
   .title {
     font-size: 16px;
     width: calc(100% - 30px);
@@ -135,7 +195,6 @@
   padding: 0 2px;
   top: 0;
   background-color: transparent;
-  cursor: pointer;
   border: 0;
   margin-top: 5px;
   width: 22px;
@@ -148,29 +207,33 @@
 
 /* Menu items */
 .slick-gridmenu-item {
-  list-style: none;
-  margin: 0;
   cursor: pointer;
-  padding: 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
+  border: $grid-menu-item-border;
+  border-radius: $grid-menu-item-border-radius;
+  padding: $grid-menu-item-padding;
+  list-style: none outside none;
+  margin: 0;
   &:hover {
-    border-color: silver;
-    background: white;
+    border: $grid-menu-item-hover-border;
+    background-color: $grid-menu-item-hover-color;
   }
 
-  &.slick-gridmenu-item-divider {
+  &.slick-header-menuitem-divider {
     cursor: default;
     border: none;
     overflow: hidden;
     padding: 0;
-    height: $header-menu-divider-height;
-    margin: $header-menu-divider-margin;
-    background-color: $header-menu-divider-color;
+    height: $grid-menu-divider-height;
+    margin: $grid-menu-divider-margin;
+    background-color: $grid-menu-divider-color;
+    &:hover {
+      border: none;
+      background-color: $grid-menu-item-disabled-color;
+    }
   }
 }
 .slick-gridmenu-item-divider.slick-gridmenu-item:hover {
-  background-color: $header-menu-divider-color;
+  background-color: $grid-menu-divider-color;
 }
 
 .slick-gridmenu-item-disabled {
@@ -199,10 +262,57 @@
     display: none;
   }
 
+  li {
+    border: $grid-menu-item-border;
+    border-radius: $grid-menu-item-border-radius;
+    padding: $grid-menu-item-padding;
+    list-style: none outside none;
+    margin: 0;
+    &:hover {
+      border: $grid-menu-item-hover-border;
+      background-color: $grid-menu-item-hover-color;
+    }
+    label {
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0px;
+    }
+  }
+
   hr {
     margin: 6px 0;
     border: 0;
     border-top: 1px solid #dddddd;
+  }
+
+  /* replace checkboxes by Font-Awesome icons */
+  input[type=checkbox] {
+    display:none;  /* to hide the checkbox itself */
+    margin-left: 4px;
+    margin-top: 3px;
+  }
+
+  input[type=checkbox] + label:before {
+    cursor: pointer;
+    content: $grid-menu-checkbox-icon-unchecked;
+    color: $grid-menu-checkbox-color;
+    display: inline-block;
+    font-weight: bold;
+    font-family: $icon-font-family;
+    font-size: $grid-menu-checkbox-size;
+    opacity: $grid-menu-checkbox-opacity; /* unchecked icon */
+    margin-right: 4px;
+    width: $grid-menu-checkbox-width;
+  }
+
+  input[type=checkbox] + label:hover:before {
+    opacity: $grid-menu-checkbox-opacity-hover;
+  }
+
+  input[type=checkbox]:checked + label:before {
+    content: $grid-menu-checkbox-icon-checked;
+    opacity: 1; /* checked icon */
+    width: $grid-menu-checkbox-width;
   }
 }
 

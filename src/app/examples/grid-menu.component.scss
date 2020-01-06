@@ -1,3 +1,16 @@
+$column-picker-checkbox-icon-unchecked:   "\f00c" !default;
+$column-picker-checkbox-icon-checked:     "\f00c" !default;
+$column-picker-checkbox-opacity:          0.2 !default;
+$column-picker-checkbox-opacity-hover:    0.35 !default;
+
+$grid-menu-checkbox-icon-unchecked:       "\f096";
+$grid-menu-checkbox-icon-checked:         "\f046";
+$grid-menu-checkbox-opacity:              0.7;
+$grid-menu-checkbox-opacity-hover:        1;
+
+/* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
+@import '../modules/angular-slickgrid/styles/slickgrid-theme-bootstrap.scss';
+
 .blue {
   color: rgb(73, 73, 255);
 }

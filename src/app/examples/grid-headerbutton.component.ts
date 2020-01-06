@@ -30,7 +30,6 @@ export class GridHeaderButtonComponent implements OnInit, OnDestroy {
         <li>These callbacks are: "itemVisibilityOverride", "itemUsabilityOverride"</li>
         <li>for example the "Column E" does not show the header button via "itemVisibilityOverride"</li>
         <li>for example the "Column J" header button is displayed but it not usable via "itemUsabilityOverride"</li>
-        <li>... e.g. in the demo, the Context Menu is only available on the first 20 Tasks via "menuUsabilityOverride"</li>
       </ol>
     </ul>
   `;

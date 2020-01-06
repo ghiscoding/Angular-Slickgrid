@@ -21,9 +21,9 @@ export class GridHeaderMenuComponent implements OnInit {
       <li>Note: The "Header Button" & "Header Menu" Plugins cannot be used at the same time</li>
       <li>Use override callback functions to change the properties of show/hide, enable/disable the menu or certain item(s) from the list</li>
       <ol>
-        <li>These callbacks are: "menuUsabilityOverride", "itemVisibilityOverride", "itemUsabilityOverride"</li>
-        <li>... e.g. in the demo, the "Action" Cell Menu is only available when Priority is set to "High" via "menuUsabilityOverride"</li>
-        <li>... e.g. in the demo, the Context Menu is only available on the first 20 Tasks via "menuUsabilityOverride"</li>
+        <li>These callbacks are: "itemVisibilityOverride", "itemUsabilityOverride"</li>
+        <li>for example if we want to disable the "Help" command over the "Title" and "Completed" column</li>
+        <li>for example don't show Help on column "% Complete"</li>
       </ol>
     </ul>
   `;
@@ -70,7 +70,7 @@ export class GridHeaderMenuComponent implements OnInit {
               textCssClass: (columnDef.id === 'title' || columnDef.id === 'completed') ? '' : 'blue', // just the text css class
               positionOrder: 99,
               itemUsabilityOverride: (args) => {
-                // for example if we want to disable the "Help" command over the "Title" column
+                // for example if we want to disable the "Help" command over the "Title" and "Completed" column
                 return !(args.column.id === 'title' || args.column.id === 'completed');
               },
               itemVisibilityOverride: (args) => {

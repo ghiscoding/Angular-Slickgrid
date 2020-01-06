@@ -10,11 +10,11 @@ import {
   ExtensionName,
   GridOption,
   HeaderMenu,
+  Locale,
   MenuCommandItem,
   MenuCommandItemCallbackArgs,
-  Locale,
-  SlickEventHandler,
   MenuOnBeforeMenuShowArgs,
+  SlickEventHandler,
 } from '../models/index';
 import { FilterService } from '../services/filter.service';
 import { SortService } from '../services/sort.service';
