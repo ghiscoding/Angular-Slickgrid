@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.15.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.15.0...v2.15.1) (2020-01-06)
+
+
+### Features
+
+* **styling:** add more SASS variables to header menu ([373641f](https://github.com/ghiscoding/angular-slickgrid/commit/373641f33f27eacec43068ed81aeb24d65d91601))
+
 ## [2.15.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.14.5...v2.15.0) (2020-01-06)
 
 
