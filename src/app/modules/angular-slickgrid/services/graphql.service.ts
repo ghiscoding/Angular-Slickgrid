@@ -101,23 +101,27 @@ export class GraphqlService implements BackendService {
       columnIds.unshift('id');
     }
 
-    const filters = this.buildFilterQuery(columnIds);
-    let graphqlFields = [];
+    const columnsQuery = this.buildFilterQuery(columnIds);
+    let graphqlNodeFields = [];
 
-    if (this.options.isWithCursor) {
-      // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _filters_ } }
-      const pageInfoQb = new QueryBuilder('pageInfo');
-      pageInfoQb.find('hasNextPage', 'endCursor');
-      dataQb.find(['cursor', { node: filters }]);
-      graphqlFields = ['totalCount', pageInfoQb, dataQb];
+    if (this._gridOptions.enablePagination !== false) {
+      if (this.options.isWithCursor) {
+        // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _columns_ } }
+        const pageInfoQb = new QueryBuilder('pageInfo');
+        pageInfoQb.find('hasNextPage', 'endCursor');
+        dataQb.find(['cursor', { node: columnsQuery }]);
+        graphqlNodeFields = ['totalCount', pageInfoQb, dataQb];
+      } else {
+        // ...nodes { _columns_ }
+        dataQb.find(columnsQuery);
+        graphqlNodeFields = ['totalCount', dataQb];
+      }
+      // all properties to be returned by the query
+      datasetQb.find(graphqlNodeFields);
     } else {
-      // ...nodes { _filters_ }
-      dataQb.find(filters);
-      graphqlFields = ['totalCount', dataQb];
+      // include all columns to be returned
+      datasetQb.find(columnsQuery);
     }
-
-    // properties to be returned by the query
-    datasetQb.find(graphqlFields);
 
     // add dataset filters, could be Pagination and SortingFilters and/or FieldFilters
     let datasetFilters: GraphqlDatasetFilter = {};
@@ -153,7 +157,8 @@ export class GraphqlService implements BackendService {
       }
     }
 
-    // query { users(first: 20, orderBy: [], filterBy: [])}
+    // with pagination:: query { users(first: 20, offset: 0, orderBy: [], filterBy: []) { totalCount: 100, nodes: { _columns_ }}}
+    // without pagination:: query { users(orderBy: [], filterBy: []) { _columns_ }}
     datasetQb.filter(datasetFilters);
     queryQb.find(datasetQb);
 

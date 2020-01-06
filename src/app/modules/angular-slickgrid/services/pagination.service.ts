@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subscription, isObservable, Subject } from 'rxjs';
 
-import { BackendServiceApi, GraphqlResult, Pager, Pagination } from '../models';
+import { BackendServiceApi, GraphqlResult, GraphqlPaginatedResult, Pager, Pagination } from '../models';
 import { FilterService } from './filter.service';
 import { GridService } from './grid.service';
 import { executeBackendProcessesCallback, onBackendError } from './backend-utilities';
@@ -224,7 +224,7 @@ export class PaginationService {
         const process = this._backendServiceApi.process(query);
         if (process instanceof Promise) {
           process
-            .then((processResult: GraphqlResult | any) => {
+            .then((processResult: GraphqlResult | GraphqlPaginatedResult | any) => {
               resolve(executeBackendProcessesCallback(startTime, processResult, this._backendServiceApi, this._totalItems));
             })
             .catch((error) => {
@@ -233,7 +233,7 @@ export class PaginationService {
             });
         } else if (isObservable(process)) {
           process.subscribe(
-            (processResult: GraphqlResult | any) => {
+            (processResult: GraphqlResult | GraphqlPaginatedResult | any) => {
               resolve(executeBackendProcessesCallback(startTime, processResult, this._backendServiceApi, this._totalItems));
             },
             (error: any) => {

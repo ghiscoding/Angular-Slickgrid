@@ -1,11 +1,11 @@
 import { isObservable } from 'rxjs';
 
-import { BackendServiceApi, EmitterType, GraphqlResult, GridOption } from '../models';
+import { BackendServiceApi, EmitterType, GraphqlResult, GraphqlPaginatedResult, GridOption } from '../models';
 
 const main: any = {};
 
 /** Execute the Backend Processes Callback, that could come from an Observable or a Promise callback */
-main.executeBackendProcessesCallback = function exeBackendProcessesCallback(startTime: Date, processResult: GraphqlResult | any, backendApi: BackendServiceApi, totalItems: number): GraphqlResult | any {
+main.executeBackendProcessesCallback = function exeBackendProcessesCallback(startTime: Date, processResult: GraphqlResult | GraphqlPaginatedResult | any, backendApi: BackendServiceApi, totalItems: number): GraphqlResult | GraphqlPaginatedResult | any {
   const endTime = new Date();
 
   // define what our internal Post Process callback, only available for GraphQL Service for now
@@ -54,11 +54,11 @@ main.executeBackendCallback = function exeBackendCallback(backendServiceApi: Bac
     // the processes can be Observables (like HttpClient) or Promises
     const process = backendServiceApi.process(query);
     if (process instanceof Promise && process.then) {
-      process.then((processResult: GraphqlResult | any) => main.executeBackendProcessesCallback(startTime, processResult, backendServiceApi, totalItems))
+      process.then((processResult: GraphqlResult | GraphqlPaginatedResult | any) => main.executeBackendProcessesCallback(startTime, processResult, backendServiceApi, totalItems))
         .catch((error: any) => main.onBackendError(error, backendServiceApi));
     } else if (isObservable(process)) {
       process.subscribe(
-        (processResult: GraphqlResult | any) => main.executeBackendProcessesCallback(startTime, processResult, backendServiceApi, totalItems),
+        (processResult: GraphqlResult | GraphqlPaginatedResult | any) => main.executeBackendProcessesCallback(startTime, processResult, backendServiceApi, totalItems),
         (error: any) => main.onBackendError(error, backendServiceApi)
       );
     }

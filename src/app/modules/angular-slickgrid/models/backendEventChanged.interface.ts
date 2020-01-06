@@ -1,19 +1,21 @@
+import { Observable } from 'rxjs';
+
 import { BackendService } from './index';
 import { BackendServiceOption } from './backendServiceOption.interface';
-import { Observable } from 'rxjs';
 import { GraphqlResult } from './graphqlResult.interface';
+import { GraphqlPaginatedResult } from './graphqlPaginatedResult.interface';
 
 export interface BackendEventChanged {
   options?: BackendServiceOption;
 
   /** On init (or on page load), what action to perform? */
-  onInit?: (query: string) => Promise<GraphqlResult | any> | Observable<GraphqlResult | any>;
+  onInit?: (query: string) => Promise<GraphqlResult | GraphqlPaginatedResult | any> | Observable<GraphqlResult | GraphqlPaginatedResult | any>;
 
   /** Before executing the query, what action to perform? For example, start a spinner */
   preProcess?: () => void;
 
   /** On Processing, we get the query back from the service, and we need to provide a Promise/Observable. For example: this.http.get(myGraphqlUrl) */
-  process: (query: string) => Promise<GraphqlResult | any> | Observable<GraphqlResult | any>;
+  process: (query: string) => Promise<GraphqlResult | GraphqlPaginatedResult | any> | Observable<GraphqlResult | GraphqlPaginatedResult | any>;
 
 
   /** After executing the query, what action to perform? For example, stop the spinner */
@@ -29,5 +31,5 @@ export interface BackendEventChanged {
    * INTERNAL USAGE ONLY by Angular-Slickgrid
    * This internal process will be run just before postProcess and is meant to refresh the Dataset & Pagination after a GraphQL call
    */
-  internalPostProcess?: (result: GraphqlResult) => void;
+  internalPostProcess?: (result: GraphqlResult | GraphqlPaginatedResult) => void;
 }

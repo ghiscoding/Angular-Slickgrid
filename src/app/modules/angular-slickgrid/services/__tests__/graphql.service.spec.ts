@@ -122,8 +122,19 @@ describe('GraphqlService', () => {
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
     });
 
+    it('should return a simple query without pagination (when disabled) set and nodes that includes "id" and the other 2 fields properties', () => {
+      gridOptionMock.enablePagination = false;
+      const expectation = `query{ users{ id, field1, field2 }}`;
+
+      service.init(serviceOptions, paginationOptions, gridStub);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
     it('should use "columnDefinitions" from the "serviceOptions" when private member is undefined and then return a simple query as usual', () => {
       const expectation = `query{ users(first:10, offset:0){ totalCount, nodes{ id, field1 }}}`;
+      gridOptionMock.enablePagination = true;
 
       service.init({ datasetName: 'users', columnDefinitions: undefined }, paginationOptions, gridStub);
       service.options.columnDefinitions = [{ id: 'field1', field: 'field1', width: 100 }];
@@ -198,7 +209,7 @@ describe('GraphqlService', () => {
     });
 
     it('should exclude pagination from the query string when the option is disabled', () => {
-      const expectation = `query{ users{ totalCount, nodes{ id, field1, field2 }}}`;
+      const expectation = `query{ users{ id, field1, field2 }}`;
       const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
       gridOptionMock.enablePagination = false;
 
@@ -254,7 +265,7 @@ describe('GraphqlService', () => {
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
     });
 
-    it('should be able to provide "filteringOptions" and see the query string include the sorting', () => {
+    it('should be able to provide "filteringOptions" and see the query string include the filters', () => {
       const expectation = `query{ users(first:20, offset:40,filterBy:[{field:field1, operator: >, value:"2000-10-10"}]){ totalCount, nodes{ id, field1, field2 }}}`;
       const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
 
@@ -263,6 +274,32 @@ describe('GraphqlService', () => {
       const query = service.buildQuery();
 
       expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+    });
+
+    it('should be able to provide "sortingOptions" and see the query string include the sorting but without pagination when that is excluded', () => {
+      const expectation = `query{ users(orderBy:[{field:field1, direction:DESC}]){ id, field1, field2 }}`;
+      const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+      gridOptionMock.enablePagination = false;
+
+      service.init({ datasetName: 'users', columnDefinitions: columns, sortingOptions: [{ field: 'field1', direction: 'DESC' }] }, paginationOptions, gridStub);
+      service.updatePagination(3, 20);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+      gridOptionMock.enablePagination = true; // reset it for the next test
+    });
+
+    it('should be able to provide "filteringOptions" and see the query string include the filters but without pagination when that is excluded', () => {
+      const expectation = `query{ users(filterBy:[{field:field1, operator: >, value:"2000-10-10"}]){ id, field1, field2 }}`;
+      const columns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+      gridOptionMock.enablePagination = false;
+
+      service.init({ datasetName: 'users', columnDefinitions: columns, filteringOptions: [{ field: 'field1', operator: '>', value: '2000-10-10' }] }, paginationOptions, gridStub);
+      service.updatePagination(3, 20);
+      const query = service.buildQuery();
+
+      expect(removeSpaces(query)).toBe(removeSpaces(expectation));
+      gridOptionMock.enablePagination = true; // reset it for the next test
     });
 
     it('should include default locale "en" in the query string when option "addLocaleIntoQuery" is enabled and i18n is not defined', () => {

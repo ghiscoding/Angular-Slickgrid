@@ -95,8 +95,19 @@ describe('backend-utilities', () => {
       executeSpy = jest.spyOn(main, 'executeBackendCallback');
     });
 
-    it('should call "executeBackendCallback" after calling the "refreshBackendDataset" method', () => {
+    it('should call "executeBackendCallback" after calling the "refreshBackendDataset" method with Pagination', () => {
       const query = `query { users (first:20,offset:0) { totalCount, nodes { id,name,gender,company } } }`;
+      const querySpy = jest.spyOn(gridOptionMock.backendServiceApi.service, 'buildQuery').mockReturnValue(query);
+
+      refreshBackendDataset(gridOptionMock);
+
+      expect(querySpy).toHaveBeenCalled();
+      expect(executeSpy).toHaveBeenCalledWith(gridOptionMock.backendServiceApi, query, null, expect.toBeDate(), gridOptionMock.pagination.totalItems);
+    });
+
+    it('should call "executeBackendCallback" after calling the "refreshBackendDataset" method without Pagination (when disabled)', () => {
+      gridOptionMock.enablePagination = false;
+      const query = `query { users { id,name,gender,company } }`;
       const querySpy = jest.spyOn(gridOptionMock.backendServiceApi.service, 'buildQuery').mockReturnValue(query);
 
       refreshBackendDataset(gridOptionMock);
@@ -107,6 +118,7 @@ describe('backend-utilities', () => {
 
     it('should throw an error when backendServiceApi is undefined', (done) => {
       try {
+        gridOptionMock.enablePagination = true;
         gridOptionMock.backendServiceApi = undefined;
         refreshBackendDataset(undefined);
       } catch (e) {

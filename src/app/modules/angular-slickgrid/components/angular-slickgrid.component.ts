@@ -20,6 +20,7 @@ import {
   BackendServiceOption,
   Column,
   ExtensionName,
+  GraphqlPaginatedResult,
   GraphqlResult,
   GridOption,
   GridStateChange,
@@ -275,12 +276,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (backendApi && backendApi.service) {
       // internalPostProcess only works (for now) with a GraphQL Service, so make sure it is of that type
       if (backendApi.service instanceof GraphqlService || typeof backendApi.service.getDatasetName === 'function') {
-        backendApi.internalPostProcess = (processResult: GraphqlResult) => {
+        backendApi.internalPostProcess = (processResult: GraphqlResult | GraphqlPaginatedResult) => {
           const datasetName = (backendApi && backendApi.service && typeof backendApi.service.getDatasetName === 'function') ? backendApi.service.getDatasetName() : '';
           this._dataset = [];
           if (processResult && processResult.data && processResult.data[datasetName]) {
-            this._dataset = processResult.data[datasetName].nodes;
-            this.refreshGridData(this._dataset, processResult.data[datasetName].totalCount);
+            this._dataset = processResult.data[datasetName].hasOwnProperty('nodes') ? (processResult as GraphqlPaginatedResult).data[datasetName].nodes : (processResult as GraphqlResult).data[datasetName];
+            const totalCount = processResult.data[datasetName].hasOwnProperty('totalCount') ? (processResult as GraphqlPaginatedResult).data[datasetName].totalCount : (processResult as GraphqlResult).data[datasetName].length;
+            this.refreshGridData(this._dataset, totalCount || 0);
           }
         };
       }
@@ -545,11 +547,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           // the processes can be Promises or Observables (like Angular HttpClient)
           const totalItems = this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems;
           if (process instanceof Promise && process.then) {
-            process.then((processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems))
+            process.then((processResult: GraphqlResult | GraphqlPaginatedResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems))
               .catch((error: any) => onBackendError(error, backendApi));
           } else if (isObservable(process)) {
             process.subscribe(
-              (processResult: GraphqlResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems),
+              (processResult: GraphqlResult | GraphqlPaginatedResult | any) => executeBackendProcessesCallback(startTime, processResult, backendApi, totalItems),
               (error: any) => onBackendError(error, backendApi)
             );
           }
