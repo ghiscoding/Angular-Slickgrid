@@ -1,13 +1,14 @@
 import { ApplicationRef, ComponentRef, Injectable, Type, ViewContainerRef } from '@angular/core';
+import { Observable, Subject, Subscription } from 'rxjs';
+import * as DOMPurify_ from 'dompurify';
+const DOMPurify = DOMPurify_; // patch to fix rollup to work
+
 import { Column, Extension, ExtensionName, GridOption, SlickEventHandler } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
 import { AngularUtilService } from '../services/angularUtil.service';
 import { FilterService } from '../services/filter.service';
 import { SharedService } from '../services/shared.service';
 import { addToArrayWhenNotExists, castToPromise, unsubscribeAllObservables } from '../services/utilities';
-import { Observable, Subject, Subscription } from 'rxjs';
-import * as DOMPurify_ from 'dompurify';
-const DOMPurify = DOMPurify_; // patch to fix rollup to work
 
 // using external non-typed js libraries
 declare var Slick: any;

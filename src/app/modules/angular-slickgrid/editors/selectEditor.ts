@@ -1,4 +1,8 @@
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
+import * as DOMPurify_ from 'dompurify';
+const DOMPurify = DOMPurify_; // patch to fix rollup to work
+
 import { Constants } from '../constants';
 import {
   CollectionCustomStructure,
@@ -16,9 +20,6 @@ import {
 } from './../models/index';
 import { CollectionService } from '../services/index';
 import { charArraysEqual, findOrDefault, getDescendantProperty, htmlEncode, setDeepValue, unsubscribeAllObservables } from '../services/utilities';
-import { Subscription } from 'rxjs';
-import * as DOMPurify_ from 'dompurify';
-const DOMPurify = DOMPurify_; // patch to fix rollup to work
 
 // using external non-typed js libraries
 declare var $: any;
