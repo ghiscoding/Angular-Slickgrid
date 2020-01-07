@@ -235,9 +235,6 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       data: {
         [GRAPHQL_QUERY_DATASET_NAME]: {
           nodes: [],
-          pageInfo: {
-            hasNextPage: true
-          },
           totalCount: 100
         }
       }

@@ -80,7 +80,7 @@ export class GraphqlService implements BackendService {
 
     const queryQb = new QueryBuilder('query');
     const datasetQb = new QueryBuilder(this.options.datasetName);
-    const dataQb = (this.options.isWithCursor) ? new QueryBuilder('edges') : new QueryBuilder('nodes');
+    const nodesQb = new QueryBuilder('nodes');
 
     // get all the columnds Ids for the filters to work
     const columnIds: string[] = [];
@@ -106,15 +106,17 @@ export class GraphqlService implements BackendService {
 
     if (this._gridOptions.enablePagination !== false) {
       if (this.options.isWithCursor) {
-        // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _columns_ } }
+        // ...pageInfo { hasNextPage, endCursor }, edges { cursor, node { _columns_ } }, totalCount: 100
+        const edgesQb = new QueryBuilder('edges');
         const pageInfoQb = new QueryBuilder('pageInfo');
-        pageInfoQb.find('hasNextPage', 'endCursor');
-        dataQb.find(['cursor', { node: columnsQuery }]);
-        graphqlNodeFields = ['totalCount', pageInfoQb, dataQb];
+        pageInfoQb.find('hasNextPage', 'hasPreviousPage', 'endCursor', 'startCursor');
+        nodesQb.find(columnsQuery);
+        edgesQb.find(['cursor']);
+        graphqlNodeFields = ['totalCount', nodesQb, pageInfoQb, edgesQb];
       } else {
-        // ...nodes { _columns_ }
-        dataQb.find(columnsQuery);
-        graphqlNodeFields = ['totalCount', dataQb];
+        // ...nodes { _columns_ }, totalCount: 100
+        nodesQb.find(columnsQuery);
+        graphqlNodeFields = ['totalCount', nodesQb];
       }
       // all properties to be returned by the query
       datasetQb.find(graphqlNodeFields);
@@ -296,7 +298,9 @@ export class GraphqlService implements BackendService {
    *     totalCount
    *     pageInfo {
    *       hasNextPage
+   *       hasPreviousPage
    *       endCursor
+   *       startCursor
    *     }
    *     edges {
    *       cursor
