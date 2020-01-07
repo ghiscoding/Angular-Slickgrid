@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.15.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.15.1...v2.15.2) (2020-01-07)
+
+
+### Bug Fixes
+
+* **security:** update DOMpurify to fix potential xss vulnerability ([63c1ddc](https://github.com/ghiscoding/angular-slickgrid/commit/63c1ddc748932671c4b168fbeab09278715dfcf9))
+
 ### [2.15.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.15.0...v2.15.1) (2020-01-06)
 
 
