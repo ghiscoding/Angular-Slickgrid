@@ -40,7 +40,8 @@ export function addWhiteSpaces(nbSpaces: number): string {
   return result;
 }
 
-/** HTML decode using jQuery with a <div>
+/**
+ * HTML decode using jQuery with a <div>
  * Create a in-memory div, set it's inner text(which jQuery automatically encodes)
  * then grab the encoded contents back out.  The div never exists on the page.
 */
@@ -57,11 +58,12 @@ export function htmlDecode(encodedStr: string): string {
   }
 }
 
-/** HTML encode using jQuery with a <div>
+/**
+ * HTML encode using jQuery with a <div>
  * Create a in-memory div, set it's inner text(which jQuery automatically encodes)
  * then grab the encoded contents back out.  The div never exists on the page.
 */
-export function htmlEncode(inputValue: string): string {
+export function htmlEncode(inputValue: string | TrustedHTML): string {
   const entityMap = {
     '&': '&amp;',
     '<': '&lt;',
@@ -70,10 +72,11 @@ export function htmlEncode(inputValue: string): string {
     '\'': '&#39;'
   };
   // all symbols::  /[&<>"'`=\/]/g
-  return inputValue.replace(/[&<>"']/g, (s) => entityMap[s]);
+  return (inputValue || '').toString().replace(/[&<>"']/g, (s) => entityMap[s]);
 }
 
-/** decode text into html entity
+/**
+ * Decode text into html entity
  * @param string text: input text
  * @param string text: output text
  */
@@ -83,7 +86,8 @@ export function htmlEntityDecode(input: string): string {
   });
 }
 
-/** decode text into html entity
+/**
+ * Decode text into html entity
  * @param string text: input text
  * @param string text: output text
  */
@@ -197,6 +201,17 @@ export function decimalFormatted(input: number | string, minDecimal?: number, ma
   return amount;
 }
 
+/**
+ * Format a number following options passed as arguments (decimals, separator, ...)
+ * @param input
+ * @param minDecimal
+ * @param maxDecimal
+ * @param displayNegativeNumberWithParentheses
+ * @param symbolPrefix
+ * @param symbolSuffix
+ * @param decimalSeparator
+ * @param thousandSeparator
+ */
 export function formatNumber(input: number | string, minDecimal?: number, maxDecimal?: number, displayNegativeNumberWithParentheses?: boolean, symbolPrefix = '', symbolSuffix = '', decimalSeparator: '.' | ',' = '.', thousandSeparator: ',' | '_' | '.' | ' ' | '' = ''): string {
   if (isNaN(+input)) {
     return input as string;

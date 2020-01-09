@@ -112,6 +112,7 @@
     "@angular/platform-browser-dynamic": "^7.2.15",
     "@angular/router": "^7.2.15",
     "@ng-select/ng-select": "^2.15.3",
+    "@types/dompurify": "^2.0.1",
     "@types/flatpickr": "^3.1.2",
     "@types/jest": "^24.0.25",
     "@types/jquery": "^3.3.31",
