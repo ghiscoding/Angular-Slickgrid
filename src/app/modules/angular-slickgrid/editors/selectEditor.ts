@@ -562,7 +562,7 @@ export class SelectEditor implements Editor {
         if (isRenderHtmlEnabled) {
           // sanitize any unauthorized html tags like script and others
           // for the remaining allowed tags we'll permit all attributes
-          const sanitizedText = DOMPurify.sanitize(optionText, sanitizedOptions);
+          const sanitizedText = (DOMPurify.sanitize(optionText, sanitizedOptions) || '').toString();
           optionText = htmlEncode(sanitizedText);
         }
 
