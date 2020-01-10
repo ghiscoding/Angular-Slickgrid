@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.15.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.15.2...v2.15.3) (2020-01-10)
+
+
+### Bug Fixes
+
+* **styling:** use latest SlickGrid version and fix some styling issues ([dc0a688](https://github.com/ghiscoding/angular-slickgrid/commit/dc0a688cc982113ce298f9f22d6fecdc0e131b00))
+
 ### [2.15.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.15.1...v2.15.2) (2020-01-07)
 
 
