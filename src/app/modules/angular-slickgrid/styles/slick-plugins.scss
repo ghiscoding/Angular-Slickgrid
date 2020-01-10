@@ -90,6 +90,9 @@
       background: inherit !important;
       color: $cell-menu-item-disabled-color;
       cursor: inherit;
+      .slick-cell-menu-icon, .slick-cell-menu-content {
+        color: $cell-menu-item-disabled-color;
+      }
     }
   }
 
@@ -193,6 +196,9 @@
       background: inherit !important;
       color: $context-menu-item-disabled-color;
       cursor: inherit;
+      .slick-context-menu-icon, .slick-context-menu-content {
+        color: $context-menu-item-disabled-color;
+      }
     }
   }
 
@@ -376,6 +382,9 @@
   background: inherit !important;
   color: $header-menu-item-disabled-color;
   cursor: inherit;
+  .slick-header-menuicon, .slick-header-menucontent {
+    color: $header-menu-item-disabled-color;
+  }
 }
 
 // ----------------------------------------------
