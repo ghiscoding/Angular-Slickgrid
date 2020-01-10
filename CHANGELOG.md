@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.15.4](https://github.com/ghiscoding/angular-slickgrid/compare/v2.15.3...v2.15.4) (2020-01-10)
+
+
+### Bug Fixes
+
+* **build:** TS warning on a missing Type ([97b25f7](https://github.com/ghiscoding/angular-slickgrid/commit/97b25f72cd448a348f3adf1a795cfde541268621))
+
 ### [2.15.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.15.2...v2.15.3) (2020-01-10)
 
 
