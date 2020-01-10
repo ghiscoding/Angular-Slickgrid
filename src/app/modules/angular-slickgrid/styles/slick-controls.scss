@@ -318,5 +318,8 @@
 
 /* Disabled */
 .slick-gridmenu-item-disabled {
-  color: silver;
+  color: $grid-menu-item-disabled-color;
+  .slick-gridmenu-icon, .slick-gridmenu-content {
+    color: $grid-menu-item-disabled-color;
+  }
 }

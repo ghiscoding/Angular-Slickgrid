@@ -70,7 +70,29 @@ describe('Example 9 - Grid Menu', () => {
         .each(($child, index) => expect($child.text()).to.eq(smallerTitleList[index]));
     });
 
-    it('should type a filter and then open the Grid Menu and expect the "Command 1" to NOT be usable and expect "Command 2" to NOT be visible', () => {
+    it('should hide a column from the picker and then open the Grid Menu and expect the "Command 1" to NOT be usable', () => {
+      const alertStub = cy.stub();
+      cy.on('window:alert', alertStub);
+
+      cy.get('#grid9')
+        .find('button.slick-gridmenu-button')
+        .trigger('click')
+        .click({ force: true });
+
+      cy.get('.slick-gridmenu-item.orange')
+        .find('.slick-gridmenu-content')
+        .contains('Command 1')
+        .click()
+        .then(() => expect(alertStub.getCall(0)).to.be.null);
+
+      cy.get('#grid9')
+        .get('.slick-gridmenu:visible')
+        .find('span.close')
+        .trigger('click')
+        .click({ force: true });
+    });
+
+    it('should type a filter and then open the Grid Menu and expect the "Command 2" to NOT be visible', () => {
       const alertStub = cy.stub();
       cy.on('window:alert', alertStub);
 
@@ -84,12 +106,6 @@ describe('Example 9 - Grid Menu', () => {
 
       cy.get('.slick-gridmenu-item.red')
         .should('not.exist');
-
-      cy.get('.slick-gridmenu-item.orange')
-        .find('.slick-gridmenu-content')
-        .contains('Command 1')
-        .click()
-        .then(() => expect(alertStub.getCall(0)).to.be.null);
     });
 
     it('should clear all filters and expect no filters in the grid', () => {
@@ -107,7 +123,7 @@ describe('Example 9 - Grid Menu', () => {
         .each(($elm) => expect($elm.text()).to.eq(''));
     });
 
-    it('should clear the filters and then open the Grid Menu and expect the "Command 1" to now be usable and expect "Command 2" to now be visible', () => {
+    it('should clear the filters and then open the Grid Menu and expect the "Command 2" to now be visible', () => {
       const alertStub = cy.stub();
       cy.on('window:alert', alertStub);
 
@@ -119,12 +135,6 @@ describe('Example 9 - Grid Menu', () => {
       cy.get('.slick-gridmenu-item.red')
         .find('.slick-gridmenu-content.italic')
         .should('contain', 'Command 2');
-
-      cy.get('.slick-gridmenu-item.orange')
-        .find('.slick-gridmenu-content')
-        .contains('Command 1')
-        .click()
-        .then(() => expect(alertStub.getCall(0)).to.be.calledWith('command1'));
     });
 
     it('should click on the Grid Menu to show the Title as 1st column again', () => {
@@ -151,6 +161,22 @@ describe('Example 9 - Grid Menu', () => {
         .find('.slick-header-columns')
         .children()
         .each(($child, index) => expect($child.text()).to.eq(fullEnglishTitles[index]));
+    });
+
+    it('should now expect the "Command 1" to be usable since all columns are visible', () => {
+      const alertStub = cy.stub();
+      cy.on('window:alert', alertStub);
+
+      cy.get('#grid9')
+        .find('button.slick-gridmenu-button')
+        .trigger('click')
+        .click({ force: true });
+
+      cy.get('.slick-gridmenu-item.orange')
+        .find('.slick-gridmenu-content')
+        .contains('Command 1')
+        .click()
+        .then(() => expect(alertStub.getCall(0)).to.be.calledWith('command1'));
     });
 
     it('should hover over the Title column and click on "Hide Column" command and remove 1st column from grid', () => {

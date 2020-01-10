@@ -254,9 +254,6 @@ export interface GridOption {
   /** Some default options to set for the export service */
   exportOptions?: ExportOption;
 
-  /** @deprecated Animation fade speed when opening/closing the column picker */
-  fadeSpeed?: number;
-
   /** Defaults to 25, which is the grid footer row panel height */
   footerRowHeight?: number;
 
