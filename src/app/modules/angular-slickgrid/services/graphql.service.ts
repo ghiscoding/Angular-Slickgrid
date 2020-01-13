@@ -57,7 +57,7 @@ export class GraphqlService implements BackendService {
   /** Initialization of the service, which acts as a constructor */
   init(serviceOptions?: GraphqlServiceOption, pagination?: Pagination, grid?: any): void {
     this._grid = grid;
-    this.options = serviceOptions || {};
+    this.options = serviceOptions || { datasetName: '', columnDefinitions: [] };
     this.pagination = pagination;
 
     if (grid && grid.getColumns) {
@@ -71,7 +71,7 @@ export class GraphqlService implements BackendService {
    */
   buildQuery() {
     if (!this.options || !this.options.datasetName || (!this._columnDefinitions && !Array.isArray(this.options.columnDefinitions))) {
-      throw new Error('GraphQL Service requires "datasetName" & "columnDefinitions" properties for it to work');
+      throw new Error('GraphQL Service requires the "datasetName" property to properly build the GraphQL query');
     }
 
     // get the column definitions and exclude some if they were tagged as excluded
@@ -262,7 +262,7 @@ export class GraphqlService implements BackendService {
     this.updateOptions({ paginationOptions });
   }
 
-  updateOptions(serviceOptions?: GraphqlServiceOption) {
+  updateOptions(serviceOptions?: Partial<GraphqlServiceOption>) {
     this.options = { ...this.options, ...serviceOptions };
   }
 
