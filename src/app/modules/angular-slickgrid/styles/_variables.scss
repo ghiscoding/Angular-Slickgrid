@@ -496,3 +496,17 @@ $viewport-border-top:                       0 none !default;                    
 $viewport-border-right:                     0 none !default;
 $viewport-border-bottom:                    0 none !default;
 $viewport-border-left:                      0 none !default;
+
+/* Custom Footer */
+$footer-bg-color:                           transparent !default;
+$footer-font-style:                         italic !default;
+$footer-font-weight:                        normal !default;
+$footer-left-font-style:                    italic !default;
+$footer-left-font-weight:                   normal !default;
+$footer-left-text-align:                    left !default;
+$footer-metrics-text-align:                 right !default;
+$footer-metrics-font-style:                 italic !default;
+$footer-metrics-font-weight:                normal !default;
+$footer-metrics-text-align:                 right !default;
+$footer-text-color:                         #6e6e6e !default;
+$footer-padding:                            5px !default;

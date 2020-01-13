@@ -1,0 +1,20 @@
+.slick-custom-footer {
+  color: $footer-text-color;
+  padding: $footer-padding;
+  background-color: $footer-bg-color;
+  font-style: $footer-font-style;
+  font-weight: $footer-font-weight;
+
+  .left-footer {
+    font-style: $footer-left-font-style;
+    font-weight: $footer-left-font-weight;
+    text-align: $footer-left-text-align;
+  }
+
+  .metrics {
+    text-align: $footer-metrics-text-align;
+    font-style: $footer-metrics-font-style;
+    font-weight: $footer-metrics-font-weight;
+    text-align: $footer-metrics-text-align;
+  }
+}

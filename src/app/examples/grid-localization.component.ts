@@ -139,6 +139,17 @@ export class GridLocalizationComponent implements OnInit {
       enableFiltering: true,
       enableTranslate: true,
       i18n: this.translate,
+      customFooterOptions: {
+        leftFooterText: 'text shown on left container', // optionally display some text on left footer container
+        metricTexts: {
+          textItems: 'TEXT_ITEMS',
+          textOf: 'TEXT_OF',
+          // lastUpdatedText: 'Last Updated',
+        },
+        dateFormat: 'yyyy-MM-dd HH:mm aaaaa\'m\'',
+        hideTotalItemCount: false,
+      },
+      showCustomFooter: true,
       excelExportOptions: {
         // optionally pass a custom header to the Excel Sheet
         // a lot of the info can be found on Web Archive of Excel-Builder

@@ -24,6 +24,7 @@ import { Column, CurrentFilter, CurrentSorter, GridOption, GridState, GridStateC
 import { Filters } from '../../filters';
 import { Editors } from '../../editors';
 import * as utilities from '../../services/backend-utilities';
+import { GraphqlPaginatedResult } from 'dist/public_api';
 
 
 const mockExecuteBackendProcess = jest.fn();
@@ -593,7 +594,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const spy = jest.spyOn(component, 'refreshGridData');
 
         component.ngAfterViewInit();
-        component.gridOptions.backendServiceApi.internalPostProcess({ data: { users: { nodes: [{ firstName: 'John' }], pageInfo: { hasNextPage: false }, totalCount: 2 } } });
+        component.gridOptions.backendServiceApi.internalPostProcess({ data: { users: { nodes: [{ firstName: 'John' }], totalCount: 2 } } } as GraphqlPaginatedResult);
 
         expect(spy).toHaveBeenCalled();
         expect(component.gridOptions.backendServiceApi.internalPostProcess).toEqual(expect.any(Function));
@@ -617,7 +618,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const spy = jest.spyOn(component, 'refreshGridData');
 
         component.ngAfterViewInit();
-        component.gridOptions.backendServiceApi.internalPostProcess({ data: { notUsers: { nodes: [{ firstName: 'John' }], pageInfo: { hasNextPage: false }, totalCount: 2 } } });
+        component.gridOptions.backendServiceApi.internalPostProcess({ data: { notUsers: { nodes: [{ firstName: 'John' }], totalCount: 2 } } } as GraphqlPaginatedResult);
 
         expect(spy).not.toHaveBeenCalled();
         expect(component.dataset).toEqual([]);

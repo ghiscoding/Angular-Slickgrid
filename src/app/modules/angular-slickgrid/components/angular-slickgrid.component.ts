@@ -26,12 +26,13 @@ import {
   GridStateChange,
   GridStateType,
   Locale,
+  Metrics,
   Pagination,
   SlickEventHandler,
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
-import { isObservable, Observable, Subscription, Subject } from 'rxjs';
+import { isObservable, Observable, Subscription } from 'rxjs';
 
 // Services
 import { AngularUtilService } from '../services/angularUtil.service';
@@ -125,7 +126,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   groupItemMetadataProvider: any;
   backendServiceApi: BackendServiceApi;
   locales: Locale;
+  metrics: Metrics;
+  metricsDateFormat = 'yyyy-MM-dd HH:mm aaaaa\'m\'';
   paginationOptions: Pagination;
+  showCustomFooter = false;
   showPagination = false;
   totalItems = 0;
   isGridInitialized = false;
@@ -394,6 +398,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
             this.extensionService.translateContextMenu();
             this.extensionService.translateGridMenu();
             this.extensionService.translateHeaderMenu();
+            this.translateCustomFooterTexts();
           }
         })
       );
@@ -472,7 +477,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.gridEventService.bindOnClick(grid, dataView);
 
     if (dataView && grid) {
-      this._eventHandler.subscribe(dataView.onRowCountChanged, () => grid.invalidate());
+      this._eventHandler.subscribe(dataView.onRowCountChanged, (e: Event, args: any) => {
+        grid.invalidate();
+
+        this.metrics = {
+          startTime: new Date(),
+          endTime: new Date(),
+          itemCount: args && args.current || 0,
+          totalItemCount: this.dataset.length || 0
+        };
+      });
 
       // without this, filtering data with local dataset will not always show correctly
       // also don't use "invalidateRows" since it destroys the entire row and as bad user experience when updating a row
@@ -727,6 +741,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       /** @deprecated please use "extensionService" instead */
       pluginService: this.extensionService,
     });
+
+    // user could show a custom footer with the data metrics (dataset length and last updated timestamp)
+    this.showCustomFooterWithMetrics();
   }
 
   /** Load the Editor Collection asynchronously and replace the "collection" property when Observable resolves */
@@ -763,6 +780,21 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     return options;
   }
 
+  private showCustomFooterWithMetrics() {
+    setTimeout(() => {
+      if (this.gridOptions && !(this.gridOptions.backendServiceApi || this.gridOptions.enablePagination)) {
+        this.showCustomFooter = this.gridOptions.hasOwnProperty('showCustomFooter') ? this.gridOptions.showCustomFooter : true;
+      }
+    });
+
+    if (this.gridOptions.enableTranslate || this.gridOptions.i18n) {
+      this.translateCustomFooterTexts();
+    } else {
+      this.gridOptions.customFooterOptions.metricTexts.textItems = this.locales && this.locales.TEXT_ITEMS || 'TEXT_ITEMS';
+      this.gridOptions.customFooterOptions.metricTexts.textOf = this.locales && this.locales.TEXT_OF || 'TEXT_OF';
+    }
+  }
+
   /**
    * For convenience to the user, we provide the property "editor" as an Angular-Slickgrid editor complex object
    * however "editor" is used internally by SlickGrid for it's own Editor Factory
@@ -777,6 +809,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
       return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor } };
     });
+  }
+
+  /** Translate all Custom Footer Texts (footer with metrics) */
+  private translateCustomFooterTexts() {
+    if (this.gridOptions && this.gridOptions.customFooterOptions && this.gridOptions.customFooterOptions.metricTexts) {
+      this.gridOptions.customFooterOptions.metricTexts.textItems = this.translate.instant('ITEMS');
+      this.gridOptions.customFooterOptions.metricTexts.textOf = this.translate.instant('OF');
+    }
   }
 
   /**

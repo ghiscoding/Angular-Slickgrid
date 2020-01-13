@@ -193,7 +193,8 @@ export class GridClientSideComponent implements OnInit {
           { columnId: 'duration', direction: 'DESC' },
           { columnId: 'complete', direction: 'ASC' }
         ],
-      }
+      },
+      showCustomFooter: true
     };
 
     // mock a dataset
@@ -272,6 +273,7 @@ export class GridClientSideComponent implements OnInit {
       setTimeout(() => {
         this.metrics = {
           startTime: new Date(),
+          endTime: new Date(),
           itemCount: args && args.current || 0,
           totalItemCount: this.dataset.length || 0
         };

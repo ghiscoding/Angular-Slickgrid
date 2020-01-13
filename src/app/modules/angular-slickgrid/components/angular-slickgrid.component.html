@@ -7,4 +7,24 @@
     [dataView]="dataView" [grid]="grid" [options]="paginationOptions" [locales]="locales" [totalItems]="totalItems"
     [backendServiceApi]="backendServiceApi">
   </slick-pagination>
+
+  <div *ngIf="showCustomFooter && gridOptions" class="slick-custom-footer" style="width: 100%;">
+    <div class="left-footer col-xs-6">
+      {{gridOptions.customFooterOptions?.leftFooterText}}
+    </div>
+
+    <div class="right-footer metrics col-xs-6" *ngIf="metrics && !gridOptions.customFooterOptions?.hideMetrics">
+      <span *ngIf="!gridOptions.customFooterOptions?.hideLastUpdatedTimestamp">
+        <span>{{gridOptions.customFooterOptions?.metricTexts?.lastUpdatedText}}</span>
+        {{metrics.endTime | date: gridOptions.customFooterOptions?.dateFormat}}
+        <span>{{gridOptions.customFooterOptions?.metricSeparator}}</span>
+      </span>
+      {{metrics.itemCount}}
+      <span
+        *ngIf="!gridOptions.customFooterOptions?.hideTotalItemCount">{{gridOptions.customFooterOptions?.metricTexts?.textOf}}
+        {{metrics.totalItemCount}}
+      </span>
+      {{gridOptions.customFooterOptions?.metricTexts?.textItems}}
+    </div>
+  </div>
 </div>
