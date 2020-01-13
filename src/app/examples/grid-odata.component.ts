@@ -110,10 +110,9 @@ export class GridOdataComponent implements OnInit {
       backendServiceApi: {
         service: new GridOdataService(),
         options: {
-          // useLocalFiltering: true,
           enableCount: this.isCountEnabled, // add the count in the OData query, which will return a property named "odata.count" (v2) or "@odata.count" (v4)
           version: this.odataVersion        // defaults to 2, the query string is slightly different between OData 2 and 4
-        } as OdataOption,
+        },
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {

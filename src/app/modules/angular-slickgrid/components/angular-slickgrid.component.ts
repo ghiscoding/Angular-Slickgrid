@@ -418,7 +418,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // bind external sorting (backend) when available or default onSort (dataView)
     if (gridOptions.enableSorting && !this.customDataView) {
-      gridOptions.backendServiceApi ? this.sortService.bindBackendOnSort(grid, dataView) : this.sortService.bindLocalOnSort(grid, dataView);
+      // bind external sorting (backend) unless specified to use the local one
+      if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalSorting) {
+        this.sortService.bindBackendOnSort(grid, dataView);
+      } else {
+        this.sortService.bindLocalOnSort(grid, dataView);
+      }
     }
 
     // bind external filter (backend) when available or default onFilter (dataView)
@@ -429,7 +434,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (gridOptions.presets && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
         this.filterService.populateColumnFilterSearchTermPresets(gridOptions.presets.filters);
       }
-      gridOptions.backendServiceApi ? this.filterService.bindBackendOnFilter(grid, this.dataView) : this.filterService.bindLocalOnFilter(grid, this.dataView);
+      // bind external filter (backend) unless specified to use the local one
+      if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalFiltering) {
+        this.filterService.bindBackendOnFilter(grid, this.dataView);
+      } else {
+        this.filterService.bindLocalOnFilter(grid, this.dataView);
+      }
     }
 
     // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
