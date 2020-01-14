@@ -238,19 +238,27 @@ export class RowDetailViewExtension implements Extension {
   }
 
   /** Render (or rerender) the View Component (Row Detail) */
-  renderViewModel(item: any) {
+  renderViewModel(item: any): CreatedView | null {
     const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item.id}`);
     if (containerElements && containerElements.length) {
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[0], true);
       if (componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance) {
-        Object.assign(componentOutput.componentRef.instance, { model: item });
+        // pass a few properties to the Row Detail template component
+        Object.assign(componentOutput.componentRef.instance, {
+          model: item,
+          addon: this._addon,
+          grid: this.sharedService.grid,
+          dataView: this.sharedService.dataView
+        });
 
         const viewObj = this._views.find((obj) => obj.id === item.id);
         if (viewObj) {
           viewObj.componentRef = componentOutput.componentRef;
         }
+        return viewObj;
       }
     }
+    return null;
   }
 
   // --
