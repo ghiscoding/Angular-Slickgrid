@@ -744,7 +744,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     });
 
     // user could show a custom footer with the data metrics (dataset length and last updated timestamp)
-    this.showCustomFooterWithMetrics();
+    this.optionallyShowCustomFooterWithMetrics();
   }
 
   /** Load the Editor Collection asynchronously and replace the "collection" property when Observable resolves */
@@ -781,7 +781,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     return options;
   }
 
-  private showCustomFooterWithMetrics() {
+  /**
+   * We could optionally display a custom footer below the grid to show some metrics (last update, item count with/without filters)
+   * It's an opt-in, user has to enable "showCustomFooter" and it cannot be used when there's already a Pagination since they display the same kind of info
+   */
+  private optionallyShowCustomFooterWithMetrics() {
     if (this.gridOptions) {
       setTimeout(() => {
         // we will display the custom footer only when there's no Pagination

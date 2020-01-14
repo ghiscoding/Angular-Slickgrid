@@ -1033,5 +1033,53 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         });
       });
     });
+
+    describe('Custom Footer', () => {
+      it('should have a Custom Footer when "showCustomFooter" is enabled and there are no Pagination used', (done) => {
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+
+        component.gridOptions.enableTranslate = true;
+        component.gridOptions.showCustomFooter = true;
+        component.ngOnInit();
+        component.ngAfterViewInit();
+        component.columnDefinitions = mockColDefs;
+
+        setTimeout(() => {
+          expect(component.columnDefinitions).toEqual(mockColDefs);
+          expect(component.showCustomFooter).toBeTrue();
+          expect(component.customFooterOptions).toEqual({
+            dateFormat: 'yyyy-MM-dd HH:mm aaaaa\'m\'',
+            hideLastUpdateTimestamp: true,
+            hideTotalItemCount: false,
+            leftContainerClass: 'col-xs-12 col-sm-5',
+            metricSeparator: '|',
+            metricTexts: {
+              items: 'ITEMS',
+              itemsKey: 'ITEMS',
+              of: 'OF',
+              ofKey: 'OF',
+            },
+            rightContainerClass: 'col-xs-6 col-sm-7',
+          });
+          done();
+        }, 1);
+      });
+
+      it('should NOT have a Custom Footer when "showCustomFooter" is enabled WITH Pagination in use', (done) => {
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+
+        component.gridOptions.enablePagination = true;
+        component.gridOptions.showCustomFooter = true;
+        component.ngOnInit();
+        component.ngAfterViewInit();
+        component.columnDefinitions = mockColDefs;
+
+        setTimeout(() => {
+          expect(component.columnDefinitions).toEqual(mockColDefs);
+          expect(component.showCustomFooter).toBeFalse();
+          done();
+        }, 1);
+      });
+    });
   });
 });
