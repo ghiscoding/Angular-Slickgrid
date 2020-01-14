@@ -141,8 +141,6 @@ export class GridLocalizationComponent implements OnInit {
       i18n: this.translate,
       showCustomFooter: true, // display some metrics in the bottom custom footer
       customFooterOptions: {
-        // optionally display some text on the left footer container
-        // leftFooterText: 'custom text shown on left container',
         metricTexts: {
           // default text displayed in the metrics section on the right
           // all texts optionally support translation keys,
