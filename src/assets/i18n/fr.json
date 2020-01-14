@@ -24,6 +24,7 @@
   "INVALID_FLOAT": "Le nombre doit être valide et avoir un maximum de {{maxDecimal}} décimales.",
   "ITEMS": "éléments",
   "ITEMS_PER_PAGE": "éléments par page",
+  "LAST_UPDATE": "Dernière mise à jour",
   "NOT_IN_COLLECTION_SEPERATED_BY_COMMA": "Recherche excluant certain éléments d'une collection, doit être séparé par une virgule (a,b)",
   "OF": "de",
   "OK": "Terminé",

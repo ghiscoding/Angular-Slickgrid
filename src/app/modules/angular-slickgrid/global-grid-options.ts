@@ -55,10 +55,15 @@ export const GlobalGridOptions: GridOption = {
   customFooterOptions: {
     dateFormat: 'yyyy-MM-dd HH:mm aaaaa\'m\'',
     hideTotalItemCount: false,
+    hideLastUpdateTimestamp: true,
+    leftContainerClass: 'col-xs-12 col-sm-5',
+    rightContainerClass: 'col-xs-6 col-sm-7',
     metricSeparator: '|',
     metricTexts: {
-      textItems: 'TEXT_ITEMS',
-      textOf: 'OF',
+      items: 'items',
+      of: 'of',
+      itemsKey: 'ITEMS',
+      ofKey: 'OF',
     }
   },
   datasetIdPropertyName: 'id',

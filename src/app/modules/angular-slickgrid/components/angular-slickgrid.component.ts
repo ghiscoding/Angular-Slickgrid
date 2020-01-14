@@ -19,6 +19,7 @@ import {
   BackendServiceApi,
   BackendServiceOption,
   Column,
+  CustomFooterOption,
   ExtensionName,
   GraphqlPaginatedResult,
   GraphqlResult,
@@ -125,9 +126,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   groupingDefinition: any = {};
   groupItemMetadataProvider: any;
   backendServiceApi: BackendServiceApi;
+  customFooterOptions: CustomFooterOption;
   locales: Locale;
   metrics: Metrics;
-  metricsDateFormat = 'yyyy-MM-dd HH:mm aaaaa\'m\'';
   paginationOptions: Pagination;
   showCustomFooter = false;
   showPagination = false;
@@ -781,17 +782,26 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   private showCustomFooterWithMetrics() {
-    setTimeout(() => {
-      if (this.gridOptions && !(this.gridOptions.backendServiceApi || this.gridOptions.enablePagination)) {
-        this.showCustomFooter = this.gridOptions.hasOwnProperty('showCustomFooter') ? this.gridOptions.showCustomFooter : true;
-      }
-    });
+    if (this.gridOptions) {
+      setTimeout(() => {
+        // we will display the custom footer only when there's no Pagination
+        if (!(this.gridOptions.backendServiceApi || this.gridOptions.enablePagination)) {
+          this.showCustomFooter = this.gridOptions.hasOwnProperty('showCustomFooter') ? this.gridOptions.showCustomFooter : false;
+          this.customFooterOptions = this.gridOptions.customFooterOptions || {};
+        }
+      });
 
-    if (this.gridOptions.enableTranslate || this.gridOptions.i18n) {
-      this.translateCustomFooterTexts();
-    } else {
-      this.gridOptions.customFooterOptions.metricTexts.textItems = this.locales && this.locales.TEXT_ITEMS || 'TEXT_ITEMS';
-      this.gridOptions.customFooterOptions.metricTexts.textOf = this.locales && this.locales.TEXT_OF || 'TEXT_OF';
+      if ((this.gridOptions.enableTranslate || this.gridOptions.i18n)) {
+        this.translateCustomFooterTexts();
+      } else if (this.gridOptions.customFooterOptions) {
+        const customFooterOptions = this.gridOptions.customFooterOptions;
+        if (!customFooterOptions.metricTexts) {
+          customFooterOptions.metricTexts = {};
+        }
+        customFooterOptions.metricTexts.lastUpdate = this.locales && this.locales.TEXT_LAST_UPDATE || 'TEXT_LAST_UPDATE';
+        customFooterOptions.metricTexts.items = this.locales && this.locales.TEXT_ITEMS || 'TEXT_ITEMS';
+        customFooterOptions.metricTexts.of = this.locales && this.locales.TEXT_OF || 'TEXT_OF';
+      }
     }
   }
 
@@ -813,9 +823,17 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   /** Translate all Custom Footer Texts (footer with metrics) */
   private translateCustomFooterTexts() {
-    if (this.gridOptions && this.gridOptions.customFooterOptions && this.gridOptions.customFooterOptions.metricTexts) {
-      this.gridOptions.customFooterOptions.metricTexts.textItems = this.translate.instant('ITEMS');
-      this.gridOptions.customFooterOptions.metricTexts.textOf = this.translate.instant('OF');
+    if (this.translate && this.translate.instant) {
+      const customFooterOptions = this.gridOptions && this.gridOptions.customFooterOptions || {};
+      if (!customFooterOptions.metricTexts) {
+        customFooterOptions.metricTexts = {};
+      }
+      for (const propName of Object.keys(customFooterOptions.metricTexts)) {
+        if (propName.lastIndexOf('Key') > 0) {
+          const propNameWithoutKey = propName.substring(0, propName.lastIndexOf('Key'));
+          customFooterOptions.metricTexts[propNameWithoutKey] = this.translate.instant(customFooterOptions.metricTexts[propName] || ' ');
+        }
+      }
     }
   }
 

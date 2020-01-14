@@ -25,6 +25,7 @@ export class Constants {
     TEXT_ITEMS_PER_PAGE: 'items per page',
     TEXT_OF: 'of',
     TEXT_OK: 'OK',
+    TEXT_LAST_UPDATE: 'Last Update',
     TEXT_PAGE: 'Page',
     TEXT_REFRESH_DATASET: 'Refresh Dataset',
     TEXT_REMOVE_FILTER: 'Remove Filter',
