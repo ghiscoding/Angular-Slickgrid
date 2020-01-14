@@ -56,6 +56,7 @@ export const GlobalGridOptions: GridOption = {
     dateFormat: 'yyyy-MM-dd HH:mm aaaaa\'m\'',
     hideTotalItemCount: false,
     hideLastUpdateTimestamp: true,
+    footerHeight: 20,
     leftContainerClass: 'col-xs-12 col-sm-5',
     rightContainerClass: 'col-xs-6 col-sm-7',
     metricSeparator: '|',

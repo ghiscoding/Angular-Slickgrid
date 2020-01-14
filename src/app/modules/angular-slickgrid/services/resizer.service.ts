@@ -84,13 +84,13 @@ export class ResizerService {
     // calculate bottom padding
     // if using pagination, we need to add the pagination height to this bottom padding
     let bottomPadding = (autoResizeOptions && autoResizeOptions.bottomPadding) ? autoResizeOptions.bottomPadding : DATAGRID_BOTTOM_PADDING;
-    if (bottomPadding && (gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
+    if (bottomPadding && (gridOptions.enablePagination || gridOptions.backendServiceApi)) {
       bottomPadding += DATAGRID_PAGINATION_HEIGHT;
     }
 
     // optionally show a custom footer with the data metrics (dataset length and last updated timestamp)
     if (bottomPadding && gridOptions.showCustomFooter) {
-      bottomPadding += DATAGRID_FOOTER_HEIGHT;
+      bottomPadding += gridOptions.customFooterOptions && gridOptions.customFooterOptions.footerHeight || DATAGRID_FOOTER_HEIGHT;
     }
 
     let gridHeight = 0;

@@ -1051,6 +1051,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
             dateFormat: 'yyyy-MM-dd HH:mm aaaaa\'m\'',
             hideLastUpdateTimestamp: true,
             hideTotalItemCount: false,
+            footerHeight: 20,
             leftContainerClass: 'col-xs-12 col-sm-5',
             metricSeparator: '|',
             metricTexts: {

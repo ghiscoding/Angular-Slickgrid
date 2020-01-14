@@ -799,9 +799,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         this.translateCustomFooterTexts();
       } else if (this.gridOptions.customFooterOptions) {
         const customFooterOptions = this.gridOptions.customFooterOptions;
-        if (!customFooterOptions.metricTexts) {
-          customFooterOptions.metricTexts = {};
-        }
+        customFooterOptions.metricTexts = customFooterOptions.metricTexts || {};
         customFooterOptions.metricTexts.lastUpdate = this.locales && this.locales.TEXT_LAST_UPDATE || 'TEXT_LAST_UPDATE';
         customFooterOptions.metricTexts.items = this.locales && this.locales.TEXT_ITEMS || 'TEXT_ITEMS';
         customFooterOptions.metricTexts.of = this.locales && this.locales.TEXT_OF || 'TEXT_OF';
@@ -829,9 +827,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private translateCustomFooterTexts() {
     if (this.translate && this.translate.instant) {
       const customFooterOptions = this.gridOptions && this.gridOptions.customFooterOptions || {};
-      if (!customFooterOptions.metricTexts) {
-        customFooterOptions.metricTexts = {};
-      }
+      customFooterOptions.metricTexts = customFooterOptions.metricTexts || {};
       for (const propName of Object.keys(customFooterOptions.metricTexts)) {
         if (propName.lastIndexOf('Key') > 0) {
           const propNameWithoutKey = propName.substring(0, propName.lastIndexOf('Key'));

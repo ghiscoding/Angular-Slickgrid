@@ -8,6 +8,9 @@ export interface CustomFooterOption {
   /** Date format used when showing the "Last Update" timestamp in the metrics section. */
   dateFormat?: string;
 
+  /** Defaults to 20, height of the Custom Footer in pixels (this is required and is used by the auto-resizer) */
+  footerHeight?: number;
+
   /** Defaults to false, do we want to hide the last update timestamp (endTime)? */
   hideLastUpdateTimestamp?: boolean;
 
