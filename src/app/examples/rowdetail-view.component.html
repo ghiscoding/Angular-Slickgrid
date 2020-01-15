@@ -15,13 +15,16 @@
 
   <hr>
 
-  <h4>
-    Find out who is the Assignee
-    <small>
-      <button class="btn btn-primary btn-sm" (click)="alertAssignee(model?.assignee)">Click Me</button>
-    </small>
-    <small>
-      <button class="btn btn-primary btn-danger" (click)="deleteRow(model)">Delete Row</button>
-    </small>
-  </h4>
+  <div class="col-sm-8">
+    <h4>
+      Find out who is the Assignee
+      <small>
+        <button class="btn btn-primary btn-sm" (click)="alertAssignee(model?.assignee)">Click Me</button>
+      </small>
+    </h4>
+  </div>
+  <div class="col-sm-4">
+    <button class="btn btn-primary btn-danger btn-sm" (click)="deleteRow(model)">Delete Row</button>
+    <button class="btn btn-default btn-sm" (click)="callParentMethod(model)">Call Parent Method</button>
+  </div>
 </div>

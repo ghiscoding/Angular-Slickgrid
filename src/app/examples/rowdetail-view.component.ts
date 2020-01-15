@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GridRowDetailComponent } from './grid-rowdetail.component';
 
 @Component({
   templateUrl: './rowdetail-view.component.html'
@@ -20,6 +21,10 @@ export class RowDetailViewComponent {
   grid: any;
   dataView: any;
 
+  // you can also optionally use the Parent Component reference
+  // NOTE that you MUST provide it through the "parent" property in your "rowDetail" grid options
+  parent: GridRowDetailComponent;
+
   constructor() { }
 
   alertAssignee(name: string) {
@@ -37,6 +42,12 @@ export class RowDetailViewComponent {
 
       // then you can delete the item from the dataView
       this.dataView.deleteItem(model.id);
+
+      this.parent.showFlashMessage(`Deleted row with ${model.title}`, 'danger');
     }
+  }
+
+  callParentMethod(model) {
+    this.parent.showFlashMessage(`We just called Parent Method from the Row Detail Child Component on ${model.title}`);
   }
 }

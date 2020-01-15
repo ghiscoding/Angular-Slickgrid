@@ -2,7 +2,7 @@
   <h2>{{title}}</h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <span>
+  <div class="col-sm-6">
     <button class="btn btn-default btn-sm" (click)="closeAllRowDetail()">
       Close All Row Details
     </button>
@@ -12,14 +12,12 @@
     <button class="btn btn-default btn-xs" (click)="changeDetailViewRowCount()">
       Set
     </button>
-  </span>
+  </div>
+  <div class="alert alert-{{flashAlertType}} col-sm-6" *ngIf="message">{{message}}</div>
 
   <hr />
 
-  <angular-slickgrid gridId="grid21"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event)">
+  <angular-slickgrid gridId="grid21" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
+    [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)">
   </angular-slickgrid>
 </div>
