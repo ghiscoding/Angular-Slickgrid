@@ -1,6 +1,10 @@
 /// <reference types="cypress" />
 import moment from 'moment-mini';
 
+function removeExtraSpaces(textS) {
+  return `${textS}`.replace(/\s+/g, ' ').trim();
+}
+
 describe('Example 4 - Client Side Sort/Filter Grid', () => {
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/clientside`);
@@ -143,6 +147,17 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
 
       cy.get('[data-test=set-dynamic-sorting]')
         .click();
+    });
+
+    it('should have some metrics shown in the grid footer', () => {
+      cy.get('#slickGridContainer-grid4')
+        .find('.slick-custom-footer')
+        .find('.right-footer')
+        .should($span => {
+          const text = removeExtraSpaces($span.text()); // remove all white spaces
+          expect(text).to.eq('1500 of 1500 items');
+        })
+      // .contains('1500 of 1500 items')
     });
 
     it('should expect the grid to be sorted by "Duration" ascending and "Start" descending', () => {

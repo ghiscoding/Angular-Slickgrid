@@ -24,6 +24,7 @@ import { Column, CurrentFilter, CurrentSorter, GridOption, GridState, GridStateC
 import { Filters } from '../../filters';
 import { Editors } from '../../editors';
 import * as utilities from '../../services/backend-utilities';
+import { GraphqlPaginatedResult } from 'dist/public_api';
 
 
 const mockExecuteBackendProcess = jest.fn();
@@ -611,7 +612,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const spy = jest.spyOn(component, 'refreshGridData');
 
         component.ngAfterViewInit();
-        component.gridOptions.backendServiceApi.internalPostProcess({ data: { users: { nodes: [{ firstName: 'John' }], pageInfo: { hasNextPage: false }, totalCount: 2 } } });
+        component.gridOptions.backendServiceApi.internalPostProcess({ data: { users: { nodes: [{ firstName: 'John' }], totalCount: 2 } } } as GraphqlPaginatedResult);
 
         expect(spy).toHaveBeenCalled();
         expect(component.gridOptions.backendServiceApi.internalPostProcess).toEqual(expect.any(Function));
@@ -635,7 +636,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const spy = jest.spyOn(component, 'refreshGridData');
 
         component.ngAfterViewInit();
-        component.gridOptions.backendServiceApi.internalPostProcess({ data: { notUsers: { nodes: [{ firstName: 'John' }], pageInfo: { hasNextPage: false }, totalCount: 2 } } });
+        component.gridOptions.backendServiceApi.internalPostProcess({ data: { notUsers: { nodes: [{ firstName: 'John' }], totalCount: 2 } } } as GraphqlPaginatedResult);
 
         expect(spy).not.toHaveBeenCalled();
         expect(component.dataset).toEqual([]);
@@ -1073,6 +1074,55 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           change: { newValues: mockPagination, type: GridStateType.pagination },
           gridState: { columns: [], pagination: mockPagination }
         });
+      });
+    });
+
+    describe('Custom Footer', () => {
+      it('should have a Custom Footer when "showCustomFooter" is enabled and there are no Pagination used', (done) => {
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+
+        component.gridOptions.enableTranslate = true;
+        component.gridOptions.showCustomFooter = true;
+        component.ngOnInit();
+        component.ngAfterViewInit();
+        component.columnDefinitions = mockColDefs;
+
+        setTimeout(() => {
+          expect(component.columnDefinitions).toEqual(mockColDefs);
+          expect(component.showCustomFooter).toBeTrue();
+          expect(component.customFooterOptions).toEqual({
+            dateFormat: 'yyyy-MM-dd HH:mm aaaaa\'m\'',
+            hideLastUpdateTimestamp: true,
+            hideTotalItemCount: false,
+            footerHeight: 20,
+            leftContainerClass: 'col-xs-12 col-sm-5',
+            metricSeparator: '|',
+            metricTexts: {
+              items: 'ITEMS',
+              itemsKey: 'ITEMS',
+              of: 'OF',
+              ofKey: 'OF',
+            },
+            rightContainerClass: 'col-xs-6 col-sm-7',
+          });
+          done();
+        }, 1);
+      });
+
+      it('should NOT have a Custom Footer when "showCustomFooter" is enabled WITH Pagination in use', (done) => {
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+
+        component.gridOptions.enablePagination = true;
+        component.gridOptions.showCustomFooter = true;
+        component.ngOnInit();
+        component.ngAfterViewInit();
+        component.columnDefinitions = mockColDefs;
+
+        setTimeout(() => {
+          expect(component.columnDefinitions).toEqual(mockColDefs);
+          expect(component.showCustomFooter).toBeFalse();
+          done();
+        }, 1);
       });
     });
   });

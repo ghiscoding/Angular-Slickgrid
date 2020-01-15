@@ -498,3 +498,22 @@ $viewport-border-top:                       0 none !default;                    
 $viewport-border-right:                     0 none !default;
 $viewport-border-bottom:                    0 none !default;
 $viewport-border-left:                      0 none !default;
+
+/* Custom Footer */
+$footer-bg-color:                           transparent !default;
+$footer-font-style:                         italic !default;
+$footer-font-weight:                        normal !default;
+$footer-height:                             30px !default; // if you modify this height, you also have to modify the footerHeight in the customFooterOptions
+$footer-padding:                            5px !default;
+$footer-text-color:                         #808080 !default;
+$footer-left-font-style:                    italic !default;
+$footer-left-font-weight:                   normal !default;
+$footer-left-padding:                       0px !default;
+$footer-left-text-align:                    left !default;
+$footer-left-text-color:                    $footer-text-color !default;
+$footer-right-font-style:                   italic !default;
+$footer-right-font-weight:                  normal !default;
+$footer-right-padding:                      0px !default;
+$footer-right-separator-margin:             2px !default;
+$footer-right-text-align:                   right !default;
+$footer-right-text-color:                   $footer-text-color !default;

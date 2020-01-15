@@ -1,8 +1,14 @@
 /// <reference types="cypress" />
+import moment from 'moment-mini';
+
+function removeExtraSpaces(textS) {
+  return `${textS}`.replace(/\s+/g, ' ').trim();
+}
 
 describe('Example 12: Localization (i18n)', () => {
   const fullEnglishTitles = ['Title', 'Description', 'Duration', 'Start', 'Finish', 'Completed', 'Completed'];
   const fullFrenchTitles = ['Titre', 'Description', 'Durée', 'Début', 'Fin', 'Terminé', 'Terminé'];
+  let now = new Date();
 
   beforeEach(() => {
     cy.restoreLocalStorage();
@@ -14,7 +20,9 @@ describe('Example 12: Localization (i18n)', () => {
 
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/localization`);
-    cy.get('h2').should('contain', 'Example 12: Localization (i18n)');
+    cy.get('h2')
+      .should('contain', 'Example 12: Localization (i18n)')
+      .then(() => now = new Date());
   });
 
   describe('English Locale', () => {
@@ -23,6 +31,17 @@ describe('Example 12: Localization (i18n)', () => {
         .find('.slick-header-columns')
         .children()
         .each(($child, index) => expect($child.text()).to.eq(fullEnglishTitles[index]));
+    });
+
+    it('should have some metrics shown in the grid footer', () => {
+      cy.get('#slickGridContainer-grid12')
+        .find('.slick-custom-footer')
+        .find('.right-footer')
+        .should($span => {
+          const text = removeExtraSpaces($span.text()); // remove all white spaces
+          const dateFormatted = moment(now).format('YYYY-MM-DD HH:mm a');
+          expect(text).to.eq(`Last Update ${dateFormatted} | 1500 of 1500 items`);
+        });
     });
 
     it('should filter certain tasks with the word "ask 1" and expect filter to use contain/include text', () => {
@@ -74,6 +93,17 @@ describe('Example 12: Localization (i18n)', () => {
         .find('.slick-header-columns')
         .children()
         .each(($child, index) => expect($child.text()).to.eq(fullFrenchTitles[index]));
+    });
+
+    it('should have some metrics shown in the grid footer', () => {
+      cy.get('#slickGridContainer-grid12')
+        .find('.slick-custom-footer')
+        .find('.right-footer')
+        .should($span => {
+          const text = removeExtraSpaces($span.text()); // remove all white spaces
+          const dateFormatted = moment(now).format('YYYY-MM-DD HH:mm a');
+          expect(text).to.eq(`Dernière mise à jour ${dateFormatted} | 1500 de 1500 éléments`);
+        });
     });
 
     it('should filter certain tasks', () => {

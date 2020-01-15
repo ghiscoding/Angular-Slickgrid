@@ -24,6 +24,7 @@ import {
   RowDetailView,
   RowMoveManager
 } from './index';
+import { CustomFooterOption } from './customFooterOption.interface';
 
 export interface GridOption {
   /** CSS class name used on newly added row */
@@ -100,6 +101,9 @@ export interface GridOption {
 
   /** Default to false, which leads to create an extra pre-header panel (on top of column header) for column grouping purposes */
   createPreHeaderPanel?: boolean;
+
+  /** Custom Footer Options */
+  customFooterOptions?: CustomFooterOption;
 
   /** Data item column value extractor (getter) that can be used by the Excel like copy buffer plugin */
   dataItemColumnValueExtractor?: (item: any, columnDef: Column) => any;
@@ -368,11 +372,20 @@ export interface GridOption {
   /** Do we want to show cell selection? */
   showCellSelection?: boolean;
 
+  /**
+   * Do we want to show a custom footer with some metrics?
+   * By default it will show how many items are in the dataset and when was last update done (timestamp)
+   * */
+  showCustomFooter?: boolean;
+
   /** Do we want to show the footer row? */
   showFooterRow?: boolean;
 
   /** Do we want to show header row? */
   showHeaderRow?: boolean;
+
+  /** Do we want to show metrics in custom footer? (dataset length, data filtered, last update timestamp) */
+  showFooterMetrics?: boolean;
 
   /** Do we want to show the extra pre-header panel (on top of column header) for column grouping purposes */
   showPreHeaderPanel?: boolean;

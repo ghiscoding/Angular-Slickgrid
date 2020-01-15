@@ -2,9 +2,34 @@
   <div attr.id='{{gridId}}' class="slickgrid-container" style="width: 100%" [style.height]="gridHeightString">
   </div>
 
+  <!-- Pagination section under the grid -->
   <slick-pagination id="slickPagingContainer-{{gridId}}" *ngIf="showPagination"
     (onPaginationChanged)="paginationChanged($event)" [enableTranslate]="gridOptions.enableTranslate"
     [dataView]="dataView" [grid]="grid" [options]="paginationOptions" [locales]="locales" [totalItems]="totalItems"
     [backendServiceApi]="backendServiceApi">
   </slick-pagination>
+
+  <!-- Custom Footer section under the grid -->
+  <div *ngIf="showCustomFooter && customFooterOptions" class="slick-custom-footer" style="width: 100%;"
+    [style.height]="customFooterOptions?.footerHeight || 20">
+    <span class="left-footer" [ngClass]="customFooterOptions.leftContainerClass">
+      {{customFooterOptions.leftFooterText}}
+    </span>
+
+    <span class="right-footer metrics" [ngClass]="customFooterOptions.rightContainerClass"
+      *ngIf="metrics && !customFooterOptions.hideMetrics">
+      <span *ngIf="!customFooterOptions.hideLastUpdateTimestamp">
+        <span>{{customFooterOptions.metricTexts?.lastUpdate}}</span>
+
+        {{metrics.endTime | date: customFooterOptions.dateFormat}}
+        <span class="separator">{{customFooterOptions.metricSeparator}}</span>
+      </span>
+
+      {{metrics.itemCount}}
+      <span *ngIf="!customFooterOptions.hideTotalItemCount">{{customFooterOptions.metricTexts?.of}}
+        {{metrics.totalItemCount}}
+      </span>
+      {{customFooterOptions.metricTexts?.items}}
+    </span>
+  </div>
 </div>
