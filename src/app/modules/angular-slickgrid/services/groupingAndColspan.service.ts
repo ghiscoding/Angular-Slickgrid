@@ -1,9 +1,11 @@
+import { Injectable } from '@angular/core';
 
 import {
   Column,
   GridOption,
   SlickEventHandler,
 } from './../models/index';
+import { ResizerService } from './resizer.service';
 
 // using external non-typed js libraries
 declare let $: any;
@@ -11,11 +13,12 @@ declare let $: any;
 // using external non-typed js libraries
 declare var Slick: any;
 
+@Injectable()
 export class GroupingAndColspanService {
   private _eventHandler: SlickEventHandler;
   private _grid: any;
 
-  constructor() {
+  constructor(private resizerService: ResizerService) {
     this._eventHandler = new Slick.EventHandler();
   }
 
@@ -45,6 +48,7 @@ export class GroupingAndColspanService {
         this._eventHandler.subscribe(grid.onSort, () => this.renderPreHeaderRowGroupingTitles());
         this._eventHandler.subscribe(grid.onColumnsResized, () => this.renderPreHeaderRowGroupingTitles());
         this._eventHandler.subscribe(dataView.onRowCountChanged, () => this.renderPreHeaderRowGroupingTitles());
+        this.resizerService.onGridAfterResize.subscribe(() => this.renderPreHeaderRowGroupingTitles());
 
         // also not sure why at this point, but it seems that I need to call the 1st create in a delayed execution
         // probably some kind of timing issues and delaying it until the grid is fully ready does help

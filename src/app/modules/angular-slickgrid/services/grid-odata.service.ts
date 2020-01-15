@@ -37,7 +37,7 @@ export class GridOdataService implements BackendService {
   private _columnDefinitions: Column[];
   private _grid: any;
   private _odataService: OdataQueryBuilderService;
-  options: OdataOption;
+  options: Partial<OdataOption>;
   pagination: Pagination | undefined;
   defaultOptions: OdataOption = {
     top: DEFAULT_ITEMS_PER_PAGE,

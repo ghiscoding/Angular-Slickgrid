@@ -37,6 +37,7 @@ export class GraphqlService implements BackendService {
   private _currentSorters: CurrentSorter[] = [];
   private _columnDefinitions: Column[];
   private _grid: any;
+  private _datasetIdPropName = 'id';
   options: GraphqlServiceOption;
   pagination: Pagination | undefined;
   defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption = {
@@ -57,8 +58,9 @@ export class GraphqlService implements BackendService {
   /** Initialization of the service, which acts as a constructor */
   init(serviceOptions?: GraphqlServiceOption, pagination?: Pagination, grid?: any): void {
     this._grid = grid;
-    this.options = serviceOptions || {};
+    this.options = serviceOptions || { datasetName: '', columnDefinitions: [] };
     this.pagination = pagination;
+    this._datasetIdPropName = this._gridOptions.datasetIdPropertyName || 'id';
 
     if (grid && grid.getColumns) {
       this._columnDefinitions = (serviceOptions && serviceOptions.columnDefinitions) || grid.getColumns();
@@ -71,7 +73,7 @@ export class GraphqlService implements BackendService {
    */
   buildQuery() {
     if (!this.options || !this.options.datasetName || (!this._columnDefinitions && !Array.isArray(this.options.columnDefinitions))) {
-      throw new Error('GraphQL Service requires "datasetName" & "columnDefinitions" properties for it to work');
+      throw new Error('GraphQL Service requires the "datasetName" property to properly build the GraphQL query');
     }
 
     // get the column definitions and exclude some if they were tagged as excluded
@@ -95,10 +97,10 @@ export class GraphqlService implements BackendService {
       }
     }
 
-    // Slickgrid also requires the "id" field to be part of DataView
+    // Slickgrid also requires the "id" (or the dataset defined unique ide) field to be part of DataView
     // add it to the GraphQL query if it wasn't already part of the list
-    if (columnIds.indexOf('id') === -1) {
-      columnIds.unshift('id');
+    if (columnIds.indexOf(this._datasetIdPropName) === -1) {
+      columnIds.unshift(this._datasetIdPropName);
     }
 
     const columnsQuery = this.buildFilterQuery(columnIds);
@@ -262,7 +264,7 @@ export class GraphqlService implements BackendService {
     this.updateOptions({ paginationOptions });
   }
 
-  updateOptions(serviceOptions?: GraphqlServiceOption) {
+  updateOptions(serviceOptions?: Partial<GraphqlServiceOption>) {
     this.options = { ...this.options, ...serviceOptions };
   }
 

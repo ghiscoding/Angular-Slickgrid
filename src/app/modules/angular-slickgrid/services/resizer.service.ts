@@ -84,7 +84,7 @@ export class ResizerService {
     // calculate bottom padding
     // if using pagination, we need to add the pagination height to this bottom padding
     let bottomPadding = (autoResizeOptions && autoResizeOptions.bottomPadding) ? autoResizeOptions.bottomPadding : DATAGRID_BOTTOM_PADDING;
-    if (bottomPadding && (gridOptions.enablePagination || gridOptions.backendServiceApi)) {
+    if (bottomPadding && gridOptions.enablePagination) {
       bottomPadding += DATAGRID_PAGINATION_HEIGHT;
     }
 

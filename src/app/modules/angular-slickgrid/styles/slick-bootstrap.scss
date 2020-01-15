@@ -247,13 +247,6 @@
     }
   }
 
-  .slick-preheader-panel.ui-state-default  {
-    .slick-header-column {
-      border-left: $preheader-border-left !important;
-      font-size: $preheader-font-size !important;
-    }
-  }
-
   .slick-header-columns {
     background: $table-background;
     width: calc(100% - #{$header-scroll-width-to-remove});
@@ -349,6 +342,23 @@
         border-right: $header-resizable-hover;
         right: 0;
       }
+    }
+  }
+
+  /** Header Grouping **/
+  .slick-preheader-panel.ui-state-default  {
+    .slick-header-column {
+      border-left: $preheader-border-left;
+      border-right: $preheader-border-right;
+      border-bottom: $preheader-border-bottom;
+      border-top: $preheader-border-top;
+      font-size: $preheader-font-size;
+    }
+    .slick-header-column:first-child {
+      border-left: $preheader-border-left-first-element;
+    }
+    .slick-header-column:last-child {
+      border-right: $preheader-border-right-last-element;
     }
   }
 

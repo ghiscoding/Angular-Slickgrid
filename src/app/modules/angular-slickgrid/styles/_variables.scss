@@ -49,10 +49,12 @@ $row-checkbox-selector-border:              none !default;
 
 /* Pre-Header - Header Grouping colspan */
 $preheader-border-left:                     none !default;
+$preheader-border-left-first-element:       none !default;
 $preheader-border-right:                    none !default;
+$preheader-border-right-last-element:       none !default;
 $preheader-border-bottom:                   none !default;
 $preheader-border-top:                      none !default;
-$preheader-font-size:                       $font-size-base + 2px !default;
+$preheader-font-size:                       $font-size-base + 3px !default;
 
 /* header */
 $header-font-weight:                        bold !default;
