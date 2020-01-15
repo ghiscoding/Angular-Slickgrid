@@ -37,6 +37,7 @@ export class GraphqlService implements BackendService {
   private _currentSorters: CurrentSorter[] = [];
   private _columnDefinitions: Column[];
   private _grid: any;
+  private _datasetIdPropName = 'id';
   options: GraphqlServiceOption;
   pagination: Pagination | undefined;
   defaultPaginationOptions: GraphqlPaginationOption | GraphqlCursorPaginationOption = {
@@ -59,6 +60,7 @@ export class GraphqlService implements BackendService {
     this._grid = grid;
     this.options = serviceOptions || { datasetName: '', columnDefinitions: [] };
     this.pagination = pagination;
+    this._datasetIdPropName = this._gridOptions.datasetIdPropertyName || 'id';
 
     if (grid && grid.getColumns) {
       this._columnDefinitions = (serviceOptions && serviceOptions.columnDefinitions) || grid.getColumns();
@@ -95,10 +97,10 @@ export class GraphqlService implements BackendService {
       }
     }
 
-    // Slickgrid also requires the "id" field to be part of DataView
+    // Slickgrid also requires the "id" (or the dataset defined unique ide) field to be part of DataView
     // add it to the GraphQL query if it wasn't already part of the list
-    if (columnIds.indexOf('id') === -1) {
-      columnIds.unshift('id');
+    if (columnIds.indexOf(this._datasetIdPropName) === -1) {
+      columnIds.unshift(this._datasetIdPropName);
     }
 
     const columnsQuery = this.buildFilterQuery(columnIds);
