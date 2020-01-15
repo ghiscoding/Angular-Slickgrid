@@ -20,15 +20,15 @@
 
   > .close {
     float: right;
-    background-color: $cell-menu-close-bg-color;
-    width: $cell-menu-close-width;
-    height: $cell-menu-close-height;
-    margin: $cell-menu-close-margin;
-    padding: $cell-menu-close-padding;
-    border: $cell-menu-close-border;
+    background-color: $cell-menu-close-btn-bg-color;
+    width: $cell-menu-close-btn-width;
+    height: $cell-menu-close-btn-height;
+    margin: $cell-menu-close-btn-margin;
+    padding: $cell-menu-close-btn-padding;
+    border: $cell-menu-close-btn-border;
 
     > span {
-      opacity: $cell-menu-close-opacity;
+      opacity: $cell-menu-close-btn-opacity;
     }
   }
 
@@ -63,6 +63,7 @@
       height: $cell-menu-divider-height;
       margin: $cell-menu-divider-margin;
       background-color: $cell-menu-divider-color;
+      width: $cell-menu-divider-width;
       &:hover {
         border: none;
         background-color: $cell-menu-divider-color;
@@ -126,15 +127,15 @@
 
   > .close {
     float: right;
-    background-color: $context-menu-close-bg-color;
-    width: $context-menu-close-width;
-    height: $context-menu-close-height;
-    margin: $context-menu-close-margin;
-    padding: $context-menu-close-padding;
-    border: $context-menu-close-border;
+    background-color: $context-menu-close-btn-bg-color;
+    width: $context-menu-close-btn-width;
+    height: $context-menu-close-btn-height;
+    margin: $context-menu-close-btn-margin;
+    padding: $context-menu-close-btn-padding;
+    border: $context-menu-close-btn-border;
 
     > span {
-      opacity: $context-menu-close-opacity;
+      opacity: $context-menu-close-btn-opacity;
     }
   }
 
@@ -169,6 +170,7 @@
       height: $context-menu-divider-height;
       margin: $context-menu-divider-margin;
       background-color: $context-menu-divider-color;
+      width: $context-menu-divider-width;
       &:hover {
         border: none;
         background-color: $context-menu-divider-color;
@@ -343,6 +345,7 @@
     height: $header-menu-divider-height;
     margin: $header-menu-divider-margin;
     background-color: $header-menu-divider-color;
+    width: $header-menu-divider-width;
     &:hover {
       border: none;
       background-color: $header-menu-item-disabled-color;

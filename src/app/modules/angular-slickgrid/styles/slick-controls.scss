@@ -22,16 +22,16 @@
 
   > .close {
     float: right;
-    width: $column-picker-close-width;
-    height: $column-picker-close-height;
-    margin: $column-picker-close-margin;
-    padding: $column-picker-close-padding;
+    width: $column-picker-close-btn-width;
+    height: $column-picker-close-btn-height;
+    margin: $column-picker-close-btn-margin;
+    padding: $column-picker-close-btn-padding;
 
-    background-color: $column-picker-close-bg-color;
-    border: $column-picker-close-border;
+    background-color: $column-picker-close-btn-bg-color;
+    border: $column-picker-close-btn-border;
 
     > span {
-      opacity: $column-picker-close-opacity;
+      opacity: $column-picker-close-btn-opacity;
     }
   }
 
@@ -57,10 +57,11 @@
     }
   }
   .title {
-    font-size: 16px;
-    width: 60%;
-    border-bottom: solid 1px #d6d6d6;
-    margin-bottom: 10px;
+    font-size: $column-picker-title-font-size;
+    font-weight: $column-picker-title-font-weight;
+    width: $column-picker-title-width;
+    border-bottom: $column-picker-title-border-bottom;
+    margin-bottom: $column-picker-title-margin-bottom;
   }
 }
 
@@ -144,24 +145,25 @@
 
   > .close {
     float: right;
-    width: $grid-menu-close-width;
-    height: $grid-menu-close-height;
-    margin: $grid-menu-close-margin;
-    padding: $grid-menu-close-padding;
+    width: $grid-menu-close-btn-width;
+    height: $grid-menu-close-btn-height;
+    margin: $grid-menu-close-btn-margin;
+    padding: $grid-menu-close-btn-padding;
 
-    background-color: $grid-menu-close-bg-color;
-    border: $grid-menu-close-border;
+    background-color: $grid-menu-close-btn-bg-color;
+    border: $grid-menu-close-btn-border;
 
     > span {
-      opacity: $grid-menu-close-opacity;
+      opacity: $grid-menu-close-btn-opacity;
     }
   }
 
   .title {
-    font-size: 16px;
-    width: calc(100% - 30px);
-    border-bottom: solid 1px #d6d6d6;
-    margin-bottom: 5px;
+    font-size: $grid-menu-title-font-size;
+    font-weight: $grid-menu-title-font-weight;
+    width: $grid-menu-title-width;
+    border-bottom: $grid-menu-title-border-bottom;
+    margin-bottom: $grid-menu-title-margin-bottom;
   }
   li {
     list-style: none;
@@ -218,7 +220,7 @@
     background-color: $grid-menu-item-hover-color;
   }
 
-  &.slick-header-menuitem-divider {
+  &.slick-gridmenu-item-divider {
     cursor: default;
     border: none;
     overflow: hidden;
@@ -226,6 +228,7 @@
     height: $grid-menu-divider-height;
     margin: $grid-menu-divider-margin;
     background-color: $grid-menu-divider-color;
+    width: $grid-menu-divider-width;
     &:hover {
       border: none;
       background-color: $grid-menu-item-disabled-color;
@@ -237,8 +240,13 @@
 }
 
 .slick-gridmenu-item-disabled {
+  cursor: inherit;
   border-color: transparent !important;
   background: inherit !important;
+  color: $grid-menu-item-disabled-color;
+  .slick-gridmenu-icon, .slick-gridmenu-content {
+    color: $grid-menu-item-disabled-color;
+  }
 }
 
 .slick-gridmenu-icon {
@@ -313,13 +321,5 @@
     content: $grid-menu-checkbox-icon-checked;
     opacity: 1; /* checked icon */
     width: $grid-menu-checkbox-width;
-  }
-}
-
-/* Disabled */
-.slick-gridmenu-item-disabled {
-  color: $grid-menu-item-disabled-color;
-  .slick-gridmenu-icon, .slick-gridmenu-content {
-    color: $grid-menu-item-disabled-color;
   }
 }
