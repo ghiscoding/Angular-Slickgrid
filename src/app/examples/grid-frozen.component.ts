@@ -9,8 +9,8 @@ import { AngularGridInstance, Column, FieldType, Formatters, Filters, GridOption
 export class GridFrozenComponent implements OnInit {
   title = 'Example 20: Pinned (frozen) Columns/Rows';
   subTitle = `
-    This example demonstrates the use of Pinned (aka frozen) Columns and/or Rows<br/>
-    <ul>
+  This example demonstrates the use of Pinned (aka frozen) Columns and/or Rows (<a href="https://github.com/ghiscoding/Angular-Slickgrid/wiki/Pinned-(aka-Frozen)-Columns-Rows" target="_blank">Wiki docs</a>)
+  <ul>
       <li>Option to pin any number of columns (left only) or rows</li>
       <li>Option to pin the rows at the bottom instead of the top (default)</li>
       <li>You can also dynamically any of these options, through SlickGrid "setOptions()"</li>

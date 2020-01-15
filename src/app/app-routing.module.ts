@@ -11,6 +11,7 @@ import { GridEditorComponent } from './examples/grid-editor.component';
 import { GridFormatterComponent } from './examples/grid-formatter.component';
 import { GridFrozenComponent } from './examples/grid-frozen.component';
 import { GridGraphqlComponent } from './examples/grid-graphql.component';
+import { GridGraphqlWithoutPaginationComponent } from './examples/grid-graphql-nopage.component';
 import { GridGroupingComponent } from './examples/grid-grouping.component';
 import { GridHeaderButtonComponent } from './examples/grid-headerbutton.component';
 import { GridHeaderMenuComponent } from './examples/grid-headermenu.component';
@@ -44,6 +45,7 @@ const routes: Routes = [
   { path: 'headerbutton', component: GridHeaderButtonComponent },
   { path: 'headermenu', component: GridHeaderMenuComponent },
   { path: 'gridgraphql', component: GridGraphqlComponent },
+  { path: 'graphql-nopage', component: GridGraphqlWithoutPaginationComponent },
   { path: 'gridmenu', component: GridMenuComponent },
   { path: 'gridstate', component: GridStateComponent },
   { path: 'gridtabs', component: GridTabsComponent },
