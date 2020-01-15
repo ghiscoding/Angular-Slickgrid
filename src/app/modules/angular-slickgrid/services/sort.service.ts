@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { isObservable, Subject } from 'rxjs';
 
 import {
   Column,
@@ -25,6 +25,7 @@ export class SortService {
   private _dataView: any;
   private _grid: any;
   private _isBackendGrid = false;
+  private httpCancelRequests$: Subject<void> = new Subject<void>(); // this will be used to cancel any pending http request
   onSortChanged = new Subject<CurrentSorter[]>();
   onSortCleared = new Subject<boolean>();
 
@@ -133,6 +134,9 @@ export class SortService {
     if (this._eventHandler && this._eventHandler.unsubscribeAll) {
       this._eventHandler.unsubscribeAll();
     }
+    if (isObservable(this.httpCancelRequests$)) {
+      this.httpCancelRequests$.next(); // this cancels any pending http requests
+    }
   }
 
   /**
@@ -236,7 +240,7 @@ export class SortService {
     // query backend
     const query = backendApi.service.processOnSortChanged(event, args);
     const totalItems = gridOptions && gridOptions.pagination && gridOptions.pagination.totalItems;
-    executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitSortChanged.bind(this));
+    executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitSortChanged.bind(this), this.httpCancelRequests$);
   }
 
   onLocalSortChanged(grid: any, dataView: any, sortColumns: ColumnSort[], forceReSort = false) {

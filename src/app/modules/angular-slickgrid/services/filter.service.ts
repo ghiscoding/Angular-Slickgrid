@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { isObservable, Subject } from 'rxjs';
+
 import * as isequal_ from 'lodash.isequal';
 const isequal = isequal_; // patch to fix rollup to work
 
@@ -46,6 +47,7 @@ export class FilterService {
   private _dataView: any;
   private _grid: any;
   private _onSearchChange: SlickEvent;
+  private httpCancelRequests$: Subject<void> = new Subject<void>(); // this will be used to cancel any pending http request
   onFilterChanged = new Subject<CurrentFilter[]>();
   onFilterCleared = new Subject<boolean>();
 
@@ -89,6 +91,9 @@ export class FilterService {
     // unsubscribe all SlickGrid events
     if (this._eventHandler && this._eventHandler.unsubscribeAll) {
       this._eventHandler.unsubscribeAll();
+    }
+    if (isObservable(this.httpCancelRequests$)) {
+      this.httpCancelRequests$.next(); // this cancels any pending http requests
     }
   }
 
@@ -222,8 +227,8 @@ export class FilterService {
       const queryResponse = backendApi.service.processOnFilterChanged(undefined, callbackArgs as FilterChangedArgs);
       if (queryResponse instanceof Promise && queryResponse.then) {
         // @deprecated, processOnFilterChanged in the future should be returned as a query string NOT as a Promise
-        console.warn(`[Angular-Slickgrid] please note that the "processOnFilterChanged" method signature, from Backend Service, should return a string instead of a Promise,
-          returning a Promise will be deprecated in the future.`);
+        console.warn(`[Angular-Slickgrid] please note that the "processOnFilterChanged" from your Backend Service, should now return a string instead of a Promise.
+          Returning a Promise will be deprecated in the future.`);
         queryResponse.then((query: string) => {
           const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems;
           executeBackendCallback(backendApi, query, callbackArgs, new Date(), totalItems, this.emitFilterChanged.bind(this));
@@ -426,25 +431,27 @@ export class FilterService {
     let debounceTypingDelay = 0;
     const isTriggeredByClearFilter = args && args.clearFilterTriggered; // was it trigger by a "Clear Filter" command?
 
-    if (!isTriggeredByClearFilter && event && event.keyCode !== KeyCode.ENTER && (event.type === 'input' || event.type === 'keyup' || event.type === 'keydown')) {
+    const eventType = event && event.type;
+    const eventKeyCode = event && event.keyCode;
+    if (!isTriggeredByClearFilter && eventKeyCode !== KeyCode.ENTER && (eventType === 'input' || eventType === 'keyup' || eventType === 'keydown')) {
       debounceTypingDelay = backendApi.hasOwnProperty('filterTypingDebounce') ? backendApi.filterTypingDebounce as number : DEFAULT_FILTER_TYPING_DEBOUNCE;
     }
 
     // query backend, except when it's called by a ClearFilters then we won't
     if (args && args.shouldTriggerQuery) {
       // call the service to get a query back
-      // TODO: remove async/await on next major change, refer to processOnFilterChanged in BackendService interface (with @deprecated)
+      // @deprecated TODO: remove async/await on next major change, refer to processOnFilterChanged in BackendService interface (with @deprecated)
+      clearTimeout(timer);
       if (debounceTypingDelay > 0) {
-        clearTimeout(timer);
         timer = setTimeout(async () => {
           const query = await backendApi.service.processOnFilterChanged(event, args);
           const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems;
-          executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitFilterChanged.bind(this));
+          executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitFilterChanged.bind(this), this.httpCancelRequests$);
         }, debounceTypingDelay);
       } else {
         const query = await backendApi.service.processOnFilterChanged(event, args);
         const totalItems = this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.totalItems;
-        executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitFilterChanged.bind(this));
+        executeBackendCallback(backendApi, query, args, startTime, totalItems, this.emitFilterChanged.bind(this), this.httpCancelRequests$);
       }
     }
   }
