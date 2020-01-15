@@ -5,7 +5,7 @@ export class OdataQueryBuilderService {
   _columnFilters: any;
   _defaultSortBy: string;
   _filterCount: number;
-  _odataOptions: OdataOption;
+  _odataOptions: Partial<OdataOption>;
 
   constructor() {
     this._odataOptions = {
@@ -86,11 +86,11 @@ export class OdataQueryBuilderService {
     return this._columnFilters;
   }
 
-  get options(): OdataOption {
+  get options(): Partial<OdataOption> {
     return this._odataOptions;
   }
 
-  set options(options: OdataOption) {
+  set options(options: Partial<OdataOption>) {
     this._odataOptions = options;
   }
 
@@ -111,7 +111,7 @@ export class OdataQueryBuilderService {
    * Change any OData options that will be used to build the query
    * @param object options
    */
-  updateOptions(options: OdataOption) {
+  updateOptions(options: Partial<OdataOption>) {
     for (const property of Object.keys(options)) {
       if (options.hasOwnProperty(property)) {
         this._odataOptions[property] = options[property]; // replace of the property

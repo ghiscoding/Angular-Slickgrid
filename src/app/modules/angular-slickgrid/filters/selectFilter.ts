@@ -28,7 +28,6 @@ import { castToPromise, getDescendantProperty, htmlEncode, unsubscribeAllObserva
 declare var $: any;
 
 export class SelectFilter implements Filter {
-  private _isFilterFirstRender = true;
   private _isMultipleSelect = true;
   private _locales: Locale;
   private _shouldTriggerQuery = true;
@@ -112,7 +111,6 @@ export class SelectFilter implements Filter {
     if (!args) {
       throw new Error('[Angular-SlickGrid] A filter must always have an "init()" with valid arguments.');
     }
-    this._isFilterFirstRender = isFilterFirstRender;
     this.grid = args.grid;
     this.callback = args.callback;
     this.columnDef = args.columnDef;
@@ -309,8 +307,8 @@ export class SelectFilter implements Filter {
       throw new Error('The "collection" passed to the Select Filter is not a valid array.');
     }
 
-    // user can optionally add a blank entry at the beginning of the collection
-    if (this.collectionOptions && this.collectionOptions.addBlankEntry && this._isFilterFirstRender) {
+    // make sure however that it wasn't added more than once
+    if (this.collectionOptions && this.collectionOptions.addBlankEntry && Array.isArray(collection) && collection.length > 0 && collection[0][this.labelName] !== '') {
       collection.unshift(this.createBlankEntry());
     }
 
@@ -370,7 +368,7 @@ export class SelectFilter implements Filter {
           optionLabel = (this.enableTranslateLabel && isEnableTranslate && optionLabel && typeof optionLabel === 'string') ? this.translate && this.translate.instant(optionLabel || ' ') : optionLabel;
 
           // add to a temp array for joining purpose and filter out empty text
-          const tmpOptionArray = [prefixText, labelText !== undefined ? labelText.toString() : labelText, suffixText].filter((text) => text);
+          const tmpOptionArray = [prefixText, (typeof labelText === 'string' || typeof labelText === 'number') ? labelText.toString() : labelText, suffixText].filter((text) => text);
           let optionText = tmpOptionArray.join(separatorBetweenLabels);
 
           // if user specifically wants to render html text, he needs to opt-in else it will stripped out by default

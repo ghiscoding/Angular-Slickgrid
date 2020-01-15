@@ -6,6 +6,7 @@ import {
   ColumnSort,
   CurrentFilter,
   FilterChangedArgs,
+  GraphqlServiceApi,
   GraphqlServiceOption,
   GridOption,
   MultiColumnSort,
@@ -27,10 +28,11 @@ const gridOptionMock = {
   enablePagination: true,
   backendServiceApi: {
     service: undefined,
+    options: { datasetName: '' },
     preProcess: jest.fn(),
     process: jest.fn(),
     postProcess: jest.fn(),
-  }
+  } as GraphqlServiceApi
 } as GridOption;
 
 const gridStub = {
@@ -105,7 +107,7 @@ describe('GraphqlService', () => {
 
     it('should throw an error when no dataset is provided in the service options after service init', () => {
       service.init({ datasetName: undefined });
-      expect(() => service.buildQuery()).toThrow();
+      expect(() => service.buildQuery()).toThrow('GraphQL Service requires the "datasetName" property to properly build the GraphQL query');
     });
 
     it('should throw an error when no column definitions is provided in the service options after service init', () => {

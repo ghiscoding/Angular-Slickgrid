@@ -10,6 +10,7 @@ import {
   GridStateChange,
   Metrics,
   OdataOption,
+  OdataServiceApi,
   OperatorType,
 } from './../modules/angular-slickgrid';
 
@@ -90,6 +91,7 @@ export class GridOdataComponent implements OnInit {
       enableFiltering: true,
       enableCheckboxSelector: true,
       enableRowSelection: true,
+      enablePagination: true, // you could optionally disable the Pagination
       pagination: {
         pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
         pageSize: defaultPageSize,
@@ -111,7 +113,7 @@ export class GridOdataComponent implements OnInit {
         options: {
           enableCount: this.isCountEnabled, // add the count in the OData query, which will return a property named "odata.count" (v2) or "@odata.count" (v4)
           version: this.odataVersion        // defaults to 2, the query string is slightly different between OData 2 and 4
-        } as OdataOption,
+        },
         preProcess: () => this.displaySpinner(true),
         process: (query) => this.getCustomerApiCall(query),
         postProcess: (response) => {
@@ -119,7 +121,7 @@ export class GridOdataComponent implements OnInit {
           this.displaySpinner(false);
           this.getCustomerCallback(response);
         }
-      }
+      } as OdataServiceApi
     };
   }
 

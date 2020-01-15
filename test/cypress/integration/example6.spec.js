@@ -57,7 +57,7 @@ describe('Example 6 - GraphQL Grid', () => {
             {field:"gender",operator:EQ,value:"male"},{field:"name",operator:Contains,value:"JohnDoe"},
             {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
           ],locale:"en",userId:123){
-            totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+            totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
       });
   });
 
@@ -75,7 +75,7 @@ describe('Example 6 - GraphQL Grid', () => {
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"name",operator:Contains,value:"JohnDoe"},
             {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
       });
   });
 
@@ -93,7 +93,7 @@ describe('Example 6 - GraphQL Grid', () => {
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"name",operator:Contains,value:"JohnDoe"},
             {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
       });
   });
 
@@ -115,7 +115,7 @@ describe('Example 6 - GraphQL Grid', () => {
             {field:"company",operator:IN,value:"xyz"},
             {field:"finish",operator:GE,value:"${presetLowestDay}"},
             {field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123) { totalCount, nodes { id,name,gender,company,billing{address{street,zip}},finish } } }`));
+          ],locale:"en",userId:123) { totalCount, nodes { id,name,gender,company,billing{address{zip,street}},finish } } }`));
       });
   });
 
@@ -134,7 +134,7 @@ describe('Example 6 - GraphQL Grid', () => {
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"name",operator:Contains,value:"JohnDoe"},
             {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
       });
   });
 
@@ -154,7 +154,7 @@ describe('Example 6 - GraphQL Grid', () => {
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"name",operator:Contains,value:"JohnDoe"},
             {field:"company",operator:IN,value:"xyz"},{field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
       });
   });
 
@@ -185,7 +185,7 @@ describe('Example 6 - GraphQL Grid', () => {
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"company",operator:IN,value:"xyz"},
             {field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
       });
   });
 
@@ -215,7 +215,7 @@ describe('Example 6 - GraphQL Grid', () => {
           filterBy:[
             {field:"gender",operator:EQ,value:"male"},{field:"company",operator:IN,value:"xyz"},
             {field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}
-          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+          ],locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
       });
   });
 
@@ -244,7 +244,7 @@ describe('Example 6 - GraphQL Grid', () => {
         expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC},{field:"company",direction:DESC}],
           filterBy:[{field:"gender",operator:EQ,value:"male"},{field:"company",operator:IN,value:"xyz"}],
-          locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+          locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
       });
   });
 
@@ -257,7 +257,7 @@ describe('Example 6 - GraphQL Grid', () => {
     cy.get('[data-test=graphql-query-result]')
       .should(($span) => {
         const text = removeSpaces($span.text()); // remove all white spaces
-        expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+        expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
       });
   });
 
@@ -279,7 +279,7 @@ describe('Example 6 - GraphQL Grid', () => {
         const text = removeSpaces($span.text()); // remove all white spaces
         expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
           orderBy:[{field:"name",direction:ASC}],
-          locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+          locale:"en",userId:123){totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
       });
   });
 
@@ -325,7 +325,7 @@ describe('Example 6 - GraphQL Grid', () => {
           filterBy:[{field:"gender",operator:EQ,value:"female"},{field:"name",operator:StartsWith,value:"Jane"},
           {field:"company",operator:IN,value:"acme"},{field:"billing.address.zip",operator:GE,value:"11"},
           {field:"finish",operator:GE,value:"${presetLowestDay}"},{field:"finish",operator:LE,value:"${presetHighestDay}"}],locale:"en",userId:123)
-          {totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+          {totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
       });
   });
 
@@ -362,7 +362,7 @@ describe('Example 6 - GraphQL Grid', () => {
           const text = removeSpaces($span.text()); // remove all white spaces
           expect(text).to.eq(removeSpaces(`query{users(first:30,offset:0,
             orderBy:[{field:"billing.address.zip",direction:DESC},{field:"company",direction:ASC}],locale:"en",userId:123){
-            totalCount,nodes{id,name,gender,company,billing{address{street,zip}},finish}}}`));
+            totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
         });
     });
   });

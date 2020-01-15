@@ -3,7 +3,7 @@ import { CaseType } from './caseType';
 
 export interface OdataOption extends BackendServiceOption {
   /** What is the casing type to use? Typically that would be 1 of the following 2: camelCase or PascalCase */
-  caseType?: CaseType;
+  caseType: CaseType;
 
   /** Add the total count $inlinecount (OData v2) or $count (OData v4) to the OData query */
   enableCount?: boolean;
@@ -20,7 +20,7 @@ export interface OdataOption extends BackendServiceOption {
   /** Filter string (or array of string) that must be a valid OData string */
   filterBy?: any;
 
-  /** What is separator between each filters? Typically "and", "or" */
+  /** What is the separator between each filters? Typically "and", "or" */
   filterBySeparator?: 'and' | 'or';
 
   /** Filter queue */
@@ -31,7 +31,4 @@ export interface OdataOption extends BackendServiceOption {
 
   /** OData version number (the query string is different between versions) */
   version?: number;
-
-  /** When accessed as an object */
-  [key: string]: any;
 }
