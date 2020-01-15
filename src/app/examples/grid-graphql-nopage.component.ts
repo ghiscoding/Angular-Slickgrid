@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Component, Injectable, OnInit, ViewEncapsulation } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   AngularGridInstance,
@@ -34,6 +34,8 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
       <li>There are no Pagination and we only use GraphQL once to load the data</li>
       <li>We enabled the following 2 flags "useLocalFiltering" and "useLocalSorting" to use regular (in memory) DataView filtering/sorting</li>
     </ul>
+    <li>NOTE - This Example calls multiple GraphQL queries, this is ONLY for demo purposes, you would typically only call 1 query (which is what GraphQL is good at)</li>
+    <li>This demo is mainly to show the use of GraphqlService to build the query and retrieve the data but also to show how to mix that with usage of local Filtering/Sorting strategies</li>
   </ul>
   `;
   angularGrid: AngularGridInstance;
@@ -161,13 +163,16 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
       : { text: 'done', class: 'alert alert-success' };
   }
 
+  // --
+  // NOTE - Demo Code ONLY
+  // This Example calls multiple GraphQL queries, this is ONLY for demo purposes, you would typically only call 1 query (which is what GraphQL is good at)
+  // This demo is mainly to show the use of GraphqlService to build the query and retrieve the data but also to show how to mix that with usage of local Filtering/Sorting strategies
+  // --
+
   /** Calling the GraphQL backend API to get the Countries with the Query created by the "process" method of GraphqlService  */
   getCountries(query: string): Observable<GraphqlResult> {
     return this.http.post<GraphqlResult>(COUNTRIES_API, { query });
   }
-
-  // --
-  // NOTE: The following 2 GraphQL queries could be grouped into 1 query and called and resolved only once prior to loading the data
 
   /**
    * Calling again the GraphQL backend API, however in this case we cannot use the GraphQL Service to build the query

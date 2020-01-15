@@ -2,6 +2,17 @@
   <h2>{{title}}</h2>
   <div class="subtitle row" [innerHTML]="subTitle"></div>
 
+  <div class="row">
+    <div class="col-xs-6 col-sm-3">
+      <div [class]="status.class" role="alert" data-test="status">
+        <strong>Status: </strong> {{status.text}}
+        <span [hidden]="!processing">
+          <i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>
+        </span>
+      </div>
+    </div>
+  </div>
+
   <angular-slickgrid gridId="grid25" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
     [dataset]="dataset">
   </angular-slickgrid>
