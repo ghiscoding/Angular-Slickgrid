@@ -47,8 +47,7 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
   graphqlQuery = '';
   processing = true;
   status = { text: 'processing...', class: 'alert alert-danger' };
-  isWithCursor = false;
-  selectedLanguage: string;
+  isDataLoaded = false;
 
   constructor(private http: HttpClient) { }
 
@@ -154,11 +153,12 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
           datasetName: 'countries', // the only REQUIRED property
         },
         // you can define the onInit callback OR enable the "executeProcessCommandOnInit" flag in the service init
-        preProcess: () => this.displaySpinner(true),
+        preProcess: () => !this.isDataLoaded ? this.displaySpinner(true) : '',
         process: (query) => this.getCountries(query),
         postProcess: (result: GraphqlResult) => {
           this.metrics = result.metrics;
           this.displaySpinner(false);
+          this.isDataLoaded = true;
         }
       } as GraphqlServiceApi
     };
