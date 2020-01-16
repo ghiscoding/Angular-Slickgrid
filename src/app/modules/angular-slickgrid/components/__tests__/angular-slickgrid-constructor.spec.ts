@@ -10,6 +10,7 @@ import {
   ExportService,
   ExtensionService,
   FilterService,
+  GraphqlPaginatedResult,
   GraphqlService,
   GridService,
   GridEventService,
@@ -24,7 +25,6 @@ import { Column, CurrentFilter, CurrentSorter, GridOption, GridState, GridStateC
 import { Filters } from '../../filters';
 import { Editors } from '../../editors';
 import * as utilities from '../../services/backend-utilities';
-import { GraphqlPaginatedResult } from 'dist/public_api';
 
 
 const mockExecuteBackendProcess = jest.fn();
@@ -1091,7 +1091,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(component.columnDefinitions).toEqual(mockColDefs);
           expect(component.showCustomFooter).toBeTrue();
           expect(component.customFooterOptions).toEqual({
-            dateFormat: 'yyyy-MM-dd HH:mm aaaaa\'m\'',
+            dateFormat: 'yyyy-MM-dd hh:mm aaaaa\'m\'',
             hideLastUpdateTimestamp: true,
             hideTotalItemCount: false,
             footerHeight: 20,
