@@ -181,10 +181,7 @@ export class ContextMenuExtension implements Extension {
             command: commandName,
             positionOrder: 50,
             action: (e: Event, args: MenuCommandItemCallbackArgs) => {
-              if (args && args.hasOwnProperty('cell') && args.hasOwnProperty('row')) {
-                this.sharedService.grid.setActiveCell(args.row, args.cell, false); // select the cell that the click originated
-                this.copyToClipboard(args);
-              }
+              this.copyToClipboard(args);
             },
             itemUsabilityOverride: (args: MenuCallbackArgs) => {
               // make sure there's an item to copy before enabling this command
