@@ -1,4 +1,5 @@
-import { isObservable } from 'rxjs';
+import { EMPTY, iif, isObservable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { BackendServiceApi, EmitterType, GraphqlResult, GraphqlPaginatedResult, GridOption } from '../models';
 
@@ -44,7 +45,7 @@ main.onBackendError = function backendError(e: any, backendApi: BackendServiceAp
  * Execute the backend callback, which are mainly the "process" & "postProcess" methods.
  * Also note that "preProcess" was executed prior to this callback
  */
-main.executeBackendCallback = function exeBackendCallback(backendServiceApi: BackendServiceApi, query: string, args: any, startTime: Date, totalItems: number, emitActionChangedCallback?: (type: EmitterType) => void) {
+main.executeBackendCallback = function exeBackendCallback(backendServiceApi: BackendServiceApi, query: string, args: any, startTime: Date, totalItems: number, emitActionChangedCallback?: (type: EmitterType) => void, httpCancelRequests$?: Subject<void>) {
   if (backendServiceApi) {
     // emit an onFilterChanged event when it's not called by a clear filter
     if (args && !args.clearFilterTriggered) {
@@ -57,10 +58,19 @@ main.executeBackendCallback = function exeBackendCallback(backendServiceApi: Bac
       process.then((processResult: GraphqlResult | GraphqlPaginatedResult | any) => main.executeBackendProcessesCallback(startTime, processResult, backendServiceApi, totalItems))
         .catch((error: any) => main.onBackendError(error, backendServiceApi));
     } else if (isObservable(process)) {
-      process.subscribe(
-        (processResult: GraphqlResult | GraphqlPaginatedResult | any) => main.executeBackendProcessesCallback(startTime, processResult, backendServiceApi, totalItems),
-        (error: any) => main.onBackendError(error, backendServiceApi)
-      );
+      // this will abort any previous HTTP requests, that were previously hooked in the takeUntil, before sending a new request
+      if (isObservable(httpCancelRequests$)) {
+        httpCancelRequests$.next();
+      }
+
+      process
+        // the following takeUntil, will potentially be used later to cancel any pending http request (takeUntil another rx, that would be httpCancelRequests$, completes)
+        // but make sure the observable is actually defined with the iif condition check before piping it to the takeUntil
+        .pipe(takeUntil(iif(() => isObservable(httpCancelRequests$), httpCancelRequests$, EMPTY)))
+        .subscribe(
+          (processResult: GraphqlResult | GraphqlPaginatedResult | any) => main.executeBackendProcessesCallback(startTime, processResult, backendServiceApi, totalItems),
+          (error: any) => main.onBackendError(error, backendServiceApi)
+        );
     }
   }
 };

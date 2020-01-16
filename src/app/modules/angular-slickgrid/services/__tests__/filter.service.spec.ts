@@ -477,7 +477,7 @@ describe('FilterService', () => {
           expect(service.getColumnFilters()).toEqual({});
           expect(spyFilterChange).not.toHaveBeenCalled();
           expect(spyEmitter).not.toHaveBeenCalled();
-          expect(consoleSpy).toHaveBeenCalledWith(expect.toInclude('[Angular-Slickgrid] please note that the "processOnFilterChanged" method signature, from Backend Service'));
+          expect(consoleSpy).toHaveBeenCalledWith(expect.toInclude('[Angular-Slickgrid] please note that the "processOnFilterChanged" from your Backend Service, should now return a string instead of a Promise.'));
           done();
         });
       });
