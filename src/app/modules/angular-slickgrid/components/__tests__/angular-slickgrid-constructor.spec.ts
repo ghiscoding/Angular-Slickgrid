@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ElementRef } from '@angular/core';
+import { ChangeDetectorRef, ElementRef } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { of, Subject, throwError } from 'rxjs';
 
@@ -220,6 +220,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
   let cellDiv: HTMLDivElement;
   let mockElementRef: ElementRef;
   let translate: TranslateService;
+  let mockChangeDetectorRef: ChangeDetectorRef;
 
   const template = `
   <div id="grid1" style="height: 800px; width: 600px;">
@@ -245,11 +246,16 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     });
     translate = TestBed.get(TranslateService);
 
+    mockChangeDetectorRef = {
+      detectChanges: jest.fn()
+    } as unknown as ChangeDetectorRef;
+
     mockElementRef = {
       nativeElement: divContainer
     } as ElementRef;
 
     component = new AngularSlickgridComponent(
+      mockChangeDetectorRef,
       mockElementRef,
       excelExportServiceStub,
       exportServiceStub,
