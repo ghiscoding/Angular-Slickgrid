@@ -10,7 +10,8 @@ import {
 } from './../modules/angular-slickgrid';
 
 @Component({
-  templateUrl: './grid-rowselection.component.html'
+  templateUrl: './grid-rowselection.component.html',
+  styles: ['.alert { padding: 8px; margin-bottom: 10px }'],
 })
 @Injectable()
 export class GridRowSelectionComponent implements OnInit {
@@ -20,8 +21,8 @@ export class GridRowSelectionComponent implements OnInit {
     <ul>
       <li>Single Select, you can click on any cell to make the row active</li>
       <li>Multiple Selections, you need to specifically click on the checkbox to make 1 or more selections</li>
-      <li>Note that "enableExcelCopyBuffer" cannot be used at the same time as Row Selection because there can exist only 1 SelectionModel at a time</li>
       <li>You can use "selectableOverride()" callback to override logic to display checkbox on every row (for example only show it every 2nd row)</li>
+      <li>NOTE: Any Row Selection(s) will be reset when using Pagination and changing Page (you will need to set it back manually if you want it back)</li>
     </ul>
   `;
 
@@ -138,7 +139,12 @@ export class GridRowSelectionComponent implements OnInit {
       },
       gridMenu: {
         hideForceFitButton: true
-      }
+      },
+      enablePagination: true,
+      pagination: {
+        pageSizes: [5, 10, 15, 20, 25, 50, 75, 100],
+        pageSize: 5
+      },
     };
 
     this.gridOptions2 = {
@@ -157,6 +163,11 @@ export class GridRowSelectionComponent implements OnInit {
       preselectedRows: [0, 2],
       enableCheckboxSelector: true,
       enableRowSelection: true,
+      enablePagination: true,
+      pagination: {
+        pageSizes: [5, 10, 15, 20, 25, 50, 75, 100],
+        pageSize: 5
+      },
     };
 
     this.dataset1 = this.prepareData();

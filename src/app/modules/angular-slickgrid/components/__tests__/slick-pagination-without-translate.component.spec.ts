@@ -7,6 +7,7 @@ import { Column, GridOption, Locale, Pager } from '../../models';
 import { PaginationService } from '../../services';
 
 const dataviewStub = {
+  onPagingInfoChanged: jest.fn(),
   onRowCountChanged: jest.fn(),
   onRowsChanged: jest.fn(),
 };
@@ -22,6 +23,7 @@ const mockBackendService = {
 
 const mockGridOption = {
   enableAutoResize: true,
+  enablePagination: true,
   backendServiceApi: {
     service: mockBackendService,
     process: jest.fn(),
@@ -125,7 +127,7 @@ describe('without ngx-translate', () => {
   it('should throw an error when "enableTranslate" is set and Translate Service is not provided', (done) => {
     try {
       component.enableTranslate = true;
-      component.ngAfterViewInit();
+      component.constructor();
     } catch (e) {
       expect(e.toString()).toContain('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
       done();

@@ -63,7 +63,7 @@ export class CheckboxSelectorExtension implements Extension {
       // user might want to pre-select some rows
       // the setTimeout is because of timing issue with styling (row selection happen but rows aren't highlighted properly)
       if (this.sharedService.gridOptions.preselectedRows && rowSelectionPlugin && this.sharedService.grid.getSelectionModel()) {
-        setTimeout(() => this._addon.selectRows(this.sharedService.gridOptions.preselectedRows), 0);
+        setTimeout(() => this._addon.selectRows(this.sharedService.gridOptions.preselectedRows));
       }
 
       return rowSelectionPlugin;

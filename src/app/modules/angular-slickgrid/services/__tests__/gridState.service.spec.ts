@@ -232,8 +232,21 @@ describe('GridStateService', () => {
       expect(output).toBeNull();
     });
 
+    it('should call "getCurrentPagination" and return Pagination when using a Local Grid', () => {
+      const gridOptionsMock = { enablePagination: true } as GridOption;
+      const paginationMock = { pageNumber: 2, pageSize: 50 } as CurrentPagination;
+      const gridSpy = jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
+      const sharedSpy = jest.spyOn(SharedService.prototype, 'currentPagination', 'get').mockReturnValue(paginationMock);
+
+      const output = service.getCurrentPagination();
+
+      expect(gridSpy).toHaveBeenCalled();
+      expect(sharedSpy).toHaveBeenCalled();
+      expect(output).toBe(paginationMock);
+    });
+
     it('should call "getCurrentPagination" and return Pagination when a BackendService is used', () => {
-      const gridOptionsMock = { backendServiceApi: { service: backendServiceStub } } as GridOption;
+      const gridOptionsMock = { backendServiceApi: { service: backendServiceStub }, enablePagination: true } as GridOption;
       const paginationMock = { pageNumber: 2, pageSize: 50 } as CurrentPagination;
       const gridSpy = jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
       const backendSpy = jest.spyOn(backendServiceStub, 'getCurrentPagination').mockReturnValue(paginationMock);

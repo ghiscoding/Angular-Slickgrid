@@ -27,6 +27,32 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
       .each(($child, index) => expect($child.text()).to.eq(fullEnglishTitles[index]));
   });
 
+  it('should have Pagination displayed with default values', () => {
+    cy.get('#slickGridContainer-grid16').as('grid16');
+
+    // 1st Grid
+    cy.get('@grid16')
+      .find('[data-test=page-number-input]')
+      .invoke('val')
+      .then(pageNumber => expect(pageNumber).to.eq('1'));
+
+    cy.get('@grid16')
+      .find('[data-test=page-count]')
+      .contains('20');
+
+    cy.get('@grid16')
+      .find('[data-test=item-from]')
+      .contains('1');
+
+    cy.get('@grid16')
+      .find('[data-test=item-to]')
+      .contains('25');
+
+    cy.get('@grid16')
+      .find('[data-test=total-items]')
+      .contains('500');
+  });
+
   it('should drag "Title" column to 3rd position in the grid', () => {
     const expectedTitles = ['', 'Description', 'Duration', 'Title', '% Complete', 'Start', 'Completed'];
 
@@ -169,7 +195,40 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
       .find('.slick-sort-indicator-numbered')
       .should('be.visible')
       .should('contain', '1');
+  });
 
+  it('should change Page Size and Page Number then expect the Pagination to have correct values', () => {
+    cy.get('#slickGridContainer-grid16').as('grid16');
+
+    cy.get('@grid16')
+      .find('#items-per-page-label').select('20');
+
+    cy.get('@grid16')
+    cy.get('.icon-seek-next').click().click();
+
+    cy.get('@grid16')
+      .find('[data-test=page-number-input]')
+      .invoke('val')
+      .then(pageNumber => expect(pageNumber).to.eq('3'));
+
+    cy.get('@grid16')
+      .find('[data-test=page-count]')
+      .contains('6');
+
+    cy.get('@grid16')
+      .find('[data-test=item-from]')
+      .contains('41');
+
+    cy.get('@grid16')
+      .find('[data-test=item-to]')
+      .contains('60');
+
+    cy.get('@grid16')
+      .find('[data-test=total-items]')
+      .contains('111');
+  });
+
+  it('should reload the page', () => {
     cy.reload();
   });
 
@@ -185,6 +244,31 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
       .find('.slick-header-columns')
       .children()
       .each(($child, index) => expect($child.find('.slick-column-name').text()).to.eq(expectedTitles[index]));
+  });
+
+  it('should expect the same Pagination to persist after reload', () => {
+    cy.get('#slickGridContainer-grid16').as('grid16');
+
+    cy.get('@grid16')
+      .find('[data-test=page-number-input]')
+      .invoke('val')
+      .then(pageNumber => expect(pageNumber).to.eq('3'));
+
+    cy.get('@grid16')
+      .find('[data-test=page-count]')
+      .contains('6');
+
+    cy.get('@grid16')
+      .find('[data-test=item-from]')
+      .contains('41');
+
+    cy.get('@grid16')
+      .find('[data-test=item-to]')
+      .contains('60');
+
+    cy.get('@grid16')
+      .find('[data-test=total-items]')
+      .contains('111');
   });
 
   it('should have French titles in Column Picker after switching to Language', () => {

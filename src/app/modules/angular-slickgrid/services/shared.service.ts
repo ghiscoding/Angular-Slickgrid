@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 
-import { Column, GridOption } from '../models';
+import { Column, CurrentPagination, GridOption } from '../models';
 
 export class SharedService {
   private _allColumns: Column[];
@@ -8,6 +8,7 @@ export class SharedService {
   private _groupItemMetadataProvider: any;
   private _grid: any;
   private _gridOptions: GridOption;
+  private _currentPagination: CurrentPagination;
   private _visibleColumns: Column[];
   onColumnsChanged = new Subject<Column[]>();
 
@@ -26,6 +27,16 @@ export class SharedService {
   /** Getter for the Column Definitions pulled through the Grid Object */
   get columnDefinitions(): Column[] {
     return (this._grid && this._grid.getColumns) ? this._grid.getColumns() : [];
+  }
+
+  /** Getter for the Current Pagination (when Pagination is enabled) */
+  get currentPagination(): CurrentPagination | undefined {
+    return this._currentPagination;
+  }
+
+  /** Setter for the Current Pagination (when Pagination is enabled) */
+  set currentPagination(currentPagination: CurrentPagination) {
+    this._currentPagination = currentPagination;
   }
 
   /** Getter for SlickGrid DataView object */

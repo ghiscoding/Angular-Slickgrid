@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Column, GridOption } from './../modules/angular-slickgrid';
 
+const NB_ITEMS = 995;
+
 @Component({
   templateUrl: './grid-basic.component.html'
 })
@@ -31,22 +33,32 @@ export class GridBasicComponent implements OnInit {
     ];
     this.gridOptions1 = {
       enableAutoResize: false,
-      enableSorting: true
+      enableSorting: true,
     };
 
     // copy the same Grid Options and Column Definitions to 2nd grid
+    // but also add Pagination in this grid
     this.columnDefinitions2 = this.columnDefinitions1;
-    this.gridOptions2 = this.gridOptions1;
+    this.gridOptions2 = {
+      ...this.gridOptions1,
+      ...{
+        enablePagination: true,
+        pagination: {
+          pageSizes: [5, 10, 15, 20, 25, 50, 75, 100],
+          pageSize: 5
+        },
+      }
+    };
 
     // mock some data (different in each dataset)
-    this.dataset1 = this.mockData();
-    this.dataset2 = this.mockData();
+    this.dataset1 = this.mockData(NB_ITEMS);
+    this.dataset2 = this.mockData(NB_ITEMS);
   }
 
-  mockData() {
+  mockData(count: number) {
     // mock a dataset
     const mockDataset = [];
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < count; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));

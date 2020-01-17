@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Subscription, isObservable, Subject } from 'rxjs';
 
-import { BackendServiceApi, GraphqlResult, GraphqlPaginatedResult, Pager, Pagination } from '../models';
+import { BackendServiceApi, CurrentPagination, GraphqlResult, GraphqlPaginatedResult, Pager, Pagination } from '../models';
 import { FilterService } from './filter.service';
 import { GridService } from './grid.service';
+import { SharedService } from './shared.service';
 import { executeBackendProcessesCallback, onBackendError } from './backend-utilities';
 import { unsubscribeAllObservables } from './utilities';
 
@@ -12,24 +13,8 @@ declare var Slick: any;
 
 @Injectable()
 export class PaginationService {
-  set paginationOptions(paginationOptions: Pagination) {
-    this._paginationOptions = paginationOptions;
-  }
-  get paginationOptions(): Pagination {
-    return this._paginationOptions;
-  }
-
-  set totalItems(totalItems: number) {
-    this._totalItems = totalItems;
-    if (this._initialized) {
-      this.refreshPagination();
-    }
-  }
-  get totalItems(): number {
-    return this._totalItems;
-  }
-
   private _initialized = false;
+  private _isLocalGrid = true;
   private _backendServiceApi: BackendServiceApi;
   private _dataFrom = 1;
   private _dataTo = 1;
@@ -41,7 +26,6 @@ export class PaginationService {
   private _eventHandler = new Slick.EventHandler();
   private _paginationOptions: Pagination;
   private _subscriptions: Subscription[] = [];
-
   onPaginationRefreshed = new Subject<boolean>();
   onPaginationChanged = new Subject<Pager>();
 
@@ -49,7 +33,15 @@ export class PaginationService {
   grid: any;
 
   /** Constructor */
-  constructor(private filterService: FilterService, private gridService: GridService) { }
+  constructor(private filterService: FilterService, private gridService: GridService, private sharedService: SharedService) { }
+
+  set paginationOptions(paginationOptions: Pagination) {
+    this._paginationOptions = paginationOptions;
+  }
+
+  get paginationOptions(): Pagination {
+    return this._paginationOptions;
+  }
 
   get pager(): Pager {
     return {
@@ -63,20 +55,43 @@ export class PaginationService {
     };
   }
 
-  init(grid: any, dataView: any, paginationOptions: Pagination, backendServiceApi: BackendServiceApi) {
+  set totalItems(totalItems: number) {
+    this._totalItems = totalItems;
+    if (this._initialized) {
+      this.refreshPagination();
+    }
+  }
+
+  get totalItems(): number {
+    return this._totalItems;
+  }
+
+  init(grid: any, dataView: any, paginationOptions: Pagination, backendServiceApi?: BackendServiceApi) {
     this._availablePageSizes = paginationOptions.pageSizes;
     this.dataView = dataView;
     this.grid = grid;
     this._backendServiceApi = backendServiceApi;
     this._paginationOptions = paginationOptions;
+    this._isLocalGrid = !backendServiceApi;
+    this._pageNumber = paginationOptions.pageNumber || 1;
 
-    if (!backendServiceApi || !backendServiceApi.service || !backendServiceApi.process) {
+    if (backendServiceApi && (!backendServiceApi.service || !backendServiceApi.process)) {
       throw new Error(`BackendServiceApi requires the following 2 properties "process" and "service" to be defined.`);
     }
 
+    if (this._isLocalGrid && this.dataView) {
+      this.dataView.onPagingInfoChanged.subscribe((e, pagingInfo) => {
+        if (this._totalItems !== pagingInfo.totalRows) {
+          this._totalItems = pagingInfo.totalRows;
+        }
+      });
+      dataView.setRefreshHints({ isFilterUnchanged: true });
+      dataView.setPagingOptions({ pageSize: this.paginationOptions.pageSize, pageNum: 0 }); // dataView page starts at 0 instead of 1
+    }
+
     // Subscribe to Filter Clear & Changed and go back to page 1 when that happen
-    this._subscriptions.push(this.filterService.onFilterChanged.subscribe(() => this.refreshPagination(true)));
-    this._subscriptions.push(this.filterService.onFilterCleared.subscribe(() => this.refreshPagination(true)));
+    this._subscriptions.push(this.filterService.onFilterChanged.subscribe(() => this.resetPagination()));
+    this._subscriptions.push(this.filterService.onFilterCleared.subscribe(() => this.resetPagination()));
 
     // Subscribe to any dataview row count changed so that when Adding/Deleting item(s) through the DataView
     // that would trigger a refresh of the pagination numbers
@@ -85,7 +100,7 @@ export class PaginationService {
       this._subscriptions.push(this.gridService.onItemDeleted.subscribe((items: any | any[]) => this.processOnItemAddedOrRemoved(items, false)));
     }
     if (!this._paginationOptions || (this._paginationOptions.totalItems !== this._totalItems)) {
-      this.refreshPagination();
+      this.refreshPagination(false, false);
     }
     this._initialized = true;
   }
@@ -102,6 +117,13 @@ export class PaginationService {
 
   getCurrentPageNumber(): number {
     return this._pageNumber;
+  }
+
+  getCurrentPagination(): CurrentPagination {
+    return {
+      pageNumber: this._pageNumber,
+      pageSize: this._itemsPerPage
+    };
   }
 
   getCurrentItemPerPageCount(): number {
@@ -161,40 +183,49 @@ export class PaginationService {
     }
   }
 
-  refreshPagination(isPageNumberReset: boolean = false) {
+  refreshPagination(isPageNumberReset: boolean = false, triggerChangedEvent = true) {
     // trigger an event to inform subscribers
     this.onPaginationRefreshed.next(true);
 
     if (this._paginationOptions) {
       const pagination = this._paginationOptions;
+
       // set the number of items per page if not already set
       if (!this._itemsPerPage) {
-        this._itemsPerPage = +((this._backendServiceApi && this._backendServiceApi.options && this._backendServiceApi.options.paginationOptions && this._backendServiceApi.options.paginationOptions.first) ? this._backendServiceApi.options.paginationOptions.first : this._paginationOptions.pageSize);
+        if (this._isLocalGrid) {
+          this._itemsPerPage = pagination.pageSize;
+        } else {
+          this._itemsPerPage = +((this._backendServiceApi && this._backendServiceApi.options && this._backendServiceApi.options.paginationOptions && this._backendServiceApi.options.paginationOptions.first) ? this._backendServiceApi.options.paginationOptions.first : pagination.pageSize);
+        }
       }
 
       // if totalItems changed, we should always go back to the first page and recalculation the From-To indexes
       if (isPageNumberReset || this._totalItems !== pagination.totalItems) {
         if (isPageNumberReset) {
           this._pageNumber = 1;
+          this.paginationOptions.pageNumber = 1;
         } else if (!this._initialized && pagination.pageNumber && pagination.pageNumber > 1) {
           this._pageNumber = pagination.pageNumber || 1;
         }
 
         // when page number is set to 1 then also reset the "offset" of backend service
-        if (this._pageNumber === 1) {
+        if (this._pageNumber === 1 && this._backendServiceApi) {
           this._backendServiceApi.service.resetPaginationOptions();
         }
       }
 
       // calculate and refresh the multiple properties of the pagination UI
-      this._availablePageSizes = this._paginationOptions.pageSizes;
-      if (!this._totalItems && this._paginationOptions.totalItems) {
-        this._totalItems = this._paginationOptions.totalItems;
+      this._availablePageSizes = pagination.pageSizes;
+      if (!this._totalItems && pagination.totalItems) {
+        this._totalItems = pagination.totalItems;
       }
       this.recalculateFromToIndexes();
     }
     this._pageCount = Math.ceil(this._totalItems / this._itemsPerPage);
-    this.onPaginationChanged.next(this.pager);
+    if (triggerChangedEvent) {
+      this.onPaginationChanged.next(this.pager);
+    }
+    this.sharedService.currentPagination = this.getCurrentPagination();
   }
 
   processOnPageChanged(pageNumber: number, event?: Event | undefined): Promise<any> {
@@ -207,7 +238,10 @@ export class PaginationService {
         this._dataTo = this._totalItems;
       }
 
-      if (this._backendServiceApi) {
+      if (this._isLocalGrid && this.dataView) {
+        this.dataView.setPagingOptions({ pageSize: this._itemsPerPage, pageNum: (pageNumber - 1) }); // dataView page starts at 0 instead of 1
+        this.onPaginationChanged.next(this.pager);
+      } else {
         const itemsPerPage = +this._itemsPerPage;
 
         // keep start time & end timestamps & return it after process execution
@@ -259,6 +293,11 @@ export class PaginationService {
         this._dataTo = this._totalItems;
       }
     }
+  }
+
+  /** Reset the Pagination to first page and recalculate necessary numbers */
+  resetPagination(triggerChangedEvent = true) {
+    this.refreshPagination(true, triggerChangedEvent);
   }
 
   // --

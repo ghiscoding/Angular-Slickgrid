@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, Optional, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Optional, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
@@ -10,7 +10,7 @@ import { unsubscribeAllObservables } from '../services/utilities';
   selector: 'slick-pagination',
   templateUrl: './slick-pagination.component.html'
 })
-export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
+export class SlickPaginationComponent implements OnDestroy {
   private _isFirstRender = true;
   private _pager: Pager;
   private _totalItems: number;
@@ -46,6 +46,10 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
 
   /** Constructor */
   constructor(private paginationService: PaginationService, @Optional() private translate: TranslateService) {
+    if (this.enableTranslate && !this.translate) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
+
     // translate all the text using ngx-translate or custom locales
     this.translateAllUiTexts(this.locales);
     if (translate && translate.onLangChange) {
@@ -76,15 +80,6 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.dispose();
-  }
-
-  ngAfterViewInit() {
-    if (this.enableTranslate && !this.translate) {
-      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
-    }
-    // Angular throws the infamous "ExpressionChangedAfterItHasBeenCheckedError"
-    // none of the code refactoring worked to go over the error expect adding a delay, so we'll keep that for now
-    setTimeout(() => this.paginationService.init(this.grid, this.dataView, this.options, this.backendServiceApi));
   }
 
   changeToFirstPage(event: any) {
