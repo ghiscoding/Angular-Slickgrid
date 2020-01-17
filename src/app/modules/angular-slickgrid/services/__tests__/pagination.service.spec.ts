@@ -1,6 +1,7 @@
 import { Subject, of, throwError } from 'rxjs';
 
 import { PaginationService } from './../pagination.service';
+import { SharedService } from '../shared.service';
 import { FilterService, GridService } from '../index';
 import { Column, GridOption, CurrentFilter } from '../../models';
 import * as utilities from '../backend-utilities';
@@ -69,9 +70,11 @@ const gridServiceStub = {
 
 describe('PaginationService', () => {
   let service: PaginationService;
+  let sharedService: SharedService;
 
   beforeEach(() => {
-    service = new PaginationService(filterServiceStub, gridServiceStub);
+    sharedService = new SharedService();
+    service = new PaginationService(filterServiceStub, gridServiceStub, sharedService);
   });
 
   afterEach(() => {
@@ -452,9 +455,10 @@ describe('PaginationService', () => {
       };
     });
 
-    it('should throw an error when no backendServiceApi is provided', (done) => {
+    it('should throw an error when backendServiceApi is defined without a "process" method', (done) => {
       try {
-        mockGridOption.backendServiceApi = null;
+        // @ts-ignore
+        mockGridOption.backendServiceApi = {};
         service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
         service.refreshPagination();
       } catch (e) {

@@ -83,7 +83,7 @@ export class SlickPaginationComponent implements AfterViewInit, OnDestroy {
       throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
     }
     // Angular throws the infamous "ExpressionChangedAfterItHasBeenCheckedError"
-    // none of the code refactoring worked to go over the error expect adding a delay, so we'll keep that for now
+    // none of the code refactoring worked to go over the error except adding a delay, so we'll keep that for now
     setTimeout(() => this.paginationService.init(this.grid, this.dataView, this.options, this.backendServiceApi));
   }
 

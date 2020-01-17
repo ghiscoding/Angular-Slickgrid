@@ -150,6 +150,11 @@ export class GridStateComponent implements OnInit {
       gridMenu: {
         hideForceFitButton: true
       },
+      enablePagination: true,
+      pagination: {
+        pageSizes: [5, 10, 15, 20, 25, 30, 40, 50, 75, 100],
+        pageSize: 25
+      },
     };
 
     // reload the Grid State with the grid options presets
@@ -157,13 +162,13 @@ export class GridStateComponent implements OnInit {
       this.gridOptions.presets = gridStatePresets;
     }
 
-    this.getData();
+    this.dataset = this.getData(NB_ITEMS);
   }
 
-  getData() {
+  getData(count: number) {
     // mock a dataset
-    this.dataset = [];
-    for (let i = 0; i < NB_ITEMS; i++) {
+    const tmpData = [];
+    for (let i = 0; i < count; i++) {
       const randomDuration = Math.round(Math.random() * 100);
       const randomYear = randomBetween(2000, 2025);
       const randomYearShort = randomBetween(10, 25);
@@ -174,7 +179,7 @@ export class GridStateComponent implements OnInit {
       const randomHour = randomBetween(10, 23);
       const randomTime = randomBetween(10, 59);
 
-      this.dataset[i] = {
+      tmpData[i] = {
         id: i,
         title: 'Task ' + i,
         etc: 'Something hidden ' + i,
@@ -188,6 +193,7 @@ export class GridStateComponent implements OnInit {
         completed: (i % 3 === 0)
       };
     }
+    return tmpData;
   }
 
   /** Dispatched event of a Grid State Changed event */
@@ -231,6 +237,6 @@ export class GridStateComponent implements OnInit {
         { columnId: 'duration', direction: 'DESC' },
         { columnId: 'complete', direction: 'ASC' }
       ],
-    };
+    } as GridState;
   }
 }

@@ -302,7 +302,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
       this.gridService.setSelectedRows([]);
     }
-
+    if (this.sharedService) {
+      const { pageNumber, pageSize } = pagination;
+      this.sharedService.currentPagination = { pageNumber, pageSize };
+    }
     this.gridStateService.onGridStateChanged.next({
       change: { newValues: pagination, type: GridStateType.pagination },
       gridState: this.gridStateService.getCurrentGridState()
@@ -314,6 +317,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * @param dataset
    */
   refreshGridData(dataset: any[], totalCount?: number) {
+    // local grid
+    if (this.gridOptions && this.gridOptions.enablePagination && !this.gridOptions.backendServiceApi) {
+      this.totalItems = dataset.length;
+      setTimeout(() => {
+        this.showPagination = true;
+        this.setPaginationOptionsWhenPresetDefined();
+      });
+    }
+
     if (Array.isArray(dataset) && this.grid && this.dataView && typeof this.dataView.setItems === 'function') {
       this.dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
       if (!this.gridOptions.backendServiceApi) {
@@ -326,13 +338,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
 
       // display the Pagination component only after calling this refresh data first, we call it here so that if we preset pagination page number it will be shown correctly
-      this.showPagination = ((this.gridOptions && this.gridOptions.enablePagination && (this.gridOptions.backendServiceApi && this.gridOptions.enablePagination === undefined)) ? true : this.gridOptions.enablePagination) || false;
+      this.showPagination = (this.gridOptions && (this.gridOptions.enablePagination || (this.gridOptions.backendServiceApi && this.gridOptions.enablePagination === undefined))) ? true : false;
 
       if (this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.pagination) {
-        if (this.gridOptions.presets && this.gridOptions.presets.pagination && this.gridOptions.pagination) {
-          this.paginationOptions.pageSize = this.gridOptions.presets.pagination.pageSize;
-          this.paginationOptions.pageNumber = this.gridOptions.presets.pagination.pageNumber;
-        }
+        this.setPaginationOptionsWhenPresetDefined();
 
         // when we have a totalCount use it, else we'll take it from the pagination object
         // only update the total items if it's different to avoid refreshing the UI
@@ -350,6 +359,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         const delay = this.gridOptions.autoResize && this.gridOptions.autoResize.delay;
         this.resizer.resizeGrid(delay || 10);
       }
+    }
+  }
+
+  setPaginationOptionsWhenPresetDefined() {
+    if (this.gridOptions.presets && this.gridOptions.presets.pagination && this.gridOptions.pagination) {
+      this.paginationOptions.pageSize = this.gridOptions.presets.pagination.pageSize;
+      this.paginationOptions.pageNumber = this.gridOptions.presets.pagination.pageNumber;
     }
   }
 
@@ -775,7 +791,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     gridOptions.enablePagination = ((gridOptions.backendServiceApi && gridOptions.enablePagination === undefined) ? true : gridOptions.enablePagination) || false;
 
     // use jquery extend to deep merge & copy to avoid immutable properties being changed in GlobalGridOptions after a route change
-    const options = $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
+    const options = $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions) as GridOption;
 
     // using jQuery extend to do a deep clone has an unwanted side on objects and pageSizes but ES6 spread has other worst side effects
     // so we will just overwrite the pageSizes when needed, this is the only one causing issues so far.
@@ -790,6 +806,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this._hideHeaderRowAfterPageLoad = (options.showHeaderRow === false);
     if (options.enableFiltering && !options.showHeaderRow) {
       options.showHeaderRow = options.enableFiltering;
+    }
+
+    // when we use Pagination on Local Grid, it doesn't seem to work without enableFiltering
+    // so we'll enable the filtering but we'll keep the header row hidden
+    if (!options.enableFiltering && options.enablePagination && !options.backendServiceApi) {
+      options.enableFiltering = true;
+      options.showHeaderRow = false;
     }
     return options;
   }

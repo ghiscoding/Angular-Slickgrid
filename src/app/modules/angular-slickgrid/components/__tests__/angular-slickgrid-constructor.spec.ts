@@ -10,7 +10,6 @@ import {
   ExportService,
   ExtensionService,
   FilterService,
-  GraphqlPaginatedResult,
   GraphqlService,
   GridService,
   GridEventService,
@@ -21,7 +20,7 @@ import {
   SharedService,
   SortService,
 } from '../../services';
-import { Column, CurrentFilter, CurrentSorter, GridOption, GridState, GridStateChange, GridStateType, Pagination, GraphqlServiceApi, GraphqlServiceOption } from '../../models';
+import { Column, CurrentFilter, CurrentSorter, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, GridOption, GridState, GridStateChange, GridStateType, Pagination } from '../../models';
 import { Filters } from '../../filters';
 import { Editors } from '../../editors';
 import * as utilities from '../../services/backend-utilities';
@@ -578,6 +577,28 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.destroy(true);
 
         expect(spy).toHaveBeenCalledWith();
+      });
+
+      it('should refresh a local grid and change pagination options pagination when a preset for it is defined in grid options', (done) => {
+        const expectedPageNumber = 3;
+        const refreshSpy = jest.spyOn(component, 'refreshGridData');
+
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        component.gridOptions = {
+          enablePagination: true,
+          presets: { pagination: { pageSize: 10, pageNumber: expectedPageNumber } }
+        };
+        component.paginationOptions = { pageSize: 10, pageNumber: 2, pageSizes: [10, 25, 50], totalItems: 100 };
+
+        component.ngAfterViewInit();
+        component.dataset = mockData;
+
+        setTimeout(() => {
+          expect(component.paginationOptions.pageSize).toBe(10);
+          expect(component.paginationOptions.pageNumber).toBe(expectedPageNumber);
+          expect(refreshSpy).toHaveBeenCalledWith(mockData);
+          done();
+        });
       });
     });
 
