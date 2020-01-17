@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Column, GridOption } from './../modules/angular-slickgrid';
 
-const NB_ITEMS = 600;
+const NB_ITEMS = 995;
 
 @Component({
   templateUrl: './grid-basic.component.html'
@@ -33,7 +33,7 @@ export class GridBasicComponent implements OnInit {
     ];
     this.gridOptions1 = {
       enableAutoResize: false,
-      enableSorting: true
+      enableSorting: true,
     };
 
     // copy the same Grid Options and Column Definitions to 2nd grid

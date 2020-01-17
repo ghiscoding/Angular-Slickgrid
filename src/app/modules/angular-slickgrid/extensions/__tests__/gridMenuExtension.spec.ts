@@ -328,7 +328,7 @@ describe('gridMenuExtension', () => {
       });
 
       it('should expect all menu related to Filter when "enableFilering" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, showHeaderRow: true, } as unknown as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         extension.register(); // calling 2x register to make sure it doesn't duplicate commands
@@ -340,7 +340,7 @@ describe('gridMenuExtension', () => {
       });
 
       it('should have only 1 menu "clear-filter" when all other menus are defined as hidden & when "enableFilering" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, gridMenu: { hideToggleFilterCommand: true, hideRefreshDatasetCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, showHeaderRow: true, gridMenu: { hideToggleFilterCommand: true, hideRefreshDatasetCommand: true } } as unknown as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         extension.register(); // calling 2x register to make sure it doesn't duplicate commands
@@ -350,7 +350,7 @@ describe('gridMenuExtension', () => {
       });
 
       it('should have only 1 menu "toggle-filter" when all other menus are defined as hidden & when "enableFilering" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, gridMenu: { hideClearAllFiltersCommand: true, hideRefreshDatasetCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, showHeaderRow: true, gridMenu: { hideClearAllFiltersCommand: true, hideRefreshDatasetCommand: true } } as unknown as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         extension.register(); // calling 2x register to make sure it doesn't duplicate commands
@@ -360,7 +360,7 @@ describe('gridMenuExtension', () => {
       });
 
       it('should have only 1 menu "refresh-dataset" when all other menus are defined as hidden & when "enableFilering" is set', () => {
-        const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, gridMenu: { hideClearAllFiltersCommand: true, hideToggleFilterCommand: true } } as unknown as GridOption;
+        const copyGridOptionsMock = { ...gridOptionsMock, enableFiltering: true, showHeaderRow: true, gridMenu: { hideClearAllFiltersCommand: true, hideToggleFilterCommand: true } } as unknown as GridOption;
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(copyGridOptionsMock);
         extension.register();
         extension.register(); // calling 2x register to make sure it doesn't duplicate commands

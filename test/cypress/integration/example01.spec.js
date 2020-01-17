@@ -50,7 +50,7 @@ describe('Example 1 - Basic Grids', () => {
       .first()
       .children('.slick-cell')
       .first()
-      .should('contain', 'Task 999');
+      .should('contain', 'Task 994');
   });
 
   it('should hover over the "Title" column of 2nd grid and click on "Sort Ascending" command', () => {

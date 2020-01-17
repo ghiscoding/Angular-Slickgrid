@@ -78,7 +78,7 @@ export class PaginationService {
       throw new Error(`BackendServiceApi requires the following 2 properties "process" and "service" to be defined.`);
     }
 
-    if (this._isLocalGrid) {
+    if (this._isLocalGrid && this.dataView) {
       this.dataView.onPagingInfoChanged.subscribe((e, pagingInfo) => {
         if (this._totalItems !== pagingInfo.totalRows) {
           this._totalItems = pagingInfo.totalRows;
@@ -192,9 +192,9 @@ export class PaginationService {
       // set the number of items per page if not already set
       if (!this._itemsPerPage) {
         if (this._isLocalGrid) {
-          this._itemsPerPage = this._paginationOptions.pageSize;
+          this._itemsPerPage = pagination.pageSize;
         } else {
-          this._itemsPerPage = +((this._backendServiceApi && this._backendServiceApi.options && this._backendServiceApi.options.paginationOptions && this._backendServiceApi.options.paginationOptions.first) ? this._backendServiceApi.options.paginationOptions.first : this._paginationOptions.pageSize);
+          this._itemsPerPage = +((this._backendServiceApi && this._backendServiceApi.options && this._backendServiceApi.options.paginationOptions && this._backendServiceApi.options.paginationOptions.first) ? this._backendServiceApi.options.paginationOptions.first : pagination.pageSize);
         }
       }
 
@@ -213,9 +213,9 @@ export class PaginationService {
       }
 
       // calculate and refresh the multiple properties of the pagination UI
-      this._availablePageSizes = this._paginationOptions.pageSizes;
-      if (!this._totalItems && this._paginationOptions.totalItems) {
-        this._totalItems = this._paginationOptions.totalItems;
+      this._availablePageSizes = pagination.pageSizes;
+      if (!this._totalItems && pagination.totalItems) {
+        this._totalItems = pagination.totalItems;
       }
       this.recalculateFromToIndexes();
     }
@@ -234,7 +234,7 @@ export class PaginationService {
         this._dataTo = this._totalItems;
       }
 
-      if (this._isLocalGrid) {
+      if (this._isLocalGrid && this.dataView) {
         this.dataView.setPagingOptions({ pageSize: this._itemsPerPage, pageNum: (pageNumber - 1) }); // dataView page starts at 0 instead of 1
         this.onPaginationChanged.next(this.pager);
       } else {
@@ -289,6 +289,11 @@ export class PaginationService {
         this._dataTo = this._totalItems;
       }
     }
+  }
+
+  /** Reset the Pagination to first page and recalculate necessary numbers */
+  resetPagination() {
+    this.refreshPagination(true);
   }
 
   // --

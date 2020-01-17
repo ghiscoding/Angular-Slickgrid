@@ -8,18 +8,18 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
     cy.get('h2').should('contain', 'Example 10: Multiple Grids with Row Selection');
   });
 
-  it('should have 2 grids of size 800 by 200px', () => {
+  it('should have 2 grids of width of 800px and different height', () => {
     cy.get('#slickGridContainer-grid1')
       .should('have.css', 'width', '800px');
 
     cy.get('#slickGridContainer-grid1 > .slickgrid-container')
-      .should('have.css', 'height', '200px');
+      .should('have.css', 'height', '225px');
 
     cy.get('#slickGridContainer-grid2')
       .should('have.css', 'width', '800px');
 
     cy.get('#slickGridContainer-grid2 > .slickgrid-container')
-      .should('have.css', 'height', '200px');
+      .should('have.css', 'height', '255px');
   });
 
   it('should have exact Titles on 1st grid', () => {

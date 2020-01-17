@@ -6,6 +6,8 @@ import { FilterService, GridService } from '../index';
 import { Column, GridOption, CurrentFilter } from '../../models';
 import * as utilities from '../backend-utilities';
 
+declare var Slick: any;
+
 const mockExecuteBackendProcess = jest.fn();
 // @ts-ignore
 utilities.executeBackendProcessesCallback = mockExecuteBackendProcess;
@@ -15,8 +17,11 @@ const mockBackendError = jest.fn();
 utilities.onBackendError = mockBackendError;
 
 const dataviewStub = {
-  onRowCountChanged: jest.fn(),
-  onRowsChanged: jest.fn(),
+  onPagingInfoChanged: new Slick.Event(),
+  onRowCountChanged: new Slick.Event(),
+  onRowsChanged: new Slick.Event(),
+  setPagingOptions: jest.fn(),
+  setRefreshHints: jest.fn(),
 };
 
 const mockBackendService = {
@@ -30,6 +35,7 @@ const mockBackendService = {
 
 const mockGridOption = {
   enableAutoResize: true,
+  enablePagination: true,
   backendServiceApi: {
     service: mockBackendService,
     process: jest.fn(),
@@ -403,6 +409,26 @@ describe('PaginationService', () => {
         done();
       });
     });
+
+    it('should call "setPagingOptions" from the DataView and trigger "onPaginationChanged" when using a Local Grid', () => {
+      const setPagingSpy = jest.spyOn(dataviewStub, 'setPagingOptions');
+      const onPaginationSpy = jest.spyOn(service.onPaginationChanged, 'next');
+
+      mockGridOption.backendServiceApi = null;
+      service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
+      service.processOnPageChanged(1);
+
+      expect(setPagingSpy).toHaveBeenCalledWith({ pageSize: 25, pageNum: 0 });
+      expect(onPaginationSpy).toHaveBeenCalledWith({
+        availablePageSizes: mockGridOption.pagination.pageSizes,
+        from: 26,
+        itemsPerPage: 25,
+        pageCount: 4,
+        pageNumber: 2,
+        to: 50,
+        totalItems: 85,
+      });
+    });
   });
 
   describe('recalculateFromToIndexes method', () => {
@@ -481,6 +507,16 @@ describe('PaginationService', () => {
 
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       filterServiceStub.onFilterChanged.next([{ columnId: 'field1', operator: '=', searchTerms: [] }]);
+
+      expect(spy).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe('resetPagination method', () => {
+    it('should call "refreshPagination" with argument True when calling the method', () => {
+      const spy = jest.spyOn(service, 'refreshPagination');
+      service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
+      service.resetPagination();
 
       expect(spy).toHaveBeenCalledWith(true);
     });
@@ -616,6 +652,42 @@ describe('PaginationService', () => {
         expect(service.pager.to).toBe(101);
         done();
       });
+    });
+  });
+
+  describe('with Local Grid', () => {
+    beforeEach(() => {
+      mockGridOption.backendServiceApi = null;
+    });
+
+    it('should initialize the service and call "refreshPagination" with some DataView calls', () => {
+      const refreshSpy = jest.spyOn(service, 'refreshPagination');
+      const paginationSpy = jest.spyOn(service.onPaginationChanged, 'next');
+      const onPagingSpy = jest.spyOn(dataviewStub.onPagingInfoChanged, 'subscribe');
+      const setRefreshSpy = jest.spyOn(dataviewStub, 'setRefreshHints');
+      const setPagingSpy = jest.spyOn(dataviewStub, 'setPagingOptions');
+      service.init(gridStub, dataviewStub, mockGridOption.pagination);
+
+      expect(service.paginationOptions).toEqual(mockGridOption.pagination);
+      expect(service.pager).toBeTruthy();
+      expect(refreshSpy).toHaveBeenCalled();
+      expect(onPagingSpy).toHaveBeenCalled();
+      expect(setRefreshSpy).toHaveBeenCalled();
+      expect(setPagingSpy).toHaveBeenCalledWith({ pageSize: 25, pageNum: 0 });
+      expect(service.getCurrentPageNumber()).toBe(2);
+      expect(paginationSpy).toHaveBeenCalledWith({
+        from: 26, to: 50, itemsPerPage: 25, pageCount: 4, pageNumber: 2, totalItems: 85, availablePageSizes: mockGridOption.pagination.pageSizes
+      });
+    });
+
+    it('should change the totalItems when "onPagingInfoChanged" from the DataView is triggered with a different total', () => {
+      const expectedNewTotal = 22;
+      const mockSlickPagingInfo = { pageSize: 5, pageNum: 2, totalRows: expectedNewTotal, totalPages: 3, dataView: dataviewStub };
+
+      service.init(gridStub, dataviewStub, mockGridOption.pagination);
+      dataviewStub.onPagingInfoChanged.notify(mockSlickPagingInfo, new Slick.EventData(), dataviewStub);
+
+      expect(service.totalItems).toBe(expectedNewTotal);
     });
   });
 });
