@@ -124,7 +124,7 @@ describe('Example 1 - Basic Grids', () => {
     cy.get('#grid2')
       .should(($grid) => {
         const classes = $grid.prop('className').split(' ');
-        gridUid = classes.find((className, index) => /slickgrid_.*/.test(className));
+        gridUid = classes.find(className => /slickgrid_.*/.test(className));
         expect(gridUid).to.not.be.null;
       })
       .then(() => {
@@ -160,5 +160,42 @@ describe('Example 1 - Basic Grids', () => {
     cy.get('#grid1')
       .find('.slick-sort-indicator-desc')
       .should('have.length', 1);
+  });
+
+  it('should have Pagination displayed and set on Grid2', () => {
+    cy.get('[data-test=page-number-input]')
+      .invoke('val')
+      .then(pageNumber => expect(pageNumber).to.eq('1'));
+
+    cy.get('[data-test=page-count]')
+      .contains('199');
+
+    cy.get('[data-test=item-from]')
+      .contains('1');
+
+    cy.get('[data-test=item-to]')
+      .contains('5');
+
+    cy.get('[data-test=total-items]')
+      .contains('995');
+  });
+
+  it('should change Page Number 52 and expect the Pagination to have correct values', () => {
+    cy.get('[data-test=page-number-input]')
+      .clear()
+      .type('52')
+      .type('{enter}');
+
+    cy.get('[data-test=page-count]')
+      .contains('199');
+
+    cy.get('[data-test=item-from]')
+      .contains('256');
+
+    cy.get('[data-test=item-to]')
+      .contains('260');
+
+    cy.get('[data-test=total-items]')
+      .contains('995');
   });
 });

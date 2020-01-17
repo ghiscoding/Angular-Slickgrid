@@ -154,6 +154,7 @@ const mockDataView = {
   getItem: jest.fn(),
   getItems: jest.fn(),
   getItemMetadata: jest.fn(),
+  getPagingInfo: jest.fn(),
   onRowsChanged: jest.fn(),
   onRowCountChanged: jest.fn(),
   onSetItemsCalled: jest.fn(),
@@ -586,12 +587,39 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should refresh a local grid and change pagination options pagination when a preset for it is defined in grid options', (done) => {
-        const expectedPageNumber = 3;
+        const expectedPageNumber = 2;
+        const expectedTotalItems = 2;
         const refreshSpy = jest.spyOn(component, 'refreshGridData');
 
         const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
         component.gridOptions = {
           enablePagination: true,
+          presets: { pagination: { pageSize: 2, pageNumber: expectedPageNumber } }
+        };
+        component.paginationOptions = { pageSize: 2, pageNumber: 2, pageSizes: [2, 10, 25, 50], totalItems: 100 };
+
+        component.dataset = mockData;
+        component.ngAfterViewInit();
+
+        setTimeout(() => {
+          expect(component.paginationOptions.pageSize).toBe(2);
+          expect(component.paginationOptions.pageNumber).toBe(expectedPageNumber);
+          expect(component.paginationOptions.totalItems).toBe(expectedTotalItems);
+          expect(refreshSpy).toHaveBeenCalledWith(mockData);
+          done();
+        });
+      });
+
+      it('should refresh a local grid defined and change pagination options pagination when a preset is defined in grid options and total rows is different when Filters are applied', (done) => {
+        const expectedPageNumber = 3;
+        const expectedTotalItems = 15;
+        const refreshSpy = jest.spyOn(component, 'refreshGridData');
+        const getPagingSpy = jest.spyOn(mockDataView, 'getPagingInfo').mockReturnValue({ pageNum: 1, totalRows: expectedTotalItems });
+
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        component.gridOptions = {
+          enablePagination: true,
+          enableFiltering: true,
           presets: { pagination: { pageSize: 10, pageNumber: expectedPageNumber } }
         };
         component.paginationOptions = { pageSize: 10, pageNumber: 2, pageSizes: [10, 25, 50], totalItems: 100 };
@@ -600,8 +628,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.dataset = mockData;
 
         setTimeout(() => {
+          expect(getPagingSpy).toHaveBeenCalled();
           expect(component.paginationOptions.pageSize).toBe(10);
           expect(component.paginationOptions.pageNumber).toBe(expectedPageNumber);
+          expect(component.paginationOptions.totalItems).toBe(expectedTotalItems);
           expect(refreshSpy).toHaveBeenCalledWith(mockData);
           done();
         });

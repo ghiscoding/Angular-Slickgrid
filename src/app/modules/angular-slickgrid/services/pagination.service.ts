@@ -73,6 +73,7 @@ export class PaginationService {
     this._backendServiceApi = backendServiceApi;
     this._paginationOptions = paginationOptions;
     this._isLocalGrid = !backendServiceApi;
+    this._pageNumber = paginationOptions.pageNumber || 1;
 
     if (backendServiceApi && (!backendServiceApi.service || !backendServiceApi.process)) {
       throw new Error(`BackendServiceApi requires the following 2 properties "process" and "service" to be defined.`);
@@ -89,8 +90,8 @@ export class PaginationService {
     }
 
     // Subscribe to Filter Clear & Changed and go back to page 1 when that happen
-    this._subscriptions.push(this.filterService.onFilterChanged.subscribe(() => this.refreshPagination(true)));
-    this._subscriptions.push(this.filterService.onFilterCleared.subscribe(() => this.refreshPagination(true)));
+    this._subscriptions.push(this.filterService.onFilterChanged.subscribe(() => this.resetPagination()));
+    this._subscriptions.push(this.filterService.onFilterCleared.subscribe(() => this.resetPagination()));
 
     // Subscribe to any dataview row count changed so that when Adding/Deleting item(s) through the DataView
     // that would trigger a refresh of the pagination numbers
@@ -99,7 +100,7 @@ export class PaginationService {
       this._subscriptions.push(this.gridService.onItemDeleted.subscribe((items: any | any[]) => this.processOnItemAddedOrRemoved(items, false)));
     }
     if (!this._paginationOptions || (this._paginationOptions.totalItems !== this._totalItems)) {
-      this.refreshPagination();
+      this.refreshPagination(false, false);
     }
     this._initialized = true;
   }
@@ -182,7 +183,7 @@ export class PaginationService {
     }
   }
 
-  refreshPagination(isPageNumberReset: boolean = false) {
+  refreshPagination(isPageNumberReset: boolean = false, triggerChangedEvent = true) {
     // trigger an event to inform subscribers
     this.onPaginationRefreshed.next(true);
 
@@ -202,6 +203,7 @@ export class PaginationService {
       if (isPageNumberReset || this._totalItems !== pagination.totalItems) {
         if (isPageNumberReset) {
           this._pageNumber = 1;
+          this.paginationOptions.pageNumber = 1;
         } else if (!this._initialized && pagination.pageNumber && pagination.pageNumber > 1) {
           this._pageNumber = pagination.pageNumber || 1;
         }
@@ -220,7 +222,9 @@ export class PaginationService {
       this.recalculateFromToIndexes();
     }
     this._pageCount = Math.ceil(this._totalItems / this._itemsPerPage);
-    this.onPaginationChanged.next(this.pager);
+    if (triggerChangedEvent) {
+      this.onPaginationChanged.next(this.pager);
+    }
     this.sharedService.currentPagination = this.getCurrentPagination();
   }
 
@@ -292,8 +296,8 @@ export class PaginationService {
   }
 
   /** Reset the Pagination to first page and recalculate necessary numbers */
-  resetPagination() {
-    this.refreshPagination(true);
+  resetPagination(triggerChangedEvent = true) {
+    this.refreshPagination(true, triggerChangedEvent);
   }
 
   // --

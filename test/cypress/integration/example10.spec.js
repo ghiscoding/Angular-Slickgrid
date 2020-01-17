@@ -9,16 +9,18 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
   });
 
   it('should have 2 grids of width of 800px and different height', () => {
-    cy.get('#slickGridContainer-grid1')
-      .should('have.css', 'width', '800px');
+    cy.get('#slickGridContainer-grid1').as('grid1');
+    cy.get('@grid1').should('have.css', 'width', '800px');
 
-    cy.get('#slickGridContainer-grid1 > .slickgrid-container')
+    cy.get('@grid1')
+      .find('.slickgrid-container')
       .should('have.css', 'height', '225px');
 
-    cy.get('#slickGridContainer-grid2')
-      .should('have.css', 'width', '800px');
+    cy.get('#slickGridContainer-grid2').as('grid2');
+    cy.get('@grid2').should('have.css', 'width', '800px');
 
-    cy.get('#slickGridContainer-grid2 > .slickgrid-container')
+    cy.get('@grid2')
+      .find('.slickgrid-container')
       .should('have.css', 'height', '255px');
   });
 
@@ -142,5 +144,152 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
       .find('span.close')
       .trigger('click')
       .click();
+  });
+
+  describe('Pagination', () => {
+    it('should Clear all Filters on 2nd Grid and expect the same Pagination defined in both Grids', () => {
+      cy.get('#grid2')
+        .find('button.slick-gridmenu-button')
+        .trigger('click')
+        .click();
+
+      cy.get(`.slick-gridmenu:visible`)
+        .find('.slick-gridmenu-item')
+        .first()
+        .find('span')
+        .contains('Clear all Filters')
+        .click();
+    });
+
+    it('should have Pagination displayed and set on Grid1 and Grid2', () => {
+      cy.get('#slickGridContainer-grid1').as('grid1');
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      // 1st Grid
+      cy.get('@grid1')
+        .find('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('1'));
+
+      cy.get('@grid1')
+        .find('[data-test=page-count]')
+        .contains('100');
+
+      cy.get('@grid1')
+        .find('[data-test=item-from]')
+        .contains('1');
+
+      cy.get('@grid1')
+        .find('[data-test=item-to]')
+        .contains('5');
+
+      cy.get('@grid1')
+        .find('[data-test=total-items]')
+        .contains('500');
+
+      // 2nd Grid
+      cy.get('@grid2')
+        .find('[data-test=page-count]')
+        .contains('100');
+
+      cy.get('@grid2')
+        .find('[data-test=item-from]')
+        .contains('1');
+
+      cy.get('@grid2')
+        .find('[data-test=item-to]')
+        .contains('5');
+
+      cy.get('@grid2')
+        .find('[data-test=total-items]')
+        .contains('500');
+    });
+
+    it('should change Page Number in Grid1 and expect the Pagination to have correct values', () => {
+      cy.get('#slickGridContainer-grid1').as('grid1');
+
+      cy.get('@grid1')
+        .find('[data-test=page-number-input]')
+        .clear()
+        .type('52')
+        .type('{enter}');
+
+      cy.get('@grid1')
+        .find('[data-test=page-count]')
+        .contains('100');
+
+      cy.get('@grid1')
+        .find('[data-test=item-from]')
+        .contains('256');
+
+      cy.get('@grid1')
+        .find('[data-test=item-to]')
+        .contains('260');
+
+      cy.get('@grid1')
+        .find('[data-test=total-items]')
+        .contains('500');
+    });
+
+    it('should change Page Number and Page Size in Grid2 and expect the Pagination to have correct values', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('@grid2')
+        .find('[data-test=page-number-input]')
+        .clear()
+        .type('34')
+        .type('{enter}');
+
+      cy.get('@grid2')
+        .find('[data-test=page-count]')
+        .contains('100');
+
+      cy.get('@grid2')
+        .find('[data-test=item-from]')
+        .contains('166');
+
+      cy.get('@grid2')
+        .find('[data-test=item-to]')
+        .contains('170');
+
+      cy.get('@grid2')
+        .find('[data-test=total-items]')
+        .contains('500');
+
+      cy.get('@grid2')
+        .find('#items-per-page-label').select('75');
+
+      cy.get('@grid2')
+        .find('[data-test=page-count]')
+        .contains('7');
+
+      cy.get('@grid2')
+        .find('[data-test=item-from]')
+        .contains('1');
+
+      cy.get('@grid2')
+        .find('[data-test=item-to]')
+        .contains('75');
+    });
+
+    it('should go back to Grid1 and expect the same value before changing Pagination of Grid2', () => {
+      cy.get('#slickGridContainer-grid1').as('grid1');
+
+      cy.get('@grid1')
+        .find('[data-test=page-count]')
+        .contains('100');
+
+      cy.get('@grid1')
+        .find('[data-test=item-from]')
+        .contains('256');
+
+      cy.get('@grid1')
+        .find('[data-test=item-to]')
+        .contains('260');
+
+      cy.get('@grid1')
+        .find('[data-test=total-items]')
+        .contains('500');
+    });
   });
 });

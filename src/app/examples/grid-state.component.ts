@@ -17,6 +17,7 @@ function randomBetween(min, max) {
 }
 const LOCAL_STORAGE_KEY = 'gridState';
 const NB_ITEMS = 500;
+const DEFAULT_PAGE_SIZE = 25;
 
 @Component({
   templateUrl: './grid-state.component.html'
@@ -66,6 +67,7 @@ export class GridStateComponent implements OnInit {
   clearGridStateFromLocalStorage() {
     localStorage[LOCAL_STORAGE_KEY] = null;
     this.angularGrid.gridService.resetGrid(this.columnDefinitions);
+    this.angularGrid.paginationService.changeItemPerPage(DEFAULT_PAGE_SIZE);
   }
 
   /* Define grid Options and Columns */
@@ -153,7 +155,7 @@ export class GridStateComponent implements OnInit {
       enablePagination: true,
       pagination: {
         pageSizes: [5, 10, 15, 20, 25, 30, 40, 50, 75, 100],
-        pageSize: 25
+        pageSize: DEFAULT_PAGE_SIZE
       },
     };
 
