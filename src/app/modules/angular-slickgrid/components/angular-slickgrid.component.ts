@@ -7,7 +7,7 @@ import 'slickgrid/slick.grid';
 import 'slickgrid/slick.dataview';
 
 // ...then everything else...
-import { AfterViewInit, Component, ElementRef, EventEmitter, Inject, Input, Output, OnDestroy, OnInit, Optional } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, Input, Output, OnDestroy, OnInit, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Constants } from '../constants';
@@ -19,6 +19,7 @@ import {
   BackendServiceApi,
   BackendServiceOption,
   Column,
+  CustomFooterOption,
   ExtensionName,
   GraphqlPaginatedResult,
   GraphqlResult,
@@ -26,12 +27,13 @@ import {
   GridStateChange,
   GridStateType,
   Locale,
+  Metrics,
   Pagination,
   SlickEventHandler,
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
 import { SlickgridConfig } from '../slickgrid-config';
-import { isObservable, Observable, Subscription, Subject } from 'rxjs';
+import { isObservable, Observable, Subscription } from 'rxjs';
 
 // Services
 import { AngularUtilService } from '../services/angularUtil.service';
@@ -117,6 +119,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _fixedHeight: number | null;
   private _fixedWidth: number | null;
   private _hideHeaderRowAfterPageLoad = false;
+  private _isGridInitialized = false;
+  private _isPaginationInitialized = false;
   dataView: any;
   grid: any;
   gridHeightString: string;
@@ -124,11 +128,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   groupingDefinition: any = {};
   groupItemMetadataProvider: any;
   backendServiceApi: BackendServiceApi;
+  customFooterOptions: CustomFooterOption;
   locales: Locale;
+  metrics: Metrics;
   paginationOptions: Pagination;
+  showCustomFooter = false;
   showPagination = false;
   totalItems = 0;
-  isGridInitialized = false;
   subscriptions: Subscription[] = [];
 
   @Output() onAngularGridCreated = new EventEmitter<AngularGridInstance>();
@@ -159,7 +165,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   @Input()
   set columnDefinitions(columnDefinitions: Column[]) {
     this._columnDefinitions = columnDefinitions;
-    if (this.isGridInitialized) {
+    if (this._isGridInitialized) {
       this.updateColumnDefinitionsList(columnDefinitions);
     }
   }
@@ -180,6 +186,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   constructor(
+    private cd: ChangeDetectorRef,
     private elm: ElementRef,
     private excelExportService: ExcelExportService,
     private exportService: ExportService,
@@ -200,7 +207,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   ngAfterViewInit() {
     this.initialization();
-    this.isGridInitialized = true;
+    this._isGridInitialized = true;
 
     // user must provide a "gridHeight" or use "autoResize: true" in the grid options
     if (!this._fixedHeight && !this.gridOptions.enableAutoResize) {
@@ -297,7 +304,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
       this.gridService.setSelectedRows([]);
     }
-
+    if (this.sharedService) {
+      const { pageNumber, pageSize } = pagination;
+      if (pageSize) {
+        this.sharedService.currentPagination = { pageNumber, pageSize };
+      }
+    }
     this.gridStateService.onGridStateChanged.next({
       change: { newValues: pagination, type: GridStateType.pagination },
       gridState: this.gridStateService.getCurrentGridState()
@@ -320,25 +332,22 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         this.grid.render();
       }
 
+      // display the Pagination component only after calling this refresh data first, we call it here so that if we preset pagination page number it will be shown correctly
+      this.showPagination = (this.gridOptions && (this.gridOptions.enablePagination || (this.gridOptions.backendServiceApi && this.gridOptions.enablePagination === undefined))) ? true : false;
+
       if (this.gridOptions && this.gridOptions.backendServiceApi && this.gridOptions.pagination) {
-        // do we want to show pagination?
-        // if we have a backendServiceApi and the enablePagination is undefined, we'll assume that we do want to see it, else get that defined value
-        this.showPagination = ((this.gridOptions.backendServiceApi && this.gridOptions.enablePagination === undefined) ? true : this.gridOptions.enablePagination) || false;
-
-        if (this.gridOptions.presets && this.gridOptions.presets.pagination && this.gridOptions.pagination) {
-          this.paginationOptions.pageSize = this.gridOptions.presets.pagination.pageSize;
-          this.paginationOptions.pageNumber = this.gridOptions.presets.pagination.pageNumber;
-        }
-
+        const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this.paginationOptions);
         // when we have a totalCount use it, else we'll take it from the pagination object
         // only update the total items if it's different to avoid refreshing the UI
         const totalRecords = totalCount !== undefined ? totalCount : (this.gridOptions && this.gridOptions.pagination && this.gridOptions.pagination.totalItems);
         if (totalRecords !== this.totalItems) {
           this.totalItems = totalRecords;
         }
-      } else {
-        // without backend service, we'll assume the total of items is the dataset size
-        this.totalItems = dataset.length;
+
+        // initialize the Pagination Service with new pagination options (which might have presets)
+        if (!this._isPaginationInitialized) {
+          this.initializePaginationService(paginationOptions);
+        }
       }
 
       // resize the grid inside a slight timeout, in case other DOM element changed prior to the resize (like a filter/pagination changed)
@@ -347,6 +356,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         this.resizer.resizeGrid(delay || 10);
       }
     }
+  }
+
+  /**
+   * Check if there's any Pagination Presets defined in the Grid Options,
+   * if there are then load them in the paginationOptions object
+   */
+  setPaginationOptionsWhenPresetDefined(gridOptions: GridOption, paginationOptions: Pagination): Pagination {
+    if (gridOptions.presets && gridOptions.presets.pagination && gridOptions.pagination) {
+      paginationOptions.pageSize = gridOptions.presets.pagination.pageSize;
+      paginationOptions.pageNumber = gridOptions.presets.pagination.pageNumber;
+    }
+    return paginationOptions;
   }
 
   /**
@@ -394,6 +415,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
             this.extensionService.translateContextMenu();
             this.extensionService.translateGridMenu();
             this.extensionService.translateHeaderMenu();
+            this.translateCustomFooterTexts();
           }
         })
       );
@@ -418,7 +440,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // bind external sorting (backend) when available or default onSort (dataView)
     if (gridOptions.enableSorting && !this.customDataView) {
-      gridOptions.backendServiceApi ? this.sortService.bindBackendOnSort(grid, dataView) : this.sortService.bindLocalOnSort(grid, dataView);
+      // bind external sorting (backend) unless specified to use the local one
+      if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalSorting) {
+        this.sortService.bindBackendOnSort(grid, dataView);
+      } else {
+        this.sortService.bindLocalOnSort(grid, dataView);
+      }
     }
 
     // bind external filter (backend) when available or default onFilter (dataView)
@@ -429,7 +456,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       if (gridOptions.presets && Array.isArray(gridOptions.presets.filters) && gridOptions.presets.filters.length > 0) {
         this.filterService.populateColumnFilterSearchTermPresets(gridOptions.presets.filters);
       }
-      gridOptions.backendServiceApi ? this.filterService.bindBackendOnFilter(grid, this.dataView) : this.filterService.bindLocalOnFilter(grid, this.dataView);
+      // bind external filter (backend) unless specified to use the local one
+      if (gridOptions.backendServiceApi && !gridOptions.backendServiceApi.useLocalFiltering) {
+        this.filterService.bindBackendOnFilter(grid, this.dataView);
+      } else {
+        this.filterService.bindLocalOnFilter(grid, this.dataView);
+      }
     }
 
     // if user set an onInit Backend, we'll run it right away (and if so, we also need to run preProcess, internalPostProcess & postProcess)
@@ -472,7 +504,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.gridEventService.bindOnClick(grid, dataView);
 
     if (dataView && grid) {
-      this._eventHandler.subscribe(dataView.onRowCountChanged, () => grid.invalidate());
+      this._eventHandler.subscribe(dataView.onRowCountChanged, (e: Event, args: any) => {
+        grid.invalidate();
+
+        this.metrics = {
+          startTime: new Date(),
+          endTime: new Date(),
+          itemCount: args && args.current || 0,
+          totalItemCount: this.dataset.length || 0
+        };
+      });
 
       // without this, filtering data with local dataset will not always show correctly
       // also don't use "invalidateRows" since it destroys the entire row and as bad user experience when updating a row
@@ -592,6 +633,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
+  private initializePaginationService(paginationOptions: Pagination) {
+    this.paginationService.init(this.grid, this.dataView, paginationOptions, this.backendServiceApi);
+    this._isPaginationInitialized = true;
+    this.cd.detectChanges();
+  }
+
   private initialization() {
     // make sure the dataset is initialized (if not it will throw an error that it cannot getLength of null)
     this._dataset = this._dataset || [];
@@ -702,6 +749,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     this.gridStateService.init(this.grid);
 
+    // local grid, check if we need to show the Pagination
+    // if so then also check if there's any presets and finally initialize the PaginationService
+    // a local grid with Pagination presets will potentially have a different total of items, we'll need to get it from the DataView and update our total
+    if (this.gridOptions && this.gridOptions.enablePagination && !this.gridOptions.backendServiceApi) {
+      this.showPagination = true;
+      this.loadLocalGridPagination();
+    }
+
     this.onAngularGridCreated.emit({
       // Slick Grid & DataView objects
       dataView: this.dataView,
@@ -727,6 +782,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       /** @deprecated please use "extensionService" instead */
       pluginService: this.extensionService,
     });
+
+    // user could show a custom footer with the data metrics (dataset length and last updated timestamp)
+    this.optionallyShowCustomFooterWithMetrics();
   }
 
   /** Load the Editor Collection asynchronously and replace the "collection" property when Observable resolves */
@@ -739,12 +797,36 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
+  /**
+   * local grid, check if we need to show the Pagination
+   * if so then also check if there's any presets and finally initialize the PaginationService
+   * a local grid with Pagination presets will potentially have a different total of items, we'll need to get it from the DataView and update our total
+   */
+  private loadLocalGridPagination() {
+    if (this.gridOptions) {
+      this.totalItems = this.dataset.length;
+      if (this.paginationOptions && this.dataView && this.dataView.getPagingInfo) {
+        const slickPagingInfo = this.dataView.getPagingInfo() || {};
+        if (slickPagingInfo.hasOwnProperty('totalRows') && this.paginationOptions.totalItems !== slickPagingInfo.totalRows) {
+          this.totalItems = slickPagingInfo.totalRows;
+        }
+      }
+      this.paginationOptions.totalItems = this.totalItems;
+      const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this.paginationOptions);
+      this.initializePaginationService(paginationOptions);
+    }
+  }
+
   private mergeGridOptions(gridOptions): GridOption {
     gridOptions.gridId = this.gridId;
     gridOptions.gridContainerId = `slickGridContainer-${this.gridId}`;
 
+    // if we have a backendServiceApi and the enablePagination is undefined, we'll assume that we do want to see it, else get that defined value
+    // @deprecated TODO remove this check in the future, user should explicitely enable the Pagination since this feature is now optional (you can now call OData/GraphQL without Pagination which is a new feature)
+    gridOptions.enablePagination = ((gridOptions.backendServiceApi && gridOptions.enablePagination === undefined) ? true : gridOptions.enablePagination) || false;
+
     // use jquery extend to deep merge & copy to avoid immutable properties being changed in GlobalGridOptions after a route change
-    const options = $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions);
+    const options = $.extend(true, {}, GlobalGridOptions, this.forRootConfig, gridOptions) as GridOption;
 
     // using jQuery extend to do a deep clone has an unwanted side on objects and pageSizes but ES6 spread has other worst side effects
     // so we will just overwrite the pageSizes when needed, this is the only one causing issues so far.
@@ -760,7 +842,39 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (options.enableFiltering && !options.showHeaderRow) {
       options.showHeaderRow = options.enableFiltering;
     }
+
+    // when we use Pagination on Local Grid, it doesn't seem to work without enableFiltering
+    // so we'll enable the filtering but we'll keep the header row hidden
+    if (!options.enableFiltering && options.enablePagination && !options.backendServiceApi) {
+      options.enableFiltering = true;
+      options.showHeaderRow = false;
+    }
     return options;
+  }
+
+  /**
+   * We could optionally display a custom footer below the grid to show some metrics (last update, item count with/without filters)
+   * It's an opt-in, user has to enable "showCustomFooter" and it cannot be used when there's already a Pagination since they display the same kind of info
+   */
+  private optionallyShowCustomFooterWithMetrics() {
+    if (this.gridOptions) {
+      if ((this.gridOptions.enableTranslate || this.gridOptions.i18n)) {
+        this.translateCustomFooterTexts();
+      } else if (this.gridOptions.customFooterOptions) {
+        const customFooterOptions = this.gridOptions.customFooterOptions;
+        customFooterOptions.metricTexts = customFooterOptions.metricTexts || {};
+        customFooterOptions.metricTexts.lastUpdate = this.locales && this.locales.TEXT_LAST_UPDATE || 'TEXT_LAST_UPDATE';
+        customFooterOptions.metricTexts.items = this.locales && this.locales.TEXT_ITEMS || 'TEXT_ITEMS';
+        customFooterOptions.metricTexts.of = this.locales && this.locales.TEXT_OF || 'TEXT_OF';
+      }
+
+      // we will display the custom footer only when there's no Pagination
+      if (!(this.gridOptions.backendServiceApi || this.gridOptions.enablePagination)) {
+        this.showCustomFooter = this.gridOptions.hasOwnProperty('showCustomFooter') ? this.gridOptions.showCustomFooter : false;
+        this.customFooterOptions = this.gridOptions.customFooterOptions || {};
+      }
+      this.cd.detectChanges();
+    }
   }
 
   /**
@@ -777,6 +891,20 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
       return { ...column, editor: column.editor && column.editor.model, internalColumnEditor: { ...column.editor } };
     });
+  }
+
+  /** Translate all Custom Footer Texts (footer with metrics) */
+  private translateCustomFooterTexts() {
+    if (this.translate && this.translate.instant) {
+      const customFooterOptions = this.gridOptions && this.gridOptions.customFooterOptions || {};
+      customFooterOptions.metricTexts = customFooterOptions.metricTexts || {};
+      for (const propName of Object.keys(customFooterOptions.metricTexts)) {
+        if (propName.lastIndexOf('Key') > 0) {
+          const propNameWithoutKey = propName.substring(0, propName.lastIndexOf('Key'));
+          customFooterOptions.metricTexts[propNameWithoutKey] = this.translate.instant(customFooterOptions.metricTexts[propName] || ' ');
+        }
+      }
+    }
   }
 
   /**

@@ -52,6 +52,21 @@ export const GlobalGridOptions: GridOption = {
     iconExportTextDelimitedCommand: 'fa fa-download',
     width: 200,
   },
+  customFooterOptions: {
+    dateFormat: 'yyyy-MM-dd hh:mm aaaaa\'m\'',
+    hideTotalItemCount: false,
+    hideLastUpdateTimestamp: true,
+    footerHeight: 20,
+    leftContainerClass: 'col-xs-12 col-sm-5',
+    rightContainerClass: 'col-xs-6 col-sm-7',
+    metricSeparator: '|',
+    metricTexts: {
+      items: 'items',
+      of: 'of',
+      itemsKey: 'ITEMS',
+      ofKey: 'OF',
+    }
+  },
   datasetIdPropertyName: 'id',
   defaultFilter: Filters.input,
   enableFilterTrimWhiteSpace: false, // do we want to trim white spaces on all Filters?

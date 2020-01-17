@@ -1,0 +1,9 @@
+$preheader-font-size: 18px;
+$preheader-border-right: 1px solid lightgrey;
+
+/* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
+@import '../modules/angular-slickgrid/styles/slickgrid-theme-bootstrap.scss';
+
+.alert {
+  padding: 8px;
+}

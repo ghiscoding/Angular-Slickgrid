@@ -177,13 +177,15 @@ export class GridStateService {
    * @return current pagination state
    */
   getCurrentPagination(): CurrentPagination | null {
-    if (this._gridOptions && this._gridOptions.backendServiceApi) {
-      const backendService = this._gridOptions.backendServiceApi.service;
-      if (backendService && backendService.getCurrentPagination) {
-        return backendService.getCurrentPagination();
+    if (this._gridOptions.enablePagination) {
+      if (this._gridOptions && this._gridOptions.backendServiceApi) {
+        const backendService = this._gridOptions.backendServiceApi.service;
+        if (backendService && backendService.getCurrentPagination) {
+          return backendService.getCurrentPagination();
+        }
+      } else {
+        return this.sharedService.currentPagination;
       }
-    } else {
-      // TODO implement this whenever local pagination gets implemented
     }
     return null;
   }

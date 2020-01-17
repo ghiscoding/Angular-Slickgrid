@@ -1,0 +1,30 @@
+@import './variables';
+
+.slick-custom-footer {
+  color: $footer-text-color;
+  padding: $footer-padding;
+  background-color: $footer-bg-color;
+  font-style: $footer-font-style;
+  font-weight: $footer-font-weight;
+  height: $footer-height;
+
+  .left-footer {
+    color: $footer-left-text-color;
+    font-style: $footer-left-font-style;
+    font-weight: $footer-left-font-weight;
+    text-align: $footer-left-text-align;
+    padding: $footer-left-padding;
+  }
+
+  .right-footer.metrics {
+    color: $footer-right-text-color;
+    text-align: $footer-right-text-align;
+    font-style: $footer-right-font-style;
+    font-weight: $footer-right-font-weight;
+    text-align: $footer-right-text-align;
+    padding: $footer-right-padding;
+    .separator {
+      margin: $footer-right-separator-margin;
+    }
+  }
+}

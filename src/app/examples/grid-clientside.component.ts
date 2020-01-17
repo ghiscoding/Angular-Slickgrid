@@ -180,6 +180,7 @@ export class GridClientSideComponent implements OnInit {
       enableFiltering: true,
       // enableFilterTrimWhiteSpace: true,
       i18n: this.translate,
+      showCustomFooter: true, // display some metrics in the bottom custom footer
 
       // use columnDef searchTerms OR use presets as shown below
       presets: {
@@ -193,7 +194,7 @@ export class GridClientSideComponent implements OnInit {
           { columnId: 'duration', direction: 'DESC' },
           { columnId: 'complete', direction: 'ASC' }
         ],
-      }
+      },
     };
 
     // mock a dataset
@@ -272,6 +273,7 @@ export class GridClientSideComponent implements OnInit {
       setTimeout(() => {
         this.metrics = {
           startTime: new Date(),
+          endTime: new Date(),
           itemCount: args && args.current || 0,
           totalItemCount: this.dataset.length || 0
         };

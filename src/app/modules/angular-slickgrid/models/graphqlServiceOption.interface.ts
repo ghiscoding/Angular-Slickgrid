@@ -4,6 +4,7 @@ import { GraphqlFilteringOption } from './graphqlFilteringOption.interface';
 import { GraphqlSortingOption } from './graphqlSortingOption.interface';
 import { GraphqlCursorPaginationOption } from './graphqlCursorPaginationOption.interface';
 import { GraphqlPaginationOption } from './graphqlPaginationOption.interface';
+import { QueryArgument } from './queryArgument.interface';
 
 export interface GraphqlServiceOption extends BackendServiceOption {
   /**
@@ -13,10 +14,14 @@ export interface GraphqlServiceOption extends BackendServiceOption {
   addLocaleIntoQuery?: boolean;
 
   /** What is the dataset, this is required for the GraphQL query to be built */
-  datasetName?: string;
+  datasetName: string;
 
-  /** Column definitions, you can pass this instead of "columnIds" */
-  columnDefinitions?: Column[];
+  /**
+   * Extra query arguments that be passed in addition to the default query arguments
+   * For example in GraphQL, if we want to pass "userId" and we want the query to look like
+   * users (first: 20, offset: 10, userId: 123) { ... }
+   */
+  extraQueryArguments?: QueryArgument[];
 
   /** (NOT FULLY IMPLEMENTED) Is the GraphQL Server using cursors? */
   isWithCursor?: boolean;

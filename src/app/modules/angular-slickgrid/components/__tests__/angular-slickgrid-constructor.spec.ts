@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ElementRef } from '@angular/core';
+import { ChangeDetectorRef, ElementRef } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { of, Subject, throwError } from 'rxjs';
 
@@ -20,7 +20,7 @@ import {
   SharedService,
   SortService,
 } from '../../services';
-import { Column, CurrentFilter, CurrentSorter, GridOption, GridState, GridStateChange, GridStateType, Pagination } from '../../models';
+import { Column, CurrentFilter, CurrentSorter, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, GridOption, GridState, GridStateChange, GridStateType, Pagination } from '../../models';
 import { Filters } from '../../filters';
 import { Editors } from '../../editors';
 import * as utilities from '../../services/backend-utilities';
@@ -154,6 +154,7 @@ const mockDataView = {
   getItem: jest.fn(),
   getItems: jest.fn(),
   getItemMetadata: jest.fn(),
+  getPagingInfo: jest.fn(),
   onRowsChanged: jest.fn(),
   onRowCountChanged: jest.fn(),
   onSetItemsCalled: jest.fn(),
@@ -220,6 +221,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
   let cellDiv: HTMLDivElement;
   let mockElementRef: ElementRef;
   let translate: TranslateService;
+  let mockChangeDetectorRef: ChangeDetectorRef;
 
   const template = `
   <div id="grid1" style="height: 800px; width: 600px;">
@@ -245,11 +247,16 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     });
     translate = TestBed.get(TranslateService);
 
+    mockChangeDetectorRef = {
+      detectChanges: jest.fn()
+    } as unknown as ChangeDetectorRef;
+
     mockElementRef = {
       nativeElement: divContainer
     } as ElementRef;
 
     component = new AngularSlickgridComponent(
+      mockChangeDetectorRef,
       mockElementRef,
       excelExportServiceStub,
       exportServiceStub,
@@ -490,6 +497,24 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         expect(syncSpy).toHaveBeenCalledWith(component.grid, true, false);
       });
+
+      it('should bind local filter when "enableFiltering" is set', () => {
+        const bindLocalSpy = jest.spyOn(filterServiceStub, 'bindLocalOnFilter');
+
+        component.gridOptions = { enableFiltering: true } as GridOption;
+        component.ngAfterViewInit();
+
+        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
+      });
+
+      it('should bind local sort when "enableSorting" is set', () => {
+        const bindLocalSpy = jest.spyOn(sortServiceStub, 'bindLocalOnSort');
+
+        component.gridOptions = { enableSorting: true } as GridOption;
+        component.ngAfterViewInit();
+
+        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
+      });
     });
 
     describe('flag checks', () => {
@@ -560,6 +585,57 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         expect(spy).toHaveBeenCalledWith();
       });
+
+      it('should refresh a local grid and change pagination options pagination when a preset for it is defined in grid options', (done) => {
+        const expectedPageNumber = 2;
+        const expectedTotalItems = 2;
+        const refreshSpy = jest.spyOn(component, 'refreshGridData');
+
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        component.gridOptions = {
+          enablePagination: true,
+          presets: { pagination: { pageSize: 2, pageNumber: expectedPageNumber } }
+        };
+        component.paginationOptions = { pageSize: 2, pageNumber: 2, pageSizes: [2, 10, 25, 50], totalItems: 100 };
+
+        component.dataset = mockData;
+        component.ngAfterViewInit();
+
+        setTimeout(() => {
+          expect(component.paginationOptions.pageSize).toBe(2);
+          expect(component.paginationOptions.pageNumber).toBe(expectedPageNumber);
+          expect(component.paginationOptions.totalItems).toBe(expectedTotalItems);
+          expect(refreshSpy).toHaveBeenCalledWith(mockData);
+          done();
+        });
+      });
+
+      it('should refresh a local grid defined and change pagination options pagination when a preset is defined in grid options and total rows is different when Filters are applied', (done) => {
+        const expectedPageNumber = 3;
+        const expectedTotalItems = 15;
+        const refreshSpy = jest.spyOn(component, 'refreshGridData');
+        const getPagingSpy = jest.spyOn(mockDataView, 'getPagingInfo').mockReturnValue({ pageNum: 1, totalRows: expectedTotalItems });
+
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        component.gridOptions = {
+          enablePagination: true,
+          enableFiltering: true,
+          presets: { pagination: { pageSize: 10, pageNumber: expectedPageNumber } }
+        };
+        component.paginationOptions = { pageSize: 10, pageNumber: 2, pageSizes: [10, 25, 50], totalItems: 100 };
+
+        component.ngAfterViewInit();
+        component.dataset = mockData;
+
+        setTimeout(() => {
+          expect(getPagingSpy).toHaveBeenCalled();
+          expect(component.paginationOptions.pageSize).toBe(10);
+          expect(component.paginationOptions.pageNumber).toBe(expectedPageNumber);
+          expect(component.paginationOptions.totalItems).toBe(expectedTotalItems);
+          expect(refreshSpy).toHaveBeenCalledWith(mockData);
+          done();
+        });
+      });
     });
 
     describe('Backend Service API', () => {
@@ -593,7 +669,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const spy = jest.spyOn(component, 'refreshGridData');
 
         component.ngAfterViewInit();
-        component.gridOptions.backendServiceApi.internalPostProcess({ data: { users: { nodes: [{ firstName: 'John' }], pageInfo: { hasNextPage: false }, totalCount: 2 } } });
+        component.gridOptions.backendServiceApi.internalPostProcess({ data: { users: { nodes: [{ firstName: 'John' }], totalCount: 2 } } } as GraphqlPaginatedResult);
 
         expect(spy).toHaveBeenCalled();
         expect(component.gridOptions.backendServiceApi.internalPostProcess).toEqual(expect.any(Function));
@@ -617,7 +693,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const spy = jest.spyOn(component, 'refreshGridData');
 
         component.ngAfterViewInit();
-        component.gridOptions.backendServiceApi.internalPostProcess({ data: { notUsers: { nodes: [{ firstName: 'John' }], pageInfo: { hasNextPage: false }, totalCount: 2 } } });
+        component.gridOptions.backendServiceApi.internalPostProcess({ data: { notUsers: { nodes: [{ firstName: 'John' }], totalCount: 2 } } } as GraphqlPaginatedResult);
 
         expect(spy).not.toHaveBeenCalled();
         expect(component.dataset).toEqual([]);
@@ -820,7 +896,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
       it('should execute backend service "init" method when set', () => {
         const mockPagination = { pageNumber: 1, pageSizes: [10, 25, 50], pageSize: 10, totalItems: 100 };
-        const mockGraphqlOptions = { extraQueryArguments: [{ field: 'userId', value: 123 }] };
+        const mockGraphqlOptions = { datasetName: 'users', extraQueryArguments: [{ field: 'userId', value: 123 }] } as GraphqlServiceOption;
         const bindBackendSpy = jest.spyOn(sortServiceStub, 'bindBackendOnSort');
         const mockGraphqlService2 = { ...mockGraphqlService, init: jest.fn() } as unknown as GraphqlService;
         const initSpy = jest.spyOn(mockGraphqlService2, 'init');
@@ -831,8 +907,8 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
             service: mockGraphqlService2,
             options: mockGraphqlOptions,
             preProcess: () => jest.fn(),
-            process: (query) => new Promise((resolve) => resolve('process resolved')),
-          },
+            process: (query) => new Promise((resolve) => resolve({ data: { users: { nodes: [], totalCount: 100 } } })),
+          } as GraphqlServiceApi,
           pagination: mockPagination,
         } as GridOption;
         component.ngAfterViewInit();
@@ -841,16 +917,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(initSpy).toHaveBeenCalledWith(mockGraphqlOptions, mockPagination, mockGrid);
       });
 
-      it('should bind local sort when "enableSorting" is set', () => {
-        const bindLocalSpy = jest.spyOn(sortServiceStub, 'bindLocalOnSort');
-
-        component.gridOptions = { enableSorting: true } as GridOption;
-        component.ngAfterViewInit();
-
-        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
-      });
-
-      it('should reflect column filters when "enableSorting" is set', () => {
+      it('should call bind backend sorting when "enableSorting" is set', () => {
         const bindBackendSpy = jest.spyOn(sortServiceStub, 'bindBackendOnSort');
 
         component.gridOptions = {
@@ -866,7 +933,24 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(bindBackendSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
       });
 
-      it('should reflect column filters when "enableFiltering" is set', () => {
+      it('should call bind local sorting when "enableSorting" is set and "useLocalSorting" is set as well', () => {
+        const bindLocalSpy = jest.spyOn(sortServiceStub, 'bindLocalOnSort');
+
+        component.gridOptions = {
+          enableSorting: true,
+          backendServiceApi: {
+            service: mockGraphqlService,
+            useLocalSorting: true,
+            preProcess: () => jest.fn(),
+            process: (query) => new Promise((resolve) => resolve('process resolved')),
+          }
+        } as GridOption;
+        component.ngAfterViewInit();
+
+        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
+      });
+
+      it('should call bind backend filtering when "enableFiltering" is set', () => {
         const initSpy = jest.spyOn(filterServiceStub, 'init');
         const bindLocalSpy = jest.spyOn(filterServiceStub, 'bindLocalOnFilter');
         const populateSpy = jest.spyOn(filterServiceStub, 'populateColumnFilterSearchTermPresets');
@@ -877,6 +961,23 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(initSpy).toHaveBeenCalledWith(mockGrid);
         expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
         expect(populateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should call bind local filtering when "enableFiltering" is set and "useLocalFiltering" is set as well', () => {
+        const bindLocalSpy = jest.spyOn(filterServiceStub, 'bindLocalOnFilter');
+
+        component.gridOptions = {
+          enableFiltering: true,
+          backendServiceApi: {
+            service: mockGraphqlService,
+            useLocalFiltering: true,
+            preProcess: () => jest.fn(),
+            process: (query) => new Promise((resolve) => resolve('process resolved')),
+          }
+        } as GridOption;
+        component.ngAfterViewInit();
+
+        expect(bindLocalSpy).toHaveBeenCalledWith(mockGrid, mockDataView);
       });
 
       it('should reflect column filters when "enableFiltering" is set', () => {
@@ -1030,6 +1131,55 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           change: { newValues: mockPagination, type: GridStateType.pagination },
           gridState: { columns: [], pagination: mockPagination }
         });
+      });
+    });
+
+    describe('Custom Footer', () => {
+      it('should have a Custom Footer when "showCustomFooter" is enabled and there are no Pagination used', (done) => {
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+
+        component.gridOptions.enableTranslate = true;
+        component.gridOptions.showCustomFooter = true;
+        component.ngOnInit();
+        component.ngAfterViewInit();
+        component.columnDefinitions = mockColDefs;
+
+        setTimeout(() => {
+          expect(component.columnDefinitions).toEqual(mockColDefs);
+          expect(component.showCustomFooter).toBeTrue();
+          expect(component.customFooterOptions).toEqual({
+            dateFormat: 'yyyy-MM-dd hh:mm aaaaa\'m\'',
+            hideLastUpdateTimestamp: true,
+            hideTotalItemCount: false,
+            footerHeight: 20,
+            leftContainerClass: 'col-xs-12 col-sm-5',
+            metricSeparator: '|',
+            metricTexts: {
+              items: 'ITEMS',
+              itemsKey: 'ITEMS',
+              of: 'OF',
+              ofKey: 'OF',
+            },
+            rightContainerClass: 'col-xs-6 col-sm-7',
+          });
+          done();
+        }, 1);
+      });
+
+      it('should NOT have a Custom Footer when "showCustomFooter" is enabled WITH Pagination in use', (done) => {
+        const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
+
+        component.gridOptions.enablePagination = true;
+        component.gridOptions.showCustomFooter = true;
+        component.ngOnInit();
+        component.ngAfterViewInit();
+        component.columnDefinitions = mockColDefs;
+
+        setTimeout(() => {
+          expect(component.columnDefinitions).toEqual(mockColDefs);
+          expect(component.showCustomFooter).toBeFalse();
+          done();
+        }, 1);
       });
     });
   });

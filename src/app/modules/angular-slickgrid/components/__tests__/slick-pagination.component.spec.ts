@@ -8,6 +8,7 @@ import { Column, GridOption, Pager } from '../../models';
 import { PaginationService } from '../../services';
 
 const dataviewStub = {
+  onPagingInfoChanged: jest.fn(),
   onRowCountChanged: jest.fn(),
   onRowsChanged: jest.fn(),
 };
@@ -23,6 +24,7 @@ const mockBackendService = {
 
 const mockGridOption = {
   enableAutoResize: true,
+  enablePagination: true,
   backendServiceApi: {
     service: mockBackendService,
     process: jest.fn(),

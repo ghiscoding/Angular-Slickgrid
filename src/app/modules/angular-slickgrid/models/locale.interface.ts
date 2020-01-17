@@ -68,6 +68,9 @@ export interface Locale {
   /** Text "of" displayed in the Pagination (when enabled) */
   TEXT_OF?: string;
 
+  /** Text "Last Update" displayed in the Footer (when enabled) */
+  TEXT_LAST_UPDATE?: string;
+
   /** Text "OK" displayed in the Multiple Select Editor/Filter */
   TEXT_OK: string;
 

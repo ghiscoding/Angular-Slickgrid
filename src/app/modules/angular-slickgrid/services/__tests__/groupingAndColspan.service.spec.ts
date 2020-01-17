@@ -1,5 +1,8 @@
+import { Subject } from 'rxjs';
+
 import { GroupingAndColspanService } from '../groupingAndColspan.service';
 import { GridOption, SlickEventHandler, Column } from '../../models';
+import { ResizerService, GridDimension } from '../resizer.service';
 
 declare var Slick: any;
 const gridId = 'grid1';
@@ -36,6 +39,15 @@ const gridStub = {
   setSortColumns: jest.fn(),
 };
 
+const resizerServiceStub = {
+  init: jest.fn(),
+  dispose: jest.fn(),
+  bindAutoResizeDataGrid: jest.fn(),
+  compensateHorizontalScroll: jest.fn(),
+  resizeGrid: jest.fn(),
+  onGridAfterResize: new Subject<GridDimension>(),
+} as unknown as ResizerService;
+
 jest.useFakeTimers();
 
 // define a <div> container to simulate the grid container
@@ -60,7 +72,7 @@ describe('GroupingAndColspanService', () => {
     div.innerHTML = template;
     document.body.appendChild(div);
 
-    service = new GroupingAndColspanService();
+    service = new GroupingAndColspanService(resizerServiceStub);
     slickgridEventHandler = service.eventHandler;
   });
 
@@ -148,6 +160,18 @@ describe('GroupingAndColspanService', () => {
       expect(spy).toHaveBeenCalledTimes(2);
       expect(setTimeout).toHaveBeenCalledTimes(1);
       expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 50);
+    });
+
+    it('should call the "renderPreHeaderRowGroupingTitles" after triggering a grid resize', () => {
+      const spy = jest.spyOn(service, 'renderPreHeaderRowGroupingTitles');
+
+      service.init(gridStub, dataViewStub);
+      resizerServiceStub.onGridAfterResize.next({ height: 100, width: 100 });
+      jest.runAllTimers(); // fast-forward timer
+
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(setTimeout).toHaveBeenCalledTimes(1);
+      // expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 75);
     });
 
     it('should render the pre-header row grouping title DOM element', () => {

@@ -9,6 +9,7 @@ declare var $: any;
 const DATAGRID_MIN_HEIGHT = 180;
 const DATAGRID_MIN_WIDTH = 300;
 const DATAGRID_BOTTOM_PADDING = 20;
+const DATAGRID_FOOTER_HEIGHT = 20;
 const DATAGRID_PAGINATION_HEIGHT = 35;
 
 export interface GridDimension {
@@ -83,8 +84,13 @@ export class ResizerService {
     // calculate bottom padding
     // if using pagination, we need to add the pagination height to this bottom padding
     let bottomPadding = (autoResizeOptions && autoResizeOptions.bottomPadding) ? autoResizeOptions.bottomPadding : DATAGRID_BOTTOM_PADDING;
-    if (bottomPadding && (gridOptions.enablePagination || this._gridOptions.backendServiceApi)) {
+    if (bottomPadding && gridOptions.enablePagination) {
       bottomPadding += DATAGRID_PAGINATION_HEIGHT;
+    }
+
+    // optionally show a custom footer with the data metrics (dataset length and last updated timestamp)
+    if (bottomPadding && gridOptions.showCustomFooter) {
+      bottomPadding += gridOptions.customFooterOptions && gridOptions.customFooterOptions.footerHeight || DATAGRID_FOOTER_HEIGHT;
     }
 
     let gridHeight = 0;
