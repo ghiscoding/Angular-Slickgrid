@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import {
   AngularGridInstance,
   Column,
@@ -34,12 +33,9 @@ export class GridRowDetailComponent implements OnInit {
   dataset: any[];
   detailViewRowCount = 9;
   message: string;
-  selectedLanguage: string;
   flashAlertType = 'info';
 
-  constructor(private translate: TranslateService) {
-    this.selectedLanguage = this.translate.getDefaultLang();
-  }
+  constructor() { }
 
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
