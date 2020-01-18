@@ -2,24 +2,22 @@
   <h2>{{title}}</h2>
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
-  <span>
-    <button class="btn btn-default btn-sm" (click)="closeAllRowDetail()">
+  <div class="col-sm-6">
+    <button class="btn btn-default btn-sm" (click)="closeAllRowDetail()" data-test="close-all-btn">
       Close All Row Details
     </button>
     &nbsp;&nbsp;
     <label for="">Detail View Rows Shown: </label>
     <input type="number" [(ngModel)]="detailViewRowCount">
-    <button class="btn btn-default btn-xs" (click)="changeDetailViewRowCount()">
+    <button class="btn btn-default btn-xs" (click)="changeDetailViewRowCount()" data-test="set-count-btn">
       Set
     </button>
-  </span>
+  </div>
+  <div class="alert alert-{{flashAlertType}} col-sm-6" *ngIf="message" data-test="flash-msg">{{message}}</div>
 
   <hr />
 
-  <angular-slickgrid gridId="grid21"
-                     [columnDefinitions]="columnDefinitions"
-                     [gridOptions]="gridOptions"
-                     [dataset]="dataset"
-                     (onAngularGridCreated)="angularGridReady($event)">
+  <angular-slickgrid gridId="grid21" [columnDefinitions]="columnDefinitions" [gridOptions]="gridOptions"
+    [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)">
   </angular-slickgrid>
 </div>

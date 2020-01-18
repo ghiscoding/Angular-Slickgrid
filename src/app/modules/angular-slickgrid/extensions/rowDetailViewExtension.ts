@@ -3,7 +3,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import * as DOMPurify_ from 'dompurify';
 const DOMPurify = DOMPurify_; // patch to fix rollup to work
 
-import { Column, Extension, ExtensionName, GridOption, SlickEventHandler } from '../models/index';
+import { Column, Extension, ExtensionName, GridOption, RowDetailView, SlickEventHandler } from '../models/index';
 import { ExtensionUtility } from './extensionUtility';
 import { AngularUtilService } from '../services/angularUtil.service';
 import { FilterService } from '../services/filter.service';
@@ -45,6 +45,14 @@ export class RowDetailViewExtension implements Extension {
 
   get eventHandler(): SlickEventHandler {
     return this._eventHandler;
+  }
+
+  get gridOptions(): GridOption {
+    return this.sharedService && this.sharedService.gridOptions || {};
+  }
+
+  get rowDetailViewOptions(): RowDetailView {
+    return this.gridOptions.rowDetailView;
   }
 
   /** Dispose of the RowDetailView Extension */
@@ -138,21 +146,21 @@ export class RowDetailViewExtension implements Extension {
       }
 
       // hook all events
-      if (this.sharedService.grid && this.sharedService.gridOptions.rowDetailView) {
-        if (this.sharedService.gridOptions.rowDetailView.onExtensionRegistered) {
-          this.sharedService.gridOptions.rowDetailView.onExtensionRegistered(this._addon);
+      if (this.sharedService.grid && this.rowDetailViewOptions) {
+        if (this.rowDetailViewOptions.onExtensionRegistered) {
+          this.rowDetailViewOptions.onExtensionRegistered(this._addon);
         }
         this._eventHandler.subscribe(this._addon.onAsyncResponse, (e: any, args: { item: any; detailView: any }) => {
-          if (this.sharedService.gridOptions.rowDetailView && typeof this.sharedService.gridOptions.rowDetailView.onAsyncResponse === 'function') {
-            this.sharedService.gridOptions.rowDetailView.onAsyncResponse(e, args);
+          if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onAsyncResponse === 'function') {
+            this.rowDetailViewOptions.onAsyncResponse(e, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onAsyncEndUpdate, (e: any, args: { grid: any; item: any; }) => {
           // triggers after backend called "onAsyncResponse.notify()"
           this.renderViewModel(args && args.item);
 
-          if (this.sharedService.gridOptions.rowDetailView && typeof this.sharedService.gridOptions.rowDetailView.onAsyncEndUpdate === 'function') {
-            this.sharedService.gridOptions.rowDetailView.onAsyncEndUpdate(e, args);
+          if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onAsyncEndUpdate === 'function') {
+            this.rowDetailViewOptions.onAsyncEndUpdate(e, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onAfterRowDetailToggle, (e: any, args: { grid: any; item: any; expandedRows: any[]; }) => {
@@ -161,29 +169,29 @@ export class RowDetailViewExtension implements Extension {
           this.renderPreloadView();
           this.renderAllViewComponents();
 
-          if (this.sharedService.gridOptions.rowDetailView && typeof this.sharedService.gridOptions.rowDetailView.onAfterRowDetailToggle === 'function') {
-            this.sharedService.gridOptions.rowDetailView.onAfterRowDetailToggle(e, args);
+          if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onAfterRowDetailToggle === 'function') {
+            this.rowDetailViewOptions.onAfterRowDetailToggle(e, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onBeforeRowDetailToggle, (e: any, args: { grid: any; item: any; }) => {
           // before toggling row detail, we need to create View Component if it doesn't exist
           this.onBeforeRowDetailToggle(e, args);
 
-          if (this.sharedService.gridOptions.rowDetailView && typeof this.sharedService.gridOptions.rowDetailView.onBeforeRowDetailToggle === 'function') {
-            this.sharedService.gridOptions.rowDetailView.onBeforeRowDetailToggle(e, args);
+          if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onBeforeRowDetailToggle === 'function') {
+            this.rowDetailViewOptions.onBeforeRowDetailToggle(e, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onRowBackToViewportRange, (e: any, args: { grid: any; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => {
           // when row is back to viewport range, we will re-render the View Component(s)
           this.onRowBackToViewportRange(e, args);
 
-          if (this.sharedService.gridOptions.rowDetailView && typeof this.sharedService.gridOptions.rowDetailView.onRowBackToViewportRange === 'function') {
-            this.sharedService.gridOptions.rowDetailView.onRowBackToViewportRange(e, args);
+          if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onRowBackToViewportRange === 'function') {
+            this.rowDetailViewOptions.onRowBackToViewportRange(e, args);
           }
         });
         this._eventHandler.subscribe(this._addon.onRowOutOfViewportRange, (e: any, args: { grid: any; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) => {
-          if (this.sharedService.gridOptions.rowDetailView && typeof this.sharedService.gridOptions.rowDetailView.onRowOutOfViewportRange === 'function') {
-            this.sharedService.gridOptions.rowDetailView.onRowOutOfViewportRange(e, args);
+          if (this.rowDetailViewOptions && typeof this.rowDetailViewOptions.onRowOutOfViewportRange === 'function') {
+            this.rowDetailViewOptions.onRowOutOfViewportRange(e, args);
           }
         });
 
@@ -238,19 +246,28 @@ export class RowDetailViewExtension implements Extension {
   }
 
   /** Render (or rerender) the View Component (Row Detail) */
-  renderViewModel(item: any) {
+  renderViewModel(item: any): CreatedView | null {
     const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item.id}`);
     if (containerElements && containerElements.length) {
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[0], true);
       if (componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance) {
-        Object.assign(componentOutput.componentRef.instance, { model: item });
+        // pass a few properties to the Row Detail template component
+        Object.assign(componentOutput.componentRef.instance, {
+          model: item,
+          addon: this._addon,
+          grid: this.sharedService.grid,
+          dataView: this.sharedService.dataView,
+          parent: this.rowDetailViewOptions && this.rowDetailViewOptions.parent,
+        });
 
         const viewObj = this._views.find((obj) => obj.id === item.id);
         if (viewObj) {
           viewObj.componentRef = componentOutput.componentRef;
         }
+        return viewObj;
       }
     }
+    return null;
   }
 
   // --

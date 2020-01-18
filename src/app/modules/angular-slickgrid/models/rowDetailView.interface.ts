@@ -27,6 +27,12 @@ export interface RowDetailView {
    */
   panelRows: number;
 
+  /**
+   * Optionally pass your Parent Component reference to your Child Component (row detail component).
+   * note:: If anyone finds a better way of passing the parent to the row detail extension, please reach out and/or create a PR
+   */
+  parent?: any;
+
   /** Defaults to false, when True will open the row detail on a row click (from any column) */
   useRowClick?: boolean;
 

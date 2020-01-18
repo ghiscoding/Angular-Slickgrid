@@ -31,6 +31,10 @@ const sortServiceStub = {
   clearSorting: jest.fn(),
 } as unknown as SortService;
 
+const dataViewStub = {
+  refresh: jest.fn(),
+};
+
 const gridStub = {
   getOptions: jest.fn(),
   getSelectionModel: jest.fn(),
@@ -136,6 +140,7 @@ describe('rowDetailViewExtension', () => {
     beforeEach(() => {
       columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }];
       jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
+      jest.spyOn(SharedService.prototype, 'dataView', 'get').mockReturnValue(dataViewStub);
       jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
       jest.clearAllMocks();
     });
@@ -259,6 +264,7 @@ describe('rowDetailViewExtension', () => {
 
     it('should call internal event handler subscribe and expect the "onAsyncEndUpdate" option to be called when addon notify is called', () => {
       const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
+      const renderSpy = jest.spyOn(extension, 'renderViewModel');
 
       const onAsyncRespSpy = jest.spyOn(SharedService.prototype.gridOptions.rowDetailView, 'onAsyncResponse');
       const onAsyncEndSpy = jest.spyOn(SharedService.prototype.gridOptions.rowDetailView, 'onAsyncEndUpdate');
@@ -278,6 +284,7 @@ describe('rowDetailViewExtension', () => {
       );
       expect(onAsyncRespSpy).not.toHaveBeenCalled();
       expect(onAsyncEndSpy).toHaveBeenCalledWith(expect.anything(), { item: columnsMock[0], grid: gridStub });
+      expect(renderSpy).toHaveBeenCalledWith({ cssClass: 'red', field: 'field1', id: 'field1', width: 100, });
       expect(onAfterRowSpy).not.toHaveBeenCalled();
       expect(onBeforeRowSpy).not.toHaveBeenCalled();
       expect(onRowOutViewSpy).not.toHaveBeenCalled();
@@ -367,8 +374,8 @@ describe('rowDetailViewExtension', () => {
       expect(onBeforeRowSpy).not.toHaveBeenCalled();
       expect(onRowOutViewSpy).toHaveBeenCalledWith(
         expect.anything(), {
-          item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0]], rowIdsOutOfViewport: [], grid: gridStub
-        });
+        item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0]], rowIdsOutOfViewport: [], grid: gridStub
+      });
       expect(onRowBackViewSpy).not.toHaveBeenCalled();
     });
 
@@ -402,8 +409,8 @@ describe('rowDetailViewExtension', () => {
       expect(onRowOutViewSpy).not.toHaveBeenCalled();
       expect(onRowBackViewSpy).toHaveBeenCalledWith(
         expect.anything(), {
-          item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0]], rowIdsOutOfViewport: [], grid: gridStub
-        });
+        item: columnsMock[0], rowId: 0, rowIndex: 0, expandedRows: [columnsMock[0]], rowIdsOutOfViewport: [], grid: gridStub
+      });
     });
 
     it('should call Angular Util "createAngularComponentAppendToDom" when grid "onColumnsReordered" is triggered', (done) => {
@@ -467,6 +474,7 @@ describe('rowDetailViewExtension', () => {
       const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
       const getElementSpy = jest.spyOn(document, 'getElementsByClassName');
       const appendSpy = jest.spyOn(angularUtilServiceStub, 'createAngularComponentAppendToDom').mockReturnValue({ componentRef: { instance: jest.fn(), destroy: jest.fn() } } as any);
+      const renderSpy = jest.spyOn(extension, 'renderViewModel');
 
       const instance = extension.create(columnsMock, gridOptionsMock);
 
@@ -474,6 +482,14 @@ describe('rowDetailViewExtension', () => {
       instance.onRowBackToViewportRange.subscribe(() => {
         expect(getElementSpy).toHaveBeenCalledWith('container_field1');
         expect(appendSpy).toHaveBeenCalledWith(undefined, expect.objectContaining({ className: 'container_field1' }), true);
+        expect(renderSpy).toReturnWith(
+          expect.objectContaining({
+            componentRef: {
+              destroy: expect.anything(),
+              instance: expect.objectContaining({ model: mockColumn, addon: expect.anything(), grid: gridStub, dataView: dataViewStub })
+            }
+          })
+        );
         done();
       });
       instance.onBeforeRowDetailToggle.notify({ item: mockColumn, grid: gridStub }, new Slick.EventData(), gridStub);
