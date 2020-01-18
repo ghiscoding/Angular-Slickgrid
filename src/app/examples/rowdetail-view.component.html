@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  <h2>{{model?.title}}</h2>
+  <h3>{{model?.title}}</h3>
   <div class="row">
     <div class="col-xs-3"><label>Assignee:</label> <input class="form-control" [(ngModel)]="model.assignee" /></div>
     <div class="col-xs-3"><label>Reporter:</label> <span>{{model?.reporter}}</span></div>
@@ -19,12 +19,18 @@
     <h4>
       Find out who is the Assignee
       <small>
-        <button class="btn btn-primary btn-sm" (click)="alertAssignee(model?.assignee)">Click Me</button>
+        <button class="btn btn-primary btn-sm" (click)="alertAssignee(model?.assignee)" data-test="assignee-btn">
+          Click Me
+        </button>
       </small>
     </h4>
   </div>
   <div class="col-sm-4">
-    <button class="btn btn-primary btn-danger btn-sm" (click)="deleteRow(model)">Delete Row</button>
-    <button class="btn btn-default btn-sm" (click)="callParentMethod(model)">Call Parent Method</button>
+    <button class="btn btn-primary btn-danger btn-sm" (click)="deleteRow(model)" data-test="delete-btn">
+      Delete Row
+    </button>
+    <button class="btn btn-default btn-sm" (click)="callParentMethod(model)" data-test="parent-btn">
+      Call Parent Method
+    </button>
   </div>
 </div>

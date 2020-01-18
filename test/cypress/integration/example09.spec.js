@@ -93,9 +93,6 @@ describe('Example 9 - Grid Menu', () => {
     });
 
     it('should type a filter and then open the Grid Menu and expect the "Command 2" to NOT be visible', () => {
-      const alertStub = cy.stub();
-      cy.on('window:alert', alertStub);
-
       cy.get('input.search-filter.filter-duration')
         .type('10');
 
@@ -124,9 +121,6 @@ describe('Example 9 - Grid Menu', () => {
     });
 
     it('should clear the filters and then open the Grid Menu and expect the "Command 2" to now be visible', () => {
-      const alertStub = cy.stub();
-      cy.on('window:alert', alertStub);
-
       cy.get('#grid9')
         .find('button.slick-gridmenu-button')
         .trigger('click')
