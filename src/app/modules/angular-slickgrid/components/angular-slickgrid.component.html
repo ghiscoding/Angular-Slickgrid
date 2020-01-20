@@ -10,13 +10,13 @@
   </slick-pagination>
 
   <!-- Custom Footer section under the grid -->
-  <div *ngIf="showCustomFooter && customFooterOptions" class="slick-custom-footer" style="width: 100%;"
+  <div *ngIf="showCustomFooter && customFooterOptions" class="slick-custom-footer row" style="width: 100%;"
     [style.height]="customFooterOptions?.footerHeight || 20">
-    <span class="left-footer" [ngClass]="customFooterOptions.leftContainerClass">
+    <div class="left-footer" [ngClass]="customFooterOptions.leftContainerClass">
       {{customFooterOptions.leftFooterText}}
-    </span>
+    </div>
 
-    <span class="right-footer metrics" [ngClass]="customFooterOptions.rightContainerClass"
+    <div class="right-footer metrics" [ngClass]="customFooterOptions.rightContainerClass"
       *ngIf="metrics && !customFooterOptions.hideMetrics">
       <span *ngIf="!customFooterOptions.hideLastUpdateTimestamp">
         <span>{{customFooterOptions.metricTexts?.lastUpdate}}</span>
@@ -30,6 +30,6 @@
         {{metrics.totalItemCount}}
       </span>
       {{customFooterOptions.metricTexts?.items}}
-    </span>
+    </div>
   </div>
 </div>
