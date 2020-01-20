@@ -14,7 +14,10 @@ export interface CustomFooterOption {
   /** Defaults to false, do we want to hide the last update timestamp (endTime)? */
   hideLastUpdateTimestamp?: boolean;
 
-  /** Defaults to false, do we want to hide the metrics when the footer is displayed? */
+  /**
+   * Defaults to false, do we want to hide the metrics (right section) when the footer is displayed?
+   * That could be used when we want to display only the left section with custom text
+   */
   hideMetrics?: boolean;
 
   /** Defaults to false, do we want to hide the total item count of the entire dataset (the count exclude any filtered data) */
