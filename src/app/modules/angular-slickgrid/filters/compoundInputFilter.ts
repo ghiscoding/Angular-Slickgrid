@@ -227,7 +227,6 @@ export class CompoundInputFilter implements Filter {
 
     // create the DOM element & add an ID and filter class
     $filterContainerElm.append($containerInputGroup);
-    $filterContainerElm.attr('id', `filter-${fieldId}`);
 
     this.$filterInputElm.val(searchTerm);
     this.$filterInputElm.data('columnId', fieldId);

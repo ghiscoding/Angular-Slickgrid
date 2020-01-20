@@ -272,7 +272,6 @@ export class CompoundDateFilter implements Filter {
 
     // create the DOM element & add an ID and filter class
     $filterContainerElm.append($containerInputGroup);
-    $filterContainerElm.attr('id', `filter-${fieldId}`);
     this.$filterInputElm.data('columnId', fieldId);
 
     if (this.operator) {

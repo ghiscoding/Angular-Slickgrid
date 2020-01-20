@@ -166,7 +166,6 @@ export class InputFilter implements Filter {
     const $filterElm = $(filterTemplate);
 
     $filterElm.val(searchTerm);
-    $filterElm.attr('id', `filter-${fieldId}`);
     $filterElm.data('columnId', fieldId);
 
     // if there's a search term, we will add the "filled" class for styling purposes

@@ -196,7 +196,6 @@ export class NativeSelectFilter implements Filter {
     const searchTermInput = (searchTerm || '') as string;
 
     $filterElm.val(searchTermInput);
-    $filterElm.attr('id', `filter-${fieldId}`);
     $filterElm.data('columnId', fieldId);
 
     if (searchTermInput) {

@@ -84,7 +84,10 @@ export class SliderEditor implements Editor {
       this._$editorElm.on('input change', (event: KeyboardEvent & { target: HTMLInputElement }) => {
         const value = event && event.target && event.target.value || '';
         if (value) {
-          document.getElementById(this._elementRangeOutputId).innerHTML = event.target.value;
+          const elements = document.getElementsByClassName(this._elementRangeOutputId);
+          if (elements.length) {
+            elements[0].innerHTML = event.target.value;
+          }
         }
       });
     }
@@ -218,22 +221,20 @@ export class SliderEditor implements Editor {
     if (this.editorParams.hideSliderNumber) {
       return `
       <div class="slider-container slider-editor">
-        <input type="range" id="${this._elementRangeInputId}"
-          name="${this._elementRangeInputId}" title="${title}"
+        <input type="range" name="${this._elementRangeInputId}" title="${title}"
           defaultValue="${defaultValue}" value="${defaultValue}"
           min="${minValue}" max="${maxValue}" step="${step}"
-          class="form-control slider-editor-input editor-${fieldId} range" />
+          class="form-control slider-editor-input editor-${fieldId} range ${this._elementRangeInputId}" />
       </div>`;
     }
 
     return `
       <div class="input-group slider-container slider-editor">
-        <input type="range" id="${this._elementRangeInputId}"
-          name="${this._elementRangeInputId}" title="${title}"
+        <input type="range" name="${this._elementRangeInputId}" title="${title}"
           defaultValue="${defaultValue}" value="${defaultValue}"
           min="${minValue}" max="${maxValue}" step="${step}"
-          class="form-control slider-editor-input editor-${fieldId} range" />
-        <div class="input-group-addon input-group-append slider-value"><span class="input-group-text" id="${this._elementRangeOutputId}">${defaultValue}</span></div>
+          class="form-control slider-editor-input editor-${fieldId} range ${this._elementRangeInputId}" />
+        <div class="input-group-addon input-group-append slider-value"><span class="input-group-text ${this._elementRangeOutputId}">${defaultValue}</span></div>
       </div>`;
   }
 }
