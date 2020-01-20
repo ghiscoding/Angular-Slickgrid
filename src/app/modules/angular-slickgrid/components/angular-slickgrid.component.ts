@@ -511,7 +511,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
           startTime: new Date(),
           endTime: new Date(),
           itemCount: args && args.current || 0,
-          totalItemCount: this.dataset.length || 0
+          totalItemCount: Array.isArray(this.dataset) ? this.dataset.length : 0
         };
       });
 
@@ -804,7 +804,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    */
   private loadLocalGridPagination() {
     if (this.gridOptions) {
-      this.totalItems = this.dataset.length;
+      this.totalItems = Array.isArray(this.dataset) ? this.dataset.length : 0;
       if (this.paginationOptions && this.dataView && this.dataView.getPagingInfo) {
         const slickPagingInfo = this.dataView.getPagingInfo() || {};
         if (slickPagingInfo.hasOwnProperty('totalRows') && this.paginationOptions.totalItems !== slickPagingInfo.totalRows) {

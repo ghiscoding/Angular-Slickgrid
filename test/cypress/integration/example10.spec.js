@@ -173,7 +173,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.get('@grid1')
         .find('[data-test=page-count]')
-        .contains('100');
+        .contains('99');
 
       cy.get('@grid1')
         .find('[data-test=item-from]')
@@ -185,12 +185,12 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.get('@grid1')
         .find('[data-test=total-items]')
-        .contains('500');
+        .contains('495');
 
       // 2nd Grid
       cy.get('@grid2')
         .find('[data-test=page-count]')
-        .contains('100');
+        .contains('105');
 
       cy.get('@grid2')
         .find('[data-test=item-from]')
@@ -202,7 +202,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.get('@grid2')
         .find('[data-test=total-items]')
-        .contains('500');
+        .contains('525');
     });
 
     it('should change Page Number in Grid1 and expect the Pagination to have correct values', () => {
@@ -216,7 +216,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.get('@grid1')
         .find('[data-test=page-count]')
-        .contains('100');
+        .contains('99');
 
       cy.get('@grid1')
         .find('[data-test=item-from]')
@@ -228,7 +228,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.get('@grid1')
         .find('[data-test=total-items]')
-        .contains('500');
+        .contains('495');
     });
 
     it('should change Page Number and Page Size in Grid2 and expect the Pagination to have correct values', () => {
@@ -242,7 +242,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.get('@grid2')
         .find('[data-test=page-count]')
-        .contains('100');
+        .contains('105');
 
       cy.get('@grid2')
         .find('[data-test=item-from]')
@@ -254,7 +254,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.get('@grid2')
         .find('[data-test=total-items]')
-        .contains('500');
+        .contains('525');
 
       cy.get('@grid2')
         .find('#items-per-page-label').select('75');
@@ -277,7 +277,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.get('@grid1')
         .find('[data-test=page-count]')
-        .contains('100');
+        .contains('99');
 
       cy.get('@grid1')
         .find('[data-test=item-from]')
@@ -289,7 +289,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.get('@grid1')
         .find('[data-test=total-items]')
-        .contains('500');
+        .contains('495');
     });
   });
 });
