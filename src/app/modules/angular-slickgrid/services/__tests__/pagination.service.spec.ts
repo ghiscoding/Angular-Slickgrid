@@ -659,6 +659,9 @@ describe('PaginationService', () => {
 
   describe('with Local Grid', () => {
     beforeEach(() => {
+      mockGridOption.pagination.pageSize = 25;
+      mockGridOption.pagination.pageNumber = 1;
+      mockGridOption.pagination.totalItems = 85;
       mockGridOption.backendServiceApi = null;
     });
 
@@ -675,7 +678,23 @@ describe('PaginationService', () => {
       expect(onPagingSpy).toHaveBeenCalled();
       expect(setRefreshSpy).toHaveBeenCalled();
       expect(setPagingSpy).toHaveBeenCalledWith({ pageSize: 25, pageNum: 0 });
-      expect(service.getCurrentPageNumber()).toBe(2);
+      expect(service.getCurrentPageNumber()).toBe(1);
+    });
+
+    it('should initialize the service with a page number bigger than 1 (3) and the DataView calls to set pagingInfo to page 2 (3-1)', () => {
+      const refreshSpy = jest.spyOn(service, 'refreshPagination');
+      const onPagingSpy = jest.spyOn(dataviewStub.onPagingInfoChanged, 'subscribe');
+      const setRefreshSpy = jest.spyOn(dataviewStub, 'setRefreshHints');
+      const setPagingSpy = jest.spyOn(dataviewStub, 'setPagingOptions');
+      mockGridOption.pagination.pageNumber = 3;
+      service.init(gridStub, dataviewStub, mockGridOption.pagination);
+
+      expect(service.paginationOptions).toEqual(mockGridOption.pagination);
+      expect(refreshSpy).toHaveBeenCalled();
+      expect(onPagingSpy).toHaveBeenCalled();
+      expect(setRefreshSpy).toHaveBeenCalled();
+      expect(setPagingSpy).toHaveBeenCalledWith({ pageSize: 25, pageNum: 2 });
+      expect(service.getCurrentPageNumber()).toBe(3);
     });
 
     it('should change the totalItems when "onPagingInfoChanged" from the DataView is triggered with a different total', () => {

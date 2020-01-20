@@ -15,9 +15,9 @@ import {
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
+const DEFAULT_PAGE_SIZE = 25;
 const LOCAL_STORAGE_KEY = 'gridState';
 const NB_ITEMS = 500;
-const DEFAULT_PAGE_SIZE = 25;
 
 @Component({
   templateUrl: './grid-state.component.html'

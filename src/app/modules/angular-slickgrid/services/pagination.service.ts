@@ -83,10 +83,11 @@ export class PaginationService {
       this.dataView.onPagingInfoChanged.subscribe((e, pagingInfo) => {
         if (this._totalItems !== pagingInfo.totalRows) {
           this._totalItems = pagingInfo.totalRows;
+          this.refreshPagination(false, false);
         }
       });
       dataView.setRefreshHints({ isFilterUnchanged: true });
-      dataView.setPagingOptions({ pageSize: this.paginationOptions.pageSize, pageNum: 0 }); // dataView page starts at 0 instead of 1
+      dataView.setPagingOptions({ pageSize: this.paginationOptions.pageSize, pageNum: (this._pageNumber - 1) }); // dataView page starts at 0 instead of 1
     }
 
     // Subscribe to Filter Clear & Changed and go back to page 1 when that happen
