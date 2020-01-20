@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.16.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.15.4...v2.16.0) (2020-01-20)
+
+
+### Features
+
+* **backend:** add OData & GraphQL Service API interfaces ([43d3a00](https://github.com/ghiscoding/angular-slickgrid/commit/43d3a00deed0e0ab8ecda3fa10f5cb2a7cb47973))
+* **backend:** add OData & GraphQL Service API interfaces ([11cc71c](https://github.com/ghiscoding/angular-slickgrid/commit/11cc71cb23bc173494c7af1a87364e452cc9854e))
+* **backend:** add option to use local filtering/sorting strategy ([73c288b](https://github.com/ghiscoding/angular-slickgrid/commit/73c288b9faccdd93e17b7b67d1df984adcd51725))
+* **examples:** add new GraphQL without Pagination Example ([f02ac2d](https://github.com/ghiscoding/angular-slickgrid/commit/f02ac2d4c6519a6267aa398ccc745c1e02b21901))
+* **footer:** add custom footer to show metrics ([2054319](https://github.com/ghiscoding/angular-slickgrid/commit/205431935e33e81f82332dabd85f94a74a9a0fb6))
+* **pagination:** add Pagination to local grid ([53aa9dc](https://github.com/ghiscoding/angular-slickgrid/commit/53aa9dc0c3fd8209c8a667ad27c9ef2e0f88340f))
+* **rowDetail:** add few object instances that can be used in child comp ([9cc52c3](https://github.com/ghiscoding/angular-slickgrid/commit/9cc52c331dcfc7af413783518e739e44674c426c))
+* **rowDetail:** add Parent property to pass ref to parent comp ([dd8c1cd](https://github.com/ghiscoding/angular-slickgrid/commit/dd8c1cdb4bbd0a867dfca61adb2ddb2f3b674afe))
+* **tests:** add Cypress E2E for Local Pagination and fix new bugs found ([b7b1a73](https://github.com/ghiscoding/angular-slickgrid/commit/b7b1a7362a50e0994a585c9e57a6df50342fd774))
+
+
+### Bug Fixes
+
+* **backend:** cancel prior http calls to avoid inconsistent data shown ([f9aaf54](https://github.com/ghiscoding/angular-slickgrid/commit/f9aaf545d3f5f9444f606a9a706245fb6cc5f0af))
+* **build:** TS warning on a missing Type ([b894ee1](https://github.com/ghiscoding/angular-slickgrid/commit/b894ee1606363c891615cd87ef9a4182ea07c78b))
+* **cypress:** fix failing Cypress E2E test ([e78b2d9](https://github.com/ghiscoding/angular-slickgrid/commit/e78b2d96a499db4ecedc196c80ad3c3db0e44dab))
+* **examples:** use spinner only when loading data ([d0b4820](https://github.com/ghiscoding/angular-slickgrid/commit/d0b48201637870d33a3b12664a22bfc0903a1c39))
+* **examples:** use valid date format ([f66703a](https://github.com/ghiscoding/angular-slickgrid/commit/f66703adf4e9b4f9f0d46e648d829b761c1a9b6e))
+* **filter:** creating blank entry should only be entered once ([3b769a4](https://github.com/ghiscoding/angular-slickgrid/commit/3b769a4ee2005d4ea240050699e2323e78112a8e))
+* **filters:** remove filter DOM element IDs to avoid duplicate IDs ([4b83133](https://github.com/ghiscoding/angular-slickgrid/commit/4b83133ff717f1f839bf2912b5b14ff9ef38bec2))
+* **header:** column header grouping should be re-render after a resize ([beda628](https://github.com/ghiscoding/angular-slickgrid/commit/beda628ce4b1ef61c2565f514e1356480b3c29be))
+* **menu:** remove unused code in Context Menu to select cell ([a2ae4bb](https://github.com/ghiscoding/angular-slickgrid/commit/a2ae4bba4bde279d0174aeb6bb91699f686a6612))
+* **pagination:** reload local grid with pagination presests w/same data ([80eef1a](https://github.com/ghiscoding/angular-slickgrid/commit/80eef1aa2b66e1e310d821b09ec856e5ea22bad8))
+* **pagination:** should work with page number defined in presets ([95428ad](https://github.com/ghiscoding/angular-slickgrid/commit/95428ad7d94660fc3138b0e97955f9b1753608f0))
+* **resizer:** grid size fix for backend service with pagination disabled ([6c4bcca](https://github.com/ghiscoding/angular-slickgrid/commit/6c4bccaa4fdb877a4526c3feea42c7be469ba93e))
+* **styling:** add missing SASS variable import ([6de44e6](https://github.com/ghiscoding/angular-slickgrid/commit/6de44e610696a2489d38e53d58bf808d60caaa37))
+* **styling:** fix some styling issues found with menu dividers ([6f375c9](https://github.com/ghiscoding/angular-slickgrid/commit/6f375c9c9c71f73631685ab0bb8461f744c2e899))
+* **test:** fix failing Cypress E2E test after GraphQL changes ([dc50117](https://github.com/ghiscoding/angular-slickgrid/commit/dc50117505dfad9bfa7f62befe42966d4963cac2))
+* **test:** fix Jest failing unit test ([761fa4a](https://github.com/ghiscoding/angular-slickgrid/commit/761fa4ad91c44debd6ed3f3d2b2ed7d35bf906ae))
+
 ### [2.15.4](https://github.com/ghiscoding/angular-slickgrid/compare/v2.15.3...v2.15.4) (2020-01-10)
 
 
