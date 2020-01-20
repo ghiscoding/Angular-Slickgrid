@@ -359,7 +359,6 @@ export class AutoCompleteFilter implements Filter {
     }
 
     $filterElm.val(searchTermInput);
-    $filterElm.attr('id', `filter-${columnId}`);
     $filterElm.data('columnId', columnId);
 
     // if there's a search term, we will add the "filled" class for styling purposes

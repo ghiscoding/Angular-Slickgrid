@@ -430,7 +430,6 @@ export class SelectFilter implements Filter {
     if (typeof this.$filterElm.multipleSelect !== 'function') {
       throw new Error(`multiple-select.js was not found, make sure to modify your "angular-cli.json" file and include "../node_modules/angular-slickgrid/lib/multiple-select/multiple-select.js" and it's css or SASS file`);
     }
-    this.$filterElm.attr('id', this.elementName);
     this.$filterElm.attr('name', this.elementName);
     this.$filterElm.data('columnId', fieldId);
 

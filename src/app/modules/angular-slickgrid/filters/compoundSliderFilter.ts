@@ -97,7 +97,10 @@ export class CompoundSliderFilter implements Filter {
       this.$filterInputElm.on('input change', (e: { target: HTMLInputElement }) => {
         const value = e && e.target && e.target.value || '';
         if (value) {
-          document.getElementById(this._elementRangeOutputId).innerHTML = value;
+          const elements = document.getElementsByClassName(this._elementRangeOutputId);
+          if (elements.length) {
+            elements[0].innerHTML = value;
+          }
         }
       });
     }
@@ -167,10 +170,9 @@ export class CompoundSliderFilter implements Filter {
     const defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
     const step = this.filterProperties.hasOwnProperty('valueStep') ? this.filterProperties.valueStep : DEFAULT_STEP;
 
-    return `<input type="range" id="${this._elementRangeInputId}"
-              name="${this._elementRangeInputId}"
+    return `<input type="range" name="${this._elementRangeInputId}"
               defaultValue="${defaultValue}" min="${minValue}" max="${maxValue}" step="${step}"
-              class="form-control slider-filter-input range compound-slider" />`;
+              class="form-control slider-filter-input range compound-slider ${this._elementRangeInputId}" />`;
   }
 
   /** Build HTML Template for the text (number) that is shown appended to the slider */
@@ -178,7 +180,7 @@ export class CompoundSliderFilter implements Filter {
     const minValue = this.filterProperties.hasOwnProperty('minValue') ? this.filterProperties.minValue : DEFAULT_MIN_VALUE;
     const defaultValue = this.filterParams.hasOwnProperty('sliderStartValue') ? this.filterParams.sliderStartValue : minValue;
 
-    return `<div class="input-group-addon input-group-append slider-value"><span class="input-group-text" id="${this._elementRangeOutputId}">${defaultValue}</span></div>`;
+    return `<div class="input-group-addon input-group-append slider-value"><span class="input-group-text ${this._elementRangeOutputId}">${defaultValue}</span></div>`;
   }
 
   /** Build HTML Template select dropdown (operator) */
@@ -237,7 +239,7 @@ export class CompoundSliderFilter implements Filter {
           <select class="form-control"></select>
         </div>
         <input class="form-control" type="text" />
-        <div class="input-group-addon input-group-prepend" id="rangeOuput_percentComplete"><span class="input-group-text">0</span></div>
+        <div class="input-group-addon input-group-prepend rangeOuput_percentComplete"><span class="input-group-text">0</span></div>
       </div>
     */
     $operatorInputGroupAddon.append(this.$selectOperatorElm);
@@ -251,7 +253,6 @@ export class CompoundSliderFilter implements Filter {
 
     // create the DOM element & add an ID and filter class
     $filterContainerElm.append(this.$containerInputGroupElm);
-    $filterContainerElm.attr('id', `filter-${fieldId}`);
 
     this.$filterInputElm.val(searchTermInput);
     this.$filterInputElm.data('columnId', fieldId);
