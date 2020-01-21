@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.16.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.16.0...v2.16.1) (2020-01-21)
+
+
+### Bug Fixes
+
+* **build:** create & use separate excel-builder package to fix security ([c114ae0](https://github.com/ghiscoding/angular-slickgrid/commit/c114ae0df149ebef361701d25253a570ed43077f))
+* **footer:** fix Custom Footer styling issues with Bootstrap 4 ([658a9fd](https://github.com/ghiscoding/angular-slickgrid/commit/658a9fdd3aee12071396aa455901fd22f61c0352))
+* **pagination:** should be empty (0) when filtering an empty dataset ([7409832](https://github.com/ghiscoding/angular-slickgrid/commit/74098325661b012f90acb9c57cf4aac2fe47e04b))
+
 ## [2.16.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.15.4...v2.16.0) (2020-01-20)
 
 
