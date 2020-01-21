@@ -406,8 +406,15 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private bindDifferentHooks(grid: any, gridOptions: GridOption, dataView: any) {
     // on locale change, we have to manually translate the Headers, GridMenu
     if (this.translate && this.translate.onLangChange) {
+      // translate some of them on first load, then on each language change
+      if (gridOptions.enableTranslate) {
+        this.translateColumnHeaderTitleKeys();
+        this.translateColumnGroupKeys();
+        this.translateCustomFooterTexts();
+      }
+
       this.subscriptions.push(
-        this.translate.onLangChange.subscribe((event) => {
+        this.translate.onLangChange.subscribe(() => {
           if (gridOptions.enableTranslate) {
             this.extensionService.translateCellMenu();
             this.extensionService.translateColumnHeaders();
@@ -416,6 +423,8 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
             this.extensionService.translateGridMenu();
             this.extensionService.translateHeaderMenu();
             this.translateCustomFooterTexts();
+            this.translateColumnHeaderTitleKeys();
+            this.translateColumnGroupKeys();
           }
         })
       );
@@ -905,6 +914,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         }
       }
     }
+  }
+
+  private translateColumnHeaderTitleKeys() {
+    // translate all columns (including hidden columns)
+    // eventually deprecate the "headerKey" and use only the "nameKey"
+    this.extensionUtility.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+    this.extensionUtility.translateItems(this.sharedService.allColumns, 'nameKey', 'name');
+  }
+
+  private translateColumnGroupKeys() {
+    // translate all column groups (including hidden columns)
+    this.extensionUtility.translateItems(this.sharedService.allColumns, 'columnGroupKey', 'columnGroup');
   }
 
   /**

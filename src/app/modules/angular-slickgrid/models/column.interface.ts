@@ -27,6 +27,9 @@ export interface Column {
   /** Column group name for grouping of column headers spanning accross multiple columns */
   columnGroup?: string;
 
+  /** Column group name translation key that can be used by the Translate Service (i18n) for grouping of column headers spanning accross multiple columns */
+  columnGroupKey?: string;
+
   /** CSS class to add to the column cell */
   cssClass?: string;
 
@@ -146,6 +149,9 @@ export interface Column {
 
   /** Field Name to be displayed in the Grid (UI) */
   name?: string;
+
+  /** Field Name translation key that can be used by the translate Service (i18n) to display the text for each column header title */
+  nameKey?: string;
 
   /** an event that can be used for triggering an action after a cell change */
   onCellChange?: (e: KeyboardEvent | MouseEvent, args: OnEventArgs) => void;

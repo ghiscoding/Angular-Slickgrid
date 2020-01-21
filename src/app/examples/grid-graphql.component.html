@@ -33,11 +33,11 @@
         <span style="font-style: italic">{{selectedLanguage + '.json'}}</span>
       </div>
       <br />
-      <span *ngIf="metrics">
+      <div *ngIf="metrics" style="margin: 10px 0px">
         <b>Metrics:</b> {{metrics.endTime | date: 'yyyy-MM-dd hh:mm aaaaa\'m\''}} | {{metrics.executionTime}}ms
         | {{metrics.totalItemCount}} items
-      </span>
-      <div class="row col-md-12">
+      </div>
+      <div class="row col-md-12" style="margin-bottom: 5px">
         <label>Programmatically go to first/last page:</label>
         <button class="btn btn-default btn-xs" data-test="goto-first-page" (click)="goToFirstPage()">
           <i class="fa fa-caret-left fa-lg"></i>
@@ -56,6 +56,7 @@
     </div>
   </div>
 
+  <hr />
   <angular-slickgrid gridId="grid6" [gridHeight]="200" [gridWidth]="900" [columnDefinitions]="columnDefinitions"
     [gridOptions]="gridOptions" [dataset]="dataset" (onAngularGridCreated)="angularGridReady($event)"
     (onGridStateChanged)="gridStateChanged($event)" (onBeforeGridDestroy)="saveCurrentGridState($event)">

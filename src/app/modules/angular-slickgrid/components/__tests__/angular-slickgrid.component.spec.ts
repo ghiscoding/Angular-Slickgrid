@@ -75,7 +75,8 @@ const extensionServiceStub = {
 } as unknown as ExtensionService;
 
 const extensionUtilityStub = {
-  loadExtensionDynamically: jest.fn()
+  loadExtensionDynamically: jest.fn(),
+  translateItems: jest.fn(),
 } as unknown as ExtensionUtility;
 
 const groupingAndColspanServiceStub = {
