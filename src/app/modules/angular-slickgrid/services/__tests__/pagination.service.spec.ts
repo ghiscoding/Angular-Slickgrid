@@ -137,12 +137,12 @@ describe('PaginationService', () => {
   });
 
   describe('changeItemPerPage method', () => {
-    it('should be on page 1 when total items is 0', () => {
+    it('should be on page 0 when total items is 0', () => {
       mockGridOption.pagination.totalItems = 0;
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.changeItemPerPage(30);
 
-      expect(service.getCurrentPageNumber()).toBe(1);
+      expect(service.getCurrentPageNumber()).toBe(0);
       expect(service.getCurrentItemPerPageCount()).toBe(30);
     });
 
@@ -428,7 +428,7 @@ describe('PaginationService', () => {
   });
 
   describe('recalculateFromToIndexes method', () => {
-    it('should recalculate the From/To as 1 when total items is 0', () => {
+    it('should recalculate the From/To as 0 when total items is 0', () => {
       mockGridOption.pagination.pageSize = 25;
       mockGridOption.pagination.pageNumber = 2;
       mockGridOption.pagination.totalItems = 0;
@@ -436,8 +436,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.recalculateFromToIndexes();
 
-      expect(service.pager.from).toBe(1);
-      expect(service.pager.to).toBe(1);
+      expect(service.pager.from).toBe(0);
+      expect(service.pager.to).toBe(0);
     });
 
     it('should recalculate the From/To within range', () => {
@@ -652,6 +652,22 @@ describe('PaginationService', () => {
       setTimeout(() => {
         expect(service.pager.from).toBe(1);
         expect(service.pager.to).toBe(101);
+        done();
+      });
+    });
+
+    it('should call "processOnItemAddedOrRemoved" and expect the (To) to equal the total items when it is higher than the total pageSize count', (done) => {
+      mockGridOption.pagination.pageNumber = 4;
+      mockGridOption.pagination.totalItems = 99;
+      const mockItems = { name: 'John' };
+
+      service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
+      gridServiceStub.onItemAdded.next(mockItems);
+      service.changeItemPerPage(100);
+
+      setTimeout(() => {
+        expect(service.pager.from).toBe(1);
+        expect(service.pager.to).toBe(100);
         done();
       });
     });

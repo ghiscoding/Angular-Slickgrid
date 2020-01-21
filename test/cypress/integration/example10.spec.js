@@ -291,5 +291,29 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
         .find('[data-test=total-items]')
         .contains('495');
     });
+
+    it('should display page 0 of 0 with 0 items when applied filter returning an empty dataset', () => {
+      cy.get('#slickGridContainer-grid1').as('grid1');
+
+      cy.get('@grid1')
+        .find('.filter-title')
+        .type('Task 1111');
+
+      cy.get('@grid1')
+        .find('[data-test=page-count]')
+        .contains('0');
+
+      cy.get('@grid1')
+        .find('[data-test=item-from]')
+        .should('not.exist');
+
+      cy.get('@grid1')
+        .find('[data-test=item-to]')
+        .should('not.exist');
+
+      cy.get('@grid1')
+        .find('[data-test=total-items]')
+        .contains('0');
+    });
   });
 });
