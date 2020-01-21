@@ -69,9 +69,9 @@ describe('Example 4 - Client Side Sort/Filter Grid', () => {
         .children('.slick-cell:nth(2)')
         .should('contain', '98');
 
-      cy.get('.slick-viewport-top.slick-viewport-left')
-        .scrollTo('bottom')
-        .wait(50);
+      // cy.get('.slick-viewport-top.slick-viewport-left')
+      //   .scrollTo('bottom')
+      //   .wait(50);
 
       cy.get('.slick-row')
         .last()
