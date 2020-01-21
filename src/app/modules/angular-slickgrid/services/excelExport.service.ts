@@ -2,7 +2,7 @@ import { ExcelWorkbook } from './../models/excelWorkbook.interface';
 import { ExcelStylesheet } from './../models/excelStylesheet.interface';
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import * as ExcelBuilder from 'excel-builder-webpack';
+import * as ExcelBuilder from 'excel-builder-webpacker';
 import { Subject } from 'rxjs';
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
