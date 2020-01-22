@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.16.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.16.2...v2.16.3) (2020-01-22)
+
+
+### Bug Fixes
+
+* **build:** remove extensionUtility DI to fix build ([42cc4b4](https://github.com/ghiscoding/angular-slickgrid/commit/42cc4b44917bccdb189e571c369403047ac69f01))
+
 ### [2.16.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.16.1...v2.16.2) (2020-01-22)
 
 
