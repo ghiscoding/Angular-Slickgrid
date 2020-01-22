@@ -69,7 +69,7 @@
         "@ngx-translate/core": "ngx-translate-core",
         "@ngx-translate/core/index": "ngx-translate-core",
         "dompurify": "dompurify",
-        "excel-builder-webpack": "excelBuilderWebpack",
+        "excel-builder-webpacker": "excelBuilderWebpacker",
         "flatpickr": "flatpickr",
         "jquery": "jquery",
         "lodash.isequal": "lodash.isequal",
