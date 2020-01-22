@@ -33,7 +33,7 @@ export class GridLocalizationComponent implements OnInit {
     <li>You first need to "enableTranslate" in the Grid Options</li>
     <li>In the Column Definitions, you have following options</li>
     <ul>
-      <li>To translate a header title, use "headerKey" with a translate key (headerKey: 'TITLE')</li>
+      <li>To translate a header title, use "nameKey" with a translate key (nameKey: 'TITLE')</li>
       <li>For the cell values, you need to use a Formatter, there's 2 ways of doing it</li>
       <ul>
         <li>formatter: myCustomTranslateFormatter <b>&lt;= "Title" column uses it</b></li>
@@ -71,7 +71,7 @@ export class GridLocalizationComponent implements OnInit {
   ngOnInit(): void {
     this.columnDefinitions = [
       {
-        id: 'title', name: 'Title', field: 'id', headerKey: 'TITLE', minWidth: 100,
+        id: 'title', name: 'Title', field: 'id', nameKey: 'TITLE', minWidth: 100,
         formatter: taskTranslateFormatter,
         sortable: true,
         filterable: true,
@@ -79,7 +79,7 @@ export class GridLocalizationComponent implements OnInit {
       },
       { id: 'description', name: 'Description', field: 'description', filterable: true, sortable: true, minWidth: 80 },
       {
-        id: 'duration', name: 'Duration (days)', field: 'duration', headerKey: 'DURATION', sortable: true,
+        id: 'duration', name: 'Duration (days)', field: 'duration', nameKey: 'DURATION', sortable: true,
         formatter: Formatters.percentCompleteBar, minWidth: 100,
         exportWithFormatter: false,
         filterable: true,
@@ -87,13 +87,13 @@ export class GridLocalizationComponent implements OnInit {
         filter: { model: Filters.slider, /* operator: '>=',*/ params: { hideSliderNumber: true } }
       },
       {
-        id: 'start', name: 'Start', field: 'start', headerKey: 'START', minWidth: 100,
+        id: 'start', name: 'Start', field: 'start', nameKey: 'START', minWidth: 100,
         formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date, exportWithFormatter: true,
         filterable: true, filter: { model: Filters.compoundDate }
       },
-      { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date, minWidth: 100, filterable: true, filter: { model: Filters.compoundDate } },
+      { id: 'finish', name: 'Finish', field: 'finish', nameKey: 'FINISH', formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date, minWidth: 100, filterable: true, filter: { model: Filters.compoundDate } },
       {
-        id: 'completedBool', name: 'Completed', field: 'completedBool', headerKey: 'COMPLETED', minWidth: 100,
+        id: 'completedBool', name: 'Completed', field: 'completedBool', nameKey: 'COMPLETED', minWidth: 100,
         sortable: true,
         formatter: Formatters.checkmark,
         exportCustomFormatter: Formatters.translateBoolean,
@@ -108,7 +108,7 @@ export class GridLocalizationComponent implements OnInit {
         }
       },
       {
-        id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', formatter: Formatters.translate, sortable: true,
+        id: 'completed', name: 'Completed', field: 'completed', nameKey: 'COMPLETED', formatter: Formatters.translate, sortable: true,
         minWidth: 100,
         exportWithFormatter: true, // you can set this property in the column definition OR in the grid options, column def has priority over grid options
         filterable: true,
@@ -125,7 +125,7 @@ export class GridLocalizationComponent implements OnInit {
         }
       }
       // OR via your own custom translate formatter
-      // { id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED', formatter: translateFormatter, sortable: true, minWidth: 100 }
+      // { id: 'completed', name: 'Completed', field: 'completed', nameKey: 'COMPLETED', formatter: translateFormatter, sortable: true, minWidth: 100 }
     ];
     this.gridOptions = {
       autoResize: {
@@ -217,7 +217,7 @@ export class GridLocalizationComponent implements OnInit {
   }
 
   dynamicallyAddTitleHeader() {
-    const newCol = { id: `title${this.duplicateTitleHeaderCount++}`, field: 'id', headerKey: 'TITLE', formatter: taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true } };
+    const newCol = { id: `title${this.duplicateTitleHeaderCount++}`, field: 'id', nameKey: 'TITLE', formatter: taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true } };
     this.columnDefinitions.push(newCol);
     this.columnDefinitions = this.columnDefinitions.slice();
   }
@@ -238,7 +238,9 @@ export class GridLocalizationComponent implements OnInit {
   }
 
   switchLanguage() {
-    this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(this.selectedLanguage);
+    const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(nextLanguage).subscribe(() => {
+      this.selectedLanguage = nextLanguage;
+    });
   }
 }

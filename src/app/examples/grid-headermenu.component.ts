@@ -41,12 +41,12 @@ export class GridHeaderMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'title', headerKey: 'TITLE' },
-      { id: 'duration', name: 'Duration', field: 'duration', headerKey: 'DURATION', sortable: true },
-      { id: 'percentComplete', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', sortable: true },
-      { id: 'start', name: 'Start', field: 'start', headerKey: 'START' },
-      { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH' },
-      { id: 'completed', name: 'Completed', field: 'completed', headerKey: 'COMPLETED' }
+      { id: 'title', name: 'Title', field: 'title', nameKey: 'TITLE' },
+      { id: 'duration', name: 'Duration', field: 'duration', nameKey: 'DURATION', sortable: true },
+      { id: 'percentComplete', name: '% Complete', field: 'percentComplete', nameKey: 'PERCENT_COMPLETE', sortable: true },
+      { id: 'start', name: 'Start', field: 'start', nameKey: 'START' },
+      { id: 'finish', name: 'Finish', field: 'finish', nameKey: 'FINISH' },
+      { id: 'completed', name: 'Completed', field: 'completed', nameKey: 'COMPLETED' }
     ];
 
     this.columnDefinitions.forEach((columnDef) => {
@@ -142,7 +142,9 @@ export class GridHeaderMenuComponent implements OnInit {
   }
 
   switchLanguage() {
-    this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(this.selectedLanguage);
+    const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(nextLanguage).subscribe(() => {
+      this.selectedLanguage = nextLanguage;
+    });
   }
 }

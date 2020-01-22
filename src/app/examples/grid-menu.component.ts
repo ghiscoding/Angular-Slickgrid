@@ -39,18 +39,18 @@ export class GridMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.columnDefinitions = [
-      { id: 'title', name: 'Title', field: 'title', headerKey: 'TITLE', filterable: true, type: FieldType.string },
-      { id: 'duration', name: 'Duration', field: 'duration', headerKey: 'DURATION', sortable: true, filterable: true, type: FieldType.string },
+      { id: 'title', name: 'Title', field: 'title', nameKey: 'TITLE', filterable: true, type: FieldType.string },
+      { id: 'duration', name: 'Duration', field: 'duration', nameKey: 'DURATION', sortable: true, filterable: true, type: FieldType.string },
       {
-        id: 'percentComplete', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', sortable: true, filterable: true,
+        id: 'percentComplete', name: '% Complete', field: 'percentComplete', nameKey: 'PERCENT_COMPLETE', sortable: true, filterable: true,
         type: FieldType.number,
         formatter: Formatters.percentCompleteBar,
         filter: { model: Filters.compoundSlider, params: { hideSliderNumber: false } }
       },
-      { id: 'start', name: 'Start', field: 'start', headerKey: 'START', filterable: true, type: FieldType.string },
-      { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', filterable: true, type: FieldType.string },
+      { id: 'start', name: 'Start', field: 'start', nameKey: 'START', filterable: true, type: FieldType.string },
+      { id: 'finish', name: 'Finish', field: 'finish', nameKey: 'FINISH', filterable: true, type: FieldType.string },
       {
-        id: 'effort-driven', name: 'Completed', field: 'effortDriven', headerKey: 'COMPLETED', maxWidth: 80, formatter: Formatters.checkmark,
+        id: 'effort-driven', name: 'Completed', field: 'effortDriven', nameKey: 'COMPLETED', maxWidth: 80, formatter: Formatters.checkmark,
         type: FieldType.boolean,
         minWidth: 100,
         sortable: true,
@@ -196,8 +196,10 @@ export class GridMenuComponent implements OnInit {
   }
 
   switchLanguage() {
-    const nextLocale = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
+    const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(nextLanguage).subscribe(() => {
+      this.selectedLanguage = nextLanguage;
+    });
   }
 
   toggleGridMenu(e) {

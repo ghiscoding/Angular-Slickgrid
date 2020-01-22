@@ -126,7 +126,7 @@ export interface Column {
   /** CSS class that can be added to the column header */
   headerCssClass?: string;
 
-  /** Column header translation key that can be used by the Translate Service (i18n) */
+  /** @deprecated (please use "nameKey" instead) Column header translation key that can be used by the Translate Service (i18n) */
   headerKey?: string;
 
   /** ID of the column, each row have to be unique or SlickGrid will throw an error. */

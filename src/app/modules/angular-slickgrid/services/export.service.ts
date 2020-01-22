@@ -252,8 +252,8 @@ export class ExportService {
     // Populate the Column Header, pull the name defined
     columns.forEach((columnDef) => {
       let headerTitle = '';
-      if (columnDef.headerKey && this._gridOptions.enableTranslate && this.translate && this.translate.instant) {
-        headerTitle = this.translate.instant(columnDef.headerKey);
+      if ((columnDef.headerKey || columnDef.nameKey) && this._gridOptions.enableTranslate && this.translate && this.translate.instant) {
+        headerTitle = this.translate.instant((columnDef.headerKey || columnDef.nameKey));
       } else {
         headerTitle = columnDef.name || titleCase(columnDef.field);
       }

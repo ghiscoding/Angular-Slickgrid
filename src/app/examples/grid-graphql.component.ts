@@ -71,7 +71,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.columnDefinitions = [
       {
-        id: 'name', field: 'name', headerKey: 'NAME', width: 60, columnGroupKey: 'CUSTOMER_INFORMATION',
+        id: 'name', field: 'name', nameKey: 'NAME', width: 60, columnGroupKey: 'CUSTOMER_INFORMATION',
         type: FieldType.string,
         sortable: true,
         filterable: true,
@@ -80,14 +80,14 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         }
       },
       {
-        id: 'gender', field: 'gender', headerKey: 'GENDER', filterable: true, sortable: true, width: 60, columnGroupKey: 'CUSTOMER_INFORMATION',
+        id: 'gender', field: 'gender', nameKey: 'GENDER', filterable: true, sortable: true, width: 60, columnGroupKey: 'CUSTOMER_INFORMATION',
         filter: {
           model: Filters.singleSelect,
           collection: [{ value: '', label: '' }, { value: 'male', label: 'male', labelKey: 'MALE' }, { value: 'female', label: 'female', labelKey: 'FEMALE' }]
         }
       },
       {
-        id: 'company', field: 'company', headerKey: 'COMPANY', width: 60, columnGroupKey: 'CUSTOMER_INFORMATION',
+        id: 'company', field: 'company', nameKey: 'COMPANY', width: 60, columnGroupKey: 'CUSTOMER_INFORMATION',
         sortable: true, filterable: true,
         filter: {
           model: Filters.multipleSelect,
@@ -98,11 +98,11 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
         }
       },
       {
-        id: 'billingAddressStreet', field: 'billing.address.street', headerKey: 'BILLING.ADDRESS.STREET',
+        id: 'billingAddressStreet', field: 'billing.address.street', nameKey: 'BILLING.ADDRESS.STREET',
         width: 60, filterable: true, sortable: true, columnGroupKey: 'BILLING.INFORMATION',
       },
       {
-        id: 'billingAddressZip', field: 'billing.address.zip', headerKey: 'BILLING.ADDRESS.ZIP', width: 60,
+        id: 'billingAddressZip', field: 'billing.address.zip', nameKey: 'BILLING.ADDRESS.ZIP', width: 60,
         type: FieldType.number,
         columnGroupKey: 'BILLING.INFORMATION', // or use "columnGroup" without Translate
         filterable: true, sortable: true,
@@ -295,7 +295,9 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
   }
 
   switchLanguage() {
-    this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(this.selectedLanguage);
+    const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(nextLanguage).subscribe(() => {
+      this.selectedLanguage = nextLanguage;
+    });
   }
 }

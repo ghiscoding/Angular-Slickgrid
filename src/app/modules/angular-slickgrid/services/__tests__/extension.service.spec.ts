@@ -187,8 +187,8 @@ describe('ExtensionService', () => {
 
       it('should call "translateItems" method is "enableTranslate" is set to true in the grid options, then column name property should be translated', () => {
         const gridOptionsMock = { enableTranslate: true } as GridOption;
-        const columnBeforeTranslate = { id: 'field1', field: 'field1', name: 'Hello', headerKey: 'HELLO' };
-        const columnAfterTranslate = { id: 'field1', field: 'field1', name: 'Bonjour', headerKey: 'HELLO' };
+        const columnBeforeTranslate = { id: 'field1', field: 'field1', name: 'Hello', nameKey: 'HELLO' };
+        const columnAfterTranslate = { id: 'field1', field: 'field1', name: 'Bonjour', nameKey: 'HELLO' };
         const columnsMock = [columnBeforeTranslate] as Column[];
         const columnSpy = jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(columnsMock);
         const gridSpy = jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
@@ -546,8 +546,8 @@ describe('ExtensionService', () => {
 
     describe('translateColumnHeaders method', () => {
       it('should translate items with default locale when no arguments is passed to the method', () => {
-        const columnsBeforeTranslateMock = [{ id: 'field1', field: 'field1', name: 'Hello', headerKey: 'HELLO' }] as Column[];
-        const columnsAfterTranslateMock = [{ id: 'field1', field: 'field1', name: 'Bonjour', headerKey: 'HELLO' }] as Column[];
+        const columnsBeforeTranslateMock = [{ id: 'field1', field: 'field1', name: 'Hello', nameKey: 'HELLO' }] as Column[];
+        const columnsAfterTranslateMock = [{ id: 'field1', field: 'field1', name: 'Bonjour', nameKey: 'HELLO' }] as Column[];
         jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get').mockReturnValue(columnsBeforeTranslateMock);
         const columnSpy = jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(columnsBeforeTranslateMock);
         const renderSpy = jest.spyOn(service, 'renderColumnHeaders');
@@ -560,8 +560,8 @@ describe('ExtensionService', () => {
       });
 
       it('should translate items with locale provided as argument to the method', () => {
-        const columnsBeforeTranslateMock = [{ id: 'field1', field: 'field1', headerKey: 'HELLO' }] as Column[];
-        const columnsAfterTranslateMock = [{ id: 'field1', field: 'field1', name: 'Hello', headerKey: 'HELLO' }] as Column[];
+        const columnsBeforeTranslateMock = [{ id: 'field1', field: 'field1', nameKey: 'HELLO' }] as Column[];
+        const columnsAfterTranslateMock = [{ id: 'field1', field: 'field1', name: 'Hello', nameKey: 'HELLO' }] as Column[];
         jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get').mockReturnValue(columnsBeforeTranslateMock);
         const columnSpy = jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(columnsBeforeTranslateMock);
         const renderSpy = jest.spyOn(service, 'renderColumnHeaders');
@@ -574,8 +574,8 @@ describe('ExtensionService', () => {
       });
 
       it('should translate items with locale & column definitions provided as arguments to the method', () => {
-        const columnsBeforeTranslateMock = [{ id: 'field1', field: 'field1', headerKey: 'HELLO' }] as Column[];
-        const columnsAfterTranslateMock = [{ id: 'field1', field: 'field1', name: 'Hello', headerKey: 'HELLO' }] as Column[];
+        const columnsBeforeTranslateMock = [{ id: 'field1', field: 'field1', nameKey: 'HELLO' }] as Column[];
+        const columnsAfterTranslateMock = [{ id: 'field1', field: 'field1', name: 'Hello', nameKey: 'HELLO' }] as Column[];
         const colDefSpy = jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get');
         const columnSpy = jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(columnsBeforeTranslateMock);
         const renderSpy = jest.spyOn(service, 'renderColumnHeaders');
@@ -591,12 +591,12 @@ describe('ExtensionService', () => {
 
     describe('renderColumnHeaders method', () => {
       beforeEach(() => {
-        const columnsMock = [{ id: 'field1', field: 'field1', headerKey: 'HELLO' }] as Column[];
+        const columnsMock = [{ id: 'field1', field: 'field1', nameKey: 'HELLO' }] as Column[];
         jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(columnsMock);
       });
 
       it('should call "setColumns" on the Shared Service with the Shared "columnDefinitions" when no arguments is provided', () => {
-        const columnsMock = [{ id: 'field1', field: 'field1', headerKey: 'HELLO' }] as Column[];
+        const columnsMock = [{ id: 'field1', field: 'field1', nameKey: 'HELLO' }] as Column[];
         jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
         const colSpy = jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get').mockReturnValue(columnsMock);
         const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
@@ -609,8 +609,8 @@ describe('ExtensionService', () => {
 
       it('should override "allColumns" on the Shared Service and call "setColumns" with the collection provided as argument', () => {
         const columnsMock = [
-          { id: 'field1', field: 'field1', headerKey: 'HELLO' },
-          { id: 'field2', field: 'field2', headerKey: 'WORLD' }
+          { id: 'field1', field: 'field1', nameKey: 'HELLO' },
+          { id: 'field2', field: 'field2', nameKey: 'WORLD' }
         ] as Column[];
         jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
         const allColsSpy = jest.spyOn(SharedService.prototype, 'allColumns', 'set');
@@ -625,7 +625,7 @@ describe('ExtensionService', () => {
       it(`should call "setColumns" with the collection provided as argument but NOT override "allColumns" on the Shared Service
     when collection provided is smaller than "allColumns" that already exists`, () => {
         const columnsMock = [
-          { id: 'field1', field: 'field1', headerKey: 'HELLO' }
+          { id: 'field1', field: 'field1', nameKey: 'HELLO' }
         ] as Column[];
         jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
         const spyAllCols = jest.spyOn(SharedService.prototype, 'allColumns', 'set');
@@ -643,8 +643,8 @@ describe('ExtensionService', () => {
         const expectedExtension = { name: ExtensionName.columnPicker, addon: instanceMock, instance: instanceMock, class: null } as ExtensionModel;
         const gridOptionsMock = { enableColumnPicker: true } as GridOption;
         const columnsMock = [
-          { id: 'field1', field: 'field1', headerKey: 'HELLO' },
-          { id: 'field2', field: 'field2', headerKey: 'WORLD' }
+          { id: 'field1', field: 'field1', nameKey: 'HELLO' },
+          { id: 'field2', field: 'field2', nameKey: 'WORLD' }
         ] as Column[];
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
         jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
@@ -668,8 +668,8 @@ describe('ExtensionService', () => {
         const expectedExtension = { name: ExtensionName.gridMenu, addon: instanceMock, instance: instanceMock, class: null } as ExtensionModel;
         const gridOptionsMock = { enableGridMenu: true } as GridOption;
         const columnsMock = [
-          { id: 'field1', field: 'field1', headerKey: 'HELLO' },
-          { id: 'field2', field: 'field2', headerKey: 'WORLD' }
+          { id: 'field1', field: 'field1', nameKey: 'HELLO' },
+          { id: 'field2', field: 'field2', nameKey: 'WORLD' }
         ] as Column[];
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
         jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
@@ -728,7 +728,7 @@ describe('ExtensionService', () => {
     it('should throw an error if "enableTranslate" is set but the Translate Service is null and "translateItems" private method is called', (done) => {
       try {
         const gridOptionsMock = { enableTranslate: true } as GridOption;
-        const columnBeforeTranslate = { id: 'field1', field: 'field1', name: 'Hello', headerKey: 'HELLO' };
+        const columnBeforeTranslate = { id: 'field1', field: 'field1', name: 'Hello', nameKey: 'HELLO' };
         const columnsMock = [columnBeforeTranslate] as Column[];
         jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(columnsMock);
         jest.spyOn(SharedService.prototype, 'gridOptions', 'get').mockReturnValue(gridOptionsMock);
