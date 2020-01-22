@@ -137,7 +137,6 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
       enableFiltering: true,
       enableCellNavigation: true,
       enablePagination: false,
-      enableTranslate: true,
       createPreHeaderPanel: true,
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 28,

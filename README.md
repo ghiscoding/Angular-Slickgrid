@@ -55,9 +55,6 @@ Technically speaking, `Material` theme is not provided, but it should still work
 The styling might need some adjustments to make it look like `Material` but there's over 300+ [SASS variables](https://github.com/ghiscoding/Angular-Slickgrid/blob/master/dist/styles/sass/_variables.scss), 
 so I'm sure making a Material Theme is totally doable and if you do, please contribute it as a new theme to the project. Thank you. 
 
-### Who is using Angular-Slickgrid?
-Are you using Angular-Slickgrid? Add your company/site/project to the [Used by Who](https://github.com/ghiscoding/Angular-Slickgrid/wiki/Used-by-Who%3F) list.
-
 ### You want to help and contribute?
 You like the library and would like contribute? That would be awesome, the first thing you can do is head over to the [Version 2.x - Project](https://github.com/ghiscoding/Angular-Slickgrid/projects/1), there are some tasks that I would gladly like receiving help with. One of the biggest task is to increase Jest unit tests code coverage and/or more Cypress E2E tests.
 
