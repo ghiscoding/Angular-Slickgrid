@@ -47,7 +47,7 @@
       "STREET": "Billing Address Street",
       "ZIP": "Billing Address Zip"
     },
-    "INFORMATION": "Billing Info"
+    "INFORMATION": "Billing Information"
   },
   "CUSTOM_COMMANDS": "Custom Commands",
   "DURATION": "Duration",

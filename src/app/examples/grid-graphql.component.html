@@ -25,12 +25,14 @@
         </button>
       </div>
       <div class="row col-md-12">
-        <button class="btn btn-default btn-sm" (click)="switchLanguage()">
+        <button class="btn btn-default btn-sm" (click)="switchLanguage()" data-test="language-button">
           <i class="fa fa-language"></i>
           Switch Language
         </button>
         <b>Locale:</b>
-        <span style="font-style: italic">{{selectedLanguage + '.json'}}</span>
+        <span style="font-style: italic" data-test="selected-locale">
+          {{selectedLanguage + '.json'}}
+        </span>
       </div>
       <br />
       <div *ngIf="metrics" style="margin: 10px 0px">

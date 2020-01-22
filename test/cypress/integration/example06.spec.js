@@ -160,7 +160,7 @@ describe('Example 6 - GraphQL Grid', () => {
 
   it('should clear a single filter, that is not empty, by the header menu and expect query change', () => {
     cy.get('#grid6')
-      .find('.slick-header-column:nth(0)')
+      .find('.slick-header-left .slick-header-column:nth(0)')
       .trigger('mouseover')
       .children('.slick-header-menubutton')
       .should('be.hidden')
@@ -191,7 +191,7 @@ describe('Example 6 - GraphQL Grid', () => {
 
   it('should try clearing same filter, which is now empty, by the header menu and expect same query without loading spinner', () => {
     cy.get('#grid6')
-      .find('.slick-header-column:nth(0)')
+      .find('.slick-header-left .slick-header-column:nth(0)')
       .trigger('mouseover')
       .children('.slick-header-menubutton')
       .invoke('show')
@@ -221,7 +221,7 @@ describe('Example 6 - GraphQL Grid', () => {
 
   it('should clear the date range filter expect the query to have the 2 "finish" (GE, LE) filters removed', () => {
     cy.get('#grid6')
-      .find('.slick-header-column:nth(5)')
+      .find('.slick-header-left .slick-header-column:nth(5)')
       .trigger('mouseover')
       .children('.slick-header-menubutton')
       .should('be.hidden')
@@ -263,11 +263,11 @@ describe('Example 6 - GraphQL Grid', () => {
 
   it('should click on "Name" column to sort it Ascending', () => {
     cy.get('.slick-header-columns')
-      .children('.slick-header-column:nth(0)')
+      .children('.slick-header-left .slick-header-column:nth(0)')
       .click();
 
     cy.get('.slick-header-columns')
-      .children('.slick-header-column:nth(0)')
+      .children('.slick-header-left .slick-header-column:nth(0)')
       .find('.slick-sort-indicator.slick-sort-indicator-asc')
       .should('be.visible');
 
@@ -344,14 +344,14 @@ describe('Example 6 - GraphQL Grid', () => {
 
     it('should expect the grid to be sorted by "Zip" descending then by "Company" ascending', () => {
       cy.get('#grid6')
-        .get('.slick-header-column:nth(2)')
+        .get('.slick-header-left .slick-header-column:nth(2)')
         .find('.slick-sort-indicator-asc')
         .should('have.length', 1)
         .siblings('.slick-sort-indicator-numbered')
         .contains('2');
 
       cy.get('#grid6')
-        .get('.slick-header-column:nth(3)')
+        .get('.slick-header-left .slick-header-column:nth(3)')
         .find('.slick-sort-indicator-desc')
         .should('have.length', 1)
         .siblings('.slick-sort-indicator-numbered')
@@ -364,6 +364,57 @@ describe('Example 6 - GraphQL Grid', () => {
             orderBy:[{field:"billing.address.zip",direction:DESC},{field:"company",direction:ASC}],locale:"en",userId:123){
             totalCount,nodes{id,name,gender,company,billing{address{zip,street}},finish}}}`));
         });
+    });
+  });
+
+  describe('Translate by Language', () => {
+    it('should Clear all Filters & Sorts', () => {
+      cy.contains('Clear all Filter & Sorts').click();
+
+      // wait for the query to finish
+      cy.get('[data-test=status]').should('contain', 'done');
+    });
+
+    it('should have English Column Titles in the grid after switching locale', () => {
+      const expectedColumnTitles = ['Name', 'Gender', 'Company', 'Billing Address Zip', 'Billing Address Street', 'Date'];
+
+      cy.get('#grid6')
+        .find('.slick-header-left .slick-header-columns')
+        .children()
+        .each(($child, index) => expect($child.text()).to.eq(expectedColumnTitles[index]));
+    });
+
+    it('should have English Column Grouping Titles in the grid after switching locale', () => {
+      const expectedGroupTitles = ['Customer Information', 'Billing Information'];
+      cy.get('#grid6')
+        .find('.slick-preheader-panel .slick-header-columns')
+        .children()
+        .each(($child, index) => expect($child.text()).to.eq(expectedGroupTitles[index]));
+    });
+
+    it('should switch locale to French', () => {
+      cy.get('[data-test=language-button]')
+        .click();
+
+      cy.get('[data-test=selected-locale]')
+        .should('contain', 'fr.json');
+    });
+
+    it('should have French Column Titles in the grid after switching locale', () => {
+      const expectedColumnTitles = ['Nom', 'Sexe', 'Compagnie', 'Code zip de facturation', 'Adresse de facturation', 'Date'];
+
+      cy.get('#grid6')
+        .find('.slick-header-left .slick-header-columns')
+        .children()
+        .each(($child, index) => expect($child.text()).to.eq(expectedColumnTitles[index]));
+    });
+
+    it('should have French Column Grouping Titles in the grid after switching locale', () => {
+      const expectedGroupTitles = ['Information Client', 'Information de Facturation'];
+      cy.get('#grid6')
+        .find('.slick-preheader-panel .slick-header-columns')
+        .children()
+        .each(($child, index) => expect($child.text()).to.eq(expectedGroupTitles[index]));
     });
   });
 });
