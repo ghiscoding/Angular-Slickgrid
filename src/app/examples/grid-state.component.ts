@@ -83,7 +83,7 @@ export class GridStateComponent implements OnInit {
         id: 'title',
         name: 'Title',
         field: 'title',
-        headerKey: 'TITLE',
+        nameKey: 'TITLE',
         filterable: true,
         sortable: true,
         type: FieldType.string,
@@ -102,7 +102,7 @@ export class GridStateComponent implements OnInit {
       {
         id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true, type: FieldType.number, exportCsvForceToKeepAsString: true,
         minWidth: 55, width: 100,
-        headerKey: 'DURATION',
+        nameKey: 'DURATION',
         filterable: true,
         filter: {
           collection: multiSelectFilterArray,
@@ -115,15 +115,15 @@ export class GridStateComponent implements OnInit {
         }
       },
       {
-        id: 'complete', name: '% Complete', field: 'percentComplete', headerKey: 'PERCENT_COMPLETE', minWidth: 70, type: FieldType.number, sortable: true, width: 100,
+        id: 'complete', name: '% Complete', field: 'percentComplete', nameKey: 'PERCENT_COMPLETE', minWidth: 70, type: FieldType.number, sortable: true, width: 100,
         formatter: Formatters.percentCompleteBar, filterable: true, filter: { model: Filters.slider, operator: '>' }
       },
       {
-        id: 'start', name: 'Start', field: 'start', headerKey: 'START', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true, width: 100,
+        id: 'start', name: 'Start', field: 'start', nameKey: 'START', formatter: Formatters.dateIso, sortable: true, minWidth: 75, exportWithFormatter: true, width: 100,
         type: FieldType.date, filterable: true, filter: { model: Filters.compoundDate }
       },
       {
-        id: 'completed', field: 'completed', headerKey: 'COMPLETED', minWidth: 85, maxWidth: 85, formatter: Formatters.checkmark, width: 100,
+        id: 'completed', field: 'completed', nameKey: 'COMPLETED', minWidth: 85, maxWidth: 85, formatter: Formatters.checkmark, width: 100,
         type: FieldType.boolean,
         sortable: true,
         filterable: true,
@@ -212,8 +212,10 @@ export class GridStateComponent implements OnInit {
   }
 
   switchLanguage() {
-    const nextLocale = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(nextLocale).subscribe(() => this.selectedLanguage = nextLocale);
+    const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(nextLanguage).subscribe(() => {
+      this.selectedLanguage = nextLanguage;
+    });
   }
 
   useDefaultPresets() {

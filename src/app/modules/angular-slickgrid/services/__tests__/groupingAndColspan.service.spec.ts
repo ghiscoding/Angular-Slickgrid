@@ -1,8 +1,12 @@
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 
 import { GroupingAndColspanService } from '../groupingAndColspan.service';
 import { GridOption, SlickEventHandler, Column } from '../../models';
 import { ResizerService, GridDimension } from '../resizer.service';
+import { ExtensionUtility } from '../../extensions/extensionUtility';
+import { SharedService } from '../shared.service';
 
 declare var Slick: any;
 const gridId = 'grid1';
@@ -21,6 +25,10 @@ const dataViewStub = {
   reSort: jest.fn(),
 };
 
+const extensionUtilityStub = {
+  translateItems: jest.fn(),
+};
+
 const gridStub = {
   autosizeColumns: jest.fn(),
   getColumnIndex: jest.fn(),
@@ -36,6 +44,7 @@ const gridStub = {
   onColumnsResized: new Slick.Event(),
   onSort: new Slick.Event(),
   render: jest.fn(),
+  setColumns: jest.fn(),
   setSortColumns: jest.fn(),
 };
 
@@ -65,6 +74,7 @@ const template =
 
 describe('GroupingAndColspanService', () => {
   let service: GroupingAndColspanService;
+  let translate: TranslateService;
   let slickgridEventHandler: SlickEventHandler;
 
   beforeEach(() => {
@@ -72,8 +82,36 @@ describe('GroupingAndColspanService', () => {
     div.innerHTML = template;
     document.body.appendChild(div);
 
-    service = new GroupingAndColspanService(resizerServiceStub);
+    // service = new GroupingAndColspanService(resizerServiceStub);
+
+    TestBed.configureTestingModule({
+      providers: [
+        GroupingAndColspanService,
+        SharedService,
+        { provide: ExtensionUtility, useValue: extensionUtilityStub },
+        { provide: ResizerService, useValue: resizerServiceStub },
+      ],
+      imports: [TranslateModule.forRoot()]
+    });
+    service = TestBed.get(GroupingAndColspanService);
+    translate = TestBed.get(TranslateService);
     slickgridEventHandler = service.eventHandler;
+
+    translate.setTranslation('en', {
+      ALL_SELECTED: 'All Selected',
+      FEMALE: 'Female',
+      MALE: 'Male',
+      OK: 'OK',
+      OTHER: 'Other',
+    });
+    translate.setTranslation('fr', {
+      ALL_SELECTED: 'Tout sélectionnés',
+      FEMALE: 'Femme',
+      MALE: 'Mâle',
+      OK: 'Terminé',
+      OTHER: 'Autre',
+    });
+    translate.setDefaultLang('en');
   });
 
   afterEach(() => {
@@ -172,6 +210,22 @@ describe('GroupingAndColspanService', () => {
       expect(spy).toHaveBeenCalledTimes(2);
       expect(setTimeout).toHaveBeenCalledTimes(1);
       // expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 75);
+    });
+
+    it('should call the "renderPreHeaderRowGroupingTitles" after triggering a translate language change', () => {
+      gridOptionMock.enableTranslate = true;
+      const renderSpy = jest.spyOn(service, 'renderPreHeaderRowGroupingTitles');
+      const translateSpy = jest.spyOn(extensionUtilityStub, 'translateItems');
+      const getColSpy = jest.spyOn(gridStub, 'getColumns');
+      const setColSpy = jest.spyOn(gridStub, 'setColumns');
+
+      service.init(gridStub, dataViewStub);
+      translate.use('fr');
+
+      expect(getColSpy).toHaveBeenCalled();
+      expect(setColSpy).toHaveBeenCalled();
+      expect(translateSpy).toHaveBeenCalled();
+      expect(renderSpy).toHaveBeenCalled();
     });
 
     it('should render the pre-header row grouping title DOM element', () => {

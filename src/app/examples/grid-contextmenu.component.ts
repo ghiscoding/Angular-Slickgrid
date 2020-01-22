@@ -120,27 +120,27 @@ export class GridContextMenuComponent implements OnInit {
     this.columnDefinitions = [
       { id: 'id', name: '#', field: 'id', maxWidth: 45, sortable: true, filterable: true },
       {
-        id: 'title', name: 'Title', field: 'id', headerKey: 'TITLE', minWidth: 100,
+        id: 'title', name: 'Title', field: 'id', nameKey: 'TITLE', minWidth: 100,
         formatter: taskTranslateFormatter,
         sortable: true,
         filterable: true,
         params: { useFormatterOuputToFilter: true }
       },
       {
-        id: 'percentComplete', headerKey: 'PERCENT_COMPLETE', field: 'percentComplete', minWidth: 100,
+        id: 'percentComplete', nameKey: 'PERCENT_COMPLETE', field: 'percentComplete', minWidth: 100,
         exportWithFormatter: false,
         sortable: true, filterable: true,
         filter: { model: Filters.slider, operator: '>=' },
         formatter: Formatters.percentCompleteBar, type: FieldType.number,
       },
       {
-        id: 'start', name: 'Start', field: 'start', headerKey: 'START', minWidth: 100,
+        id: 'start', name: 'Start', field: 'start', nameKey: 'START', minWidth: 100,
         formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date,
         filterable: true, filter: { model: Filters.compoundDate }
       },
-      { id: 'finish', name: 'Finish', field: 'finish', headerKey: 'FINISH', formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date, minWidth: 100, filterable: true, filter: { model: Filters.compoundDate } },
+      { id: 'finish', name: 'Finish', field: 'finish', nameKey: 'FINISH', formatter: Formatters.dateIso, outputType: FieldType.dateIso, type: FieldType.date, minWidth: 100, filterable: true, filter: { model: Filters.compoundDate } },
       {
-        id: 'priority', headerKey: 'PRIORITY', field: 'priority',
+        id: 'priority', nameKey: 'PRIORITY', field: 'priority',
         exportCustomFormatter: priorityExportFormatter,
         formatter: priorityFormatter,
         sortable: true, filterable: true,
@@ -154,7 +154,7 @@ export class GridContextMenuComponent implements OnInit {
         }
       },
       {
-        id: 'completed', headerKey: 'COMPLETED', field: 'completed',
+        id: 'completed', nameKey: 'COMPLETED', field: 'completed',
         exportCustomFormatter: Formatters.translateBoolean,
         formatter: Formatters.checkmark,
         sortable: true, filterable: true,
@@ -448,7 +448,9 @@ export class GridContextMenuComponent implements OnInit {
   }
 
   switchLanguage() {
-    this.selectedLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
-    this.translate.use(this.selectedLanguage);
+    const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    this.translate.use(nextLanguage).subscribe(() => {
+      this.selectedLanguage = nextLanguage;
+    });
   }
 }

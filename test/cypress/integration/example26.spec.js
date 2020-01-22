@@ -364,8 +364,6 @@ describe('Example 26 - Cell Menu & Context Menu Plugins', () => {
       cy.get('[data-test=language-button]')
         .click();
 
-      cy.wait(10);
-
       cy.get('[data-test=selected-locale]')
         .should('contain', 'fr.json');
     });

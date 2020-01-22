@@ -53,7 +53,7 @@ Slick.Plugins = {
 };
 
 describe('headerMenuExtension', () => {
-  const columnsMock: Column[] = [{ id: 'field1', field: 'field1', width: 100, headerKey: 'TITLE' }, { id: 'field2', field: 'field2', width: 75 }];
+  const columnsMock: Column[] = [{ id: 'field1', field: 'field1', width: 100, nameKey: 'TITLE' }, { id: 'field2', field: 'field2', width: 75 }];
   let extensionUtility: ExtensionUtility;
   let translate: TranslateService;
   let extension: HeaderMenuExtension;
@@ -217,7 +217,7 @@ describe('headerMenuExtension', () => {
     });
 
     describe('addHeaderMenuCustomCommands method', () => {
-      const mockColumn = { id: 'field1', field: 'field1', width: 100, headerKey: 'TITLE', sortable: true, filterable: true } as any;
+      const mockColumn = { id: 'field1', field: 'field1', width: 100, nameKey: 'TITLE', sortable: true, filterable: true } as any;
 
       beforeEach(() => {
         jest.spyOn(SharedService.prototype, 'columnDefinitions', 'get').mockReturnValue([mockColumn]);
@@ -296,7 +296,7 @@ describe('headerMenuExtension', () => {
         const setColumnsSpy = jest.spyOn(gridStub, 'setColumns');
         const visibleSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'set');
         const updatedColumnsMock = [{
-          id: 'field1', field: 'field1', headerKey: 'TITLE', width: 100,
+          id: 'field1', field: 'field1', nameKey: 'TITLE', width: 100,
           header: { menu: { items: [{ command: 'hide', iconCssClass: 'fa fa-times', positionOrder: 55, title: 'Cacher la colonne' }] } }
         }] as Column[];
 

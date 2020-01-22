@@ -78,7 +78,9 @@ export class ColumnPickerExtension implements Extension {
       }
 
       // translate all columns (including hidden columns)
+      // eventually deprecate the "headerKey" and use only the "nameKey"
       this.extensionUtility.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+      this.extensionUtility.translateItems(this.sharedService.allColumns, 'nameKey', 'name');
 
       // update the Titles of each sections (command, customTitle, ...)
       if (this._addon && this._addon.updateAllTitles) {

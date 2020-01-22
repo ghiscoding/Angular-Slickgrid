@@ -174,7 +174,9 @@ export class GridMenuExtension implements Extension {
       this.sharedService.gridOptions.gridMenu.syncResizeTitle = this.extensionUtility.getPickerTitleOutputString('syncResizeTitle', 'gridMenu');
 
       // translate all columns (including non-visible)
+      // eventually deprecate the "headerKey" and use only the "nameKey"
       this.extensionUtility.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+      this.extensionUtility.translateItems(this.sharedService.allColumns, 'nameKey', 'name');
 
       // update the Titles of each sections (command, customTitle, ...)
       if (this._addon && this._addon.updateAllTitles) {

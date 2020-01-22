@@ -1,10 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
-import {
-  Column,
-  GridOption,
-  SlickEventHandler,
-} from './../models/index';
+import { Column, GridOption, SlickEventHandler } from './../models/index';
+import { ExtensionUtility } from '../extensions';
 import { ResizerService } from './resizer.service';
 
 // using external non-typed js libraries
@@ -18,7 +16,7 @@ export class GroupingAndColspanService {
   private _eventHandler: SlickEventHandler;
   private _grid: any;
 
-  constructor(private resizerService: ResizerService) {
+  constructor(private extensionUtility: ExtensionUtility, private resizerService: ResizerService, @Optional() private translate: TranslateService) {
     this._eventHandler = new Slick.EventHandler();
   }
 
@@ -49,6 +47,16 @@ export class GroupingAndColspanService {
         this._eventHandler.subscribe(grid.onColumnsResized, () => this.renderPreHeaderRowGroupingTitles());
         this._eventHandler.subscribe(dataView.onRowCountChanged, () => this.renderPreHeaderRowGroupingTitles());
         this.resizerService.onGridAfterResize.subscribe(() => this.renderPreHeaderRowGroupingTitles());
+
+        // if we use Translation, we need to re-translate the keys after a language change
+        if (this._gridOptions.enableTranslate) {
+          this.translate.onLangChange.subscribe(() => {
+            const currentColumnDefinitions = this._grid.getColumns();
+            this.extensionUtility.translateItems(currentColumnDefinitions, 'columnGroupKey', 'columnGroup');
+            this._grid.setColumns(currentColumnDefinitions);
+            this.renderPreHeaderRowGroupingTitles();
+          });
+        }
 
         // also not sure why at this point, but it seems that I need to call the 1st create in a delayed execution
         // probably some kind of timing issues and delaying it until the grid is fully ready does help

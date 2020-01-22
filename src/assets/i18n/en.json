@@ -46,7 +46,8 @@
     "ADDRESS": {
       "STREET": "Billing Address Street",
       "ZIP": "Billing Address Zip"
-    }
+    },
+    "INFORMATION": "Billing Information"
   },
   "CUSTOM_COMMANDS": "Custom Commands",
   "DURATION": "Duration",
@@ -54,6 +55,7 @@
   "COMPLETED": "Completed",
   "CHANGE_COMPLETED_FLAG": "Change Completed Flag",
   "CHANGE_PRIORITY": "Change Priority",
+  "CUSTOMER_INFORMATION": "Customer Information",
   "DELETE_ROW": "Delete Row",
   "DISABLED_COMMAND": "Disabled Command",
   "FALSE": "False",

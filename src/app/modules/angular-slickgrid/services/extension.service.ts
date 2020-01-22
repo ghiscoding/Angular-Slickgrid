@@ -117,7 +117,9 @@ export class ExtensionService {
       // make sure all columns are translated before creating ColumnPicker/GridMenu Controls
       // this is to avoid having hidden columns not being translated on first load
       if (this.sharedService.gridOptions.enableTranslate) {
+        // eventually deprecate the "headerKey" and use only the "nameKey"
         this.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+        this.translateItems(this.sharedService.allColumns, 'nameKey', 'name');
       }
 
       // Auto Tooltip Plugin
@@ -370,8 +372,11 @@ export class ExtensionService {
       columnDefinitions = this.sharedService.columnDefinitions;
     }
 
+    // eventually deprecate the "headerKey" and use only the "nameKey"
     this.translateItems(columnDefinitions, 'headerKey', 'name');
     this.translateItems(this.sharedService.allColumns, 'headerKey', 'name');
+    this.translateItems(columnDefinitions, 'nameKey', 'name');
+    this.translateItems(this.sharedService.allColumns, 'nameKey', 'name');
 
     // re-render the column headers
     this.renderColumnHeaders(columnDefinitions);
