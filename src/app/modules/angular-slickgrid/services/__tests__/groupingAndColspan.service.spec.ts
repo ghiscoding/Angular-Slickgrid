@@ -5,7 +5,6 @@ import { Subject } from 'rxjs';
 import { GroupingAndColspanService } from '../groupingAndColspan.service';
 import { GridOption, SlickEventHandler, Column } from '../../models';
 import { ResizerService, GridDimension } from '../resizer.service';
-import { ExtensionUtility } from '../../extensions/extensionUtility';
 import { SharedService } from '../shared.service';
 
 declare var Slick: any;
@@ -23,10 +22,6 @@ const dataViewStub = {
   sort: jest.fn(),
   onRowCountChanged: new Slick.Event(),
   reSort: jest.fn(),
-};
-
-const extensionUtilityStub = {
-  translateItems: jest.fn(),
 };
 
 const gridStub = {
@@ -88,7 +83,6 @@ describe('GroupingAndColspanService', () => {
       providers: [
         GroupingAndColspanService,
         SharedService,
-        { provide: ExtensionUtility, useValue: extensionUtilityStub },
         { provide: ResizerService, useValue: resizerServiceStub },
       ],
       imports: [TranslateModule.forRoot()]
@@ -103,6 +97,7 @@ describe('GroupingAndColspanService', () => {
       MALE: 'Male',
       OK: 'OK',
       OTHER: 'Other',
+      START: 'Start',
     });
     translate.setTranslation('fr', {
       ALL_SELECTED: 'Tout sélectionnés',
@@ -110,6 +105,7 @@ describe('GroupingAndColspanService', () => {
       MALE: 'Mâle',
       OK: 'Terminé',
       OTHER: 'Autre',
+      START: 'Début',
     });
     translate.setDefaultLang('en');
   });
@@ -145,7 +141,7 @@ describe('GroupingAndColspanService', () => {
         { id: 'title', name: 'Title', field: 'title', sortable: true, columnGroup: 'Common Factor' },
         { id: 'duration', name: 'Duration', field: 'duration', width: 100, columnGroup: 'Common Factor' },
         { id: 'category', name: 'Category', field: 'category', columnGroup: 'Common Factor' },
-        { id: 'start', name: 'Start', field: 'start' },
+        { id: 'start', name: 'Start', nameKey: 'START', field: 'start' },
       ];
       gridStub.getColumns = jest.fn();
       jest.spyOn(gridStub, 'getColumns').mockReturnValue(mockColumns);
@@ -215,7 +211,7 @@ describe('GroupingAndColspanService', () => {
     it('should call the "renderPreHeaderRowGroupingTitles" after triggering a translate language change', () => {
       gridOptionMock.enableTranslate = true;
       const renderSpy = jest.spyOn(service, 'renderPreHeaderRowGroupingTitles');
-      const translateSpy = jest.spyOn(extensionUtilityStub, 'translateItems');
+      const translateSpy = jest.spyOn(service, 'translateItems');
       const getColSpy = jest.spyOn(gridStub, 'getColumns');
       const setColSpy = jest.spyOn(gridStub, 'setColumns');
 
@@ -226,6 +222,13 @@ describe('GroupingAndColspanService', () => {
       expect(setColSpy).toHaveBeenCalled();
       expect(translateSpy).toHaveBeenCalled();
       expect(renderSpy).toHaveBeenCalled();
+    });
+
+    it('should translate the items when "translateItems" is called', () => {
+      translate.use('fr');
+      service.translateItems(mockColumns, 'nameKey', 'name');
+
+      expect(mockColumns[3]).toEqual({ id: 'start', name: 'Début', nameKey: 'START', field: 'start' });
     });
 
     it('should render the pre-header row grouping title DOM element', () => {

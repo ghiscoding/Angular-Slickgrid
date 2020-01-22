@@ -2,7 +2,6 @@ import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Column, GridOption, SlickEventHandler } from './../models/index';
-import { ExtensionUtility } from '../extensions';
 import { ResizerService } from './resizer.service';
 
 // using external non-typed js libraries
@@ -16,7 +15,7 @@ export class GroupingAndColspanService {
   private _eventHandler: SlickEventHandler;
   private _grid: any;
 
-  constructor(private extensionUtility: ExtensionUtility, private resizerService: ResizerService, @Optional() private translate: TranslateService) {
+  constructor(private resizerService: ResizerService, @Optional() private translate: TranslateService) {
     this._eventHandler = new Slick.EventHandler();
   }
 
@@ -52,7 +51,7 @@ export class GroupingAndColspanService {
         if (this._gridOptions.enableTranslate) {
           this.translate.onLangChange.subscribe(() => {
             const currentColumnDefinitions = this._grid.getColumns();
-            this.extensionUtility.translateItems(currentColumnDefinitions, 'columnGroupKey', 'columnGroup');
+            this.translateItems(currentColumnDefinitions, 'columnGroupKey', 'columnGroup');
             this._grid.setColumns(currentColumnDefinitions);
             this.renderPreHeaderRowGroupingTitles();
           });
@@ -117,6 +116,17 @@ export class GroupingAndColspanService {
             .appendTo(preHeaderPanel);
         }
         lastColumnGroup = colDef.columnGroup || '';
+      }
+    }
+  }
+
+  /** Translate the an array of items from an input key and assign to the output key */
+  translateItems(items: any[], inputKey: string, outputKey: string) {
+    if (Array.isArray(items)) {
+      for (const item of items) {
+        if (item[inputKey]) {
+          item[outputKey] = this.translate && this.translate && this.translate.instant && this.translate.instant(item[inputKey]);
+        }
       }
     }
   }
