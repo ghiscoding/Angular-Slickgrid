@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.16.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.16.1...v2.16.2) (2020-01-22)
+
+
+### Features
+
+* **columnGroup:** add columnGroupKey property in order to use translate ([147470f](https://github.com/ghiscoding/angular-slickgrid/commit/147470febe5327f36e569fb934a883059ba76a30))
+
+
+### Bug Fixes
+
+* **tests:** fix a Cypress E2E flaky test ([8fb09e2](https://github.com/ghiscoding/angular-slickgrid/commit/8fb09e21660b8a02ce420aa08ed62bcefb735f8f))
+
 ### [2.16.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.16.0...v2.16.1) (2020-01-21)
 
 
