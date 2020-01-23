@@ -4,4 +4,7 @@ export interface CurrentPagination {
 
   /** Grid page size */
   pageSize: number;
+
+  /** The available page sizes */
+  pageSizes: number[];
 }

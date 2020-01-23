@@ -4,9 +4,7 @@
 
   <!-- Pagination section under the grid -->
   <slick-pagination id="slickPagingContainer-{{gridId}}" *ngIf="showPagination"
-    (onPaginationChanged)="paginationChanged($event)" [enableTranslate]="gridOptions.enableTranslate"
-    [dataView]="dataView" [grid]="grid" [options]="paginationOptions" [locales]="locales" [totalItems]="totalItems"
-    [backendServiceApi]="backendServiceApi">
+    [enableTranslate]="gridOptions.enableTranslate" [locales]="locales">
   </slick-pagination>
 
   <!-- Custom Footer section under the grid -->

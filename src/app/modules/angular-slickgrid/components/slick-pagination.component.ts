@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, OnDestroy, Optional, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Optional, Output, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
-import { BackendServiceApi, Locale, Pager, Pagination } from './../models/index';
+import { Locale, Pagination } from './../models/index';
 import { PaginationService } from '../services/pagination.service';
 import { unsubscribeAllObservables } from '../services/utilities';
 
@@ -10,33 +10,11 @@ import { unsubscribeAllObservables } from '../services/utilities';
   selector: 'slick-pagination',
   templateUrl: './slick-pagination.component.html'
 })
-export class SlickPaginationComponent implements OnDestroy {
-  private _isFirstRender = true;
-  private _pager: Pager;
-  private _totalItems: number;
+export class SlickPaginationComponent implements OnDestroy, OnInit {
   private subscriptions: Subscription[] = [];
 
-  @Output() onPaginationChanged = new EventEmitter<Pagination>();
   @Input() enableTranslate: boolean;
-  @Input() options: Pagination;
-  @Input() dataView: any;
   @Input() locales: Locale;
-  @Input() backendServiceApi: BackendServiceApi;
-  @Input()
-  set totalItems(total: number) {
-    if (this._isFirstRender || this._totalItems === undefined) {
-      this._isFirstRender = true;
-    }
-    this._totalItems = total;
-    this._isFirstRender = false;
-    if (this.paginationService) {
-      this.paginationService.totalItems = total;
-    }
-  }
-  get totalItems(): number {
-    return this._totalItems;
-  }
-  @Input() grid: any;
 
   // text translations (handled by ngx-translate or by custom locale)
   textItemsPerPage: string;
@@ -55,31 +33,45 @@ export class SlickPaginationComponent implements OnDestroy {
     if (translate && translate.onLangChange) {
       this.subscriptions.push(this.translate.onLangChange.subscribe(() => this.translateAllUiTexts(this.locales)));
     }
-
-    // translate all the text using ngx-translate or custom locales
-    this.paginationService.onPaginationRefreshed.subscribe(() => this.translateAllUiTexts(this.locales));
-
-    this.paginationService.onPaginationChanged.subscribe(pager => {
-      this._pager = pager;
-
-      // emit the changes to the parent component with only necessary properties
-      if (!this._isFirstRender) {
-        this.onPaginationChanged.emit({
-          pageNumber: this.pager.pageNumber,
-          pageSizes: this.pager.availablePageSizes,
-          pageSize: this.pager.itemsPerPage,
-          totalItems: this.pager.totalItems,
-        });
-      }
-    });
   }
 
-  get pager(): Pager {
-    return this._pager || this.paginationService.pager;
+  get availablePageSizes(): number[] {
+    return this.paginationService.availablePageSizes;
+  }
+
+  get dataFrom(): number {
+    return this.paginationService.dataFrom;
+  }
+
+  get dataTo(): number {
+    return this.paginationService.dataTo;
+  }
+
+  get itemsPerPage(): number {
+    return this.paginationService.itemsPerPage;
+  }
+
+  get pageCount(): number {
+    return this.paginationService.pageCount;
+  }
+
+  get pageNumber(): number {
+    return this.paginationService.pageNumber;
+  }
+  set pageNumber(page: number) {
+    // the setter has to be declared but we won't use it, instead we will use the "changeToCurrentPage()" to only update the value after ENTER keydown event
+  }
+
+  get totalItems() {
+    return this.paginationService.totalItems;
   }
 
   ngOnDestroy() {
     this.dispose();
+  }
+
+  ngOnInit() {
+    this.translateAllUiTexts(this.locales);
   }
 
   changeToFirstPage(event: any) {
@@ -115,7 +107,6 @@ export class SlickPaginationComponent implements OnDestroy {
   }
 
   dispose() {
-    this.onPaginationChanged.unsubscribe();
     this.paginationService.dispose();
 
     // also unsubscribe all Angular Subscriptions

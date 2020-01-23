@@ -291,16 +291,17 @@ export class GridOdataComponent implements OnInit {
             countPropName = (this.odataVersion === 4) ? '@odata.count' : 'odata.count';
           }
           const backendResult = { items: updatedData, [countPropName]: countTotalItems, query };
-          console.log('Backend Result', backendResult);
+          // console.log('Backend Result', backendResult);
           resolve(backendResult);
-        }, 250);
+        }, 100);
       });
     });
   }
 
   /** Dispatched event of a Grid State Changed event */
   gridStateChanged(gridStateChanges: GridStateChange) {
-    console.log('Client sample, Grid State changed:: ', gridStateChanges);
+    // console.log('Client sample, Grid State changed:: ', gridStateChanges);
+    console.log('Client sample, Grid State changed:: ', gridStateChanges.change);
   }
 
   // THE FOLLOWING METHODS ARE ONLY FOR DEMO PURPOSES DO NOT USE THIS CODE

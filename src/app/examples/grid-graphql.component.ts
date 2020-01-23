@@ -243,7 +243,7 @@ export class GridGraphqlComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.graphqlQuery = this.angularGrid.backendService.buildQuery();
         resolve(mockedResult);
-      }, 250);
+      }, 100);
     });
   }
 
