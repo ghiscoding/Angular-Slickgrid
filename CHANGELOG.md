@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.16.4](https://github.com/ghiscoding/angular-slickgrid/compare/v2.16.3...v2.16.4) (2020-01-23)
+
+
+### Bug Fixes
+
+* **backend:** fix build warnings ([c72ccc9](https://github.com/ghiscoding/angular-slickgrid/commit/c72ccc92ede37504efc7e19798082765e486bdfc))
+* **columns:** Column Grouping should re-render after cols reordering ([bd991f0](https://github.com/ghiscoding/angular-slickgrid/commit/bd991f06ee6b891f9d26e28325e32a9e1ad38c11))
+* **formatter:** refine condition to display a checkmark icon ([507b299](https://github.com/ghiscoding/angular-slickgrid/commit/507b2995f10f0c1475e41044a959244b3b928980))
+
 ### [2.16.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.16.2...v2.16.3) (2020-01-22)
 
 
