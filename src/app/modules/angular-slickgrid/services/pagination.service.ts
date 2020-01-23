@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subscription, isObservable, Subject } from 'rxjs';
+import * as isequal_ from 'lodash.isequal';
+const isequal = isequal_; // patch to fix rollup to work
 
 import { BackendServiceApi, CurrentPagination, GraphqlResult, GraphqlPaginatedResult, Pagination, ServicePagination } from '../models';
 import { FilterService } from './filter.service';
@@ -69,7 +71,7 @@ export class PaginationService {
   set totalItems(totalItems: number) {
     this._totalItems = totalItems;
     if (this._initialized) {
-      this.refreshPagination(false, false);
+      this.refreshPagination();
     }
   }
 
@@ -131,7 +133,7 @@ export class PaginationService {
     return this._pageNumber;
   }
 
-  getCurrentPagination(): CurrentPagination {
+  getCurrentPagination(): CurrentPagination & { pageSizes: number[] } {
     return {
       pageNumber: this._pageNumber,
       pageSize: this._itemsPerPage,
@@ -151,7 +153,7 @@ export class PaginationService {
     };
   }
 
-  getCurrentItemPerPageCount(): number {
+  getCurrentItemPerPage(): number {
     return this._itemsPerPage;
   }
 
@@ -211,6 +213,7 @@ export class PaginationService {
   refreshPagination(isPageNumberReset: boolean = false, triggerChangedEvent = true) {
     // trigger an event to inform subscribers
     this.onPaginationRefreshed.next(true);
+    const previousPagination = { ...this.getCurrentPagination() };
 
     if (this._paginationOptions) {
       const pagination = this._paginationOptions;
@@ -247,10 +250,12 @@ export class PaginationService {
       this.recalculateFromToIndexes();
     }
     this._pageCount = Math.ceil(this._totalItems / this._itemsPerPage);
-    if (triggerChangedEvent) {
-      this.onPaginationChanged.next(this.getFullPagination());
+    const currentPagination = this.getCurrentPagination();
+    this.sharedService.currentPagination = currentPagination;
+
+    if (triggerChangedEvent && !isequal(previousPagination, currentPagination)) {
+      this.onPaginationChanged.next(currentPagination);
     }
-    this.sharedService.currentPagination = this.getCurrentPagination();
   }
 
   processOnPageChanged(pageNumber: number, event?: Event | undefined): Promise<any> {
@@ -307,7 +312,7 @@ export class PaginationService {
       this._pageNumber = 0;
     } else {
       this._dataFrom = this._pageNumber > 1 ? ((this._pageNumber * this._itemsPerPage) - this._itemsPerPage + 1) : 1;
-      this._dataTo = (this._totalItems < this._itemsPerPage) ? this._totalItems : (this._pageNumber * this._itemsPerPage);
+      this._dataTo = (this._totalItems < this._itemsPerPage) ? this._totalItems : ((this._pageNumber || 1) * this._itemsPerPage);
       if (this._dataTo > this._totalItems) {
         this._dataTo = this._totalItems;
       }

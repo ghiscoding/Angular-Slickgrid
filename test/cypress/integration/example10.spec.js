@@ -297,7 +297,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.get('@grid1')
         .find('.filter-title')
-        .type('Task 1111');
+        .type('000');
 
       cy.get('@grid1')
         .find('[data-test=page-count]')
@@ -314,6 +314,49 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
       cy.get('@grid1')
         .find('[data-test=total-items]')
         .contains('0');
+    });
+
+    it('should erase part of the filter to have "00" and expect 4 items in total with 1 page', () => {
+      cy.get('#slickGridContainer-grid1').as('grid1');
+
+      cy.get('@grid1')
+        .find('.filter-title')
+        .type('{backspace}');
+
+      cy.get('@grid1')
+        .find('[data-test=page-count]')
+        .contains('1');
+
+      cy.get('@grid1')
+        .find('[data-test=item-from]')
+        .contains('1');
+
+      cy.get('@grid1')
+        .find('[data-test=item-to]')
+        .contains('4');
+
+      cy.get('@grid1')
+        .find('[data-test=total-items]')
+        .contains('4');
+    });
+
+    it('should also expect Grid2 to be unchanged (after changing Pagination in Grid1 in previous tests)', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+      cy.get('@grid2')
+        .find('[data-test=page-count]')
+        .contains('7');
+
+      cy.get('@grid2')
+        .find('[data-test=item-from]')
+        .contains('1');
+
+      cy.get('@grid2')
+        .find('[data-test=item-to]')
+        .contains('75');
+
+      cy.get('@grid2')
+        .find('[data-test=total-items]')
+        .contains('525');
     });
   });
 });

@@ -108,10 +108,10 @@ export class SortService {
       // however for a local grid, we need to pass a sort column and so we will sort by the 1st column
       if (triggerQueryEvent) {
         if (this._isBackendGrid) {
-          this.onBackendSortChanged(undefined, { grid: this._grid, sortCols: [] });
+          this.onBackendSortChanged(undefined, { grid: this._grid, sortCols: [], clearSortTriggered: true });
         } else {
           if (this._columnDefinitions && Array.isArray(this._columnDefinitions)) {
-            this.onLocalSortChanged(this._grid, this._dataView, new Array({ sortAsc: true, sortCol: this._columnDefinitions[0] }));
+            this.onLocalSortChanged(this._grid, this._dataView, new Array({ sortAsc: true, sortCol: this._columnDefinitions[0], clearSortTriggered: true }));
           }
         }
       } else if (this._isBackendGrid) {
@@ -219,7 +219,7 @@ export class SortService {
     return sortCols;
   }
 
-  onBackendSortChanged(event: Event, args: any) {
+  onBackendSortChanged(event: Event, args: { multiColumnSort?: boolean; grid: any; sortCols: ColumnSort[]; clearSortTriggered?: boolean }) {
     if (!args || !args.grid) {
       throw new Error('Something went wrong when trying to bind the "onBackendSortChanged(event, args)" function, it seems that "args" is not populated correctly');
     }

@@ -56,7 +56,7 @@ describe('Example 5 - OData Grid', () => {
 
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(1);
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 3, pageSize: 20, pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100] }, type: 'pagination' });
+        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 3, pageSize: 20 }, type: 'pagination' });
       });
     });
 
@@ -87,6 +87,11 @@ describe('Example 5 - OData Grid', () => {
         .should(($span) => {
           expect($span.text()).to.eq(`$inlinecount=allpages&$top=10&$orderby=Name asc&$filter=(Gender eq 'male')`);
         });
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(1);
+        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 1, pageSize: 10 }, type: 'pagination' });
+      });
     });
 
     it('should change Pagination to last page', () => {
@@ -115,6 +120,11 @@ describe('Example 5 - OData Grid', () => {
         .should(($span) => {
           expect($span.text()).to.eq(`$inlinecount=allpages&$top=10&$skip=40&$orderby=Name asc&$filter=(Gender eq 'male')`);
         });
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(1);
+        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 5, pageSize: 10 }, type: 'pagination' });
+      });
     });
 
     it('should change Pagination to first page using the external button', () => {
@@ -144,6 +154,11 @@ describe('Example 5 - OData Grid', () => {
         .should(($span) => {
           expect($span.text()).to.eq(`$inlinecount=allpages&$top=10&$orderby=Name asc&$filter=(Gender eq 'male')`);
         });
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(1);
+        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 1, pageSize: 10 }, type: 'pagination' });
+      });
     });
 
     it('should change Pagination to last page using the external button', () => {
@@ -173,6 +188,11 @@ describe('Example 5 - OData Grid', () => {
         .should(($span) => {
           expect($span.text()).to.eq(`$inlinecount=allpages&$top=10&$skip=40&$orderby=Name asc&$filter=(Gender eq 'male')`);
         });
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(1);
+        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 5, pageSize: 10 }, type: 'pagination' });
+      });
     });
 
     it('should Clear all Filters and expect to go back to first page', () => {
@@ -211,6 +231,12 @@ describe('Example 5 - OData Grid', () => {
         .should(($span) => {
           expect($span.text()).to.eq(`$inlinecount=allpages&$top=10&$orderby=Name asc`);
         });
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(2);
+        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: [], type: 'filter' });
+        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 1, pageSize: 10 }, type: 'pagination' });
+      });
     });
 
     it('should Clear all Sorting', () => {
@@ -232,6 +258,11 @@ describe('Example 5 - OData Grid', () => {
         .should(($span) => {
           expect($span.text()).to.eq(`$inlinecount=allpages&$top=10`);
         });
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(1);
+        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: [], type: 'sorter' });
+      });
     });
 
     it('should use "substringof" when OData version is set to 2', () => {
@@ -476,18 +507,18 @@ describe('Example 5 - OData Grid', () => {
       cy.get('.search-filter.filter-name')
         .find('input')
         .clear()
-        .type('xyz');
+        .type('xy');
 
       cy.get('[data-test=odata-query-result]')
         .should(($span) => {
-          expect($span.text()).to.eq(`$top=10&$filter=(contains(Name, 'xyz'))`);
+          expect($span.text()).to.eq(`$top=10&$filter=(contains(Name, 'xy'))`);
         });
 
       // wait for the query to finish
       cy.get('[data-test=status]').should('contain', 'done');
     });
 
-    it('should display page 0 of 0 but hide pagination from/to numbers when filtered data "xyz" returns an empty dataset', () => {
+    it('should display page 0 of 0 but hide pagination from/to numbers when filtered data "xy" returns an empty dataset', () => {
       cy.get('[data-test=page-number-input]')
         .invoke('val')
         .then(pageNumber => expect(pageNumber).to.eq('0'));
@@ -506,14 +537,14 @@ describe('Example 5 - OData Grid', () => {
 
       cy.get('[data-test=odata-query-result]')
         .should(($span) => {
-          expect($span.text()).to.eq(`$top=10&$filter=(contains(Name, 'xyz'))`);
+          expect($span.text()).to.eq(`$top=10&$filter=(contains(Name, 'xy'))`);
         });
     });
 
     it('should erase part of the filter so that it filters with "x"', () => {
       cy.get('.search-filter.filter-name')
         .find('input')
-        .type('{backspace}{backspace}');
+        .type('{backspace}');
 
       cy.get('[data-test=odata-query-result]')
         .should(($span) => {
@@ -526,7 +557,7 @@ describe('Example 5 - OData Grid', () => {
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(2);
         expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: [{ columnId: 'name', searchTerms: ['x'] }], type: 'filter' });
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 0, pageSize: 10, pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100] }, type: 'pagination' });
+        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { pageNumber: 1, pageSize: 10 }, type: 'pagination' });
       });
     });
 
