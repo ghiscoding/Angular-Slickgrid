@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.16.5](https://github.com/ghiscoding/angular-slickgrid/compare/v2.16.4...v2.16.5) (2020-01-23)
+
+
+### Bug Fixes
+
+* **state:** Clear Sort should trigger only 1 event & fix Pagination ([8e4f931](https://github.com/ghiscoding/angular-slickgrid/commit/8e4f93102329173f65e2e6054dec54824bd0b85a))
+
 ### [2.16.4](https://github.com/ghiscoding/angular-slickgrid/compare/v2.16.3...v2.16.4) (2020-01-23)
 
 
