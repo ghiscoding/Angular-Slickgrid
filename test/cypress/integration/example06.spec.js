@@ -338,7 +338,7 @@ describe('Example 6 - GraphQL Grid', () => {
         .click();
 
       // wait for the query to finish
-      cy.get('[data-test=status]').should('contain', 'processing');
+      // cy.get('[data-test=status]').should('contain', 'processing');
       cy.get('[data-test=status]').should('contain', 'done');
     });
 

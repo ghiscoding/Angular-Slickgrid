@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subscription, isObservable, Subject } from 'rxjs';
 
-import { BackendServiceApi, CurrentPagination, GraphqlResult, GraphqlPaginatedResult, Pager, Pagination } from '../models';
+import { BackendServiceApi, CurrentPagination, GraphqlResult, GraphqlPaginatedResult, Pagination, ServicePagination } from '../models';
 import { FilterService } from './filter.service';
 import { GridService } from './grid.service';
 import { SharedService } from './shared.service';
@@ -27,7 +27,7 @@ export class PaginationService {
   private _paginationOptions: Pagination;
   private _subscriptions: Subscription[] = [];
   onPaginationRefreshed = new Subject<boolean>();
-  onPaginationChanged = new Subject<Pager>();
+  onPaginationChanged = new Subject<ServicePagination>();
 
   dataView: any;
   grid: any;
@@ -35,30 +35,41 @@ export class PaginationService {
   /** Constructor */
   constructor(private filterService: FilterService, private gridService: GridService, private sharedService: SharedService) { }
 
+  get paginationOptions(): Pagination {
+    return this._paginationOptions;
+  }
   set paginationOptions(paginationOptions: Pagination) {
     this._paginationOptions = paginationOptions;
   }
 
-  get paginationOptions(): Pagination {
-    return this._paginationOptions;
+  get availablePageSizes(): number[] {
+    return this._availablePageSizes;
   }
 
-  get pager(): Pager {
-    return {
-      from: this._dataFrom,
-      to: this._dataTo,
-      itemsPerPage: this._itemsPerPage,
-      pageCount: this._pageCount,
-      pageNumber: this._pageNumber,
-      availablePageSizes: this._availablePageSizes,
-      totalItems: this._totalItems,
-    };
+  get dataFrom(): number {
+    return this._dataFrom;
+  }
+
+  get dataTo(): number {
+    return this._dataTo;
+  }
+
+  get itemsPerPage(): number {
+    return this._itemsPerPage;
+  }
+
+  get pageCount(): number {
+    return this._pageCount;
+  }
+
+  get pageNumber(): number {
+    return this._pageNumber;
   }
 
   set totalItems(totalItems: number) {
     this._totalItems = totalItems;
     if (this._initialized) {
-      this.refreshPagination();
+      this.refreshPagination(false, false);
     }
   }
 
@@ -101,9 +112,8 @@ export class PaginationService {
       this._subscriptions.push(this.gridService.onItemAdded.subscribe((items: any | any[]) => this.processOnItemAddedOrRemoved(items, true)));
       this._subscriptions.push(this.gridService.onItemDeleted.subscribe((items: any | any[]) => this.processOnItemAddedOrRemoved(items, false)));
     }
-    if (!this._paginationOptions || (this._paginationOptions.totalItems !== this._totalItems)) {
-      this.refreshPagination(false, false);
-    }
+
+    this.refreshPagination(false, false);
     this._initialized = true;
   }
 
@@ -124,7 +134,20 @@ export class PaginationService {
   getCurrentPagination(): CurrentPagination {
     return {
       pageNumber: this._pageNumber,
-      pageSize: this._itemsPerPage
+      pageSize: this._itemsPerPage,
+      pageSizes: this._availablePageSizes,
+    };
+  }
+
+  getFullPagination(): ServicePagination {
+    return {
+      pageCount: this._pageCount,
+      pageNumber: this._pageNumber,
+      pageSize: this._itemsPerPage,
+      pageSizes: this._availablePageSizes,
+      totalItems: this._totalItems,
+      dataFrom: this._dataFrom,
+      dataTo: this._dataTo,
     };
   }
 
@@ -225,7 +248,7 @@ export class PaginationService {
     }
     this._pageCount = Math.ceil(this._totalItems / this._itemsPerPage);
     if (triggerChangedEvent) {
-      this.onPaginationChanged.next(this.pager);
+      this.onPaginationChanged.next(this.getFullPagination());
     }
     this.sharedService.currentPagination = this.getCurrentPagination();
   }
@@ -236,7 +259,7 @@ export class PaginationService {
 
       if (this._isLocalGrid && this.dataView) {
         this.dataView.setPagingOptions({ pageSize: this._itemsPerPage, pageNum: (pageNumber - 1) }); // dataView page starts at 0 instead of 1
-        this.onPaginationChanged.next(this.pager);
+        this.onPaginationChanged.next(this.getFullPagination());
       } else {
         const itemsPerPage = +this._itemsPerPage;
 
@@ -272,7 +295,7 @@ export class PaginationService {
             }
           );
         }
-        this.onPaginationChanged.next(this.pager);
+        this.onPaginationChanged.next(this.getFullPagination());
       }
     });
   }
@@ -288,6 +311,9 @@ export class PaginationService {
       if (this._dataTo > this._totalItems) {
         this._dataTo = this._totalItems;
       }
+    }
+    if (this._totalItems > 0 && this._pageNumber === 0) {
+      this._pageNumber = 1;
     }
 
     // do a final check on the From/To and make sure they are not over or below min/max acceptable values
@@ -327,7 +353,7 @@ export class PaginationService {
       // finally refresh the "To" count and we know it might be different than the "items per page" count
       // but this is necessary since we don't want an actual backend refresh
       this._dataTo = previousDataTo + itemCountWithDirection;
-      this.onPaginationChanged.next(this.pager);
+      this.onPaginationChanged.next(this.getFullPagination());
     }
   }
 }

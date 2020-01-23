@@ -20,7 +20,7 @@ import {
   SharedService,
   SortService,
 } from '../../services';
-import { Column, CurrentFilter, CurrentSorter, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, GridOption, GridState, GridStateChange, GridStateType, Pagination } from '../../models';
+import { Column, CurrentFilter, CurrentSorter, GraphqlPaginatedResult, GraphqlServiceApi, GraphqlServiceOption, GridOption, GridState, GridStateChange, GridStateType, Pagination, ServicePagination } from '../../models';
 import { Filters } from '../../filters';
 import { Editors } from '../../editors';
 import * as utilities from '../../services/backend-utilities';
@@ -116,9 +116,16 @@ const gridStateServiceStub = {
 } as unknown as GridStateService;
 
 const paginationServiceStub = {
+  totalItems: 0,
   init: jest.fn(),
   dispose: jest.fn(),
+  onPaginationChanged: new Subject<ServicePagination>(),
 } as unknown as PaginationService;
+
+Object.defineProperty(paginationServiceStub, 'totalItems', {
+  get: jest.fn(() => 0),
+  set: jest.fn()
+});
 
 const resizerServiceStub = {
   init: jest.fn(),
@@ -676,6 +683,22 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(component.gridOptions.backendServiceApi.internalPostProcess).toEqual(expect.any(Function));
       });
 
+      it('should execute the "internalPostProcess" callback and expect totalItems to be updated in the PaginationService when "refreshGridData" is called on the 2nd time', () => {
+        jest.spyOn(component.gridOptions.backendServiceApi.service, 'getDatasetName').mockReturnValue('users');
+        const refreshSpy = jest.spyOn(component, 'refreshGridData');
+        const paginationSpy = jest.spyOn(paginationServiceStub, 'totalItems', 'set');
+        const mockDataset = [{ firstName: 'John' }, { firstName: 'Jane' }];
+
+        component.ngAfterViewInit();
+        component.gridOptions.backendServiceApi.internalPostProcess({ data: { users: { nodes: mockDataset, totalCount: mockDataset.length } } } as GraphqlPaginatedResult);
+        component.refreshGridData(mockDataset, 1);
+        component.refreshGridData(mockDataset, 1);
+
+        expect(refreshSpy).toHaveBeenCalledTimes(3);
+        expect(paginationSpy).toHaveBeenCalledWith(2);
+        expect(component.gridOptions.backendServiceApi.internalPostProcess).toEqual(expect.any(Function));
+      });
+
       it('should execute the "internalPostProcess" callback method that was created by "createBackendApiInternalPostProcessCallback" without Pagination (when disabled)', () => {
         component.gridOptions.enablePagination = false;
         jest.spyOn(component.gridOptions.backendServiceApi.service, 'getDatasetName').mockReturnValue('users');
@@ -1093,6 +1116,26 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         component.ngAfterViewInit();
         component.paginationChanged(mockPagination);
+
+        expect(spy).toHaveBeenCalledWith({
+          change: { newValues: mockPagination, type: GridStateType.pagination },
+          gridState: { columns: [], pagination: mockPagination }
+        });
+      });
+
+      it('should call trigger a gridStage change event when "onPaginationChanged" from the Pagination Service is triggered', () => {
+        const mockPagination = { pageNumber: 2, pageSize: 20, pageSizes: [5, 10, 15, 20] } as Pagination;
+        const mockServicePagination = {
+          ...mockPagination,
+          dataFrom: 5,
+          dataTo: 10,
+          pageCount: 1,
+        } as ServicePagination;
+        const spy = jest.spyOn(gridStateServiceStub.onGridStateChanged, 'next');
+        jest.spyOn(gridStateServiceStub, 'getCurrentGridState').mockReturnValue({ columns: [], pagination: mockPagination } as GridState);
+
+        component.ngAfterViewInit();
+        paginationServiceStub.onPaginationChanged.next(mockServicePagination);
 
         expect(spy).toHaveBeenCalledWith({
           change: { newValues: mockPagination, type: GridStateType.pagination },

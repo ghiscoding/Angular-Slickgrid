@@ -29,6 +29,7 @@ import {
   Locale,
   Metrics,
   Pagination,
+  ServicePagination,
   SlickEventHandler,
 } from './../models/index';
 import { FilterFactory } from '../filters/filterFactory';
@@ -135,6 +136,10 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   showCustomFooter = false;
   showPagination = false;
   totalItems = 0;
+  paginationData: {
+    enableTranslate: boolean;
+    locales: Locale;
+  };
   subscriptions: Subscription[] = [];
 
   @Output() onAngularGridCreated = new EventEmitter<AngularGridInstance>();
@@ -300,18 +305,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * On a Pagination changed, we will trigger a Grid State changed with the new pagination info
    * Also if we use Row Selection or the Checkbox Selector, we need to reset any selection
    */
-  paginationChanged(pagination: Pagination) {
+  paginationChanged(pagination: ServicePagination) {
     if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
       this.gridService.setSelectedRows([]);
     }
+    const { pageNumber, pageSize, pageSizes } = pagination;
     if (this.sharedService) {
-      const { pageNumber, pageSize } = pagination;
       if (pageSize) {
-        this.sharedService.currentPagination = { pageNumber, pageSize };
+        this.sharedService.currentPagination = { pageNumber, pageSize, pageSizes };
       }
     }
     this.gridStateService.onGridStateChanged.next({
-      change: { newValues: pagination, type: GridStateType.pagination },
+      change: { newValues: { pageNumber, pageSize, pageSizes }, type: GridStateType.pagination },
       gridState: this.gridStateService.getCurrentGridState()
     });
   }
@@ -347,6 +352,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         // initialize the Pagination Service with new pagination options (which might have presets)
         if (!this._isPaginationInitialized) {
           this.initializePaginationService(paginationOptions);
+        } else {
+          // update the pagination service with the new total
+          this.paginationService.totalItems = this.totalItems;
         }
       }
 
@@ -643,8 +651,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   private initializePaginationService(paginationOptions: Pagination) {
-    this.paginationService.init(this.grid, this.dataView, paginationOptions, this.backendServiceApi);
-    this._isPaginationInitialized = true;
+    if (this.gridOptions) {
+      this.paginationData = {
+        enableTranslate: this.gridOptions.enableTranslate,
+        locales: this.locales,
+      };
+      this.paginationService.totalItems = this.totalItems;
+      this.paginationService.onPaginationChanged.subscribe((changes: ServicePagination) => this.paginationChanged(changes));
+      this.paginationService.init(this.grid, this.dataView, paginationOptions, this.backendServiceApi);
+      this._isPaginationInitialized = true;
+    }
     this.cd.detectChanges();
   }
 

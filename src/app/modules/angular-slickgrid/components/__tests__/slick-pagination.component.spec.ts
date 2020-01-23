@@ -4,56 +4,19 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
 import { SlickPaginationComponent } from '../slick-pagination.component';
-import { Column, GridOption, Pager } from '../../models';
+import { ServicePagination } from '../../models';
 import { PaginationService } from '../../services';
 
-const dataviewStub = {
-  onPagingInfoChanged: jest.fn(),
-  onRowCountChanged: jest.fn(),
-  onRowsChanged: jest.fn(),
-};
-
-const mockBackendService = {
-  resetPaginationOptions: jest.fn(),
-  buildQuery: jest.fn(),
-  updateOptions: jest.fn(),
-  processOnFilterChanged: jest.fn(),
-  processOnSortChanged: jest.fn(),
-  processOnPaginationChanged: jest.fn(),
-};
-
-const mockGridOption = {
-  enableAutoResize: true,
-  enablePagination: true,
-  backendServiceApi: {
-    service: mockBackendService,
-    process: jest.fn(),
-    options: {
-      columnDefinitions: [{ id: 'name', field: 'name' }] as Column[],
-      datasetName: 'user',
-    }
-  },
-  pagination: {
-    pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
-    pageSize: 25,
-    totalItems: 85
-  }
-} as GridOption;
-
-const gridStub = {
-  autosizeColumns: jest.fn(),
-  getColumnIndex: jest.fn(),
-  getOptions: () => mockGridOption,
-  getColumns: jest.fn(),
-  setColumns: jest.fn(),
-  onColumnsReordered: jest.fn(),
-  onColumnsResized: jest.fn(),
-  registerPlugin: jest.fn(),
-};
-
 const paginationServiceStub = {
-  onPaginationRefreshed: new Subject<boolean>(),
-  onPaginationChanged: new Subject<Pager>(),
+  dataFrom: 5,
+  dataTo: 10,
+  pageNumber: 2,
+  pageCount: 1,
+  itemsPerPage: 5,
+  pageSize: 10,
+  totalItems: 100,
+  availablePageSizes: [5, 10, 15, 20],
+  pageInfoTotalItems: jest.fn(),
   goToFirstPage: jest.fn(),
   goToLastPage: jest.fn(),
   goToNextPage: jest.fn(),
@@ -62,13 +25,15 @@ const paginationServiceStub = {
   changeItemPerPage: jest.fn(),
   dispose: jest.fn(),
   init: jest.fn(),
+  onPaginationRefreshed: new Subject<boolean>(),
+  onPaginationChanged: new Subject<ServicePagination>(),
 } as unknown as PaginationService;
 
 describe('App Component', () => {
   let fixture: ComponentFixture<SlickPaginationComponent>;
   let component: SlickPaginationComponent;
   let translate: TranslateService;
-  let mockPager: Pager;
+  let mockServicePagination: ServicePagination;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -113,28 +78,17 @@ describe('App Component', () => {
 
   describe('Integration Tests', () => {
     beforeEach(() => {
-      mockPager = {
-        from: 5,
-        to: 10,
-        itemsPerPage: 5,
+      mockServicePagination = {
+        dataFrom: 5,
+        dataTo: 10,
+        pageSize: 5,
         pageCount: 1,
         pageNumber: 2,
-        availablePageSizes: [5, 10, 15, 20],
+        pageSizes: [5, 10, 15, 20],
         totalItems: 100,
       };
       component.enableTranslate = true;
-      component.grid = gridStub;
-      component.options = {
-        pageNumber: mockPager.pageNumber,
-        pageSizes: mockPager.availablePageSizes,
-        pageSize: mockPager.itemsPerPage,
-        totalItems: mockPager.totalItems,
-      };
-      component.backendServiceApi = mockGridOption.backendServiceApi;
-      component.totalItems = mockPager.totalItems;
-
-      paginationServiceStub.init(gridStub, dataviewStub, component.options, component.backendServiceApi);
-      paginationServiceStub.onPaginationChanged.next(mockPager);
+      paginationServiceStub.onPaginationChanged.next(mockServicePagination);
       fixture.detectChanges();
     });
 
@@ -143,6 +97,16 @@ describe('App Component', () => {
       jest.clearAllMocks();
       spyOn(component, 'ngOnDestroy').and.callFake(() => { });
       fixture.destroy();
+    });
+
+    describe('getters & setters', () => {
+      // the following 2 setters unit test are simply here for code coverage,
+      // these 2 setters don't actually do anything
+      it('should use the "itemsPerPage" setter but do nothing with it', () => {
+        fixture.detectChanges();
+        component.pageNumber = 3;
+        expect(component.pageNumber).toBe(2);
+      });
     });
 
     it('should create a the Slick-Pagination component in the DOM', () => {

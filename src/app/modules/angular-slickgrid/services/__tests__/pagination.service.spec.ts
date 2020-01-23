@@ -100,7 +100,6 @@ describe('PaginationService', () => {
     service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
 
     expect(service.paginationOptions).toEqual(mockGridOption.pagination);
-    expect(service.pager).toBeTruthy();
     expect(refreshSpy).toHaveBeenCalled();
     expect(service.getCurrentPageNumber()).toBe(2);
   });
@@ -110,7 +109,6 @@ describe('PaginationService', () => {
     service.paginationOptions = mockGridOption.pagination;
 
     expect(service.paginationOptions).toEqual(mockGridOption.pagination);
-    expect(service.pager).toBeTruthy();
     expect(service.getCurrentPageNumber()).toBe(2);
   });
 
@@ -120,7 +118,6 @@ describe('PaginationService', () => {
     service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
 
     expect(service.totalItems).toEqual(125);
-    expect(service.pager).toBeTruthy();
     expect(service.getCurrentPageNumber()).toBe(2);
     expect(spy).toHaveBeenCalledWith(false, false);
   });
@@ -131,9 +128,33 @@ describe('PaginationService', () => {
     service.totalItems = 125;
 
     expect(service.totalItems).toEqual(125);
-    expect(service.pager).toBeTruthy();
     expect(service.getCurrentPageNumber()).toBe(2);
     expect(spy).toHaveBeenCalledTimes(2); // called 2x times inside the init() and SETTER
+  });
+
+  describe('Getters and Setters', () => {
+    it('should get the availablePageSizes and equal the one defined in the grid options pagination', () => {
+      mockGridOption.pagination.pageSizes = [5, 10, 15, 20];
+      service.init(gridStub, dataviewStub, mockGridOption.pagination);
+      expect(service.availablePageSizes).toEqual(mockGridOption.pagination.pageSizes);
+    });
+
+    it('should get the itemsPerPage and equal the one defined in the grid options pagination', () => {
+      mockGridOption.pagination.pageSize = 20;
+      service.init(gridStub, dataviewStub, mockGridOption.pagination);
+      expect(service.itemsPerPage).toEqual(mockGridOption.pagination.pageSize);
+    });
+
+    it('should get the pageCount and equal the one defined in the grid options pagination', () => {
+      service.init(gridStub, dataviewStub, mockGridOption.pagination);
+      expect(service.pageCount).toEqual(4); // since totalItems is 85 and our pageSize is 20/page
+    });
+
+    it('should get the pageNumber and equal the one defined in the grid options pagination', () => {
+      mockGridOption.pagination.pageNumber = 3;
+      service.init(gridStub, dataviewStub, mockGridOption.pagination);
+      expect(service.pageNumber).toEqual(mockGridOption.pagination.pageNumber);
+    });
   });
 
   describe('changeItemPerPage method', () => {
@@ -177,8 +198,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.goToFirstPage();
 
-      expect(service.pager.from).toBe(1);
-      expect(service.pager.to).toBe(25);
+      expect(service.dataFrom).toBe(1);
+      expect(service.dataTo).toBe(25);
       expect(service.getCurrentPageNumber()).toBe(1);
       expect(spy).toHaveBeenCalledWith(1, undefined);
     });
@@ -191,8 +212,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.goToLastPage();
 
-      expect(service.pager.from).toBe(76);
-      expect(service.pager.to).toBe(85);
+      expect(service.dataFrom).toBe(76);
+      expect(service.dataTo).toBe(85);
       expect(service.getCurrentPageNumber()).toBe(4);
       expect(spy).toHaveBeenCalledWith(4, undefined);
     });
@@ -205,8 +226,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.goToNextPage();
 
-      expect(service.pager.from).toBe(51);
-      expect(service.pager.to).toBe(75);
+      expect(service.dataFrom).toBe(51);
+      expect(service.dataTo).toBe(75);
       expect(service.getCurrentPageNumber()).toBe(3);
       expect(spy).toHaveBeenCalledWith(3, undefined);
     });
@@ -217,8 +238,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.goToNextPage();
 
-      expect(service.pager.from).toBe(51);
-      expect(service.pager.to).toBe(75);
+      expect(service.dataFrom).toBe(51);
+      expect(service.dataTo).toBe(75);
       expect(service.getCurrentPageNumber()).toBe(3);
       expect(spy).toHaveBeenCalledWith(3, undefined);
     });
@@ -230,8 +251,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.goToNextPage();
 
-      expect(service.pager.from).toBe(76);
-      expect(service.pager.to).toBe(85);
+      expect(service.dataFrom).toBe(76);
+      expect(service.dataTo).toBe(85);
       expect(service.getCurrentPageNumber()).toBe(4);
       expect(spy).not.toHaveBeenCalled();
     });
@@ -244,8 +265,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.goToPreviousPage();
 
-      expect(service.pager.from).toBe(1);
-      expect(service.pager.to).toBe(25);
+      expect(service.dataFrom).toBe(1);
+      expect(service.dataTo).toBe(25);
       expect(service.getCurrentPageNumber()).toBe(1);
       expect(spy).toHaveBeenCalledWith(1, undefined);
     });
@@ -257,8 +278,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.goToPreviousPage();
 
-      expect(service.pager.from).toBe(1);
-      expect(service.pager.to).toBe(25);
+      expect(service.dataFrom).toBe(1);
+      expect(service.dataTo).toBe(25);
       expect(service.getCurrentPageNumber()).toBe(1);
       expect(spy).not.toHaveBeenCalled();
     });
@@ -272,8 +293,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.goToPageNumber(4);
 
-      expect(service.pager.from).toBe(76);
-      expect(service.pager.to).toBe(85);
+      expect(service.dataFrom).toBe(76);
+      expect(service.dataTo).toBe(85);
       expect(service.getCurrentPageNumber()).toBe(4);
       expect(spy).toHaveBeenCalledWith(4, undefined);
     });
@@ -284,8 +305,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.goToPageNumber(0);
 
-      expect(service.pager.from).toBe(1);
-      expect(service.pager.to).toBe(25);
+      expect(service.dataFrom).toBe(1);
+      expect(service.dataTo).toBe(25);
       expect(service.getCurrentPageNumber()).toBe(1);
       expect(spy).toHaveBeenCalledWith(1, undefined);
     });
@@ -296,8 +317,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.goToPageNumber(10);
 
-      expect(service.pager.from).toBe(76);
-      expect(service.pager.to).toBe(85);
+      expect(service.dataFrom).toBe(76);
+      expect(service.dataTo).toBe(85);
       expect(service.getCurrentPageNumber()).toBe(4);
       expect(spy).toHaveBeenCalledWith(4, undefined);
     });
@@ -309,8 +330,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.goToPageNumber(2);
 
-      expect(service.pager.from).toBe(26);
-      expect(service.pager.to).toBe(50);
+      expect(service.dataFrom).toBe(26);
+      expect(service.dataTo).toBe(50);
       expect(service.getCurrentPageNumber()).toBe(2);
       expect(spy).not.toHaveBeenCalled();
     });
@@ -416,13 +437,27 @@ describe('PaginationService', () => {
 
       expect(setPagingSpy).toHaveBeenCalledWith({ pageSize: 25, pageNum: 0 });
       expect(onPaginationSpy).toHaveBeenCalledWith({
-        availablePageSizes: mockGridOption.pagination.pageSizes,
-        from: 26,
-        itemsPerPage: 25,
+        pageSizes: mockGridOption.pagination.pageSizes,
+        dataFrom: 26,
+        pageSize: 25,
         pageCount: 4,
         pageNumber: 2,
-        to: 50,
+        dataTo: 50,
         totalItems: 85,
+      });
+    });
+
+    it('should call "setPagingOptions" from the DataView and trigger "onPaginationChanged" when using a Local Grid', () => {
+      const setPagingSpy = jest.spyOn(dataviewStub, 'setPagingOptions');
+      const onPaginationSpy = jest.spyOn(service.onPaginationChanged, 'next');
+
+      mockGridOption.backendServiceApi = null;
+      service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
+      service.processOnPageChanged(1);
+
+      expect(setPagingSpy).toHaveBeenCalledWith({ pageSize: 25, pageNum: 0 });
+      expect(onPaginationSpy).toHaveBeenCalledWith({
+        dataFrom: 26, dataTo: 50, pageSize: 25, pageCount: 4, pageNumber: 2, totalItems: 85, pageSizes: mockGridOption.pagination.pageSizes,
       });
     });
   });
@@ -436,8 +471,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.recalculateFromToIndexes();
 
-      expect(service.pager.from).toBe(0);
-      expect(service.pager.to).toBe(0);
+      expect(service.dataFrom).toBe(0);
+      expect(service.dataTo).toBe(0);
     });
 
     it('should recalculate the From/To within range', () => {
@@ -448,8 +483,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.recalculateFromToIndexes();
 
-      expect(service.pager.from).toBe(26);
-      expect(service.pager.to).toBe(50);
+      expect(service.dataFrom).toBe(26);
+      expect(service.dataTo).toBe(50);
     });
 
     it('should recalculate the From/To within range and have the To equal the total items when total items is not a modulo of 1', () => {
@@ -460,8 +495,8 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
       service.recalculateFromToIndexes();
 
-      expect(service.pager.from).toBe(76);
-      expect(service.pager.to).toBe(85);
+      expect(service.dataFrom).toBe(76);
+      expect(service.dataTo).toBe(85);
     });
   });
 
@@ -550,8 +585,8 @@ describe('PaginationService', () => {
       setTimeout(() => {
         expect(paginationSpy).toHaveBeenCalledTimes(1);
         expect(recalculateSpy).toHaveBeenCalledTimes(2);
-        expect(service.pager.from).toBe(26);
-        expect(service.pager.to).toBe(50 + 1);
+        expect(service.dataFrom).toBe(26);
+        expect(service.dataTo).toBe(50 + 1);
         done();
       });
     });
@@ -567,8 +602,8 @@ describe('PaginationService', () => {
       setTimeout(() => {
         expect(paginationSpy).toHaveBeenCalledTimes(1);
         expect(recalculateSpy).toHaveBeenCalledTimes(2);
-        expect(service.pager.from).toBe(26);
-        expect(service.pager.to).toBe(50 + mockItems.length);
+        expect(service.dataFrom).toBe(26);
+        expect(service.dataTo).toBe(50 + mockItems.length);
         done();
       });
     });
@@ -583,8 +618,8 @@ describe('PaginationService', () => {
       setTimeout(() => {
         expect(paginationSpy).not.toHaveBeenCalled();
         expect(recalculateSpy).toHaveBeenCalledTimes(1);
-        expect(service.pager.from).toBe(26);
-        expect(service.pager.to).toBe(50);
+        expect(service.dataFrom).toBe(26);
+        expect(service.dataTo).toBe(50);
         done();
       });
     });
@@ -600,8 +635,8 @@ describe('PaginationService', () => {
       setTimeout(() => {
         expect(paginationSpy).toHaveBeenCalledTimes(1);
         expect(recalculateSpy).toHaveBeenCalledTimes(2);
-        expect(service.pager.from).toBe(26);
-        expect(service.pager.to).toBe(50 - 1);
+        expect(service.dataFrom).toBe(26);
+        expect(service.dataTo).toBe(50 - 1);
         done();
       });
     });
@@ -617,8 +652,8 @@ describe('PaginationService', () => {
       setTimeout(() => {
         expect(paginationSpy).toHaveBeenCalledTimes(1);
         expect(recalculateSpy).toHaveBeenCalledTimes(2);
-        expect(service.pager.from).toBe(26);
-        expect(service.pager.to).toBe(50 - mockItems.length);
+        expect(service.dataFrom).toBe(26);
+        expect(service.dataTo).toBe(50 - mockItems.length);
         done();
       });
     });
@@ -634,8 +669,8 @@ describe('PaginationService', () => {
       setTimeout(() => {
         expect(paginationSpy).not.toHaveBeenCalled();
         expect(recalculateSpy).toHaveBeenCalledTimes(1);
-        expect(service.pager.from).toBe(26);
-        expect(service.pager.to).toBe(50);
+        expect(service.dataFrom).toBe(26);
+        expect(service.dataTo).toBe(50);
         done();
       });
     });
@@ -650,8 +685,8 @@ describe('PaginationService', () => {
       service.changeItemPerPage(200);
 
       setTimeout(() => {
-        expect(service.pager.from).toBe(1);
-        expect(service.pager.to).toBe(101);
+        expect(service.dataFrom).toBe(1);
+        expect(service.dataTo).toBe(101);
         done();
       });
     });
@@ -666,8 +701,8 @@ describe('PaginationService', () => {
       service.changeItemPerPage(100);
 
       setTimeout(() => {
-        expect(service.pager.from).toBe(1);
-        expect(service.pager.to).toBe(100);
+        expect(service.dataFrom).toBe(1);
+        expect(service.dataTo).toBe(100);
         done();
       });
     });
@@ -689,7 +724,6 @@ describe('PaginationService', () => {
       service.init(gridStub, dataviewStub, mockGridOption.pagination);
 
       expect(service.paginationOptions).toEqual(mockGridOption.pagination);
-      expect(service.pager).toBeTruthy();
       expect(refreshSpy).toHaveBeenCalled();
       expect(onPagingSpy).toHaveBeenCalled();
       expect(setRefreshSpy).toHaveBeenCalled();

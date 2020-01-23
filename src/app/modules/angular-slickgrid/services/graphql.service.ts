@@ -258,7 +258,8 @@ export class GraphqlService implements BackendService {
     // save current pagination as Page 1 and page size as "first" set size
     this._currentPagination = {
       pageNumber: 1,
-      pageSize: paginationOptions.first || DEFAULT_PAGE_SIZE
+      pageSize: paginationOptions.first || DEFAULT_PAGE_SIZE,
+      pageSizes: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.pageSizes,
     };
 
     this.updateOptions({ paginationOptions });
@@ -455,10 +456,11 @@ export class GraphqlService implements BackendService {
    * @param newPage
    * @param pageSize
    */
-  updatePagination(newPage: number, pageSize: number) {
+  updatePagination(newPage: number, pageSize: number, pageSizes?: number[]) {
     this._currentPagination = {
       pageNumber: newPage,
-      pageSize
+      pageSize,
+      pageSizes,
     };
 
     let paginationOptions;

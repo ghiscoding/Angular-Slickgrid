@@ -3,56 +3,19 @@ import { By } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 
 import { SlickPaginationComponent } from '../slick-pagination.component';
-import { Column, GridOption, Locale, Pager } from '../../models';
+import { Locale, ServicePagination } from '../../models';
 import { PaginationService } from '../../services';
 
-const dataviewStub = {
-  onPagingInfoChanged: jest.fn(),
-  onRowCountChanged: jest.fn(),
-  onRowsChanged: jest.fn(),
-};
-
-const mockBackendService = {
-  resetPaginationOptions: jest.fn(),
-  buildQuery: jest.fn(),
-  updateOptions: jest.fn(),
-  processOnFilterChanged: jest.fn(),
-  processOnSortChanged: jest.fn(),
-  processOnPaginationChanged: jest.fn(),
-};
-
-const mockGridOption = {
-  enableAutoResize: true,
-  enablePagination: true,
-  backendServiceApi: {
-    service: mockBackendService,
-    process: jest.fn(),
-    options: {
-      columnDefinitions: [{ id: 'name', field: 'name' }] as Column[],
-      datasetName: 'user',
-    }
-  },
-  pagination: {
-    pageSizes: [10, 15, 20, 25, 30, 40, 50, 75, 100],
-    pageSize: 25,
-    totalItems: 85
-  }
-} as GridOption;
-
-const gridStub = {
-  autosizeColumns: jest.fn(),
-  getColumnIndex: jest.fn(),
-  getOptions: () => mockGridOption,
-  getColumns: jest.fn(),
-  setColumns: jest.fn(),
-  onColumnsReordered: jest.fn(),
-  onColumnsResized: jest.fn(),
-  registerPlugin: jest.fn(),
-};
-
 const paginationServiceStub = {
-  onPaginationRefreshed: new Subject<boolean>(),
-  onPaginationChanged: new Subject<Pager>(),
+  dataFrom: 5,
+  dataTo: 10,
+  pageNumber: 2,
+  pageCount: 1,
+  itemsPerPage: 5,
+  pageSize: 10,
+  totalItems: 100,
+  availablePageSizes: [5, 10, 15, 20],
+  pageInfoTotalItems: jest.fn(),
   goToFirstPage: jest.fn(),
   goToLastPage: jest.fn(),
   goToNextPage: jest.fn(),
@@ -61,12 +24,14 @@ const paginationServiceStub = {
   changeItemPerPage: jest.fn(),
   dispose: jest.fn(),
   init: jest.fn(),
+  onPaginationRefreshed: new Subject<boolean>(),
+  onPaginationChanged: new Subject<ServicePagination>(),
 } as unknown as PaginationService;
 
 describe('without ngx-translate', () => {
   let fixture: ComponentFixture<SlickPaginationComponent>;
   let component: SlickPaginationComponent;
-  let mockPager: Pager;
+  let mockServicePagination: ServicePagination;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -82,25 +47,16 @@ describe('without ngx-translate', () => {
     fixture = TestBed.createComponent(SlickPaginationComponent);
     component = fixture.debugElement.componentInstance;
 
-    mockPager = {
-      from: 5,
-      to: 10,
-      itemsPerPage: 5,
+    mockServicePagination = {
+      dataFrom: 5,
+      dataTo: 10,
+      pageSize: 5,
       pageCount: 1,
       pageNumber: 2,
-      availablePageSizes: [5, 10, 15, 20],
+      pageSizes: [5, 10, 15, 20],
       totalItems: 100,
     };
     component.enableTranslate = false;
-    component.grid = gridStub;
-    component.options = {
-      pageNumber: mockPager.pageNumber,
-      pageSizes: mockPager.availablePageSizes,
-      pageSize: mockPager.itemsPerPage,
-      totalItems: mockPager.totalItems,
-    };
-    component.backendServiceApi = mockGridOption.backendServiceApi;
-    component.totalItems = mockPager.totalItems;
     component.locales = {
       TEXT_ITEMS_PER_PAGE: 'items per page',
       TEXT_ITEMS: 'items',
@@ -108,8 +64,7 @@ describe('without ngx-translate', () => {
       TEXT_PAGE: 'page'
     } as Locale;
 
-    paginationServiceStub.init(gridStub, dataviewStub, component.options, component.backendServiceApi);
-    paginationServiceStub.onPaginationChanged.next(mockPager);
+    paginationServiceStub.onPaginationChanged.next(mockServicePagination);
     fixture.detectChanges();
   }));
 
@@ -137,7 +92,6 @@ describe('without ngx-translate', () => {
   it('should have defined locale and expect new text in the UI', (done) => {
     component.enableTranslate = false;
     fixture.detectChanges();
-    paginationServiceStub.onPaginationRefreshed.next(true);
 
     setTimeout(() => {
       fixture.detectChanges();

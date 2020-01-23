@@ -24,10 +24,10 @@ describe('Example 22 - Use of Angular Components', () => {
 
     cy.get('#grid22')
       .find('#myDrop-r1-c6')
-      .click();
+      .click({ force: true });
 
     cy.contains('Delete Row')
-      .trigger('click', { force: true });
+      .click({ force: true });
 
     // after deleting the row
     cy.get('#grid22')
