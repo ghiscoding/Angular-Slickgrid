@@ -309,14 +309,14 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
       this.gridService.setSelectedRows([]);
     }
-    const { pageNumber, pageSize, pageSizes } = pagination;
+    const { pageNumber, pageSize } = pagination;
     if (this.sharedService) {
       if (pageSize) {
-        this.sharedService.currentPagination = { pageNumber, pageSize, pageSizes };
+        this.sharedService.currentPagination = { pageNumber, pageSize };
       }
     }
     this.gridStateService.onGridStateChanged.next({
-      change: { newValues: { pageNumber, pageSize, pageSizes }, type: GridStateType.pagination },
+      change: { newValues: { pageNumber, pageSize }, type: GridStateType.pagination },
       gridState: this.gridStateService.getCurrentGridState()
     });
   }

@@ -79,7 +79,6 @@ export class GridOdataService implements BackendService {
       this._currentPagination = {
         pageNumber: 1,
         pageSize: this._odataService.options.top || this.defaultOptions.top || DEFAULT_PAGE_SIZE,
-        pageSizes: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.pageSizes,
       };
     }
 
@@ -399,11 +398,10 @@ export class GridOdataService implements BackendService {
    * @param newPage
    * @param pageSize
    */
-  updatePagination(newPage: number, pageSize: number, pageSizes?: number[]) {
+  updatePagination(newPage: number, pageSize: number) {
     this._currentPagination = {
       pageNumber: newPage,
       pageSize,
-      pageSizes,
     };
 
     // unless user specifically set "enablePagination" to False, we'll update pagination options in every other cases

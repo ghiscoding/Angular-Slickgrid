@@ -259,7 +259,6 @@ export class GraphqlService implements BackendService {
     this._currentPagination = {
       pageNumber: 1,
       pageSize: paginationOptions.first || DEFAULT_PAGE_SIZE,
-      pageSizes: this._gridOptions && this._gridOptions.pagination && this._gridOptions.pagination.pageSizes,
     };
 
     this.updateOptions({ paginationOptions });
@@ -456,11 +455,10 @@ export class GraphqlService implements BackendService {
    * @param newPage
    * @param pageSize
    */
-  updatePagination(newPage: number, pageSize: number, pageSizes?: number[]) {
+  updatePagination(newPage: number, pageSize: number) {
     this._currentPagination = {
       pageNumber: newPage,
       pageSize,
-      pageSizes,
     };
 
     let paginationOptions;

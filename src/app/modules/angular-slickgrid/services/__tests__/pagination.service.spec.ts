@@ -164,7 +164,7 @@ describe('PaginationService', () => {
       service.changeItemPerPage(30);
 
       expect(service.getCurrentPageNumber()).toBe(0);
-      expect(service.getCurrentItemPerPageCount()).toBe(30);
+      expect(service.getCurrentItemPerPage()).toBe(30);
     });
 
     it('should be on page 1 with 2 pages when total items is 51 and we set 50 per page', () => {
@@ -176,7 +176,7 @@ describe('PaginationService', () => {
       service.changeItemPerPage(50);
 
       expect(service.getCurrentPageNumber()).toBe(1);
-      expect(service.getCurrentItemPerPageCount()).toBe(50);
+      expect(service.getCurrentItemPerPage()).toBe(50);
     });
 
     it('should be on page 1 with 2 pages when total items is 100 and we set 50 per page', () => {
@@ -188,7 +188,7 @@ describe('PaginationService', () => {
       service.changeItemPerPage(50);
 
       expect(service.getCurrentPageNumber()).toBe(1);
-      expect(service.getCurrentItemPerPageCount()).toBe(50);
+      expect(service.getCurrentItemPerPage()).toBe(50);
     });
   });
 

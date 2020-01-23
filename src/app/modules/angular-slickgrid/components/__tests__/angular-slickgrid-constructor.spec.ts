@@ -1124,12 +1124,13 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should call trigger a gridStage change event when "onPaginationChanged" from the Pagination Service is triggered', () => {
-        const mockPagination = { pageNumber: 2, pageSize: 20, pageSizes: [5, 10, 15, 20] } as Pagination;
+        const mockPagination = { pageNumber: 2, pageSize: 20 } as Pagination;
         const mockServicePagination = {
           ...mockPagination,
           dataFrom: 5,
           dataTo: 10,
           pageCount: 1,
+          pageSizes: [5, 10, 15, 20],
         } as ServicePagination;
         const spy = jest.spyOn(gridStateServiceStub.onGridStateChanged, 'next');
         jest.spyOn(gridStateServiceStub, 'getCurrentGridState').mockReturnValue({ columns: [], pagination: mockPagination } as GridState);
