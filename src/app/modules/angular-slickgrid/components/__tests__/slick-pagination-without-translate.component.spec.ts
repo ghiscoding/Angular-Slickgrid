@@ -24,7 +24,6 @@ const paginationServiceStub = {
   changeItemPerPage: jest.fn(),
   dispose: jest.fn(),
   init: jest.fn(),
-  onPaginationRefreshed: new Subject<boolean>(),
   onPaginationChanged: new Subject<ServicePagination>(),
 } as unknown as PaginationService;
 

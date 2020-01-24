@@ -28,7 +28,6 @@ export class PaginationService {
   private _eventHandler = new Slick.EventHandler();
   private _paginationOptions: Pagination;
   private _subscriptions: Subscription[] = [];
-  onPaginationRefreshed = new Subject<boolean>();
   onPaginationChanged = new Subject<ServicePagination>();
 
   dataView: any;
@@ -211,8 +210,6 @@ export class PaginationService {
   }
 
   refreshPagination(isPageNumberReset: boolean = false, triggerChangedEvent = true) {
-    // trigger an event to inform subscribers
-    this.onPaginationRefreshed.next(true);
     const previousPagination = { ...this.getCurrentPagination() };
 
     if (this._paginationOptions) {
