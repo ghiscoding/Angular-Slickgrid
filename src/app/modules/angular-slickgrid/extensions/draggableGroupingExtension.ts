@@ -53,16 +53,24 @@ export class DraggableGroupingExtension implements Extension {
 
   register(): any {
     if (this.sharedService && this.sharedService.grid && this.sharedService.gridOptions) {
-      this.sharedService.grid.registerPlugin(this._addon);
+      const grid = this.sharedService.grid;
+      grid.registerPlugin(this._addon);
 
-      // Events
-      if (this.sharedService.grid && this.sharedService.gridOptions.draggableGrouping) {
+      if (grid && this.sharedService.gridOptions.draggableGrouping) {
+        // Expose some of the Events
         if (this.sharedService.gridOptions.draggableGrouping.onExtensionRegistered) {
           this.sharedService.gridOptions.draggableGrouping.onExtensionRegistered(this._addon);
         }
         this._eventHandler.subscribe(this._addon.onGroupChanged, (e: any, args: { caller?: string; groupColumns: Grouping[] }) => {
           if (this.sharedService.gridOptions.draggableGrouping && typeof this.sharedService.gridOptions.draggableGrouping.onGroupChanged === 'function') {
             this.sharedService.gridOptions.draggableGrouping.onGroupChanged(e, args);
+          }
+        });
+
+        // if a column was added dynamically, we need to re-initialize the draggable grouping after the render
+        this._eventHandler.subscribe(grid.onRendered, () => {
+          if (this._addon && this.sharedService.dataView.getGroups && this.sharedService.dataView.getGroups().length === 0) {
+            this._addon.init(grid);
           }
         });
       }

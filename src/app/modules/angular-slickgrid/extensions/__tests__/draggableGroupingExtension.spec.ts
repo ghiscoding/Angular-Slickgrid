@@ -8,8 +8,18 @@ import { Grouping } from '../../models';
 
 declare var Slick: any;
 
+const dataViewStub = {
+  collapseAllGroups: jest.fn(),
+  expandAllGroups: jest.fn(),
+  refresh: jest.fn(),
+  getGroups: jest.fn(),
+  getGrouping: jest.fn(),
+  setGrouping: jest.fn(),
+};
+
 const gridStub = {
   getOptions: jest.fn(),
+  onRendered: new Slick.Event(),
   registerPlugin: jest.fn(),
 };
 
@@ -120,6 +130,20 @@ describe('draggableGroupingExtension', () => {
         expect.anything()
       );
       expect(onColumnSpy).toHaveBeenCalledWith(expect.anything(), { caller: 'clear-all', groupColumns: [] });
+    });
+
+    it('should re-initialize the draggable grouping after "onRendered" event is triggered and dataView returns an empty array', () => {
+      jest.spyOn(SharedService.prototype, 'dataView', 'get').mockReturnValue(dataViewStub);
+      const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
+      jest.spyOn(dataViewStub, 'getGroups').mockReturnValue([]);
+
+      const instance = extension.create(gridOptionsMock);
+      const onInitSpy = jest.spyOn(instance, 'init');
+      extension.register();
+      gridStub.onRendered.notify({ startRow: 0, endRow: 3 }, new Slick.EventData(), gridStub);
+
+      expect(handlerSpy).toHaveBeenCalled();
+      expect(onInitSpy).toHaveBeenCalledWith(gridStub);
     });
   });
 });
