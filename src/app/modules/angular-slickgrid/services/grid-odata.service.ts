@@ -64,7 +64,7 @@ export class GridOdataService implements BackendService {
     this._odataService = new OdataQueryBuilderService();
   }
 
-  init(serviceOptions: OdataOption, pagination?: Pagination, grid?: any): void {
+  init(serviceOptions: Partial<OdataOption>, pagination?: Pagination, grid?: any): void {
     this._grid = grid;
     const mergedOptions = { ...this.defaultOptions, ...serviceOptions };
 
