@@ -1,5 +1,3 @@
-import { OperatorString, OperatorType, SearchTerm } from './../models/index';
-
 export interface CurrentColumn {
   /** Column id (in the column definitions) */
   columnId: string;

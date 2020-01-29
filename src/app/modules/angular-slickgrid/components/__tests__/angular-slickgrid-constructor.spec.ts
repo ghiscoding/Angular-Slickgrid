@@ -112,6 +112,7 @@ const gridStateServiceStub = {
   dispose: jest.fn(),
   getAssociatedGridColumns: jest.fn(),
   getCurrentGridState: jest.fn(),
+  needToPreserveRowSelection: jest.fn(),
   onGridStateChanged: new Subject<GridStateChange>(),
 } as unknown as GridStateService;
 
@@ -163,6 +164,7 @@ const mockDataView = {
   getItems: jest.fn(),
   getItemMetadata: jest.fn(),
   getPagingInfo: jest.fn(),
+  mapIdsToRows: jest.fn(),
   onRowsChanged: jest.fn(),
   onRowCountChanged: jest.fn(),
   onSetItemsCalled: jest.fn(),
@@ -196,6 +198,7 @@ const mockGrid = {
   invalidate: jest.fn(),
   getActiveCellNode: jest.fn(),
   getColumns: jest.fn(),
+  getSelectionModel: jest.fn(),
   getEditorLock: () => mockGetEditorLock,
   getOptions: jest.fn(),
   getScrollbarDimensions: jest.fn(),
@@ -286,7 +289,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     component.gridId = 'grid1';
     component.columnDefinitions = [{ id: 'name', field: 'name' }];
     component.dataset = [];
-    component.gridOptions = { enableExcelExport: false } as GridOption;
+    component.gridOptions = { enableExcelExport: false, dataView: null } as GridOption;
     component.gridHeight = 600;
     component.gridWidth = 800;
   });
@@ -486,6 +489,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should call the DataView syncGridSelection method with 2nd argument as True when the "dataView" grid option is a boolean and is set to True', () => {
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
         const syncSpy = jest.spyOn(mockDataView, 'syncGridSelection');
 
         component.gridOptions = { dataView: { syncGridSelection: true }, enableRowSelection: true } as GridOption;
@@ -495,6 +499,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should call the DataView syncGridSelection method with 3 arguments when the "dataView" grid option is provided as an object', () => {
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
         const syncSpy = jest.spyOn(mockDataView, 'syncGridSelection');
 
         component.gridOptions = {
@@ -746,6 +751,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should call the "updateSorters" method when filters are defined in the "presets" property', () => {
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
         const spy = jest.spyOn(mockGraphqlService, 'updateSorters');
         const mockSorters = [{ columnId: 'name', direction: 'asc' }] as CurrentSorter[];
 
@@ -1225,6 +1231,45 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(component.showCustomFooter).toBeFalse();
           done();
         }, 1);
+      });
+    });
+
+    describe('loadRowSelectionPresetWhenExists method', () => {
+      it('should call the "mapIdsToRows" from the DataView then "setSelectedRows" from the Grid when there are row selection presets with "dataContextIds" array set', (done) => {
+        const selectedGridRows = [2];
+        const selectedRowIds = [99];
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        const dataviewSpy = jest.spyOn(mockDataView, 'mapIdsToRows').mockReturnValue(selectedGridRows);
+        const gridSpy = jest.spyOn(mockGrid, 'setSelectedRows');
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
+
+        component.gridOptions.enableCheckboxSelector = true;
+        component.gridOptions.presets = { rowSelection: { dataContextIds: selectedRowIds } };
+        component.ngAfterViewInit();
+        component.dataset = mockData;
+
+        setTimeout(() => {
+          expect(dataviewSpy).toHaveBeenCalled();
+          expect(gridSpy).toHaveBeenCalledWith(selectedGridRows);
+          done();
+        });
+      });
+
+      it('should call the "setSelectedRows" from the Grid when there are row selection presets with "dataContextIds" array set', (done) => {
+        const selectedGridRows = [22];
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        const gridSpy = jest.spyOn(mockGrid, 'setSelectedRows');
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
+
+        component.gridOptions.enableRowSelection = true;
+        component.gridOptions.presets = { rowSelection: { gridRowIndexes: selectedGridRows } };
+        component.dataset = mockData;
+        component.ngAfterViewInit();
+
+        setTimeout(() => {
+          expect(gridSpy).toHaveBeenCalledWith(selectedGridRows);
+          done();
+        });
       });
     });
   });

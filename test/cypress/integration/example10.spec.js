@@ -3,6 +3,13 @@
 describe('Example 10 - Multiple Grids with Row Selection', () => {
   const titles = ['', 'Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 
+  beforeEach(() => {
+    // create a console.log spy for later use
+    cy.window().then((win) => {
+      cy.spy(win.console, "log");
+    });
+  });
+
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/selection`);
     cy.get('h2').should('contain', 'Example 10: Multiple Grids with Row Selection');
@@ -147,7 +154,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
   });
 
   describe('Pagination', () => {
-    it('should Clear all Filters on 2nd Grid and expect the same Pagination defined in both Grids', () => {
+    it('should Clear all Filters on 2nd Grid', () => {
       cy.get('#grid2')
         .find('button.slick-gridmenu-button')
         .trigger('click')
@@ -169,7 +176,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
       cy.get('@grid1')
         .find('[data-test=page-number-input]')
         .invoke('val')
-        .then(pageNumber => expect(pageNumber).to.eq('1'));
+        .then(pageNumber => expect(pageNumber).to.eq('2'));
 
       cy.get('@grid1')
         .find('[data-test=page-count]')
@@ -177,11 +184,11 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.get('@grid1')
         .find('[data-test=item-from]')
-        .contains('1');
+        .contains('6');
 
       cy.get('@grid1')
         .find('[data-test=item-to]')
-        .contains('5');
+        .contains('10');
 
       cy.get('@grid1')
         .find('[data-test=total-items]')
@@ -357,6 +364,51 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
       cy.get('@grid2')
         .find('[data-test=total-items]')
         .contains('525');
+    });
+  });
+
+  describe('Row Selection', () => {
+    it('should click on 3rd row and of the Grid1 and expect to see "Task 300" selected', () => {
+      cy.get('.slick-row:nth(2) .slick-cell:nth(0) input[type=checkbox]')
+        .click({ force: true });
+
+      cy.get('[data-test=grid1-selections]')
+        .contains('Task 300');
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(2);
+        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { gridRowIndexes: [2], dataContextIds: [300] }, type: 'rowSelection' });
+      });
+    });
+
+    it('should remove the filter from Grid1', () => {
+      cy.get('#slickGridContainer-grid1').as('grid1');
+
+      cy.get('@grid1')
+        .find('.filter-title')
+        .type('{backspace}{backspace}')
+        .invoke('text').then((text => {
+          expect(text.trim()).to.eq('')
+        }));
+    });
+
+    it('should go to Page 61 of Grid1 and expect to find "Task 300" still be selected', () => {
+      cy.get('#slickGridContainer-grid1').as('grid1');
+
+      cy.get('@grid1')
+        .find('[data-test=page-number-input]')
+        .clear()
+        .type('61')
+        .type('{enter}');
+
+      cy.get('[data-test=grid1-selections]')
+        .contains('Task 300');
+
+      cy.get('.slick-cell.l0.r0.slick-cell-checkboxsel.selected.true')
+        .should('exist');
+
+      cy.get('[data-test=grid1-selections]')
+        .contains('Task 300');
     });
   });
 });

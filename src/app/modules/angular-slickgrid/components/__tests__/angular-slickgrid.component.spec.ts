@@ -43,14 +43,6 @@ import {
   RowSelectionExtension,
 } from '../../extensions';
 
-declare var Slick: any;
-
-const sharedServiceStub = {} as SharedService;
-// Object.defineProperty(sharedServiceStub, 'dataView', {
-//   get: jest.fn(() => 'bar'),
-//   set: jest.fn()
-// });
-
 const excelExportServiceStub = {
   init: jest.fn(),
   dispose: jest.fn(),
@@ -176,7 +168,7 @@ describe('App Component', () => {
 
     // setup bindable properties
     component.gridId = 'grid1';
-    component.gridOptions = { enableFiltering: true };
+    component.gridOptions = { enableFiltering: true, dataView: { syncGridSelection: false } };
     component.columnDefinitions = [];
     component.dataset = [];
   }));

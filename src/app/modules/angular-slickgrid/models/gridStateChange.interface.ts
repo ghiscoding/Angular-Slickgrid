@@ -1,9 +1,9 @@
-import { Column, CurrentFilter, CurrentPagination, CurrentSorter, GridState, GridStateType } from './index';
+import { Column, CurrentFilter, CurrentPagination, CurrentRowSelection, CurrentSorter, GridState, GridStateType } from './index';
 
 export interface GridStateChange {
   /** Changes that were triggered */
   change?: {
-    newValues: Column[] | CurrentFilter[] | CurrentSorter[] | CurrentPagination;
+    newValues: Column[] | CurrentFilter[] | CurrentSorter[] | CurrentPagination | CurrentRowSelection;
     type: GridStateType;
   };
 

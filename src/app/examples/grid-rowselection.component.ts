@@ -5,7 +5,8 @@ import {
   FieldType,
   Filters,
   Formatters,
-  GridOption
+  GridOption,
+  GridStateChange
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -133,6 +134,16 @@ export class GridRowSelectionComponent implements OnInit {
         pageSizes: [5, 10, 15, 20, 25, 50, 75, 100],
         pageSize: 5
       },
+      presets: {
+        pagination: { pageNumber: 2, pageSize: 5 },
+
+        // you can presets row selection here as well, you can choose 1 of the following 2 ways of setting the selection
+        // by their index position in the grid (UI) or by the object IDs, the default is "dataContextIds" and if provided it will use it and disregard "gridRowIndexes"
+        // rowSelection: {
+        //   // gridRowIndexes: [2],  // the row position of what you see on the screen (UI)
+        //   dataContextIds: [6]      // the data object IDs
+        // }
+      },
     };
 
     this.gridOptions2 = {
@@ -201,8 +212,14 @@ export class GridRowSelectionComponent implements OnInit {
     this.angularGrid2.paginationService.goToLastPage();
   }
 
+  /** Dispatched event of a Grid State Changed event */
+  grid1StateChanged(gridStateChanges: GridStateChange) {
+    console.log('Client sample, Grid State changed:: ', gridStateChanges);
+    console.log('Client sample, Grid State changed:: ', gridStateChanges.change);
+  }
+
   handleSelectedRowsChanged1(e, args) {
-    if (Array.isArray(args.rows)) {
+    if (Array.isArray(args.rows) && this.gridObj1) {
       this.selectedTitle = args.rows.map(idx => {
         const item = this.gridObj1.getDataItem(idx);
         return item.title || '';
@@ -211,7 +228,7 @@ export class GridRowSelectionComponent implements OnInit {
   }
 
   handleSelectedRowsChanged2(e, args) {
-    if (Array.isArray(args.rows)) {
+    if (Array.isArray(args.rows) && this.gridObj2) {
       this.selectedTitles = args.rows.map(idx => {
         const item = this.gridObj2.getDataItem(idx);
         return item.title || '';

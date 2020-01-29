@@ -67,6 +67,9 @@ export const GlobalGridOptions: GridOption = {
       ofKey: 'OF',
     }
   },
+  dataView: {
+    syncGridSelection: true // when enabled, this will preserve the row selection even after filtering/sorting/grouping
+  },
   datasetIdPropertyName: 'id',
   defaultFilter: Filters.input,
   enableFilterTrimWhiteSpace: false, // do we want to trim white spaces on all Filters?

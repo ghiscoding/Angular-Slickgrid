@@ -121,6 +121,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _fixedWidth: number | null;
   private _hideHeaderRowAfterPageLoad = false;
   private _isGridInitialized = false;
+  private _isDatasetInitialized = false;
   private _isPaginationInitialized = false;
   dataView: any;
   grid: any;
@@ -306,9 +307,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * Also if we use Row Selection or the Checkbox Selector, we need to reset any selection
    */
   paginationChanged(pagination: ServicePagination) {
-    if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
+    const isSyncGridSelectionEnabled = this.gridStateService && this.gridStateService.needToPreserveRowSelection() || false;
+    if (!isSyncGridSelectionEnabled && (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector)) {
       this.gridService.setSelectedRows([]);
     }
+
     const { pageNumber, pageSize } = pagination;
     if (this.sharedService) {
       if (pageSize) {
@@ -330,6 +333,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
       if (!this.gridOptions.backendServiceApi) {
         this.dataView.reSort();
+      }
+
+      if (dataset.length > 0) {
+        if (!this._isDatasetInitialized && this.gridOptions.enableCheckboxSelector) {
+          this.loadRowSelectionPresetWhenExists();
+        }
+        this._isDatasetInitialized = true;
       }
 
       if (dataset) {
@@ -405,6 +415,24 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   showHeaderRow(showing = true) {
     this.grid.setHeaderRowVisibility(showing);
     return showing;
+  }
+
+  /** Load any Row Selections into the DataView that were presets by the user */
+  loadRowSelectionPresetWhenExists() {
+    // if user entered some Row Selections "presets"
+    const selectionModel = this.grid && this.grid.getSelectionModel();
+    const enableRowSelection = this.gridOptions && (this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection);
+    if (enableRowSelection && selectionModel && this.gridOptions.presets && this.gridOptions.presets.rowSelection && (Array.isArray(this.gridOptions.presets.rowSelection.gridRowIndexes) || Array.isArray(this.gridOptions.presets.rowSelection.dataContextIds))) {
+      const dataContextSelections = this.gridOptions.presets.rowSelection.dataContextIds;
+      const gridRowIndexes = this.gridOptions.presets.rowSelection.gridRowIndexes;
+
+      if (Array.isArray(dataContextSelections) && dataContextSelections.length > 0) {
+        const selectedRows = this.dataView.mapIdsToRows(dataContextSelections);
+        this.grid.setSelectedRows(selectedRows);
+      } else if (Array.isArray(gridRowIndexes) && gridRowIndexes.length > 0) {
+        this.grid.setSelectedRows(gridRowIndexes);
+      }
+    }
   }
 
   //
@@ -718,13 +746,21 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
       // if you don't want the items that are not visible (due to being filtered out or being on a different page)
       // to stay selected, pass 'false' to the second arg
-      if (this.gridOptions && this.gridOptions.dataView && this.gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
+      const selectionModel = this.grid && this.grid.getSelectionModel();
+      if (selectionModel && this.gridOptions && this.gridOptions.dataView && this.gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
         const syncGridSelection = this.gridOptions.dataView.syncGridSelection;
         if (typeof syncGridSelection === 'boolean') {
           this.dataView.syncGridSelection(this.grid, this.gridOptions.dataView.syncGridSelection);
         } else {
           this.dataView.syncGridSelection(this.grid, syncGridSelection.preserveHidden, syncGridSelection.preserveHiddenOnSelectionChange);
         }
+      }
+
+      if (this._dataset.length > 0) {
+        if (!this._isDatasetInitialized && (this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection)) {
+          this.loadRowSelectionPresetWhenExists();
+        }
+        this._isDatasetInitialized = true;
       }
     }
 
@@ -772,7 +808,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.bindBackendCallbackFunctions(this.gridOptions);
     }
 
-    this.gridStateService.init(this.grid);
+    this.gridStateService.init(this.grid, this.dataView);
 
     // local grid, check if we need to show the Pagination
     // if so then also check if there's any presets and finally initialize the PaginationService

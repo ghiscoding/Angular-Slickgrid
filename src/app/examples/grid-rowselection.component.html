@@ -21,6 +21,7 @@
 
   <angular-slickgrid gridId="grid1" gridHeight="225" gridWidth="800" [columnDefinitions]="columnDefinitions1"
     [gridOptions]="gridOptions1" [dataset]="dataset1" (onAngularGridCreated)="angularGridReady1($event)"
+    (onGridStateChanged)="grid1StateChanged($event)"
     (sgOnSelectedRowsChanged)="handleSelectedRowsChanged1($event.detail.eventData, $event.detail.args)">
   </angular-slickgrid>
 

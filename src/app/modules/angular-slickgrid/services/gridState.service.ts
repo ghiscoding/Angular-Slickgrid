@@ -3,6 +3,7 @@ import {
   CurrentColumn,
   CurrentFilter,
   CurrentPagination,
+  CurrentRowSelection,
   CurrentSorter,
   ExtensionName,
   GridOption,
@@ -27,6 +28,7 @@ export class GridStateService {
   private _eventHandler: SlickEventHandler;
   private _columns: Column[] = [];
   private _currentColumns: CurrentColumn[] = [];
+  private _dataView: any;
   private _grid: any;
   private subscriptions: Subscription[] = [];
   onGridStateChanged = new Subject<GridStateChange>();
@@ -49,8 +51,9 @@ export class GridStateService {
    * Initialize the Grid State Service
    * @param grid
    */
-  init(grid: any): void {
+  init(grid: any, dataView: any): void {
     this._grid = grid;
+    this._dataView = dataView;
     this.subscribeToAllGridChanges(grid);
   }
 
@@ -74,12 +77,17 @@ export class GridStateService {
     const gridState: GridState = {
       columns: this.getCurrentColumns(),
       filters: this.getCurrentFilters(),
-      sorters: this.getCurrentSorters()
+      sorters: this.getCurrentSorters(),
     };
 
     const currentPagination = this.getCurrentPagination();
     if (currentPagination) {
       gridState.pagination = currentPagination;
+    }
+
+    const currentRowSelection = this.getCurrentRowSelections();
+    if (currentRowSelection) {
+      gridState.rowSelection = currentRowSelection;
     }
     return gridState;
   }
@@ -194,6 +202,24 @@ export class GridStateService {
    * Get the current Sorters (and their state, columnId, direction) that are currently applied in the grid
    * @return current sorters
    */
+  getCurrentRowSelections(): CurrentRowSelection | null {
+    if (this._grid && this._gridOptions && this._dataView) {
+      const selectionModel = this._grid.getSelectionModel();
+      const isRowSelectionEnabled = this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector;
+
+      if (isRowSelectionEnabled && selectionModel && this._grid.getSelectedRows && this._dataView.mapRowsToIds) {
+        const rowSelections = this._grid.getSelectedRows() || [];
+        const dataViewIndexes = this._dataView.mapRowsToIds(rowSelections) || [];
+        return { gridRowIndexes: rowSelections, dataContextIds: dataViewIndexes };
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get the current Sorters (and their state, columnId, direction) that are currently applied in the grid
+   * @return current sorters
+   */
   getCurrentSorters(): CurrentSorter[] | null {
     if (this._gridOptions && this._gridOptions.backendServiceApi) {
       const backendService = this._gridOptions.backendServiceApi.service;
@@ -206,6 +232,20 @@ export class GridStateService {
     return null;
   }
 
+  /** Check whether the row selection needs to be preserved */
+  needToPreserveRowSelection(): boolean {
+    let preservedRowSelection = false;
+    if (this._gridOptions && this._gridOptions.dataView && this._gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
+      const syncGridSelection = this._gridOptions.dataView.syncGridSelection;
+      if (typeof syncGridSelection === 'boolean') {
+        preservedRowSelection = this._gridOptions.dataView.syncGridSelection as boolean;
+      } else {
+        preservedRowSelection = syncGridSelection.preserveHidden;
+      }
+    }
+    return preservedRowSelection;
+  }
+
   resetColumns(columnDefinitions?: Column[]) {
     const columns: Column[] = columnDefinitions || this._columns;
     const currentColumns: CurrentColumn[] = this.getAssociatedCurrentColumns(columns);
@@ -213,8 +253,8 @@ export class GridStateService {
   }
 
   /** if we use Row Selection or the Checkbox Selector, we need to reset any selection */
-  resetRowSelection() {
-    if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
+  resetRowSelectionWhenRequired() {
+    if (!this.needToPreserveRowSelection() && this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
       // this also requires the Row Selection Model to be registered as well
       const rowSelectionExtension = this.extensionService && this.extensionService.getExtensionByName && this.extensionService.getExtensionByName(ExtensionName.rowSelection);
       if (rowSelectionExtension && rowSelectionExtension.instance) {
@@ -231,14 +271,15 @@ export class GridStateService {
     // Subscribe to Event Emitter of Filter changed
     this.subscriptions.push(
       this.filterService.onFilterChanged.subscribe((currentFilters: CurrentFilter[]) => {
-        this.resetRowSelection();
+        this.resetRowSelectionWhenRequired();
         this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: this.getCurrentGridState() });
       })
     );
+
     // Subscribe to Event Emitter of Filter cleared
     this.subscriptions.push(
       this.filterService.onFilterCleared.subscribe(() => {
-        this.resetRowSelection();
+        this.resetRowSelectionWhenRequired();
         this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.filter }, gridState: this.getCurrentGridState() });
       })
     );
@@ -246,7 +287,7 @@ export class GridStateService {
     // Subscribe to Event Emitter of Sort changed
     this.subscriptions.push(
       this.sortService.onSortChanged.subscribe((currentSorters: CurrentSorter[]) => {
-        this.resetRowSelection();
+        this.resetRowSelectionWhenRequired();
         this.onGridStateChanged.next({ change: { newValues: currentSorters, type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
       })
     );
@@ -254,7 +295,7 @@ export class GridStateService {
     // Subscribe to Event Emitter of Sort cleared
     this.subscriptions.push(
       this.sortService.onSortCleared.subscribe(() => {
-        this.resetRowSelection();
+        this.resetRowSelectionWhenRequired();
         this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
       })
     );
@@ -264,8 +305,9 @@ export class GridStateService {
     this.bindExtensionAddonEventToGridStateChange(ExtensionName.gridMenu, 'onColumnsChanged');
 
     // subscribe to Column Resize & Reordering
-    this.bindSlickGridEventToGridStateChange('onColumnsReordered', grid);
-    this.bindSlickGridEventToGridStateChange('onColumnsResized', grid);
+    this.bindSlickGridEventToGridStateChange('onColumnsReordered', grid, GridStateType.columns);
+    this.bindSlickGridEventToGridStateChange('onColumnsResized', grid, GridStateType.columns);
+    this.bindSlickGridEventToGridStateChange('onSelectedRowsChanged', grid, GridStateType.rowSelection);
 
     // subscribe to HeaderMenu (hide column)
     this.subscriptions.push(
@@ -303,14 +345,15 @@ export class GridStateService {
    * @param event name
    * @param grid
    */
-  private bindSlickGridEventToGridStateChange(eventName: string, grid: any) {
+  private bindSlickGridEventToGridStateChange(eventName: string, grid: any, changeType = GridStateType.columns) {
     const slickGridEvent = grid && grid[eventName];
 
     if (slickGridEvent && slickGridEvent.subscribe) {
-      this._eventHandler.subscribe(slickGridEvent, (e: Event, args: any) => {
+      this._eventHandler.subscribe(slickGridEvent, () => {
         const columns: Column[] = grid.getColumns();
         const currentColumns: CurrentColumn[] = this.getAssociatedCurrentColumns(columns);
-        this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
+        const newValues = (changeType === GridStateType.rowSelection) ? this.getCurrentRowSelections() : currentColumns;
+        this.onGridStateChanged.next({ change: { newValues, type: changeType }, gridState: this.getCurrentGridState() });
       });
     }
   }
