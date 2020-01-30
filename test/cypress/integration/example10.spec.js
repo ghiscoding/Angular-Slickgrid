@@ -377,7 +377,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.window().then((win) => {
         expect(win.console.log).to.have.callCount(2);
-        expect(win.console.log).to.be.calledWith("Client sample, Grid State changed:: ", { newValues: { gridRowIndexes: [2], dataContextIds: [300] }, type: 'rowSelection' });
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [2], dataContextIds: [300] }, type: 'rowSelection' });
       });
     });
 

@@ -13,7 +13,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Constants } from '../constants';
 import { GlobalGridOptions } from './../global-grid-options';
 import { titleCase, unsubscribeAllObservables } from './../services/utilities';
-import { executeBackendProcessesCallback, onBackendError } from '../services/backend-utilities';
+import { executeBackendProcessesCallback, onBackendError, refreshBackendDataset } from '../services/backend-utilities';
 import {
   AngularGridInstance,
   BackendServiceApi,
@@ -685,8 +685,18 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         locales: this.locales,
       };
       this.paginationService.totalItems = this.totalItems;
-      this.paginationService.onPaginationChanged.subscribe((changes: ServicePagination) => this.paginationChanged(changes));
       this.paginationService.init(this.grid, this.dataView, paginationOptions, this.backendServiceApi);
+      this.subscriptions.push(
+        this.paginationService.onPaginationChanged.subscribe((changes: ServicePagination) => this.paginationChanged(changes))
+      );
+      this.subscriptions.push(
+        this.paginationService.onShowPaginationChanged.subscribe((showPaging: boolean) => {
+          this.showPagination = showPaging;
+          if (this.gridOptions && this.gridOptions.backendServiceApi) {
+            refreshBackendDataset();
+          }
+        })
+      );
       this._isPaginationInitialized = true;
     }
     this.cd.detectChanges();

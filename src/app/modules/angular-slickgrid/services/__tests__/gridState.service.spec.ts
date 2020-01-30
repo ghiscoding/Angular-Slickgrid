@@ -33,7 +33,10 @@ const backendServiceStub = {
 } as BackendService;
 
 const dataViewStub = {
+  mapIdsToRows: jest.fn(),
   mapRowsToIds: jest.fn(),
+  onBeforePagingInfoChanged: new Slick.Event(),
+  onPagingInfoChanged: new Slick.Event(),
 };
 
 const gridStub = {
@@ -43,9 +46,10 @@ const gridStub = {
   getColumns: jest.fn(),
   getSelectionModel: jest.fn(),
   getSelectedRows: jest.fn(),
+  setSelectedRows: jest.fn(),
   onColumnsReordered: new Slick.Event(),
   onColumnsResized: new Slick.Event(),
-  setSelectedRows: jest.fn(),
+  onSelectedRowsChanged: new Slick.Event(),
 };
 
 const extensionServiceStub = {

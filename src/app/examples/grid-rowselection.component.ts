@@ -36,8 +36,10 @@ export class GridRowSelectionComponent implements OnInit {
   dataset2: any[];
   gridObj1: any;
   gridObj2: any;
+  isGrid2WithPagination = true;
   selectedTitles: any[];
   selectedTitle: any;
+  selectedGrid2IDs: number[];
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -214,23 +216,33 @@ export class GridRowSelectionComponent implements OnInit {
 
   /** Dispatched event of a Grid State Changed event */
   grid1StateChanged(gridStateChanges: GridStateChange) {
-    console.log('Client sample, Grid State changed:: ', gridStateChanges);
-    console.log('Client sample, Grid State changed:: ', gridStateChanges.change);
+    console.log('Grid State changed:: ', gridStateChanges);
+    console.log('Grid State changed:: ', gridStateChanges.change);
+  }
+
+  /** Dispatched event of a Grid State Changed event */
+  grid2StateChanged(gridStateChanges: GridStateChange) {
+    console.log('Grid State changed:: ', gridStateChanges);
+    console.log('Grid State changed:: ', gridStateChanges.change);
+
+    if (gridStateChanges.gridState.rowSelection) {
+      this.selectedGrid2IDs = (gridStateChanges.gridState.rowSelection.dataContextIds || []) as number[];
+      this.selectedTitles = this.selectedGrid2IDs.map(dataContextId => `Task ${dataContextId}`);
+    }
+  }
+
+  // Toggle the Pagination of Grid2
+  // IMPORTANT, the Pagination MUST BE CREATED on initial page load before you can start toggling it
+  // Basically you cannot toggle a Pagination that doesn't exist (must created at the time as the grid)
+  togglePaginationGrid2() {
+    this.isGrid2WithPagination = !this.isGrid2WithPagination;
+    this.angularGrid2.paginationService.showPagination(this.isGrid2WithPagination);
   }
 
   handleSelectedRowsChanged1(e, args) {
     if (Array.isArray(args.rows) && this.gridObj1) {
       this.selectedTitle = args.rows.map(idx => {
         const item = this.gridObj1.getDataItem(idx);
-        return item.title || '';
-      });
-    }
-  }
-
-  handleSelectedRowsChanged2(e, args) {
-    if (Array.isArray(args.rows) && this.gridObj2) {
-      this.selectedTitles = args.rows.map(idx => {
-        const item = this.gridObj2.getDataItem(idx);
         return item.title || '';
       });
     }

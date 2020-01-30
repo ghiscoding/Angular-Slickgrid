@@ -27,8 +27,11 @@ import * as utilities from '../../services/backend-utilities';
 
 
 const mockExecuteBackendProcess = jest.fn();
+const mockRefreshBackendDataset = jest.fn();
 // @ts-ignore
 utilities.executeBackendProcessesCallback = mockExecuteBackendProcess;
+// @ts-ignore
+utilities.refreshBackendDataset = mockRefreshBackendDataset;
 
 const mockBackendError = jest.fn();
 // @ts-ignore
@@ -120,6 +123,7 @@ const paginationServiceStub = {
   totalItems: 0,
   init: jest.fn(),
   dispose: jest.fn(),
+  onShowPaginationChanged: new Subject<boolean>(),
   onPaginationChanged: new Subject<ServicePagination>(),
 } as unknown as PaginationService;
 
@@ -1110,9 +1114,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
     });
 
-    describe('paginationChanged method', () => {
+    describe('pagination events', () => {
       beforeEach(() => {
         jest.clearAllMocks();
+        component.destroy();
       });
 
       it('should call trigger a gridStage change event when pagination change is triggered', () => {
@@ -1268,6 +1273,35 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
 
         setTimeout(() => {
           expect(gridSpy).toHaveBeenCalledWith(selectedGridRows);
+          done();
+        });
+      });
+    });
+
+    describe('onShowPaginationChanged event', () => {
+      beforeEach(() => {
+        jest.clearAllMocks();
+        component.destroy();
+      });
+
+      it('should change "showPagination" flag when "onShowPaginationChanged" from the Pagination Service is triggered', (done) => {
+        component.gridOptions.enablePagination = true;
+        component.gridOptions.backendServiceApi = null;
+        component.ngAfterViewInit();
+        paginationServiceStub.onShowPaginationChanged.next(false);
+        setTimeout(() => {
+          expect(component.showPagination).toBeFalsy();
+          done();
+        });
+      });
+
+      it('should call the backend service API to refresh the dataset', (done) => {
+        component.gridOptions.enablePagination = true;
+        component.ngAfterViewInit();
+        paginationServiceStub.onShowPaginationChanged.next(false);
+        setTimeout(() => {
+          expect(mockRefreshBackendDataset).toHaveBeenCalled();
+          expect(component.showPagination).toBeFalsy();
           done();
         });
       });
