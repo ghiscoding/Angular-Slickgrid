@@ -43,6 +43,10 @@ export class RowDetailViewExtension implements Extension {
     this._eventHandler = new Slick.EventHandler();
   }
 
+  private get datasetIdPropName(): string {
+    return this.gridOptions.datasetIdPropertyName || 'id';
+  }
+
   get eventHandler(): SlickEventHandler {
     return this._eventHandler;
   }
@@ -107,7 +111,7 @@ export class RowDetailViewExtension implements Extension {
           }
           if (!gridOptions.rowDetailView.postTemplate) {
             this._viewComponent = gridOptions && gridOptions.rowDetailView && gridOptions.rowDetailView.viewComponent;
-            gridOptions.rowDetailView.postTemplate = (itemDetail: any) => DOMPurify.sanitize(`<div class="${ROW_DETAIL_CONTAINER_PREFIX}${itemDetail.id}"></div>`);
+            gridOptions.rowDetailView.postTemplate = (itemDetail: any) => DOMPurify.sanitize(`<div class="${ROW_DETAIL_CONTAINER_PREFIX}${itemDetail[this.datasetIdPropName]}"></div>`);
           }
 
           // finally register the Row Detail View Plugin
@@ -231,7 +235,7 @@ export class RowDetailViewExtension implements Extension {
 
   /** Redraw the necessary View Component */
   redrawViewComponent(createdView: CreatedView) {
-    const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${createdView.id}`);
+    const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${createdView[this.datasetIdPropName]}`);
     if (containerElements && containerElements.length) {
       this.renderViewModel(createdView.dataContext);
     }
@@ -247,7 +251,7 @@ export class RowDetailViewExtension implements Extension {
 
   /** Render (or rerender) the View Component (Row Detail) */
   renderViewModel(item: any): CreatedView | null {
-    const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item.id}`);
+    const containerElements = document.getElementsByClassName(`${ROW_DETAIL_CONTAINER_PREFIX}${item[this.datasetIdPropName]}`);
     if (containerElements && containerElements.length) {
       const componentOutput = this.angularUtilService.createAngularComponentAppendToDom(this._viewComponent, containerElements[0], true);
       if (componentOutput && componentOutput.componentRef && componentOutput.componentRef.instance) {
@@ -260,7 +264,7 @@ export class RowDetailViewExtension implements Extension {
           parent: this.rowDetailViewOptions && this.rowDetailViewOptions.parent,
         });
 
-        const viewObj = this._views.find((obj) => obj.id === item.id);
+        const viewObj = this._views.find((obj) => obj[this.datasetIdPropName] === item[this.datasetIdPropName]);
         if (viewObj) {
           viewObj.componentRef = componentOutput.componentRef;
         }
@@ -307,15 +311,15 @@ export class RowDetailViewExtension implements Extension {
       // wait for the "userProcessFn", once resolved we will save it into the "collection"
       const response: any | any[] = await userProcessFn;
 
-      if (response.hasOwnProperty('id')) {
+      if (response.hasOwnProperty(this.datasetIdPropName)) {
         awaitedItemDetail = response; // from Promise
       } else if (response && response instanceof Observable || response instanceof Promise) {
         awaitedItemDetail = await castToPromise(response); // from Angular-http-client
       }
 
-      if (!awaitedItemDetail || !awaitedItemDetail.hasOwnProperty('id')) {
+      if (!awaitedItemDetail || !awaitedItemDetail.hasOwnProperty(this.datasetIdPropName)) {
         throw new Error(`[Angular-Slickgrid] could not process the Row Detail, you must make sure that your "process" callback
-          (a Promise or an HttpClient call returning an Observable) returns an item object that has an "id" property`);
+          (a Promise or an HttpClient call returning an Observable) returns an item object that has an "${this.datasetIdPropName}" property`);
       }
 
       // notify the plugin with the new item details
@@ -334,13 +338,13 @@ export class RowDetailViewExtension implements Extension {
     if (args && args.item && args.item.__collapsed) {
       // expanding row detail
       const viewInfo: CreatedView = {
-        id: args.item.id,
+        id: args.item[this.datasetIdPropName],
         dataContext: args.item
       };
       addToArrayWhenNotExists(this._views, viewInfo);
     } else {
       // collapsing, so dispose of the View/Component
-      const foundViewIndex = this._views.findIndex((view: CreatedView) => view.id === args.item.id);
+      const foundViewIndex = this._views.findIndex((view: CreatedView) => view[this.datasetIdPropName] === args.item[this.datasetIdPropName]);
       if (foundViewIndex >= 0 && this._views.hasOwnProperty(foundViewIndex)) {
         const compRef = this._views[foundViewIndex].componentRef;
         this.appRef.detachView(compRef.hostView);
@@ -354,7 +358,7 @@ export class RowDetailViewExtension implements Extension {
   private onRowBackToViewportRange(e: Event, args: { grid: any; item: any; rowId: number; rowIndex: number; expandedRows: any[]; rowIdsOutOfViewport: number[]; }) {
     if (args && args.item) {
       this._views.forEach((view) => {
-        if (view.id === args.item.id) {
+        if (view[this.datasetIdPropName] === args.item[this.datasetIdPropName]) {
           this.redrawViewComponent(view);
         }
       });

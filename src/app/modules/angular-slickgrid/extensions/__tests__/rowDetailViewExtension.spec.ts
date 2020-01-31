@@ -138,6 +138,7 @@ describe('rowDetailViewExtension', () => {
     let columnsMock: Column[];
 
     beforeEach(() => {
+      gridOptionsMock.datasetIdPropertyName = 'id';
       columnsMock = [{ id: 'field1', field: 'field1', width: 100, cssClass: 'red' }];
       jest.spyOn(SharedService.prototype, 'grid', 'get').mockReturnValue(gridStub);
       jest.spyOn(SharedService.prototype, 'dataView', 'get').mockReturnValue(dataViewStub);
@@ -184,6 +185,13 @@ describe('rowDetailViewExtension', () => {
     it('should provide a sanitized "postTemplate" when only a "viewComponent" is provided (meaning no "postTemplate" is originally provided)', async () => {
       gridOptionsMock.rowDetailView.viewComponent = TestPreloadComponent;
       const output = await gridOptionsMock.rowDetailView.postTemplate({ id: 'field1', field: 'field1' });
+      expect(output).toEqual(`<div class="${ROW_DETAIL_CONTAINER_PREFIX}field1"></div>`);
+    });
+
+    it('should define "datasetIdPropertyName" with different "id" and provide a sanitized "postTemplate" when only a "viewComponent" is provided (meaning no "postTemplate" is originally provided)', async () => {
+      gridOptionsMock.rowDetailView.viewComponent = TestPreloadComponent;
+      gridOptionsMock.datasetIdPropertyName = 'rowId';
+      const output = await gridOptionsMock.rowDetailView.postTemplate({ rowId: 'field1', field: 'field1' });
       expect(output).toEqual(`<div class="${ROW_DETAIL_CONTAINER_PREFIX}field1"></div>`);
     });
 
@@ -522,6 +530,20 @@ describe('rowDetailViewExtension', () => {
       });
 
       gridOptionsMock.rowDetailView.process({ id: 'field1', field: 'field1' });
+    });
+
+    it('should define "datasetIdPropertyName" with different "id" and run the internal "onProcessing" and call "notifyTemplate" with an Object to simular HttpClient call when "process" method is defined and executed', (done) => {
+      const mockItem = { rowId: 2, firstName: 'John', lastName: 'Doe' };
+      gridOptionsMock.rowDetailView.process = (item) => of(mockItem);
+      gridOptionsMock.datasetIdPropertyName = 'rowId';
+      const instance = extension.create(columnsMock, gridOptionsMock);
+
+      instance.onAsyncResponse.subscribe((e, response) => {
+        expect(response).toEqual(expect.objectContaining({ item: mockItem }));
+        done();
+      });
+
+      gridOptionsMock.rowDetailView.process({ rowId: 'field1', field: 'field1' });
     });
 
     it('should run the internal "onProcessing" and call "notifyTemplate" with an Object to simular HttpClient call when "process" method is defined and executed', async () => {

@@ -85,6 +85,7 @@ export class GridRowDetailComponent implements OnInit {
       rowSelectionOptions: {
         selectActiveRow: true
       },
+      datasetIdPropertyName: 'rowId', // optionally use a different "id"
       rowDetailView: {
         // We can load the "process" asynchronously in 2 different ways (httpClient OR even Promise)
         process: (item) => this.simulateServerAsyncCall(item),
@@ -134,7 +135,7 @@ export class GridRowDetailComponent implements OnInit {
       const randomPercent = Math.round(Math.random() * 100);
 
       this.dataset[i] = {
-        id: i,
+        rowId: i,
         title: 'Task ' + i,
         duration: (i % 33 === 0) ? null : Math.random() * 100 + '',
         percentComplete: randomPercent,
