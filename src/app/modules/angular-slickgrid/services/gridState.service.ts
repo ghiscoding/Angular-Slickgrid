@@ -1,8 +1,12 @@
+import * as isequal_ from 'lodash.isequal';
+const isequal = isequal_; // patch to fix rollup to work
+
 import {
   Column,
   CurrentColumn,
   CurrentFilter,
   CurrentPagination,
+  CurrentRowSelection,
   CurrentSorter,
   ExtensionName,
   GridOption,
@@ -27,14 +31,12 @@ export class GridStateService {
   private _eventHandler: SlickEventHandler;
   private _columns: Column[] = [];
   private _currentColumns: CurrentColumn[] = [];
+  private _dataView: any;
   private _grid: any;
-  private subscriptions: Subscription[] = [];
+  private _subscriptions: Subscription[] = [];
+  private _selectedRowDataContextIds: Array<number | string> = []; // used with row selection
+  private _wasRecheckedAfterPageChange = true; // used with row selection & pagination
   onGridStateChanged = new Subject<GridStateChange>();
-
-  /** Getter for the Grid Options pulled through the Grid Object */
-  private get _gridOptions(): GridOption {
-    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
-  }
 
   constructor(
     private extensionService: ExtensionService,
@@ -45,12 +47,28 @@ export class GridStateService {
     this._eventHandler = new Slick.EventHandler();
   }
 
+  /** Getter for the Grid Options pulled through the Grid Object */
+  private get _gridOptions(): GridOption {
+    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
+
+  /** Getter of the selected data context object IDs */
+  get selectedRowDataContextIds(): Array<number | string> {
+    return this._selectedRowDataContextIds;
+  }
+
+  /** Setter of the selected data context object IDs */
+  set selectedRowDataContextIds(dataContextIds: Array<number | string>) {
+    this._selectedRowDataContextIds = dataContextIds;
+  }
+
   /**
    * Initialize the Grid State Service
    * @param grid
    */
-  init(grid: any): void {
+  init(grid: any, dataView: any): void {
     this._grid = grid;
+    this._dataView = dataView;
     this.subscribeToAllGridChanges(grid);
   }
 
@@ -60,7 +78,7 @@ export class GridStateService {
     this._eventHandler.unsubscribeAll();
 
     // also unsubscribe all Angular Subscriptions
-    this.subscriptions = unsubscribeAllObservables(this.subscriptions);
+    this._subscriptions = unsubscribeAllObservables(this._subscriptions);
 
     this._currentColumns = [];
     this._columns = [];
@@ -74,12 +92,17 @@ export class GridStateService {
     const gridState: GridState = {
       columns: this.getCurrentColumns(),
       filters: this.getCurrentFilters(),
-      sorters: this.getCurrentSorters()
+      sorters: this.getCurrentSorters(),
     };
 
     const currentPagination = this.getCurrentPagination();
     if (currentPagination) {
       gridState.pagination = currentPagination;
+    }
+
+    const currentRowSelection = this.getCurrentRowSelections();
+    if (currentRowSelection) {
+      gridState.rowSelection = currentRowSelection;
     }
     return gridState;
   }
@@ -194,6 +217,32 @@ export class GridStateService {
    * Get the current Sorters (and their state, columnId, direction) that are currently applied in the grid
    * @return current sorters
    */
+  getCurrentRowSelections(): CurrentRowSelection | null {
+    if (this._grid && this._gridOptions && this._dataView) {
+      const selectionModel = this._grid.getSelectionModel();
+      const isRowSelectionEnabled = this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector;
+
+      if (isRowSelectionEnabled && selectionModel && this._grid.getSelectedRows && this._dataView.mapRowsToIds) {
+        let gridRowIndexes: number[] = [];
+        let dataContextIds: Array<number | string> = [];
+
+        if (this._gridOptions.enablePagination) {
+          gridRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []); // note that this will return only what is visible in current page
+          dataContextIds = this._selectedRowDataContextIds;
+        } else {
+          gridRowIndexes = this._grid.getSelectedRows() || [];
+          dataContextIds = this._dataView.mapRowsToIds(gridRowIndexes) || [];
+        }
+        return { gridRowIndexes, dataContextIds };
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get the current Sorters (and their state, columnId, direction) that are currently applied in the grid
+   * @return current sorters
+   */
   getCurrentSorters(): CurrentSorter[] | null {
     if (this._gridOptions && this._gridOptions.backendServiceApi) {
       const backendService = this._gridOptions.backendServiceApi.service;
@@ -206,6 +255,20 @@ export class GridStateService {
     return null;
   }
 
+  /** Check whether the row selection needs to be preserved */
+  needToPreserveRowSelection(): boolean {
+    let preservedRowSelection = false;
+    if (this._gridOptions && this._gridOptions.dataView && this._gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
+      const syncGridSelection = this._gridOptions.dataView.syncGridSelection;
+      if (typeof syncGridSelection === 'boolean') {
+        preservedRowSelection = this._gridOptions.dataView.syncGridSelection as boolean;
+      } else {
+        preservedRowSelection = syncGridSelection.preserveHidden;
+      }
+    }
+    return preservedRowSelection;
+  }
+
   resetColumns(columnDefinitions?: Column[]) {
     const columns: Column[] = columnDefinitions || this._columns;
     const currentColumns: CurrentColumn[] = this.getAssociatedCurrentColumns(columns);
@@ -213,8 +276,8 @@ export class GridStateService {
   }
 
   /** if we use Row Selection or the Checkbox Selector, we need to reset any selection */
-  resetRowSelection() {
-    if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
+  resetRowSelectionWhenRequired() {
+    if (!this.needToPreserveRowSelection() && this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
       // this also requires the Row Selection Model to be registered as well
       const rowSelectionExtension = this.extensionService && this.extensionService.getExtensionByName && this.extensionService.getExtensionByName(ExtensionName.rowSelection);
       if (rowSelectionExtension && rowSelectionExtension.instance) {
@@ -229,32 +292,33 @@ export class GridStateService {
    */
   subscribeToAllGridChanges(grid: any) {
     // Subscribe to Event Emitter of Filter changed
-    this.subscriptions.push(
+    this._subscriptions.push(
       this.filterService.onFilterChanged.subscribe((currentFilters: CurrentFilter[]) => {
-        this.resetRowSelection();
+        this.resetRowSelectionWhenRequired();
         this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: this.getCurrentGridState() });
       })
     );
+
     // Subscribe to Event Emitter of Filter cleared
-    this.subscriptions.push(
+    this._subscriptions.push(
       this.filterService.onFilterCleared.subscribe(() => {
-        this.resetRowSelection();
+        this.resetRowSelectionWhenRequired();
         this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.filter }, gridState: this.getCurrentGridState() });
       })
     );
 
     // Subscribe to Event Emitter of Sort changed
-    this.subscriptions.push(
+    this._subscriptions.push(
       this.sortService.onSortChanged.subscribe((currentSorters: CurrentSorter[]) => {
-        this.resetRowSelection();
+        this.resetRowSelectionWhenRequired();
         this.onGridStateChanged.next({ change: { newValues: currentSorters, type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
       })
     );
 
     // Subscribe to Event Emitter of Sort cleared
-    this.subscriptions.push(
+    this._subscriptions.push(
       this.sortService.onSortCleared.subscribe(() => {
-        this.resetRowSelection();
+        this.resetRowSelectionWhenRequired();
         this.onGridStateChanged.next({ change: { newValues: [], type: GridStateType.sorter }, gridState: this.getCurrentGridState() });
       })
     );
@@ -264,11 +328,16 @@ export class GridStateService {
     this.bindExtensionAddonEventToGridStateChange(ExtensionName.gridMenu, 'onColumnsChanged');
 
     // subscribe to Column Resize & Reordering
-    this.bindSlickGridEventToGridStateChange('onColumnsReordered', grid);
-    this.bindSlickGridEventToGridStateChange('onColumnsResized', grid);
+    this.bindSlickGridColumnChangeEventToGridStateChange('onColumnsReordered', grid);
+    this.bindSlickGridColumnChangeEventToGridStateChange('onColumnsResized', grid);
+
+    // subscribe to Row Selection changes (when enabled)
+    if (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
+      this.bindSlickGridRowSelectionToGridStateChange();
+    }
 
     // subscribe to HeaderMenu (hide column)
-    this.subscriptions.push(
+    this._subscriptions.push(
       this.sharedService.onColumnsChanged.subscribe((visibleColumns: Column[]) => {
         const currentColumns: CurrentColumn[] = this.getAssociatedCurrentColumns(visibleColumns);
         this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
@@ -299,18 +368,110 @@ export class GridStateService {
   }
 
   /**
-   * Bind a Grid Event to a Grid State change event
+   * Bind a Grid Event (of Column changes) to a Grid State change event
    * @param event name
    * @param grid
    */
-  private bindSlickGridEventToGridStateChange(eventName: string, grid: any) {
+  private bindSlickGridColumnChangeEventToGridStateChange(eventName: string, grid: any) {
     const slickGridEvent = grid && grid[eventName];
 
     if (slickGridEvent && slickGridEvent.subscribe) {
-      this._eventHandler.subscribe(slickGridEvent, (e: Event, args: any) => {
+      this._eventHandler.subscribe(slickGridEvent, () => {
         const columns: Column[] = grid.getColumns();
         const currentColumns: CurrentColumn[] = this.getAssociatedCurrentColumns(columns);
         this.onGridStateChanged.next({ change: { newValues: currentColumns, type: GridStateType.columns }, gridState: this.getCurrentGridState() });
+      });
+    }
+  }
+
+  /**
+   * Bind a Grid Event of Row Selection change to a Grid State change event
+   * @param event name
+   * @param grid
+   */
+  private bindSlickGridRowSelectionToGridStateChange() {
+    if (this._gridOptions && this._gridOptions.enablePagination) {
+      // when using pagination, the process is much more complex so let's do it in a separate method
+      this.bindSlickGridRowSelectionWithPaginationToGridStateChange();
+    } else {
+      // without Pagination, we can simply get the getSelectedRows() and mapRowsToIds() and we're done
+      this._eventHandler.subscribe(this._grid.onSelectedRowsChanged, () => {
+        const currentSelectedRowIndexes = this._grid.getSelectedRows();
+        this._selectedRowDataContextIds = this._dataView.mapRowsToIds(currentSelectedRowIndexes);
+        const newValues = { gridRowIndexes: currentSelectedRowIndexes, dataContextIds: this._selectedRowDataContextIds } as CurrentRowSelection;
+        this.onGridStateChanged.next({ change: { newValues, type: GridStateType.rowSelection }, gridState: this.getCurrentGridState() });
+      });
+    }
+  }
+
+  /**
+   * When using Pagination, we can't just use the getSelectedRows() since this will only return the selection in current page which is not enough.
+   * The process is much more complex, what we have to do instead is the following
+   * 1. when changing a row selection, we'll add the new selection if it's not yet in the global array of selected IDs
+   * 2. when deleting a row selection, we'll remove the selection from our global array of selected IDs (unless it came from a page change)
+   * 3. before we change page, we'll keep track with a flag (this flag will be used to skip any deletion when we're changing page)
+   * 4. after the page is changed, we'll do an extra (and delayed) check to make sure that what we have in our global array of selected IDs is displayed on screen
+   */
+  private bindSlickGridRowSelectionWithPaginationToGridStateChange() {
+    if (this._grid && this._gridOptions && this._dataView) {
+      this._eventHandler.subscribe(this._dataView.onBeforePagingInfoChanged, () => {
+        this._wasRecheckedAfterPageChange = false; // reset the page check flag, to skip deletions on page change (used in code below)
+      });
+
+      this._eventHandler.subscribe(this._dataView.onPagingInfoChanged, () => {
+        // when user changes page, the selected row indexes might not show up
+        // we can check to make sure it is but it has to be in a delay so it happens after the first "onSelectedRowsChanged" is triggered
+        setTimeout(() => {
+          const shouldBeSelectedRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []);
+          const currentSelectedRowIndexes = this._grid.getSelectedRows();
+          if (!isequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes)) {
+            this._grid.setSelectedRows(shouldBeSelectedRowIndexes);
+          }
+        });
+      });
+
+      this._eventHandler.subscribe(this._grid.onSelectedRowsChanged, (e, args) => {
+        if (Array.isArray(args.rows) && Array.isArray(args.previousSelectedRows)) {
+          const newSelectedRows = args.rows as number[];
+          const prevSelectedRows = args.previousSelectedRows as number[];
+
+          const newSelectedAdditions = newSelectedRows.filter((i) => prevSelectedRows.indexOf(i) < 0);
+          const newSelectedDeletions = prevSelectedRows.filter((i) => newSelectedRows.indexOf(i) < 0);
+
+          // deletion might happen when user is changing page, if that is the case then skip the deletion since it's only a visual deletion (current page)
+          // if it's not a page change (when the flag is true), then proceed with the deletion in our global array of selected IDs
+          if (this._wasRecheckedAfterPageChange && newSelectedDeletions.length > 0) {
+            const toDeleteDataIds: Array<number | string> = this._dataView.mapRowsToIds(newSelectedDeletions) || [];
+            toDeleteDataIds.forEach((removeId: number | string) => {
+              this._selectedRowDataContextIds.splice((this._selectedRowDataContextIds as Array<number | string>).indexOf(removeId), 1);
+            });
+          }
+
+          // if we have newly added selected row(s), let's update our global array of selected IDs
+          if (newSelectedAdditions.length > 0) {
+            const toAddDataIds: Array<number | string> = this._dataView.mapRowsToIds(newSelectedAdditions) || [];
+            toAddDataIds.forEach((dataId: number | string) => {
+              if ((this._selectedRowDataContextIds as Array<number | string>).indexOf(dataId) === -1) {
+                (this._selectedRowDataContextIds as Array<number | string>).push(dataId);
+              }
+            });
+          }
+
+          // we set this flag which will be used on the 2nd time the "onSelectedRowsChanged" event is called
+          // when it's the first time, we skip deletion and this is what this flag is for
+          this._wasRecheckedAfterPageChange = true;
+
+          // form our full selected row IDs, let's make sure these indexes are selected in the grid, if not then let's call a reselect
+          // this could happen if the previous step was a page change
+          const shouldBeSelectedRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []);
+          const currentSelectedRowIndexes = this._grid.getSelectedRows();
+          if (!isequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes)) {
+            this._grid.setSelectedRows(shouldBeSelectedRowIndexes);
+          }
+
+          const newValues = { gridRowIndexes: this._grid.getSelectedRows(), dataContextIds: this._selectedRowDataContextIds } as CurrentRowSelection;
+          this.onGridStateChanged.next({ change: { newValues, type: GridStateType.rowSelection }, gridState: this.getCurrentGridState() });
+        }
       });
     }
   }

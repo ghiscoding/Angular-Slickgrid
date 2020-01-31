@@ -13,7 +13,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Constants } from '../constants';
 import { GlobalGridOptions } from './../global-grid-options';
 import { titleCase, unsubscribeAllObservables } from './../services/utilities';
-import { executeBackendProcessesCallback, onBackendError } from '../services/backend-utilities';
+import { executeBackendProcessesCallback, onBackendError, refreshBackendDataset } from '../services/backend-utilities';
 import {
   AngularGridInstance,
   BackendServiceApi,
@@ -121,7 +121,9 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private _fixedWidth: number | null;
   private _hideHeaderRowAfterPageLoad = false;
   private _isGridInitialized = false;
+  private _isDatasetInitialized = false;
   private _isPaginationInitialized = false;
+  private _isLocalGrid = true;
   dataView: any;
   grid: any;
   gridHeightString: string;
@@ -306,9 +308,11 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
    * Also if we use Row Selection or the Checkbox Selector, we need to reset any selection
    */
   paginationChanged(pagination: ServicePagination) {
-    if (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector) {
+    const isSyncGridSelectionEnabled = this.gridStateService && this.gridStateService.needToPreserveRowSelection() || false;
+    if (!isSyncGridSelectionEnabled && (this.gridOptions.enableRowSelection || this.gridOptions.enableCheckboxSelector)) {
       this.gridService.setSelectedRows([]);
     }
+
     const { pageNumber, pageSize } = pagination;
     if (this.sharedService) {
       if (pageSize) {
@@ -330,6 +334,13 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.dataView.setItems(dataset, this.gridOptions.datasetIdPropertyName);
       if (!this.gridOptions.backendServiceApi) {
         this.dataView.reSort();
+      }
+
+      if (dataset.length > 0) {
+        if (!this._isDatasetInitialized && this.gridOptions.enableCheckboxSelector) {
+          this.loadRowSelectionPresetWhenExists();
+        }
+        this._isDatasetInitialized = true;
       }
 
       if (dataset) {
@@ -657,8 +668,16 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         locales: this.locales,
       };
       this.paginationService.totalItems = this.totalItems;
-      this.paginationService.onPaginationChanged.subscribe((changes: ServicePagination) => this.paginationChanged(changes));
       this.paginationService.init(this.grid, this.dataView, paginationOptions, this.backendServiceApi);
+      this.subscriptions.push(
+        this.paginationService.onPaginationChanged.subscribe((changes: ServicePagination) => this.paginationChanged(changes)),
+        this.paginationService.onPaginationVisibilityChanged.subscribe((visibility: { visible: boolean }) => {
+          this.showPagination = visibility && visibility.visible || false;
+          if (this.gridOptions && this.gridOptions.backendServiceApi) {
+            refreshBackendDataset();
+          }
+        })
+      );
       this._isPaginationInitialized = true;
     }
     this.cd.detectChanges();
@@ -672,6 +691,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     this.locales = this.gridOptions && this.gridOptions.locales || Constants.locales;
     this.backendServiceApi = this.gridOptions && this.gridOptions.backendServiceApi;
     this.createBackendApiInternalPostProcessCallback(this.gridOptions);
+    this._isLocalGrid = !this.backendServiceApi; // considered a local grid if it doesn't have a backend service set
 
     if (!this.customDataView) {
       if (this.gridOptions.draggableGrouping || this.gridOptions.enableGrouping) {
@@ -718,13 +738,21 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
       // if you don't want the items that are not visible (due to being filtered out or being on a different page)
       // to stay selected, pass 'false' to the second arg
-      if (this.gridOptions && this.gridOptions.dataView && this.gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
+      const selectionModel = this.grid && this.grid.getSelectionModel();
+      if (selectionModel && this.gridOptions && this.gridOptions.dataView && this.gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
         const syncGridSelection = this.gridOptions.dataView.syncGridSelection;
         if (typeof syncGridSelection === 'boolean') {
           this.dataView.syncGridSelection(this.grid, this.gridOptions.dataView.syncGridSelection);
-        } else {
+        } else if (typeof syncGridSelection === 'object') {
           this.dataView.syncGridSelection(this.grid, syncGridSelection.preserveHidden, syncGridSelection.preserveHiddenOnSelectionChange);
         }
+      }
+
+      if (this._dataset.length > 0) {
+        if (!this._isDatasetInitialized && (this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection)) {
+          this.loadRowSelectionPresetWhenExists();
+        }
+        this._isDatasetInitialized = true;
       }
     }
 
@@ -772,12 +800,12 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.bindBackendCallbackFunctions(this.gridOptions);
     }
 
-    this.gridStateService.init(this.grid);
+    this.gridStateService.init(this.grid, this.dataView);
 
     // local grid, check if we need to show the Pagination
     // if so then also check if there's any presets and finally initialize the PaginationService
     // a local grid with Pagination presets will potentially have a different total of items, we'll need to get it from the DataView and update our total
-    if (this.gridOptions && this.gridOptions.enablePagination && !this.gridOptions.backendServiceApi) {
+    if (this.gridOptions && this.gridOptions.enablePagination && this._isLocalGrid) {
       this.showPagination = true;
       this.loadLocalGridPagination();
     }
@@ -842,6 +870,33 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     }
   }
 
+  /** Load any Row Selections into the DataView that were presets by the user */
+  loadRowSelectionPresetWhenExists() {
+    // if user entered some Row Selections "presets"
+    const presets = this.gridOptions && this.gridOptions.presets;
+    const selectionModel = this.grid && this.grid.getSelectionModel();
+    const enableRowSelection = this.gridOptions && (this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection);
+    if (enableRowSelection && selectionModel && presets && presets.rowSelection && (Array.isArray(presets.rowSelection.gridRowIndexes) || Array.isArray(presets.rowSelection.dataContextIds))) {
+      let dataContextIds = presets.rowSelection.dataContextIds;
+      let gridRowIndexes = presets.rowSelection.gridRowIndexes;
+
+      // maps the IDs to the Grid Rows and vice versa, the "dataContextIds" has precedence over the other
+      if (Array.isArray(dataContextIds) && dataContextIds.length > 0) {
+        gridRowIndexes = this.dataView.mapIdsToRows(dataContextIds) || [];
+      } else if (Array.isArray(gridRowIndexes) && gridRowIndexes.length > 0) {
+        dataContextIds = this.dataView.mapRowsToIds(gridRowIndexes) || [];
+      }
+      this.gridStateService.selectedRowDataContextIds = dataContextIds;
+
+      // change the selected rows except UNLESS it's a Local Grid with Pagination
+      // local Pagination uses the DataView and that also trigger a change/refresh
+      // and we don't want to trigger 2 Grid State changes just 1
+      if ((this._isLocalGrid && !this.gridOptions.enablePagination) || !this._isLocalGrid) {
+        setTimeout(() => this.grid.setSelectedRows(gridRowIndexes));
+      }
+    }
+  }
+
   private mergeGridOptions(gridOptions): GridOption {
     gridOptions.gridId = this.gridId;
     gridOptions.gridContainerId = `slickGridContainer-${this.gridId}`;
@@ -870,7 +925,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
     // when we use Pagination on Local Grid, it doesn't seem to work without enableFiltering
     // so we'll enable the filtering but we'll keep the header row hidden
-    if (!options.enableFiltering && options.enablePagination && !options.backendServiceApi) {
+    if (!options.enableFiltering && options.enablePagination && this._isLocalGrid) {
       options.enableFiltering = true;
       options.showHeaderRow = false;
     }

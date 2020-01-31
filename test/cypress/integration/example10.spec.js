@@ -3,6 +3,13 @@
 describe('Example 10 - Multiple Grids with Row Selection', () => {
   const titles = ['', 'Title', 'Duration (days)', '% Complete', 'Start', 'Finish', 'Effort Driven'];
 
+  beforeEach(() => {
+    // create a console.log spy for later use
+    cy.window().then((win) => {
+      cy.spy(win.console, "log");
+    });
+  });
+
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/selection`);
     cy.get('h2').should('contain', 'Example 10: Multiple Grids with Row Selection');
@@ -33,17 +40,17 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
       });
   });
 
-  it('should have 2 rows pre-selected in 2nd grid', () => {
-    cy.get('[data-test=grid2-selections]').should('contain', 'Task 0,Task 2');
+  it('should have 1 rows (Task 3) pre-selected in 2nd grid on its first page but 5 rows selected in the entire dataset', () => {
+    cy.get('[data-test=grid2-selections]').should('contain', 'Task 3,Task 12,Task 13,Task 522');
 
     cy.get('#grid2')
       .find('.slick-row')
       .children()
       .filter('.slick-cell-checkboxsel.selected.true')
-      .should('have.length', 2);
+      .should('have.length', 1);
   });
 
-  it('should have 0 rows selected in 2nd grid after typing in a search filter', () => {
+  it('should have 2 rows (Task 12,Task 13) selected in 2nd grid after typing in a search filter', () => {
     cy.get('#grid2')
       .find('.filter-title')
       .type('Task 1');
@@ -58,7 +65,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
       .find('.slick-row')
       .children()
       .filter('.slick-cell-checkboxsel.selected.true')
-      .should('have.length', 0);
+      .should('have.length', 2);
   });
 
   it('should make sure that first column is hidden from the Grid Menu (1st column definition has "excludeFromGridMenu" set) on 1st grid', () => {
@@ -147,7 +154,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
   });
 
   describe('Pagination', () => {
-    it('should Clear all Filters on 2nd Grid and expect the same Pagination defined in both Grids', () => {
+    it('should Clear all Filters on 2nd Grid', () => {
       cy.get('#grid2')
         .find('button.slick-gridmenu-button')
         .trigger('click')
@@ -169,7 +176,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
       cy.get('@grid1')
         .find('[data-test=page-number-input]')
         .invoke('val')
-        .then(pageNumber => expect(pageNumber).to.eq('1'));
+        .then(pageNumber => expect(pageNumber).to.eq('2'));
 
       cy.get('@grid1')
         .find('[data-test=page-count]')
@@ -177,11 +184,11 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
       cy.get('@grid1')
         .find('[data-test=item-from]')
-        .contains('1');
+        .contains('6');
 
       cy.get('@grid1')
         .find('[data-test=item-to]')
-        .contains('5');
+        .contains('10');
 
       cy.get('@grid1')
         .find('[data-test=total-items]')
@@ -342,6 +349,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
 
     it('should also expect Grid2 to be unchanged (after changing Pagination in Grid1 in previous tests)', () => {
       cy.get('#slickGridContainer-grid2').as('grid2');
+
       cy.get('@grid2')
         .find('[data-test=page-count]')
         .contains('7');
@@ -357,6 +365,255 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
       cy.get('@grid2')
         .find('[data-test=total-items]')
         .contains('525');
+    });
+
+    it('should have 3 rows (Task 12,Task 13,Task 522) selected in the entire 2nd grid BUT 0 selected in current Page 1', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('[data-test=grid2-selections]').should('contain', 'Task 12,Task 13,Task 522');
+
+      cy.get('@grid2')
+        .find('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('1'));
+
+      cy.get('#grid2')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell-checkboxsel.selected.true')
+        .should('have.length', 0);
+    });
+
+    it('should go to Page 3 of 2nd Grid and have 2 rows selected in that Page and also have 3 rows (Task 12,Task 13,Task 522) selected in the entire grid', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('[data-test=grid2-selections]').should('contain', 'Task 12,Task 13,Task 522');
+
+      cy.get('@grid2')
+        .find('#items-per-page-label').select('5');
+
+      cy.get('@grid2')
+        .find('[data-test=page-number-input]')
+        .clear()
+        .type('3')
+        .type('{enter}');
+
+      cy.get('@grid2')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell-checkboxsel.selected.true')
+        .should('have.length', 2);
+    });
+
+    it('should go to last Page of 2nd Grid and have 1 rows selected in that Page and also have 3 rows (Task 12,Task 13,Task 522) selected in the entire grid', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('@grid2')
+        .find('.icon-seek-end')
+        .click();
+
+      cy.get('[data-test=grid2-selections]')
+        .should('contain', 'Task 12,Task 13,Task 522');
+
+      cy.get('@grid2')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell-checkboxsel.selected.true')
+        .should('have.length', 1);
+    });
+
+    it(`should go to first Page of 2nd Grid and select a new row (Task 1) in that Page and now have 4 rows (Task 1,Task 12,Task 13,Task 522) selected in the entire grid`, () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('@grid2')
+        .find('.icon-seek-first')
+        .click()
+        .wait(10);
+
+      cy.get('@grid2')
+        .find('.slick-row:nth(1) .slick-cell:nth(0) input[type=checkbox]')
+        .click({ force: true });
+
+      cy.get('[data-test=grid2-selections]')
+        .should('contain', 'Task 1,Task 12,Task 13,Task 522');
+
+      cy.get('@grid2')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell-checkboxsel.selected.true')
+        .should('have.length', 1);
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(6);
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [1], dataContextIds: [1, 12, 13, 522] }, type: 'rowSelection' });
+      });
+    });
+
+    it('should go back to Page 3 of 2nd Grid and have 2 rows selected in that Page and also have 3 rows (Task 1, Task 12,Task 13,Task 522) selected in the entire grid', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('[data-test=grid2-selections]').should('contain', 'Task 1,Task 12,Task 13,Task 522');
+
+      cy.get('@grid2')
+        .find('#items-per-page-label').select('5');
+
+      cy.get('@grid2')
+        .find('[data-test=page-number-input]')
+        .clear()
+        .type('3')
+        .type('{enter}');
+
+      cy.get('@grid2')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell-checkboxsel.selected.true')
+        .should('have.length', 2);
+    });
+
+    it('should go to last Page of 2nd Grid and still have 1 rows selected in that Page and also have 3 rows (Task 1, Task 12,Task 13,Task 522) selected in the entire grid', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('@grid2')
+        .find('.icon-seek-end')
+        .click();
+
+      cy.get('[data-test=grid2-selections]')
+        .should('contain', 'Task 1,Task 12,Task 13,Task 522');
+
+      cy.get('@grid2')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell-checkboxsel.selected.true')
+        .should('have.length', 1);
+    });
+  });
+
+  describe('Row Selection', () => {
+    it('should click on 3rd row and of the Grid1 and expect to see "Task 300" selected', () => {
+      cy.get('#slickGridContainer-grid1').as('grid1');
+
+      cy.get('@grid1')
+      cy.get('.slick-row:nth(2) .slick-cell:nth(0) input[type=checkbox]')
+        .click({ force: true });
+
+      cy.get('[data-test=grid1-selections]')
+        .contains('Task 300');
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(2);
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [2], dataContextIds: [300] }, type: 'rowSelection' });
+      });
+    });
+
+    it('should remove the filter from Grid1', () => {
+      cy.get('#slickGridContainer-grid1').as('grid1');
+
+      cy.get('@grid1')
+        .find('.filter-title')
+        .type('{backspace}{backspace}')
+        .invoke('text').then((text => {
+          expect(text.trim()).to.eq('')
+        }));
+    });
+
+    it('should go to Page 61 of Grid1 and expect to find "Task 300" still be selected', () => {
+      cy.get('#slickGridContainer-grid1').as('grid1');
+
+      cy.get('@grid1')
+        .find('[data-test=page-number-input]')
+        .clear()
+        .type('61')
+        .type('{enter}');
+
+      cy.get('[data-test=grid1-selections]')
+        .contains('Task 300');
+
+      cy.get('.slick-cell.l0.r0.slick-cell-checkboxsel.selected.true')
+        .should('exist');
+
+      cy.get('[data-test=grid1-selections]')
+        .contains('Task 300');
+    });
+  });
+
+  describe('Remove Pagination', () => {
+    it('should remove Pagination and not expect any DOM elements of it', () => {
+      cy.get('[data-test=toggle-pagination-grid2]')
+        .click();
+
+      cy.get('#slickPagingContainer-grid2')
+        .should('not.exist');
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(4);
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [1, 12, 13, 522], dataContextIds: [1, 12, 13, 522] }, type: 'rowSelection' });
+      });
+    });
+
+    it('should have 4 rows (Task 1,Task 12,Task 13,Task 522) selected in the entire 2nd grid BUT only 1 shown in the DOM on top of the grid (because SlickGrid uses virtual rendering)', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('[data-test=grid2-selections]').should('contain', 'Task 1,Task 12,Task 13,Task 522');
+
+      cy.get('@grid2')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell-checkboxsel.selected.true')
+        .should('have.length', 1);
+    });
+
+    it('should scroll to the bottom of 2nd Grid and still have 4 rows (Task 1,Task 12,Task 13,Task 522) selected and find 2 row selected because we now have 2 rows that got rendered (first and last)', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('[data-test=grid2-selections]').should('contain', 'Task 1,Task 12,Task 13,Task 522');
+
+      cy.get('@grid2')
+        .find('.slick-viewport-top.slick-viewport-left')
+        .scrollTo('bottom')
+        .wait(10);
+
+      cy.get('@grid2')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell-checkboxsel.selected.true')
+        .should('have.length', 2);
+    });
+
+    it('should re-enable the Pagination and expect to see it show it again below the grid at Page 1', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('[data-test=toggle-pagination-grid2]')
+        .click();
+
+      cy.get('#slickPagingContainer-grid2')
+        .should('exist');
+
+      cy.get('@grid2')
+        .find('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('1'));
+
+      cy.get('@grid2')
+        .find('[data-test=page-count]')
+        .contains('105');
+
+      cy.get('@grid2')
+        .find('[data-test=item-from]')
+        .contains('1');
+
+      cy.get('@grid2')
+        .find('[data-test=item-to]')
+        .contains('5');
+
+      cy.get('@grid2')
+        .find('[data-test=total-items]')
+        .contains('525');
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(4);
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [1], dataContextIds: [1, 12, 13, 522] }, type: 'rowSelection' });
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { pageNumber: 1, pageSize: 5 }, type: 'pagination' });
+      });
     });
   });
 });

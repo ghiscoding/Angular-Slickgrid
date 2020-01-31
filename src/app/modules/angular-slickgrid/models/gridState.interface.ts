@@ -1,4 +1,4 @@
-import { CurrentColumn, CurrentFilter, CurrentSorter } from './index';
+import { CurrentColumn, CurrentFilter, CurrentPagination, CurrentRowSelection, CurrentSorter } from './index';
 
 export interface GridState {
   /** Columns (and their state: visibility/position) that are currently applied in the grid */
@@ -11,8 +11,8 @@ export interface GridState {
   sorters?: CurrentSorter[] | null;
 
   /** Pagination (and it's state, pageNumber, pageSize) that are currently applied in the grid */
-  pagination?: {
-    pageNumber: number;
-    pageSize: number;
-  } | null;
+  pagination?: CurrentPagination | null;
+
+  /** Row Selections (by their dataContext IDs and/or grid row indexes) */
+  rowSelection?: CurrentRowSelection | null;
 }

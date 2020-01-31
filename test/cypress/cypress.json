@@ -3,7 +3,7 @@
   "baseExampleUrl": "http://localhost:4300",
   "video": false,
   "viewportWidth": 1200,
-  "viewportHeight": 800,
+  "viewportHeight": 950,
   "fixturesFolder": "fixtures",
   "integrationFolder": "integration",
   "pluginsFile": "plugins/index.js",

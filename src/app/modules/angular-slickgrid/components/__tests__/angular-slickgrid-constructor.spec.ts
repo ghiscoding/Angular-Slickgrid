@@ -27,8 +27,11 @@ import * as utilities from '../../services/backend-utilities';
 
 
 const mockExecuteBackendProcess = jest.fn();
+const mockRefreshBackendDataset = jest.fn();
 // @ts-ignore
 utilities.executeBackendProcessesCallback = mockExecuteBackendProcess;
+// @ts-ignore
+utilities.refreshBackendDataset = mockRefreshBackendDataset;
 
 const mockBackendError = jest.fn();
 // @ts-ignore
@@ -112,6 +115,7 @@ const gridStateServiceStub = {
   dispose: jest.fn(),
   getAssociatedGridColumns: jest.fn(),
   getCurrentGridState: jest.fn(),
+  needToPreserveRowSelection: jest.fn(),
   onGridStateChanged: new Subject<GridStateChange>(),
 } as unknown as GridStateService;
 
@@ -119,6 +123,7 @@ const paginationServiceStub = {
   totalItems: 0,
   init: jest.fn(),
   dispose: jest.fn(),
+  onPaginationVisibilityChanged: new Subject<boolean>(),
   onPaginationChanged: new Subject<ServicePagination>(),
 } as unknown as PaginationService;
 
@@ -163,6 +168,8 @@ const mockDataView = {
   getItems: jest.fn(),
   getItemMetadata: jest.fn(),
   getPagingInfo: jest.fn(),
+  mapIdsToRows: jest.fn(),
+  mapRowsToIds: jest.fn(),
   onRowsChanged: jest.fn(),
   onRowCountChanged: jest.fn(),
   onSetItemsCalled: jest.fn(),
@@ -196,6 +203,7 @@ const mockGrid = {
   invalidate: jest.fn(),
   getActiveCellNode: jest.fn(),
   getColumns: jest.fn(),
+  getSelectionModel: jest.fn(),
   getEditorLock: () => mockGetEditorLock,
   getOptions: jest.fn(),
   getScrollbarDimensions: jest.fn(),
@@ -286,7 +294,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
     component.gridId = 'grid1';
     component.columnDefinitions = [{ id: 'name', field: 'name' }];
     component.dataset = [];
-    component.gridOptions = { enableExcelExport: false } as GridOption;
+    component.gridOptions = { enableExcelExport: false, dataView: null } as GridOption;
     component.gridHeight = 600;
     component.gridWidth = 800;
   });
@@ -486,6 +494,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should call the DataView syncGridSelection method with 2nd argument as True when the "dataView" grid option is a boolean and is set to True', () => {
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
         const syncSpy = jest.spyOn(mockDataView, 'syncGridSelection');
 
         component.gridOptions = { dataView: { syncGridSelection: true }, enableRowSelection: true } as GridOption;
@@ -495,6 +504,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should call the DataView syncGridSelection method with 3 arguments when the "dataView" grid option is provided as an object', () => {
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
         const syncSpy = jest.spyOn(mockDataView, 'syncGridSelection');
 
         component.gridOptions = {
@@ -746,6 +756,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
 
       it('should call the "updateSorters" method when filters are defined in the "presets" property', () => {
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
         const spy = jest.spyOn(mockGraphqlService, 'updateSorters');
         const mockSorters = [{ columnId: 'name', direction: 'asc' }] as CurrentSorter[];
 
@@ -1104,9 +1115,10 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
       });
     });
 
-    describe('paginationChanged method', () => {
+    describe('pagination events', () => {
       beforeEach(() => {
         jest.clearAllMocks();
+        component.destroy();
       });
 
       it('should call trigger a gridStage change event when pagination change is triggered', () => {
@@ -1208,7 +1220,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
             rightContainerClass: 'col-xs-6 col-sm-7',
           });
           done();
-        }, 1);
+        });
       });
 
       it('should NOT have a Custom Footer when "showCustomFooter" is enabled WITH Pagination in use', (done) => {
@@ -1224,7 +1236,97 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
           expect(component.columnDefinitions).toEqual(mockColDefs);
           expect(component.showCustomFooter).toBeFalse();
           done();
-        }, 1);
+        });
+      });
+    });
+
+    describe('loadRowSelectionPresetWhenExists method', () => {
+      beforeEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call the "mapIdsToRows" from the DataView then "setSelectedRows" from the Grid when there are row selection presets with "dataContextIds" array set', (done) => {
+        const selectedGridRows = [2];
+        const selectedRowIds = [99];
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        const dataviewSpy = jest.spyOn(mockDataView, 'mapIdsToRows').mockReturnValue(selectedGridRows);
+        const selectRowSpy = jest.spyOn(mockGrid, 'setSelectedRows');
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
+
+        component.gridOptions.enableCheckboxSelector = true;
+        component.gridOptions.presets = { rowSelection: { dataContextIds: selectedRowIds } };
+        component.ngAfterViewInit();
+        component.dataset = mockData;
+
+        setTimeout(() => {
+          expect(dataviewSpy).toHaveBeenCalled();
+          expect(selectRowSpy).toHaveBeenCalledWith(selectedGridRows);
+          done();
+        });
+      });
+
+      it('should call the "setSelectedRows" from the Grid when there are row selection presets with "dataContextIds" array set', (done) => {
+        const selectedGridRows = [22];
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        const selectRowSpy = jest.spyOn(mockGrid, 'setSelectedRows');
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
+
+        component.gridOptions.enableRowSelection = true;
+        component.gridOptions.presets = { rowSelection: { gridRowIndexes: selectedGridRows } };
+        component.dataset = mockData;
+        component.ngAfterViewInit();
+
+        setTimeout(() => {
+          expect(selectRowSpy).toHaveBeenCalledWith(selectedGridRows);
+          done();
+        });
+      });
+
+      it('should NOT call the "setSelectedRows" when the Grid has Local Pagination and there are row selection presets with "dataContextIds" array set', (done) => {
+        const selectedGridRows = [22];
+        const mockData = [{ firstName: 'John', lastName: 'Doe' }, { firstName: 'Jane', lastName: 'Smith' }];
+        const selectRowSpy = jest.spyOn(mockGrid, 'setSelectedRows');
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
+
+        component.gridOptions.enableRowSelection = true;
+        component.gridOptions.enablePagination = true;
+        component.gridOptions.backendServiceApi = null;
+        component.gridOptions.presets = { rowSelection: { dataContextIds: selectedGridRows } };
+        component.dataset = mockData;
+        component.ngAfterViewInit();
+
+        setTimeout(() => {
+          expect(selectRowSpy).not.toHaveBeenCalled();
+          done();
+        }, 2);
+      });
+    });
+
+    describe('onPaginationVisibilityChanged event', () => {
+      beforeEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should change "showPagination" flag when "onPaginationVisibilityChanged" from the Pagination Service is triggered', (done) => {
+        component.gridOptions.enablePagination = true;
+        component.gridOptions.backendServiceApi = null;
+        component.ngAfterViewInit();
+        paginationServiceStub.onPaginationVisibilityChanged.next({ visible: false });
+        setTimeout(() => {
+          expect(component.showPagination).toBeFalsy();
+          done();
+        });
+      });
+
+      it('should call the backend service API to refresh the dataset', (done) => {
+        component.gridOptions.enablePagination = true;
+        component.ngAfterViewInit();
+        paginationServiceStub.onPaginationVisibilityChanged.next({ visible: false });
+        setTimeout(() => {
+          expect(mockRefreshBackendDataset).toHaveBeenCalled();
+          expect(component.showPagination).toBeFalsy();
+          done();
+        });
       });
     });
   });

@@ -3,7 +3,7 @@ import { Subscription, isObservable, Subject } from 'rxjs';
 import * as isequal_ from 'lodash.isequal';
 const isequal = isequal_; // patch to fix rollup to work
 
-import { BackendServiceApi, CurrentPagination, GraphqlResult, GraphqlPaginatedResult, Pagination, ServicePagination } from '../models';
+import { BackendServiceApi, CurrentPagination, GraphqlResult, GraphqlPaginatedResult, GridOption, Pagination, ServicePagination } from '../models';
 import { FilterService } from './filter.service';
 import { GridService } from './grid.service';
 import { SharedService } from './shared.service';
@@ -29,6 +29,7 @@ export class PaginationService {
   private _paginationOptions: Pagination;
   private _subscriptions: Subscription[] = [];
   onPaginationChanged = new Subject<ServicePagination>();
+  onPaginationVisibilityChanged = new Subject<{ visible: boolean }>();
 
   dataView: any;
   grid: any;
@@ -329,6 +330,33 @@ export class PaginationService {
   /** Reset the Pagination to first page and recalculate necessary numbers */
   resetPagination(triggerChangedEvent = true) {
     this.refreshPagination(true, triggerChangedEvent);
+  }
+
+  /**
+   * Toggle the Pagination (show/hide), it will use the visible if defined else it will automatically inverse when called without argument
+   *
+   * IMPORTANT NOTE:
+   * The Pagination must be created on initial page load, then only after can you toggle it.
+   * Basically this method WILL NOT WORK to show the Pagination if it was not there from the start.
+   */
+  togglePaginationVisibility(visible?: boolean) {
+    if (this.grid && this.sharedService && this.sharedService.gridOptions) {
+      const isVisible = visible !== undefined ? visible : !this.sharedService.gridOptions.enablePagination;
+      this.sharedService.gridOptions.enablePagination = isVisible;
+      this.onPaginationVisibilityChanged.next({ visible: isVisible });
+
+      // make sure to reset the Pagination and go back to first page to avoid any issues with Pagination being offset
+      if (isVisible) {
+        this.goToFirstPage();
+      }
+
+      // when using a local grid, we can reset the DataView pagination by changing its page size
+      // page size of 0 would show all, hence cancel the pagination
+      if (this._isLocalGrid) {
+        const pageSize = visible ? this._itemsPerPage : 0;
+        this.dataView.setPagingOptions({ pageSize, pageNum: 0 });
+      }
+    }
   }
 
   // --

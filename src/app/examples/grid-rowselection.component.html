@@ -3,7 +3,8 @@
   <div class="subtitle" [innerHTML]="subTitle"></div>
 
   <div class="row">
-    <div class="col-sm-1">
+    <div class="col-sm-4" style="max-width: 170px;">
+      Pagination
       <button class="btn btn-default btn-xs" data-test="goto-first-page" (click)="goToGrid1FirstPage()">
         <i class="fa fa-caret-left fa-lg"></i>
       </button>
@@ -21,21 +22,26 @@
 
   <angular-slickgrid gridId="grid1" gridHeight="225" gridWidth="800" [columnDefinitions]="columnDefinitions1"
     [gridOptions]="gridOptions1" [dataset]="dataset1" (onAngularGridCreated)="angularGridReady1($event)"
+    (onGridStateChanged)="grid1StateChanged($event)"
     (sgOnSelectedRowsChanged)="handleSelectedRowsChanged1($event.detail.eventData, $event.detail.args)">
   </angular-slickgrid>
 
   <hr>
 
   <div class="row">
-    <div class="col-sm-1">
-      <button class="btn btn-default btn-xs" data-test="goto-first-page" (click)="goToGrid2FirstPage()">
-        <i class="fa fa-caret-left fa-lg"></i>
-      </button>
-      <button class="btn btn-default btn-xs" data-test="goto-last-page" (click)="goToGrid2LastPage()">
-        <i class="fa fa-caret-right fa-lg"></i>
-      </button>
+    <div class="col-sm-4 col-md-3" style="max-width: 170px;">
+      Pagination: <input type="checkbox" (change)="togglePaginationGrid2()" [checked]="isGrid2WithPagination"
+        data-test="toggle-pagination-grid2" />
+      <span style="margin-left: 5px" *ngIf="isGrid2WithPagination">
+        <button class="btn btn-default btn-xs" data-test="goto-first-page" (click)="goToGrid2FirstPage()">
+          <i class="fa fa-caret-left fa-lg"></i>
+        </button>
+        <button class="btn btn-default btn-xs" data-test="goto-last-page" (click)="goToGrid2LastPage()">
+          <i class="fa fa-caret-right fa-lg"></i>
+        </button>
+      </span>
     </div>
-    <div class="col-sm-8">
+    <div class="col-sm-7">
       <div class="alert alert-success">
         <strong>(multi-select) Selected Row(s):</strong>
         <span [innerHTML]="selectedTitles" data-test="grid2-selections"></span>
@@ -45,6 +51,6 @@
 
   <angular-slickgrid gridId="grid2" gridHeight="255" gridWidth="800" [columnDefinitions]="columnDefinitions2"
     [gridOptions]="gridOptions2" [dataset]="dataset2" (onAngularGridCreated)="angularGridReady2($event)"
-    (sgOnSelectedRowsChanged)="handleSelectedRowsChanged2($event.detail.eventData, $event.detail.args)">
+    (onGridStateChanged)="grid2StateChanged($event)">
   </angular-slickgrid>
 </div>

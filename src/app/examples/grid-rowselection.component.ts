@@ -1,11 +1,12 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Injectable, OnInit } from '@angular/core';
 import {
   AngularGridInstance,
   Column,
   FieldType,
   Filters,
   Formatters,
-  GridOption
+  GridOption,
+  GridStateChange
 } from './../modules/angular-slickgrid';
 
 @Component({
@@ -35,8 +36,12 @@ export class GridRowSelectionComponent implements OnInit {
   dataset2: any[];
   gridObj1: any;
   gridObj2: any;
+  isGrid2WithPagination = true;
   selectedTitles: any[];
   selectedTitle: any;
+  selectedGrid2IDs: number[];
+
+  constructor(private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.prepareGrid();
@@ -133,6 +138,10 @@ export class GridRowSelectionComponent implements OnInit {
         pageSizes: [5, 10, 15, 20, 25, 50, 75, 100],
         pageSize: 5
       },
+      // we can use some Presets, for the example Pagination
+      presets: {
+        pagination: { pageNumber: 2, pageSize: 5 },
+      },
     };
 
     this.gridOptions2 = {
@@ -148,13 +157,25 @@ export class GridRowSelectionComponent implements OnInit {
         // True (Single Selection), False (Multiple Selections)
         selectActiveRow: false
       },
-      preselectedRows: [0, 2],
       enableCheckboxSelector: true,
       enableRowSelection: true,
       enablePagination: true,
       pagination: {
         pageSizes: [5, 10, 15, 20, 25, 50, 75, 100],
         pageSize: 5
+      },
+      // 1. pre-select some grid row indexes (less recommended, better use the Presets, see below)
+      // preselectedRows: [0, 2],
+
+      // 2. or use the Presets to pre-select some rows
+      presets: {
+        // you can presets row selection here as well, you can choose 1 of the following 2 ways of setting the selection
+        // by their index position in the grid (UI) or by the object IDs, the default is "dataContextIds" and if provided it will use it and disregard "gridRowIndexes"
+        // the RECOMMENDED is to use "dataContextIds" since that will always work even with Pagination, while "gridRowIndexes" is only good for 1 page
+        rowSelection: {
+          // gridRowIndexes: [2],           // the row position of what you see on the screen (UI)
+          dataContextIds: [3, 12, 13, 522]  // (recommended) select by the your data object IDs
+        }
       },
     };
 
@@ -201,19 +222,37 @@ export class GridRowSelectionComponent implements OnInit {
     this.angularGrid2.paginationService.goToLastPage();
   }
 
-  handleSelectedRowsChanged1(e, args) {
-    if (Array.isArray(args.rows)) {
-      this.selectedTitle = args.rows.map(idx => {
-        const item = this.gridObj1.getDataItem(idx);
-        return item.title || '';
-      });
+  /** Dispatched event of a Grid State Changed event */
+  grid1StateChanged(gridStateChanges: GridStateChange) {
+    console.log('Grid State changed:: ', gridStateChanges);
+    console.log('Grid State changed:: ', gridStateChanges.change);
+  }
+
+  /** Dispatched event of a Grid State Changed event */
+  grid2StateChanged(gridStateChanges: GridStateChange) {
+    console.log('Grid State changed:: ', gridStateChanges);
+    console.log('Grid State changed:: ', gridStateChanges.change);
+
+    if (gridStateChanges.gridState.rowSelection) {
+      this.selectedGrid2IDs = (gridStateChanges.gridState.rowSelection.dataContextIds || []) as number[];
+      this.selectedGrid2IDs = this.selectedGrid2IDs.sort((a, b) => a - b); // sort by ID
+      this.selectedTitles = this.selectedGrid2IDs.map(dataContextId => `Task ${dataContextId}`);
+      this.cd.detectChanges();
     }
   }
 
-  handleSelectedRowsChanged2(e, args) {
-    if (Array.isArray(args.rows)) {
-      this.selectedTitles = args.rows.map(idx => {
-        const item = this.gridObj2.getDataItem(idx);
+  // Toggle the Pagination of Grid2
+  // IMPORTANT, the Pagination MUST BE CREATED on initial page load before you can start toggling it
+  // Basically you cannot toggle a Pagination that doesn't exist (must created at the time as the grid)
+  togglePaginationGrid2() {
+    this.isGrid2WithPagination = !this.isGrid2WithPagination;
+    this.angularGrid2.paginationService.togglePaginationVisibility(this.isGrid2WithPagination);
+  }
+
+  handleSelectedRowsChanged1(e, args) {
+    if (Array.isArray(args.rows) && this.gridObj1) {
+      this.selectedTitle = args.rows.map(idx => {
+        const item = this.gridObj1.getDataItem(idx);
         return item.title || '';
       });
     }

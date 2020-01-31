@@ -1,12 +1,15 @@
-import { Column, CurrentFilter, CurrentPagination, CurrentSorter, GridState, GridStateType } from './index';
+import { Column, CurrentFilter, CurrentPagination, CurrentRowSelection, CurrentSorter, GridState, GridStateType } from './index';
 
 export interface GridStateChange {
-  /** Changes that were triggered */
+  /** Last Grid State Change that was triggered (only 1 type of change at a time) */
   change?: {
-    newValues: Column[] | CurrentFilter[] | CurrentSorter[] | CurrentPagination;
+    /** Grid State change, the values of the new change */
+    newValues: Column[] | CurrentFilter[] | CurrentSorter[] | CurrentPagination | CurrentRowSelection;
+
+    /** The Grid State Type of change that was made (filter/sorter/...) */
     type: GridStateType;
   };
 
-  /** Current grid state */
+  /** Current Grid State, that will include all of the current states (columns/filters/sorters) and some optional ones (pagination/rowSelection) */
   gridState?: GridState;
 }

@@ -201,6 +201,15 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
       .should('contain', '1');
   });
 
+  it('should select row (Task 105)', () => {
+    cy.get('#grid16')
+      .contains('Task 105')
+      .parent()
+      .children('.slick-cell-checkboxsel')
+      .find('input[type=checkbox]')
+      .click({ force: true });
+  });
+
   it('should change Page Size and Page Number then expect the Pagination to have correct values', () => {
     const expectedTasks = ['Task 135', 'Task 136', 'Task 137', 'Task 138', 'Task 139', 'Task 14'];
 
@@ -244,6 +253,15 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
         cy.wrap($row).children('.slick-cell:nth(3)')
           .should('contain', expectedTasks[index]);
       });
+  });
+
+  it('should select row (Task 144)', () => {
+    cy.get('#grid16')
+      .contains('Task 144')
+      .parent()
+      .children('.slick-cell-checkboxsel')
+      .find('input[type=checkbox]')
+      .click({ force: true });
   });
 
   it('should reload the page', () => {
@@ -298,6 +316,17 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
         }
         cy.wrap($row).children('.slick-cell:nth(3)')
           .should('contain', expectedTasks[index]);
+      });
+  });
+
+  it('should expect row selection (Task 144) to be persisted', () => {
+    cy.get('#grid16')
+      .contains('Task 144')
+      .parent()
+      .children()
+      .each($child => {
+        console.log($child)
+        expect($child.attr('class')).to.contain('selected');
       });
   });
 
@@ -420,5 +449,34 @@ describe('Example 16: Grid State & Presets using Local Storage', () => {
       .find('.slick-header-columns')
       .children()
       .each(($child, index) => expect($child.find('.slick-column-name').text()).to.eq(expectedTitles[index]));
+  });
+
+  it('should expect row selection (Task 144) to be persisted', () => {
+    cy.get('#grid16')
+      .contains('Task 144')
+      .parent()
+      .children()
+      .each($child => {
+        console.log($child)
+        expect($child.attr('class')).to.contain('selected');
+      });
+  });
+
+  it('should go back to first page and expect row selection (Task 105) to be persisted', () => {
+    cy.get('#slickGridContainer-grid16').as('grid16');
+
+    cy.get('@grid16')
+      .find('.icon-seek-first')
+      .click()
+      .wait(10);
+
+    cy.get('#grid16')
+      .contains('Task 105')
+      .parent()
+      .children()
+      .each($child => {
+        console.log($child)
+        expect($child.attr('class')).to.contain('selected');
+      });
   });
 });
