@@ -740,9 +740,21 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       // to stay selected, pass 'false' to the second arg
       const selectionModel = this.grid && this.grid.getSelectionModel();
       if (selectionModel && this.gridOptions && this.gridOptions.dataView && this.gridOptions.dataView.hasOwnProperty('syncGridSelection')) {
+        // if we are using a Backend Service, we will do an extra flag check, the reason is because it might have some unintended behaviors
+        // with the BackendServiceApi because technically the data in the page changes the DataView on every page change.
+        let preservedRowSelectionWithBackend = false;
+        if (this.gridOptions.backendServiceApi && this.gridOptions.dataView.hasOwnProperty('syncGridSelectionWithBackendService')) {
+          preservedRowSelectionWithBackend = this.gridOptions.dataView.syncGridSelectionWithBackendService;
+        }
+
         const syncGridSelection = this.gridOptions.dataView.syncGridSelection;
         if (typeof syncGridSelection === 'boolean') {
-          this.dataView.syncGridSelection(this.grid, this.gridOptions.dataView.syncGridSelection);
+          let preservedRowSelection = syncGridSelection;
+          if (!this._isLocalGrid) {
+            // when using BackendServiceApi, we'll be using the "syncGridSelectionWithBackendService" flag BUT "syncGridSelection" must also be set to True
+            preservedRowSelection = syncGridSelection && preservedRowSelectionWithBackend;
+          }
+          this.dataView.syncGridSelection(this.grid, preservedRowSelection);
         } else if (typeof syncGridSelection === 'object') {
           this.dataView.syncGridSelection(this.grid, syncGridSelection.preserveHidden, syncGridSelection.preserveHiddenOnSelectionChange);
         }

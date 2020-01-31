@@ -117,10 +117,17 @@ export interface GridOption {
   /** Some of the SlickGrid DataView options */
   dataView?: {
     /**
-     * If you don't want the items that are not visible (due to being filtered out or being on a different page)
-     * to stay selected, the set this property as 'false'. You can also set any of the preserve options instead of a boolean value.
+     * Defaults to true, when using row selection,
+     * if you don't want the items that are not visible (due to being filtered out or being on a different page) to stay selected,
+     * then set this property as 'false'. You can also set any of the preserve options instead of a boolean value.
      */
     syncGridSelection?: boolean | { preserveHidden: boolean; preserveHiddenOnSelectionChange: boolean; };
+
+    /**
+     * Defaults to false, do we also want to keep the row selections kept between the pages when using BackendServiceApi?
+     * Note that this flag will be skipped if "syncGridSelection" is already disabled, both flags are used in conjunction
+     */
+    syncGridSelectionWithBackendService?: boolean;
   };
 
   /** Default column width, is set to 80 when null */
