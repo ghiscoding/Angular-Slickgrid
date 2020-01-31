@@ -9,7 +9,6 @@ import {
   ExtensionName,
   MenuCommandItem,
   MenuCommandItemCallbackArgs,
-  MenuOnBeforeMenuShowArgs,
   MenuOptionItemCallbackArgs,
   MenuOptionItem,
   Locale,
@@ -88,26 +87,31 @@ export class CellMenuExtension implements Extension {
         if (this.sharedService.gridOptions.cellMenu.onExtensionRegistered) {
           this.sharedService.gridOptions.cellMenu.onExtensionRegistered(this._addon);
         }
-        this._eventHandler.subscribe(this._addon.onCommand, (event: Event, args: MenuCommandItemCallbackArgs) => {
-          if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onCommand === 'function') {
+        if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onCommand === 'function') {
+          this._eventHandler.subscribe(this._addon.onCommand, (event: Event, args: MenuCommandItemCallbackArgs) => {
             this.sharedService.gridOptions.cellMenu.onCommand(event, args);
-          }
-        });
-        this._eventHandler.subscribe(this._addon.onOptionSelected, (event: Event, args: MenuOptionItemCallbackArgs) => {
-          if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onOptionSelected === 'function') {
+          });
+        }
+        if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onOptionSelected === 'function') {
+          this._eventHandler.subscribe(this._addon.onOptionSelected, (event: Event, args: MenuOptionItemCallbackArgs) => {
             this.sharedService.gridOptions.cellMenu.onOptionSelected(event, args);
-          }
-        });
-        this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: MenuOnBeforeMenuShowArgs) => {
-          if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onBeforeMenuShow === 'function') {
+          });
+        }
+        if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onAfterMenuShow === 'function') {
+          this._eventHandler.subscribe(this._addon.onAfterMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
+            this.sharedService.gridOptions.cellMenu.onAfterMenuShow(event, args);
+          });
+        }
+        if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onBeforeMenuShow === 'function') {
+          this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (event: Event, args: { cell: number; row: number; grid: any; }) => {
             this.sharedService.gridOptions.cellMenu.onBeforeMenuShow(event, args);
-          }
-        });
-        this._eventHandler.subscribe(this._addon.onBeforeMenuClose, (event: Event, args: { cell: number; row: number; grid: any; menu: any; }) => {
-          if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onBeforeMenuClose === 'function') {
+          });
+        }
+        if (this.sharedService.gridOptions.cellMenu && typeof this.sharedService.gridOptions.cellMenu.onBeforeMenuClose === 'function') {
+          this._eventHandler.subscribe(this._addon.onBeforeMenuClose, (event: Event, args: { cell: number; row: number; grid: any; menu: any; }) => {
             this.sharedService.gridOptions.cellMenu.onBeforeMenuClose(event, args);
-          }
-        });
+          });
+        }
       }
       return this._addon;
     }

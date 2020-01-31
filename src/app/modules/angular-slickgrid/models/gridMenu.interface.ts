@@ -1,5 +1,7 @@
+import { Column } from './column.interface';
 import { GridMenuItem } from './gridMenuItem.interface';
 import { MenuCallbackArgs } from './menuCallbackArgs.interface';
+import { MenuCommandItemCallbackArgs } from './menuCommandItemCallbackArgs.interface';
 
 export interface GridMenu {
   /** Array of Custom Items (title, command, disabled, ...) */
@@ -111,15 +113,18 @@ export interface GridMenu {
   /** Fired after extension (control) is registered by SlickGrid */
   onExtensionRegistered?: (plugin: any) => void;
 
-  /** SlickGrid Event fired before the menu is shown. */
-  onBeforeMenuShow?: (e: Event, args: any) => void;
+  /** SlickGrid Event fired After the menu is shown. */
+  onAfterMenuShow?: (e: Event, args: { grid: any; menu: any; columns: Column[] }) => void;
+
+  /** SlickGrid Event fired Before the menu is shown. */
+  onBeforeMenuShow?: (e: Event, args: { grid: any; menu: any; columns: Column[] }) => void;
 
   /** SlickGrid Event fired when any of the columns checkbox selection changes. */
-  onColumnsChanged?: (e: Event, args: any) => void;
+  onColumnsChanged?: (e: Event, args: { grid; any; allColumns: Column[]; columns: Column[]; }) => void;
 
   /** SlickGrid Event fired when the menu is closing. */
-  onMenuClose?: (e: Event, args: any) => void;
+  onMenuClose?: (e: Event, args: { grid: any; menu: any; allColumns: Column[], visibleColumns: Column[] }) => void;
 
   /** SlickGrid Event fired on menu option clicked from the Command items list */
-  onCommand?: (e: Event, args: any) => void;
+  onCommand?: (e: Event, args: MenuCommandItemCallbackArgs) => void;
 }

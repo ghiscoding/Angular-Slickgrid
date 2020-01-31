@@ -1,7 +1,8 @@
+import { GridOption } from './models/gridOption.interface';
 import { GlobalGridOptions } from './global-grid-options';
 
 export class SlickgridConfig {
-  options: any;
+  options: Partial<GridOption>;
 
   constructor() {
     this.options = GlobalGridOptions;
