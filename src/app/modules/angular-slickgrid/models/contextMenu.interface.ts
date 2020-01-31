@@ -1,7 +1,6 @@
 import { MenuCallbackArgs } from './menuCallbackArgs.interface';
 import { MenuCommandItem } from './menuCommandItem.interface';
 import { MenuCommandItemCallbackArgs } from './menuCommandItemCallbackArgs.interface';
-import { MenuOnBeforeMenuShowArgs } from './menuOnBeforeMenuShowArgs.interface';
 import { MenuOptionItem } from './menuOptionItem.interface';
 import { MenuOptionItemCallbackArgs } from './menuOptionItemCallbackArgs.interface';
 
@@ -114,14 +113,14 @@ export interface ContextMenu {
   /** Fired after extension (control) is registered by SlickGrid */
   onExtensionRegistered?: (plugin: any) => void;
 
-  /** SlickGrid Event fired before the menu is shown. */
-  onBeforeMenuShow?: (e: Event, args: MenuOnBeforeMenuShowArgs) => void;
+  /** SlickGrid Event fired After the menu is shown. */
+  onAfterMenuShow?: (e: Event, args: { cell: number; row: number; grid: any; }) => void;
 
-  /** SlickGrid Event fired when any of the columns checkbox selection changes. */
-  onColumnsChanged?: (e: Event, args: any) => void;
+  /** SlickGrid Event fired Before the menu is shown. */
+  onBeforeMenuShow?: (e: Event, args: { cell: number; row: number; grid: any; }) => void;
 
   /** SlickGrid Event fired when the menu is closing. */
-  onBeforeMenuClose?: (e: Event, args: any) => void;
+  onBeforeMenuClose?: (e: Event, args: { cell: number; row: number; grid: any; menu: any; }) => void;
 
   /** SlickGrid Event fired on menu option clicked from the Command items list */
   onCommand?: (e: Event, args: MenuCommandItemCallbackArgs) => void;

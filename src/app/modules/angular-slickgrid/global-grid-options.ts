@@ -4,7 +4,7 @@ import { Filters } from './filters/index';
 /**
  * Options that can be passed to the Bootstrap-Datetimepicker directly
  */
-export const GlobalGridOptions: GridOption = {
+export const GlobalGridOptions: Partial<GridOption> = {
   alwaysShowVerticalScroll: true,
   autoEdit: false,
   asyncEditorLoading: false,
@@ -160,6 +160,8 @@ export const GlobalGridOptions: GridOption = {
     pageSize: 25,
     totalItems: 0
   },
+  // @ts-ignore
+  // technically speaking the Row Detail requires the process & viewComponent but we'll ignore it just to set certain options
   rowDetailView: {
     cssClass: 'detail-view-toggle',
     panelRows: 1,
@@ -167,10 +169,6 @@ export const GlobalGridOptions: GridOption = {
     useRowClick: true,
     useSimpleViewportCalc: true,
     saveDetailViewOnScroll: false,
-
-    // the following 2 property/method should always be override by the user
-    process: undefined,
-    viewComponent: null
   },
   rowHeight: 35,
   topPanelHeight: 35

@@ -13,7 +13,6 @@ import {
   Locale,
   MenuCommandItem,
   MenuCommandItemCallbackArgs,
-  MenuOnBeforeMenuShowArgs,
   SlickEventHandler,
 } from '../models/index';
 import { FilterService } from '../services/filter.service';
@@ -93,11 +92,16 @@ export class HeaderMenuExtension implements Extension {
             this.sharedService.gridOptions.headerMenu.onCommand(e, args);
           }
         });
-        this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (e: any, args: MenuOnBeforeMenuShowArgs) => {
-          if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
+        if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onBeforeMenuShow === 'function') {
+          this._eventHandler.subscribe(this._addon.onBeforeMenuShow, (e: Event, args: { grid: any; column: Column; menu: any; }) => {
             this.sharedService.gridOptions.headerMenu.onBeforeMenuShow(e, args);
-          }
-        });
+          });
+        }
+        if (this.sharedService.gridOptions.headerMenu && typeof this.sharedService.gridOptions.headerMenu.onAfterMenuShow === 'function') {
+          this._eventHandler.subscribe(this._addon.onAfterMenuShow, (e: Event, args: { grid: any; column: Column; menu: any; }) => {
+            this.sharedService.gridOptions.headerMenu.onAfterMenuShow(e, args);
+          });
+        }
       }
       return this._addon;
     }

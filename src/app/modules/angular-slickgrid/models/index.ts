@@ -99,7 +99,6 @@ export * from './menuCallbackArgs.interface';
 export * from './menuCommandItemCallbackArgs.interface';
 export * from './menuCommandItem.interface';
 export * from './menuItem.interface';
-export * from './menuOnBeforeMenuShowArgs.interface';
 export * from './menuOptionItem.interface';
 export * from './menuOptionItemCallbackArgs.interface';
 export * from './metrics.interface';

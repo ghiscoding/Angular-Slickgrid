@@ -29,6 +29,7 @@ const gridStub = {
 const mockAddon = jest.fn().mockImplementation(() => ({
   init: jest.fn(),
   destroy: jest.fn(),
+  onAfterMenuShow: new Slick.Event(),
   onBeforeMenuClose: new Slick.Event(),
   onBeforeMenuShow: new Slick.Event(),
   onColumnsChanged: new Slick.Event(),
@@ -68,10 +69,11 @@ describe('CellMenuExtension', () => {
       maxHeight: 'none',
       width: 'auto',
       onExtensionRegistered: jest.fn(),
-      onCommand: (e, args: MenuCommandItemCallbackArgs) => { },
-      onBeforeMenuShow: (e, args: { cell: number; row: number; grid: any; }) => { },
-      onBeforeMenuClose: (e, args: { cell: number; row: number; grid: any; menu: any; }) => { },
-      onOptionSelected: (e, args: MenuOptionItemCallbackArgs) => { },
+      onCommand: () => { },
+      onAfterMenuShow: () => { },
+      onBeforeMenuShow: () => { },
+      onBeforeMenuClose: () => { },
+      onOptionSelected: () => { },
     },
     multiColumnSort: true,
     pagination: {
@@ -160,6 +162,7 @@ describe('CellMenuExtension', () => {
           onOptionSelected: expect.anything(),
           onBeforeMenuClose: expect.anything(),
           onBeforeMenuShow: expect.anything(),
+          onAfterMenuShow: expect.anything(),
           onExtensionRegistered: expect.anything(),
         });
         expect(onRegisteredSpy).toHaveBeenCalledWith(instance);
@@ -170,13 +173,14 @@ describe('CellMenuExtension', () => {
         const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
         const onb4CloseSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onBeforeMenuClose');
         const onb4ShowSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onBeforeMenuShow');
+        const onAfterShowSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onAfterMenuShow');
         const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onCommand');
         const onOptionSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onOptionSelected');
 
         const instance = extension.register();
         instance.onBeforeMenuShow.notify({ cell: 0, row: 0, grid: gridStub }, new Slick.EventData(), gridStub);
 
-        expect(handlerSpy).toHaveBeenCalledTimes(4);
+        expect(handlerSpy).toHaveBeenCalledTimes(5);
         expect(handlerSpy).toHaveBeenCalledWith(
           { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
           expect.anything()
@@ -185,12 +189,14 @@ describe('CellMenuExtension', () => {
         expect(onb4CloseSpy).not.toHaveBeenCalled();
         expect(onCommandSpy).not.toHaveBeenCalled();
         expect(onOptionSpy).not.toHaveBeenCalled();
+        expect(onAfterShowSpy).not.toHaveBeenCalled();
       });
 
       it('should call internal event handler subscribe and expect the "onBeforeMenuClose" option to be called when addon notify is called', () => {
         const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
         const onb4CloseSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onBeforeMenuClose');
         const onb4ShowSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onBeforeMenuShow');
+        const onAfterShowSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onAfterMenuShow');
         const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onCommand');
         const onOptionSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onOptionSelected');
 
@@ -198,12 +204,36 @@ describe('CellMenuExtension', () => {
         const instance = extension.register();
         instance.onBeforeMenuClose.notify({ cell: 0, row: 0, grid: gridStub, menu: menuElm }, new Slick.EventData(), gridStub);
 
-        expect(handlerSpy).toHaveBeenCalledTimes(4);
+        expect(handlerSpy).toHaveBeenCalledTimes(5);
         expect(handlerSpy).toHaveBeenCalledWith(
           { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
           expect.anything()
         );
         expect(onb4CloseSpy).toHaveBeenCalledWith(expect.anything(), { cell: 0, row: 0, grid: gridStub, menu: menuElm });
+        expect(onAfterShowSpy).not.toHaveBeenCalled();
+        expect(onb4ShowSpy).not.toHaveBeenCalled();
+        expect(onCommandSpy).not.toHaveBeenCalled();
+        expect(onOptionSpy).not.toHaveBeenCalled();
+      });
+
+      it('should call internal event handler subscribe and expect the "onAfterMenuShow" option to be called when addon notify is called', () => {
+        const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
+        const onb4CloseSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onBeforeMenuClose');
+        const onb4ShowSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onBeforeMenuShow');
+        const onAfterShowSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onAfterMenuShow');
+        const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onCommand');
+        const onOptionSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onOptionSelected');
+
+        const instance = extension.register();
+        instance.onAfterMenuShow.notify({ cell: 0, row: 0, grid: gridStub }, new Slick.EventData(), gridStub);
+
+        expect(handlerSpy).toHaveBeenCalledTimes(5);
+        expect(handlerSpy).toHaveBeenCalledWith(
+          { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
+          expect.anything()
+        );
+        expect(onAfterShowSpy).toHaveBeenCalledWith(expect.anything(), { cell: 0, row: 0, grid: gridStub });
+        expect(onb4CloseSpy).not.toHaveBeenCalled();
         expect(onb4ShowSpy).not.toHaveBeenCalled();
         expect(onCommandSpy).not.toHaveBeenCalled();
         expect(onOptionSpy).not.toHaveBeenCalled();
@@ -213,13 +243,14 @@ describe('CellMenuExtension', () => {
         const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
         const onb4CloseSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onBeforeMenuClose');
         const onb4ShowSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onBeforeMenuShow');
+        const onAfterShowSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onAfterMenuShow');
         const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onCommand');
         const onOptionSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onOptionSelected');
 
         const instance = extension.register();
         instance.onCommand.notify({ grid: gridStub, command: 'help' }, new Slick.EventData(), gridStub);
 
-        expect(handlerSpy).toHaveBeenCalledTimes(4);
+        expect(handlerSpy).toHaveBeenCalledTimes(5);
         expect(handlerSpy).toHaveBeenCalledWith(
           { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
           expect.anything()
@@ -228,19 +259,21 @@ describe('CellMenuExtension', () => {
         expect(onOptionSpy).not.toHaveBeenCalled();
         expect(onb4CloseSpy).not.toHaveBeenCalled();
         expect(onb4ShowSpy).not.toHaveBeenCalled();
+        expect(onAfterShowSpy).not.toHaveBeenCalled();
       });
 
       it('should call internal event handler subscribe and expect the "onOptionSelected" option to be called when addon notify is called', () => {
         const handlerSpy = jest.spyOn(extension.eventHandler, 'subscribe');
         const onb4CloseSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onBeforeMenuClose');
         const onb4ShowSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onBeforeMenuShow');
+        const onAfterShowSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onAfterMenuShow');
         const onCommandSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onCommand');
         const onOptionSpy = jest.spyOn(SharedService.prototype.gridOptions.cellMenu, 'onOptionSelected');
 
         const instance = extension.register();
         instance.onOptionSelected.notify({ grid: gridStub, command: 'help' }, new Slick.EventData(), gridStub);
 
-        expect(handlerSpy).toHaveBeenCalledTimes(4);
+        expect(handlerSpy).toHaveBeenCalledTimes(5);
         expect(handlerSpy).toHaveBeenCalledWith(
           { notify: expect.anything(), subscribe: expect.anything(), unsubscribe: expect.anything(), },
           expect.anything()
@@ -249,6 +282,7 @@ describe('CellMenuExtension', () => {
         expect(onCommandSpy).not.toHaveBeenCalled();
         expect(onb4CloseSpy).not.toHaveBeenCalled();
         expect(onb4ShowSpy).not.toHaveBeenCalled();
+        expect(onAfterShowSpy).not.toHaveBeenCalled();
       });
 
       it('should dispose of the addon', () => {
