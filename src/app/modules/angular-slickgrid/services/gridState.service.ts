@@ -265,6 +265,12 @@ export class GridStateService {
       } else {
         preservedRowSelection = syncGridSelection.preserveHidden;
       }
+
+      // if the result is True but the grid is using a Backend Service, we will do an extra flag check the reason is because it might have some unintended behaviors
+      // with the BackendServiceApi because technically the data in the page changes the DataView on every page.
+      if (preservedRowSelection && this._gridOptions.backendServiceApi && this._gridOptions.dataView.hasOwnProperty('syncGridSelectionWithBackendService')) {
+        preservedRowSelection = this._gridOptions.dataView.syncGridSelectionWithBackendService;
+      }
     }
     return preservedRowSelection;
   }

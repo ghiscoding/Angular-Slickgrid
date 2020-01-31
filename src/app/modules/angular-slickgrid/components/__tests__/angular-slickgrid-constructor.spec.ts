@@ -493,7 +493,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(sortSpy).toHaveBeenCalled();
       });
 
-      it('should call the DataView syncGridSelection method with 2nd argument as True when the "dataView" grid option is a boolean and is set to True', () => {
+      it('should call the DataView "syncGridSelection" method with 2nd argument as True when the "dataView.syncGridSelection" grid option is enabled', () => {
         jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
         const syncSpy = jest.spyOn(mockDataView, 'syncGridSelection');
 
@@ -503,7 +503,17 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(syncSpy).toHaveBeenCalledWith(component.grid, true);
       });
 
-      it('should call the DataView syncGridSelection method with 3 arguments when the "dataView" grid option is provided as an object', () => {
+      it('should call the DataView "syncGridSelection" method with 2nd argument as False when the "dataView.syncGridSelection" grid option is disabled', () => {
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
+        const syncSpy = jest.spyOn(mockDataView, 'syncGridSelection');
+
+        component.gridOptions = { dataView: { syncGridSelection: false }, enableRowSelection: true } as GridOption;
+        component.ngAfterViewInit();
+
+        expect(syncSpy).toHaveBeenCalledWith(component.grid, false);
+      });
+
+      it('should call the DataView "syncGridSelection" method with 3 arguments when the "dataView" grid option is provided as an object', () => {
         jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
         const syncSpy = jest.spyOn(mockDataView, 'syncGridSelection');
 
@@ -514,6 +524,57 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         component.ngAfterViewInit();
 
         expect(syncSpy).toHaveBeenCalledWith(component.grid, true, false);
+      });
+
+      it('should call the DataView "syncGridSelection" method when using BackendServiceApi and "syncGridSelectionWithBackendService" when the "dataView.syncGridSelection" grid option is enabled as well', () => {
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
+        const syncSpy = jest.spyOn(mockDataView, 'syncGridSelection');
+
+        component.gridOptions = {
+          backendServiceApi: {
+            service: mockGraphqlService,
+            process: jest.fn(),
+          },
+          dataView: { syncGridSelection: true, syncGridSelectionWithBackendService: true },
+          enableRowSelection: true
+        } as GridOption;
+        component.ngAfterViewInit();
+
+        expect(syncSpy).toHaveBeenCalledWith(component.grid, true);
+      });
+
+      it('should call the DataView "syncGridSelection" method with false as 2nd argument when using BackendServiceApi and "syncGridSelectionWithBackendService" BUT the "dataView.syncGridSelection" grid option is disabled', () => {
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
+        const syncSpy = jest.spyOn(mockDataView, 'syncGridSelection');
+
+        component.gridOptions = {
+          backendServiceApi: {
+            service: mockGraphqlService,
+            process: jest.fn(),
+          },
+          dataView: { syncGridSelection: false, syncGridSelectionWithBackendService: true },
+          enableRowSelection: true
+        } as GridOption;
+        component.ngAfterViewInit();
+
+        expect(syncSpy).toHaveBeenCalledWith(component.grid, false);
+      });
+
+      it('should call the DataView "syncGridSelection" method with false as 2nd argument when using BackendServiceApi and "syncGridSelectionWithBackendService" disabled and the "dataView.syncGridSelection" grid option is enabled', () => {
+        jest.spyOn(mockGrid, 'getSelectionModel').mockReturnValue(true);
+        const syncSpy = jest.spyOn(mockDataView, 'syncGridSelection');
+
+        component.gridOptions = {
+          backendServiceApi: {
+            service: mockGraphqlService,
+            process: jest.fn(),
+          },
+          dataView: { syncGridSelection: true, syncGridSelectionWithBackendService: false },
+          enableRowSelection: true
+        } as GridOption;
+        component.ngAfterViewInit();
+
+        expect(syncSpy).toHaveBeenCalledWith(component.grid, false);
       });
 
       it('should bind local filter when "enableFiltering" is set', () => {

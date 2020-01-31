@@ -701,7 +701,7 @@ describe('GridStateService', () => {
 
       const output = service.needToPreserveRowSelection();
 
-      expect(output).toBeFalsy();
+      expect(output).toBeFalse();
     });
 
     it('should return false when "dataView" property is defined in the grid options with "syncGridSelection" property', () => {
@@ -710,7 +710,7 @@ describe('GridStateService', () => {
 
       const output = service.needToPreserveRowSelection();
 
-      expect(output).toBeFalsy();
+      expect(output).toBeFalse();
     });
 
     it('should return true when the "dataView" grid option is a boolean and is set to True', () => {
@@ -719,7 +719,39 @@ describe('GridStateService', () => {
 
       const output = service.needToPreserveRowSelection();
 
-      expect(output).toBeTruthy();
+      expect(output).toBeTrue();
+    });
+
+    it('should return false when using BackendServiceApi and the "dataView" grid option is a boolean and is set to True but "syncGridSelectionWithBackendService" is disabled', () => {
+      const gridOptionsMock = {
+        dataView: { syncGridSelection: true, syncGridSelectionWithBackendService: false },
+        backendServiceApi: {
+          service: backendServiceStub,
+          process: jest.fn(),
+        },
+        enableRowSelection: true
+      } as GridOption;
+      jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
+
+      const output = service.needToPreserveRowSelection();
+
+      expect(output).toBeFalse();
+    });
+
+    it('should return true when using BackendServiceApi and the "dataView" grid option is a boolean and is set to True but "syncGridSelectionWithBackendService" is enabled', () => {
+      const gridOptionsMock = {
+        dataView: { syncGridSelection: true, syncGridSelectionWithBackendService: true },
+        backendServiceApi: {
+          service: backendServiceStub,
+          process: jest.fn(),
+        },
+        enableRowSelection: true
+      } as GridOption;
+      jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
+
+      const output = service.needToPreserveRowSelection();
+
+      expect(output).toBeTrue();
     });
 
     it('should return true when the "dataView" grid option is provided as an object', () => {
@@ -731,7 +763,7 @@ describe('GridStateService', () => {
 
       const output = service.needToPreserveRowSelection();
 
-      expect(output).toBeTruthy();
+      expect(output).toBeTrue();
     });
   });
 
