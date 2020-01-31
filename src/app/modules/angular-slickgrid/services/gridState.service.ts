@@ -34,14 +34,9 @@ export class GridStateService {
   private _dataView: any;
   private _grid: any;
   private _subscriptions: Subscription[] = [];
-  private _selectedRowDataContextIds: number[] | string[] = []; // used with row selection
+  private _selectedRowDataContextIds: Array<number | string> = []; // used with row selection
   private _wasRecheckedAfterPageChange = true; // used with row selection & pagination
   onGridStateChanged = new Subject<GridStateChange>();
-
-  /** Getter for the Grid Options pulled through the Grid Object */
-  private get _gridOptions(): GridOption {
-    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
-  }
 
   constructor(
     private extensionService: ExtensionService,
@@ -50,6 +45,21 @@ export class GridStateService {
     private sortService: SortService
   ) {
     this._eventHandler = new Slick.EventHandler();
+  }
+
+  /** Getter for the Grid Options pulled through the Grid Object */
+  private get _gridOptions(): GridOption {
+    return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
+  }
+
+  /** Getter of the selected data context object IDs */
+  get selectedRowDataContextIds(): Array<number | string> {
+    return this._selectedRowDataContextIds;
+  }
+
+  /** Setter of the selected data context object IDs */
+  set selectedRowDataContextIds(dataContextIds: Array<number | string>) {
+    this._selectedRowDataContextIds = dataContextIds;
   }
 
   /**
@@ -217,7 +227,7 @@ export class GridStateService {
         let dataContextIds: Array<number | string> = [];
 
         if (this._gridOptions.enablePagination) {
-          gridRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds); // note that this will return only what is visible in current page
+          gridRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []); // note that this will return only what is visible in current page
           dataContextIds = this._selectedRowDataContextIds;
         } else {
           gridRowIndexes = this._grid.getSelectedRows() || [];
@@ -412,7 +422,7 @@ export class GridStateService {
         // when user changes page, the selected row indexes might not show up
         // we can check to make sure it is but it has to be in a delay so it happens after the first "onSelectedRowsChanged" is triggered
         setTimeout(() => {
-          const shouldBeSelectedRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds);
+          const shouldBeSelectedRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []);
           const currentSelectedRowIndexes = this._grid.getSelectedRows();
           if (!isequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes)) {
             this._grid.setSelectedRows(shouldBeSelectedRowIndexes);
@@ -425,30 +435,35 @@ export class GridStateService {
           const newSelectedRows = args.rows as number[];
           const prevSelectedRows = args.previousSelectedRows as number[];
 
-          const newSelectAdditions = newSelectedRows.filter((i) => prevSelectedRows.indexOf(i) < 0);
-          const newSelectDeletions = prevSelectedRows.filter((i) => newSelectedRows.indexOf(i) < 0);
+          const newSelectedAdditions = newSelectedRows.filter((i) => prevSelectedRows.indexOf(i) < 0);
+          const newSelectedDeletions = prevSelectedRows.filter((i) => newSelectedRows.indexOf(i) < 0);
 
-          // deletion might happen when user is changing page, if that is the case then skip the deletion since it's only a visual deletion
+          // deletion might happen when user is changing page, if that is the case then skip the deletion since it's only a visual deletion (current page)
           // if it's not a page change (when the flag is true), then proceed with the deletion in our global array of selected IDs
-          if (this._wasRecheckedAfterPageChange && newSelectDeletions.length > 0) {
-            const toDeleteDataIds = (this._dataView.mapRowsToIds(newSelectDeletions) as Array<number | string>) || [];
-            toDeleteDataIds.forEach((removeId: number | string) => this._selectedRowDataContextIds.splice((this._selectedRowDataContextIds as Array<number | string>).indexOf(removeId), 1));
+          if (this._wasRecheckedAfterPageChange && newSelectedDeletions.length > 0) {
+            const toDeleteDataIds: Array<number | string> = this._dataView.mapRowsToIds(newSelectedDeletions) || [];
+            toDeleteDataIds.forEach((removeId: number | string) => {
+              this._selectedRowDataContextIds.splice((this._selectedRowDataContextIds as Array<number | string>).indexOf(removeId), 1);
+            });
           }
 
           // if we have newly added selected row(s), let's update our global array of selected IDs
-          if (newSelectAdditions.length > 0) {
-            const toAddDataIds: Array<number | string> = this._dataView.mapRowsToIds(newSelectAdditions) || [];
+          if (newSelectedAdditions.length > 0) {
+            const toAddDataIds: Array<number | string> = this._dataView.mapRowsToIds(newSelectedAdditions) || [];
             toAddDataIds.forEach((dataId: number | string) => {
               if ((this._selectedRowDataContextIds as Array<number | string>).indexOf(dataId) === -1) {
                 (this._selectedRowDataContextIds as Array<number | string>).push(dataId);
               }
             });
           }
+
+          // we set this flag which will be used on the 2nd time the "onSelectedRowsChanged" event is called
+          // when it's the first time, we skip deletion and this is what this flag is for
           this._wasRecheckedAfterPageChange = true;
 
           // form our full selected row IDs, let's make sure these indexes are selected in the grid, if not then let's call a reselect
           // this could happen if the previous step was a page change
-          const shouldBeSelectedRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds);
+          const shouldBeSelectedRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []);
           const currentSelectedRowIndexes = this._grid.getSelectedRows();
           if (!isequal(shouldBeSelectedRowIndexes, currentSelectedRowIndexes)) {
             this._grid.setSelectedRows(shouldBeSelectedRowIndexes);

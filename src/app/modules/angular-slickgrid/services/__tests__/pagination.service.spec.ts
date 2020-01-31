@@ -770,40 +770,42 @@ describe('PaginationService', () => {
         service: mockBackendService,
         process: jest.fn(),
       };
-      const onShowPaginationSpy = jest.spyOn(service.onShowPaginationChanged, 'next');
+      const onShowPaginationSpy = jest.spyOn(service.onPaginationVisibilityChanged, 'next');
       const setPagingSpy = jest.spyOn(dataviewStub, 'setPagingOptions');
 
       service.init(gridStub, dataviewStub, mockGridOption.pagination, mockGridOption.backendServiceApi);
-      service.showPagination(false);
+      service.togglePaginationVisibility(false);
 
       expect(sharedService.gridOptions.enablePagination).toBeFalse();
-      expect(onShowPaginationSpy).toHaveBeenCalledWith(false);
+      expect(onShowPaginationSpy).toHaveBeenCalledWith({ visible: false });
       expect(setPagingSpy).not.toHaveBeenCalled();
     });
 
     it('should reset DataView Pagination when using Local Grid and ShowPagination is set to False', () => {
-      const onShowPaginationSpy = jest.spyOn(service.onShowPaginationChanged, 'next');
+      const onShowPaginationSpy = jest.spyOn(service.onPaginationVisibilityChanged, 'next');
       const setPagingSpy = jest.spyOn(dataviewStub, 'setPagingOptions');
       mockGridOption.backendServiceApi = null;
 
       service.init(gridStub, dataviewStub, mockGridOption.pagination);
-      service.showPagination(false);
+      service.togglePaginationVisibility(false);
 
       expect(sharedService.gridOptions.enablePagination).toBeFalse();
-      expect(onShowPaginationSpy).toHaveBeenCalledWith(false);
+      expect(onShowPaginationSpy).toHaveBeenCalledWith({ visible: false });
       expect(setPagingSpy).toHaveBeenCalledWith({ pageSize: 0, pageNum: 0 });
     });
 
-    it('should reset DataView Pagination when using Local Grid and ShowPagination is set to True', () => {
-      const onShowPaginationSpy = jest.spyOn(service.onShowPaginationChanged, 'next');
+    it('should reset DataView Pagination when using Local Grid and also expect to back to Page 1 when re-enabling the Pagination', () => {
+      const onShowPaginationSpy = jest.spyOn(service.onPaginationVisibilityChanged, 'next');
       const setPagingSpy = jest.spyOn(dataviewStub, 'setPagingOptions');
+      const gotoSpy = jest.spyOn(service, 'goToFirstPage');
       mockGridOption.backendServiceApi = null;
 
       service.init(gridStub, dataviewStub, mockGridOption.pagination);
-      service.showPagination(true);
+      service.togglePaginationVisibility(true);
 
       expect(sharedService.gridOptions.enablePagination).toBeTrue();
-      expect(onShowPaginationSpy).toHaveBeenCalledWith(true);
+      expect(gotoSpy).toHaveBeenCalled();
+      expect(onShowPaginationSpy).toHaveBeenCalledWith({ visible: true });
       expect(setPagingSpy).toHaveBeenCalledWith({ pageSize: mockGridOption.pagination.pageSize, pageNum: 0 });
     });
   });
