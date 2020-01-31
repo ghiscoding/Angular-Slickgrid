@@ -418,33 +418,6 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
     return showing;
   }
 
-  /** Load any Row Selections into the DataView that were presets by the user */
-  loadRowSelectionPresetWhenExists() {
-    // if user entered some Row Selections "presets"
-    const presets = this.gridOptions && this.gridOptions.presets;
-    const selectionModel = this.grid && this.grid.getSelectionModel();
-    const enableRowSelection = this.gridOptions && (this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection);
-    if (enableRowSelection && selectionModel && presets && presets.rowSelection && (Array.isArray(presets.rowSelection.gridRowIndexes) || Array.isArray(presets.rowSelection.dataContextIds))) {
-      let dataContextIds = presets.rowSelection.dataContextIds;
-      let gridRowIndexes = presets.rowSelection.gridRowIndexes;
-
-      // maps the IDs to the Grid Rows and vice versa, the "dataContextIds" has precedence over the other
-      if (Array.isArray(dataContextIds) && dataContextIds.length > 0) {
-        gridRowIndexes = this.dataView.mapIdsToRows(dataContextIds) || [];
-      } else if (Array.isArray(gridRowIndexes) && gridRowIndexes.length > 0) {
-        dataContextIds = this.dataView.mapRowsToIds(gridRowIndexes) || [];
-      }
-      this.gridStateService.selectedRowDataContextIds = dataContextIds;
-
-      // change the selected rows except UNLESS it's a Local Grid with Pagination
-      // local Pagination uses the DataView and that also trigger a change/refresh
-      // and we don't want to trigger 2 Grid State changes just 1
-      if ((this._isLocalGrid && !this.gridOptions.enablePagination) || !this._isLocalGrid) {
-        setTimeout(() => this.grid.setSelectedRows(gridRowIndexes));
-      }
-    }
-  }
-
   //
   // private functions
   // ------------------
@@ -697,9 +670,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.paginationService.totalItems = this.totalItems;
       this.paginationService.init(this.grid, this.dataView, paginationOptions, this.backendServiceApi);
       this.subscriptions.push(
-        this.paginationService.onPaginationChanged.subscribe((changes: ServicePagination) => this.paginationChanged(changes))
-      );
-      this.subscriptions.push(
+        this.paginationService.onPaginationChanged.subscribe((changes: ServicePagination) => this.paginationChanged(changes)),
         this.paginationService.onPaginationVisibilityChanged.subscribe((visibility: { visible: boolean }) => {
           this.showPagination = visibility && visibility.visible || false;
           if (this.gridOptions && this.gridOptions.backendServiceApi) {
@@ -772,7 +743,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
         const syncGridSelection = this.gridOptions.dataView.syncGridSelection;
         if (typeof syncGridSelection === 'boolean') {
           this.dataView.syncGridSelection(this.grid, this.gridOptions.dataView.syncGridSelection);
-        } else {
+        } else if (typeof syncGridSelection === 'object') {
           this.dataView.syncGridSelection(this.grid, syncGridSelection.preserveHidden, syncGridSelection.preserveHiddenOnSelectionChange);
         }
       }
@@ -896,6 +867,33 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       this.paginationOptions.totalItems = this.totalItems;
       const paginationOptions = this.setPaginationOptionsWhenPresetDefined(this.gridOptions, this.paginationOptions);
       this.initializePaginationService(paginationOptions);
+    }
+  }
+
+  /** Load any Row Selections into the DataView that were presets by the user */
+  loadRowSelectionPresetWhenExists() {
+    // if user entered some Row Selections "presets"
+    const presets = this.gridOptions && this.gridOptions.presets;
+    const selectionModel = this.grid && this.grid.getSelectionModel();
+    const enableRowSelection = this.gridOptions && (this.gridOptions.enableCheckboxSelector || this.gridOptions.enableRowSelection);
+    if (enableRowSelection && selectionModel && presets && presets.rowSelection && (Array.isArray(presets.rowSelection.gridRowIndexes) || Array.isArray(presets.rowSelection.dataContextIds))) {
+      let dataContextIds = presets.rowSelection.dataContextIds;
+      let gridRowIndexes = presets.rowSelection.gridRowIndexes;
+
+      // maps the IDs to the Grid Rows and vice versa, the "dataContextIds" has precedence over the other
+      if (Array.isArray(dataContextIds) && dataContextIds.length > 0) {
+        gridRowIndexes = this.dataView.mapIdsToRows(dataContextIds) || [];
+      } else if (Array.isArray(gridRowIndexes) && gridRowIndexes.length > 0) {
+        dataContextIds = this.dataView.mapRowsToIds(gridRowIndexes) || [];
+      }
+      this.gridStateService.selectedRowDataContextIds = dataContextIds;
+
+      // change the selected rows except UNLESS it's a Local Grid with Pagination
+      // local Pagination uses the DataView and that also trigger a change/refresh
+      // and we don't want to trigger 2 Grid State changes just 1
+      if ((this._isLocalGrid && !this.gridOptions.enablePagination) || !this._isLocalGrid) {
+        setTimeout(() => this.grid.setSelectedRows(gridRowIndexes));
+      }
     }
   }
 

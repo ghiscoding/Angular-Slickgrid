@@ -594,7 +594,6 @@ describe('GridStateService', () => {
           done();
         });
       });
-
     });
   });
 
