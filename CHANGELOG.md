@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.17.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.16.5...v2.17.0) (2020-01-31)
+
+
+### Features
+
+* **menus:** add "onAfterMenuShow" event to all possible menu plugins ([#389](https://github.com/ghiscoding/angular-slickgrid/issues/389)) ([141d01a](https://github.com/ghiscoding/angular-slickgrid/commit/141d01ac9aa52ffe182453c31318456f67c74788))
+* **selection:** add flag to disable syncGridSelection w/BackendService ([#390](https://github.com/ghiscoding/angular-slickgrid/issues/390)) ([f29c6f0](https://github.com/ghiscoding/angular-slickgrid/commit/f29c6f0298d02f4eddf528d034afa0e5dd2747a6))
+* **selection:** preserve row selection & add it to Grid State & Presets ([#388](https://github.com/ghiscoding/angular-slickgrid/issues/388)) ([a50d489](https://github.com/ghiscoding/angular-slickgrid/commit/a50d489080a11490d54b728962849408f6ae091a)), closes [#295](https://github.com/ghiscoding/angular-slickgrid/issues/295)
+
 ### [2.16.5](https://github.com/ghiscoding/angular-slickgrid/compare/v2.16.4...v2.16.5) (2020-01-23)
 
 
