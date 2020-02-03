@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.0...v2.17.1) (2020-02-03)
+
+
+### Bug Fixes
+
+* **backend:** updateOptions can be use with partial options - TS type ([80bdaa5](https://github.com/ghiscoding/angular-slickgrid/commit/80bdaa5270aa613a1bbc6794c7d97950089a3e2e))
+* **footer:** custom footer should work anytime pagination is disabled ([7d9798a](https://github.com/ghiscoding/angular-slickgrid/commit/7d9798aedf25653375f0344afa04297fb2c7ef69))
+* **locales:** fix some Locales not showing up when not using Translate ([#392](https://github.com/ghiscoding/angular-slickgrid/issues/392)) ([4d5e65b](https://github.com/ghiscoding/angular-slickgrid/commit/4d5e65b0697276cb827f1bc0355e8dff378304b1))
+
 ## [2.17.0](https://github.com/ghiscoding/angular-slickgrid/compare/v2.16.5...v2.17.0) (2020-01-31)
 
 
