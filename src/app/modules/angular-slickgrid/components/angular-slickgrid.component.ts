@@ -959,7 +959,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
       }
 
       // we will display the custom footer only when there's no Pagination
-      if (!(this.gridOptions.backendServiceApi || this.gridOptions.enablePagination)) {
+      if (!this.gridOptions.enablePagination) {
         this.showCustomFooter = this.gridOptions.hasOwnProperty('showCustomFooter') ? this.gridOptions.showCustomFooter : false;
         this.customFooterOptions = this.gridOptions.customFooterOptions || {};
       }

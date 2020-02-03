@@ -141,6 +141,7 @@ export class GridGraphqlWithoutPaginationComponent implements OnInit {
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 28,
       datasetIdPropertyName: 'code',
+      showCustomFooter: true, // display some metrics in the bottom custom footer
       backendServiceApi: {
         // use the GraphQL Service to build the query but use local (in memory) Filtering/Sorting strategies
         // the useLocalFiltering/useLocalSorting flags can be enabled independently
