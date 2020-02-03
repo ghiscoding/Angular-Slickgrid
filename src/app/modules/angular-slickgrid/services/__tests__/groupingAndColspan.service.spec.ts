@@ -109,6 +109,7 @@ describe('GroupingAndColspanService', () => {
       START: 'Début',
     });
     translate.setDefaultLang('en');
+    translate.use('en');
   });
 
   afterEach(() => {

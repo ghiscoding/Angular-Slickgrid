@@ -78,11 +78,19 @@ export class LongTextEditor implements Editor {
   }
 
   init(): void {
+    let cancelText = '';
+    let saveText = '';
+    if (this._translate && this._translate.instant && this._translate.currentLang) {
+      cancelText = this._translate.instant('CANCEL');
+      saveText = this._translate.instant('SAVE');
+    } else {
+      cancelText = this._locales && this._locales.TEXT_CANCEL;
+      saveText = this._locales && this._locales.TEXT_SAVE;
+    }
+
     const columnId = this.columnDef && this.columnDef.id;
     const placeholder = this.columnEditor && this.columnEditor.placeholder || '';
     const title = this.columnEditor && this.columnEditor.title || '';
-    const cancelText = this._translate && this._translate.instant && this._translate.instant('CANCEL') || this._locales && this._locales.TEXT_CANCEL;
-    const saveText = this._translate && this._translate.instant && this._translate.instant('SAVE') || this._locales && this._locales.TEXT_SAVE;
     const $container = $('body');
 
     this._$wrapper = $(`<div class="slick-large-editor-text editor-${columnId}" />`).appendTo($container);

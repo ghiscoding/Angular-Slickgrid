@@ -139,8 +139,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   showPagination = false;
   totalItems = 0;
   paginationData: {
-    enableTranslate: boolean;
-    locales: Locale;
+    gridOptions: GridOption;
   };
   subscriptions: Subscription[] = [];
 
@@ -664,8 +663,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   private initializePaginationService(paginationOptions: Pagination) {
     if (this.gridOptions) {
       this.paginationData = {
-        enableTranslate: this.gridOptions.enableTranslate,
-        locales: this.locales,
+        gridOptions: this.gridOptions,
       };
       this.paginationService.totalItems = this.totalItems;
       this.paginationService.init(this.grid, this.dataView, paginationOptions, this.backendServiceApi);
@@ -987,7 +985,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
 
   /** Translate all Custom Footer Texts (footer with metrics) */
   private translateCustomFooterTexts() {
-    if (this.translate && this.translate.instant) {
+    if (this.translate && this.translate.instant && this.translate.currentLang) {
       const customFooterOptions = this.gridOptions && this.gridOptions.customFooterOptions || {};
       customFooterOptions.metricTexts = customFooterOptions.metricTexts || {};
       for (const propName of Object.keys(customFooterOptions.metricTexts)) {

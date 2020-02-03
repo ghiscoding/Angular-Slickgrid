@@ -3,8 +3,7 @@
   </div>
 
   <!-- Pagination section under the grid -->
-  <slick-pagination id="slickPagingContainer-{{gridId}}" *ngIf="showPagination"
-    [enableTranslate]="gridOptions.enableTranslate" [locales]="locales">
+  <slick-pagination id="slickPagingContainer-{{gridId}}" *ngIf="showPagination" [gridOptions]="gridOptions">
   </slick-pagination>
 
   <!-- Custom Footer section under the grid -->

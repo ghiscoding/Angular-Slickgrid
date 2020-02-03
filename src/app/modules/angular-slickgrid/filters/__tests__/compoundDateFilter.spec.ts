@@ -62,6 +62,7 @@ describe('CompoundDateFilter', () => {
       STARTS_WITH: 'Commence par',
     });
     translate.setDefaultLang('en');
+    translate.use('en');
 
     filter = new CompoundDateFilter(translate);
   });

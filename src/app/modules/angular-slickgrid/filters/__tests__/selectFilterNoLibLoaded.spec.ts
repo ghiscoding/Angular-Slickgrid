@@ -62,6 +62,7 @@ describe('SelectFilter', () => {
     });
     translate = TestBed.get(TranslateService);
     translate.setDefaultLang('en');
+    translate.use('en');
 
     filter = new SelectFilter(translate, collectionServiceStub);
   });

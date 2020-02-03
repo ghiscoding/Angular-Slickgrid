@@ -271,7 +271,7 @@ export class ExcelExportService {
   private getGroupColumnTitle(): string | null {
     // Group By text, it could be set in the export options or from translation or if nothing is found then use the English constant text
     let groupByColumnHeader = this._excelExportOptions.groupingColumnHeaderTitle;
-    if (!groupByColumnHeader && this._gridOptions.enableTranslate && this.translate && this.translate.instant) {
+    if (!groupByColumnHeader && this._gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
       groupByColumnHeader = this.translate.instant('GROUP_BY');
     } else if (!groupByColumnHeader) {
       groupByColumnHeader = this._locales && this._locales.TEXT_GROUP_BY;
@@ -302,7 +302,7 @@ export class ExcelExportService {
     // Populate the Column Header, pull the name defined
     columns.forEach((columnDef) => {
       let headerTitle = '';
-      if ((columnDef.headerKey || columnDef.nameKey) && this._gridOptions.enableTranslate && this.translate && this.translate.instant) {
+      if ((columnDef.headerKey || columnDef.nameKey) && this._gridOptions.enableTranslate && this.translate && this.translate.currentLang && this.translate.instant) {
         headerTitle = this.translate.instant((columnDef.headerKey || columnDef.nameKey));
       } else {
         headerTitle = columnDef.name || titleCase(columnDef.field);

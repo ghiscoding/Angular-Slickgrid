@@ -61,6 +61,7 @@ describe('CompoundInputPasswordFilter', () => {
       STARTS_WITH: 'Commence par',
     });
     translate.setDefaultLang('en');
+    translate.use('en');
 
     filter = new CompoundInputPasswordFilter(translate);
   });

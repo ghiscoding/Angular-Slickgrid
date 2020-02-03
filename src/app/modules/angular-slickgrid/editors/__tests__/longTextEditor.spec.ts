@@ -62,6 +62,7 @@ describe('LongTextEditor', () => {
       SAVE: 'Sauvegarder',
     });
     translate.setDefaultLang('fr');
+    translate.use('fr');
 
     mockColumn = { id: 'title', field: 'title', editable: true, editor: { model: Editors.longText }, internalColumnEditor: {} } as Column;
 

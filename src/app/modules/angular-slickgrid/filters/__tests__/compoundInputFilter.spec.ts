@@ -60,6 +60,7 @@ describe('CompoundInputFilter', () => {
       STARTS_WITH: 'Commence par',
     });
     translate.setDefaultLang('en');
+    translate.use('en');
 
     filter = new CompoundInputFilter(translate);
   });

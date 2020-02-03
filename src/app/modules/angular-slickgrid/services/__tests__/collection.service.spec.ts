@@ -40,6 +40,7 @@ describe('CollectionService', () => {
         DEVELOPER: 'Développeur',
       });
       translate.setDefaultLang('en');
+      translate.use('en');
 
       collection = [
         { firstName: 'John', lastName: 'Z', position: 'SALES_REP', order: 10 },

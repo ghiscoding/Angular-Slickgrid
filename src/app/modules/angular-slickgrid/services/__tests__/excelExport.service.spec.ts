@@ -99,6 +99,7 @@ describe('ExcelExportService', () => {
         DEVELOPER: 'Développeur',
       });
       translate.setDefaultLang('en');
+      translate.use('en');
     });
 
     afterEach(() => {

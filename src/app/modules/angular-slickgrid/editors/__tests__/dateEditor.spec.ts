@@ -63,6 +63,7 @@ describe('DateEditor', () => {
       SAVE: 'Sauvegarder',
     });
     translate.setDefaultLang('en');
+    translate.use('en');
 
     mockColumn = { id: 'startDate', field: 'startDate', editable: true, editor: { model: Editors.date }, internalColumnEditor: {} } as Column;
 

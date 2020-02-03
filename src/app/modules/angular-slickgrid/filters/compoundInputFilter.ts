@@ -172,13 +172,13 @@ export class CompoundInputFilter implements Filter {
     switch (type) {
       case FieldType.string:
         optionValues = [
-          { operator: '' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('CONTAINS') || this._locales && this._locales.TEXT_CONTAINS },
-          { operator: '=' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('EQUALS') || this._locales && this._locales.TEXT_EQUALS },
-          { operator: 'a*' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('STARTS_WITH') || this._locales && this._locales.TEXT_STARTS_WITH },
-          { operator: '*z' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('ENDS_WITH') || this._locales && this._locales.TEXT_CONTAINS },
+          { operator: '' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('CONTAINS') || this._locales && this._locales.TEXT_CONTAINS },
+          { operator: '=' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('EQUALS') || this._locales && this._locales.TEXT_EQUALS },
+          { operator: 'a*' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('STARTS_WITH') || this._locales && this._locales.TEXT_STARTS_WITH },
+          { operator: '*z' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('ENDS_WITH') || this._locales && this._locales.TEXT_CONTAINS },
           /*
-          { operator: 'IN' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('IN_COLLECTION_SEPERATED_BY_COMMA') },
-          { operator: 'NIN' as OperatorString, description: this.translate && this.translate.instant && this.translate.instant('NOT_IN_COLLECTION_SEPERATED_BY_COMMA') },
+          { operator: 'IN' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('IN_COLLECTION_SEPERATED_BY_COMMA') },
+          { operator: 'NIN' as OperatorString, description: this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant('NOT_IN_COLLECTION_SEPERATED_BY_COMMA') },
           */
         ];
         break;
