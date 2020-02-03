@@ -105,7 +105,8 @@ describe('Example 8 - Header Menu Plugin', () => {
 
     cy.get('.slick-header-menuitem .slick-header-menucontent')
       .contains('Sort Descending')
-      .click();
+      .click()
+      .wait(10);
 
     cy.get('.slick-header-column:nth(1).slick-header-sortable.slick-header-column-sorted')
       .find('.slick-sort-indicator.slick-sort-indicator-asc')
