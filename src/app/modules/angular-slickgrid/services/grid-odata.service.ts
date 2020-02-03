@@ -105,7 +105,7 @@ export class GridOdataService implements BackendService {
     this.updateSorters([]);
   }
 
-  updateOptions(serviceOptions?: OdataOption) {
+  updateOptions(serviceOptions?: Partial<OdataOption>) {
     this.options = { ...this.options, ...serviceOptions };
     this._odataService.options = this.options;
   }

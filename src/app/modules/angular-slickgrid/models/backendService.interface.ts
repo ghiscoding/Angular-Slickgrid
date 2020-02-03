@@ -52,7 +52,7 @@ export interface BackendService {
   updateSorters?: (sortColumns?: ColumnSort[], presetSorters?: CurrentSorter[]) => void;
 
   /** Update the backend service options */
-  updateOptions: (serviceOptions?: BackendServiceOption) => void;
+  updateOptions: (serviceOptions?: Partial<BackendServiceOption>) => void;
 
   // --
   // Events / Methods
