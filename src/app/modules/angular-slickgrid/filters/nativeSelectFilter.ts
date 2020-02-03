@@ -175,7 +175,7 @@ export class NativeSelectFilter implements Filter {
           throw new Error(`A collection with value/label (or value/labelKey when using Locale) is required to populate the Native Select Filter list, for example:: { filter: model: Filters.select, collection: [ { value: '1', label: 'One' } ]')`);
         }
         const labelKey = option.labelKey || option[labelName];
-        const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && typeof this.translate.instant === 'function') ? this.translate.instant(labelKey || ' ') : labelKey;
+        const textLabel = ((option.labelKey || this.columnDef.filter.enableTranslateLabel) && this.translate && this.translate.currentLang && this.translate.instant) ? this.translate.instant(labelKey || ' ') : labelKey;
         options += `<option value="${option[valueName]}">${textLabel}</option>`;
       });
     }

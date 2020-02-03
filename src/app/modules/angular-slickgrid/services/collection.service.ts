@@ -120,8 +120,8 @@ export class CollectionService {
               const sortDirection = sortBy.sortDesc ? SortDirectionNumber.desc : SortDirectionNumber.asc;
               const objectProperty = sortBy.property;
               const fieldType = sortBy.fieldType || FieldType.string;
-              const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[objectProperty] || ' ') : dataRow1[objectProperty];
-              const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[objectProperty] || ' ') : dataRow2[objectProperty];
+              const value1 = (enableTranslateLabel) ? this.translate && this.translate.currentLang && this.translate.instant(dataRow1[objectProperty] || ' ') : dataRow1[objectProperty];
+              const value2 = (enableTranslateLabel) ? this.translate && this.translate.currentLang && this.translate.instant(dataRow2[objectProperty] || ' ') : dataRow2[objectProperty];
 
               const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, columnDef);
               if (sortResult !== SortDirectionNumber.neutral) {
@@ -140,8 +140,8 @@ export class CollectionService {
 
         if (objectProperty) {
           sortedCollection = collection.sort((dataRow1: any, dataRow2: any) => {
-            const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1[objectProperty] || ' ') : dataRow1[objectProperty];
-            const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2[objectProperty] || ' ') : dataRow2[objectProperty];
+            const value1 = (enableTranslateLabel) ? this.translate && this.translate.currentLang && this.translate.instant(dataRow1[objectProperty] || ' ') : dataRow1[objectProperty];
+            const value2 = (enableTranslateLabel) ? this.translate && this.translate.currentLang && this.translate.instant(dataRow2[objectProperty] || ' ') : dataRow2[objectProperty];
             const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, columnDef);
             if (sortResult !== SortDirectionNumber.neutral) {
               return sortResult;
@@ -154,8 +154,8 @@ export class CollectionService {
         const fieldType = sortByOptions.fieldType || FieldType.string;
 
         sortedCollection = collection.sort((dataRow1: any, dataRow2: any) => {
-          const value1 = (enableTranslateLabel) ? this.translate.instant(dataRow1 || ' ') : dataRow1;
-          const value2 = (enableTranslateLabel) ? this.translate.instant(dataRow2 || ' ') : dataRow2;
+          const value1 = (enableTranslateLabel) ? this.translate && this.translate.currentLang && this.translate.instant(dataRow1 || ' ') : dataRow1;
+          const value2 = (enableTranslateLabel) ? this.translate && this.translate.currentLang && this.translate.instant(dataRow2 || ' ') : dataRow2;
           const sortResult = sortByFieldType(fieldType, value1, value2, sortDirection, columnDef);
           if (sortResult !== SortDirectionNumber.neutral) {
             return sortResult;

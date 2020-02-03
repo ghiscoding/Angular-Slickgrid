@@ -76,6 +76,7 @@ describe('NativeSelectFilter', () => {
       X_OF_Y_SELECTED: '# de % sélectionnés',
     });
     translate.setDefaultLang('en');
+    translate.use('en');
 
     filter = new NativeSelectFilter(translate);
   });

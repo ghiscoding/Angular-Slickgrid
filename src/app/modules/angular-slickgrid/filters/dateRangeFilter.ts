@@ -172,7 +172,7 @@ export class DateRangeFilter implements Filter {
     const userFilterOptions = (this.columnFilter && this.columnFilter.filterOptions || {}) as FlatpickrOption;
 
     // get current locale, if user defined a custom locale just use or get it the Translate Service if it exist else just use English
-    let currentLocale = (userFilterOptions && userFilterOptions.locale) || (this.translate && this.translate.currentLang) || 'en';
+    let currentLocale = (userFilterOptions && userFilterOptions.locale) || (this.translate && this.translate.currentLang) || this.gridOptions.locale || 'en';
     if (currentLocale.length > 2) {
       currentLocale = currentLocale.substring(0, 2);
     }

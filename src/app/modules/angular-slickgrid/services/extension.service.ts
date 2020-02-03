@@ -443,7 +443,7 @@ export class ExtensionService {
     if (Array.isArray(items)) {
       for (const item of items) {
         if (item[inputKey]) {
-          item[outputKey] = this.translate.instant(item[inputKey]);
+          item[outputKey] = this.translate && this.translate.currentLang && this.translate.instant(item[inputKey]);
         }
       }
     }

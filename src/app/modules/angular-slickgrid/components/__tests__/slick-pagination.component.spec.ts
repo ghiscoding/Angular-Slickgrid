@@ -4,7 +4,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
 import { SlickPaginationComponent } from '../slick-pagination.component';
-import { ServicePagination } from '../../models';
+import { GridOption, ServicePagination } from '../../models';
 import { PaginationService } from '../../services';
 
 const paginationServiceStub = {
@@ -87,7 +87,8 @@ describe('App Component', () => {
         pageSizes: [5, 10, 15, 20],
         totalItems: 100,
       };
-      component.enableTranslate = true;
+      component.gridOptions = { enableTranslate: true } as GridOption;
+      component.ngOnInit();
       paginationServiceStub.onPaginationChanged.next(mockServicePagination);
       fixture.detectChanges();
     });
@@ -110,12 +111,14 @@ describe('App Component', () => {
     });
 
     it('should create a the Slick-Pagination component in the DOM', () => {
+      component.gridOptions = { enableTranslate: true } as GridOption;
       fixture.detectChanges();
 
       const elm = document.querySelector('.slick-pagination');
       const pageInfoFromTo = fixture.debugElement.query(By.css('.page-info-from-to')).nativeElement;
       const pageInfoTotalItems = fixture.debugElement.query(By.css('.page-info-total-items')).nativeElement;
 
+      expect(translate.currentLang).toBe('fr');
       expect(elm.innerHTML).toContain('slick-pagination-nav');
       expect(pageInfoFromTo.innerHTML).toBe('<span data-test="item-from">5</span>-<span data-test="item-to">10</span> de ');
       expect(pageInfoTotalItems.innerHTML).toBe('<span data-test="total-items">100</span> éléments ');

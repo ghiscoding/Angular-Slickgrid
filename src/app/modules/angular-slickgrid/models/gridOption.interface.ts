@@ -313,7 +313,15 @@ export interface GridOption {
   /** ngx-translate i18n translation service instance */
   i18n?: TranslateService;
 
-  /** Locale translations used by the library */
+  /**
+   * When using custom Locales (that is when user is NOT using ngx-translate, this property does nothing when used with ngx-translate),
+   * This is useful so that every component of the lib knows the locale.
+   * For example, not providing this will make the Date Filter/Editor use English by default even if we use different "locales",
+   * so this basically helps certain elements know which locale is currently used.
+   */
+  locale?: string;
+
+  /** Set of Locale translations used by the library */
   locales?: Locale;
 
   /** Do we leave space for new rows in the DOM visible buffer */

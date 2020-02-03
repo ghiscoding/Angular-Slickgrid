@@ -71,6 +71,7 @@ describe('SingleSelectFilter', () => {
       OTHER: 'Autre',
     });
     translate.setDefaultLang('en');
+    translate.use('en');
 
     filter = new SingleSelectFilter(translate, collectionService);
   });

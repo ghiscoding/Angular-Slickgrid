@@ -62,6 +62,7 @@ describe('DateRangeFilter', () => {
       STARTS_WITH: 'Commence par',
     });
     translate.setDefaultLang('en');
+    translate.use('en');
 
     filter = new DateRangeFilter(translate);
   });

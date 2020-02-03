@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, OnDestroy, Optional, Output, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
-import { Locale, Pagination } from './../models/index';
+import { Constants } from '../constants';
+import { GridOption, Locale } from './../models/index';
 import { PaginationService } from '../services/pagination.service';
 import { unsubscribeAllObservables } from '../services/utilities';
 
@@ -11,29 +12,20 @@ import { unsubscribeAllObservables } from '../services/utilities';
   templateUrl: './slick-pagination.component.html'
 })
 export class SlickPaginationComponent implements OnDestroy, OnInit {
-  private subscriptions: Subscription[] = [];
+  @Input() gridOptions: GridOption;
 
-  @Input() enableTranslate: boolean;
-  @Input() locales: Locale;
+  private subscriptions: Subscription[] = [];
+  private _enableTranslate = false;
+  private _locales: Locale;
 
   // text translations (handled by ngx-translate or by custom locale)
-  textItemsPerPage: string;
-  textItems: string;
-  textOf: string;
-  textPage: string;
+  textItemsPerPage = 'items per page';
+  textItems = 'items';
+  textOf = 'of';
+  textPage = 'Page';
 
   /** Constructor */
-  constructor(private paginationService: PaginationService, @Optional() private translate: TranslateService) {
-    if (this.enableTranslate && !this.translate) {
-      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
-    }
-
-    // translate all the text using ngx-translate or custom locales
-    this.translateAllUiTexts(this.locales);
-    if (translate && translate.onLangChange) {
-      this.subscriptions.push(this.translate.onLangChange.subscribe(() => this.translateAllUiTexts(this.locales)));
-    }
-  }
+  constructor(private paginationService: PaginationService, @Optional() private translate: TranslateService) { }
 
   get availablePageSizes(): number[] {
     return this.paginationService.availablePageSizes;
@@ -71,7 +63,20 @@ export class SlickPaginationComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.translateAllUiTexts(this.locales);
+    const gridOptions: GridOption = this.gridOptions || {};
+    this._enableTranslate = gridOptions && gridOptions.enableTranslate || false;
+    this._locales = gridOptions && gridOptions.locales || Constants.locales;
+
+    if (this._enableTranslate && !this.translate) {
+      throw new Error('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
+    }
+
+    this.translateAllUiTexts(this._locales);
+
+    // translate all the text using ngx-translate or custom locales
+    if (this._enableTranslate && this.translate && this.translate.onLangChange) {
+      this.subscriptions.push(this.translate.onLangChange.subscribe(() => this.translateAllUiTexts(this._locales)));
+    }
   }
 
   changeToFirstPage(event: any) {
@@ -119,7 +124,7 @@ export class SlickPaginationComponent implements OnDestroy, OnInit {
 
   /** Translate all the texts shown in the UI, use ngx-translate service when available or custom locales when service is null */
   private translateAllUiTexts(locales: Locale) {
-    if (this.translate && this.translate.instant) {
+    if (this._enableTranslate && this.translate && this.translate.instant && this.translate.currentLang) {
       this.textItemsPerPage = this.translate.instant('ITEMS_PER_PAGE');
       this.textItems = this.translate.instant('ITEMS');
       this.textOf = this.translate.instant('OF');

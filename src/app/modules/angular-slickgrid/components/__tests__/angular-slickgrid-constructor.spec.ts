@@ -1273,9 +1273,9 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
             leftContainerClass: 'col-xs-12 col-sm-5',
             metricSeparator: '|',
             metricTexts: {
-              items: 'ITEMS',
+              items: 'items',
               itemsKey: 'ITEMS',
-              of: 'OF',
+              of: 'of',
               ofKey: 'OF',
             },
             rightContainerClass: 'col-xs-6 col-sm-7',

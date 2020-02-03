@@ -47,7 +47,7 @@ export class DateEditor implements Editor {
       throw new Error('[Angular-SlickGrid] Something is wrong with this grid, an Editor must always have valid arguments.');
     }
     this.grid = args.grid;
-    this.gridOptions = args.grid && args.grid.getOptions() as GridOption;
+    this.gridOptions = (args.grid && args.grid.getOptions() || {}) as GridOption;
     const options = this.gridOptions || this.args.column.params || {};
     if (options && options.i18n instanceof TranslateService) {
       this._translate = options.i18n;
@@ -93,7 +93,7 @@ export class DateEditor implements Editor {
       this.defaultDate = (this.args.item) ? this.args.item[this.columnDef.field] : null;
       const inputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.type || FieldType.dateIso);
       const outputFormat = mapFlatpickrDateFormatWithFieldType(this.columnDef.outputType || FieldType.dateUtc);
-      let currentLocale = this._translate && this._translate.currentLang || 'en';
+      let currentLocale = this._translate && this._translate.currentLang || this.gridOptions.locale || 'en';
       if (currentLocale && currentLocale.length > 2) {
         currentLocale = currentLocale.substring(0, 2);
       }

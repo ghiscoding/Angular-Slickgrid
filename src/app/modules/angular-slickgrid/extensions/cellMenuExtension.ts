@@ -150,10 +150,10 @@ export class CellMenuExtension implements Extension {
 
           // translate their titles only if they have a titleKey defined
           if (columnDef.cellMenu.commandTitleKey) {
-            columnDef.cellMenu.commandTitle = this.translate && this.translate.instant && this.translate.instant(columnDef.cellMenu.commandTitleKey) || this._locales && this._locales.TEXT_COMMANDS || columnDef.cellMenu.commandTitle;
+            columnDef.cellMenu.commandTitle = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(columnDef.cellMenu.commandTitleKey) || this._locales && this._locales.TEXT_COMMANDS || columnDef.cellMenu.commandTitle;
           }
           if (columnDef.cellMenu.optionTitleKey) {
-            columnDef.cellMenu.optionTitle = this.translate && this.translate.instant && this.translate.instant(columnDef.cellMenu.optionTitleKey) || columnDef.cellMenu.optionTitle;
+            columnDef.cellMenu.optionTitle = this.translate && this.translate.currentLang && this.translate.instant && this.translate.instant(columnDef.cellMenu.optionTitleKey) || columnDef.cellMenu.optionTitle;
           }
 
           // translate both command/option items (whichever is provided)

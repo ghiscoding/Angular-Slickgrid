@@ -64,6 +64,7 @@ describe('SelectEditor', () => {
       SAVE: 'Sauvegarder',
     });
     translate.setDefaultLang('fr');
+    translate.use('fr');
 
     mockColumn = { id: 'gender', field: 'gender', editable: true, editor: { model: Editors.multipleSelect }, internalColumnEditor: {} } as Column;
 

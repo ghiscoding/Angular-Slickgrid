@@ -3,7 +3,7 @@ import { By } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 
 import { SlickPaginationComponent } from '../slick-pagination.component';
-import { Locale, ServicePagination } from '../../models';
+import { GridOption, ServicePagination } from '../../models';
 import { PaginationService } from '../../services';
 
 const paginationServiceStub = {
@@ -56,13 +56,7 @@ describe('without ngx-translate', () => {
       pageSizes: [5, 10, 15, 20],
       totalItems: 100,
     };
-    component.enableTranslate = false;
-    component.locales = {
-      TEXT_ITEMS_PER_PAGE: 'items per page',
-      TEXT_ITEMS: 'items',
-      TEXT_OF: 'of',
-      TEXT_PAGE: 'page'
-    } as Locale;
+    component.gridOptions = { enableTranslate: false } as GridOption;
 
     paginationServiceStub.onPaginationChanged.next(mockServicePagination);
     fixture.detectChanges();
@@ -81,8 +75,9 @@ describe('without ngx-translate', () => {
 
   it('should throw an error when "enableTranslate" is set and Translate Service is not provided', (done) => {
     try {
-      component.enableTranslate = true;
+      component.gridOptions.enableTranslate = true;
       component.constructor();
+      component.ngOnInit();
     } catch (e) {
       expect(e.toString()).toContain('[Angular-Slickgrid] requires "ngx-translate" to be installed and configured when the grid option "enableTranslate" is enabled.');
       done();
@@ -90,7 +85,7 @@ describe('without ngx-translate', () => {
   });
 
   it('should have defined locale and expect new text in the UI', (done) => {
-    component.enableTranslate = false;
+    component.gridOptions.enableTranslate = false;
     fixture.detectChanges();
 
     setTimeout(() => {

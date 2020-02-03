@@ -8,7 +8,6 @@ function removeExtraSpaces(textS) {
 describe('Example 12: Localization (i18n)', () => {
   const fullEnglishTitles = ['Title', 'Description', 'Duration', 'Start', 'Finish', 'Completed', 'Completed'];
   const fullFrenchTitles = ['Titre', 'Description', 'Durée', 'Début', 'Fin', 'Terminé', 'Terminé'];
-  let now = new Date();
 
   beforeEach(() => {
     cy.restoreLocalStorage();
@@ -21,8 +20,7 @@ describe('Example 12: Localization (i18n)', () => {
   it('should display Example title', () => {
     cy.visit(`${Cypress.config('baseExampleUrl')}/localization`);
     cy.get('h2')
-      .should('contain', 'Example 12: Localization (i18n)')
-      .then(() => now = new Date());
+      .should('contain', 'Example 12: Localization (i18n)');
   });
 
   describe('English Locale', () => {
@@ -38,6 +36,7 @@ describe('Example 12: Localization (i18n)', () => {
         .find('.slick-custom-footer')
         .find('.right-footer')
         .should($span => {
+          const now = new Date();
           const text = removeExtraSpaces($span.text()); // remove all white spaces
           const dateFormatted = moment(now).format('YYYY-MM-DD hh:mm a');
           expect(text).to.eq(`Last Update ${dateFormatted} | 1500 of 1500 items`);
@@ -100,6 +99,7 @@ describe('Example 12: Localization (i18n)', () => {
         .find('.slick-custom-footer')
         .find('.right-footer')
         .should($span => {
+          const now = new Date();
           const text = removeExtraSpaces($span.text()); // remove all white spaces
           const dateFormatted = moment(now).format('YYYY-MM-DD hh:mm a');
           expect(text).to.eq(`Dernière mise à jour ${dateFormatted} | 1500 de 1500 éléments`);
