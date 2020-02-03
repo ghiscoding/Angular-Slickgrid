@@ -883,7 +883,7 @@ export class AngularSlickgridComponent implements AfterViewInit, OnDestroy, OnIn
   }
 
   /** Load any Row Selections into the DataView that were presets by the user */
-  loadRowSelectionPresetWhenExists() {
+  private loadRowSelectionPresetWhenExists() {
     // if user entered some Row Selections "presets"
     const presets = this.gridOptions && this.gridOptions.presets;
     const selectionModel = this.grid && this.grid.getSelectionModel();

@@ -120,7 +120,7 @@ export interface GridMenu {
   onBeforeMenuShow?: (e: Event, args: { grid: any; menu: any; columns: Column[] }) => void;
 
   /** SlickGrid Event fired when any of the columns checkbox selection changes. */
-  onColumnsChanged?: (e: Event, args: { grid; any; allColumns: Column[]; columns: Column[]; }) => void;
+  onColumnsChanged?: (e: Event, args: { grid: any; allColumns: Column[]; columns: Column[]; }) => void;
 
   /** SlickGrid Event fired when the menu is closing. */
   onMenuClose?: (e: Event, args: { grid: any; menu: any; allColumns: Column[], visibleColumns: Column[] }) => void;

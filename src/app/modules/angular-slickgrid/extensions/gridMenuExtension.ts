@@ -107,7 +107,7 @@ export class GridMenuExtension implements Extension {
             this.sharedService.gridOptions.gridMenu.onAfterMenuShow(e, args);
           });
         }
-        this._eventHandler.subscribe(this._addon.onColumnsChanged, (e: any, args: { grid; any; allColumns: Column[]; columns: Column[]; }) => {
+        this._eventHandler.subscribe(this._addon.onColumnsChanged, (e: any, args: { grid: any; allColumns: Column[]; columns: Column[]; }) => {
           this._areVisibleColumnDifferent = true;
           if (this.sharedService.gridOptions.gridMenu && typeof this.sharedService.gridOptions.gridMenu.onColumnsChanged === 'function') {
             this.sharedService.gridOptions.gridMenu.onColumnsChanged(e, args);
