@@ -74,6 +74,9 @@
 
        &.selected {
          background-color: rgb(231, 231, 195); // beige
+         .cell-selection {
+          background-color: transparent; /* show default selected row background */
+         }
        }
 
        &.active {
