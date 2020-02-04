@@ -34,6 +34,19 @@ export class GridFrozenComponent implements OnInit {
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
     this.gridObj = angularGrid.slickGrid;
+
+    // with frozen (pinned) grid, in order to see the entire row being highlighted when hovering
+    // we need to do some extra tricks (that is because frozen grids use 2 separate div containers)
+    // the trick is to use row selection to highlight when hovering current row and remove selection once we're not
+    this.gridObj.onMouseEnter.subscribe(event => {
+      const cell = this.gridObj.getCellFromEvent(event);
+      this.gridObj.setSelectedRows([cell.row]); // highlight current row
+      event.preventDefault();
+    });
+    this.gridObj.onMouseLeave.subscribe(event => {
+      this.gridObj.setSelectedRows([]); // remove highlight
+      event.preventDefault();
+    });
   }
 
   prepareDataGrid() {
@@ -124,6 +137,7 @@ export class GridFrozenComponent implements OnInit {
       alwaysShowVerticalScroll: false, // disable scroll since we don't want it to show on the left pinned columns
       enableExcelCopyBuffer: true,
       enableCellNavigation: true,
+      asyncEditorLoading: true,
       frozenColumn: this.frozenColumnCount,
       frozenRow: this.frozenRowCount,
       // frozenBottom: true, // if you want to freeze the bottom instead of the top, you can enable this property
