@@ -227,7 +227,7 @@ export class GridStateService {
    * Get the current Sorters (and their state, columnId, direction) that are currently applied in the grid
    * @return current sorters
    */
-  getCurrentRowSelections(requestRefreshRowFilteredRow = true): CurrentRowSelection | null {
+  getCurrentRowSelections(requestRefreshFilteredRow = true): CurrentRowSelection | null {
     if (this._grid && this._gridOptions && this._dataView && this.hasRowSelectionEnabled()) {
       if (this._grid.getSelectedRows && this._dataView.mapRowsToIds) {
         let gridRowIndexes: number[] = [];
@@ -244,7 +244,7 @@ export class GridStateService {
 
         // user might request to refresh the filtered selection dataset
         // typically always True, except when "reEvaluateRowSelectionAfterFilterChange" is called and we don't need to refresh the filtered dataset twice
-        if (requestRefreshRowFilteredRow === true) {
+        if (requestRefreshFilteredRow === true) {
           filteredDataContextIds = this.refreshFilteredRowSelections();
         }
         filteredDataContextIds = this._selectedFilteredRowDataContextIds;
