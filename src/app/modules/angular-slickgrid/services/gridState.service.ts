@@ -34,7 +34,8 @@ export class GridStateService {
   private _dataView: any;
   private _grid: any;
   private _subscriptions: Subscription[] = [];
-  private _selectedRowDataContextIds: Array<number | string> = []; // used with row selection
+  private _selectedRowDataContextIds: Array<number | string> | undefined = []; // used with row selection
+  private _selectedFilteredRowDataContextIds: Array<number | string> | undefined = []; // used with row selection
   private _wasRecheckedAfterPageChange = true; // used with row selection & pagination
   onGridStateChanged = new Subject<GridStateChange>();
 
@@ -52,14 +53,21 @@ export class GridStateService {
     return (this._grid && this._grid.getOptions) ? this._grid.getOptions() : {};
   }
 
+  private get datasetIdPropName(): string {
+    return this._gridOptions.datasetIdPropertyName || 'id';
+  }
+
   /** Getter of the selected data context object IDs */
-  get selectedRowDataContextIds(): Array<number | string> {
+  get selectedRowDataContextIds(): Array<number | string> | undefined {
     return this._selectedRowDataContextIds;
   }
 
   /** Setter of the selected data context object IDs */
-  set selectedRowDataContextIds(dataContextIds: Array<number | string>) {
+  set selectedRowDataContextIds(dataContextIds: Array<number | string> | undefined) {
     this._selectedRowDataContextIds = dataContextIds;
+
+    // since this is coming from a preset, we also need to update the filtered IDs
+    this._selectedFilteredRowDataContextIds = dataContextIds;
   }
 
   /**
@@ -88,7 +96,7 @@ export class GridStateService {
    * Get the current grid state (filters/sorters/pagination)
    * @return grid state
    */
-  getCurrentGridState(): GridState {
+  getCurrentGridState(args?: { requestRefreshRowFilteredRow?: boolean }): GridState {
     const gridState: GridState = {
       columns: this.getCurrentColumns(),
       filters: this.getCurrentFilters(),
@@ -100,9 +108,11 @@ export class GridStateService {
       gridState.pagination = currentPagination;
     }
 
-    const currentRowSelection = this.getCurrentRowSelections();
-    if (currentRowSelection) {
-      gridState.rowSelection = currentRowSelection;
+    if (this.hasRowSelectionEnabled()) {
+      const currentRowSelection = this.getCurrentRowSelections(args && args.requestRefreshRowFilteredRow);
+      if (currentRowSelection) {
+        gridState.rowSelection = currentRowSelection;
+      }
     }
     return gridState;
   }
@@ -217,14 +227,12 @@ export class GridStateService {
    * Get the current Sorters (and their state, columnId, direction) that are currently applied in the grid
    * @return current sorters
    */
-  getCurrentRowSelections(): CurrentRowSelection | null {
-    if (this._grid && this._gridOptions && this._dataView) {
-      const selectionModel = this._grid.getSelectionModel();
-      const isRowSelectionEnabled = this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector;
-
-      if (isRowSelectionEnabled && selectionModel && this._grid.getSelectedRows && this._dataView.mapRowsToIds) {
+  getCurrentRowSelections(requestRefreshRowFilteredRow = true): CurrentRowSelection | null {
+    if (this._grid && this._gridOptions && this._dataView && this.hasRowSelectionEnabled()) {
+      if (this._grid.getSelectedRows && this._dataView.mapRowsToIds) {
         let gridRowIndexes: number[] = [];
-        let dataContextIds: Array<number | string> = [];
+        let dataContextIds: Array<number | string> | undefined = [];
+        let filteredDataContextIds: Array<number | string> | undefined = [];
 
         if (this._gridOptions.enablePagination) {
           gridRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []); // note that this will return only what is visible in current page
@@ -233,7 +241,15 @@ export class GridStateService {
           gridRowIndexes = this._grid.getSelectedRows() || [];
           dataContextIds = this._dataView.mapRowsToIds(gridRowIndexes) || [];
         }
-        return { gridRowIndexes, dataContextIds };
+
+        // user might request to refresh the filtered selection dataset
+        // typically always True, except when "reEvaluateRowSelectionAfterFilterChange" is called and we don't need to refresh the filtered dataset twice
+        if (requestRefreshRowFilteredRow === true) {
+          filteredDataContextIds = this.refreshFilteredRowSelections();
+        }
+        filteredDataContextIds = this._selectedFilteredRowDataContextIds;
+
+        return { gridRowIndexes, dataContextIds, filteredDataContextIds };
       }
     }
     return null;
@@ -283,7 +299,7 @@ export class GridStateService {
 
   /** if we use Row Selection or the Checkbox Selector, we need to reset any selection */
   resetRowSelectionWhenRequired() {
-    if (!this.needToPreserveRowSelection() && this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector) {
+    if (!this.needToPreserveRowSelection() && (this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector)) {
       // this also requires the Row Selection Model to be registered as well
       const rowSelectionExtension = this.extensionService && this.extensionService.getExtensionByName && this.extensionService.getExtensionByName(ExtensionName.rowSelection);
       if (rowSelectionExtension && rowSelectionExtension.instance) {
@@ -301,7 +317,14 @@ export class GridStateService {
     this._subscriptions.push(
       this.filterService.onFilterChanged.subscribe((currentFilters: CurrentFilter[]) => {
         this.resetRowSelectionWhenRequired();
-        this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: this.getCurrentGridState() });
+
+        // trigger a Grid State filter change, however don't reevaluate the filtered row selections, we'll do that on the next Grid State change below
+        this.onGridStateChanged.next({ change: { newValues: currentFilters, type: GridStateType.filter }, gridState: this.getCurrentGridState({ requestRefreshRowFilteredRow: !this.hasRowSelectionEnabled() }) });
+
+        // when Row Selection is enabled, we also need to re-evaluate the row selection with the leftover filtered dataset
+        if (this.hasRowSelectionEnabled()) {
+          this.reEvaluateRowSelectionAfterFilterChange();
+        }
       })
     );
 
@@ -404,8 +427,9 @@ export class GridStateService {
       this._eventHandler.subscribe(this._grid.onSelectedRowsChanged, () => {
         const currentSelectedRowIndexes = this._grid.getSelectedRows();
         this._selectedRowDataContextIds = this._dataView.mapRowsToIds(currentSelectedRowIndexes);
-        const newValues = { gridRowIndexes: currentSelectedRowIndexes, dataContextIds: this._selectedRowDataContextIds } as CurrentRowSelection;
-        this.onGridStateChanged.next({ change: { newValues, type: GridStateType.rowSelection }, gridState: this.getCurrentGridState() });
+        const filteredDataContextIds = this.refreshFilteredRowSelections();
+        const newValues = { gridRowIndexes: currentSelectedRowIndexes, dataContextIds: this._selectedRowDataContextIds, filteredDataContextIds } as CurrentRowSelection;
+        this.onGridStateChanged.next({ change: { newValues, type: GridStateType.rowSelection }, gridState: this.getCurrentGridState({ requestRefreshRowFilteredRow: false }) });
       });
     }
   }
@@ -447,18 +471,18 @@ export class GridStateService {
           // deletion might happen when user is changing page, if that is the case then skip the deletion since it's only a visual deletion (current page)
           // if it's not a page change (when the flag is true), then proceed with the deletion in our global array of selected IDs
           if (this._wasRecheckedAfterPageChange && newSelectedDeletions.length > 0) {
-            const toDeleteDataIds: Array<number | string> = this._dataView.mapRowsToIds(newSelectedDeletions) || [];
+            const toDeleteDataIds: Array<number | string> | undefined = this._dataView.mapRowsToIds(newSelectedDeletions) || [];
             toDeleteDataIds.forEach((removeId: number | string) => {
-              this._selectedRowDataContextIds.splice((this._selectedRowDataContextIds as Array<number | string>).indexOf(removeId), 1);
+              this._selectedRowDataContextIds.splice((this._selectedRowDataContextIds as Array<number | string> | undefined).indexOf(removeId), 1);
             });
           }
 
           // if we have newly added selected row(s), let's update our global array of selected IDs
           if (newSelectedAdditions.length > 0) {
-            const toAddDataIds: Array<number | string> = this._dataView.mapRowsToIds(newSelectedAdditions) || [];
+            const toAddDataIds: Array<number | string> | undefined = this._dataView.mapRowsToIds(newSelectedAdditions) || [];
             toAddDataIds.forEach((dataId: number | string) => {
-              if ((this._selectedRowDataContextIds as Array<number | string>).indexOf(dataId) === -1) {
-                (this._selectedRowDataContextIds as Array<number | string>).push(dataId);
+              if ((this._selectedRowDataContextIds as Array<number | string> | undefined).indexOf(dataId) === -1) {
+                (this._selectedRowDataContextIds as Array<number | string> | undefined).push(dataId);
               }
             });
           }
@@ -475,10 +499,44 @@ export class GridStateService {
             this._grid.setSelectedRows(shouldBeSelectedRowIndexes);
           }
 
-          const newValues = { gridRowIndexes: this._grid.getSelectedRows(), dataContextIds: this._selectedRowDataContextIds } as CurrentRowSelection;
+          const filteredDataContextIds = this.refreshFilteredRowSelections();
+          const newValues = { gridRowIndexes: this._grid.getSelectedRows(), dataContextIds: this._selectedRowDataContextIds, filteredDataContextIds } as CurrentRowSelection;
           this.onGridStateChanged.next({ change: { newValues, type: GridStateType.rowSelection }, gridState: this.getCurrentGridState() });
         }
       });
     }
+  }
+
+  /** Check wether the grid has the Row Selection enabled */
+  private hasRowSelectionEnabled() {
+    const selectionModel = this._grid.getSelectionModel();
+    const isRowSelectionEnabled = this._gridOptions.enableRowSelection || this._gridOptions.enableCheckboxSelector;
+    return (isRowSelectionEnabled && selectionModel);
+  }
+
+  private reEvaluateRowSelectionAfterFilterChange() {
+    const currentSelectedRowIndexes = this._grid.getSelectedRows();
+    const previousSelectedFilteredRowDataContextIds = this._selectedFilteredRowDataContextIds.slice();
+    const filteredDataContextIds = this.refreshFilteredRowSelections();
+
+    // when selection changed, we'll send a Grid State event with the selection changes
+    if (!isequal(this._selectedFilteredRowDataContextIds, previousSelectedFilteredRowDataContextIds)) {
+      const newValues = { gridRowIndexes: currentSelectedRowIndexes, dataContextIds: this._selectedRowDataContextIds, filteredDataContextIds } as CurrentRowSelection;
+      this.onGridStateChanged.next({ change: { newValues, type: GridStateType.rowSelection }, gridState: this.getCurrentGridState({ requestRefreshRowFilteredRow: false }) });
+    }
+  }
+
+  /** When a Filter is triggered or when user request it, we will refresh the filtered selection array and return it */
+  private refreshFilteredRowSelections(): Array<number | string> | undefined {
+    let tmpFilteredArray = [];
+    const filteredDataset = this._dataView.getFilteredItems() || [];
+    if (Array.isArray(this._selectedRowDataContextIds)) {
+      const selectedFilteredRowDataContextIds = [...this._selectedRowDataContextIds]; // take a fresh copy of all selections before filtering the row ids
+      tmpFilteredArray = selectedFilteredRowDataContextIds.filter((selectedRowId: number | string) => {
+        return filteredDataset.findIndex((item: any) => item[this.datasetIdPropName] === selectedRowId) > -1;
+      });
+      this._selectedFilteredRowDataContextIds = tmpFilteredArray;
+    }
+    return tmpFilteredArray;
   }
 }
