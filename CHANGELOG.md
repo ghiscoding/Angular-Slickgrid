@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.2...v2.17.3) (2020-02-05)
+
+
+### Bug Fixes
+
+* **pagination:** on filter change pagination should reset to 1st page ([#397](https://github.com/ghiscoding/angular-slickgrid/issues/397)) ([af64dd6](https://github.com/ghiscoding/angular-slickgrid/commit/af64dd61523363cc7677a0e6d5813cfa753d2213))
+* **selection:** filter data should work with row selection, closes [#295](https://github.com/ghiscoding/angular-slickgrid/issues/295) ([#393](https://github.com/ghiscoding/angular-slickgrid/issues/393)) ([f36a4f7](https://github.com/ghiscoding/angular-slickgrid/commit/f36a4f794458f68434de4edad4a52a93dcbafc51))
+
 ### [2.17.2](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.1...v2.17.2) (2020-02-03)
 
 ### [2.17.1](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.0...v2.17.1) (2020-02-03)
