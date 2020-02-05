@@ -534,6 +534,71 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
       cy.get('[data-test=grid1-selections]')
         .contains('Task 300');
     });
+
+    it('should go to a different page for next test to confirm that it will then go to page 1', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('@grid2')
+        .find('[data-test=page-number-input]')
+        .clear()
+        .type('22')
+        .type('{enter}');
+
+      cy.get('@grid2')
+        .find('[data-test=page-count]')
+        .contains('105');
+
+      cy.get('@grid2')
+        .find('[data-test=item-from]')
+        .contains('106');
+
+      cy.get('@grid2')
+        .find('[data-test=item-to]')
+        .contains('110');
+
+      cy.get('@grid2')
+        .find('[data-test=total-items]')
+        .contains('525');
+    });
+
+    it('should have 2 rows (Task 3,Task 13) selected in 2nd grid after typing in a search filter (3)', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('@grid2')
+        .find('.filter-title')
+        .type('3')
+        .wait(100);
+
+      cy.get('@grid2')
+        .find('[data-test=page-number-input]')
+        .invoke('val')
+        .then(pageNumber => expect(pageNumber).to.eq('1'));
+
+      cy.get('@grid2')
+        .find('.slick-row')
+        .should('not.have.length', 0);
+
+      cy.get('[data-test=grid2-selections]').should('contain', 'Task 3,Task 13');
+
+      cy.get('@grid2')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell-checkboxsel.selected.true')
+        .should('have.length', 2);
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [0, 1], dataContextIds: [3, 12, 13, 522, 1], filteredDataContextIds: [3, 13] }, type: 'rowSelection' });
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: [{ columnId: 'title', searchTerms: ['3'] }], type: 'filter' });
+      });
+    });
+
+    it('should remove filter from Grid2', () => {
+      cy.get('#slickGridContainer-grid2').as('grid2');
+
+      cy.get('@grid2')
+        .find('.filter-title')
+        .type('{backspace}');
+    });
   });
 
   describe('Remove Pagination', () => {
@@ -545,7 +610,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
         .should('not.exist');
 
       cy.window().then((win) => {
-        expect(win.console.log).to.have.callCount(4);
+        expect(win.console.log).to.have.callCount(2);
         expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [1, 12, 13, 3, 522], dataContextIds: [3, 12, 13, 522, 1], filteredDataContextIds: [3, 12, 13, 522, 1] }, type: 'rowSelection' });
       });
     });
@@ -604,7 +669,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
         .should('have.length', 2);
 
       cy.window().then((win) => {
-        expect(win.console.log).to.have.callCount(6);
+        expect(win.console.log).to.have.callCount(4);
         expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [0, 1], dataContextIds: [3, 12, 13, 522, 1], filteredDataContextIds: [3, 13] }, type: 'rowSelection' });
         expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: [{ columnId: 'title', searchTerms: ['3'] }], type: 'filter' });
       });
@@ -633,6 +698,10 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
         .find('[data-test=page-number-input]')
         .invoke('val')
         .then(pageNumber => expect(pageNumber).to.eq('1'));
+
+      cy.get('@grid2')
+        .find('[data-test=page-number-input]')
+        .click();
 
       cy.get('@grid2')
         .find('[data-test=page-count]')
@@ -677,7 +746,7 @@ describe('Example 10 - Multiple Grids with Row Selection', () => {
         .should('have.length', 2);
 
       cy.window().then((win) => {
-        expect(win.console.log).to.have.callCount(6);
+        expect(win.console.log).to.have.callCount(4);
         expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [0, 1], dataContextIds: [3, 12, 13, 522, 1], filteredDataContextIds: [3, 13] }, type: 'rowSelection' });
         expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: [{ columnId: 'title', searchTerms: ['3'] }], type: 'filter' });
       });
