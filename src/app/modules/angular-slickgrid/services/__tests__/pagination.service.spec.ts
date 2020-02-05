@@ -565,6 +565,18 @@ describe('PaginationService', () => {
 
       expect(spy).toHaveBeenCalledWith(true, false);
     });
+
+    it('should reset the DataView when using local grid by calling "setPagingOptions" with page 0 and also call "refreshPagination" method', () => {
+      const spy = jest.spyOn(service, 'refreshPagination');
+      const setPagingSpy = jest.spyOn(dataviewStub, 'setPagingOptions');
+
+      mockGridOption.backendServiceApi = null;
+      service.init(gridStub, dataviewStub, mockGridOption.pagination, null);
+      service.resetPagination();
+
+      expect(setPagingSpy).toHaveBeenCalledWith({ pageSize: 25, pageNum: 0 });
+      expect(spy).toHaveBeenCalledWith(true, true);
+    });
   });
 
   // processOnItemAddedOrRemoved is private but we can spy on recalculateFromToIndexes
