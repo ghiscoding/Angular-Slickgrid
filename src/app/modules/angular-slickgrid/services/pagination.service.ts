@@ -329,6 +329,10 @@ export class PaginationService {
 
   /** Reset the Pagination to first page and recalculate necessary numbers */
   resetPagination(triggerChangedEvent = true) {
+    if (this._isLocalGrid) {
+      // on a local grid we also need to reset the DataView paging to 1st page
+      this.dataView.setPagingOptions({ pageSize: this._itemsPerPage, pageNum: 0 });
+    }
     this.refreshPagination(true, triggerChangedEvent);
   }
 
