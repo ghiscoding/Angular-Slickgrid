@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.4](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.3...v2.17.4) (2020-02-06)
+
+
+### Bug Fixes
+
+* **selection:** row selection always be kept, closes [#295](https://github.com/ghiscoding/angular-slickgrid/issues/295) again ([#399](https://github.com/ghiscoding/angular-slickgrid/issues/399)) ([5e8f1df](https://github.com/ghiscoding/angular-slickgrid/commit/5e8f1df472b899e488fa9b930bedca8895f5e8f4))
+
 ### [2.17.3](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.2...v2.17.3) (2020-02-05)
 
 
