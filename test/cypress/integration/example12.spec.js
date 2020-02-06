@@ -6,11 +6,16 @@ function removeExtraSpaces(textS) {
 }
 
 describe('Example 12: Localization (i18n)', () => {
-  const fullEnglishTitles = ['Title', 'Description', 'Duration', 'Start', 'Finish', 'Completed', 'Completed'];
-  const fullFrenchTitles = ['Titre', 'Description', 'Durée', 'Début', 'Fin', 'Terminé', 'Terminé'];
+  const fullEnglishTitles = ['', 'Title', 'Description', 'Duration', 'Start', 'Finish', 'Completed', 'Completed'];
+  const fullFrenchTitles = ['', 'Titre', 'Description', 'Durée', 'Début', 'Fin', 'Terminé', 'Terminé'];
 
   beforeEach(() => {
     cy.restoreLocalStorage();
+
+    // create a console.log spy for later use
+    cy.window().then((win) => {
+      cy.spy(win.console, "log");
+    });
   });
 
   afterEach(() => {
@@ -36,8 +41,8 @@ describe('Example 12: Localization (i18n)', () => {
         .find('.slick-custom-footer')
         .find('.right-footer')
         .should($span => {
-          const now = new Date();
           const text = removeExtraSpaces($span.text()); // remove all white spaces
+          const now = new Date();
           const dateFormatted = moment(now).format('YYYY-MM-DD hh:mm a');
           expect(text).to.eq(`Last Update ${dateFormatted} | 1500 of 1500 items`);
         });
@@ -59,8 +64,7 @@ describe('Example 12: Localization (i18n)', () => {
           if (index > tasks.length - 1) {
             return;
           }
-          cy.wrap($row).children('.slick-cell')
-            .first()
+          cy.wrap($row).children('.slick-cell:nth(1)')
             .should('contain', tasks[index]);
         });
     });
@@ -122,8 +126,7 @@ describe('Example 12: Localization (i18n)', () => {
           if (index > tasks.length - 1) {
             return;
           }
-          cy.wrap($row).children('.slick-cell')
-            .first()
+          cy.wrap($row).children('.slick-cell:nth(1)')
             .should('contain', tasks[index]);
         });
     });
@@ -158,13 +161,13 @@ describe('Example 12: Localization (i18n)', () => {
           }
 
           // get full cell width of the first cell, then return
-          cy.wrap($row).children('.slick-cell:nth(2)')
+          cy.wrap($row).children('.slick-cell:nth(3)')
             .first()
             .then(($cell) => fullCellWidth = $cell.width());
 
 
           cy.wrap($row)
-            .children('.slick-cell:nth(2)')
+            .children('.slick-cell:nth(3)')
             .children()
             .should('have.css', 'background-color', 'rgb(255, 0, 0)')
             .should(($el) => {
@@ -174,6 +177,135 @@ describe('Example 12: Localization (i18n)', () => {
               expect($el.width()).lessThan(expectedWidth + 1);
             });
         });
+    });
+  });
+
+  describe('Row Selection', () => {
+    it('should switch locale back to English and reset all Filters', () => {
+      cy.get('[data-test=language-button]')
+        .click();
+
+      cy.get('[data-test=selected-locale]')
+        .should('contain', 'en.json');
+
+      cy.get('#grid12')
+        .find('button.slick-gridmenu-button')
+        .trigger('click')
+        .click();
+
+      cy.get(`.slick-gridmenu:visible`)
+        .find('.slick-gridmenu-item')
+        .first()
+        .find('span')
+        .contains('Clear all Filters')
+        .click();
+    });
+
+    it('should hover over the Title column and click on "Sort Descending" command', () => {
+      cy.get('#slickGridContainer-grid12')
+        .find('.slick-header-column:nth(1)')
+        .trigger('mouseover')
+        .children('.slick-header-menubutton')
+        .should('be.hidden')
+        .invoke('show')
+        .click();
+
+      cy.get('.slick-header-menu')
+        .should('be.visible')
+        .children('.slick-header-menuitem:nth-child(2)')
+        .children('.slick-header-menucontent')
+        .should('contain', 'Sort Descending')
+        .click();
+
+      cy.get('.slick-row')
+        .children('.slick-cell:nth(1)')
+        .first()
+        .should('contain', 'Task 1499');
+    });
+
+    it('should select the row with "Task 1497" and expect the Grid State to be called with it in the console', () => {
+      cy.get('#slickGridContainer-grid12').as('grid12');
+
+      cy.get('#grid12')
+        .contains('Task 1497')
+        .parent()
+        .children('.slick-cell-checkboxsel')
+        .find('input[type=checkbox]')
+        .click({ force: true });
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(2);
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [2], dataContextIds: [1497], filteredDataContextIds: [1497] }, type: 'rowSelection' });
+      });
+    });
+
+    it('should scroll to bottom of the grid then select "Task 4"', () => {
+      cy.get('#slickGridContainer-grid12').as('grid12');
+
+      cy.get('@grid12')
+        .find('.slick-viewport-top.slick-viewport-left')
+        .scrollTo('bottom')
+        .wait(10);
+
+      cy.get('#grid12')
+        .contains('Task 4')
+        .parent()
+        .children('.slick-cell-checkboxsel')
+        .find('input[type=checkbox]')
+        .click({ force: true });
+
+      cy.window().then((win) => {
+        expect(win.console.log).to.have.callCount(2);
+        expect(win.console.log).to.be.calledWith("Grid State changed:: ", { newValues: { gridRowIndexes: [1495, 2], dataContextIds: [1497, 4], filteredDataContextIds: [1497, 4] }, type: 'rowSelection' });
+      });
+    });
+
+    it('should filter the Tasks column with number 4 and expect only "Task 4" visible in the grid', () => {
+      cy.get('#slickGridContainer-grid12').as('grid12');
+
+      cy.get('.grid-canvas')
+        .find('.slick-row')
+        .should('be.visible');
+
+      cy.get('input.filter-title')
+        .type('4');
+
+      cy.get('@grid12')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell-checkboxsel.selected.true')
+        .should('have.length', 1);
+
+      cy.get('@grid12')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell.selected.true:nth(1)')
+        .contains('Task 4');
+    });
+
+    it('should scroll back to the top and expect to see "Task 1497" still selected', () => {
+      cy.get('#slickGridContainer-grid12').as('grid12');
+
+      cy.get('.grid-canvas')
+        .find('.slick-row')
+        .should('be.visible');
+
+      cy.get('@grid12')
+        .find('.slick-viewport-top.slick-viewport-left')
+        .scrollTo('top')
+        .wait(10);
+
+      cy.get('@grid12')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell-checkboxsel.selected.true')
+        .should('have.length', 1);
+
+      cy.get('@grid12')
+        .find('.slick-row')
+        .children()
+        .filter('.slick-cell.selected.true:nth(1)')
+        .contains('Task 1497');
     });
   });
 });
