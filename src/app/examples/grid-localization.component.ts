@@ -9,7 +9,8 @@ import {
   Filters,
   Formatter,
   Formatters,
-  GridOption
+  GridOption,
+  GridStateChange
 } from './../modules/angular-slickgrid';
 
 const NB_ITEMS = 1500;
@@ -139,6 +140,13 @@ export class GridLocalizationComponent implements OnInit {
       enableFiltering: true,
       enableTranslate: true,
       i18n: this.translate,
+      checkboxSelector: {
+        // you can toggle these 2 properties to show the "select all" checkbox in different location
+        hideInFilterHeaderRow: false,
+        hideInColumnTitleRow: true
+      },
+      enableCheckboxSelector: true,
+      enableRowSelection: true,
       showCustomFooter: true, // display some metrics in the bottom custom footer
       customFooterOptions: {
         metricTexts: {
@@ -235,6 +243,12 @@ export class GridLocalizationComponent implements OnInit {
       filename: 'myExport',
       format: (type === 'csv') ? FileType.csv : FileType.txt
     });
+  }
+
+  /** Dispatched event of a Grid State Changed event */
+  gridStateChanged(gridStateChanges: GridStateChange) {
+    console.log('Grid State changed:: ', gridStateChanges);
+    console.log('Grid State changed:: ', gridStateChanges.change);
   }
 
   switchLanguage() {

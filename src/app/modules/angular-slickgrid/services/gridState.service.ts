@@ -230,17 +230,9 @@ export class GridStateService {
   getCurrentRowSelections(requestRefreshFilteredRow = true): CurrentRowSelection | null {
     if (this._grid && this._gridOptions && this._dataView && this.hasRowSelectionEnabled()) {
       if (this._grid.getSelectedRows && this._dataView.mapRowsToIds) {
-        let gridRowIndexes: number[] = [];
-        let dataContextIds: Array<number | string> | undefined = [];
         let filteredDataContextIds: Array<number | string> | undefined = [];
-
-        if (this._gridOptions.enablePagination) {
-          gridRowIndexes = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []); // note that this will return only what is visible in current page
-          dataContextIds = this._selectedRowDataContextIds;
-        } else {
-          gridRowIndexes = this._grid.getSelectedRows() || [];
-          dataContextIds = this._dataView.mapRowsToIds(gridRowIndexes) || [];
-        }
+        const gridRowIndexes: number[] = this._dataView.mapIdsToRows(this._selectedRowDataContextIds || []); // note that this will return only what is visible in current page
+        const dataContextIds: Array<number | string> | undefined = this._selectedRowDataContextIds;
 
         // user might request to refresh the filtered selection dataset
         // typically always True, except when "reEvaluateRowSelectionAfterFilterChange" is called and we don't need to refresh the filtered dataset twice
@@ -415,34 +407,14 @@ export class GridStateService {
 
   /**
    * Bind a Grid Event of Row Selection change to a Grid State change event
-   * @param event name
-   * @param grid
-   */
-  private bindSlickGridRowSelectionToGridStateChange() {
-    if (this._gridOptions && this._gridOptions.enablePagination) {
-      // when using pagination, the process is much more complex so let's do it in a separate method
-      this.bindSlickGridRowSelectionWithPaginationToGridStateChange();
-    } else {
-      // without Pagination, we can simply get the getSelectedRows() and mapRowsToIds() and we're done
-      this._eventHandler.subscribe(this._grid.onSelectedRowsChanged, () => {
-        const currentSelectedRowIndexes = this._grid.getSelectedRows();
-        this._selectedRowDataContextIds = this._dataView.mapRowsToIds(currentSelectedRowIndexes);
-        const filteredDataContextIds = this.refreshFilteredRowSelections();
-        const newValues = { gridRowIndexes: currentSelectedRowIndexes, dataContextIds: this._selectedRowDataContextIds, filteredDataContextIds } as CurrentRowSelection;
-        this.onGridStateChanged.next({ change: { newValues, type: GridStateType.rowSelection }, gridState: this.getCurrentGridState({ requestRefreshRowFilteredRow: false }) });
-      });
-    }
-  }
-
-  /**
-   * When using Pagination, we can't just use the getSelectedRows() since this will only return the selection in current page which is not enough.
+   * For the row selection, we can't just use the getSelectedRows() since this will only return the visible rows shown in the UI which is not enough.
    * The process is much more complex, what we have to do instead is the following
    * 1. when changing a row selection, we'll add the new selection if it's not yet in the global array of selected IDs
    * 2. when deleting a row selection, we'll remove the selection from our global array of selected IDs (unless it came from a page change)
-   * 3. before we change page, we'll keep track with a flag (this flag will be used to skip any deletion when we're changing page)
-   * 4. after the page is changed, we'll do an extra (and delayed) check to make sure that what we have in our global array of selected IDs is displayed on screen
+   * 3. if we use Pagination and we change page, we'll keep track with a flag (this flag will be used to skip any deletion when we're changing page)
+   * 4. after the Page or DataView is changed or updated, we'll do an extra (and delayed) check to make sure that what we have in our global array of selected IDs is displayed on screen
    */
-  private bindSlickGridRowSelectionWithPaginationToGridStateChange() {
+  private bindSlickGridRowSelectionToGridStateChange() {
     if (this._grid && this._gridOptions && this._dataView) {
       this._eventHandler.subscribe(this._dataView.onBeforePagingInfoChanged, () => {
         this._wasRecheckedAfterPageChange = false; // reset the page check flag, to skip deletions on page change (used in code below)

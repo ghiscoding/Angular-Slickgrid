@@ -306,40 +306,6 @@ describe('GridStateService', () => {
       expect(output).toBeNull();
     });
 
-    it('should return the current row selections in the grid when "enableCheckboxSelector" flag is enabled', () => {
-      const selectedGridRows = [2];
-      const selectedRowIds = [99];
-      const mockRowItems = [{ id: 99 }];
-      const gridOptionsMock = { enableCheckboxSelector: true } as GridOption;
-      jest.spyOn(dataViewStub, 'getFilteredItems').mockReturnValue(mockRowItems);
-      jest.spyOn(gridStub, 'getSelectedRows').mockReturnValue(selectedGridRows);
-      jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
-      const sharedSpy = jest.spyOn(dataViewStub, 'mapRowsToIds').mockReturnValue(selectedRowIds);
-
-      service.selectedRowDataContextIds = selectedRowIds;
-      const output = service.getCurrentRowSelections();
-
-      expect(sharedSpy).toHaveBeenCalled();
-      expect(output).toEqual({ gridRowIndexes: selectedGridRows, dataContextIds: selectedRowIds, filteredDataContextIds: selectedRowIds });
-    });
-
-    it('should return the current row selections in the grid when "enableRowSelection" flag is enabled', () => {
-      const selectedGridRows = [2];
-      const selectedRowIds = [99];
-      const mockRowItems = [{ id: 99 }];
-      const gridOptionsMock = { enableRowSelection: true } as GridOption;
-      jest.spyOn(dataViewStub, 'getFilteredItems').mockReturnValue(mockRowItems);
-      jest.spyOn(gridStub, 'getSelectedRows').mockReturnValue(selectedGridRows);
-      jest.spyOn(gridStub, 'getOptions').mockReturnValue(gridOptionsMock);
-      const sharedSpy = jest.spyOn(dataViewStub, 'mapRowsToIds').mockReturnValue(selectedRowIds);
-
-      service.selectedRowDataContextIds = selectedRowIds;
-      const output = service.getCurrentRowSelections();
-
-      expect(sharedSpy).toHaveBeenCalled();
-      expect(output).toEqual({ gridRowIndexes: selectedGridRows, dataContextIds: selectedRowIds, filteredDataContextIds: selectedRowIds });
-    });
-
     it('should call "getCurrentGridState" method and return the Row Selection when either "enableCheckboxSelector" or "enableRowSelection" flag is enabled', () => {
       const selectedGridRows = [2];
       const selectedRowIds = [99];
@@ -365,7 +331,7 @@ describe('GridStateService', () => {
       expect(output).toEqual({ columns: columnMock, filters: filterMock, sorters: sorterMock, rowSelection: selectionMock } as GridState);
     });
 
-    it('should call the "mapIdsToRows" from the DataView and get the data IDs from the "selectedRowDataContextIds" array when Pagination is enabled', () => {
+    it('should call the "mapIdsToRows" from the DataView and get the data IDs from the "selectedRowDataContextIds" array', () => {
       const mockRowIndexes = [3, 44];
       const mockRowIds = [333, 444];
       const mockRowItems = [{ id: 333 }, { id: 444 }];
