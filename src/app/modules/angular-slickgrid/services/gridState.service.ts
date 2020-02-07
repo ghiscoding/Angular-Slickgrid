@@ -175,7 +175,7 @@ export class GridStateService {
   }
 
   /**
-   * Get the Columns (and their state: visibility/position) that are currently applied in the grid
+   * Get the Columns (and their states: visibility/position/width) that are currently applied in the grid
    * @return current columns
    */
   getCurrentColumns(): CurrentColumn[] {
@@ -206,7 +206,7 @@ export class GridStateService {
   }
 
   /**
-   * Get current Pagination (and it's state, pageNumber, pageSize) that are currently applied in the grid
+   * Get current Pagination (and its state, pageNumber, pageSize) that are currently applied in the grid
    * @return current pagination state
    */
   getCurrentPagination(): CurrentPagination | null {
@@ -224,8 +224,8 @@ export class GridStateService {
   }
 
   /**
-   * Get the current Sorters (and their state, columnId, direction) that are currently applied in the grid
-   * @return current sorters
+   * Get the current Row Selections (and its state, gridRowIndexes, dataContextIds, filteredDataContextIds) that are currently applied in the grid
+   * @return current row selection
    */
   getCurrentRowSelections(requestRefreshFilteredRow = true): CurrentRowSelection | null {
     if (this._grid && this._gridOptions && this._dataView && this.hasRowSelectionEnabled()) {
