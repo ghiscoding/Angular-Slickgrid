@@ -1,5 +1,3 @@
-import { ExcelWorkbook } from './../models/excelWorkbook.interface';
-import { ExcelStylesheet } from './../models/excelStylesheet.interface';
 import { Injectable, Optional } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import * as ExcelBuilder from 'excel-builder-webpacker';
@@ -7,7 +5,8 @@ import { Subject } from 'rxjs';
 import * as moment_ from 'moment-mini';
 const moment = moment_; // patch to fix rollup "moment has no default export" issue, document here https://github.com/rollup/rollup/issues/670
 
-
+import { ExcelWorkbook } from './../models/excelWorkbook.interface';
+import { ExcelStylesheet } from './../models/excelStylesheet.interface';
 import {
   Column,
   ExcelCellFormat,
@@ -119,6 +118,9 @@ export class ExcelExportService {
           if (this._gridOptions && this._gridOptions.excelExportOptions && this._gridOptions.excelExportOptions.customExcelHeader) {
             this._gridOptions.excelExportOptions.customExcelHeader(this._workbook, this._sheet);
           }
+
+          const columns = this._grid && this._grid.getColumns && this._grid.getColumns() || [];
+          this._sheet.setColumns(this.getColumnStyles(columns));
 
           const currentSheetData = this._sheet.data;
           let finalOutput = currentSheetData;
@@ -239,14 +241,44 @@ export class ExcelExportService {
 
     // data variable which will hold all the fields data of a row
     const outputData = [];
+    const columnHeaderStyle = this._gridOptions && this._gridOptions.excelExportOptions && this._gridOptions.excelExportOptions.columnHeaderStyle;
+    let columnHeaderStyleId = this._stylesheetFormats.boldFormatter.id;
+    if (columnHeaderStyle) {
+      columnHeaderStyleId = this._stylesheet.createFormat(columnHeaderStyle).id;
+    }
 
     // get all column headers (it might include a "Group by" title at A1 cell)
-    outputData.push(this.getColumnHeaderData(columns, { style: this._stylesheetFormats.boldFormatter.id }));
+    // also style the headers, defaults to Bold but user could pass his own style
+    outputData.push(this.getColumnHeaderData(columns, { style: columnHeaderStyleId }));
 
     // Populate the rest of the Grid Data
     this.pushAllGridRowDataToArray(outputData, columns);
 
     return outputData;
+  }
+
+  /** Get each column style including a style for the width of each column */
+  private getColumnStyles(columns: Column[]): any[] {
+    const grouping = this._dataView && this._dataView.getGrouping && this._dataView.getGrouping();
+    const columnStyles = [];
+    if (grouping) {
+      columnStyles.push({
+        bestFit: true,
+        columnStyles: (this._gridOptions && this._gridOptions.excelExportOptions && this._gridOptions.excelExportOptions.customColumnWidth) || 10
+      });
+    }
+
+    columns.forEach((columnDef: Column) => {
+      const skippedField = columnDef.excludeFromExport || false;
+      // if column width is 0, then we consider that field as a hidden field and should not be part of the export
+      if ((columnDef.width === undefined || columnDef.width > 0) && !skippedField) {
+        columnStyles.push({
+          bestFit: true,
+          width: columnDef.exportColumnWidth || (this._gridOptions && this._gridOptions.excelExportOptions && this._gridOptions.excelExportOptions.customColumnWidth) || 10
+        });
+      }
+    });
+    return columnStyles;
   }
 
   /** Get all column headers and format them in Bold */
@@ -420,9 +452,13 @@ export class ExcelExportService {
 
       const skippedField = columnDef.excludeFromExport || false;
 
-      // if there's a groupTotalsFormatter, we will re-run it to get the exact same output as what is shown in UI
-      if (columnDef.groupTotalsFormatter) {
-        itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
+      // if there's a exportCustomGroupTotalsFormatter or groupTotalsFormatter, we will re-run it to get the exact same output as what is shown in UI
+      if (columnDef.exportCustomGroupTotalsFormatter) {
+        itemData = columnDef.exportCustomGroupTotalsFormatter(itemObj, columnDef);
+      } else {
+        if (columnDef.groupTotalsFormatter) {
+          itemData = columnDef.groupTotalsFormatter(itemObj, columnDef);
+        }
       }
 
       // does the user want to sanitize the output data (remove HTML tags)?
