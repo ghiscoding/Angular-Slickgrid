@@ -24,6 +24,7 @@ const gridOptionMock = {
 
 const gridStub = {
   autosizeColumns: jest.fn(),
+  getContainerNode: jest.fn(),
   getScrollbarDimensions: jest.fn(),
   resizeCanvas: jest.fn(),
   getOptions: () => gridOptionMock,
@@ -45,12 +46,14 @@ const template =
 
 describe('Resizer Service', () => {
   let service: ResizerService;
+  let div;
 
   beforeEach(() => {
-    const div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = template;
     document.body.appendChild(div);
 
+    jest.spyOn(gridStub, 'getContainerNode').mockReturnValue(div.querySelector(`#${gridId}`));
     service = new ResizerService();
     service.init(gridStub);
   });
@@ -66,11 +69,10 @@ describe('Resizer Service', () => {
 
   it('should throw an error when there is no grid object defined', () => {
     service = new ResizerService();
-    service.init(null);
-    expect(() => service.resizeGrid()).toThrowError('Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined');
+    expect(() => service.init(null)).toThrowError('Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined');
   });
 
-  it('should throw an error when there is no grid options defined', () => {
+  xit('should throw an error when there is no grid options defined', () => {
     service = new ResizerService();
     service.init({ getOptions: () => null });
     expect(() => service.resizeGrid()).toThrowError('Angular-Slickgrid resizer requires a valid Grid object and Grid Options defined');
@@ -90,13 +92,15 @@ describe('Resizer Service', () => {
     });
 
     it('should return null when calling "bindAutoResizeDataGrid" method with a gridId that is not found in the DOM', () => {
-      gridOptionMock.gridId = 'unknown';
+      jest.spyOn(gridStub, 'getContainerNode').mockReturnValue(null);
+      service.init(gridStub);
       const output = service.bindAutoResizeDataGrid();
       expect(output).toBe(null);
     });
 
     it('should return null when calling "calculateGridNewDimensions" method with a gridId that is not found in the DOM', () => {
-      gridOptionMock.gridId = 'unknown';
+      jest.spyOn(gridStub, 'getContainerNode').mockReturnValue(null);
+      service.init(gridStub);
       const output = service.calculateGridNewDimensions(gridOptionMock);
       expect(output).toBe(null);
     });
