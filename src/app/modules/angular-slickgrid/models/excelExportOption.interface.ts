@@ -6,6 +6,12 @@ export interface ExcelExportOption {
   /** Defaults to true, when grid is using Grouping, it will show indentation of the text with collapsed/expanded symbol as well */
   addGroupIndentation?: boolean;
 
+  /** If defined apply the style to header columns. Else use the bold style */
+  columnHeaderStyle?: any;
+
+  /** If set then this will be used as column width for all columns */
+  customColumnWidth?: number;
+
   /** Defaults to false, which leads to all Formatters of the grid being evaluated on export. You can also override a column by changing the propery on the column itself */
   exportWithFormatter?: boolean;
 

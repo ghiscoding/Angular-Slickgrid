@@ -256,7 +256,11 @@ export class GridContextMenuComponent implements OnInit {
       enableSorting: true,
       enableTranslate: true,
       excelExportOptions: {
-        exportWithFormatter: true
+        exportWithFormatter: true,
+        customColumnWidth: 15,
+
+        // you can customize how the header titles will be styled (defaults to Bold)
+        columnHeaderStyle: { font: { bold: true, italic: true } }
       },
       i18n: this.translate,
 
