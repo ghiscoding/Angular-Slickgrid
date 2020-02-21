@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.5](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.4...v2.17.5) (2020-02-21)
+
+
+### Features
+
+* **excel:** add some extra styling & width options for Excel export ([#403](https://github.com/ghiscoding/angular-slickgrid/issues/403)) ([d87ce2c](https://github.com/ghiscoding/angular-slickgrid/commit/d87ce2c89aa9fc8142a0a694e445f193a92ea19e))
+* **tests:** update to latest Cypress version ([dc3afa9](https://github.com/ghiscoding/angular-slickgrid/commit/dc3afa93751761c06c222b9765c44dd9afb18525))
+
 ### [2.17.4](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.3...v2.17.4) (2020-02-06)
 
 
