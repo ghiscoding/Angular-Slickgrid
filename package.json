@@ -79,8 +79,8 @@
     }
   },
   "dependencies": {
-    "@ngx-translate/core": ">=11.0.1",
-    "@ngx-translate/http-loader": ">=4.0.0",
+    "@ngx-translate/core": "^11.0.1",
+    "@ngx-translate/http-loader": "^4.0.0",
     "dompurify": "^2.0.8",
     "excel-builder-webpacker": "^1.0.4",
     "flatpickr": ">=4.5.0",
