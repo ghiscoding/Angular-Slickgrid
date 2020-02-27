@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.8](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.7...v2.17.8) (2020-02-27)
+
+
+### Bug Fixes
+
+* **mousewheel:** add jquery mousewheel lib to fix scroll in frozen grid ([d2bc0e7](https://github.com/ghiscoding/angular-slickgrid/commit/d2bc0e7afd9fd507c4214e12289cf2ef39930c29))
+
 ### [2.17.7](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.6...v2.17.7) (2020-02-27)
 
 ### [2.17.6](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.5...v2.17.6) (2020-02-27)
