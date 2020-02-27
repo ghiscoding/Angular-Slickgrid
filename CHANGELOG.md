@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.7](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.6...v2.17.7) (2020-02-27)
+
 ### [2.17.6](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.5...v2.17.6) (2020-02-27)
 
 
