@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.6](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.5...v2.17.6) (2020-02-27)
+
+
+### Bug Fixes
+
+* **editor:** LongText Editor save button that was not working properly ([90beeac](https://github.com/ghiscoding/angular-slickgrid/commit/90beeacebdc03d8bdfdb163c9813a54a7d2e68b6))
+
 ### [2.17.5](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.4...v2.17.5) (2020-02-21)
 
 
