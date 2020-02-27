@@ -96,12 +96,6 @@ export class LongTextEditor implements Editor {
     this._$wrapper = $(`<div class="slick-large-editor-text editor-${columnId}" />`).appendTo($container);
     this._$textarea = $(`<textarea hidefocus rows="5" placeholder="${placeholder}" title="${title}">`).appendTo(this._$wrapper);
 
-    // the lib does not get the focus out event for some reason
-    // so register it here
-    if (this.hasAutoCommitEdit) {
-      this._$textarea.on('focusout', () => this.save());
-    }
-
     $(`<div class="editor-footer">
           <button class="btn btn-save btn-primary btn-xs">${saveText}</button>
           <button class="btn btn-cancel btn-default btn-xs">${cancelText}</button>
@@ -131,7 +125,7 @@ export class LongTextEditor implements Editor {
   }
 
   destroy() {
-    this._$wrapper.off('keydown focusout').remove();
+    this._$wrapper.remove();
   }
 
   focus() {
@@ -189,12 +183,12 @@ export class LongTextEditor implements Editor {
 
   save() {
     const validation = this.validate();
-    if (validation && validation.valid && this.isValueChanged()) {
-      if (this.hasAutoCommitEdit) {
-        this.grid.getEditorLock().commitCurrentEdit();
-      } else {
-        this.args.commitChanges();
-      }
+    const isValid = (validation && validation.valid) || false;
+
+    if (this.hasAutoCommitEdit && isValid) {
+      this.grid.getEditorLock().commitCurrentEdit();
+    } else {
+      this.args.commitChanges();
     }
   }
 

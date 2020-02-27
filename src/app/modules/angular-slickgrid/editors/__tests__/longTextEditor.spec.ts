@@ -345,6 +345,27 @@ describe('LongTextEditor', () => {
         expect(spy).toHaveBeenCalled();
       });
 
+      it('should call "commitChanges" method when "hasAutoCommitEdit" is enabled but value is invalid', () => {
+        mockItemData = { id: 1, title: 'task', isActive: true };
+        gridOptionMock.autoCommitEdit = true;
+        mockColumn.internalColumnEditor.validator = (value: any, args: EditorArgs) => {
+          if (value.length < 10) {
+            return { valid: false, msg: 'Must be at least 10 chars long.' };
+          }
+          return { valid: true, msg: '' };
+        };
+        const commitCurrentSpy = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
+        const commitChangeSpy = jest.spyOn(editorArguments, 'commitChanges');
+
+        editor = new LongTextEditor(editorArguments);
+        editor.loadValue(mockItemData);
+        editor.setValue('task 1');
+        editor.save();
+
+        expect(commitCurrentSpy).not.toHaveBeenCalled();
+        expect(commitChangeSpy).toHaveBeenCalled();
+      });
+
       it('should call "commitChanges" method when "hasAutoCommitEdit" is disabled', () => {
         mockItemData = { id: 1, title: 'task', isActive: true };
         gridOptionMock.autoCommitEdit = false;
@@ -370,26 +391,6 @@ describe('LongTextEditor', () => {
         editor.save();
 
         expect(spy).not.toHaveBeenCalled();
-      });
-
-      it('should call "getEditorLock" and "save" methods when "hasAutoCommitEdit" is enabled and the event "focusout" is triggered', (done) => {
-        mockItemData = { id: 1, title: 'task', isActive: true };
-        gridOptionMock.autoCommitEdit = true;
-        const spyCommit = jest.spyOn(gridStub.getEditorLock(), 'commitCurrentEdit');
-
-        editor = new LongTextEditor(editorArguments);
-        editor.loadValue(mockItemData);
-        const spySave = jest.spyOn(editor, 'save');
-        const editorElm = editor.editorDomElement;
-
-        editorElm.trigger('focusout');
-        editorElm[0].dispatchEvent(new (window.window as any).Event('focusout'));
-
-        setTimeout(() => {
-          expect(spyCommit).toHaveBeenCalled();
-          expect(spySave).toHaveBeenCalled();
-          done();
-        });
       });
     });
 
