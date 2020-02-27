@@ -47,9 +47,8 @@ const myCustomTitleValidator: EditorValidator = (value: any, args: EditorArgs) =
     return { valid: false, msg: 'Your title is invalid, it must start with "Task" followed by a number' };
     // OR use the Translate Service with your custom message
     // return { valid: false, msg: translate.instant('YOUR_ERROR', { x: value }) };
-  } else {
-    return { valid: true, msg: '' };
   }
+  return { valid: true, msg: '' };
 };
 
 // create a custom Formatter to show the Task + value
