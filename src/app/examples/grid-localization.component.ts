@@ -61,6 +61,7 @@ export class GridLocalizationComponent implements OnInit {
   dataset: any[];
   selectedLanguage: string;
   duplicateTitleHeaderCount = 1;
+  gridObj: any;
 
   constructor(private translate: TranslateService) {
     // always start with English for Cypress E2E tests to be consistent
@@ -222,12 +223,24 @@ export class GridLocalizationComponent implements OnInit {
 
   angularGridReady(angularGrid: AngularGridInstance) {
     this.angularGrid = angularGrid;
+    this.gridObj = angularGrid.slickGrid;
   }
 
   dynamicallyAddTitleHeader() {
+    // you can dynamically add your column to your column definitions
+    // and then use the spread operator [...cols] OR slice to force Angular to review the changes
     const newCol = { id: `title${this.duplicateTitleHeaderCount++}`, field: 'id', nameKey: 'TITLE', formatter: taskTranslateFormatter, sortable: true, minWidth: 100, filterable: true, params: { useFormatterOuputToFilter: true } };
     this.columnDefinitions.push(newCol);
-    this.columnDefinitions = this.columnDefinitions.slice();
+    this.columnDefinitions = this.columnDefinitions.slice(); // or use spread operator [...cols]
+
+    // NOTE if you use an Extensions (Checkbox Selector, Row Detail, ...) that modifies the column definitions in any way
+    // you MUST use "getColumns()" instead to get ALL columns including the 1st column that is created internally
+    // for example if you use the Checkbox Selector (row selection), you need to use the code below
+    /*
+    const allColumns = this.gridObj.getColumns();
+    allColumns.push(newCol);
+    this.columnDefinitions = [...allColumns]; // (or use slice) reassign to column definitions for Angular to do dirty checking
+    */
   }
 
   exportToExcel() {
