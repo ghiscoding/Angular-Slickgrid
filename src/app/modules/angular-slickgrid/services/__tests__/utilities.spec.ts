@@ -7,6 +7,7 @@ import {
   findOrDefault,
   formatNumber,
   getDescendantProperty,
+  getHtmlElementOffset,
   htmlDecode,
   htmlEncode,
   htmlEntityDecode,
@@ -429,6 +430,27 @@ describe('Service/Utilies', () => {
       const thousandSeparator = '_';
       const output = formatNumber(input, null, null, displayNegativeNumberWithParentheses, currencyPrefix, currencySuffix, decimalSeparator, thousandSeparator);
       expect(output).toBe('($12_345_678 CAD)');
+    });
+  });
+
+  describe('getHtmlElementOffset method', () => {
+    const div = document.createElement('div');
+    div.innerHTML = `<span></span>`;
+    document.body.appendChild(div);
+
+    it('should return top/left 0 when creating a new element in the document without positions', () => {
+      const output = getHtmlElementOffset(div);
+      expect(output).toEqual({ top: 0, left: 0 });
+    });
+
+    it('should return same top/left positions as defined in the document/window', () => {
+      // @ts-ignore
+      jest.spyOn(div, 'getBoundingClientRect').mockReturnValue({ top: 10, left: 25 });
+      div.style.top = '10px';
+      div.style.left = '25px';
+
+      const output = getHtmlElementOffset(div);
+      expect(output).toEqual({ top: 10, left: 25 });
     });
   });
 
