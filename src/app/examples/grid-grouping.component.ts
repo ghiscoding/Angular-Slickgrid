@@ -14,7 +14,6 @@ import {
   SortDirectionNumber,
   Sorters,
 } from './../modules/angular-slickgrid';
-import { Subscription } from 'rxjs';
 
 @Injectable()
 @Component({
