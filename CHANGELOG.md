@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.17.9](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.8...v2.17.9) (2020-03-02)
+
+
+### Bug Fixes
+
+* **columns:** add/remove columns dynamically, fixes [#406](https://github.com/ghiscoding/angular-slickgrid/issues/406) ([324cb1a](https://github.com/ghiscoding/angular-slickgrid/commit/324cb1a97fcd8e0362e2c656a091f3289e155119))
+* **example:** should re-render after clearing groups, fixes [#407](https://github.com/ghiscoding/angular-slickgrid/issues/407) ([7752abd](https://github.com/ghiscoding/angular-slickgrid/commit/7752abd27933a51d5e58c3e305ceff791400ea88))
+
 ### [2.17.8](https://github.com/ghiscoding/angular-slickgrid/compare/v2.17.7...v2.17.8) (2020-02-27)
 
 
