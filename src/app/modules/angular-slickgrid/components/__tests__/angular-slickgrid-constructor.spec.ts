@@ -327,6 +327,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         const translateSpy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
         const autosizeSpy = jest.spyOn(mockGrid, 'autosizeColumns');
         const updateSpy = jest.spyOn(component, 'updateColumnDefinitionsList');
+        const renderSpy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
         const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
 
         component.gridOptions.enableTranslate = true;
@@ -338,12 +339,14 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(translateSpy).toHaveBeenCalledWith(false, mockColDefs);
         expect(autosizeSpy).toHaveBeenCalled();
         expect(updateSpy).toHaveBeenCalledWith(mockColDefs);
+        expect(renderSpy).toHaveBeenCalledWith(false, mockColDefs);
       });
 
       it('should expect "renderColumnHeaders" being called when "enableTranslate" is disabled', () => {
         const translateSpy = jest.spyOn(extensionServiceStub, 'translateColumnHeaders');
         const autosizeSpy = jest.spyOn(mockGrid, 'autosizeColumns');
         const updateSpy = jest.spyOn(component, 'updateColumnDefinitionsList');
+        const renderSpy = jest.spyOn(extensionServiceStub, 'renderColumnHeaders');
         const mockColDefs = [{ id: 'name', field: 'name', editor: undefined, internalColumnEditor: {} }];
 
         component.ngOnInit();
@@ -353,6 +356,7 @@ describe('Angular-Slickgrid Custom Component instantiated via Constructor', () =
         expect(translateSpy).toHaveBeenCalledWith(false, mockColDefs);
         expect(autosizeSpy).toHaveBeenCalled();
         expect(updateSpy).toHaveBeenCalledWith(mockColDefs);
+        expect(renderSpy).toHaveBeenCalledWith(mockColDefs, true);
       });
     });
 

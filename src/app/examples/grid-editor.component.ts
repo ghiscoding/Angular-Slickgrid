@@ -615,6 +615,15 @@ export class GridEditorComponent implements OnInit {
     */
   }
 
+  dynamicallyRemoveLastColumn() {
+    const allColumns = this.gridObj.getColumns();
+
+    // remove your column the full set of columns
+    // and use slice or spread [...] to trigger an Angular dirty change
+    allColumns.pop();
+    this.columnDefinitions = allColumns.slice();
+  }
+
   setAutoEdit(isAutoEdit) {
     this.isAutoEdit = isAutoEdit;
     this.gridObj.setOptions({ autoEdit: isAutoEdit }); // change the grid option dynamically

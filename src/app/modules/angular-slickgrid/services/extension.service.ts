@@ -379,7 +379,7 @@ export class ExtensionService {
     this.translateItems(this.sharedService.allColumns, 'nameKey', 'name');
 
     // re-render the column headers
-    this.renderColumnHeaders(columnDefinitions);
+    this.renderColumnHeaders(columnDefinitions, Array.isArray(newColumnDefinitions));
     this.gridMenuExtension.translateGridMenu();
   }
 
@@ -387,13 +387,13 @@ export class ExtensionService {
    * Render (or re-render) the column headers from column definitions.
    * calling setColumns() will trigger a grid re-render
    */
-  renderColumnHeaders(newColumnDefinitions?: Column[]) {
+  renderColumnHeaders(newColumnDefinitions?: Column[], forceColumnDefinitionsOverwrite = false) {
     let collection = newColumnDefinitions;
     if (!collection) {
       collection = this.sharedService.columnDefinitions;
     }
     if (Array.isArray(collection) && this.sharedService.grid && this.sharedService.grid.setColumns) {
-      if (collection.length > this.sharedService.allColumns.length) {
+      if (collection.length > this.sharedService.allColumns.length || forceColumnDefinitionsOverwrite) {
         this.sharedService.allColumns = collection;
       }
       this.sharedService.grid.setColumns(collection);
