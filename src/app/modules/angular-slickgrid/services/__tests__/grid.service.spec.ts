@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { GridService, ExtensionService, FilterService, GridStateService, SortService } from '..';
+import { GridService, ExtensionService, FilterService, GridStateService, SortService, SharedService } from '..';
 import { CellArgs, Column, OnEventArgs, GridOption } from './../../models';
 
 declare var Slick: any;
@@ -62,6 +62,7 @@ const gridStub = {
 
 describe('Grid Service', () => {
   let service: GridService;
+  let sharedService = new SharedService();
   let translate: TranslateService;
   jest.spyOn(gridStub, 'getOptions').mockReturnValue({ enableAutoResize: true } as GridOption);
 
@@ -71,12 +72,14 @@ describe('Grid Service', () => {
         { provide: ExtensionService, useValue: extensionServiceStub },
         { provide: FilterService, useValue: filterServiceStub },
         { provide: GridStateService, useValue: gridStateServiceStub },
+        { provide: SharedService, useValue: sharedService },
         { provide: SortService, useValue: sortServiceStub },
         GridService,
       ],
       imports: [TranslateModule.forRoot()]
     });
     translate = TestBed.get(TranslateService);
+    sharedService = TestBed.get(SharedService);
     service = TestBed.get(GridService);
     service.init(gridStub, dataviewStub);
   });
@@ -87,6 +90,30 @@ describe('Grid Service', () => {
 
   it('should create the service', () => {
     expect(service).toBeTruthy();
+  });
+
+  describe('getAllColumnDefinitions method', () => {
+    it('should call "allColumns" GETTER ', () => {
+      const mockColumns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+      const getSpy = jest.spyOn(SharedService.prototype, 'allColumns', 'get').mockReturnValue(mockColumns);
+
+      const output = service.getAllColumnDefinitions();
+
+      expect(getSpy).toHaveBeenCalled();
+      expect(output).toEqual(mockColumns);
+    });
+  });
+
+  describe('getVisibleColumnDefinitions method', () => {
+    it('should call "visibleColumns" GETTER ', () => {
+      const mockColumns = [{ id: 'field1', field: 'field1', width: 100 }, { id: 'field2', field: 'field2', width: 100 }];
+      const getSpy = jest.spyOn(SharedService.prototype, 'visibleColumns', 'get').mockReturnValue(mockColumns);
+
+      const output = service.getVisibleColumnDefinitions();
+
+      expect(getSpy).toHaveBeenCalled();
+      expect(output).toEqual(mockColumns);
+    });
   });
 
   describe('upsertItem methods', () => {

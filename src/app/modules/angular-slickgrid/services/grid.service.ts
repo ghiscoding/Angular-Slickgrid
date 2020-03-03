@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
+
 import {
   CellArgs,
   Column,
@@ -11,8 +13,8 @@ import {
 import { ExtensionService } from './extension.service';
 import { FilterService } from './filter.service';
 import { GridStateService } from './gridState.service';
+import { SharedService } from './shared.service';
 import { SortService } from './sort.service';
-import { Subject } from 'rxjs';
 
 // using external non-typed js libraries
 declare var Slick: any;
@@ -34,6 +36,7 @@ export class GridService {
     private extensionService: ExtensionService,
     private filterService: FilterService,
     private gridStateService: GridStateService,
+    private sharedService: SharedService,
     private sortService: SortService
   ) { }
 
@@ -56,6 +59,19 @@ export class GridService {
     if (this.filterService && this.filterService.clearFilters) {
       this.filterService.clearFilters();
     }
+  }
+
+  /**
+   * Get all column set in the grid, that is all visible/hidden columns
+   * and also include any extra columns used by some plugins (like Row Selection, Row Detail, ...)
+   */
+  getAllColumnDefinitions() {
+    return this.sharedService.allColumns;
+  }
+
+  /** Get only visible column definitions and also include any extra columns by some plugins (like Row Selection, Row Detail, ...) */
+  getVisibleColumnDefinitions() {
+    return this.sharedService.visibleColumns;
   }
 
   /**
