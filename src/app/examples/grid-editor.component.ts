@@ -606,22 +606,34 @@ export class GridEditorComponent implements OnInit {
     this.columnDefinitions = this.columnDefinitions.slice(); // or use spread operator [...cols]
 
     // NOTE if you use an Extensions (Checkbox Selector, Row Detail, ...) that modifies the column definitions in any way
-    // you MUST use "getColumns()", using this will be ALL columns including the 1st column that is created internally
+    // you MUST use "getAllColumnDefinitions()" from the GridService, using this will be ALL columns including the 1st column that is created internally
     // for example if you use the Checkbox Selector (row selection), you MUST use the code below
     /*
-    const allColumns = this.gridObj.getColumns();
+    const allColumns = this.angularGrid.gridService.getAllColumnDefinitions();
     allColumns.push(newCol);
     this.columnDefinitions = [...allColumns]; // (or use slice) reassign to column definitions for Angular to do dirty checking
     */
   }
 
   dynamicallyRemoveLastColumn() {
-    const allColumns = this.gridObj.getColumns();
+    this.columnDefinitions.pop();
+    this.columnDefinitions = this.columnDefinitions.slice();
+
+    // NOTE if you use an Extensions (Checkbox Selector, Row Detail, ...) that modifies the column definitions in any way
+    // you MUST use the code below, first you must reassign the Editor facade (from the internalColumnEditor back to the editor)
+    // in other words, SlickGrid is not using the same as Angular-Slickgrid uses (editor with a "model" and other properties are a facade, SlickGrid only uses what is inside the model)
+    /*
+    const allColumns = this.angularGrid.gridService.getAllColumnDefinitions();
+    const allOriginalColumns = allColumns.map((column) => {
+      column.editor = column.internalColumnEditor;
+      return column;
+    });
 
     // remove your column the full set of columns
     // and use slice or spread [...] to trigger an Angular dirty change
-    allColumns.pop();
-    this.columnDefinitions = allColumns.slice();
+    allOriginalColumns.pop();
+    this.columnDefinitions = allOriginalColumns.slice();
+    */
   }
 
   setAutoEdit(isAutoEdit) {
