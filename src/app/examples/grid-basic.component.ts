@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Column, GridOption } from './../modules/angular-slickgrid';
+import { Column, GridOption, Formatters } from './../modules/angular-slickgrid';
 
 const NB_ITEMS = 995;
 
@@ -27,8 +27,8 @@ export class GridBasicComponent implements OnInit {
       { id: 'title', name: 'Title', field: 'title', sortable: true },
       { id: 'duration', name: 'Duration (days)', field: 'duration', sortable: true },
       { id: '%', name: '% Complete', field: 'percentComplete', sortable: true },
-      { id: 'start', name: 'Start', field: 'start' },
-      { id: 'finish', name: 'Finish', field: 'finish' },
+      { id: 'start', name: 'Start', field: 'start', formatter: Formatters.dateIso },
+      { id: 'finish', name: 'Finish', field: 'finish', formatter: Formatters.dateIso },
       { id: 'effort-driven', name: 'Effort Driven', field: 'effortDriven', sortable: true }
     ];
     this.gridOptions1 = {
@@ -69,8 +69,8 @@ export class GridBasicComponent implements OnInit {
         title: 'Task ' + i,
         duration: Math.round(Math.random() * 100) + '',
         percentComplete: randomPercent,
-        start: `${randomMonth}/${randomDay}/${randomYear}`,
-        finish: `${randomMonth}/${randomDay}/${randomYear}`,
+        start: new Date(randomYear, randomMonth + 1, randomDay),
+        finish: new Date(randomYear + 1, randomMonth + 1, randomDay),
         effortDriven: (i % 5 === 0)
       };
     }

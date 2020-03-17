@@ -130,6 +130,9 @@ export interface GridOption {
     syncGridSelectionWithBackendService?: boolean;
   };
 
+  /** Defaults to 'id', what is the default column field id to sort when calling clear sorting */
+  defaultColumnSortFieldId?: string;
+
   /** Default column width, is set to 80 when null */
   defaultColumnWidth?: number;
 

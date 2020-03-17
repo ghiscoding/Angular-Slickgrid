@@ -72,6 +72,7 @@ export const GlobalGridOptions: Partial<GridOption> = {
     syncGridSelectionWithBackendService: false, // but disable it when using backend services
   },
   datasetIdPropertyName: 'id',
+  defaultColumnSortFieldId: 'id',
   defaultFilter: Filters.input,
   enableFilterTrimWhiteSpace: false, // do we want to trim white spaces on all Filters?
   defaultFilterPlaceholder: '&#128269;',

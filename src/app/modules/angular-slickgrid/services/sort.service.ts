@@ -111,7 +111,9 @@ export class SortService {
           this.onBackendSortChanged(undefined, { grid: this._grid, sortCols: [], clearSortTriggered: true });
         } else {
           if (this._columnDefinitions && Array.isArray(this._columnDefinitions)) {
-            this.onLocalSortChanged(this._grid, this._dataView, new Array({ sortAsc: true, sortCol: this._columnDefinitions[0], clearSortTriggered: true }));
+            const sortColFieldId = this._gridOptions && this._gridOptions.defaultColumnSortFieldId || 'id';
+            const sortCol = { id: sortColFieldId, field: sortColFieldId } as Column;
+            this.onLocalSortChanged(this._grid, this._dataView, new Array({ sortAsc: true, sortCol, clearSortTriggered: true }));
           }
         }
       } else if (this._isBackendGrid) {
