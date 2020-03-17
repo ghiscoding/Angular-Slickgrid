@@ -117,9 +117,9 @@ describe('Example 1 - Basic Grids', () => {
       .click();
   });
 
-  it('should have no sorting in 2nd grid', () => {
+  it('should have no sorting in 2nd grid (back to default sorted by id)', () => {
     let gridUid = '';
-    const grid2Tasks = ['Task 0', 'Task 1', 'Task 10', 'Task 100', 'Task 101'];
+    const grid2Tasks = ['Task 0', 'Task 1', 'Task 2', 'Task 3', 'Task 4'];
 
     cy.get('#grid2')
       .should(($grid) => {
