@@ -351,6 +351,17 @@ describe('Service/Utilies', () => {
       expect(output2).toBe('12,345,678');
     });
 
+    it('should return a string without decimals but using dot (.) as thousand separator when these arguments are null or undefined and the input provided is an integer', () => {
+      const input = 12345678;
+      const decimalSeparator = ',';
+      const thousandSeparator = '.';
+      const output1 = formatNumber(input, null, null, false, '', '', decimalSeparator, thousandSeparator);
+      const output2 = formatNumber(input, undefined, undefined, false, '', '', decimalSeparator, thousandSeparator);
+
+      expect(output1).toBe('12.345.678');
+      expect(output2).toBe('12.345.678');
+    });
+
     it('should return a formatted string wrapped in parentheses when the input number is negative and the displayNegativeNumberWithParentheses argument is enabled', () => {
       const input = -123;
       const displayNegativeNumberWithParentheses = true;
@@ -390,6 +401,16 @@ describe('Service/Utilies', () => {
       const thousandSeparator = ',';
       const output = formatNumber(input, 2, 2, displayNegativeNumberWithParentheses, currencyPrefix, '', decimalSeparator, thousandSeparator);
       expect(output).toBe('-$12,345,678.00');
+    });
+
+    it('should return a formatted currency string and thousand separator using dot (.) and decimal using comma (,) when those are provided', () => {
+      const input = -12345678.32;
+      const displayNegativeNumberWithParentheses = false;
+      const currencyPrefix = '$';
+      const decimalSeparator = ',';
+      const thousandSeparator = '.';
+      const output = formatNumber(input, 2, 2, displayNegativeNumberWithParentheses, currencyPrefix, '', decimalSeparator, thousandSeparator);
+      expect(output).toBe('-$12.345.678,32');
     });
 
     it('should return a formatted currency string with symbol prefix/suffix wrapped in parentheses when the input number is negative, when all necessary arguments are filled', () => {
